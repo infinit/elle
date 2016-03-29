@@ -1,96 +1,86 @@
-// Copyright 2013 Glyn Matthews.
+// Copyright 2013-2016 Glyn Matthews.
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
 #include <iterator>
 #include <vector>
-#include <boost/optional.hpp>
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/erase.hpp>
-#include <boost/algorithm/string/replace.hpp>
-#include <boost/algorithm/string/join.hpp>
-#include <boost/algorithm/string/predicate.hpp>
-#include <boost/algorithm/string/classification.hpp>
-#include <boost/range/iterator_range.hpp>
-#include <boost/range/as_literal.hpp>
-#include <boost/range/algorithm_ext/erase.hpp>
-#include <boost/range/algorithm/for_each.hpp>
+#include <algorithm>
+#include "../boost/algorithm/string/split.hpp"
+#include "../boost/algorithm/string/join.hpp"
 #include "uri_normalize.hpp"
 #include "uri_percent_encode.hpp"
+#include "algorithm.hpp"
 
 namespace network {
-  namespace detail {
-    uri::string_type normalize_path(uri::string_view path,
-                                    uri_comparison_level level) {
-      uri::string_type normalized(std::begin(path), std::end(path));
+namespace detail {
+uri::string_type normalize_path(uri::string_view path,
+                                uri_comparison_level level) {
+  uri::string_type result = path.to_string();
 
-      if (uri_comparison_level::syntax_based == level) {
-        // case normalization
-        boost::for_each(normalized, percent_encoded_to_upper());
+  if (uri_comparison_level::syntax_based == level) {
+    // case normalization
+    detail::for_each(result, percent_encoded_to_upper());
 
-        // % encoding normalization
-        normalized.erase(detail::decode_encoded_unreserved_chars(std::begin(normalized),
-                                                                 std::end(normalized)),
-                         std::end(normalized));
+    // % encoding normalization
+    result.erase(
+        detail::decode_encoded_unreserved_chars(std::begin(result),
+                                                std::end(result)),
+        std::end(result));
 
-        // % path segment normalization
-        normalized = normalize_path_segments(normalized);
+    // % path segment normalization
+    result = normalize_path_segments(result);
+  }
+
+  return result;
+}
+
+uri::string_type normalize_path_segments(uri::string_view path) {
+  uri::string_type result;
+
+  if (!path.empty()) {
+    std::vector<uri::string_type> path_segments;
+    network_boost::split(path_segments, path,
+                 [](char ch) { return ch == '/'; });
+
+    // remove single dot segments
+    detail::remove_erase_if(
+        path_segments, [](const uri::string_type& s) { return (s == "."); });
+
+    // remove double dot segments
+    std::vector<uri::string_type> normalized_segments;
+    for (auto& segment : path_segments) {
+      if (segment == "..") {
+        if (normalized_segments.size() <= 1) {
+          throw uri_builder_error();
+        }
+        normalized_segments.pop_back();
       }
-
-      return normalized;
+      else {
+        normalized_segments.push_back(segment);
+      }
     }
 
-    uri::string_type normalize_path_segments(uri::string_view path) {
-      using namespace boost;
-      using namespace boost::algorithm;
-
-      uri::string_type normalized;
-      if (!path.empty()) {
-        std::vector<uri::string_type> path_segments;
-        boost::split(path_segments, path, is_any_of("/"));
-
-        // remove single dot segments
-        boost::remove_erase_if(path_segments, [](const uri::string_type &
-                                                 s) { return (s == "."); });
-
-        // remove double dot segments
-        std::vector<uri::string_type> normalized_segments;
-        boost::for_each(path_segments,
-                        [&normalized_segments](const uri::string_type & s) {
-          if (s == "..") {
-            // in a valid path, the minimum number of segments is 1
-            if (normalized_segments.size() <= 1) {
-              throw uri_builder_error();
-            }
-
-            normalized_segments.pop_back();
-          } else {
-            normalized_segments.push_back(s);
+    // remove adjacent slashes
+    optional<uri::string_type> prev_segment;
+    detail::remove_erase_if(
+        normalized_segments, [&prev_segment](const uri::string_type& segment) {
+          bool has_adjacent_slash =
+              ((prev_segment && prev_segment->empty()) && segment.empty());
+          if (!has_adjacent_slash) {
+            prev_segment = segment;
           }
+          return has_adjacent_slash;
         });
 
-        // remove adjacent slashes
-        boost::optional<uri::string_type> prev_segment;
-        boost::remove_erase_if(
-            normalized_segments,
-            [&prev_segment](const uri::string_type & segment) {
-              bool has_adjacent_slash =
-                  ((prev_segment && prev_segment->empty()) && segment.empty());
-              if (!has_adjacent_slash) {
-                prev_segment = segment;
-              }
-              return has_adjacent_slash;
-            });
+    result = network_boost::join(normalized_segments, "/");
+  }
 
-        normalized = boost::join(normalized_segments, "/");
-      }
+  if (result.empty()) {
+    result = "/";
+  }
 
-      if (normalized.empty()) {
-        normalized = "/";
-      }
-
-      return normalized;
-    }
-  }  // namespace detail
+  return result;
+}
+}  // namespace detail
 }  // namespace network

@@ -9,9 +9,9 @@
 .. image:: https://travis-ci.org/cpp-netlib/uri.png?branch=master
   :target: https://travis-ci.org/cpp-netlib/uri
 
-This project contains the source code that will track the proposal for
-a C++ URI at
-http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2012/n3420.html.
+This project contains the source code that was originally meant to
+track the proposal for a C++ URI at
+http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2014/n3975.html
 
 This package provides:
 
@@ -30,30 +30,11 @@ This package provides:
 Building the project
 ====================
 
-Configuring ``Boost``
----------------------
-
-Boost can be downloaded from
-http://www.boost.org/users/download/. This library requires at least
-Boost 1.53. Follow instructions to build boost at
-http://www.boost.org/doc/html/bbv2/installation.html and set the
-environment variable ``BOOST_ROOT`` to the location of the installation.
-
-Configuring ``google-test``
----------------------------
-
-Instructions can be found here:
-http://googletest.googlecode.com/svn/trunk/README . In order to locate
-using cmake, set the environment ``GTEST_ROOT`` to the location of the
-installation.
-
 Building with ``CMake``
 -----------------------
 
 ::
 
-	$ set BOOST_ROOT=...
-	$ set GTEST_ROOT=...
 	$ mkdir _build
 	$ cd _build
 	$ cmake ..
@@ -78,6 +59,6 @@ Contact
 
 Any questions about this library can be addressed to the cpp-netlib
 `developers mailing list`_. Issues can be filed using Github at
-http://github.com/cpp-netlib/cpp-netlib/issues.
+http://github.com/cpp-netlib/uri/issues.
 
 .. _`developers mailing list`: cpp-netlib@googlegroups.com

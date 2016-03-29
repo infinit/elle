@@ -1,9 +1,8 @@
-// Copyright (c) Glyn Matthews 2012, 2013, 2014.
+// Copyright (c) Glyn Matthews 2012-2016.
 // Copyright 2012 Google, Inc.
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt or copy at
 //  http://www.boost.org/LICENSE_1_0.txt)
-
 
 #include <gtest/gtest.h>
 #include <network/uri.hpp>
@@ -558,44 +557,6 @@ TEST(builder_test, build_uri_with_hash_in_path) {
   ASSERT_EQ("http://www.example.com/%23/", builder.uri());
 }
 
-TEST(builder_test, DISABLED_build_uri_from_filesystem_path) {
-  network::uri_builder builder;
-  builder
-    .scheme("file")
-    .path(boost::filesystem::path("/path/to/a/file.html"))
-    ;
-  ASSERT_EQ("file:///path/to/a/file.html", builder.uri());
-}
-
-TEST(builder_test, build_http_uri_from_filesystem_path) {
-  network::uri_builder builder;
-  builder
-    .scheme("http")
-    .host("www.example.com")
-    .path(boost::filesystem::path("/path/to/a/file.html"))
-    ;
-  ASSERT_EQ("http://www.example.com/path/to/a/file.html", builder.uri());
-}
-
-TEST(builder_test, DISABLED_build_uri_from_filesystem_path_with_encoded_chars) {
-  network::uri_builder builder;
-  builder
-    .scheme("file")
-    .path(boost::filesystem::path("/path/to/a/file with spaces.html"))
-    ;
-  ASSERT_EQ("file:///path/to/a/file%20with%20spaces.html", builder.uri());
-}
-
-TEST(builder_test, DISABLED_build_uri_with_encoded_unreserved_characters) {
-  network::uri_builder builder;
-  builder
-    .scheme("http")
-    .host("www.example.com")
-    .path("/%7Eglynos/")
-    ;
-  ASSERT_EQ("http://www.example.com/~glynos/", builder.uri());
-}
-
 TEST(builder_test, simple_port) {
   network::uri_builder builder;
   builder
@@ -605,31 +566,6 @@ TEST(builder_test, simple_port) {
     .path("/")
     ;
   ASSERT_EQ("http://www.example.com:8000/", builder.uri());
-}
-
-// This seems to work, but I don't want to add the Boost.System
-// dependency just for this.
-
-TEST(builder_test, build_uri_with_ipv4_address) {
-  using namespace boost::asio::ip;
-  network::uri_builder builder;
-  builder
-    .scheme("http")
-    .host(address_v4::loopback())
-    .path("/")
-    ;
-  ASSERT_EQ("http://127.0.0.1/", builder.uri());
-}
-
-TEST(builder_test, build_uri_with_ipv6_address) {
-  using namespace boost::asio::ip;
-  network::uri_builder builder;
-  builder
-    .scheme("http")
-    .host(address_v6::loopback())
-    .path("/")
-    ;
-  ASSERT_EQ("http://[::1]/", builder.uri());
 }
 
 TEST(builder_test, build_uri_with_query_item) {

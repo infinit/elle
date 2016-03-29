@@ -1,10 +1,10 @@
-# Copyright (c) Glyn Matthews 2012, 2013.
+# Copyright (c) Glyn Matthews 2012-2016.
 # Distributed under the Boost Software License, Version 1.0.
 # (See accompanying file LICENSE_1_0.txt or copy at
 # http://www.boost.org/LICENSE_1_0.txt)
 
 
-include_directories(${GTEST_INCLUDE_DIRS})
+include_directories( ${gtest_SOURCE_DIR}/include)
 
 set(
   TESTS
@@ -16,12 +16,13 @@ set(
   uri_resolve_test
   uri_builder_test
   uri_stream_test
+  optional_test
   )
 
 foreach (test ${TESTS})
   add_executable(${test} ${test}.cpp)
-  add_dependencies(${test} network-uri)
-  target_link_libraries(${test} ${GTEST_BOTH_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} network-uri)
+  add_dependencies(${test} network-uri gtest_main)
+  target_link_libraries(${test} ${CMAKE_THREAD_LIBS_INIT} network-uri gtest_main)
   if (OPENSSL_FOUND)
     target_link_libraries(${test} ${OPENSSL_LIBRARIES})
   endif()

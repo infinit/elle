@@ -1,4 +1,4 @@
-# Copyright (c) Glyn Matthews 2012, 2013.
+# Copyright (c) Glyn Matthews 2012-2016.
 # Distributed under the Boost Software License, Version 1.0.
 # (See accompanying file LICENSE_1_0.txt or copy at
 # http://www.boost.org/LICENSE_1_0.txt)
@@ -9,19 +9,7 @@ project(Uri)
 
 find_package(Threads REQUIRED)
 
-if(CPP-NETLIB_BUILD_SHARED_LIBS OR BUILD_SHARED_LIBS)
-  set(Boost_USE_STATIC_LIBS OFF)
-  if (MSVC)
-    add_definitions(-DBOOST_ALL_DYN_LINK -DNETWORK_URI_EXPORTS)
-  endif(MSVC)
-else()
-  set(Boost_USE_STATIC_LIBS ON)
-endif()
-
-set(Boost_USE_MULTITHREADED ON)
-find_package(Boost 1.53 REQUIRED system filesystem)
-
-include_directories(${Uri_SOURCE_DIR}/src ${Boost_INCLUDE_DIRS})
+include_directories(${Uri_SOURCE_DIR}/src)
 
 set(CMAKE_VERBOSE_MAKEFILE true)
 
@@ -56,7 +44,7 @@ add_subdirectory(src)
 # Testing
 if (CMAKE_PROJECT_NAME STREQUAL "Uri" OR CPP-NETLIB_BUILD_TESTS)
   enable_testing()
-  find_package(GTest REQUIRED)
+  add_subdirectory(deps/googletest)
   add_subdirectory(test)
 endif()
 

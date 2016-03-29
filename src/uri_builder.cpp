@@ -1,16 +1,12 @@
-// Copyright (c) Glyn Matthews 2012, 2013, 2014.
+// Copyright (c) Glyn Matthews 2012-2016.
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-#include <boost/algorithm/string/split.hpp>
-#include <boost/algorithm/string/join.hpp>
-#include <boost/algorithm/string/case_conv.hpp>
-#include <boost/algorithm/string/trim.hpp>
-#include <boost/algorithm/string/predicate.hpp>
-#include <boost/algorithm/string/classification.hpp>
-#include "network/uri.hpp"
+#include <cctype>
+#include "network/uri/uri_builder.hpp"
 #include "detail/uri_parse_authority.hpp"
+#include "detail/algorithm.hpp"
 
 namespace network {
 uri_builder::uri_builder(const network::uri &base_uri) {
@@ -43,13 +39,15 @@ uri_builder::uri_builder(const network::uri &base_uri) {
   }
 }
 
-uri_builder::~uri_builder() NETWORK_URI_NOEXCEPT {}
+uri_builder::~uri_builder() noexcept {}
 
 network::uri uri_builder::uri() const { return network::uri(*this); }
 
 void uri_builder::set_scheme(string_type scheme) {
   // validate scheme is valid and normalize
-  scheme_ = boost::to_lower_copy(scheme);
+  scheme_ = scheme;
+  detail::transform(*scheme_, std::begin(*scheme_),
+                    [] (char ch) { return std::tolower(ch); });
 }
 
 void uri_builder::set_user_info(string_type user_info) {
@@ -59,7 +57,7 @@ void uri_builder::set_user_info(string_type user_info) {
 }
 
 uri_builder &uri_builder::clear_user_info() {
-  user_info_ = boost::none;
+  user_info_ = network::nullopt;
   return *this;
 }
 
@@ -67,8 +65,8 @@ void uri_builder::set_host(string_type host) {
   host_ = string_type();
   auto end = network::uri::encode_host(std::begin(host), std::end(host),
                                        std::back_inserter(*host_));
-  std::transform(std::begin(*host_), std::end(*host_), std::begin(*host_),
-                 [](string_type::value_type c) { return std::tolower(c); });
+  detail::transform(*host_, std::begin(*host_),
+                    [](char ch) { return std::tolower(ch); });
 }
 
 void uri_builder::set_port(string_type port) {
@@ -78,14 +76,13 @@ void uri_builder::set_port(string_type port) {
 }
 
 uri_builder &uri_builder::clear_port() {
-  port_ = boost::none;
+  port_ = network::nullopt;
   return *this;
 }
 
 void uri_builder::set_authority(string_type authority) {
-  boost::optional<uri::string_type> user_info, host, port;
-  detail::parse_authority(std::begin(authority), std::end(authority),
-                          user_info, host, port);
+  network_boost::optional<uri::string_type> user_info, host, port;
+  detail::parse_authority(authority, user_info, host, port);
 
   if (user_info) {
     set_user_info(*user_info);
@@ -107,7 +104,7 @@ void uri_builder::set_path(string_type path) {
 }
 
 uri_builder &uri_builder::clear_path() {
-  path_ = boost::none;
+  path_ = network::nullopt;
   return *this;
 }
 
@@ -118,7 +115,7 @@ void uri_builder::set_query(string_type query) {
 }
 
 uri_builder &uri_builder::clear_query() {
-  query_ = boost::none;
+  query_ = network::nullopt;
   return *this;
 }
 
@@ -129,7 +126,7 @@ void uri_builder::set_fragment(string_type fragment) {
 }
 
 uri_builder &uri_builder::clear_fragment() {
-  fragment_ = boost::none;
+  fragment_ = network::nullopt;
   return *this;
 }
 }  // namespace network
