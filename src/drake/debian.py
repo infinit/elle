@@ -48,12 +48,22 @@ class Packager(drake.Builder):
     import pipes
     def escape(cmd):
       return (pipes.quote(str(a)) for a in cmd)
-    return ['fakeroot', 'sh', '-e', '-c', pipes.quote(
-            ' '.join(itertools.chain(escape(chown),
+    res = ['fakeroot', 'sh', '-e', '-c']
+    import sys
+    # OS X requires that the commands passed to fakeroot are properly quoted.
+    if sys.platform == 'darwin':
+      res.append(pipes.quote(' '.join(itertools.chain(escape(chown),
+                                                      [';'],
+                                                      escape(chmod),
+                                                      [';'],
+                                                      escape(dpkg)))))
+    else:
+      res.append(' '.join(itertools.chain(escape(chown),
                                      [';'],
                                      escape(chmod),
                                      [';'],
-                                     escape(dpkg))))]
+                                     escape(dpkg))))
+    return res
 
   @property
   def package(self):
