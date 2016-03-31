@@ -507,13 +507,13 @@ def configure(cxx_toolkit = None,
   ## Curl ##
   ## ---- ##
 
-  curl_basename = 'curl-7.47.1'
+  curl_basename = 'curl-7.48.0'
   curl_tarball = drake.node('curl/%s.tar.gz' % curl_basename)
   curl_prefix = drake.Path('curl')
   curl_build = curl_prefix / curl_basename
   curl_url = 'http://curl.haxx.se/download/%s.tar.gz' % curl_basename
   drake.HTTPDownload(curl_url, curl_tarball,
-                     fingerprint = '3f9d1be7bf33ca4b8c8602820525302b')
+                     fingerprint = 'b2cac71029d28cb989150bac72aafab5')
   drake.TarballExtractor(
     curl_tarball,
     targets = ['%s/%s' % (curl_basename, f) for f in (
