@@ -276,17 +276,33 @@ namespace athena
       bool
       check_confirmed(Server<T, Version, CId, SId>& self, Proposal const& p)
       {
+        ELLE_LOG_COMPONENT("athena.paxos.Server");
         if (self.version() < elle::Version(0, 1, 0))
+        {
+          ELLE_DUMP_SCOPE("elle version %s is too old for confirmation",
+                          self.version());
           return true;
+        }
         if (!self._state)
+        {
+          ELLE_DUMP("no confirmation needed as there never was a proposal");
           return true;
+        }
         auto const& version = self._state->proposal.version;
+        ELLE_DUMP_SCOPE("confirm current paxos version %s", version);
         if (version >= p.version)
+        {
+          ELLE_DUMP("proposed version %s is not more recent", p.version);
           return true;
+        }
         if (version == p.version - 1 &&
             self._state->accepted &&
             self._state->accepted->confirmed)
+        {
+          ELLE_DUMP("ready to be commited");
           return true;
+        }
+        ELLE_DUMP("unconfirmed");
         return false;
       }
     };
@@ -318,22 +334,29 @@ namespace athena
           auto& accepted = this->_state->accepted;
           ELLE_ASSERT(accepted);
           if (accepted->value.template is<T>())
+          {
+            ELLE_DEBUG("commit previous value");
             this->_value.emplace(std::move(accepted->value.template get<T>()));
+          }
           else
+          {
+            ELLE_DEBUG("commit previous quorum election");
             this->_quorum =
               std::move(accepted->value.template get<Quorum>());
+          }
           this->_state.reset();
         }
         _Details::check_quorum(*this, q);
       }
       else
       {
+        ELLE_DEBUG("acknowledge partial state");
         this->_partial = true;
         this->_state.reset();
       }
       if (!this->_state)
       {
-        ELLE_DEBUG_SCOPE("accept first proposal for version %s", p.version);
+        ELLE_DEBUG("accept first proposal for version %s", p.version);
         this->_state.emplace(std::move(p));
         return {};
       }
