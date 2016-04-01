@@ -2,19 +2,27 @@
 
 namespace elle
 {
+  template <typename F, typename... T>
+  void
+  fprintf(std::ostream& out,
+          F&& fmt,
+          T&&... values);
+
   template <typename IT>
-  std::string join(IT it, IT ite, std::string const& sep)
+  std::string
+  join(IT it, IT ite, std::string const& sep)
   {
-    int n = 0;
-    std::stringstream res;
+    std::stringstream out;
+    bool first = true;
     for (; it != ite; ++it)
     {
       auto const& val = *it;
-
-      if (n++)
-        res << sep;
-      res << val;
+      if (first)
+        first = false;
+      else
+        out << sep;
+      elle::fprintf(out, "%s", val);
     }
-    return res.str();
+    return out.str();
   }
 } /* elle */
