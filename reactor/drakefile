@@ -58,6 +58,7 @@ def configure(curl_config,
   # Public C++ configuration
   config = drake.cxx.Config()
   config.add_local_include_path('src')
+  config.add_local_include_path('bin')
   config.standard = drake.cxx.Config.cxx_14
   config.lib_path('lib')
 
@@ -732,10 +733,14 @@ def configure(curl_config,
   cxx_config_bin = drake.cxx.Config(local_cxx_config)
   cxx_config_bin.lib_path_runtime('../lib')
   for name in binaries_config:
-    source = drake.node('bin/%s.cc' % name)
+    sources = drake.nodes('bin/%s.cc' % name)
+    if name == 'connectivity':
+      sources += drake.nodes(
+        'bin/connectivity/connectivity.hh',
+      )
     bin = drake.cxx.Executable(
-      'bin/%s' % name, [
-        source,
+      'bin/%s' % name,
+        sources + [
         library,
         elle_lib,
       ],
