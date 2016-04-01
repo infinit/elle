@@ -557,6 +557,7 @@ namespace athena
     Server<T, Version, ClientId, ServerId>::serialize(
       elle::serialization::Serializer& s, elle::Version const& v)
     {
+      s.serialize_context<elle::Version>(this->_version);
       s.serialize("id", this->_id);
       s.serialize("quorum", this->_quorum);
       if (v >= elle::Version(0, 1, 0))
