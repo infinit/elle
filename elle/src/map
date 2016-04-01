@@ -5,6 +5,15 @@
 # include <ostream>
 # include_next <map>
 
+namespace elle
+{
+  template <typename F, typename... T>
+  void
+  fprintf(std::ostream& out,
+          F&& fmt,
+          T&&... values);
+}
+
 namespace std
 {
   template <class K, class V, class ...OTHER>
@@ -20,7 +29,7 @@ namespace std
         first = false;
       else
         out << ", ";
-      out << elt.first << ": " << elt.second;
+      elle::fprintf(out, "%s: %s", elt.first, elt.second);
     }
     out << "}";
     return out;
