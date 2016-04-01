@@ -136,9 +136,9 @@ namespace aws
   void
   Credentials::print(std::ostream& stream) const
   {
-    stream << "aws::Credentials(access_id = \"" << this->_access_key_id;
+    stream << "aws::Credentials(access_id = \"" << this->_access_key_id << "\"";
     if (this->federated_user())
-      stream << "\", expiry = " << this->_expiry;
+      stream << ", expiry = " << this->_expiry;
     stream << ")";
   }
 }
