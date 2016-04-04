@@ -802,8 +802,8 @@ def configure(cxx_toolkit = None,
   else:
     boost_version = drake.Version(1, 60, 0)
     boost_basename = 'boost_%s' % str(boost_version).replace('.', '_')
-    boost_tarball = \
-      drake.node('boost/%s.tar.bz2' % boost_basename)
+    boost_tarball = drake.node('boost/%s.tar.bz2' % boost_basename)
+    boost_prefix = drake.Path('boost')
     boost_url = \
       'http://downloads.sourceforge.net/project/boost/boost/%s/%s.tar.bz2' % \
       (boost_version, boost_basename)

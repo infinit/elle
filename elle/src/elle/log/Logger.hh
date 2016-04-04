@@ -99,7 +99,7 @@ namespace elle
     /*------------.
     | Indentation |
     `------------*/
-    private:
+    public:
       friend struct detail::Send;
       friend
       void
@@ -110,6 +110,7 @@ namespace elle
       indent();
       void
       unindent();
+    private:
       std::recursive_mutex _mutex;
       std::unique_ptr<Indentation> _indentation;
       ELLE_ATTRIBUTE_RW(bool, time_universal);

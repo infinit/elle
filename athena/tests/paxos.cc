@@ -754,8 +754,13 @@ ELLE_TEST_SCHEDULED(serialization)
   }
   ELLE_LOG("unserialize and choose")
   {
-    auto server_1 = elle::serialization::json::deserialize<Server>(s1, false);
-    auto server_2 = elle::serialization::json::deserialize<Server>(s2, false);
+    elle::serialization::Context ctx;
+    ctx.set<elle::Version>(
+      elle::Version(ELLE_MAJOR, ELLE_MINOR, ELLE_SUBMINOR));
+    auto server_1 =
+      elle::serialization::json::deserialize<Server>(s1, false, ctx);
+    auto server_2 =
+      elle::serialization::json::deserialize<Server>(s2, false, ctx);
     Peers peers;
     peers.emplace_back(new Peer(11, server_1));
     peers.emplace_back(new Peer(12, server_2));

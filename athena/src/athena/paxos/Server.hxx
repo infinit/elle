@@ -230,12 +230,13 @@ namespace athena
     Server<T, Version, ClientId, ServerId>::Server(
       ServerId id, Quorum quorum, elle::Version version)
       : _id(std::move(id))
-      , _quorum_initial(quorum)
+      , _quorum(quorum)
       , _value()
       , _version(version)
+      , _partial(false)
       , _state()
     {
-      ELLE_ASSERT_CONTAINS(this->_quorum_initial, this->_id);
+      ELLE_ASSERT_CONTAINS(this->_quorum, this->_id);
       this->_register_wrong_quorum_serialization.poke();
       this->_register_partial_state_serialization.poke();
     }
@@ -254,7 +255,7 @@ namespace athena
                    bool get = false)
       {
         ELLE_LOG_COMPONENT("athena.paxos.Server");
-        auto expected = self._quorum_initial;
+        auto expected = self._quorum;
         if (get &&
             self._state &&
             self._state->accepted &&
@@ -275,17 +276,33 @@ namespace athena
       bool
       check_confirmed(Server<T, Version, CId, SId>& self, Proposal const& p)
       {
+        ELLE_LOG_COMPONENT("athena.paxos.Server");
         if (self.version() < elle::Version(0, 1, 0))
+        {
+          ELLE_DUMP_SCOPE("elle version %s is too old for confirmation",
+                          self.version());
           return true;
+        }
         if (!self._state)
+        {
+          ELLE_DUMP("no confirmation needed as there never was a proposal");
           return true;
+        }
         auto const& version = self._state->proposal.version;
+        ELLE_DUMP_SCOPE("confirm current paxos version %s", version);
         if (version >= p.version)
+        {
+          ELLE_DUMP("proposed version %s is not more recent", p.version);
           return true;
+        }
         if (version == p.version - 1 &&
             self._state->accepted &&
             self._state->accepted->confirmed)
+        {
+          ELLE_DUMP("ready to be commited");
           return true;
+        }
+        ELLE_DUMP("unconfirmed");
         return false;
       }
     };
@@ -317,22 +334,29 @@ namespace athena
           auto& accepted = this->_state->accepted;
           ELLE_ASSERT(accepted);
           if (accepted->value.template is<T>())
+          {
+            ELLE_DEBUG("commit previous value");
             this->_value.emplace(std::move(accepted->value.template get<T>()));
+          }
           else
-            this->_quorum_initial =
+          {
+            ELLE_DEBUG("commit previous quorum election");
+            this->_quorum =
               std::move(accepted->value.template get<Quorum>());
+          }
           this->_state.reset();
         }
         _Details::check_quorum(*this, q);
       }
       else
       {
-        // FIXME: if the quorum changed, we need to take note !
+        ELLE_DEBUG("acknowledge partial state");
+        this->_partial = true;
         this->_state.reset();
       }
       if (!this->_state)
       {
-        ELLE_DEBUG_SCOPE("accept first proposal for version %s", p.version);
+        ELLE_DEBUG("accept first proposal for version %s", p.version);
         this->_state.emplace(std::move(p));
         return {};
       }
@@ -354,7 +378,8 @@ namespace athena
     {
       ELLE_LOG_COMPONENT("athena.paxos.Server");
       ELLE_TRACE_SCOPE("%s: accept for %f: %f", *this, p, value);
-      _Details::check_quorum(*this, q);
+      if (!this->_partial)
+        _Details::check_quorum(*this, q);
       if (!this->_state || this->_state->proposal < p)
       {
         ELLE_WARN("%s: someone malicious sent an accept before propose",
@@ -389,7 +414,8 @@ namespace athena
     {
       ELLE_LOG_COMPONENT("athena.paxos.Server");
       ELLE_TRACE_SCOPE("%s: confirm proposal %s", *this, p);
-      _Details::check_quorum(*this, q);
+      if (!this->_partial)
+        _Details::check_quorum(*this, q);
       if (!this->_state ||
           this->_state->proposal < p ||
           !this->_state->accepted)
@@ -406,7 +432,14 @@ namespace athena
       }
       auto& accepted = *this->_state->accepted;
       if (!accepted.confirmed)
+      {
         accepted.confirmed = true;
+        if (this->_partial)
+        {
+          this->_quorum = q;
+          this->_partial = false;
+        }
+      }
     }
 
     template <typename T, typename Version, typename CId, typename SId>
@@ -419,7 +452,7 @@ namespace athena
           this->_state->accepted->value.template is<Quorum>())
         return this->_state->accepted->value.template get<Quorum>();
       else
-        return this->_quorum_initial;
+        return this->_quorum;
     }
 
     template <typename T, typename Version, typename CId, typename SId>
@@ -508,8 +541,10 @@ namespace athena
     Server<T, Version, ClientId, ServerId>::Server(
       elle::serialization::SerializerIn& s, elle::Version const& v)
       : _id()
-      , _quorum_initial()
+      , _quorum()
       , _value()
+      , _version()
+      , _partial(false)
       , _state()
     {
       this->serialize(s, v);
@@ -522,8 +557,9 @@ namespace athena
     Server<T, Version, ClientId, ServerId>::serialize(
       elle::serialization::Serializer& s, elle::Version const& v)
     {
+      s.serialize_context<elle::Version>(this->_version);
       s.serialize("id", this->_id);
-      s.serialize("quorum", this->_quorum_initial);
+      s.serialize("quorum", this->_quorum);
       if (v >= elle::Version(0, 1, 0))
         s.serialize("value", this->_value);
       typedef boost::multi_index::multi_index_container<
@@ -549,6 +585,8 @@ namespace athena
         if (it != states.rend())
           this->_state.emplace(*it);
       }
+      if (v >= elle::Version(0, 2, 0))
+        s.serialize("partial", this->_partial);
     }
 
     /*----------.
