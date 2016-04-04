@@ -8,6 +8,9 @@
 
 .. image:: https://travis-ci.org/cpp-netlib/uri.png?branch=master
   :target: https://travis-ci.org/cpp-netlib/uri
+  
+.. image:: https://img.shields.io/badge/license-boost-blue.svg
+  :target: https://github.com/cpp-netlib/uri/blob/master/LICENSE_1_0.txt
 
 This project contains the source code that was originally meant to
 track the proposal for a C++ URI at
