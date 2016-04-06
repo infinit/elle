@@ -178,8 +178,10 @@ namespace elle
   {
     auto other = base.rbegin();
 
+    // The function address could change as observed in CentOS.
     while (!this->empty() && other != base.rend()
-           && this->back().address == other->address)
+           && (this->back().address == other->address
+               || this->back().symbol == other->symbol))
       {
         this->pop_back();
         ++other;
