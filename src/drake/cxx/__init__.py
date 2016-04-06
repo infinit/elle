@@ -1958,6 +1958,12 @@ class PkgConfig():
           self.__library.append(drake.Path(path))
       return self.__library
 
+    @property
+    def prefix(self):
+      if self.__prefix is None:
+        self.__prefix = self.__pkg_config(['--variable=prefix'])[0]
+      return self.__prefix
+
 
 class LibraryConfiguration(drake.Configuration):
 
