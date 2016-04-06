@@ -1898,27 +1898,28 @@ def find_library(token = None,
 class PkgConfig():
 
     try:
-        subprocess.check_output(['which', 'pkg-config'])
-        available = True
+      subprocess.check_output(['which', 'pkg-config'])
+      available = True
     except:
-        available = False
+      available = False
 
     def __init__(self, package):
-        self.__package = package
-        self.__include_path = None
-        self.__library_path = None
-        self.__library = None
-        self.__exists = None
+      self.__package = package
+      self.__include_path = None
+      self.__library_path = None
+      self.__library = None
+      self.__exists = None
+      self.__prefix = None
 
     @property
     def exists(self):
-        if self.__exists is None:
-            try:
-                self.__pkg_config([])
-                self.__exists = True
-            except:
-                self.__exists = False
-        return self.__exists
+      if self.__exists is None:
+        try:
+          self.__pkg_config([])
+          self.__exists = True
+        except:
+          self.__exists = False
+      return self.__exists
 
     def __pkg_config(self, cmd):
       output = subprocess.check_output(['pkg-config', self.__package] + cmd)
@@ -1935,27 +1936,27 @@ class PkgConfig():
 
     @property
     def include_path(self):
-        if self.__include_path is None:
-            self.__include_path = []
-            for path in self.__flags(['--cflags-only-I'], '-I'):
-                self.__include_path.append(drake.Path(path))
-        return self.__include_path
+      if self.__include_path is None:
+        self.__include_path = []
+        for path in self.__flags(['--cflags-only-I'], '-I'):
+          self.__include_path.append(drake.Path(path))
+      return self.__include_path
 
     @property
     def library_path(self):
-        if self.__library_path is None:
-            self.__library_path = []
-            for path in self.__flags(['--libs-only-L'], '-L'):
-                self.__library_path.append(drake.Path(path))
-        return self.__library_path
+      if self.__library_path is None:
+        self.__library_path = []
+        for path in self.__flags(['--libs-only-L'], '-L'):
+          self.__library_path.append(drake.Path(path))
+      return self.__library_path
 
     @property
     def library(self):
-        if self.__library is None:
-            self.__library = []
-            for path in self.__flags(['--libs-only-l'], '-l'):
-                self.__library.append(drake.Path(path))
-        return self.__library
+      if self.__library is None:
+        self.__library = []
+        for path in self.__flags(['--libs-only-l'], '-l'):
+          self.__library.append(drake.Path(path))
+      return self.__library
 
 
 class LibraryConfiguration(drake.Configuration):
