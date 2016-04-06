@@ -18,8 +18,4 @@ except:
   valgrind = None
 
 with drake.Drake('../..') as d:
-  python3 = drake.cxx.find_library(
-    token = 'pyconfig.h',
-    include_dir = 'include/python3.4m')
-  d.run(python3 = python3,
-        valgrind = valgrind)
+  d.run(valgrind = valgrind)

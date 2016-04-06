@@ -138,6 +138,8 @@ def configure(cxx_toolkit = None,
       prefix = drake.Path('..') / prefix
 
   if python3 is not False:
+    if python3 is None and drake.cxx.PkgConfig.available:
+      python3 = drake.cxx.PkgConfig('python3').prefix
     if python_version is None:
       python_version = (drake.Version(3, 5),
                         drake.Version(3, 4),
