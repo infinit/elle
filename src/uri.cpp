@@ -143,6 +143,8 @@ void uri::initialize(optional<string_type> scheme,
     uri_.append(*fragment);
   }
 
+  uri_view_ = string_view(uri_);
+
   auto it = std::begin(uri_);
   if (scheme) {
     uri_parts_->scheme = copy_range(*scheme, it);
@@ -187,9 +189,9 @@ void uri::initialize(optional<string_type> scheme,
   }
 }
 
-uri::uri() : uri_parts_(new detail::uri_parts{}) {}
+uri::uri() : uri_view_(uri_), uri_parts_(new detail::uri_parts{}) {}
 
-uri::uri(const uri &other) : uri_(other.uri_), uri_parts_(new detail::uri_parts{}) {
+uri::uri(const uri &other) : uri_(other.uri_), uri_view_(uri_), uri_parts_(new detail::uri_parts{}) {
   advance_parts(uri_, *uri_parts_, *other.uri_parts_);
 }
 
@@ -198,9 +200,10 @@ uri::uri(const uri_builder &builder) : uri_parts_(new detail::uri_parts{}) {
              builder.path_, builder.query_, builder.fragment_);
 }
 
-uri::uri(uri &&other) noexcept : uri_(std::move(other.uri_)), uri_parts_(std::move(other.uri_parts_)) {
+uri::uri(uri &&other) noexcept : uri_(std::move(other.uri_)), uri_view_(uri_), uri_parts_(std::move(other.uri_parts_)) {
   advance_parts(uri_, *uri_parts_, *other.uri_parts_);
   other.uri_.clear();
+  other.uri_view_ = string_view(other.uri_);
   other.uri_parts_ = new detail::uri_parts{};
 }
 
@@ -216,12 +219,13 @@ uri &uri::operator=(uri other) {
 void uri::swap(uri &other) noexcept {
   advance_parts(other.uri_, *uri_parts_, *other.uri_parts_);
   uri_.swap(other.uri_);
+  uri_view_.swap(other.uri_view_);
   advance_parts(other.uri_, *other.uri_parts_, *uri_parts_);
 }
 
-uri::const_iterator uri::begin() const { return uri_.begin(); }
+uri::const_iterator uri::begin() const { return uri_view_.begin(); }
 
-uri::const_iterator uri::end() const { return uri_.end(); }
+uri::const_iterator uri::end() const { return uri_view_.end(); }
 
 namespace {
 inline uri::string_view to_string_view(const uri::string_type &uri,
@@ -320,15 +324,15 @@ optional<uri::string_view> uri::authority() const {
 std::string uri::string() const { return uri_; }
 
 std::wstring uri::wstring() const {
-  return std::wstring(std::begin(uri_), std::end(uri_));
+  return std::wstring(std::begin(*this), std::end(*this));
 }
 
 std::u16string uri::u16string() const {
-  return std::u16string(std::begin(uri_), std::end(uri_));
+  return std::u16string(std::begin(*this), std::end(*this));
 }
 
 std::u32string uri::u32string() const {
-  return std::u32string(std::begin(uri_), std::end(uri_));
+  return std::u32string(std::begin(*this), std::end(*this));
 }
 
 bool uri::empty() const noexcept { return uri_.empty(); }
@@ -529,6 +533,7 @@ bool uri::initialize(const string_type &uri) {
   uri_parts_ = new detail::uri_parts{};
   if (!uri_.empty()) {
     bool is_valid = detail::parse(uri_, *uri_parts_);
+	uri_view_ = string_view(uri_);
     return is_valid;
   }
   return true;

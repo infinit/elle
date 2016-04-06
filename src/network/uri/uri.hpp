@@ -105,7 +105,7 @@ class uri {
   /**
    * \brief The URI const_iterator type.
    */
-  typedef string_type::const_iterator const_iterator;
+  typedef string_view::const_iterator const_iterator;
 
   /**
    * \brief The URI iterator type.
@@ -506,6 +506,7 @@ class uri {
                   optional<string_type> fragment);
 
   string_type uri_;
+  string_view uri_view_;
   detail::uri_parts* uri_parts_;
 };
 
