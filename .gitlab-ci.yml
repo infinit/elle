@@ -20,7 +20,7 @@ x86_64-centos6-gcc5:
   tags:
     - x86_64
     - centos6
-    - gcc5
+    - gcc4
 
 x86_64-trusty-gcc4:
   stage: build
