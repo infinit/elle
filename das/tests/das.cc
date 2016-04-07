@@ -261,9 +261,9 @@ index_list()
   l.removed().connect(
     [&] (elle::UUID const& id){BOOST_CHECK(!removed); removed = id;});
   auto check_changed = [&] { BOOST_CHECK(changed); changed = false; };
-  auto check_added = [&] { BOOST_CHECK(added); added = {}; };
+  auto check_added = [&] { BOOST_CHECK(added); added = boost::none; };
   auto check_reset = [&] { BOOST_CHECK(reset); reset = false; };
-  auto check_removed = [&] { BOOST_CHECK(removed); removed = {}; };
+  auto check_removed = [&] { BOOST_CHECK(removed); removed = boost::none; };
   Device d1("d1");
   Device d2("d1");
   l.add(d1);
