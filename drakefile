@@ -804,6 +804,8 @@ def configure(cxx_toolkit = None,
     boost_basename = 'boost_%s' % str(boost_version).replace('.', '_')
     boost_tarball = drake.node('boost/%s.tar.bz2' % boost_basename)
     boost_prefix = drake.Path('boost')
+    boost_prefix_abs = drake.Path(os.getcwd()) / drake.path_build() / boost_prefix
+    print(boost_prefix_abs)
     boost_url = \
       'http://downloads.sourceforge.net/project/boost/boost/%s/%s.tar.bz2' % (boost_version, boost_basename)
     drake.HTTPDownload(
@@ -862,7 +864,7 @@ def configure(cxx_toolkit = None,
       boost_bootstrap_libraries.append('locale')
     boost_bootstrap_command = [
       './bootstrap.sh',
-      '--prefix=%s' % boost_prefix,
+      '--prefix=%s' % boost_prefix_abs,
       '--with-libraries=%s' % ','.join(boost_bootstrap_libraries),
     ]
     if python3 is not None and not windows:
@@ -1026,7 +1028,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
             'link=static',
             'runtime-link=static',
             '--layout=tagged',
-            '--prefix=%s' % boost_prefix,
+            '--prefix=%s' % boost_prefix_abs,
             '-sBUILD=<define>BOOST_USE_WINDOWS_H=1',
             'cxxflags=-std=c++11 -include cmath -DBOOST_USE_WINDOWS_H -DBOOST_LEXICAL_CAST_ASSUME_C_LOCALE',
             'linkflags=-std=c++11',
@@ -1044,7 +1046,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
             'link=static',
             'runtime-link=static',
             '--layout=tagged',
-            '--prefix=%s' % boost_prefix,
+            '--prefix=%s' % boost_prefix_abs,
             'target-os=iphone',
             'architecture=arm',
             'define=_LITTLE_ENDIAN',
