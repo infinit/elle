@@ -3928,8 +3928,29 @@ def host():
     raise Exception('Unhandled system: %s' % system)
   return '%s-%s' % (platform.machine(), os_string)
 
+class TemporaryDirectory:
+
+  def __init__(self):
+    self.__dir = None
+
+  def __enter__(self):
+    import tempfile
+    self.__dir = tempfile.mkdtemp()
+    return self
+
+  def __exit__(self, *args, **kwargs):
+    import shutil
+    shutil.rmtree(self.__dir)
+
+  def __str__(self):
+    return str(self.__dir)
+
+  @property
+  def dir(self):
+    return self.__dir
+
 class PythonModule(Builder):
-  '''Builder to download and extract python modules using pip.
+  '''Builder to download and extract python modules using pip3.
   '''
   def __init__(self, package_name,
                python_path,
@@ -3946,9 +3967,11 @@ class PythonModule(Builder):
       [],
       [drake.Node(python_path / self.__module_name / '__init__.py')])
 
-  def command(self):
+  def command(self, directory = None):
     options = ['pip3', 'install',
                '--no-compile', '--install-option=--prefix=']
+    if directory is not None:
+      options += ['-b', directory]
     if self.__python_path is not None:
       options.append('--target=%s' % self.__python_path)
     options.append(self.__package_name)
@@ -3964,11 +3987,11 @@ class PythonModule(Builder):
     environment = copy.deepcopy(os_env)
     if environment.get('MACOSX_DEPLOYMENT_TARGET', None):
       del environment['MACOSX_DEPLOYMENT_TARGET']
-    return self.cmd('Installing package %s' % self.__package_name,
-             self.command(),
-             leave_stdout = True,
-             throw = True,
-             env = environment)
-
+    with TemporaryDirectory() as tmp:
+      return self.cmd('Installing package %s' % self.__package_name,
+                      self.command(tmp.dir),
+                      leave_stdout = True,
+                      throw = True,
+                      env = environment)
   def hash(self):
-    return self.command()
+    return self.command(None)
