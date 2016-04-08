@@ -1,4 +1,6 @@
 import drake
+import os
+import shutil
 
 class Packager(drake.Builder):
 
@@ -7,29 +9,40 @@ class Packager(drake.Builder):
                version,
                dist,
                arch,
-               rpm_build_path,
+               top_dir,
                sources,
                destination = '.'):
-    path = drake.path_build(rpm_build_path)
-    self.__spec = path / 'SPECS' / ('%s.spec' % basename)
-    self.__build_root = path / 'BUILDROOT'
-    rpm_name = '%(base)s-%(ver)s-1.%(dist)s.%(arch)s.rpm' % \
-      {'base': basename, 'ver': version, 'dist': dist, 'arch': arch}
-    self.__build_target = path / 'RPMS' / arch / rpm_name
-    self.__destination = destination
-    self.__target = drake.node(drake.path_build(destination) / rpm_name)
+    if '-' in version:
+      raise Exception('RPM cannot have "-" in version')
+    self.__top_dir = drake.Path(os.getcwd()) / top_dir
+    self.__spec = top_dir / 'SPECS' / ('%s.spec' % basename)
+    self.__arch = arch
+    self.__rpm_name = '%(base)s-%(ver)s-1.%(dist)s.%(arch)s.rpm' % \
+      {'base': basename, 'ver': version, 'dist': dist, 'arch': self.__arch}
+    self.__destination = drake.path_build(destination)
+    self.__target = drake.node(self.__destination / self.__rpm_name)
     super().__init__(sources, [self.__target])
 
   def execute(self):
-    return self.cmd('Package %s' % self.__target, self.command)
+    rpm_dir = '%s/RPMS' % self.__top_dir
+    if os.path.exists(rpm_dir):
+      shutil.rmtree(rpm_dir)
+    os.makedirs(rpm_dir)
+    if not self.cmd('Package %s' % self.__rpm_name, self.rpm_build_cmd(dir)):
+      return False
+    return self.cmd('Copy %s' % self.__target, self.cp_rpm_cmd(dir))
 
-  @property
-  def command(self):
-    rpm_build = [
+  def rpm_build_cmd(self, root_dir):
+    return [
       'rpmbuild', '-bb', str(self.__spec),
-      '--buildroot', str(self.__build_root)]
-    cp = ['cp', str(self.__build_target), self.__destination]
-    return rpm_build + [';'] + cp
+      '--define', '_topdir %s' % self.__top_dir,
+      '--buildroot', '%s/BUILDROOT' % self.__top_dir,
+    ]
+
+  def cp_rpm_cmd(self, root_dir):
+    source = '%(top_dir)s/RPMS/%(arch)s/%(name)s' % \
+      {'top_dir': self.__top_dir, 'arch': self.__arch, 'name': self.__rpm_name}
+    return ['cp', source, str(self.__destination)]
 
   @property
   def package(self):
