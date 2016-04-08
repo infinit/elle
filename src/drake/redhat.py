@@ -27,10 +27,17 @@ class Packager(drake.Builder):
     rpm_dir = '%s/RPMS' % self.__top_dir
     if os.path.exists(rpm_dir):
       shutil.rmtree(rpm_dir)
+    for node in self.sources():
+      if isinstance(node, drake.cxx.Executable):
+        if not self.cmd('Undo prelink %s' % node, self.undo_prelink_cmd(node)):
+          return False
     os.makedirs(rpm_dir)
     if not self.cmd('Package %s' % self.__rpm_name, self.rpm_build_cmd(dir)):
       return False
     return self.cmd('Copy %s' % self.__target, self.cp_rpm_cmd(dir))
+
+  def undo_prelink_cmd(self, path):
+    return ['prelink', '-u', str(path)]
 
   def rpm_build_cmd(self, root_dir):
     return [
