@@ -245,76 +245,113 @@ inline uri::string_view to_string_view(
   return uri::string_view(uri_part_begin,
                           std::distance(uri_part_begin, uri_part_end));
 }
-
 }  // namespace
 
-optional<uri::string_view> uri::scheme() const {
-  return uri_parts_->scheme ? to_string_view(uri_, *uri_parts_->scheme)
-                           : optional<uri::string_view>();
+bool uri::has_scheme() const {
+  return static_cast<bool>(uri_parts_->scheme);
 }
 
-optional<uri::string_view> uri::user_info() const {
-  return uri_parts_->hier_part.user_info
-             ? to_string_view(uri_, *uri_parts_->hier_part.user_info)
-             : optional<uri::string_view>();
+uri::string_view uri::scheme() const {
+  assert(has_scheme());
+  return to_string_view(uri_, *uri_parts_->scheme);
 }
 
-optional<uri::string_view> uri::host() const {
-  return uri_parts_->hier_part.host
-             ? to_string_view(uri_, *uri_parts_->hier_part.host)
-             : optional<uri::string_view>();
+bool uri::has_user_info() const {
+  return static_cast<bool>(uri_parts_->hier_part.user_info);
 }
 
-optional<uri::string_view> uri::port() const {
-  return uri_parts_->hier_part.port
-             ? to_string_view(uri_, *uri_parts_->hier_part.port)
-             : optional<uri::string_view>();
+uri::string_view uri::user_info() const {
+  assert(has_user_info());
+  return to_string_view(uri_, *uri_parts_->hier_part.user_info);
 }
 
-optional<uri::string_view> uri::path() const {
-  return uri_parts_->hier_part.path
-             ? to_string_view(uri_, *uri_parts_->hier_part.path)
-             : optional<uri::string_view>();
+bool uri::has_host() const {
+  return static_cast<bool>(uri_parts_->hier_part.host);
 }
 
-optional<uri::string_view> uri::query() const {
-  return uri_parts_->query ? to_string_view(uri_, *uri_parts_->query)
-                          : optional<uri::string_view>();
+uri::string_view uri::host() const {
+  assert(has_host());
+  return to_string_view(uri_, *uri_parts_->hier_part.host);
 }
 
-optional<uri::string_view> uri::fragment() const {
-  return uri_parts_->fragment ? to_string_view(uri_, *uri_parts_->fragment)
-                             : optional<uri::string_view>();
+bool uri::has_port() const {
+  return static_cast<bool>(uri_parts_->hier_part.port);
 }
 
-optional<uri::string_view> uri::authority() const {
+uri::string_view uri::port() const {
+  assert(has_port());
+  return to_string_view(uri_, *uri_parts_->hier_part.port);
+}
+
+bool uri::has_path() const {
+  return static_cast<bool>(uri_parts_->hier_part.path);
+}
+
+uri::string_view uri::path() const {
+  assert(has_path());
+  return to_string_view(uri_, *uri_parts_->hier_part.path);
+}
+
+bool uri::has_query() const {
+  return static_cast<bool>(uri_parts_->query);
+}
+
+uri::string_view uri::query() const {
+  assert(has_query());
+  return to_string_view(uri_, *uri_parts_->query);
+}
+
+bool uri::has_fragment() const {
+  return static_cast<bool>(uri_parts_->fragment);
+}
+
+uri::string_view uri::fragment() const {
+  assert(has_fragment());
+  return to_string_view(uri_, *uri_parts_->fragment);
+}
+
+bool uri::has_authority() const {
+  return has_host();
+}
+
+uri::string_view uri::authority() const {
+  assert(has_host());
   auto host = this->host();
-  if (!host) {
-    return optional<uri::string_view>();
+
+  auto user_info = string_view{};
+  if (has_user_info()) {
+    user_info = this->user_info();
   }
 
-  auto first = std::begin(*host), last = std::end(*host);
-  auto user_info = this->user_info();
-  auto port = this->port();
-  if (user_info && !user_info->empty()) {
-    first = std::begin(*user_info);
-  } else if (host->empty() && port && !port->empty()) {
-    first = std::begin(*port);
+  auto port = string_view{};
+  if (has_port()) {
+    port = this->port();
+  }
+
+  auto first = std::begin(host), last = std::end(host);
+  if (has_user_info() && !user_info.empty()) {
+    first = std::begin(user_info);
+  }
+  else if (host.empty() && has_port() && !port.empty()) {
+    first = std::begin(port);
     --first; // include ':' before port
   }
 
-  if (host->empty()) {
-    if (port && !port->empty()) {
-      last = std::end(*port);
-    } else if (user_info && !user_info->empty()) {
-      last = std::end(*user_info);
+  if (host.empty()) {
+    if (has_port() && !port.empty()) {
+      last = std::end(port);
+    }
+    else if (has_user_info() && !user_info.empty()) {
+      last = std::end(user_info);
       ++last; // include '@'
     }
-  } else if (port) {
-    if (port->empty()) {
+  }
+  else if (has_port()) {
+    if (port.empty()) {
       ++last; // include ':' after host
-    } else {
-      last = std::end(*port);
+    }
+    else {
+      last = std::end(port);
     }
   }
 
@@ -337,9 +374,9 @@ std::u32string uri::u32string() const {
 
 bool uri::empty() const noexcept { return uri_.empty(); }
 
-bool uri::is_absolute() const { return static_cast<bool>(scheme()); }
+bool uri::is_absolute() const { return has_scheme(); }
 
-bool uri::is_opaque() const { return (is_absolute() && !authority()); }
+bool uri::is_opaque() const { return (is_absolute() && !has_authority()); }
 
 uri uri::normalize(uri_comparison_level level) const {
   string_type normalized(uri_);
@@ -413,33 +450,32 @@ uri uri::make_relative(const uri &other) const {
     return other;
   }
 
-  auto scheme = this->scheme(), other_scheme = other.scheme();
-  if ((!scheme || !other_scheme) || !detail::equal(*scheme, *other_scheme)) {
+  if ((!has_scheme() || !other.has_scheme()) ||
+      !detail::equal(scheme(), other.scheme())) {
     return other;
   }
 
-  auto authority = this->authority(), other_authority = other.authority();
-  if ((!authority || !other_authority) ||
-      !detail::equal(*authority, *other_authority)) {
+  if ((!has_authority() || !other.has_authority()) ||
+      !detail::equal(authority(), other.authority())) {
     return other;
   }
 
-  if (!this->path() || !other.path()) {
+  if (!has_path() || !other.has_path()) {
     return other;
   }
 
   auto path =
-      detail::normalize_path(*this->path(), uri_comparison_level::syntax_based),
-       other_path = detail::normalize_path(*other.path(),
+    detail::normalize_path(this->path(), uri_comparison_level::syntax_based);
+  auto other_path = detail::normalize_path(other.path(),
                                            uri_comparison_level::syntax_based);
 
   optional<string_type> query, fragment;
-  if (other.query()) {
-    query = other.query()->to_string();
+  if (other.has_query()) {
+    query = other.query().to_string();
   }
 
-  if (other.fragment()) {
-    fragment = other.fragment()->to_string();
+  if (other.has_fragment()) {
+    fragment = other.fragment().to_string();
   }
 
   network::uri result;
@@ -472,41 +508,74 @@ uri uri::resolve(const uri &base) const {
     return *this;
   }
 
-  optional<uri::string_type> user_info, host, port, path, query;
+  optional<uri::string_type> user_info, host, port, path, query, fragment;
   // const uri &base = *this;
 
-  if (this->authority()) {
+  if (has_authority()) {
     // g -> http://g
-    user_info = detail::make_arg(this->user_info());
-    host = detail::make_arg(this->host());
-    port = detail::make_arg(this->port());
-    path = detail::remove_dot_segments(*this->path());
-    query = detail::make_arg(this->query());
+    if (has_user_info()) {
+      user_info = detail::make_arg(this->user_info());
+    }
+
+    if (has_host()) {
+      host = detail::make_arg(this->host());
+    }
+
+    if (has_port()) {
+      port = detail::make_arg(this->port());
+    }
+
+    if (has_path()) {
+      path = detail::remove_dot_segments(this->path());
+    }
+
+    if (has_query()) {
+      query = detail::make_arg(this->query());
+    }
   } else {
-    if (!this->path() || this->path()->empty()) {
-      path = detail::make_arg(base.path());
-      if (this->query()) {
+    if (!has_path() || this->path().empty()) {
+      if (base.has_path()) {
+        path = detail::make_arg(base.path());
+      }
+
+      if (has_query()) {
         query = detail::make_arg(this->query());
-      } else {
+      } else if (base.has_query()) {
         query = detail::make_arg(base.query());
       }
     } else {
-      if (this->path().value().front() == '/') {
-        path = detail::remove_dot_segments(*this->path());
+      if (this->path().front() == '/') {
+        path = detail::remove_dot_segments(this->path());
       } else {
         path = detail::merge_paths(base, *this);
       }
-      query = detail::make_arg(this->query());
+
+      if (has_query()) {
+        query = detail::make_arg(this->query());
+      }
     }
-    user_info = detail::make_arg(base.user_info());
-    host = detail::make_arg(base.host());
-    port = detail::make_arg(base.port());
+
+    if (base.has_user_info()) {
+      user_info = detail::make_arg(base.user_info());
+    }
+
+    if (base.has_host()) {
+      host = detail::make_arg(base.host());
+    }
+
+    if (base.has_port()) {
+      port = detail::make_arg(base.port());
+    }
+  }
+
+  if (has_fragment()) {
+    fragment = detail::make_arg(this->fragment());
   }
 
   network::uri result;
   result.initialize(detail::make_arg(base.scheme()), std::move(user_info),
                     std::move(host), std::move(port), std::move(path),
-                    std::move(query), detail::make_arg(this->fragment()));
+                    std::move(query), std::move(fragment));
   return result;
 }
 

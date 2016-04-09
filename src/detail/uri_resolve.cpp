@@ -65,15 +65,15 @@ uri::string_type remove_dot_segments(uri::string_view path) {
 uri::string_type merge_paths(const uri& base, const uri& reference) {
   uri::string_type result;
 
-  if (!base.path() || base.path()->empty()) {
+  if (!base.has_path() || base.path().empty()) {
     result = "/";
   } else {
-    const auto& base_path = base.path().value();
+    const auto& base_path = base.path();
     auto last_slash = network_boost::find_last(base_path, "/");
     result.append(std::begin(base_path), std::end(last_slash));
   }
-  if (reference.path()) {
-    result.append(reference.path()->to_string());
+  if (reference.has_path()) {
+    result.append(reference.path().to_string());
   }
   return remove_dot_segments(std::move(result));
 }

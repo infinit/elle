@@ -119,7 +119,7 @@ class uri {
 
  public:
   /**
-   * \brief Constructor.
+   * \brief Default constructor.
    */
   uri();
 
@@ -215,68 +215,125 @@ class uri {
   const_iterator end() const;
 
   /**
-   * \brief Returns the URI scheme.
-   * \return The scheme, if it exists, or nullopt.
+   * \brief Tests whether this URI has a scheme component.
+   * \return \c true if the URI has a scheme, \c false otherwise.
    */
-  optional<string_view> scheme() const;
+  bool has_scheme() const;
+
+  /**
+   * \brief Returns the URI scheme.
+   * \return The scheme.
+   * \pre has_scheme()
+   */
+  string_view scheme() const;
+
+  /**
+   * \brief Tests whether this URI has a user info component.
+   * \return \c true if the URI has a user info, \c false otherwise.
+   */
+  bool has_user_info() const;
 
   /**
    * \brief Returns the URI user info.
-   * \return The user info, if it exists, or nullopt.
+   * \return The user info.
+   * \pre has_user_info()
    */
-  optional<string_view> user_info() const;
+  string_view user_info() const;
+
+  /**
+   * \brief Tests whether this URI has a host component.
+   * \return \c true if the URI has a host, \c false otherwise.
+   */
+  bool has_host() const;
 
   /**
    * \brief Returns the URI host.
-   * \return The host, if it exists, or nullopt.
+   * \return The host.
+   * \pre has_host()
    */
-  optional<string_view> host() const;
+  string_view host() const;
+
+  /**
+   * \brief Tests whether this URI has a port component.
+   * \return \c true if the URI has a port, \c false otherwise.
+   */
+  bool has_port() const;
 
   /**
    * \brief Returns the URI port.
-   * \return The port, if it exists, or nullopt.
+   * \return The port.
+   * \pre has_port()
    */
-  optional<string_view> port() const;
+  string_view port() const;
 
   /**
    * \brief Returns the URI port as an integer.
-   * \return The port, if it exists, or nullopt.
+   * \return The port number.
+   * \pre has_port()
    */
   template <typename IntT>
-  optional<IntT> port(typename std::is_integral<IntT>::type * = 0) const {
-    if (auto p = port()) {
-      try {
-        return std::stoi(string_type(std::begin(*p), std::end(*p)));
-      } catch (std::exception &) {
-        return optional<IntT>();
-      }
+  IntT port(typename std::is_integral<IntT>::type * = 0) const {
+    assert(has_port());
+
+    auto p = port();
+    try {
+      return std::stoi(port().to_string());
     }
-    return optional<IntT>();
+    catch (std::exception &) {
+      assert(!"Unable to parse port number.");
+    }
   }
 
   /**
-   * \brief Returns the URI path.
-   * \return The path, if it exists, or nullopt.
+   * \brief Tests whether this URI has a path component.
+   * \return \c true if the URI has a path, \c false otherwise.
    */
-  optional<string_view> path() const;
+  bool has_path() const;
+
+  /**
+   * \brief Returns the URI path.
+   * \return The path.
+   * \pre has_path()
+   */
+  string_view path() const;
+
+  /**
+   * \brief Tests whether this URI has a query component.
+   * \return \c true if the URI has a query, \c false otherwise.
+   */
+  bool has_query() const;
 
   /**
    * \brief Returns the URI query.
-   * \return The query, if it exists, or nullopt.
+   * \return The query.
+   * \pre has_query()
    */
-  optional<string_view> query() const;
+  string_view query() const;
+
+  /**
+   * \brief Tests whether this URI has a fragment component.
+   * \return \c true if the URI has a fragment, \c false otherwise.
+   */
+  bool has_fragment() const;
 
   /**
    * \brief Returns the URI fragment.
-   * \return The fragment, if it exists, or nullopt.
+   * \return The fragment.
+   * \pre has_fragment()
    */
-  optional<string_view> fragment() const;
+  string_view fragment() const;
+
+  /**
+   * \brief Tests whether this URI has a valid authority.
+   * \return \c true if the URI has an authority, \c false otherwise.
+   */
+  bool has_authority() const;
 
   /**
    * \brief Returns the URI authority.
-   * \return The authority, if it exists, or nullopt.
+   * \return The authority.
    */
-  optional<string_view> authority() const;
+  string_view authority() const;
 
 #if !defined(NETWORK_URI_MSVC)
   /**

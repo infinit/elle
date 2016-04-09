@@ -10,32 +10,32 @@
 
 namespace network {
 uri_builder::uri_builder(const network::uri &base_uri) {
-  if (auto scheme = base_uri.scheme()) {
-    set_scheme(string_type(std::begin(*scheme), std::end(*scheme)));
+  if (base_uri.has_scheme()) {
+    set_scheme(base_uri.scheme().to_string());
   }
 
-  if (auto user_info = base_uri.user_info()) {
-    set_user_info(string_type(std::begin(*user_info), std::end(*user_info)));
+  if (base_uri.has_user_info()) {
+    set_user_info(base_uri.user_info().to_string());
   }
 
-  if (auto host = base_uri.host()) {
-    set_host(string_type(std::begin(*host), std::end(*host)));
+  if (base_uri.has_host()) {
+    set_host(base_uri.host().to_string());
   }
 
-  if (auto port = base_uri.port()) {
-    set_port(string_type(std::begin(*port), std::end(*port)));
+  if (base_uri.has_port()) {
+    set_port(base_uri.port().to_string());
   }
 
-  if (auto path = base_uri.path()) {
-    set_path(string_type(std::begin(*path), std::end(*path)));
+  if (base_uri.has_path()) {
+    set_path(base_uri.path().to_string());
   }
 
-  if (auto query = base_uri.query()) {
-    set_query(string_type(std::begin(*query), std::end(*query)));
+  if (base_uri.has_query()) {
+    set_query(base_uri.query().to_string());
   }
 
-  if (auto fragment = base_uri.fragment()) {
-    set_fragment(string_type(std::begin(*fragment), std::end(*fragment)));
+  if (base_uri.has_fragment()) {
+    set_fragment(base_uri.fragment().to_string());
   }
 }
 
