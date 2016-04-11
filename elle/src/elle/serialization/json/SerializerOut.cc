@@ -236,6 +236,58 @@ namespace elle
       }
 
       void
+      SerializerOut::_serialize_time_duration(std::int64_t& ticks_,
+                                              std::int64_t& num_,
+                                              std::int64_t& denom_)
+      {
+        auto ticks = ticks_;
+        auto num = num_;
+        auto denom = denom_;
+        auto order = 3;
+        while (denom % 1000 == 0)
+        {
+          denom /= 1000;
+          ++order;
+        }
+        if (denom != 1)
+          if (1000 % denom == 0)
+          {
+            num *= 1000 / denom;
+            denom *= 1;
+            ++order;
+          }
+          else
+            ELLE_ABORT("cannot safely represent time with ratio %s:%s",
+                       num_, denom_);
+        ELLE_ASSERT_EQ(denom, 1);
+        char orders[][9] = {"d", "h", "min", "s", "ms", "us", "ns", "ps", "fs"};
+        if (order >= 9)
+          ELLE_ABORT("cannot safely represent time with ratio %s:%s",
+                       num_, denom_);
+        ticks *= num;
+        if (order == 3)
+        {
+          if (ticks % 60 == 0)
+          {
+            ticks /= 60;
+            --order;
+            if (ticks % 60 == 0)
+            {
+              ticks /= 60;
+              --order;
+              if (ticks % 24 == 0)
+              {
+                ticks /= 24;
+                --order;
+              }
+            }
+          }
+        }
+        auto& current = this->_get_current();
+        current = elle::sprintf("%s%s", ticks, orders[order]);
+      }
+
+      void
       SerializerOut::_serialize_named_option(std::string const& name,
                                              bool filled,
                                              std::function<void ()> const& f)
