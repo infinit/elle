@@ -805,7 +805,6 @@ def configure(cxx_toolkit = None,
     boost_tarball = drake.node('boost/%s.tar.bz2' % boost_basename)
     boost_prefix = drake.Path('boost')
     boost_prefix_abs = drake.Path(os.getcwd()) / drake.path_build() / boost_prefix
-    print(boost_prefix_abs)
     boost_url = \
       'http://downloads.sourceforge.net/project/boost/boost/%s/%s.tar.bz2' % (boost_version, boost_basename)
     drake.HTTPDownload(
