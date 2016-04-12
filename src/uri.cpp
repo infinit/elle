@@ -252,8 +252,8 @@ bool uri::has_scheme() const noexcept {
 }
 
 uri::string_view uri::scheme() const noexcept {
-  assert(has_scheme());
-  return to_string_view(uri_, *uri_parts_->scheme);
+  return has_scheme() ? to_string_view(uri_, *uri_parts_->scheme)
+                      : string_view{};
 }
 
 bool uri::has_user_info() const noexcept {
@@ -261,8 +261,9 @@ bool uri::has_user_info() const noexcept {
 }
 
 uri::string_view uri::user_info() const noexcept {
-  assert(has_user_info());
-  return to_string_view(uri_, *uri_parts_->hier_part.user_info);
+  return has_user_info()
+             ? to_string_view(uri_, *uri_parts_->hier_part.user_info)
+             : string_view{};
 }
 
 bool uri::has_host() const noexcept {
@@ -270,8 +271,8 @@ bool uri::has_host() const noexcept {
 }
 
 uri::string_view uri::host() const noexcept {
-  assert(has_host());
-  return to_string_view(uri_, *uri_parts_->hier_part.host);
+  return has_host() ? to_string_view(uri_, *uri_parts_->hier_part.host)
+                    : string_view{};
 }
 
 bool uri::has_port() const noexcept {
@@ -279,8 +280,8 @@ bool uri::has_port() const noexcept {
 }
 
 uri::string_view uri::port() const noexcept {
-  assert(has_port());
-  return to_string_view(uri_, *uri_parts_->hier_part.port);
+  return has_port() ? to_string_view(uri_, *uri_parts_->hier_part.port)
+                    : string_view{};
 }
 
 bool uri::has_path() const noexcept {
@@ -288,8 +289,8 @@ bool uri::has_path() const noexcept {
 }
 
 uri::string_view uri::path() const noexcept {
-  assert(has_path());
-  return to_string_view(uri_, *uri_parts_->hier_part.path);
+  return has_path() ? to_string_view(uri_, *uri_parts_->hier_part.path)
+                    : string_view{};
 }
 
 bool uri::has_query() const noexcept {
@@ -297,8 +298,7 @@ bool uri::has_query() const noexcept {
 }
 
 uri::string_view uri::query() const noexcept {
-  assert(has_query());
-  return to_string_view(uri_, *uri_parts_->query);
+  return has_query() ? to_string_view(uri_, *uri_parts_->query) : string_view{};
 }
 
 bool uri::has_fragment() const noexcept {
@@ -306,8 +306,8 @@ bool uri::has_fragment() const noexcept {
 }
 
 uri::string_view uri::fragment() const noexcept {
-  assert(has_fragment());
-  return to_string_view(uri_, *uri_parts_->fragment);
+  return has_fragment() ? to_string_view(uri_, *uri_parts_->fragment)
+                        : string_view{};
 }
 
 bool uri::has_authority() const noexcept {
@@ -315,7 +315,10 @@ bool uri::has_authority() const noexcept {
 }
 
 uri::string_view uri::authority() const noexcept {
-  assert(has_host());
+  if (!has_host()) {
+    return string_view{};
+  }
+
   auto host = this->host();
 
   auto user_info = string_view{};
