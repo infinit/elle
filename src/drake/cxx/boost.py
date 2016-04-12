@@ -151,6 +151,9 @@ class Boost(drake.Configuration):
                                     self.version.major,
                                     self.version.minor)
       suffixes = [suffix] + suffixes
+    if cxx_toolkit.os is drake.os.macos:
+      suffix = '-%s_%s' % (self.version.major, self.version.minor)
+      suffixes = [suffix] + suffixes
     mgw = '-mgw-mt-%s_%s' % (self.version.major, self.version.minor)
     suffixes += [mgw]
     # Variants
