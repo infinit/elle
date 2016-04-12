@@ -224,6 +224,16 @@ namespace elle
       }
 
       void
+      SerializerOut::_serialize_time_duration(std::int64_t& ticks,
+                                              std::int64_t& num,
+                                              std::int64_t& denom)
+      {
+        this->_serialize_number(ticks);
+        this->_serialize_number(num);
+        this->_serialize_number(denom);
+      }
+
+      void
       SerializerOut::_serialize_named_option(std::string const&,
                                        bool,
                                        std::function<void ()> const& f)

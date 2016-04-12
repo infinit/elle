@@ -247,6 +247,43 @@ namespace elle
         }
       }
 
+      void
+      SerializerIn::_serialize_time_duration(std::int64_t& ticks,
+                                             std::int64_t& num,
+                                             std::int64_t& denom)
+      {
+        auto const repr = this->_check_type<std::string>("<TIME_FIXME>");
+        auto const pos = repr.find_first_not_of("0123456789");
+        if (pos == std::string::npos)
+          throw elle::Error("missing duration unit");
+        if (pos == 0)
+          throw elle::Error(elle::sprintf("invalide duration: %s", repr));
+        ticks = std::atoi(repr.substr(0, pos).c_str());
+        num = 1;
+        denom = 1;
+        auto const unit = repr.substr(pos);
+        if (unit == "d")
+          num = 60 * 60 * 24;
+        else if (unit == "h")
+          num = 60 * 60;
+        else if (unit == "min")
+          num = 60;
+        else if (unit == "s")
+          ;
+        else if (unit == "ms")
+          denom = 1000;
+        else if (unit == "us")
+          denom = 1000000;
+        else if (unit == "ns")
+          denom = 1000000000;
+        else if (unit == "ps")
+          denom = 1000000000000;
+        else if (unit == "fs")
+          denom = 1000000000000;
+        else
+          throw elle::Error(elle::sprintf("invalide duration unit: %s", unit));
+      }
+
       bool
       SerializerIn::_enter(std::string const& name)
       {

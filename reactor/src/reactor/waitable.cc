@@ -40,8 +40,8 @@ namespace reactor
       std::vector<std::string> threads;
       for (auto thread: this->_waiters)
         threads.push_back(elle::sprintf("%s", *thread.first));
-      ELLE_ABORT("%s destroyed while waited by %s",
-                 *this, elle::join(threads.begin(), threads.end(), ", "));
+      ELLE_ABORT("%s destroyed while waited by %s at %s",
+                 *this, elle::join(threads.begin(), threads.end(), ", "), elle::Backtrace::current());
     }
   }
 

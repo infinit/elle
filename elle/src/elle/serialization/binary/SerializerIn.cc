@@ -222,6 +222,16 @@ namespace elle
         }
       }
 
+      void
+      SerializerIn::_serialize_time_duration(std::int64_t& ticks,
+                                             std::int64_t& num,
+                                             std::int64_t& denom)
+      {
+        ticks = this->_serialize_number();
+        num = this->_serialize_number();
+        denom = this->_serialize_number();
+      }
+
       bool
       SerializerIn::_enter(std::string const& name)
       {
