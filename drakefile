@@ -804,16 +804,16 @@ def configure(cxx_toolkit = None,
   else:
     boost_version = drake.Version(1, 60, 0)
     boost_basename = 'boost_%s' % str(boost_version).replace('.', '_')
-    boost_tarball = drake.node('boost/%s.tar.bz2' % boost_basename)
+    boost_tarball = drake.node('boost/%s.tar.gz' % boost_basename)
     boost_prefix = drake.Path('boost')
     boost_prefix_abs = drake.Path(os.getcwd()) / drake.path_build() / boost_prefix
     boost_url = \
-      'http://downloads.sourceforge.net/project/boost/boost/%s/%s.tar.bz2' % \
+      'http://downloads.sourceforge.net/project/boost/boost/%s/%s.tar.gz' % \
       (boost_version, boost_basename)
     drake.HTTPDownload(
       boost_url,
       boost_tarball,
-      fingerprint = '65a840e1a0b13a558ff19eeb2c4f0cbe',
+      fingerprint = '28f58b9a33469388302110562bdf6188',
     )
     boost_patches = [
       (drake.Node('boost_asio_ssl.patch'), 1),
