@@ -223,9 +223,9 @@ void uri::swap(uri &other) noexcept {
   advance_parts(other.uri_, *other.uri_parts_, *uri_parts_);
 }
 
-uri::const_iterator uri::begin() const { return uri_view_.begin(); }
+uri::const_iterator uri::begin() const noexcept { return uri_view_.begin(); }
 
-uri::const_iterator uri::end() const { return uri_view_.end(); }
+uri::const_iterator uri::end() const noexcept { return uri_view_.end(); }
 
 namespace {
 inline uri::string_view to_string_view(const uri::string_type &uri,
@@ -247,74 +247,74 @@ inline uri::string_view to_string_view(
 }
 }  // namespace
 
-bool uri::has_scheme() const {
+bool uri::has_scheme() const noexcept {
   return static_cast<bool>(uri_parts_->scheme);
 }
 
-uri::string_view uri::scheme() const {
+uri::string_view uri::scheme() const noexcept {
   assert(has_scheme());
   return to_string_view(uri_, *uri_parts_->scheme);
 }
 
-bool uri::has_user_info() const {
+bool uri::has_user_info() const noexcept {
   return static_cast<bool>(uri_parts_->hier_part.user_info);
 }
 
-uri::string_view uri::user_info() const {
+uri::string_view uri::user_info() const noexcept {
   assert(has_user_info());
   return to_string_view(uri_, *uri_parts_->hier_part.user_info);
 }
 
-bool uri::has_host() const {
+bool uri::has_host() const noexcept {
   return static_cast<bool>(uri_parts_->hier_part.host);
 }
 
-uri::string_view uri::host() const {
+uri::string_view uri::host() const noexcept {
   assert(has_host());
   return to_string_view(uri_, *uri_parts_->hier_part.host);
 }
 
-bool uri::has_port() const {
+bool uri::has_port() const noexcept {
   return static_cast<bool>(uri_parts_->hier_part.port);
 }
 
-uri::string_view uri::port() const {
+uri::string_view uri::port() const noexcept {
   assert(has_port());
   return to_string_view(uri_, *uri_parts_->hier_part.port);
 }
 
-bool uri::has_path() const {
+bool uri::has_path() const noexcept {
   return static_cast<bool>(uri_parts_->hier_part.path);
 }
 
-uri::string_view uri::path() const {
+uri::string_view uri::path() const noexcept {
   assert(has_path());
   return to_string_view(uri_, *uri_parts_->hier_part.path);
 }
 
-bool uri::has_query() const {
+bool uri::has_query() const noexcept {
   return static_cast<bool>(uri_parts_->query);
 }
 
-uri::string_view uri::query() const {
+uri::string_view uri::query() const noexcept {
   assert(has_query());
   return to_string_view(uri_, *uri_parts_->query);
 }
 
-bool uri::has_fragment() const {
+bool uri::has_fragment() const noexcept {
   return static_cast<bool>(uri_parts_->fragment);
 }
 
-uri::string_view uri::fragment() const {
+uri::string_view uri::fragment() const noexcept {
   assert(has_fragment());
   return to_string_view(uri_, *uri_parts_->fragment);
 }
 
-bool uri::has_authority() const {
+bool uri::has_authority() const noexcept {
   return has_host();
 }
 
-uri::string_view uri::authority() const {
+uri::string_view uri::authority() const noexcept {
   assert(has_host());
   auto host = this->host();
 
@@ -374,9 +374,11 @@ std::u32string uri::u32string() const {
 
 bool uri::empty() const noexcept { return uri_.empty(); }
 
-bool uri::is_absolute() const { return has_scheme(); }
+bool uri::is_absolute() const noexcept { return has_scheme(); }
 
-bool uri::is_opaque() const { return (is_absolute() && !has_authority()); }
+bool uri::is_opaque() const noexcept {
+  return (is_absolute() && !has_authority());
+}
 
 uri uri::normalize(uri_comparison_level level) const {
   string_type normalized(uri_);

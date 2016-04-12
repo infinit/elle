@@ -205,66 +205,66 @@ class uri {
    *        underlying sequence.
    * \return An iterator starting at the first element.
    */
-  const_iterator begin() const;
+  const_iterator begin() const noexcept;
 
   /**
    * \brief Returns an iterator at the end + 1th element in the
    *        underlying sequence.
    * \return An iterator starting at the end + 1th element.
    */
-  const_iterator end() const;
+  const_iterator end() const noexcept;
 
   /**
    * \brief Tests whether this URI has a scheme component.
    * \return \c true if the URI has a scheme, \c false otherwise.
    */
-  bool has_scheme() const;
+  bool has_scheme() const noexcept;
 
   /**
    * \brief Returns the URI scheme.
    * \return The scheme.
    * \pre has_scheme()
    */
-  string_view scheme() const;
+  string_view scheme() const noexcept;
 
   /**
    * \brief Tests whether this URI has a user info component.
    * \return \c true if the URI has a user info, \c false otherwise.
    */
-  bool has_user_info() const;
+  bool has_user_info() const noexcept;
 
   /**
    * \brief Returns the URI user info.
    * \return The user info.
    * \pre has_user_info()
    */
-  string_view user_info() const;
+  string_view user_info() const noexcept;
 
   /**
    * \brief Tests whether this URI has a host component.
    * \return \c true if the URI has a host, \c false otherwise.
    */
-  bool has_host() const;
+  bool has_host() const noexcept;
 
   /**
    * \brief Returns the URI host.
    * \return The host.
    * \pre has_host()
    */
-  string_view host() const;
+  string_view host() const noexcept;
 
   /**
    * \brief Tests whether this URI has a port component.
    * \return \c true if the URI has a port, \c false otherwise.
    */
-  bool has_port() const;
+  bool has_port() const noexcept;
 
   /**
    * \brief Returns the URI port.
    * \return The port.
    * \pre has_port()
    */
-  string_view port() const;
+  string_view port() const noexcept;
 
   /**
    * \brief Returns the URI port as an integer.
@@ -288,52 +288,52 @@ class uri {
    * \brief Tests whether this URI has a path component.
    * \return \c true if the URI has a path, \c false otherwise.
    */
-  bool has_path() const;
+  bool has_path() const noexcept;
 
   /**
    * \brief Returns the URI path.
    * \return The path.
    * \pre has_path()
    */
-  string_view path() const;
+  string_view path() const noexcept;
 
   /**
    * \brief Tests whether this URI has a query component.
    * \return \c true if the URI has a query, \c false otherwise.
    */
-  bool has_query() const;
+  bool has_query() const noexcept;
 
   /**
    * \brief Returns the URI query.
    * \return The query.
    * \pre has_query()
    */
-  string_view query() const;
+  string_view query() const noexcept;
 
   /**
    * \brief Tests whether this URI has a fragment component.
    * \return \c true if the URI has a fragment, \c false otherwise.
    */
-  bool has_fragment() const;
+  bool has_fragment() const noexcept;
 
   /**
    * \brief Returns the URI fragment.
    * \return The fragment.
    * \pre has_fragment()
    */
-  string_view fragment() const;
+  string_view fragment() const noexcept;
 
   /**
    * \brief Tests whether this URI has a valid authority.
    * \return \c true if the URI has an authority, \c false otherwise.
    */
-  bool has_authority() const;
+  bool has_authority() const noexcept;
 
   /**
    * \brief Returns the URI authority.
    * \return The authority.
    */
-  string_view authority() const;
+  string_view authority() const noexcept;
 
 #if !defined(NETWORK_URI_MSVC)
   /**
@@ -390,14 +390,14 @@ class uri {
    * \brief Checks if the uri is absolute, i.e. it has a scheme.
    * \returns \c true if it is absolute, \c false if it is relative.
    */
-  bool is_absolute() const;
+  bool is_absolute() const noexcept;
 
   /**
    * \brief Checks if the uri is opaque, i.e. if it doesn't have an
    *        authority.
    * \returns \c true if it is opaque, \c false if it is hierarchical.
    */
-  bool is_opaque() const;
+  bool is_opaque() const noexcept;
 
   /**
    * \brief Normalizes a uri object at a given level in the
