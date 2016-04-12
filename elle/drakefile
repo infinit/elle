@@ -111,6 +111,8 @@ def configure(zlib_lib,
 
   sources = drake.nodes(
     'src/elle/bytes.hh',
+    'src/elle/err.cc',
+    'src/elle/err.hh',
     'src/elle/finally.cc',
     'src/elle/finally.hh',
     'src/elle/factory.hh',
