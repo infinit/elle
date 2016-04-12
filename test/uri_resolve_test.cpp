@@ -291,9 +291,9 @@ TEST_F(uri_resolve_test, issue_15_resolve_from_copy_with_query) {
   network::uri copy = uri;
   ASSERT_TRUE(copy.is_opaque());
   auto result = copy.resolve(base);
-  ASSERT_EQ("query", *uri.query());
-  ASSERT_EQ("query", *copy.query());
-  ASSERT_EQ("query", *result.query());
+  ASSERT_EQ("query", uri.query());
+  ASSERT_EQ("query", copy.query());
+  ASSERT_EQ("query", result.query());
 }
 
 TEST_F(uri_resolve_test, issue_15_resolve_from_copy_with_fragment) {
@@ -303,5 +303,5 @@ TEST_F(uri_resolve_test, issue_15_resolve_from_copy_with_fragment) {
   network::uri copy = uri;
   ASSERT_TRUE(copy.is_opaque());
   auto result = copy.resolve(base);
-  ASSERT_EQ("fragment", *result.fragment());
+  ASSERT_EQ("fragment", result.fragment());
 }

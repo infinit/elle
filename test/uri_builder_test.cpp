@@ -46,7 +46,7 @@ TEST(builder_test, simple_uri_has_scheme) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_TRUE(static_cast<bool>(builder.uri().scheme()));
+  ASSERT_TRUE(builder.uri().has_scheme());
 }
 
 TEST(builder_test, simple_uri_scheme_value) {
@@ -56,7 +56,7 @@ TEST(builder_test, simple_uri_scheme_value) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_EQ("http", *builder.uri().scheme());
+  ASSERT_EQ("http", builder.uri().scheme());
 }
 
 TEST(builder_test, simple_uri_has_no_user_info) {
@@ -66,7 +66,7 @@ TEST(builder_test, simple_uri_has_no_user_info) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_FALSE(builder.uri().user_info());
+  ASSERT_FALSE(builder.uri().has_user_info());
 }
 
 TEST(builder_test, simple_uri_has_host) {
@@ -76,7 +76,7 @@ TEST(builder_test, simple_uri_has_host) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_TRUE(static_cast<bool>(builder.uri().host()));
+  ASSERT_TRUE(builder.uri().has_host());
 }
 
 TEST(builder_test, simple_uri_host_value) {
@@ -86,7 +86,7 @@ TEST(builder_test, simple_uri_host_value) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_EQ("www.example.com", *builder.uri().host());
+  ASSERT_EQ("www.example.com", builder.uri().host());
 }
 
 TEST(builder_test, simple_uri_has_no_port) {
@@ -96,7 +96,7 @@ TEST(builder_test, simple_uri_has_no_port) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_FALSE(builder.uri().port());
+  ASSERT_FALSE(builder.uri().has_port());
 }
 
 TEST(builder_test, simple_uri_has_path) {
@@ -106,7 +106,7 @@ TEST(builder_test, simple_uri_has_path) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_TRUE(static_cast<bool>(builder.uri().path()));
+  ASSERT_TRUE(builder.uri().has_path());
 }
 
 TEST(builder_test, simple_uri_path_value) {
@@ -116,7 +116,7 @@ TEST(builder_test, simple_uri_path_value) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_EQ("/", *builder.uri().path());
+  ASSERT_EQ("/", builder.uri().path());
 }
 
 TEST(builder_test, simple_uri_has_no_query) {
@@ -126,7 +126,7 @@ TEST(builder_test, simple_uri_has_no_query) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_FALSE(builder.uri().query());
+  ASSERT_FALSE(builder.uri().has_query());
 }
 
 TEST(builder_test, simple_uri_has_no_fragment) {
@@ -136,7 +136,7 @@ TEST(builder_test, simple_uri_has_no_fragment) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_FALSE(builder.uri().fragment());
+  ASSERT_FALSE(builder.uri().has_fragment());
 }
 
 TEST(builder_test, simple_opaque_uri_doesnt_throw) {
@@ -163,7 +163,7 @@ TEST(builder_test, simple_opaque_uri_has_scheme) {
     .scheme("mailto")
     .path("john.doe@example.com")
     ;
-  ASSERT_TRUE(static_cast<bool>(builder.uri().scheme()));
+  ASSERT_TRUE(builder.uri().has_scheme());
 }
 
 TEST(builder_test, simple_opaque_uri_scheme_value) {
@@ -172,7 +172,7 @@ TEST(builder_test, simple_opaque_uri_scheme_value) {
     .scheme("mailto")
     .path("john.doe@example.com")
     ;
-  ASSERT_EQ("mailto", *builder.uri().scheme());
+  ASSERT_EQ("mailto", builder.uri().scheme());
 }
 
 TEST(builder_test, relative_hierarchical_uri_doesnt_throw) {
@@ -248,7 +248,7 @@ TEST(builder_test, full_uri_has_scheme) {
     .query("query")
     .fragment("fragment")
     ;
-  ASSERT_TRUE(static_cast<bool>(builder.uri().scheme()));
+  ASSERT_TRUE(builder.uri().has_scheme());
 }
 
 TEST(builder_test, full_uri_scheme_value) {
@@ -262,7 +262,7 @@ TEST(builder_test, full_uri_scheme_value) {
     .query("query")
     .fragment("fragment")
     ;
-  ASSERT_EQ("http", *builder.uri().scheme());
+  ASSERT_EQ("http", builder.uri().scheme());
 }
 
 TEST(builder_test, full_uri_has_user_info) {
@@ -276,7 +276,7 @@ TEST(builder_test, full_uri_has_user_info) {
     .query("query")
     .fragment("fragment")
     ;
-  ASSERT_TRUE(static_cast<bool>(builder.uri().user_info()));
+  ASSERT_TRUE(builder.uri().has_user_info());
 }
 
 TEST(builder_test, full_uri_user_info_value) {
@@ -290,7 +290,7 @@ TEST(builder_test, full_uri_user_info_value) {
     .query("query")
     .fragment("fragment")
     ;
-  ASSERT_EQ("user:password", *builder.uri().user_info());
+  ASSERT_EQ("user:password", builder.uri().user_info());
 }
 
 TEST(builder_test, full_uri_has_host) {
@@ -304,7 +304,7 @@ TEST(builder_test, full_uri_has_host) {
     .query("query")
     .fragment("fragment")
     ;
-  ASSERT_TRUE(static_cast<bool>(builder.uri().host()));
+  ASSERT_TRUE(builder.uri().has_host());
 }
 
 TEST(builder_test, full_uri_host_value) {
@@ -318,7 +318,7 @@ TEST(builder_test, full_uri_host_value) {
     .query("query")
     .fragment("fragment")
     ;
-  ASSERT_EQ("www.example.com", *builder.uri().host());
+  ASSERT_EQ("www.example.com", builder.uri().host());
 }
 
 TEST(builder_test, full_uri_has_port) {
@@ -332,7 +332,7 @@ TEST(builder_test, full_uri_has_port) {
     .query("query")
     .fragment("fragment")
     ;
-  ASSERT_TRUE(static_cast<bool>(builder.uri().port()));
+  ASSERT_TRUE(builder.uri().has_port());
 }
 
 TEST(builder_test, full_uri_has_path) {
@@ -346,7 +346,7 @@ TEST(builder_test, full_uri_has_path) {
     .query("query")
     .fragment("fragment")
     ;
-  ASSERT_TRUE(static_cast<bool>(builder.uri().path()));
+  ASSERT_TRUE(builder.uri().has_path());
 }
 
 TEST(builder_test, full_uri_path_value) {
@@ -360,7 +360,7 @@ TEST(builder_test, full_uri_path_value) {
     .query("query")
     .fragment("fragment")
     ;
-  ASSERT_EQ("/path", *builder.uri().path());
+  ASSERT_EQ("/path", builder.uri().path());
 }
 
 TEST(builder_test, full_uri_has_query) {
@@ -374,7 +374,7 @@ TEST(builder_test, full_uri_has_query) {
     .query("query")
     .fragment("fragment")
     ;
-  ASSERT_TRUE(static_cast<bool>(builder.uri().query()));
+  ASSERT_TRUE(builder.uri().has_query());
 }
 
 TEST(builder_test, full_uri_query_value) {
@@ -388,7 +388,7 @@ TEST(builder_test, full_uri_query_value) {
     .query("query")
     .fragment("fragment")
     ;
-  ASSERT_EQ("query", *builder.uri().query());
+  ASSERT_EQ("query", builder.uri().query());
 }
 
 TEST(builder_test, full_uri_has_fragment) {
@@ -402,7 +402,7 @@ TEST(builder_test, full_uri_has_fragment) {
     .query("query")
     .fragment("fragment")
     ;
-  ASSERT_TRUE(static_cast<bool>(builder.uri().fragment()));
+  ASSERT_TRUE(builder.uri().has_fragment());
 }
 
 TEST(builder_test, full_uri_fragment_value) {
@@ -416,7 +416,7 @@ TEST(builder_test, full_uri_fragment_value) {
     .query("query")
     .fragment("fragment")
     ;
-  ASSERT_EQ("fragment", *builder.uri().fragment());
+  ASSERT_EQ("fragment", builder.uri().fragment());
 }
 
 TEST(builder_test, relative_uri) {
@@ -434,7 +434,7 @@ TEST(builder_test, relative_uri_scheme) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_FALSE(builder.uri().scheme());
+  ASSERT_FALSE(builder.uri().has_scheme());
 }
 
 TEST(builder_test, authority) {
@@ -445,8 +445,8 @@ TEST(builder_test, authority) {
     .path("/")
     ;
   ASSERT_EQ("http://www.example.com:8080/", builder.uri());
-  ASSERT_EQ("www.example.com", *builder.uri().host());
-  ASSERT_EQ("8080", *builder.uri().port());
+  ASSERT_EQ("www.example.com", builder.uri().host());
+  ASSERT_EQ("8080", builder.uri().port());
 }
 
 TEST(builder_test, relative_uri_has_host) {
@@ -455,7 +455,7 @@ TEST(builder_test, relative_uri_has_host) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_TRUE(static_cast<bool>(builder.uri().host()));
+  ASSERT_TRUE(builder.uri().has_host());
 }
 
 TEST(builder_test, relative_uri_host_value) {
@@ -464,7 +464,7 @@ TEST(builder_test, relative_uri_host_value) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_EQ("www.example.com", *builder.uri().host());
+  ASSERT_EQ("www.example.com", builder.uri().host());
 }
 
 TEST(builder_test, relative_uri_has_path) {
@@ -473,7 +473,7 @@ TEST(builder_test, relative_uri_has_path) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_TRUE(static_cast<bool>(builder.uri().path()));
+  ASSERT_TRUE(builder.uri().has_path());
 }
 
 TEST(builder_test, relative_uri_path_value) {
@@ -482,7 +482,7 @@ TEST(builder_test, relative_uri_path_value) {
     .host("www.example.com")
     .path("/")
     ;
-  ASSERT_EQ("/", *builder.uri().path());
+  ASSERT_EQ("/", builder.uri().path());
 }
 
 TEST(builder_test, build_relative_uri_with_path_query_and_fragment) {
@@ -492,9 +492,9 @@ TEST(builder_test, build_relative_uri_with_path_query_and_fragment) {
     .query("key", "value")
     .fragment("fragment")
     ;
-  ASSERT_EQ("/path/", *builder.uri().path());
-  ASSERT_EQ("key=value", *builder.uri().query());
-  ASSERT_EQ("fragment", *builder.uri().fragment());
+  ASSERT_EQ("/path/", builder.uri().path());
+  ASSERT_EQ("key=value", builder.uri().query());
+  ASSERT_EQ("fragment", builder.uri().fragment());
 }
 
 TEST(builder_test, build_uri_with_capital_scheme) {
@@ -646,7 +646,7 @@ TEST(builder_test, authority_without_port_test) {
     .scheme("https")
     .authority("www.example.com")
     ;
-  ASSERT_EQ("www.example.com", *builder.uri().authority());
+  ASSERT_EQ("www.example.com", builder.uri().authority());
 }
 
 TEST(builder_test, authority_with_port_test) {
@@ -655,7 +655,7 @@ TEST(builder_test, authority_with_port_test) {
     .scheme("https")
     .authority("www.example.com:")
     ;
-  ASSERT_EQ("www.example.com:", *builder.uri().authority());
+  ASSERT_EQ("www.example.com:", builder.uri().authority());
 }
 
 TEST(builder_test, authority_without_host_test) {
@@ -664,7 +664,7 @@ TEST(builder_test, authority_without_host_test) {
     .scheme("https")
     .authority(":1234")
     ;
-  ASSERT_EQ(":1234", *builder.uri().authority());
+  ASSERT_EQ(":1234", builder.uri().authority());
 }
 
 TEST(builder_test, clear_user_info_test) {
@@ -720,5 +720,5 @@ TEST(builder_test, path_should_be_prefixed_with_slash_2) {
   network::uri_builder builder;
   builder
     .scheme("ftp").host("127.0.0.1").path("noleadingslash/foo.txt");
-  ASSERT_EQ("/noleadingslash/foo.txt", *builder.uri().path());
+  ASSERT_EQ("/noleadingslash/foo.txt", builder.uri().path());
 }
