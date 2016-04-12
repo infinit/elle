@@ -6,7 +6,7 @@
 # include <algorithm>
 # include <cmath>
 # include <cstdlib>
-# include <iosfwd>
+# include <string>
 
 # include <elle/err.hh>
 

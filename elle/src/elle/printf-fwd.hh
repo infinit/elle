@@ -1,6 +1,8 @@
 #ifndef ELLE_PRINTF_FWD_HH
 # define ELLE_PRINTF_FWD_HH
 
+# include <iosfwd>
+
 namespace elle
 {
   template <typename F, typename... T>
