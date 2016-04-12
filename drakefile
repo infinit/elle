@@ -825,10 +825,18 @@ def configure(cxx_toolkit = None,
     boost_attributes = {}
     exec(open(str(drake.path_source('boost.py')), 'r').read(),
          boost_attributes)
+    boost_patched_sources = boost_attributes['patched_sources']
+    if cxx_toolkit.os is drake.os.macos:
+      boost_patched_sources += [
+        'boostcpp.jam', # boost_build_osx.patch
+      ]
+      boost_patches += [
+        (drake.Node('boost_build_osx.patch'), 1),
+      ]
     drake.TarballExtractor(
       boost_tarball,
       targets = ['%s/%s' % (boost_basename, f)
-        for f in boost_attributes['patched_sources'] + ['bootstrap.sh']
+        for f in boost_patched_sources + ['bootstrap.sh']
       ],
       patches = boost_patches,
       patch_dir = boost_basename,
@@ -878,8 +886,7 @@ def configure(cxx_toolkit = None,
     if cxx_toolkit.os is drake.os.macos:
       boost_static_format = '%s/lib/libboost_%s.a'
       boost_dynamic_format = '%s/lib/libboost_%s.dylib'
-      boost_dynamic_versioned_format = None
-      # boost_dynamic_versioned_format = 'boost/lib/libboost_%s.1.60.0.dylib'
+      boost_dynamic_versioned_format = '%s/lib/libboost_%s-1_60.dylib'
     elif windows:
       boost_static_format = '%s/lib/libboost_%s-mt-s.a'
       boost_dynamic_format = None
@@ -1027,6 +1034,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
           self.__command += [
             'cxxflags=-stdlib=libc++ -std=c++11',
             'linkflags=-stdlib=libc++ -std=c++11',
+            '--layout=infinit_osx',
           ]
         elif cxx_toolkit.os is drake.os.ios:
           self.__command += [
