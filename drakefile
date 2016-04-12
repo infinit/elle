@@ -1078,6 +1078,14 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
                       str(target.path())]
               if not self.cmd('Fix id of %s' % target.path(), cmd):
                 return False
+              if cxx_toolkit.kind is drake.cxx.GccToolkit.Kind.clang:
+                # Use our libc++.
+                cmd = ['install_name_tool',
+                       '-change', '/usr/lib/libc++.1.dylib',
+                       '@rpath/libc++.1.dylib',
+                       str(target)]
+                if not self.cmd('Use our libc++ for %s' % target, cmd):
+                  return False
               for dep in (t for t in self.__targets if isinstance(t, drake.cxx.DynLib)):
                 cmd = [
                   'install_name_tool',
