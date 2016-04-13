@@ -12,6 +12,10 @@ namespace infinit
       Super("checksum error")
     {}
 
+    InterruptionError::InterruptionError():
+      Super("peer has interrupted sending")
+    {}
+
     RPCError::RPCError(std::string const& message):
       Super(message)
     {}

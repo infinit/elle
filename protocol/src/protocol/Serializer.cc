@@ -5,8 +5,12 @@
 #endif
 
 #include <elle/log.hh>
+#include <elle/elle.hh>
 
 #include <cryptography/hash.hh>
+
+#include <elle/serialization/binary.hh>
+#include <elle/serialization/json.hh>
 
 #include <reactor/scheduler.hh>
 #include <reactor/exception.hh>
@@ -27,81 +31,226 @@ namespace infinit
 
     Serializer::Serializer(std::iostream& stream, bool checksum)
       : Serializer(*reactor::Scheduler::scheduler(), stream, checksum)
-    {}
+    {
+    }
 
     Serializer::Serializer(reactor::Scheduler& scheduler,
                            std::iostream& stream,
                            bool checksum)
+      : Serializer(elle::Version{ELLE_MAJOR, ELLE_MINOR, ELLE_SUBMINOR},
+                   scheduler, stream, checksum)
+    {}
+
+    Serializer::Serializer(elle::Version const& version,
+                           reactor::Scheduler& scheduler,
+                           std::iostream& stream,
+                           bool checksum)
       : Super(scheduler)
+      , _version(version)
       , _stream(stream)
       , _lock_write()
       , _lock_read()
       , _checksum(checksum)
-    {}
+      , _chunk_size(500)
+    {
+      if (this->version() >= elle::Version(0, 2, 0))
+      {
+        ELLE_TRACE("%s: send local version '%s'", *this, this->version())
+          elle::serialization::json::serialize(this->version(), this->_stream);
+        ELLE_TRACE("%s: read peer version", *this)
+        {
+          auto peer_version
+            = elle::serialization::json::deserialize<elle::Version>(
+              this->_stream);
+          ELLE_DEBUG("peer version: %s", peer_version);
+          this->_version = std::min(peer_version, this->version());
+        }
+      }
+      ELLE_TRACE("using version: '%s'", this->version());
+    }
+
+    Serializer::~Serializer()
+    {
+    }
 
     /*----------.
     | Receiving |
     `----------*/
+    // enum Control: char
+    // {
+    //   keep_going = 0,
+    //   interrupt = 1,
+    // };
+    static const char keep_going =  (char) 0;
+    static const char interrupt = (char) 1;
+
+    // Read a chunk from the given stream.
+    // The data struct is:
+    // - the size: 4 bytes
+    // - the content: $size bytes.
+    static
+    elle::Buffer
+    read(Serializer::Inner& stream)
+    {
+      elle::Buffer content;
+      uint32_t size(Serializer::Super::uint32_get(stream));
+      ELLE_DUMP("expected size: %s", size);
+      content.size(size);
+      stream.read(reinterpret_cast<char*>(content.mutable_contents()), size);
+      ELLE_DUMP("content: %x (size: %s)", content, content.size());
+      return content;
+    }
+
+    // Return the sha1 of a given buffer.
+    static
+    elle::Buffer
+    compute_checksum(elle::Buffer const& content)
+    {
+      ELLE_DUMP("compute checksum of '%s'", content);
+#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
+      auto _hash =
+        infinit::cryptography::hash(
+          infinit::cryptography::Plain(
+            elle::WeakBuffer(content.mutable_contents(),
+                             content.size())),
+          infinit::cryptography::Oneway::sha1);
+      auto hash(_hash.buffer());
+#else
+      auto hash =
+        infinit::cryptography::hash(
+          elle::ConstWeakBuffer(content.contents(),
+                                content.size()),
+          infinit::cryptography::Oneway::sha1);
+#endif
+      ELLE_DUMP("checksum: '%x'", hash);
+      return hash;
+    }
+
+    // Make sure the given buffer checksum match the given checksum.
+    static
+    void
+    enforce_checksums_equal(elle::Buffer const& content,
+                            elle::Buffer const& expected_checksum)
+    {
+      ELLE_DEBUG_SCOPE("compare '%f' checksum with expected '%x'",
+                       content, expected_checksum);
+      auto checksum = compute_checksum(content);
+      ELLE_DEBUG("checksum: '%x'", checksum);
+      if (checksum != expected_checksum)
+      {
+        ELLE_ERR("wrong packet checksum")
+          throw ChecksumError();
+      }
+      else
+        ELLE_DEBUG("checksums match");
+    }
+
+    // Check control byte.
+    static
+    void
+    check_control(Serializer::Inner& stream)
+    {
+      ELLE_DEBUG_SCOPE("read control");
+      char control = (char) 0x8F;
+      stream.read(&control, 1);
+      ELLE_DEBUG("control: '%f'", control);
+      if (control == keep_going)
+        return;
+      if (control == interrupt)
+        throw InterruptionError();
+      elle::unreachable();
+    }
 
     elle::Buffer
     Serializer::read()
     {
+      ELLE_TRACE_SCOPE("%s: read packet", *this);
       reactor::Lock lock(this->_lock_read);
+      ELLE_DEBUG("read packet as %s", this->version());
       elle::IOStreamClear clearer(this->_stream);
-      int state = 0;
-      elle::SafeFinally state_checker([&] {
-        if (state == 1)
-          ELLE_ERR("serializer::read interrupted in unsafe state");
-      });
-      ELLE_TRACE("%s: read packet", *this)
+      if (this->version() < elle::Version(0, 2, 0))
       {
+        int state = 0;
+        elle::SafeFinally state_checker([&] {
+            if (state == 1)
+              ELLE_ERR("serializer::read interrupted in unsafe state");
+          });
+        elle::Buffer hash;
+        if (this->_checksum)
+          ELLE_DEBUG("read checksum")
+            hash = infinit::protocol::read(this->_stream);
+        ELLE_DEBUG("read actual data");
+        auto packet = infinit::protocol::read(this->_stream);
+        ELLE_DEBUG("got packet '%f'", packet);
+        ELLE_DUMP("packet content: '%x'", packet);
+        state = 2;
+        // Check checksums match.
+        if (this->_checksum)
+          enforce_checksums_equal(packet, hash);
+        return packet;
+      }
+      else if (this->version() == elle::Version(0, 2, 0))
+      {
+        int state = 0;
+        elle::SafeFinally state_checker([&] {
+            if (state == 1)
+              ELLE_ERR("serializer::read interrupted in unsafe state");
+          });
         elle::Buffer hash;
         if (this->_checksum)
         {
-          uint32_t hash_size(uint32_get(_stream));
-          ELLE_DUMP("%s: checksum size: %s", *this, hash_size);
-
-          hash.size(hash_size);
-          this->_stream.read(reinterpret_cast<char*>(hash.mutable_contents()),
-                             hash_size);
-          ELLE_DUMP("%s: checksum: %s", *this, hash);
+          ELLE_DEBUG("read checksum")
+            hash = infinit::protocol::read(this->_stream);
+          check_control(this->_stream);
         }
-        uint32_t size(uint32_get(_stream));
-        ELLE_DEBUG("%s: packet size: %s", *this, size);
-        state = 1;
-        elle::Buffer packet(static_cast<std::size_t>(size));
-        this->_stream.read(reinterpret_cast<char*>(packet.mutable_contents()), size);
-        ELLE_DUMP("%s: packet data %s", *this, packet);
+        // Get the total size.
+        uint32_t total_size(uint32_get(this->_stream));
+        ELLE_DEBUG("packet size: %s", total_size);
+        elle::Buffer packet(static_cast<std::size_t>(total_size));
+        for (elle::Buffer::Size offset = 0; offset < total_size;)
+        {
+          check_control(this->_stream);
+          uint32_t size(uint32_get(this->_stream));
+          ELLE_DEBUG("read chunk of size %s", size);
+          this->_stream.read(
+            reinterpret_cast<char*>(packet.mutable_contents()) + offset,
+            size);
+          ELLE_DUMP("current packet state: '%x'", packet);
+          offset += size;
+          ELLE_ASSERT_LTE(offset, total_size);
+        }
+        ELLE_DEBUG("got packet '%f'", packet);
+        ELLE_DUMP("packet content: '%x'", packet);
         state = 2;
         // Check hash.
         if (this->_checksum)
-        {
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-          auto _hash_local =
-            infinit::cryptography::hash(
-              infinit::cryptography::Plain(
-                elle::WeakBuffer(packet.mutable_contents(),
-                                 packet.size())),
-              infinit::cryptography::Oneway::sha1);
-          auto hash_local(_hash_local.buffer());
-#else
-          auto hash_local =
-            infinit::cryptography::hash(
-              elle::ConstWeakBuffer(packet.contents(),
-                                    packet.size()),
-              infinit::cryptography::Oneway::sha1);
-#endif
-          ELLE_DUMP("%s: local checksum: %s", *this, hash_local);
-          if (hash_local != hash)
-          {
-            ELLE_ERR("%s: wrong packet checksum", *this);
-            throw ChecksumError();
-          }
-          else
-            ELLE_DUMP("%s: checksum match", *this);
-        }
+          enforce_checksums_equal(packet, hash);
         return packet;
       }
+      elle::unreachable();
+    }
+
+    static
+    void
+    write(Serializer::Inner& stream,
+          elle::Buffer const& content,
+          elle::Buffer::Size offset = 0,
+          boost::optional<elle::Buffer::Size> size = boost::none)
+
+    {
+      elle::Buffer::Size to_send = size ? size.get() : content.size();
+      ELLE_DEBUG_SCOPE("write %s '%f' (offset: %s)",
+                       to_send == content.size()
+                       ? std::string{"whole"}
+                       : elle::sprintf("%s bytes from", to_send),
+                       content,
+                       offset);
+      ELLE_DEBUG("write size: %s byte(s)", to_send);
+        Serializer::Super::uint32_put(stream, to_send);
+      ELLE_DEBUG("write content: '%f'", content)
+        stream.write(
+          reinterpret_cast<char*>(content.mutable_contents()) + offset,
+          to_send);
     }
 
     /*--------.
@@ -110,45 +259,72 @@ namespace infinit
     void
     Serializer::_write(elle::Buffer const& packet)
     {
+      ELLE_TRACE_SCOPE("%s: write packet '%f' (%s bytes)",
+                       *this, packet, packet.size());
       // The write must not be interrupted, otherwise it will break
       // the serialization protocol.
-      reactor::Thread::NonInterruptible ni;
       reactor::Lock lock(this->_lock_write);
       elle::IOStreamClear clearer(this->_stream);
-      ELLE_TRACE("%s: send %s", *this, packet)
-      if (this->_checksum)
+      ELLE_DEBUG("read packet as %s", this->version());
+      if (this->version() < elle::Version(0, 2, 0))
       {
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        auto _hash =
-        infinit::cryptography::hash(
-          infinit::cryptography::Plain(
-            elle::WeakBuffer(packet.mutable_contents(),
-              packet.size())),
-          infinit::cryptography::Oneway::sha1);
-        auto hash(_hash.buffer());
-#else
-        auto hash =
-        infinit::cryptography::hash(
-          elle::ConstWeakBuffer(packet.contents(),
-                                packet.size()),
-          infinit::cryptography::Oneway::sha1);
-#endif
-        auto hash_size = hash.size();
-        ELLE_DUMP("%s: send checksum size: %s", *this, hash_size)
-          uint32_put(this->_stream, hash_size);
-        ELLE_DUMP("%s: send checksum: %s", *this, hash)
+        reactor::Thread::NonInterruptible ni;
+        if (this->_checksum)
         {
-          auto data = reinterpret_cast<char*>(hash.mutable_contents());
-          this->_stream.write(data, hash_size);
+          auto hash = compute_checksum(packet);
+          ELLE_DEBUG("send checksum %x", hash)
+            infinit::protocol::write(this->_stream, hash);
+        }
+        ELLE_DEBUG("send actual data")
+          infinit::protocol::write(this->_stream, packet);
+        this->_stream.flush();
+      }
+      else if (this->version() == elle::Version(0, 2, 0))
+      {
+        try
+        {
+          if (this->_checksum)
+          {
+            reactor::Thread::NonInterruptible ni;
+            // Compute the hash and send it first.
+            auto hash = compute_checksum(packet);
+            ELLE_DEBUG("send checksum %s", hash)
+              infinit::protocol::write(this->_stream, hash);
+          }
+          {
+            reactor::Thread::NonInterruptible ni;
+            if (this->_checksum)
+              this->_stream.write(&keep_going, 1);
+            // Send the size.
+            auto size = packet.size();
+            ELLE_DEBUG("send packet size %s", size)
+              uint32_put(this->_stream, size);
+            this->_stream.flush();
+          }
+          for (elle::Buffer::Size offset = 0;
+               offset < packet.size();
+               offset += this->_chunk_size)
+          {
+            reactor::Thread::NonInterruptible ni;
+            ELLE_DEBUG("write control '%f'", keep_going)
+              this->_stream.write(&keep_going, 1);
+            auto to_send = std::min(this->_chunk_size, packet.size() - offset);
+            ELLE_DEBUG("send actual data")
+              infinit::protocol::write(this->_stream, packet, offset, to_send);
+            this->_stream.flush();
+          }
+        }
+        catch (reactor::Terminate const&)
+        {
+          this->_stream.write(&interrupt, 1);
+          this->_stream.flush();
+          throw;
         }
       }
-      auto size = packet.size();
-      ELLE_DUMP("%s: send packet size %s", *this, size)
-      uint32_put(this->_stream, size);
-      ELLE_DUMP("%s: send packet data", *this)
-      this->_stream.write(reinterpret_cast<char*>(packet.mutable_contents()),
-                          packet.size());
-      this->_stream.flush();
+      else
+      {
+        elle::unreachable();
+      }
     }
 
     /*----------.

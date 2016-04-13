@@ -6,33 +6,48 @@
 # include <reactor/mutex.hh>
 
 # include <protocol/Stream.hh>
+# include <elle/attribute.hh>
 
 namespace infinit
 {
   namespace protocol
   {
-    class Serializer: public Stream
+    class Serializer
+      : public Stream
     {
     /*------.
     | Types |
     `------*/
     public:
       typedef Stream Super;
+      typedef std::iostream Inner;
 
     /*-------------.
     | Construction |
     `-------------*/
     public:
-      Serializer(std::iostream& stream, bool checksum = true);
-      Serializer(reactor::Scheduler& scheduler, std::iostream& stream,
+      Serializer(std::iostream& stream,
                  bool checksum = true);
+
+      Serializer(reactor::Scheduler& scheduler,
+                 std::iostream& stream,
+                 bool checksum = true);
+
+    protected:
+      Serializer(elle::Version const& version,
+                 reactor::Scheduler& scheduler,
+                 std::iostream& stream,
+                 bool checksum);
+
+    public:
+      ~Serializer();
 
     /*----------.
     | Receiving |
     `----------*/
     public:
       elle::Buffer
-      read();
+      read() override;
 
     /*--------.
     | Sending |
@@ -51,10 +66,18 @@ namespace infinit
     /*--------.
     | Details |
     `--------*/
-      ELLE_ATTRIBUTE(std::iostream&, stream, protected);
+      ELLE_ATTRIBUTE_R(elle::Version, version);
+    protected:
+      ELLE_ATTRIBUTE(Inner&, stream);
       ELLE_ATTRIBUTE(reactor::Mutex, lock_write, protected);
       ELLE_ATTRIBUTE(reactor::Mutex, lock_read, protected);
-      ELLE_ATTRIBUTE(bool, checksum, protected);
+      ELLE_ATTRIBUTE_R(bool, checksum, protected);
+      ELLE_ATTRIBUTE_R(elle::Buffer::Size, chunk_size);
+
+    // public:
+    //   class pImpl;
+    // private:
+    //   std::unique_ptr<pImpl> _impl;
     };
   }
 }

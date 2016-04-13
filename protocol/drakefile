@@ -107,7 +107,8 @@ def configure(cryptography,
   tests = [
     'rpc',
     'serializer',
-    ]
+    'split',
+  ]
 
   cxx_config_tests = drake.cxx.Config(local_cxx_config)
   if cxx_toolkit.os == drake.os.android:

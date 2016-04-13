@@ -25,6 +25,15 @@ namespace infinit
       ChecksumError();
     };
 
+    /// An operation failure because the peer interrupted transmission.
+    class InterruptionError:
+      public Error
+    {
+    public:
+      typedef Error Super;
+      InterruptionError();
+    };
+
     /// A remote RPC could not be called.
     class RPCError:
       public Error
