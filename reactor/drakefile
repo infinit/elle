@@ -374,7 +374,7 @@ def configure(curl_config,
         def execute(self):
           self.cmd('Mount DMG: %s' % self.__dmg,
           [
-            'hdiutil', 'attach', '-noautoopen',
+            'hdiutil', 'attach', '-noautoopen', '-nobrowse',
             '-mountpoint', self.__mountpoint,
             self.__dmg,
           ])
