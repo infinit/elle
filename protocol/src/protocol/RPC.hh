@@ -18,8 +18,9 @@ namespace infinit
 {
   namespace protocol
   {
-    /// Thrown by handler to ask the RPC server to exit from run
-    class LastMessageException: public elle::Exception
+    /// Thrown by handler to ask the RPC server to exit from run.
+    class LastMessageException
+      : public elle::Exception
     {
     public:
       LastMessageException(std::string const& what);
@@ -28,39 +29,58 @@ namespace infinit
     typedef std::function<void(std::exception_ptr)> ExceptionHandler;
 
     template <typename ISerializer, typename OSerializer>
-    class BaseProcedure: public boost::noncopyable
+    class BaseProcedure
+      : public boost::noncopyable
     {
     public:
       BaseProcedure(std::string const& name);
-      virtual ~BaseProcedure();
+      virtual
+      ~BaseProcedure();
+
     protected:
       template <typename I, typename O>
       friend class RPC;
-      virtual void _call(ISerializer& in, OSerializer& out) = 0;
+
+      virtual
+      void
+      _call(ISerializer& in, OSerializer& out) = 0;
+
     private:
-      std::string _name;
+      ELLE_ATTRIBUTE(std::string, name);
     };
 
     template <typename ISerializer,
               typename OSerializer,
               typename R,
               typename ... Args>
-    class Procedure: public BaseProcedure<ISerializer, OSerializer>
+    class Procedure
+      : public BaseProcedure<ISerializer, OSerializer>
     {
     public:
-      virtual ~Procedure();
+      typedef RPC<ISerializer, OSerializer> Owner;
+      typedef boost::function<R (Args...)> Function;
+
+    public:
+      virtual
+      ~Procedure();
+
     protected:
-      virtual void _call(ISerializer& in, OSerializer& out);
+      void
+      _call(ISerializer& in, OSerializer& out) override;
+
     private:
       template <typename I, typename O>
       friend class RPC;
+
       Procedure(std::string const& name,
                 RPC<ISerializer, OSerializer>& owner,
                 uint32_t id,
                 boost::function<R (Args...)> const& f);
-      uint32_t _id;
-      RPC<ISerializer, OSerializer>& _owner;
-      boost::function<R (Args...)> _function;
+
+    private:
+      ELLE_ATTRIBUTE(uint32_t, id);
+      ELLE_ATTRIBUTE(Owner&, owner);
+      ELLE_ATTRIBUTE(Function, function);
     };
 
     class BaseRPC
@@ -77,22 +97,26 @@ namespace infinit
       *          used in place of the one thrown by RPC procedure as base for
       *          the error reply.
       */
-      virtual void run(ExceptionHandler handler = {}) = 0;
+      virtual
+      void
+      run(ExceptionHandler handler = {}) = 0;
+
     protected:
       template <typename ISerializer,
                 typename OSerializer,
                 typename R,
                 typename ... Args>
       friend class Procedure;
-      ChanneledStream& _channels;
-      uint32_t _id;
+
+      ELLE_ATTRIBUTE(ChanneledStream&, channels, protected);
+      ELLE_ATTRIBUTE(uint32_t, id, protected);
     };
 
     template <typename ISerializer, typename OSerializer>
-    class RPC:
-      public BaseRPC,
-      public elle::Printable,
-      public boost::noncopyable
+    class RPC
+      : public BaseRPC
+      , public elle::Printable
+      , public boost::noncopyable
     {
     public:
       template <typename R, typename ... Args>
@@ -100,6 +124,7 @@ namespace infinit
       {
       public:
         typedef R ReturnType;
+        typedef RPC<ISerializer, OSerializer> Owner;
 
       public:
         RemoteProcedure(std::string const& name,
@@ -112,29 +137,40 @@ namespace infinit
                         RPC<ISerializer, OSerializer>& owner,
                         uint32_t id);
       private:
-        uint32_t _id;
-        std::string _name;
-        RPC<ISerializer, OSerializer>& _owner;
+        ELLE_ATTRIBUTE(uint32_t, id);
+        ELLE_ATTRIBUTE(std::string, name);
+        ELLE_ATTRIBUTE(Owner&, owner);
       };
 
     public:
       RPC(ChanneledStream& channels);
+
       template <typename R, typename ... Args>
       RemoteProcedure<R, Args...>
       add(std::string const& name);
+
       template <typename R, typename ... Args>
       RemoteProcedure<R, Args...>
       add(boost::function<R (Args...)> const& f);
-      void add(BaseRPC& rpc);
-      virtual void run(ExceptionHandler = {});
-      virtual void parallel_run();
+
+      void
+      add(BaseRPC& rpc);
+
+      void
+      run(ExceptionHandler = {}) override;
+
+      virtual
+      void
+      parallel_run();
+
     protected:
       typedef BaseProcedure<ISerializer, OSerializer> LocalProcedure;
       typedef std::pair<std::string,
                         std::unique_ptr<LocalProcedure>> NamedProcedure;
       typedef std::unordered_map<uint32_t, NamedProcedure> Procedures;
-      Procedures _procedures;
-      std::vector<BaseRPC*> _rpcs;
+
+      ELLE_ATTRIBUTE(Procedures, procedures, protected);
+      ELLE_ATTRIBUTE(std::vector<BaseRPC*>, rpcs, protected);
 
     /*----------.
     | Printable |

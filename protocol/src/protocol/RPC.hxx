@@ -23,7 +23,7 @@ namespace infinit
   {
 
     inline LastMessageException::LastMessageException(std::string const& what)
-    : elle::Exception(what)
+      : elle::Exception(what)
     {}
 
     /*--------------.
@@ -32,13 +32,12 @@ namespace infinit
 
     template <typename IS, typename OS>
     BaseProcedure<IS, OS>::
-    BaseProcedure(std::string const& name):
-      _name(name)
+    BaseProcedure(std::string const& name)
+      : _name(name)
     {}
 
     template <typename IS, typename OS>
-    BaseProcedure<IS, OS>::
-    ~BaseProcedure()
+    BaseProcedure<IS, OS>::~BaseProcedure()
     {}
 
     /*----------.
@@ -53,19 +52,18 @@ namespace infinit
     Procedure (std::string const& name,
                RPC<IS, OS>& owner,
                uint32_t id,
-               boost::function<R (Args...)> const& f):
-      BaseProcedure<IS, OS>(name),
-      _id(id),
-      _owner(owner),
-      _function(f)
+               boost::function<R (Args...)> const& f)
+      : BaseProcedure<IS, OS>(name)
+      , _id(id)
+      , _owner(owner)
+      , _function(f)
     {}
 
     template <typename IS,
               typename OS,
               typename R,
               typename ... Args>
-    Procedure<IS, OS, R, Args ...>::
-    ~Procedure()
+    Procedure<IS, OS, R, Args ...>::~Procedure()
     {}
 
     /*------------------------.
@@ -121,23 +119,23 @@ namespace infinit
               typename OS>
     template <typename R,
               typename ... Args>
-    RPC<IS, OS>::RemoteProcedure<R, Args ...>::
-    RemoteProcedure(std::string const& name,
-                    RPC<IS, OS>& owner):
-      RemoteProcedure<R, Args...>(owner.add<R, Args...>(name))
+    RPC<IS, OS>::RemoteProcedure<R, Args ...>::RemoteProcedure(
+      std::string const& name,
+      RPC<IS, OS>& owner)
+      : RemoteProcedure<R, Args...>(owner.add<R, Args...>(name))
     {}
 
     template <typename IS,
               typename OS>
     template <typename R,
               typename ... Args>
-    RPC<IS, OS>::RemoteProcedure<R, Args ...>::
-    RemoteProcedure(std::string const& name,
-                    RPC<IS, OS>& owner,
-                    uint32_t id):
-      _id(id),
-      _name(name),
-      _owner(owner)
+    RPC<IS, OS>::RemoteProcedure<R, Args ...>:: RemoteProcedure(
+      std::string const& name,
+      RPC<IS, OS>& owner,
+      uint32_t id)
+      : _id(id)
+      , _name(name)
+      , _owner(owner)
     {}
 
     template <typename IS,
@@ -148,11 +146,12 @@ namespace infinit
     RPC<IS, OS>::RemoteProcedure<R, Args ...>::
     operator = (boost::function<R (Args...)> const& f)
     {
-      auto proc = _owner._procedures.find(_id);
-      assert(proc != _owner._procedures.end());
+      auto proc = this->_owner._procedures.find(this->_id);
+      assert(proc != this->_owner._procedures.end());
       assert(proc->second.second == nullptr);
-      _owner._procedures[_id].second.reset(
-        new Procedure<IS, OS, R, Args...>(_name, _owner, _id, f));
+      this->_owner._procedures[_id].second.reset(
+        new Procedure<IS, OS, R, Args...>(
+          this->_name, this->_owner, this->_id, f));
     }
 
 
@@ -167,15 +166,15 @@ namespace infinit
       ELLE_LOG_COMPONENT("infinit.protocol.RPC");
 
       ELLE_TRACE_SCOPE("%s: call remote procedure: %s",
-                       _owner, _name);
+                       this->_owner, this->_name);
 
-      Channel channel(_owner._channels);
+      Channel channel(this->_owner._channels);
       {
         elle::Buffer question;
         {
           elle::IOStream outs(question.ostreambuf());
           OS output(outs);
-          output << _id;
+          output << this->_id;
           put_args<OS, Args...>(output, args...);
         }
         channel.write(question);
@@ -193,7 +192,7 @@ namespace infinit
           std::string error;
           input >> error;
           ELLE_TRACE_SCOPE("%s: remote procedure call failed: %s",
-                           _owner, error);
+                           this->_owner, error);
           uint16_t bt_size;
           input >> bt_size;
           elle::Backtrace bt;
@@ -312,13 +311,11 @@ namespace infinit
               typename R,
               typename ... Args>
     void
-    Procedure<IS, OS, R, Args...>::
-    _call(IS& in,
-          OS& out)
+    Procedure<IS, OS, R, Args...>::_call(IS& in, OS& out)
     {
       std::string err;
       VoidSwitch<IS, OS, R, Args ...>::call(
-        in, out, _function);
+        in, out, this->_function);
     }
 
     /*----.
@@ -332,9 +329,9 @@ namespace infinit
     RPC<IS, OS>::RemoteProcedure<R, Args...>
     RPC<IS, OS>::add(boost::function<R (Args...)> const& f)
     {
-      uint32_t id = _id++;
+      uint32_t id = this->_id++;
       typedef Procedure<IS, OS, R, Args...> Proc;
-      _procedures[id] = std::unique_ptr<Proc>(new Proc(*this, id, f));
+      this->_procedures[id] = std::unique_ptr<Proc>(new Proc(*this, id, f));
       return RemoteProcedure<R, Args...>(*this, id);
     }
 
@@ -343,23 +340,24 @@ namespace infinit
     template <typename R,
               typename ... Args>
     RPC<IS, OS>::RemoteProcedure<R, Args...>
-    RPC<IS, OS>::
-    add(std::string const& name)
+    RPC<IS, OS>::add(std::string const& name)
     {
-      uint32_t id = _id++;
-      _procedures[id] = NamedProcedure(name, nullptr);
+      uint32_t id = this->_id++;
+      this->_procedures[id] = NamedProcedure(name, nullptr);
       return RemoteProcedure<R, Args...>(name, *this, id);
     }
 
     template <typename IS,
               typename OS>
-    RPC<IS, OS>::RPC(ChanneledStream& channels):
-      BaseRPC(channels)
+    RPC<IS, OS>::RPC(ChanneledStream& channels)
+      : BaseRPC(channels)
     {}
 
-    template<typename T> bool handle_exception(ExceptionHandler & handler,
-                                               T& output,
-                                               std::exception_ptr ex)
+    template<typename T>
+    bool
+    handle_exception(ExceptionHandler & handler,
+                     T& output,
+                     std::exception_ptr ex)
     {
       ELLE_LOG_COMPONENT("infinit.protocol.RPC");
       bool res = false;
@@ -420,21 +418,21 @@ namespace infinit
         while (!stop_request)
         {
           ELLE_TRACE_SCOPE("%s: Accepting new request...", *this);
-          Channel c(_channels.accept());
+          Channel c(this->_channels.accept());
           elle::Buffer question(c.read());
           elle::IOStream ins(question.istreambuf());
           IS input(ins);
           uint32_t id;
           input >> id;
           ELLE_TRACE_SCOPE("%s: Processing request for %s...", *this, id);
-          auto procedure = _procedures.find(id);
+          auto procedure = this->_procedures.find(id);
 
           elle::Buffer answer;
           elle::IOStream outs(answer.ostreambuf());
           OS output(outs);
           try
           {
-            if (procedure == _procedures.end())
+            if (procedure == this->_procedures.end())
               throw Exception(sprintf("call to unknown procedure: %s", id));
             else if (procedure->second.second == nullptr)
             {
@@ -490,7 +488,7 @@ namespace infinit
           int i = 0;
           while (true)
           {
-            auto chan = std::make_shared<Channel>(_channels.accept());
+            auto chan = std::make_shared<Channel>(this->_channels.accept());
             ++i;
 
             auto call_procedure = [&, chan] {
@@ -501,7 +499,7 @@ namespace infinit
               IS input(ins);
               uint32_t id;
               input >> id;
-              auto procedure = _procedures.find(id);
+              auto procedure = this->_procedures.find(id);
 
               elle::Buffer answer;
               elle::IOStream outs(answer.ostreambuf());
@@ -592,7 +590,7 @@ namespace infinit
     void
     RPC<IS, OS>::add(BaseRPC& rpc)
     {
-      _rpcs.push_back(&rpc);
+      this->_rpcs.push_back(&rpc);
     }
 
     template <typename IS,

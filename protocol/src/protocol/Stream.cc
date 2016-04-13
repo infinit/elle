@@ -2,6 +2,8 @@
 
 #include <protocol/Stream.hh>
 
+#include <reactor/scheduler.hh>
+
 #ifdef INFINIT_WINDOWS
 # include <winsock2.h>
 #else
@@ -20,18 +22,12 @@ namespace infinit
       : _scheduler(scheduler)
     {}
 
-    Stream::~Stream()
+    Stream::Stream()
+      : Stream(*reactor::Scheduler::scheduler())
     {}
 
-    /*-----------.
-    | Properties |
-    `-----------*/
-
-    reactor::Scheduler&
-    Stream::scheduler()
-    {
-      return _scheduler;
-    }
+    Stream::~Stream()
+    {}
 
     /*--------.
     | Sending |
@@ -48,23 +44,25 @@ namespace infinit
     `------------------*/
 
     void
-    Stream::_uint32_put(elle::Buffer& b, uint32_t i)
+    Stream::uint32_put(elle::Buffer& b, uint32_t i)
     {
       i = htonl(i);
       b.append(&i, 4);
     }
+
     uint32_t
-    Stream::_uint32_get(elle::Buffer& b)
+    Stream::uint32_get(elle::Buffer& b)
     {
       uint32_t i;
       ELLE_ASSERT_GTE((signed)b.size(), 4);
       i = *(uint32_t*)b.contents();
-      memmove(b.mutable_contents(), b.contents()+4, b.size() - 4);
-      b.size(b.size()-4);
+      memmove(b.mutable_contents(), b.contents() + 4, b.size() - 4);
+      b.size(b.size() - 4);
       return ntohl(i);
     }
+
     void
-    Stream::_uint32_put(std::ostream& s, uint32_t  i)
+    Stream::uint32_put(std::ostream& s, uint32_t  i)
     {
       elle::IOStreamClear clearer(s);
       // FIXME: should rethrow the underlying streambuf error.
@@ -75,7 +73,7 @@ namespace infinit
     }
 
     uint32_t
-    Stream::_uint32_get(std::istream& s)
+    Stream::uint32_get(std::istream& s)
     {
       uint32_t res;
       elle::IOStreamClear clearer(s);

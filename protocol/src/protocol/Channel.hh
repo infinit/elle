@@ -36,37 +36,32 @@ namespace infinit
     | Printable |
     `----------*/
     public:
-      virtual void print(std::ostream& s) const;
-
-    /*-----------.
-    | Properties |
-    `-----------*/
-    public:
-      int id() const;
+      void
+      print(std::ostream& s) const override;
 
     /*----------.
     | Receiving |
     `----------*/
     public:
-      virtual elle::Buffer read();
+      elle::Buffer
+      read() override;
 
     /*--------.
     | Sending |
     `--------*/
     protected:
-      virtual
       void
-      _write(elle::Buffer& packet);
+      _write(elle::Buffer& packet) override;
 
     /*--------.
     | Details |
     `--------*/
     private:
       friend class ChanneledStream;
-      ChanneledStream& _backend;
-      int _id;
-      std::list<elle::Buffer> _packets;
-      reactor::Signal _available;
+      ELLE_ATTRIBUTE(ChanneledStream&, backend);
+      ELLE_ATTRIBUTE_R(int, id);
+      ELLE_ATTRIBUTE(std::list<elle::Buffer>, packets);
+      ELLE_ATTRIBUTE(reactor::Signal, available);
     };
   }
 }

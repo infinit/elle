@@ -21,21 +21,21 @@ namespace infinit
     `-------------*/
     public:
       Stream(reactor::Scheduler& scheduler);
+      Stream();
       virtual ~Stream();
 
     /*-----------.
     | Properties |
     `-----------*/
-    public:
-      reactor::Scheduler& scheduler();
-    private:
-      reactor::Scheduler& _scheduler;
+      ELLE_ATTRIBUTE_R(reactor::Scheduler&, scheduler);
 
     /*----------.
     | Receiving |
     `----------*/
     public:
-      virtual elle::Buffer read() = 0;
+      virtual
+      elle::Buffer
+      read() = 0;
 
     /*--------.
     | Sending |
@@ -51,11 +51,22 @@ namespace infinit
     /*------------------.
     | Int serialization |
     `------------------*/
-    protected:
-      void _uint32_put(std::ostream& s, uint32_t  i);
-      uint32_t _uint32_get(std::istream& s);
-      void _uint32_put(elle::Buffer& s, uint32_t  i);
-      uint32_t _uint32_get(elle::Buffer& s);
+    public:
+      static
+      void
+      uint32_put(std::ostream& s, uint32_t  i);
+
+      static
+      uint32_t
+      uint32_get(std::istream& s);
+
+      static
+      void
+      uint32_put(elle::Buffer& s, uint32_t  i);
+
+      static
+      uint32_t
+      uint32_get(elle::Buffer& s);
     };
   }
 }

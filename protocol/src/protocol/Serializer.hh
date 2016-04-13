@@ -31,30 +31,30 @@ namespace infinit
     | Receiving |
     `----------*/
     public:
-      elle::Buffer read();
+      elle::Buffer
+      read();
 
     /*--------.
     | Sending |
     `--------*/
     protected:
-      virtual
       void
-      _write(elle::Buffer& packet);
+      _write(elle::Buffer& packet) override;
 
     /*----------.
     | Printable |
     `----------*/
     public:
-      virtual void print(std::ostream& stream) const;
+      void
+      print(std::ostream& stream) const override;
 
     /*--------.
     | Details |
     `--------*/
-    private:
-      std::iostream& _stream;
-      reactor::Mutex _lock_write;
-      reactor::Mutex _lock_read;
-      bool           _checksum;
+      ELLE_ATTRIBUTE(std::iostream&, stream, protected);
+      ELLE_ATTRIBUTE(reactor::Mutex, lock_write, protected);
+      ELLE_ATTRIBUTE(reactor::Mutex, lock_read, protected);
+      ELLE_ATTRIBUTE(bool, checksum, protected);
     };
   }
 }
