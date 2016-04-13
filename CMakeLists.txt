@@ -9,8 +9,6 @@ project(Uri)
 
 find_package(Threads REQUIRED)
 
-include_directories(${Uri_SOURCE_DIR}/src)
-
 set(CMAKE_VERBOSE_MAKEFILE true)
 
 if (${CMAKE_CXX_COMPILER_ID} MATCHES GNU)
@@ -47,6 +45,8 @@ foreach(flag_var
    endif(${flag_var} MATCHES "/MD")
 endforeach(flag_var)
 
+include_directories(${Uri_SOURCE_DIR}/src ${Uri_SOURCE_DIR}/include)
+
 add_subdirectory(src)
 
 # Testing
@@ -68,6 +68,3 @@ if (DOXYGEN_FOUND)
     set(CPP-NETLIB_GENERATE_DOCS ON)
   endif()
 endif(DOXYGEN_FOUND)
-
-#propagate sources to parent scope for one-lib-build
-set(Uri_SRCS ${Uri_SRCS} PARENT_SCOPE)
