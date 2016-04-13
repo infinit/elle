@@ -72,11 +72,10 @@ namespace infinit
     `--------*/
     protected:
       void
-      _write(elle::Buffer& packet) override;
-
+      _write(elle::Buffer const& packet) override;
     private:
       void
-      _write(elle::Buffer& packet, int id);
+      _write(elle::Buffer const& packet, int id);
 
     /*----------.
     | Printable |

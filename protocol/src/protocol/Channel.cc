@@ -77,7 +77,7 @@ namespace infinit
     `--------*/
 
     void
-    Channel::_write(elle::Buffer& packet)
+    Channel::_write(elle::Buffer const& packet)
     {
       this->_backend._write(packet, this->_id);
     }

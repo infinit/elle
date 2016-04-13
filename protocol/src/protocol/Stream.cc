@@ -34,7 +34,7 @@ namespace infinit
     `--------*/
 
     void
-    Stream::write(elle::Buffer& packet)
+    Stream::write(elle::Buffer const& packet)
     {
       this->_write(packet);
     }

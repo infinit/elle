@@ -42,11 +42,11 @@ namespace infinit
     `--------*/
     public:
       void
-      write(elle::Buffer& packet);
+      write(elle::Buffer const& packet);
     protected:
       virtual
       void
-      _write(elle::Buffer& packet) = 0;
+      _write(elle::Buffer const& packet) = 0;
 
     /*------------------.
     | Int serialization |

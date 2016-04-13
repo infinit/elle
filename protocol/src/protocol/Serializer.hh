@@ -39,7 +39,7 @@ namespace infinit
     `--------*/
     protected:
       void
-      _write(elle::Buffer& packet) override;
+      _write(elle::Buffer const& packet) override;
 
     /*----------.
     | Printable |

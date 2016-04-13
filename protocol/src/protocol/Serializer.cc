@@ -108,7 +108,7 @@ namespace infinit
     | Sending |
     `--------*/
     void
-    Serializer::_write(elle::Buffer& packet)
+    Serializer::_write(elle::Buffer const& packet)
     {
       // The write must not be interrupted, otherwise it will break
       // the serialization protocol.

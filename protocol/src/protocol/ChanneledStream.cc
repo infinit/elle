@@ -219,13 +219,13 @@ namespace infinit
     `--------*/
 
     void
-    ChanneledStream::_write(elle::Buffer& packet)
+    ChanneledStream::_write(elle::Buffer const& packet)
     {
       this->_default.write(packet);
     }
 
     void
-    ChanneledStream::_write(elle::Buffer& packet, int id)
+    ChanneledStream::_write(elle::Buffer const& packet, int id)
     {
       ELLE_TRACE_SCOPE("%s: send %s on channel %s", *this, packet, id);
 
