@@ -19,8 +19,8 @@ class Packager(drake.Builder):
     self.__arch = arch
     self.__rpm_name = '%(base)s-%(ver)s-1.%(dist)s.%(arch)s.rpm' % \
       {'base': basename, 'ver': version, 'dist': dist, 'arch': self.__arch}
-    self.__destination = drake.path_build(destination)
-    self.__target = drake.node(self.__destination / self.__rpm_name)
+    self.__destination = drake.Path(destination)
+    self.__target = drake.node('%s/%s' % (destination, self.__rpm_name))
     super().__init__(sources, [self.__target])
 
   def execute(self):
