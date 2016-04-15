@@ -27,17 +27,13 @@ namespace infinit
     `-------------*/
     public:
       Serializer(std::iostream& stream,
+                 elle::Version const& version = elle::Version(0, 1, 0),
                  bool checksum = true);
 
       Serializer(reactor::Scheduler& scheduler,
                  std::iostream& stream,
+                 elle::Version const& version  = elle::Version(0, 1, 0),
                  bool checksum = true);
-
-    protected:
-      Serializer(elle::Version const& version,
-                 reactor::Scheduler& scheduler,
-                 std::iostream& stream,
-                 bool checksum);
 
     public:
       ~Serializer();

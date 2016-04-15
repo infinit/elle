@@ -22,22 +22,12 @@ ELLE_LOG_COMPONENT("infinit.protocol.test");
 static const elle::Version v010{0, 1, 0};
 static const elle::Version v020{0, 2, 0};
 
-struct Serializer
-  : public infinit::protocol::Serializer
-{
-  typedef infinit::protocol::Serializer Super;
-public:
-  Serializer(elle::Version const& version,
-             std::iostream& stream,
-             bool checksum)
-    : Super(version, *reactor::Scheduler::scheduler(), stream, checksum)
-  {
-  }
-};
+typedef infinit::protocol::Serializer Serializer;
 
 struct setup
 {
-  setup(elle::Version const& version)
+  setup(elle::Version const& version,
+        bool checksum = true)
   {
     reactor::network::TCPServer c;
     reactor::Barrier listening;
@@ -53,7 +43,7 @@ struct setup
           port = server.port();
           listening.open();
           this->_bob.reset(server.accept().release());
-          this->bob.reset(new Serializer(version, *this->_bob, true));
+          this->bob.reset(new Serializer(*this->_bob, version, checksum));
         });
       scope.run_background(
         "alice",
@@ -62,7 +52,7 @@ struct setup
           reactor::wait(listening);
           this->_alice.reset(
             new reactor::network::TCPSocket("127.0.0.1", port));
-          this->alice.reset(new Serializer(version, *this->_alice, true));
+          this->alice.reset(new Serializer(*this->_alice, version, checksum));
         });
       reactor::wait(scope);
     };

@@ -117,21 +117,19 @@ namespace infinit
       _write(elle::Buffer const&) final;
     };
 
-    Serializer::Serializer(std::iostream& stream, bool checksum)
-      : Serializer(*reactor::Scheduler::scheduler(), stream, checksum)
+    /*-------------.
+    | Construction |
+    `-------------*/
+    Serializer::Serializer(std::iostream& stream,
+                           elle::Version const& version,
+                           bool checksum)
+      : Serializer(*reactor::Scheduler::scheduler(), stream, version, checksum)
     {
     }
 
     Serializer::Serializer(reactor::Scheduler& scheduler,
                            std::iostream& stream,
-                           bool checksum)
-      : Serializer(elle::Version{ELLE_MAJOR, ELLE_MINOR, ELLE_SUBMINOR},
-                   scheduler, stream, checksum)
-    {}
-
-    Serializer::Serializer(elle::Version const& version,
-                           reactor::Scheduler& scheduler,
-                           std::iostream& stream,
+                           elle::Version const& version,
                            bool checksum)
       : Super(scheduler)
       , _version(version)
