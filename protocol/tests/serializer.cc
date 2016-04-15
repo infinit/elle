@@ -190,7 +190,8 @@ dialog(elle::Version const& version,
        bool checksum,
        std::function<void (SocketInstrumentation&)> const& conf,
        std::function<void (infinit::protocol::Serializer&)> const& a,
-       std::function<void (infinit::protocol::Serializer&)> const& b)
+       std::function<void (infinit::protocol::Serializer&)> const& b,
+       F const& f = F())
 {
   reactor::Scheduler sched;
 
@@ -222,8 +223,15 @@ dialog(elle::Version const& version,
       conf(sockets);
       elle::With<reactor::Scope>() << [&](reactor::Scope& scope)
       {
-        scope.run_background("alice", boost::bind(a, boost::ref(*alice)));
-        scope.run_background("bob", boost::bind(b, boost::ref(*bob)));
+        auto& _alice = scope.run_background("alice", boost::bind(a, boost::ref(*alice)));
+        auto& _bob = scope.run_background("bob", boost::bind(b, boost::ref(*bob)));
+        if (f)
+          scope.run_background(
+            "other",
+            [&] ()
+            {
+              f(_alice, _bob, sockets);
+            });
         scope.wait();
       };
     });
@@ -296,9 +304,11 @@ _exchange(elle::Version const& version,
   std::vector<elle::Buffer> packets={
     infinit::cryptography::random::generate<std::string>(0),
     infinit::cryptography::random::generate<std::string>(1),
-    infinit::cryptography::random::generate<std::string>(100),
     infinit::cryptography::random::generate<std::string>(1000),
-    infinit::cryptography::random::generate<std::string>(100000),
+    // Crypto is quite slow generating large strings.
+    std::string(2 << 12, 'y'),
+    // XXX: Make sure it's always bigger than the chunk size.
+    std::string(2 << 21, 'x')
   };
   dialog(version,
          checksum,
@@ -450,12 +460,99 @@ corruption()
   CASES(_corruption);
 }
 
+static
+void
+_interruption(elle::Version const& version,
+              bool checksum)
+{
+  reactor::Barrier interrupted, terminated, received;
+  elle::Buffer to_send;
+  dialog(
+    version,
+    checksum,
+    [] (SocketInstrumentation& sockets)
+    {
+      sockets.alice_routed(0);
+      sockets.bob_routed(0);
+    },
+    [&] (infinit::protocol::Serializer& s)
+    {
+      to_send.size(s.chunk_size() * 10);
+      try
+      {
+        s.write(to_send);
+      }
+      catch (reactor::Terminate const&)
+      {
+        terminated.open();
+        throw;
+      }
+    },
+    [&] (infinit::protocol::Serializer& s)
+    {
+      try
+      {
+        auto res = s.read();
+        // Sender in version 0.1.0 cannot be interrupted.
+        if (version == elle::Version{0, 1, 0})
+          received.open();
+        else
+          elle::unreachable();
+      }
+      catch (infinit::protocol::InterruptionError const&)
+      {
+        if (version == elle::Version{0, 2, 0})
+        {
+          interrupted.open();
+          return;
+        }
+        elle::unreachable();
+      }
+    },
+    [&] (reactor::Thread& alice,
+         reactor::Thread& bob,
+         SocketInstrumentation& sockets)
+    {
+      // Wait for buffer to send to be filled.
+      while (to_send.size() == 0)
+        reactor::yield();
+      do
+      {
+        // Wait for the sending process to begin.
+        reactor::yield();
+        if (sockets.alice_routed() > (to_send.size() / 5))
+        {
+          alice.terminate_now();
+          break;
+        }
+      } while (true);
+      // Version one will go throught even if a termination has been required.
+      terminated.wait(10_sec);
+      if (version == elle::Version{0, 1, 0})
+        received.wait(10_sec);
+      else if (version == elle::Version{0, 2, 0})
+      {
+        interrupted.wait(10_sec);
+        BOOST_CHECK(!received);
+      }
+    }
+  );
+}
+
+static
+void
+interruption()
+{
+  CASES(_interruption);
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
   suite.add(BOOST_TEST_CASE(exchange_packets), 0, valgrind(10, 10));
-  suite.add(BOOST_TEST_CASE(exchange), 0, valgrind(15, 10));
+  suite.add(BOOST_TEST_CASE(exchange), 0, valgrind(10, 10));
   suite.add(BOOST_TEST_CASE(connection_lost_reader), 0, valgrind(3, 10));
   suite.add(BOOST_TEST_CASE(connection_lost_sender), 0, valgrind(3, 10));
   suite.add(BOOST_TEST_CASE(corruption), 0, valgrind(3, 10));
+  suite.add(BOOST_TEST_CASE(interruption), 0, valgrind(6, 10));
 }

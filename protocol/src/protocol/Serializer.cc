@@ -84,8 +84,8 @@ namespace infinit
     {
     public:
       Version010Impl(std::iostream& stream,
-                 elle::Buffer::Size chunk_size,
-                 bool checksum)
+                     elle::Buffer::Size chunk_size,
+                     bool checksum)
         :  Serializer::pImpl(stream, chunk_size, checksum)
       {
       }
@@ -133,7 +133,7 @@ namespace infinit
                            bool checksum)
       : Super(scheduler)
       , _version(version)
-      , _chunk_size(500)
+      , _chunk_size(2 << 19)
       , _checksum(checksum)
     {
       if (this->version() >= elle::Version(0, 2, 0))
@@ -151,9 +151,11 @@ namespace infinit
       }
       ELLE_TRACE("using version: '%s'", this->version());
       if (this->version() < elle::Version(0, 2, 0))
-        this->_impl.reset(new Version010Impl(stream, 500, checksum));
+        this->_impl.reset(
+          new Version010Impl(stream, this->_chunk_size, checksum));
       else
-        this->_impl.reset(new Version020Impl(stream, 500, checksum));
+        this->_impl.reset(
+          new Version020Impl(stream, this->_chunk_size, checksum));
     }
 
     Serializer::~Serializer()
