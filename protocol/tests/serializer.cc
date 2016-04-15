@@ -453,9 +453,9 @@ corruption()
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
-  suite.add(BOOST_TEST_CASE(exchange_packets), 0, 10);
-  suite.add(BOOST_TEST_CASE(exchange), 0, 10);
-  suite.add(BOOST_TEST_CASE(connection_lost_reader), 0, 3);
-  suite.add(BOOST_TEST_CASE(connection_lost_sender), 0, 3);
-  suite.add(BOOST_TEST_CASE(corruption), 0, 3);
+  suite.add(BOOST_TEST_CASE(exchange_packets), 0, valgrind(10, 10));
+  suite.add(BOOST_TEST_CASE(exchange), 0, valgrind(15, 10));
+  suite.add(BOOST_TEST_CASE(connection_lost_reader), 0, valgrind(3, 10));
+  suite.add(BOOST_TEST_CASE(connection_lost_sender), 0, valgrind(3, 10));
+  suite.add(BOOST_TEST_CASE(corruption), 0, valgrind(3, 10));
 }
