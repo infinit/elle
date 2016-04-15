@@ -1,6 +1,8 @@
 #include <protocol/exceptions.hh>
 #include <protocol/Serializer.hh>
 
+#include <cryptography/random.hh>
+
 #include <reactor/asio.hh>
 #include <reactor/Barrier.hh>
 #include <reactor/Scope.hh>
@@ -10,6 +12,7 @@
 #include <reactor/scheduler.hh>
 
 #include <elle/test.hh>
+#include <elle/cast.hh>
 #include <elle/With.hh>
 
 ELLE_LOG_COMPONENT("infinit.protocol.test");
@@ -17,18 +20,23 @@ ELLE_LOG_COMPONENT("infinit.protocol.test");
 class SocketInstrumentation
 {
 public:
-  SocketInstrumentation():
-    _router(*reactor::Scheduler::scheduler(), "router",
-            std::bind(&SocketInstrumentation::_route, this)),
-    _a_conf(),
-    _b_conf()
+  struct Conf;
+
+public:
+  SocketInstrumentation()
+    : _router(*reactor::Scheduler::scheduler(), "router",
+              std::bind(&SocketInstrumentation::_route, this))
+    , alice_conf(new Conf)
+    , bob_conf(new Conf)
+    , _alice_routed(0)
+    , _bob_routed(0)
   {
     this->_a_server.listen();
     this->_b_server.listen();
-    this->_alice.reset(new reactor::network::TCPSocket("127.0.0.1",
-                                                       this->_a_server.port()));
-    this->_bob.reset(new reactor::network::TCPSocket("127.0.0.1",
-                                                     this->_b_server.port()));
+    this->_alice.reset(
+      new reactor::network::TCPSocket("127.0.0.1", this->_a_server.port()));
+    this->_bob.reset(
+      new reactor::network::TCPSocket("127.0.0.1", this->_b_server.port()));
     reactor::yield();
     reactor::yield();
   }
@@ -51,22 +59,22 @@ public:
   }
 
   void
-  alice_quota(int quota)
+  alice_quota(size_t quota)
   {
-    this->_a_conf.quota = quota;
+    this->alice_conf->quota = quota;
   }
 
   void
-  bob_quota(int quota)
+  bob_quota(size_t quota)
   {
-    this->_b_conf.quota = quota;
+    this->bob_conf->quota = quota;
   }
 
   void
-  alice_corrupt(int offset, char mask = 0xFF)
+  alice_corrupt(size_t offset, char mask = 0xFF)
   {
-    this->_a_conf.corrupt_offset = offset;
-    this->_a_conf.corrupt_mask = mask;
+    this->alice_conf->corrupt_offset = offset;
+    this->alice_conf->corrupt_mask = mask;
   }
 
 private:
@@ -80,18 +88,22 @@ private:
 
     elle::With<reactor::Scope>() << [&](reactor::Scope& scope)
     {
-      auto route = [&] (reactor::network::Socket* a,
-                        reactor::network::Socket* b,
+      auto route = [&] (reactor::network::Socket* sender,
+                        reactor::network::Socket* recipient,
+                        size_t& routed,
                         Conf& conf)
         {
           try
           {
-            int routed = 0;
             bool relay = true;
             while (relay)
             {
               char buffer[1024];
-              int size = a->read_some(Buffer(buffer, sizeof(buffer)));
+              ELLE_DEBUG("reading");
+              size_t size = sender->read_some(Buffer(buffer, sizeof(buffer)),
+                                              30_sec);
+              ELLE_DEBUG("read %s", size);
+              conf(elle::ConstWeakBuffer(buffer, size));
               if (conf.corrupt_offset >= 0 && \
                   conf.corrupt_offset >= routed && \
                   conf.corrupt_offset < routed + size)
@@ -101,6 +113,7 @@ private:
                 buffer[offset] ^= conf.corrupt_mask;
               }
               routed += size;
+              conf(*this);
               if (conf.quota >= 0 && routed > conf.quota)
               {
                 ELLE_LOG("%s: quota reached, interrupt", *this);
@@ -109,23 +122,24 @@ private:
                 routed = conf.quota;
               }
               ELLE_TRACE("%s: route %s bytes", *this, size);
-              b->write(elle::ConstWeakBuffer(buffer, size));
+              recipient->write(elle::ConstWeakBuffer(buffer, size));
             }
           }
           catch (reactor::network::ConnectionClosed const&)
           {}
-          a->close();
-          b->close();
+          sender->close();
+          recipient->close();
         };
       scope.run_background("A to B",
                            std::bind(route, a.get(), b.get(),
-                                     std::ref(this->_a_conf)));
+                                     std::ref(this->_alice_routed),
+                                     std::ref(*this->alice_conf)));
       scope.run_background("B to A",
                            std::bind(route, b.get(), a.get(),
-                                     std::ref(this->_b_conf)));
+                                     std::ref(this->_bob_routed),
+                                     std::ref(*this->bob_conf)));
       scope.wait();
     };
-
   }
 
   reactor::network::TCPServer _a_server;
@@ -134,6 +148,7 @@ private:
   std::unique_ptr<reactor::network::TCPSocket> _bob;
   reactor::Thread _router;
 
+public:
   struct Conf
   {
     Conf():
@@ -142,17 +157,38 @@ private:
       corrupt_mask(0)
     {}
 
-    int quota;
-    int corrupt_offset;
+    virtual
+    void
+    operator ()(elle::ConstWeakBuffer const& data)
+    {
+    }
+
+    virtual
+    void
+    operator ()(SocketInstrumentation const& sockets)
+    {
+    }
+
+    size_t quota;
+    size_t corrupt_offset;
     char corrupt_mask;
   };
-  Conf _a_conf;
-  Conf _b_conf;
+public:
+  std::unique_ptr<Conf> alice_conf;
+  std::unique_ptr<Conf> bob_conf;
+private:
+  ELLE_ATTRIBUTE_RW(size_t, alice_routed);
+  ELLE_ATTRIBUTE_RW(size_t, bob_routed);
 };
 
+typedef std::function<void (reactor::Thread&,
+                            reactor::Thread&,
+                            SocketInstrumentation&)> F;
 static
 void
-dialog(std::function<void (SocketInstrumentation&)> const& conf,
+dialog(elle::Version const& version,
+       bool checksum,
+       std::function<void (SocketInstrumentation&)> const& conf,
        std::function<void (infinit::protocol::Serializer&)> const& a,
        std::function<void (infinit::protocol::Serializer&)> const& b)
 {
@@ -163,14 +199,31 @@ dialog(std::function<void (SocketInstrumentation&)> const& conf,
     [&] ()
     {
       SocketInstrumentation sockets;
-      infinit::protocol::Serializer alice(sockets.alice());
-      infinit::protocol::Serializer bob(sockets.bob());
-      conf(sockets);
-
+      std::unique_ptr<infinit::protocol::Serializer> alice;
+      std::unique_ptr<infinit::protocol::Serializer> bob;
       elle::With<reactor::Scope>() << [&](reactor::Scope& scope)
       {
-        scope.run_background("alice", boost::bind(a, boost::ref(alice)));
-        scope.run_background("bob", boost::bind(b, boost::ref(bob)));
+        scope.run_background(
+          "setup alice's serializer",
+          [&]
+          {
+            alice.reset(
+              new infinit::protocol::Serializer(sockets.alice(), version, checksum));
+          });
+        scope.run_background(
+          "setup bob's serializer",
+          [&]
+          {
+            bob.reset(
+              new infinit::protocol::Serializer(sockets.bob(), version, checksum));
+          });
+        scope.wait();
+      };
+      conf(sockets);
+      elle::With<reactor::Scope>() << [&](reactor::Scope& scope)
+      {
+        scope.run_background("alice", boost::bind(a, boost::ref(*alice)));
+        scope.run_background("bob", boost::bind(b, boost::ref(*bob)));
         scope.wait();
       };
     });
@@ -178,11 +231,19 @@ dialog(std::function<void (SocketInstrumentation&)> const& conf,
   sched.run();
 }
 
+#define CASES(function)                                                        \
+  for (auto const& version: {elle::Version{0, 1, 0}, elle::Version{0, 2, 0}})  \
+    for (auto checksum: {true, false})                                         \
+      function(version, checksum)
+
 static
 void
-exchange_packets()
+_exchange_packets(elle::Version const& version,
+                  bool checksum)
 {
-  dialog([] (SocketInstrumentation&) {},
+  dialog(version,
+         checksum,
+         [] (SocketInstrumentation&) {},
          [] (infinit::protocol::Serializer& s)
          {
            {
@@ -222,11 +283,62 @@ exchange_packets()
 
 static
 void
-connection_lost_reader()
+exchange_packets()
+{
+  CASES(_exchange_packets);
+}
+
+static
+void
+_exchange(elle::Version const& version,
+          bool checksum)
+{
+  std::vector<elle::Buffer> packets={
+    infinit::cryptography::random::generate<std::string>(0),
+    infinit::cryptography::random::generate<std::string>(1),
+    infinit::cryptography::random::generate<std::string>(100),
+    infinit::cryptography::random::generate<std::string>(1000),
+    infinit::cryptography::random::generate<std::string>(100000),
+  };
+  dialog(version,
+         checksum,
+         [] (SocketInstrumentation&) {},
+         [&] (infinit::protocol::Serializer& s)
+         {
+           for (auto const& buffer: packets)
+             s.write(buffer);
+           for (size_t i = 0; i < packets.size(); ++i)
+             BOOST_CHECK_EQUAL(s.read(), packets.at(i));
+         },
+         [&] (infinit::protocol::Serializer& s)
+         {
+           for (size_t i = 0; i < packets.size(); ++i)
+             BOOST_CHECK_EQUAL(s.read(), packets.at(i));
+           for (auto const& buffer: packets)
+             s.write(buffer);
+         });
+}
+
+static
+void
+exchange()
+{
+  CASES(_exchange);
+}
+
+static
+void
+_connection_lost_reader(elle::Version const& version,
+                        bool checksum)
 {
   dialog(
+    version,
+    checksum,
     [] (SocketInstrumentation& sockets)
     {
+      // Reset 'routed' to ignore version exchange.
+      sockets.alice_routed(0);
+      sockets.bob_routed(0);
       sockets.alice_quota(96);
     },
     [] (infinit::protocol::Serializer& s)
@@ -248,11 +360,24 @@ connection_lost_reader()
 
 static
 void
-connection_lost_sender()
+connection_lost_reader()
+{
+  CASES(_connection_lost_reader);
+}
+
+static
+void
+_connection_lost_sender(elle::Version const& version,
+                        bool checksum)
 {
   dialog(
+    version,
+    checksum,
     [] (SocketInstrumentation& sockets)
     {
+      // Reset 'routed' to ignore version exchange.
+      sockets.alice_routed(0);
+      sockets.bob_routed(0);
       sockets.alice_quota(4);
     },
     [] (infinit::protocol::Serializer& s)
@@ -280,11 +405,24 @@ connection_lost_sender()
 
 static
 void
-corruption()
+connection_lost_sender()
+{
+  CASES(_connection_lost_sender);
+}
+
+static
+void
+_corruption(elle::Version const& version,
+            bool checksum)
 {
   dialog(
+    version,
+    checksum,
     [] (SocketInstrumentation& sockets)
     {
+      // Reset 'routed' to ignore version exchange.
+      sockets.alice_routed(0);
+      sockets.bob_routed(0);
       sockets.alice_corrupt(1024);
     },
     [] (infinit::protocol::Serializer& s)
@@ -298,16 +436,25 @@ corruption()
       p.flush();
       s.write(pp);
     },
-    [] (infinit::protocol::Serializer& s)
+    [=] (infinit::protocol::Serializer& s)
     {
-      BOOST_CHECK_THROW(s.read(), infinit::protocol::ChecksumError);
+      if (checksum)
+        BOOST_CHECK_THROW(s.read(), infinit::protocol::ChecksumError);
     });
+}
+
+static
+void
+corruption()
+{
+  CASES(_corruption);
 }
 
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
   suite.add(BOOST_TEST_CASE(exchange_packets), 0, 10);
+  suite.add(BOOST_TEST_CASE(exchange), 0, 10);
   suite.add(BOOST_TEST_CASE(connection_lost_reader), 0, 3);
   suite.add(BOOST_TEST_CASE(connection_lost_sender), 0, 3);
   suite.add(BOOST_TEST_CASE(corruption), 0, 3);
