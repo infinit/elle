@@ -25,9 +25,9 @@ namespace infinit
 {
   namespace protocol
   {
-    /*-------------------------.
-    | Implementation definition|
-    `-------------------------*/
+    /*--------------------------.
+    | Implementation definition |
+    `--------------------------*/
     class Serializer::pImpl
     {
     protected:
@@ -204,13 +204,15 @@ namespace infinit
     // - the content: $size bytes.
     static
     elle::Buffer
-    read(Serializer::Inner& stream)
+    read(Serializer::Inner& stream,
+         boost::optional<uint32_t> size = boost::none)
     {
       elle::Buffer content;
-      uint32_t size(Serializer::Super::uint32_get(stream));
-      ELLE_DUMP("expected size: %s", size);
-      content.size(size);
-      stream.read(reinterpret_cast<char*>(content.mutable_contents()), size);
+      if (!size)
+        size = Serializer::Super::uint32_get(stream);
+      ELLE_DUMP("expected size: %s", *size);
+      content.size(*size);
+      stream.read(reinterpret_cast<char*>(content.mutable_contents()), *size);
       ELLE_DUMP("content: %x (size: %s)", content, content.size());
       return content;
     }
@@ -263,6 +265,7 @@ namespace infinit
     void
     write(Serializer::Inner& stream,
           elle::Buffer const& content,
+          bool write_size = true,
           elle::Buffer::Size offset = 0,
           boost::optional<elle::Buffer::Size> size = boost::none)
     {
@@ -273,8 +276,9 @@ namespace infinit
                        : elle::sprintf("%s bytes from", to_send),
                        content,
                        offset);
-      ELLE_DEBUG("write size: %s byte(s)", to_send);
-        Serializer::Super::uint32_put(stream, to_send);
+      if (write_size)
+        ELLE_DEBUG("write size: %s byte(s)", to_send)
+          Serializer::Super::uint32_put(stream, to_send);
       ELLE_DEBUG("write content: '%f'", content)
         stream.write(
           reinterpret_cast<char*>(content.mutable_contents()) + offset,
@@ -364,11 +368,6 @@ namespace infinit
     elle::Buffer
     Version020Impl::_read()
     {
-      int state = 0;
-      elle::SafeFinally state_checker([&] {
-          if (state == 1)
-            ELLE_ERR("serializer::read interrupted in unsafe state");
-        });
       elle::Buffer hash;
       if (this->_checksum)
       {
@@ -383,7 +382,7 @@ namespace infinit
       for (elle::Buffer::Size offset = 0; offset < total_size;)
       {
         check_control(this->_stream);
-        uint32_t size(Serializer::Super::uint32_get(this->_stream));
+        uint32_t size = std::min(total_size - offset, this->_chunk_size);
         ELLE_DEBUG("read chunk of size %s", size);
         this->_stream.read(
           reinterpret_cast<char*>(packet.mutable_contents()) + offset,
@@ -394,7 +393,6 @@ namespace infinit
       }
       ELLE_DEBUG("got packet '%f'", packet);
       ELLE_DUMP("packet content: '%x'", packet);
-      state = 2;
       // Check hash.
       if (this->_checksum)
         enforce_checksums_equal(packet, hash);
