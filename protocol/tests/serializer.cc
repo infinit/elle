@@ -121,7 +121,7 @@ private:
                 relay = false;
                 routed = conf.quota;
               }
-              ELLE_TRACE("%s: route %s bytes", *this, size);
+              ELLE_DEBUG("%s: route %s bytes", *this, size);
               recipient->write(elle::ConstWeakBuffer(buffer, size));
             }
           }
@@ -242,7 +242,8 @@ dialog(elle::Version const& version,
 #define CASES(function)                                                        \
   for (auto const& version: {elle::Version{0, 1, 0}, elle::Version{0, 2, 0}})  \
     for (auto checksum: {true, false})                                         \
-      function(version, checksum)
+      ELLE_TRACE("version: %s, checksum: %s", version, checksum)        \
+        function(version, checksum)
 
 static
 void
