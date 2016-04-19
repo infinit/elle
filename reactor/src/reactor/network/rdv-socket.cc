@@ -27,6 +27,11 @@ namespace reactor
     {
       _breacher.terminate_now();
       _keep_alive.terminate_now();
+      for (auto& c: this->_contacts)
+        c.second.barrier.open();
+      ELLE_DEBUG("%s: waiting for tasks to terminate...", this);
+      reactor::wait(this->_tasks);
+      ELLE_DEBUG("%s: waiting done", this);
     }
 
     void
@@ -179,6 +184,7 @@ namespace reactor
                        std::vector<Endpoint> const& endpoints,
                        DurationOpt timeout)
     {
+      auto task_lock = this->_tasks.lock();
       ELLE_TRACE_SCOPE("%s: contact %s", *this, id);
       std::string tempid;
       std::string contactid = id;
@@ -232,8 +238,14 @@ namespace reactor
         }
         if (reactor::wait(_contacts.at(contactid).barrier, 500_ms))
         {
-          ELLE_TRACE("got result: %s", *this->_contacts.at(contactid).result);
-          return *_contacts.at(contactid).result;
+          auto& c = _contacts.at(contactid);
+          if (c.result)
+          {
+            ELLE_TRACE("got result: %s", *c.result);
+            return *c.result;
+          }
+          else
+            throw elle::Error(elle::sprintf("contact(%s) aborted", id));
         }
         if (timeout
           && boost::posix_time::second_clock::universal_time() - now > *timeout)

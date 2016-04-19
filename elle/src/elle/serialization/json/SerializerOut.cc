@@ -247,7 +247,10 @@ namespace elle
         while (denom % 1000 == 0)
         {
           denom /= 1000;
-          ++order;
+          if (ticks % 1000 == 0)
+            ticks /= 1000;
+          else
+            ++order;
         }
         if (denom != 1)
           if (1000 % denom == 0)

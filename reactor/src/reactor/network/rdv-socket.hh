@@ -3,6 +3,7 @@
 
 #include <reactor/network/udp-socket.hh>
 #include <reactor/Barrier.hh>
+#include <reactor/MultiLockBarrier.hh>
 #include <reactor/duration.hh>
 #include <reactor/thread.hh>
 
@@ -68,6 +69,7 @@ namespace reactor
           std::function<void(Buffer, Endpoint)>> _readers;
         reactor::Thread _breacher;
         reactor::Thread _keep_alive;
+        MultiLockBarrier _tasks;
     };
   }
 }

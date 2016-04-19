@@ -720,6 +720,7 @@ def configure(curl_config,
     'rdv-server',
   ]
   cxx_config_bin = drake.cxx.Config(local_cxx_config)
+  cxx_config_bin.lib_path_runtime('../lib')
   for name in binaries_config:
     source = drake.node('bin/%s.cc' % name)
     bin = drake.cxx.Executable(
