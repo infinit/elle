@@ -459,25 +459,18 @@ ELLE_TEST_SCHEDULED(shutdown_flush)
 
 ELLE_TEST_SCHEDULED(shutdown_timeout)
 {
-  reactor::Barrier listening;
-  int port = 0;
-  elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
-  {
-    auto& server = scope.run_background(
-      "server",
-      [&]
-      {
-        reactor::network::SSLServer server(load_certificate(), valgrind(10_ms));
-        server.listen();
-        port = server.port();
-        listening.open();
-        auto client = server.accept();
-      });
-    reactor::wait(listening);
-    reactor::network::SSLSocket valid(
-      "127.0.0.1", boost::lexical_cast<std::string>(port));
-    reactor::wait(server);
-  };
+  reactor::network::SSLServer server(load_certificate(), valgrind(10_ms));
+  server.listen();
+  reactor::Thread server_thread(
+    "server",
+    [&]
+    {
+      auto client = server.accept();
+    });
+  reactor::network::SSLSocket valid(
+    "127.0.0.1", boost::lexical_cast<std::string>(server.port()));
+  BOOST_CHECK(!reactor::wait(server_thread, 1_sec));
+  server_thread.terminate_now();
 }
 
 ELLE_TEST_SCHEDULED(shutdown_asynchronous)
@@ -729,6 +722,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(shutdown_asynchronous_timeoutless), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(shutdown_asynchronous_timeout), 0, valgrind(2));
   suite.add(BOOST_TEST_CASE(shutdown_asynchronous_concurrent), 0, valgrind(2));
+  suite.add(BOOST_TEST_CASE(shutdown_timeout), 0, valgrind(3));
 
 }
 
