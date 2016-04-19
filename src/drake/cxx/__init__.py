@@ -1904,13 +1904,14 @@ class PkgConfig():
     except:
       available = False
 
-    def __init__(self, package):
+    def __init__(self, package, version = None):
       self.__package = package
       self.__include_path = None
       self.__library_path = None
       self.__library = None
       self.__exists = None
       self.__prefix = None
+      self.__version = None
 
     @property
     def exists(self):
@@ -1923,7 +1924,10 @@ class PkgConfig():
       return self.__exists
 
     def __pkg_config(self, cmd):
-      output = subprocess.check_output(['pkg-config', self.__package] + cmd)
+      base = ['pkg-config', self.__package]
+      if self.__version is not None:
+        base += ['--exact-version', str(self.__version)]
+      output = subprocess.check_output(base + cmd)
       return output.decode('utf-8').strip().split()
 
     def __flags(self, cmd, expected):
