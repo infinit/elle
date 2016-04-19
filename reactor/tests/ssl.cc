@@ -459,7 +459,7 @@ ELLE_TEST_SCHEDULED(shutdown_flush)
 
 ELLE_TEST_SCHEDULED(shutdown_timeout)
 {
-  reactor::network::SSLServer server(load_certificate(), valgrind(10_ms));
+  reactor::network::SSLServer server(load_certificate());
   server.listen();
   reactor::Thread server_thread(
     "server",
@@ -467,10 +467,12 @@ ELLE_TEST_SCHEDULED(shutdown_timeout)
     {
       auto client = server.accept();
     });
-  reactor::network::SSLSocket valid(
-    "127.0.0.1", boost::lexical_cast<std::string>(server.port()));
-  BOOST_CHECK(!reactor::wait(server_thread, 1_sec));
-  server_thread.terminate_now();
+  {
+    reactor::network::SSLSocket valid(
+      "127.0.0.1", boost::lexical_cast<std::string>(server.port()));
+    BOOST_CHECK(!reactor::wait(server_thread, 1_sec));
+  }
+  reactor::wait(server_thread);
 }
 
 ELLE_TEST_SCHEDULED(shutdown_asynchronous)
