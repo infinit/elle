@@ -620,38 +620,43 @@ ELLE_TEST_SCHEDULED(resolution_abort)
 ELLE_TEST_SCHEDULED(read_terminate_recover)
 {
   char wbuf[100];
-  for (int i=0; i<100;++i)
+  for (int i = 0; i < 100;++i)
     wbuf[i] = rand();
   reactor::network::TCPServer server;
-  server.listen(0);
-  std::unique_ptr<reactor::network::Socket> srv;
-  reactor::Thread accept("accept", [&] {
-        srv = server.accept();
-        char buffer[100] = {0};
-        int bytes_read = 0;
-        try
-        {
-          srv->read(reactor::network::Buffer(buffer, 100), elle::DurationOpt(), &bytes_read);
-        }
-        catch (reactor::Terminate const& e)
-        {
-          BOOST_CHECK_EQUAL(bytes_read, 50);
-          BOOST_CHECK(!memcmp(buffer, wbuf, 50));
-          srv->read(reactor::network::Buffer(buffer+bytes_read, 100-bytes_read));
-          BOOST_CHECK(!memcmp(buffer, wbuf, 100));
-          ELLE_LOG("all ok");
-          throw;
-        }
-        BOOST_CHECK(!"read finished!");
-  });
-  reactor::network::TCPSocket socket("localhost", server.local_endpoint().port());
-  ELLE_LOG("write 50");
-  socket.write(elle::ConstWeakBuffer(wbuf, 50));
-  ELLE_LOG("kill reader");
-  accept.terminate();
-  reactor::sleep(200_ms);
-  ELLE_LOG("write 50");
-  socket.write(elle::ConstWeakBuffer(wbuf+50, 50));
+  server.listen();
+  reactor::Barrier terminated;
+  reactor::Thread accept(
+    "accept",
+    [&]
+    {
+      auto socket = server.accept();
+      char buffer[100] = {0xfd};
+      int bytes_read = 0;
+      try
+      {
+        socket->read(reactor::network::Buffer(buffer, 100),
+                  elle::DurationOpt(), &bytes_read);
+      }
+      catch (reactor::Terminate const& e)
+      {
+        terminated.open();
+        BOOST_CHECK_EQUAL(bytes_read, 50);
+        BOOST_CHECK(!memcmp(buffer, wbuf, 50));
+        socket->read(reactor::network::Buffer(buffer+bytes_read, 100-bytes_read));
+        BOOST_CHECK(!memcmp(buffer, wbuf, 100));
+        throw;
+      }
+      BOOST_FAIL("unreachable");
+    });
+  reactor::network::TCPSocket socket(
+    "localhost", server.local_endpoint().port());
+  ELLE_LOG("write 50")
+    socket.write(elle::ConstWeakBuffer(wbuf, 50));
+  ELLE_LOG("kill reader")
+    accept.terminate();
+  reactor::wait(terminated);
+  ELLE_LOG("write 50")
+    socket.write(elle::ConstWeakBuffer(wbuf+50, 50));
   reactor::wait(accept);
 }
 
