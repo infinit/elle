@@ -295,7 +295,7 @@ namespace reactor
     `-----*/
 
     void
-    Socket::read(network::Buffer, DurationOpt)
+    Socket::read(network::Buffer, DurationOpt, int*)
     {
       std::abort();
       // XXX[unused arguments for now, do something with it]
@@ -439,9 +439,10 @@ namespace reactor
     template <typename AsioSocket, typename EndPoint>
     void
     StreamSocket<AsioSocket, EndPoint>::read(Buffer buf,
-                                             DurationOpt timeout)
+                                             DurationOpt timeout,
+                                             int* bytes_read)
     {
-      this->_read(buf, timeout, false);
+      this->_read(buf, timeout, false, bytes_read);
     }
 
     template <typename AsioSocket, typename EndPoint>
@@ -456,7 +457,8 @@ namespace reactor
     Size
     StreamSocket<AsioSocket, EndPoint>::_read(Buffer buf,
                                               DurationOpt timeout,
-                                              bool some)
+                                              bool some,
+                                              int* bytes_read)
     {
       ELLE_TRACE_SCOPE("%s: read %s%s bytes%s",
                        *this,
@@ -474,6 +476,8 @@ namespace reactor
           ELLE_DEBUG("%s: completed read of %s (cached) bytes: %s",
                      *this, size, elle::ConstWeakBuffer(buf.data(),
                                                         buf.size()).string());
+          if (bytes_read)
+            *bytes_read = size;
           return size;
         }
         else if (size)
@@ -492,11 +496,15 @@ namespace reactor
       catch (...)
       {
         ELLE_TRACE("%s: read threw: %s", *this, elle::exception_string());
+        if (bytes_read)
+          *bytes_read = read.read();
         throw;
       }
       if (!finished)
       {
         ELLE_TRACE("%s: read timed out", *this);
+        if (bytes_read)
+          *bytes_read = read.read();
         throw TimeOut();
       }
       ELLE_TRACE("%s: completed read of %s bytes: %s",
@@ -509,7 +517,8 @@ namespace reactor
           return elle::format::hexadecimal::encode(data);
         });
       ELLE_DUMP("%s: data: 0x%s", *this, hex);
-
+      if (bytes_read)
+        *bytes_read = read.read();
       return read.read();
     }
 
