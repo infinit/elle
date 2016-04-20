@@ -133,7 +133,7 @@ namespace infinit
                            bool checksum)
       : Super(scheduler)
       , _version(version)
-      , _chunk_size(2 << 19)
+      , _chunk_size(2 << 16)
       , _checksum(checksum)
     {
       if (this->version() >= elle::Version(0, 2, 0))
