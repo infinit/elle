@@ -89,7 +89,7 @@ namespace reactor
       public:
         virtual
         void
-        read(Buffer buffer, DurationOpt timeout = DurationOpt());
+        read(Buffer buffer, DurationOpt timeout = DurationOpt(), int* bytes_read=nullptr);
 
         virtual
         Size
@@ -238,7 +238,8 @@ namespace reactor
       using Super::read;
       virtual
       void
-      read(Buffer buffer, DurationOpt timeout = DurationOpt());
+      read(Buffer buffer, DurationOpt timeout = DurationOpt(),
+           int* bytes_read = nullptr);
       using Super::read_some;
       virtual
       Size
@@ -250,7 +251,7 @@ namespace reactor
     private:
       virtual
       Size
-      _read(Buffer buffer, DurationOpt timeout, bool some);
+      _read(Buffer buffer, DurationOpt timeout, bool some, int* bytes_read=nullptr);
 
       ELLE_ATTRIBUTE(boost::asio::streambuf, streambuffer);
 
