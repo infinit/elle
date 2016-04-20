@@ -73,7 +73,7 @@ def configure(curl_config,
     pass
 
   if cxx_toolkit.os in [drake.os.windows]:
-    backend = Backends.boost
+    backend = Backends.io
   else:
     backend = Backends.boost
   print('backend:', backend)
@@ -606,7 +606,7 @@ def configure(curl_config,
     lib_cxx_config,
   )
 
-  if backend is Backends.io:
+  if backend == Backends.io:
     libcoroutine_sources = drake.nodes(
       'src/reactor/backend/coro_io/libcoroutine/asm.S',
       'src/reactor/backend/coro_io/libcoroutine/context.cc',
