@@ -6,6 +6,7 @@
 #include <elle/finally.hh>
 #include <elle/log.hh>
 #include <elle/memory.hh>
+#include <elle/Plugin.hh>
 
 #include <reactor/BackgroundOperation.hh>
 #include <reactor/backend/backend.hh>
@@ -22,6 +23,12 @@ ELLE_LOG_COMPONENT("reactor.Scheduler");
 
 namespace reactor
 {
+  namespace plugins
+  {
+    extern elle::Plugin<elle::log::Indenter> logger_indentation;
+    extern elle::Plugin<elle::log::Tag> logger_tags;
+  }
+
   /*-------------.
   | Construction |
   `-------------*/
@@ -49,6 +56,8 @@ namespace reactor
     , _running_thread()
   {
     this->_eptr = nullptr;
+    plugins::logger_indentation.load();
+    plugins::logger_tags.load();
   }
 
   Scheduler::~Scheduler()
