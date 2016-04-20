@@ -75,7 +75,7 @@ def configure(curl_config,
   if cxx_toolkit.os in [drake.os.windows]:
     backend = Backends.io
   else:
-    backend = Backends.io
+    backend = Backends.boost
 
   # Libcxabi through llvm
   if cxx_toolkit.os in [drake.os.macos, drake.os.ios] and cxx_toolkit.kind == drake.cxx.GccToolkit.Kind.clang:
