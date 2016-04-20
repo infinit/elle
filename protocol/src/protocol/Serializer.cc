@@ -50,9 +50,20 @@ namespace infinit
       elle::Buffer
       read()
       {
-        reactor::Lock lock(this->_lock_read);
-        elle::IOStreamClear clearer(this->_stream);
-        return this->_read();
+        while (true)
+        {
+          try
+          {
+            reactor::Lock lock(this->_lock_read);
+            elle::IOStreamClear clearer(this->_stream);
+            return this->_read();
+          }
+          catch (InterruptionError const&)
+          {
+          }
+        }
+        ELLE_ERR("exit reading")
+          elle::unreachable();
       }
 
       virtual
@@ -430,7 +441,8 @@ namespace infinit
           write_control(this->_stream, Control::keep_going);
           auto to_send = std::min(this->_chunk_size, packet.size() - offset);
           ELLE_DEBUG("send actual data")
-            infinit::protocol::write(this->_stream, packet, offset, to_send);
+            infinit::protocol::write(
+              this->_stream, packet, false, offset, to_send);
           this->_stream.flush();
         }
       }

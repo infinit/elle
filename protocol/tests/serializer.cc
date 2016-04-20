@@ -101,7 +101,7 @@ private:
               char buffer[1024];
               ELLE_DEBUG("reading");
               size_t size = sender->read_some(Buffer(buffer, sizeof(buffer)),
-                                              30_sec);
+                                              1_sec);
               ELLE_DEBUG("read %s", size);
               conf(elle::ConstWeakBuffer(buffer, size));
               if (conf.corrupt_offset >= 0 && \
