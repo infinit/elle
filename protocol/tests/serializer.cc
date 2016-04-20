@@ -13,9 +13,159 @@
 
 #include <elle/test.hh>
 #include <elle/cast.hh>
+#include <elle/IOStream.hh>
 #include <elle/With.hh>
 
 ELLE_LOG_COMPONENT("infinit.protocol.test");
+
+struct Focket // Fake socket.
+  : public elle::IOStream
+{
+  struct StreamBuffer
+    : public elle::DynamicStreamBuffer
+  {
+    typedef elle::DynamicStreamBuffer Super;
+
+    StreamBuffer(elle::Buffer& our,
+                  elle::Buffer& their,
+                 bool yield_during_writing = true,
+                 bool yield_during_reading = true)
+      : elle::DynamicStreamBuffer(1024)
+      , _in(our)
+      , _bytes_read(0)
+      , _yield_during_reading(yield_during_reading)
+      , _out(their)
+      , _bytes_written(0)
+      , _yield_during_writing(yield_during_writing)
+    {
+      ELLE_TRACE("%s: connect (%s <-> %s)",
+                 this, (void*) &this->_in, (void*) &this->_out);
+    }
+
+    ~StreamBuffer()
+    {
+      ELLE_TRACE("%s: destroy", this);
+    }
+
+    virtual
+    Size
+    read(char* buffer, Size size)
+    {
+      ELLE_TRACE("read %s: %f (%s)",
+                 (void*) &this->_in, this->_in, this->_in.size());
+      do
+      {
+        reactor::yield();
+        auto size_ = std::min(this->_in.size(), 1024lu);
+        ELLE_DEBUG("size: %s", size_);
+        if (size_ == 0)
+          continue;
+        memcpy(buffer, this->_in.mutable_contents(), size_);
+        this->_in = elle::Buffer{
+          this->_in.mutable_contents() + size_, this->_in.size() - size_
+        };
+        this->_bytes_read += size_;
+        return size_;
+      } while (true);
+    };
+
+    virtual
+    void
+    write(char* buffer, Size size)
+    {
+      this->_bytes_written += size;
+      this->_out.append(buffer, size);
+      ELLE_TRACE("write %s: %f (%s)",
+                 (void*) &this->_out, this->_out, this->_out.size());
+      if (this->_yield_during_writing)
+        reactor::yield();
+    }
+
+  protected:
+    // Reading.
+    ELLE_ATTRIBUTE(elle::Buffer&, in);
+    ELLE_ATTRIBUTE_R(size_t, bytes_read);
+    ELLE_ATTRIBUTE_RW(bool, yield_during_reading);
+    // Writing.
+    ELLE_ATTRIBUTE(elle::Buffer&, out);
+    ELLE_ATTRIBUTE_R(size_t, bytes_written);
+    ELLE_ATTRIBUTE_RW(bool, yield_during_writing);
+  };
+
+  Focket(elle::Buffer& in,
+         elle::Buffer& out)
+    : elle::IOStream(new StreamBuffer(in, out))
+  {
+    ELLE_TRACE("%s: create", this);
+  }
+
+  ~Focket()
+  {
+    ELLE_TRACE("%s: destroy", this);
+  }
+
+  StreamBuffer*
+  stream() const
+  {
+    return static_cast<StreamBuffer*>(this->_buffer);
+  }
+
+  size_t
+  read(char* buffer, size_t size)
+  {
+    return this->stream()->read(buffer, size);
+  }
+
+  void
+  write(char* buffer, size_t size)
+  {
+    return this->stream()->write(buffer, size);
+  }
+
+  size_t
+  bytes_read() const
+  {
+    return this->stream()->bytes_read();
+  }
+
+  size_t
+  bytes_written() const
+  {
+    return this->stream()->bytes_written();
+  }
+};
+
+struct Connector
+{
+  Connector()
+    : _alice_buffer()
+    , _bob_buffer()
+    , _alice(_alice_buffer, _bob_buffer)
+    , _bob(_bob_buffer, _alice_buffer)
+  {
+    ELLE_TRACE("%s: create", this);
+  }
+
+  ~Connector()
+  {
+    ELLE_TRACE("%s: destroy", this);
+  }
+
+  Focket&
+  alice()
+  {
+    return this->_alice;
+  }
+
+  Focket&
+  bob()
+  {
+    return this->_bob;
+  }
+
+  elle::Buffer _alice_buffer, _bob_buffer;
+  Focket _alice, _bob;
+};
 
 class SocketInstrumentation
 {
@@ -181,17 +331,14 @@ private:
   ELLE_ATTRIBUTE_RW(size_t, bob_routed);
 };
 
-typedef std::function<void (reactor::Thread&,
-                            reactor::Thread&,
-                            SocketInstrumentation&)> F;
-static
+template <typename SocketProvider>
 void
 dialog(elle::Version const& version,
        bool checksum,
-       std::function<void (SocketInstrumentation&)> const& conf,
+       std::function<void (SocketProvider&)> const& conf,
        std::function<void (infinit::protocol::Serializer&)> const& a,
        std::function<void (infinit::protocol::Serializer&)> const& b,
-       F const& f = F())
+       std::function<void (reactor::Thread&, reactor::Thread&, SocketProvider&)> const& f = std::function<void (reactor::Thread&, reactor::Thread&, SocketProvider&)>())
 {
   reactor::Scheduler sched;
 
@@ -199,7 +346,7 @@ dialog(elle::Version const& version,
     sched, "main",
     [&] ()
     {
-      SocketInstrumentation sockets;
+      SocketProvider sockets;
       std::unique_ptr<infinit::protocol::Serializer> alice;
       std::unique_ptr<infinit::protocol::Serializer> bob;
       elle::With<reactor::Scope>() << [&](reactor::Scope& scope)
@@ -208,23 +355,27 @@ dialog(elle::Version const& version,
           "setup alice's serializer",
           [&]
           {
-            alice.reset(
-              new infinit::protocol::Serializer(sockets.alice(), version, checksum));
+            alice.reset(new infinit::protocol::Serializer(
+                          sockets.alice(), version, checksum));
           });
-        scope.run_background(
+         scope.run_background(
           "setup bob's serializer",
           [&]
           {
-            bob.reset(
-              new infinit::protocol::Serializer(sockets.bob(), version, checksum));
+            bob.reset(new infinit::protocol::Serializer(
+                        sockets.bob(), version, checksum));
           });
         scope.wait();
       };
       conf(sockets);
       elle::With<reactor::Scope>() << [&](reactor::Scope& scope)
       {
-        auto& _alice = scope.run_background("alice", boost::bind(a, boost::ref(*alice)));
-        auto& _bob = scope.run_background("bob", boost::bind(b, boost::ref(*bob)));
+        auto& _alice = scope.run_background(
+          "alice",
+          boost::bind(a, boost::ref(*alice)));
+        auto& _bob = scope.run_background(
+          "bob",
+          boost::bind(b, boost::ref(*bob)));
         if (f)
           scope.run_background(
             "other",
@@ -239,9 +390,9 @@ dialog(elle::Version const& version,
   sched.run();
 }
 
-#define CASES(function)                                                        \
-  for (auto const& version: {elle::Version{0, 1, 0}, elle::Version{0, 2, 0}})  \
-    for (auto checksum: {true, false})                                         \
+#define CASES(function)                                                 \
+  for (auto const& version: {elle::Version{0, 1, 0}, elle::Version{0, 2, 0}}) \
+    for (auto checksum: {true, false})                                  \
       ELLE_TRACE("version: %s, checksum: %s", version, checksum)        \
         function(version, checksum)
 
@@ -250,7 +401,7 @@ void
 _exchange_packets(elle::Version const& version,
                   bool checksum)
 {
-  dialog(version,
+  dialog<SocketInstrumentation>(version,
          checksum,
          [] (SocketInstrumentation&) {},
          [] (infinit::protocol::Serializer& s)
@@ -307,13 +458,13 @@ _exchange(elle::Version const& version,
     infinit::cryptography::random::generate<std::string>(1),
     infinit::cryptography::random::generate<std::string>(1000),
     // Crypto is quite slow generating large strings.
-    std::string(2 << 12, 'y'),
+    std::string((2 << 12) + 11, 'y'),
     // XXX: Make sure it's always bigger than the chunk size.
-    std::string(2 << 21, 'x')
+    std::string((2 << 21) - 1, 'x')
   };
-  dialog(version,
+  dialog<Connector>(version,
          checksum,
-         [] (SocketInstrumentation&) {},
+         [] (Connector&) {},
          [&] (infinit::protocol::Serializer& s)
          {
            for (auto const& buffer: packets)
@@ -342,7 +493,7 @@ void
 _connection_lost_reader(elle::Version const& version,
                         bool checksum)
 {
-  dialog(
+  dialog<SocketInstrumentation>(
     version,
     checksum,
     [] (SocketInstrumentation& sockets)
@@ -381,7 +532,7 @@ void
 _connection_lost_sender(elle::Version const& version,
                         bool checksum)
 {
-  dialog(
+  dialog<SocketInstrumentation>(
     version,
     checksum,
     [] (SocketInstrumentation& sockets)
@@ -426,7 +577,7 @@ void
 _corruption(elle::Version const& version,
             bool checksum)
 {
-  dialog(
+  dialog<SocketInstrumentation>(
     version,
     checksum,
     [] (SocketInstrumentation& sockets)
@@ -466,53 +617,50 @@ void
 _interruption(elle::Version const& version,
               bool checksum)
 {
-  reactor::Barrier interrupted, terminated, received;
+  reactor::Barrier interrupted("interrupted");
+  reactor::Barrier terminated("terminated");
+  reactor::Barrier received("received");
   elle::Buffer to_send;
-  dialog(
+  elle::Buffer to_send2 = elle::Buffer{std::string("ok")};
+  dialog<Connector>(
     version,
     checksum,
-    [] (SocketInstrumentation& sockets)
+    [] (Connector& sockets)
     {
-      sockets.alice_routed(0);
-      sockets.bob_routed(0);
     },
     [&] (infinit::protocol::Serializer& s)
     {
-      to_send.size(s.chunk_size() * 10);
+      to_send.size(s.chunk_size() * 30);
       try
       {
-        s.write(to_send);
+        ELLE_LOG("write '%f'", to_send)
+          s.write(to_send);
       }
       catch (reactor::Terminate const&)
       {
+        ELLE_LOG("terminated!!");
         terminated.open();
-        throw;
       }
+      ELLE_LOG("write '%f'", to_send2)
+        s.write(to_send2);
     },
     [&] (infinit::protocol::Serializer& s)
     {
-      try
+      // Read.
+      auto res = s.read();
+      // Sender in version 0.1.0 cannot be interrupted.
+      if (version == elle::Version{0, 1, 0})
       {
-        auto res = s.read();
-        // Sender in version 0.1.0 cannot be interrupted.
-        if (version == elle::Version{0, 1, 0})
-          received.open();
-        else
-          elle::unreachable();
+        received.open();
+        BOOST_CHECK_EQUAL(res, to_send);
+        // Read a second time.
+        res = s.read();
       }
-      catch (infinit::protocol::InterruptionError const&)
-      {
-        if (version == elle::Version{0, 2, 0})
-        {
-          interrupted.open();
-          return;
-        }
-        elle::unreachable();
-      }
+      BOOST_CHECK_EQUAL(res, to_send2);
     },
     [&] (reactor::Thread& alice,
          reactor::Thread& bob,
-         SocketInstrumentation& sockets)
+         Connector& sockets)
     {
       // Wait for buffer to send to be filled.
       while (to_send.size() == 0)
@@ -521,20 +669,27 @@ _interruption(elle::Version const& version,
       {
         // Wait for the sending process to begin.
         reactor::yield();
-        if (sockets.alice_routed() > (to_send.size() / 5))
+        ELLE_DEBUG("bytes_written: %s", sockets.alice().bytes_written());
+        if (sockets.alice().bytes_written() > (to_send.size() / 5))
         {
+          ELLE_LOG("terminate after sending %s bytes (over %s bytes)",
+                   sockets.alice().bytes_written(), to_send.size());
           alice.terminate_now();
           break;
         }
       } while (true);
       // Version one will go throught even if a termination has been required.
-      terminated.wait(10_sec);
+      ELLE_DEBUG("wait for %s", terminated)
+        terminated.wait(1_sec);
       if (version == elle::Version{0, 1, 0})
-        received.wait(10_sec);
+      {
+        ELLE_DEBUG("wait for %s", received)
+          received.wait(1_sec);
+      }
       else if (version == elle::Version{0, 2, 0})
       {
-        interrupted.wait(10_sec);
-        BOOST_CHECK(!received);
+        ELLE_DEBUG("make sure the original packet hasn't been received")
+          BOOST_CHECK(!received);
       }
     }
   );
