@@ -3,6 +3,7 @@ stages:
 
 variables:
   PYTHONUNBUFFERED: "1"
+  DRAKE_DEBUG_BACKTRACE: "1"
 
 x86_64-centos6-gcc4:
   stage: build
