@@ -75,8 +75,8 @@ def configure(curl_config,
   if cxx_toolkit.os in [drake.os.windows]:
     backend = Backends.io
   else:
-    backend = Backends.boost
-  print('backend:', backend)
+    backend = Backends.io
+
   # Libcxabi through llvm
   if cxx_toolkit.os in [drake.os.macos, drake.os.ios] and cxx_toolkit.kind == drake.cxx.GccToolkit.Kind.clang:
     build_libcxxabi = drake.Rule("libcxxabi")
@@ -626,7 +626,7 @@ def configure(curl_config,
       drake.nodes(
         'src/reactor/backend/coro_io/backend.cc',
         'src/reactor/backend/coro_io/backend.hh',
-      ) + [backend, libcoroutine],
+      ) + [backend_lib, libcoroutine],
       cxx_toolkit,
       lib_cxx_config,
     )
