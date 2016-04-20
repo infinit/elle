@@ -68,25 +68,15 @@ def configure(curl_config,
   local_cxx_config.lib_path_runtime('.')
   local_cxx_config.enable_debug_symbols()
 
-  # Lib coroutine
-  libcoroutine = None
-  if cxx_toolkit.os in [drake.os.windows]:
-    libcoroutine_sources = drake.nodes(
-      'src/reactor/backend/coro_io/libcoroutine/asm.S',
-      'src/reactor/backend/coro_io/libcoroutine/context.cc',
-      'src/reactor/backend/coro_io/libcoroutine/coroutine.cc',
-      'src/reactor/backend/coro_io/libcoroutine/coroutine.hh',
-    )
-    libcoroutine_cxx_config = drake.cxx.Config(local_cxx_config)
-    libcoroutine_cxx_config.warnings.missing_declarations = None
-    if valgrind is not None:
-      libcoroutine_cxx_config.define('USE_VALGRIND')
-    libcoroutine = drake.cxx.StaticLib('lib/reactor/coroutine',
-                                       libcoroutine_sources,
-                                       cxx_toolkit,
-                                       libcoroutine_cxx_config)
-    library_coroutine = libcoroutine
+  class Backends(drake.enumeration.Enumerated,
+                 values = ['boost', 'io', 'threads']):
+    pass
 
+  if cxx_toolkit.os in [drake.os.windows]:
+    backend = Backends.boost
+  else:
+    backend = Backends.boost
+  print('backend:', backend)
   # Libcxabi through llvm
   if cxx_toolkit.os in [drake.os.macos, drake.os.ios] and cxx_toolkit.kind == drake.cxx.GccToolkit.Kind.clang:
     build_libcxxabi = drake.Rule("libcxxabi")
@@ -264,22 +254,26 @@ def configure(curl_config,
     local_cxx_config += boost.config_signals(static = True)
     local_cxx_config += boost.config_system(static = True)
     local_cxx_config += boost.config_thread(static = True)
-    if cxx_toolkit.os != drake.os.windows:
-      # windows uses coro io
+    if backend == Backends.boost:
       local_cxx_config += boost.config_context(static = True)
   else:
-    local_cxx_config += boost.config_context(link = False)
-    local_cxx_config.library_add(
-      drake.copy(boost.context_dynamic, 'lib', strip_prefix = True, post_process = set_local_libcxx(cxx_toolkit)))
+    if backend == Backends.boost:
+      local_cxx_config += boost.config_context(link = False)
+      local_cxx_config.library_add(
+        drake.copy(boost.context_dynamic, 'lib', strip_prefix = True,
+                   post_process = set_local_libcxx(cxx_toolkit)))
     local_cxx_config += boost.config_signals(link = False)
     local_cxx_config.library_add(
-      drake.copy(boost.signals_dynamic, 'lib', strip_prefix = True, post_process = set_local_libcxx(cxx_toolkit)))
+      drake.copy(boost.signals_dynamic, 'lib', strip_prefix = True,
+                 post_process = set_local_libcxx(cxx_toolkit)))
     local_cxx_config += boost.config_system(link = False)
     local_cxx_config.library_add(
-      drake.copy(boost.system_dynamic, 'lib', strip_prefix = True, post_process = set_local_libcxx(cxx_toolkit)))
+      drake.copy(boost.system_dynamic, 'lib', strip_prefix = True,
+                 post_process = set_local_libcxx(cxx_toolkit)))
     local_cxx_config += boost.config_thread(link = False)
     local_cxx_config.library_add(
-      drake.copy(boost.thread_dynamic, 'lib', strip_prefix = True, post_process = set_local_libcxx(cxx_toolkit)))
+      drake.copy(boost.thread_dynamic, 'lib', strip_prefix = True,
+                 post_process = set_local_libcxx(cxx_toolkit)))
 
   # FUSE
   fuse_lib = None
@@ -602,7 +596,7 @@ def configure(curl_config,
 
   lib_cxx_config = drake.cxx.Config(local_cxx_config)
 
-  backend = drake.cxx.StaticLib(
+  backend_lib = drake.cxx.StaticLib(
     'lib/reactor/backend',
     drake.nodes(
       'src/reactor/backend/backend.cc',
@@ -612,7 +606,21 @@ def configure(curl_config,
     lib_cxx_config,
   )
 
-  if libcoroutine is not None:
+  if backend is Backends.io:
+    libcoroutine_sources = drake.nodes(
+      'src/reactor/backend/coro_io/libcoroutine/asm.S',
+      'src/reactor/backend/coro_io/libcoroutine/context.cc',
+      'src/reactor/backend/coro_io/libcoroutine/coroutine.cc',
+      'src/reactor/backend/coro_io/libcoroutine/coroutine.hh',
+    )
+    libcoroutine_cxx_config = drake.cxx.Config(local_cxx_config)
+    libcoroutine_cxx_config.warnings.missing_declarations = None
+    if valgrind is not None:
+      libcoroutine_cxx_config.define('USE_VALGRIND')
+    libcoroutine = drake.cxx.StaticLib('lib/reactor/coroutine',
+                                       libcoroutine_sources,
+                                       cxx_toolkit,
+                                       libcoroutine_cxx_config)
     backend_coro_io = drake.cxx.StaticLib(
       'lib/reactor/backend_coro_io',
       drake.nodes(
@@ -622,7 +630,9 @@ def configure(curl_config,
       cxx_toolkit,
       lib_cxx_config,
     )
+    library_coroutine = libcoroutine
   else:
+    libcoroutine = None
     backend_coro_io = None
 
   lib_cxx_config.add_local_include_path('libutp')
@@ -648,14 +658,14 @@ def configure(curl_config,
     miniupnpc.library,
     utp_lib,
   ]
-  if backend_coro_io is not None:
+  if backend == Backends.io:
     lib_dynamic_link_libs.append(backend_coro_io)
     lib_static_link_libs.append(backend_coro_io)
-  else:
+  elif backend == Backends.boost:
     lib_dynamic_link_libs.append(backend_boost_context)
-    lib_dynamic_link_libs.append(backend)
+    lib_dynamic_link_libs.append(backend_lib)
     lib_static_link_libs.append(backend_boost_context)
-    lib_static_link_libs.append(backend)
+    lib_static_link_libs.append(backend_lib)
   if dokan_lib is not None:
     lib_static_link_libs.append(dokan_lib)
   if fuse_lib is not None:
@@ -670,12 +680,12 @@ def configure(curl_config,
     miniupnpc.library,
     utp_lib,
   ]
-  if cxx_toolkit.os is drake.os.windows:
+  if backend == Backends.io:
     lib_dynamic_link_libs.append(libcoroutine)
     lib_dynamic_link_libs.append(backend_coro_io)
-  else:
+  elif backend == Backends.boost:
     lib_dynamic_link_libs.append(backend_boost_context)
-    lib_dynamic_link_libs.append(backend)
+    lib_dynamic_link_libs.append(backend_lib)
   if fuse_lib is not None:
     lib_dynamic_link_libs.append(fuse_lib)
   if cxx_toolkit.os in [drake.os.macos]:
