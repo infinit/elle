@@ -56,7 +56,7 @@ struct Focket // Fake socket.
       do
       {
         reactor::yield();
-        auto size_ = std::min(this->_in.size(), 1024lu);
+        auto size_ = std::min(this->_in.size(), (elle::Buffer::Size) 1024);
         ELLE_DEBUG("size: %s", size_);
         if (size_ == 0)
           continue;
