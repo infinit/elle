@@ -110,6 +110,9 @@ namespace elle
       {
         std::unordered_map<std::string, std::vector<std::string>> p;
         BerElement* ber;
+        char* dn = ldap_get_dn(_ld, entry);
+        p["dn"].push_back(dn);
+        ldap_memfree(dn);
         const char* attr;
         for( attr = ldap_first_attribute(_ld, entry, &ber); attr != NULL;
           attr = ldap_next_attribute(_ld, entry, ber))
