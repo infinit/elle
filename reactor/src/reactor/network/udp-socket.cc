@@ -149,7 +149,7 @@ namespace reactor
     };
 
     Size
-    UDPSocket::read_some(Buffer buffer, DurationOpt timeout)
+    UDPSocket::read_some(Buffer buffer, DurationOpt timeout, int* bytes_read)
     {
       if (timeout)
         ELLE_TRACE("%s: read at most %s bytes with timeout %s",
@@ -160,6 +160,8 @@ namespace reactor
       UDPRead read(scheduler(), this, buffer);
       if (!read.run(timeout))
         throw TimeOut();
+      if (bytes_read)
+        *bytes_read = read.read();
       return read.read();
     }
 

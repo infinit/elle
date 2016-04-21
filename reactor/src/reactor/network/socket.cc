@@ -448,9 +448,10 @@ namespace reactor
     template <typename AsioSocket, typename EndPoint>
     Size
     StreamSocket<AsioSocket, EndPoint>::read_some(Buffer buf,
-                                                  DurationOpt timeout)
+                                                  DurationOpt timeout,
+                                                  int* bytes_read)
     {
-      return this->_read(buf, timeout, true);
+      return this->_read(buf, timeout, true, bytes_read);
     }
 
     template <typename AsioSocket, typename EndPoint>

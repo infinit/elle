@@ -89,11 +89,13 @@ namespace reactor
       public:
         virtual
         void
-        read(Buffer buffer, DurationOpt timeout = DurationOpt(), int* bytes_read=nullptr);
+        read(Buffer buffer, DurationOpt timeout = DurationOpt(),
+             int* bytes_read = nullptr);
 
         virtual
         Size
-        read_some(Buffer buffer, DurationOpt timeout = DurationOpt()) = 0;
+        read_some(Buffer buffer, DurationOpt timeout = DurationOpt(),
+                  int* bytes_read = nullptr) = 0;
 
         elle::Buffer
         read(Size size, DurationOpt timeout = DurationOpt());
@@ -239,11 +241,12 @@ namespace reactor
       virtual
       void
       read(Buffer buffer, DurationOpt timeout = DurationOpt(),
-           int* bytes_read = nullptr);
+           int* bytes_read = nullptr) override;
       using Super::read_some;
       virtual
       Size
-      read_some(Buffer buffer, DurationOpt timeout = DurationOpt());
+      read_some(Buffer buffer, DurationOpt timeout = DurationOpt(),
+                int* bytes_read = nullptr) override;
 
       elle::Buffer
       read_until(std::string const& delimiter, DurationOpt opt = DurationOpt());
