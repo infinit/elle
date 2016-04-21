@@ -11,9 +11,9 @@ namespace reactor
 
   template <typename ... Args>
   Thread::Thread(const std::string& name,
-                 const Action& action,
+                 Action action,
                  Args&& ... args)
-    : Thread(name, action)
+    : Thread(name, std::move(action))
   {
     elle::named::prototype(dispose = false, managed = false)
       .call([&] (bool dispose, bool managed)
@@ -25,7 +25,7 @@ namespace reactor
 
   template <typename R>
   static void vthread_catcher(const typename VThread<R>::Action& action,
-                       R& result)
+                              R& result)
   {
     result = action();
   }
@@ -41,9 +41,9 @@ namespace reactor
   template <typename R>
   VThread<R>::VThread(Scheduler& scheduler,
                       const std::string& name,
-                      const Action& action)
-    : Thread(scheduler, name, boost::bind(vthread_catcher<R>, action,
-                                          boost::ref(_result)))
+                      Action action)
+    : Thread(scheduler, name, std::bind(vthread_catcher<R>, std::move(action),
+                                        std::ref(_result)))
     , _result()
   {}
 

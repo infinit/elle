@@ -18,6 +18,8 @@
 
 ELLE_LOG_COMPONENT("infinit.protocol.test");
 
+static elle::Buffer::Size buffer_size = 4096;
+
 struct Focket // Fake socket.
   : public elle::IOStream
 {
@@ -30,7 +32,7 @@ struct Focket // Fake socket.
                   elle::Buffer& their,
                  bool yield_during_writing = true,
                  bool yield_during_reading = true)
-      : elle::DynamicStreamBuffer(1024)
+      : elle::DynamicStreamBuffer(buffer_size)
       , _in(our)
       , _bytes_read(0)
       , _yield_during_reading(yield_during_reading)
@@ -56,7 +58,7 @@ struct Focket // Fake socket.
       do
       {
         reactor::yield();
-        auto size_ = std::min(this->_in.size(), (elle::Buffer::Size) 1024);
+        auto size_ = std::min(this->_in.size(), buffer_size);
         ELLE_DEBUG("size: %s", size_);
         if (size_ == 0)
           continue;
@@ -114,6 +116,12 @@ struct Focket // Fake socket.
   read(char* buffer, size_t size)
   {
     return this->stream()->read(buffer, size);
+  }
+
+  size_t
+  read_some(char* buffer, size_t size)
+  {
+    ELLE_ABORT("ok");
   }
 
   void
@@ -340,54 +348,45 @@ dialog(elle::Version const& version,
        std::function<void (infinit::protocol::Serializer&)> const& b,
        std::function<void (reactor::Thread&, reactor::Thread&, SocketProvider&)> const& f = std::function<void (reactor::Thread&, reactor::Thread&, SocketProvider&)>())
 {
-  reactor::Scheduler sched;
-
-  reactor::Thread main(
-    sched, "main",
-    [&] ()
-    {
-      SocketProvider sockets;
-      std::unique_ptr<infinit::protocol::Serializer> alice;
-      std::unique_ptr<infinit::protocol::Serializer> bob;
-      elle::With<reactor::Scope>() << [&](reactor::Scope& scope)
+  SocketProvider sockets;
+  std::unique_ptr<infinit::protocol::Serializer> alice;
+  std::unique_ptr<infinit::protocol::Serializer> bob;
+  elle::With<reactor::Scope>() << [&](reactor::Scope& scope)
+  {
+    scope.run_background(
+      "setup alice's serializer",
+      [&]
       {
-        scope.run_background(
-          "setup alice's serializer",
-          [&]
-          {
-            alice.reset(new infinit::protocol::Serializer(
-                          sockets.alice(), version, checksum));
-          });
-         scope.run_background(
-          "setup bob's serializer",
-          [&]
-          {
-            bob.reset(new infinit::protocol::Serializer(
-                        sockets.bob(), version, checksum));
-          });
-        scope.wait();
-      };
-      conf(sockets);
-      elle::With<reactor::Scope>() << [&](reactor::Scope& scope)
+        alice.reset(new infinit::protocol::Serializer(
+                      sockets.alice(), version, checksum));
+      });
+    scope.run_background(
+      "setup bob's serializer",
+      [&]
       {
-        auto& _alice = scope.run_background(
-          "alice",
-          boost::bind(a, boost::ref(*alice)));
-        auto& _bob = scope.run_background(
-          "bob",
-          boost::bind(b, boost::ref(*bob)));
-        if (f)
-          scope.run_background(
-            "other",
-            [&] ()
-            {
-              f(_alice, _bob, sockets);
-            });
-        scope.wait();
-      };
-    });
-
-  sched.run();
+        bob.reset(new infinit::protocol::Serializer(
+                    sockets.bob(), version, checksum));
+      });
+    scope.wait();
+  };
+  conf(sockets);
+  elle::With<reactor::Scope>() << [&](reactor::Scope& scope)
+  {
+    auto& _alice = scope.run_background(
+      "alice",
+      boost::bind(a, boost::ref(*alice)));
+    auto& _bob = scope.run_background(
+      "bob",
+      boost::bind(b, boost::ref(*bob)));
+    if (f)
+      scope.run_background(
+        "other",
+        [&] ()
+        {
+          f(_alice, _bob, sockets);
+        });
+    scope.wait();
+  };
 }
 
 #define CASES(function)                                                 \
@@ -441,9 +440,7 @@ _exchange_packets(elle::Version const& version,
          });
 }
 
-static
-void
-exchange_packets()
+ELLE_TEST_SCHEDULED(exchange_packets)
 {
   CASES(_exchange_packets);
 }
@@ -458,9 +455,9 @@ _exchange(elle::Version const& version,
     infinit::cryptography::random::generate<std::string>(1),
     infinit::cryptography::random::generate<std::string>(1000),
     // Crypto is quite slow generating large strings.
-    std::string((2 << 12) + 11, 'y'),
-    // XXX: Make sure it's always bigger than the chunk size.
-    std::string((2 << 21) - 1, 'x')
+    std::string((2 << 18) + 11, 'y'),
+    // // XXX: Make sure it's always bigger than the chunk size.
+    // std::string((2 << 21) - 1, 'x')
   };
   dialog<Connector>(version,
          checksum,
@@ -481,9 +478,7 @@ _exchange(elle::Version const& version,
          });
 }
 
-static
-void
-exchange()
+ELLE_TEST_SCHEDULED(exchange)
 {
   CASES(_exchange);
 }
@@ -520,9 +515,7 @@ _connection_lost_reader(elle::Version const& version,
     });
 }
 
-static
-void
-connection_lost_reader()
+ELLE_TEST_SCHEDULED(connection_lost_reader)
 {
   CASES(_connection_lost_reader);
 }
@@ -565,9 +558,7 @@ _connection_lost_sender(elle::Version const& version,
     {});
 }
 
-static
-void
-connection_lost_sender()
+ELLE_TEST_SCHEDULED(connection_lost_sender)
 {
   CASES(_connection_lost_sender);
 }
@@ -605,9 +596,7 @@ _corruption(elle::Version const& version,
     });
 }
 
-static
-void
-corruption()
+ELLE_TEST_SCHEDULED(corruption)
 {
   CASES(_corruption);
 }
@@ -633,15 +622,15 @@ _interruption(elle::Version const& version,
       to_send.size(s.chunk_size() * 30);
       try
       {
-        ELLE_LOG("write '%f'", to_send)
+        ELLE_TRACE("write '%f'", to_send)
           s.write(to_send);
       }
       catch (reactor::Terminate const&)
       {
-        ELLE_LOG("terminated!!");
-        terminated.open();
+        ELLE_LOG("terminated!!")
+          terminated.open();
       }
-      ELLE_LOG("write '%f'", to_send2)
+      ELLE_TRACE("write '%f'", to_send2)
         s.write(to_send2);
     },
     [&] (infinit::protocol::Serializer& s)
@@ -695,20 +684,82 @@ _interruption(elle::Version const& version,
   );
 }
 
-static
-void
-interruption()
+ELLE_TEST_SCHEDULED(interruption)
 {
   CASES(_interruption);
+}
+
+static
+void
+_termination(elle::Version const& version,
+            bool checksum)
+{
+  auto& t = *new reactor::Thread::unique_ptr;
+  auto& tready = *new reactor::Barrier;
+  dialog<SocketInstrumentation>(
+    version,
+    checksum,
+    [] (SocketInstrumentation& sockets)
+    {
+    },
+    [&] (infinit::protocol::Serializer& s)
+    {
+      t.reset(new reactor::Thread("reader", [&] {
+          try
+          {
+            ELLE_TRACE("read from thread");
+            tready.open();
+            s.read();
+            BOOST_CHECK(false);
+          }
+          catch (reactor::Terminate const& t)
+          {
+            ELLE_TRACE("terminating first reader");
+            throw;
+          }
+      }));
+      reactor::wait(*t);
+      ELLE_TRACE("second read")
+      {
+        auto buf = s.read();
+        ELLE_TRACE("reader done");
+        BOOST_CHECK_EQUAL(buf.string(), "foobar");
+      }
+    },
+    [&] (infinit::protocol::Serializer& s)
+    {
+      ELLE_TRACE("waitinng for thread")
+        reactor::wait(tready);
+      auto& backend = s.stream();
+      uint32_t sz = htonl(6);
+      backend.write(static_cast<const char*>((void*)&sz), 4);
+      backend.write("foo", 3);
+      backend.flush();
+      reactor::sleep(100_ms);
+      ELLE_TRACE("killing thread")
+        t->terminate();
+      reactor::sleep(100_ms);
+      backend.write("baz", 3);
+      backend.write(static_cast<const char*>((void*)&sz), 4);
+      backend.write("foobar", 6);
+      backend.flush();
+      ELLE_TRACE("writer done");
+    });
+}
+
+ELLE_TEST_SCHEDULED(termination)
+{
+  _termination(elle::Version{0, 1, 0}, false);
 }
 
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
   suite.add(BOOST_TEST_CASE(exchange_packets), 0, valgrind(10, 10));
-  suite.add(BOOST_TEST_CASE(exchange), 0, valgrind(10, 10));
+  suite.add(BOOST_TEST_CASE(exchange), 0, valgrind(20, 10));
   suite.add(BOOST_TEST_CASE(connection_lost_reader), 0, valgrind(3, 10));
   suite.add(BOOST_TEST_CASE(connection_lost_sender), 0, valgrind(3, 10));
   suite.add(BOOST_TEST_CASE(corruption), 0, valgrind(3, 10));
   suite.add(BOOST_TEST_CASE(interruption), 0, valgrind(6, 10));
+  suite.add(BOOST_TEST_CASE(termination), 0, valgrind(3, 10));
 }

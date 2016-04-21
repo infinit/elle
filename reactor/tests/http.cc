@@ -682,10 +682,11 @@ ELLE_TEST_SCHEDULED(download_stall)
                            conf);
   r.finalize();
   // CURL takes some time to trigger the stall detection timeout, take margins.
-  BOOST_CHECK_THROW(reactor::wait(r, 20_sec), reactor::http::Timeout);
+  BOOST_CHECK_THROW(reactor::wait(r), reactor::http::Timeout);
   // magic 999 is because we did not take header length into consideration.
-  BOOST_CHECK_EQUAL(r.progress(), (reactor::http::Request::Progress{999, 2000, 0, 0}));
-  // unstuck the server. Request disconnected so it will terminate fast.
+  BOOST_CHECK_EQUAL(r.progress(),
+                    (reactor::http::Request::Progress{999, 2000, 0, 0}));
+  // Unstuck the server. Request disconnected so it will terminate fast.
   server.sem.release();
   server.sem.release();
 }

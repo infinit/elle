@@ -89,10 +89,14 @@ def configure(cxx_toolkit,
   if cxx_toolkit.os in [
       drake.os.windows, drake.os.ios, drake.os.android]:
     local_config_tests += boost.config_test(static = True)
+    local_config_tests += boost.config_timer(static = True)
   else:
     local_config_tests += boost.config_test(link = False)
     local_config_tests.library_add(
       drake.copy(boost.test_dynamic, 'lib', strip_prefix = True))
+    local_config_tests += boost.config_timer(link = False)
+    local_config_tests.library_add(
+      drake.copy(boost.timer_dynamic, 'lib', strip_prefix = True))
   local_config_tests.lib_path_runtime('../lib')
   rule_tests = drake.Rule('tests')
   rule_check = drake.TestSuite('check')
@@ -104,6 +108,27 @@ def configure(cxx_toolkit,
       cxx_toolkit,
       local_config_tests)
     rule_tests << test
-    runner = drake.Runner(test)
+    if valgrind_tests:
+      runner = drake.valgrind.ValgrindRunner(
+        exe = test,
+        valgrind_args = [
+          '--suppressions=%s' % drake.path_source('../valgrind.suppr'),
+        ],
+      )
+    else:
+      runner = drake.Runner(test)
     runner.reporting = drake.Runner.Reporting.on_failure
     rule_check << runner.status
+
+  ## ------- ##
+  ## Install ##
+  ## ------- ##
+
+  if prefix is not False:
+    rule_install = drake.Rule('install')
+    if cxx_toolkit.os not in [drake.os.windows, drake.os.ios]:
+      rule_install << drake.install(lib_dynamic, prefix)
+    rule_install << drake.install(lib_static, prefix)
+    rule_install << drake.install(
+      list(filter(lambda n: isinstance(n, drake.cxx.Header), sources)),
+      prefix / 'include', 'src')

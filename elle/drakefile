@@ -59,7 +59,7 @@ def configure(zlib_lib,
     if cxx_toolkit.os is drake.os.windows:
       cxx_config += boost.config_locale(static = True)
     cxx_config += boost.config_chrono(static = True)
-    if python3 is not None:
+    if python3 is not None and cxx_toolkit.os is not drake.os.windows:
       boost_python = drake.cxx.Config(boost.config_python(static = True))
   else:
     if python3 is not None:
@@ -111,6 +111,8 @@ def configure(zlib_lib,
 
   sources = drake.nodes(
     'src/elle/bytes.hh',
+    'src/elle/err.cc',
+    'src/elle/err.hh',
     'src/elle/finally.cc',
     'src/elle/finally.hh',
     'src/elle/factory.hh',
@@ -523,7 +525,7 @@ def configure(zlib_lib,
   ## ------ ##
 
 
-  if python3 is not None:
+  if python3 is not None and cxx_toolkit.os is not drake.os.windows:
     python = []
     python_rule = drake.Rule('python')
     python3 = drake.cxx.find_library(
@@ -648,10 +650,14 @@ def configure(zlib_lib,
     cxx_config_tests.lib('atomic')
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
     cxx_config_tests += boost.config_test(static = True)
+    cxx_config_tests += boost.config_timer(static = True)
   else:
     cxx_config_tests += boost.config_test(link = False)
     cxx_config_tests.library_add(
       drake.copy(boost.test_dynamic, 'lib', strip_prefix = True))
+    cxx_config_tests += boost.config_timer(link = False)
+    cxx_config_tests.library_add(
+      drake.copy(boost.timer_dynamic, 'lib', strip_prefix = True))
   for test in tests:
     if isinstance(test, tuple):
       test, dependencies, valgrind_this_test = test

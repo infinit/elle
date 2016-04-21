@@ -105,11 +105,11 @@ namespace reactor
     template <typename R>
     R
     mt_run(const std::string& name,
-           const boost::function<R ()>& action);
+           const std::function<R ()>& action);
   private:
     void
     _mt_run_void(const std::string& name,
-                 const boost::function<void ()>& action);
+                 const std::function<void ()>& action);
 
   /*----------.
   | Printable |
@@ -128,7 +128,7 @@ namespace reactor
      */
     void run_later(std::string const& name,
                    std::function<void ()> const& f);
-    void CallLater(const boost::function<void ()>&      f,
+    void CallLater(const std::function<void ()>&      f,
                    const std::string&                   name,
                    Duration                             delay);
     /** Run an operation at a given frequency.
@@ -150,7 +150,7 @@ namespace reactor
      *  \return     The thread running the operation.
      */
     Thread*
-    every(const boost::function<void ()>& op,
+    every(const std::function<void ()>& op,
           const std::string& name,
           Duration freq,
           bool dispose = false);

@@ -8,10 +8,6 @@
 
 # include <reactor/Barrier.hh>
 
-#ifdef EOF
-# undef EOF
-#endif
-
 namespace reactor
 {
   class FDStream
@@ -25,13 +21,6 @@ namespace reactor
 #endif
     FDStream(boost::asio::io_service& service, Handle fd);
     FDStream(Handle fd);
-
-    class EOF
-      : public elle::Error
-    {
-    public:
-      EOF();
-    };
 
     class StreamBuffer
       : public elle::PlainStreamBuffer

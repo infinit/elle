@@ -1004,7 +1004,7 @@ namespace aws
         throw aws_exception;
       }
       // Consider all other failures as fatal errors
-      return std::move(request);
+      return request;
     }
   }
 

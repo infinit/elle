@@ -15,6 +15,9 @@
 #include <reactor/scheduler.hh>
 #include <reactor/exception.hh>
 #include <reactor/Barrier.hh>
+#include <reactor/network/socket.hh>
+#include <reactor/network/utp-socket.hh>
+#include <reactor/network/buffer.hh>
 
 #include <protocol/Serializer.hh>
 #include <protocol/exceptions.hh>
@@ -83,7 +86,7 @@ namespace infinit
       _write(elle::Buffer const&) = 0;
 
     private:
-      ELLE_ATTRIBUTE(std::iostream&, stream, protected);
+      ELLE_ATTRIBUTE_RX(std::iostream&, stream, protected);
       ELLE_ATTRIBUTE(elle::Buffer::Size, chunk_size, protected);
       ELLE_ATTRIBUTE(bool, checksum, protected);
       ELLE_ATTRIBUTE(reactor::Mutex, lock_write, protected);
@@ -143,6 +146,7 @@ namespace infinit
                            elle::Version const& version,
                            bool checksum)
       : Super(scheduler)
+      , _stream(stream)
       , _version(version)
       , _chunk_size(2 << 16)
       , _checksum(checksum)
@@ -209,22 +213,64 @@ namespace infinit
     /*---------------.
     | Implementation |
     `---------------*/
+
     // Read a chunk from the given stream.
     // The data struct is:
     // - the size: 4 bytes
     // - the content: $size bytes.
     static
+    void
+    read(Serializer::Inner& stream,
+         elle::Buffer& content,
+         uint32_t size,
+         uint32_t offset = 0)
+    {
+      ELLE_DEBUG_SCOPE("read %s bytes from %s at offset %s (to %f)",
+                       size, stream, offset, content);
+      // read the full packet even if terminated to keep the stream
+      // in a consistent state
+      int nread = 0;
+      auto* beginning = (char*) content.mutable_contents() + offset;
+      while (nread < signed(size))
+      {
+        char* where = beginning + nread;
+        try
+        {
+          ELLE_DEBUG_SCOPE("read from %s", nread);
+          elle::IOStreamClear clearer(stream);
+          std::streamsize r = std::readsome(stream, where, size - nread);
+          ELLE_DEBUG("read: %sB", r);
+          nread += r;
+        }
+        catch (reactor::Terminate const& t)
+        {
+          ELLE_TRACE("reading %s interrupted", stream);
+          while (nread < signed(size))
+          {
+            ELLE_DEBUG_SCOPE("read from %s", nread);
+            char* where = beginning + nread;
+            elle::IOStreamClear clearer(stream);
+            std::streamsize r = std::readsome(stream, where, size - nread);
+            ELLE_DEBUG("read: %sB", r);
+            nread += r;
+          }
+          throw;
+        }
+      }
+      ELLE_DUMP("content: %x (size: %s)", content, content.size());
+    }
+
+    static
     elle::Buffer
     read(Serializer::Inner& stream,
          boost::optional<uint32_t> size = boost::none)
     {
-      elle::Buffer content;
+      ELLE_DEBUG_SCOPE("read %s (size: %s)", stream, size);
       if (!size)
         size = Serializer::Super::uint32_get(stream);
       ELLE_DUMP("expected size: %s", *size);
-      content.size(*size);
-      stream.read(reinterpret_cast<char*>(content.mutable_contents()), *size);
-      ELLE_DUMP("content: %x (size: %s)", content, content.size());
+      elle::Buffer content(*size);
+      read(stream, content, *size);
       return content;
     }
 
@@ -281,7 +327,7 @@ namespace infinit
           boost::optional<elle::Buffer::Size> size = boost::none)
     {
       elle::Buffer::Size to_send = size ? size.get() : content.size();
-      ELLE_DEBUG_SCOPE("write %s '%f' (offset: %s)",
+      ELLE_DEBUG_SCOPE("write %s '%x' (offset: %s)",
                        to_send == content.size()
                        ? std::string{"whole"}
                        : elle::sprintf("%s bytes from", to_send),
@@ -290,7 +336,7 @@ namespace infinit
       if (write_size)
         ELLE_DEBUG("write size: %s byte(s)", to_send)
           Serializer::Super::uint32_put(stream, to_send);
-      ELLE_DEBUG("write content: '%f'", content)
+      ELLE_DEBUG("write content: '%x'", content)
         stream.write(
           reinterpret_cast<char*>(content.mutable_contents()) + offset,
           to_send);
@@ -395,9 +441,7 @@ namespace infinit
         check_control(this->_stream);
         uint32_t size = std::min(total_size - offset, this->_chunk_size);
         ELLE_DEBUG("read chunk of size %s", size);
-        this->_stream.read(
-          reinterpret_cast<char*>(packet.mutable_contents()) + offset,
-          size);
+        infinit::protocol::read(this->_stream, packet, size, offset);
         ELLE_DUMP("current packet state: '%x'", packet);
         offset += size;
         ELLE_ASSERT_LTE(offset, total_size);

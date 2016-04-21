@@ -459,36 +459,33 @@ ELLE_TEST_SCHEDULED(shutdown_flush)
 
 ELLE_TEST_SCHEDULED(shutdown_timeout)
 {
-  reactor::Barrier listening;
-  int port = 0;
-  elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+  reactor::network::SSLServer server(load_certificate());
+  server.listen();
+  reactor::Thread server_thread(
+    "server",
+    [&]
+    {
+      auto client = server.accept();
+    });
   {
-    auto& server = scope.run_background(
-      "server",
-      [&]
-      {
-        reactor::network::SSLServer server(load_certificate(), valgrind(10_ms));
-        server.listen();
-        port = server.port();
-        listening.open();
-        auto client = server.accept();
-      });
-    reactor::wait(listening);
     reactor::network::SSLSocket valid(
-      "127.0.0.1", boost::lexical_cast<std::string>(port));
-    reactor::wait(server);
-  };
+      "127.0.0.1", boost::lexical_cast<std::string>(server.port()));
+    BOOST_CHECK(!reactor::wait(server_thread, 1_sec));
+  }
+  reactor::wait(server_thread);
 }
 
 ELLE_TEST_SCHEDULED(shutdown_asynchronous)
 {
   reactor::Barrier listening;
+  reactor::Barrier connected1;
   reactor::Barrier shutdown1;
+  reactor::Barrier connected2;
   reactor::Barrier shutdown2;
   int port = 0;
   elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
   {
-    auto& server = scope.run_background(
+    scope.run_background(
       "server",
       [&]
       {
@@ -497,31 +494,94 @@ ELLE_TEST_SCHEDULED(shutdown_asynchronous)
         port = server.port();
         listening.open();
         {
-          ELLE_LOG_SCOPE("accept first synchronous client");
+          ELLE_LOG_SCOPE("accept synchronous client");
           auto client = server.accept();
+          reactor::wait(connected1);
+          ELLE_LOG_SCOPE("shutdown synchronous client");
         }
+        ELLE_LOG_SCOPE("synchronous client shut down");
         shutdown1.open();
         {
-          ELLE_LOG_SCOPE("accept second asynchronous client");
+          ELLE_LOG_SCOPE("accept asynchronous client");
           auto client = server.accept();
           client->shutdown_asynchronous(true);
+          reactor::wait(connected2);
+          ELLE_LOG_SCOPE("shutdown asynchronous client");
         }
+        ELLE_LOG_SCOPE("asynchronous client shut down");
         shutdown2.open();
       });
-    (void)server;
     reactor::wait(listening);
+    reactor::Barrier forwarding;
+    forwarding.open();
+    reactor::network::TCPServer forwarder;
+    forwarder.listen();
+    auto& forwarder_thread = scope.run_background(
+      "forwarder",
+      [&]
+      {
+        elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+        {
+          while (true)
+          {
+            std::shared_ptr<reactor::network::Socket> socket(
+              forwarder.accept().release());
+            auto backend = std::make_shared<reactor::network::TCPSocket>(
+              "127.0.0.1", std::to_string(port));
+            auto forward = [&forwarding]
+              (std::shared_ptr<reactor::network::Socket> from,
+               std::shared_ptr<reactor::network::Socket> to)
+              {
+                try
+                {
+                  while (true)
+                  {
+                    char buffer[1024];
+                    reactor::network::Buffer b(buffer, sizeof(buffer));
+                    {
+                      auto size = from->read_some(b);
+                      reactor::wait(forwarding);
+                      ELLE_LOG("forward %s bytes", size);
+                      to->write(elle::ConstWeakBuffer(buffer, size));
+                    }
+                  }
+                }
+                catch (reactor::network::Exception const&)
+                {}
+              };
+            scope.run_background("forward", [=] { forward(socket, backend); });
+            scope.run_background("forward", [=] { forward(backend, socket); });
+          }
+        };
+      });
     {
       ELLE_LOG_SCOPE("connect first client");
       reactor::network::SSLSocket synchronous(
-        "127.0.0.1", boost::lexical_cast<std::string>(port));
-      BOOST_CHECK(!reactor::wait(shutdown1, valgrind(10_ms)));
+        "127.0.0.1", boost::lexical_cast<std::string>(forwarder.port()));
+      forwarding.close();
+      connected1.open();
+      BOOST_CHECK_THROW(synchronous.read(1, 1_sec),
+                        reactor::network::TimeOut);
+      BOOST_CHECK(!shutdown1.opened());
+      forwarding.open();
+      BOOST_CHECK_THROW(synchronous.read(1, 1_sec),
+                        reactor::network::ConnectionClosed);
     }
+    reactor::wait(shutdown1);
     {
       ELLE_LOG_SCOPE("connect second client");
-      reactor::network::SSLSocket synchronous(
-        "127.0.0.1", boost::lexical_cast<std::string>(port));
-      BOOST_CHECK(reactor::wait(shutdown2, valgrind(10_ms)));
+      reactor::network::SSLSocket asynchronous(
+        "127.0.0.1", boost::lexical_cast<std::string>(forwarder.port()));
+      forwarding.close();
+      connected2.open();
+      BOOST_CHECK_THROW(asynchronous.read(1, 1_sec),
+                        reactor::network::TimeOut);
+      reactor::wait(shutdown2);
+      forwarding.open();
+      BOOST_CHECK_THROW(asynchronous.read(1, 1_sec),
+                        reactor::network::ConnectionClosed);
     }
+    forwarder_thread.terminate();
     reactor::wait(scope);
   };
 }
@@ -660,10 +720,11 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(handshake_stuck), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(handshake_error), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(shutdown_flush), 0, valgrind(1));
-  suite.add(BOOST_TEST_CASE(shutdown_asynchronous), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(shutdown_asynchronous), 0, valgrind(5));
   suite.add(BOOST_TEST_CASE(shutdown_asynchronous_timeoutless), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(shutdown_asynchronous_timeout), 0, valgrind(2));
   suite.add(BOOST_TEST_CASE(shutdown_asynchronous_concurrent), 0, valgrind(2));
+  suite.add(BOOST_TEST_CASE(shutdown_timeout), 0, valgrind(3));
 
 }
 

@@ -3,6 +3,25 @@ stages:
 
 variables:
   PYTHONUNBUFFERED: "1"
+  DRAKE_DEBUG_BACKTRACE: "1"
+
+x86_64-centos6-gcc4:
+  stage: build
+  script:
+    - git submodule update --init --recursive
+    - git fetch origin --tags
+    - mkdir -p ../elle-build ../elle-install
+    - scl enable devtoolset-4 rh-python34 "farm/configure --arch x86_64 --os centos6 --compiler gcc4 --project Elle --source-dir . --build-dir ../elle-build --install-dir ../elle-install"
+    - cd ../elle-build && scl enable devtoolset-4 rh-python34 "python3 drake -j 4 //build"
+    - cd ../elle-build && scl enable devtoolset-4 rh-python34 "python3 drake -j 4 //check"
+    - cd ../elle-build && scl enable devtoolset-4 rh-python34 "python3 drake -j 4 //install"
+    - TARBALL=elle-x86_64-centos6-gcc4-$(GIT_DIR=../elle/.git git describe).tbz
+    - tar -cvjf ../$TARBALL -C ../elle-install . --show-transformed-names --transform "s,^\\./,elle-$(GIT_DIR=../elle/.git git describe)/,"
+    - scp ../$TARBALL debian@debian.infinit.io:/tmp
+  tags:
+    - x86_64
+    - centos6
+    - gcc4
 
 x86_64-trusty-gcc4:
   stage: build
@@ -29,6 +48,9 @@ x86_64-jessie-gcc4:
     - cd ../elle-build && python3 drake -j 4 //build
     - cd ../elle-build && python3 drake -j 4 //check
     - cd ../elle-build && python3 drake -j 4 //install
+    - TARBALL=elle-x86_64-jessie-gcc4-$(GIT_DIR=../elle/.git git describe).tbz
+    - tar -cvjf ../$TARBALL -C ../elle-install . --show-transformed-names --transform "s,^\\./,elle-$(GIT_DIR=../elle/.git git describe)/,"
+    - scp ../$TARBALL debian@debian.infinit.io:/tmp
   tags:
     - x86_64
     - jessie
@@ -89,6 +111,9 @@ x86_64-osx-clang:
     - cd ../elle-build && python3 drake -j 4 //build
     - cd ../elle-build && python3 drake -j 4 //check
     - cd ../elle-build && python3 drake -j 4 //install
+    - TARBALL=elle-x86_64-osx-clang3-$(GIT_DIR=../elle/.git git describe).tbz
+    - gtar -cvjf ../$TARBALL -C ../elle-install . --show-transformed-names --transform "s,^\\./,elle-$(GIT_DIR=../elle/.git git describe)/,"
+    - scp ../$TARBALL debian@debian.infinit.io:/tmp
   tags:
     - x86_64
     - osx

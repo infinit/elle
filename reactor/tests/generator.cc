@@ -112,7 +112,7 @@ ELLE_TEST_SCHEDULED(destruct)
     };
   auto g = reactor::generator<int>(f);
   auto it = g.begin();
-  it != g.end();
+  BOOST_CHECK(it != g.end());
   BOOST_CHECK_EQUAL(*it, 0);
 }
 

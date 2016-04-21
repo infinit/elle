@@ -48,8 +48,11 @@ namespace reactor
       | Read |
       `-----*/
       public:
-        virtual Size read_some(Buffer buffer,
-                               DurationOpt timeout = DurationOpt());
+        virtual
+        Size
+        read_some(Buffer buffer,
+                  DurationOpt timeout = DurationOpt(),
+                  int* bytes_read = nullptr) override;
 
         Size receive_from(Buffer buffer,
                           boost::asio::ip::udp::endpoint &endpoint,

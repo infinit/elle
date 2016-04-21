@@ -39,7 +39,7 @@ namespace reactor
   template <typename R>
   R
   Scheduler::mt_run(const std::string& name,
-                    const boost::function<R ()>& action)
+                    const std::function<R ()>& action)
   {
     ELLE_ASSERT(!this->done());
     R result;
@@ -65,7 +65,7 @@ namespace reactor
   template <>
   void
   Scheduler::mt_run<void>(const std::string& name,
-                          const boost::function<void ()>& action);
+                          const std::function<void ()>& action);
 
   // A stateless Comparer would be preferable, but GCC 4.8 has a limitation
   // where you can't capture parameter packs in lambdas, forcing a 2-step

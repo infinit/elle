@@ -251,6 +251,15 @@ namespace elle
       virtual
       void
       _serialize(std::string const& name, boost::posix_time::ptime& v) = 0;
+      template <typename Repr, typename Ratio>
+      void
+      _serialize(std::string const& name,
+                 std::chrono::duration<Repr, Ratio>& duration);
+      virtual
+      void
+      _serialize_time_duration(std::int64_t& ticks,
+                               std::int64_t& num,
+                               std::int64_t& denom) = 0;
       virtual
       void
       _serialize_named_option(std::string const& name,

@@ -111,10 +111,11 @@ namespace reactor
       }
       catch (reactor::Terminate const&)
       {
-        ELLE_WARN("%s: ignore stacked thread termination during SSL shutdown",
-                  *this);
         if (!reactor::scheduler().current()->terminating())
           throw;
+        else
+          ELLE_WARN("%s: ignore stacked thread termination during SSL shutdown",
+                    this);
       }
       catch (...)
       {

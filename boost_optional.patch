@@ -1,18 +1,14 @@
-diff --git a/boost/optional/optional.hpp b/boost/optional/optional.hpp
-index 07c4bd3..c021319 100644
---- a/boost/optional/optional.hpp
-+++ b/boost/optional/optional.hpp
-@@ -1227,9 +1227,9 @@ get_pointer ( optional<T>& opt )
- }
- 
- // Forward declaration to prevent operator safe-bool from being used.
--template<class CharType, class CharTrait, class T>
--std::basic_ostream<CharType, CharTrait>&
--operator<<(std::basic_ostream<CharType, CharTrait>& out, optional<T> const& v);
-+// template<class CharType, class CharTrait, class T>
-+// std::basic_ostream<CharType, CharTrait>&
-+// operator<<(std::basic_ostream<CharType, CharTrait>& out, optional<T> const& v);
- 
- // optional's relational operators ( ==, !=, <, >, <=, >= ) have deep-semantics (compare values).
- // WARNING: This is UNLIKE pointers. Use equal_pointees()/less_pointess() in generic code instead.
- 
+diff --git a/boost/optional/optional_io.hpp b/boost/optional/optional_io.hpp
+index e75a9c9..bacd1fb 100644
+--- a/boost/optional/optional_io.hpp
++++ b/boost/optional/optional_io.hpp
+@@ -44,7 +44,7 @@ operator<<(std::basic_ostream<CharType, CharTrait>& out, optional<T> const& v)
+   {
+     if (!v)
+-         out << "--" ;
+-    else out << ' ' << *v ;
++         out << "null" ;
++    else out << *v ;
+   }
+
+   return out;

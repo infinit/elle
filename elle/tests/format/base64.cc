@@ -74,13 +74,13 @@ encode_to_and_decode_from_base64_impl()
     elle::Buffer source(to_encode.data(), to_encode.length());
     elle::Buffer encoded;
     ELLE_TRACE("encode")
-      encoded = std::move(Encode(source));
+      encoded = Encode(source);
     ELLE_TRACE("encoded: \"%s\"",
                std::string(reinterpret_cast<char*>(encoded.contents()),
                            encoded.size()));
     elle::Buffer decoded;
     ELLE_TRACE("decode")
-      decoded = std::move(Decode(encoded));
+      decoded = Decode(encoded);
     ELLE_TRACE("decoded: %s", decoded);
 
     std::string decoded_str((char *) decoded.contents(), decoded.size());;

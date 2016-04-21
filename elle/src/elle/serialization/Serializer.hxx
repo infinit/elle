@@ -808,6 +808,30 @@ namespace elle
       this->_serialize_collection(name, collection);
     }
 
+    template <typename Repr, typename Ratio>
+    void
+    Serializer::_serialize(std::string const& name,
+                           std::chrono::duration<Repr, Ratio>& duration)
+    {
+      if (out())
+      {
+        int64_t count = duration.count();
+        int64_t num = Ratio::num;
+        int64_t denom = Ratio::den;
+        this->_serialize_time_duration(count, num, denom);
+      }
+      else
+      {
+        int64_t count;
+        int64_t num;
+        int64_t denom;
+        this->_serialize_time_duration(count, num, denom);
+        // FIXME: handle overflows
+        count = count * num * Ratio::den / Ratio::num / denom;
+        duration = std::chrono::duration<Repr, Ratio>(count);
+      }
+    }
+
     template <template <typename, typename> class C, typename T, typename A>
     void
     Serializer::_serialize(std::string const& name,

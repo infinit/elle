@@ -1,9 +1,8 @@
 #include <reactor/thread.hh>
 
-#include <boost/foreach.hpp>
-
 #include <elle/finally.hh>
 #include <elle/log.hh>
+#include <elle/optional.hh>
 
 #include <reactor/backend/backend.hh>
 #include <reactor/exception.hh>
@@ -27,7 +26,7 @@ namespace reactor
 
   Thread::Thread(Scheduler& scheduler,
                  std::string const& name,
-                 Action const& action,
+                 Action action,
                  bool dispose)
     : _dispose(dispose)
     , _managed(false)
@@ -39,7 +38,7 @@ namespace reactor
     , _timeout_timer(scheduler.io_service())
     , _thread(scheduler._manager->make_thread(
                 name,
-                boost::bind(&Thread::_action_wrapper, this, action)))
+                std::bind(&Thread::_action_wrapper, this, std::move(action))))
     , _scheduler(scheduler)
     , _terminating(false)
     , _interruptible(true)
@@ -48,24 +47,26 @@ namespace reactor
   }
 
   Thread::Thread(std::string const& name,
-                 Action const& action,
+                 Action action,
                  bool dispose):
-    Thread(reactor::scheduler(), name, action, dispose)
+    Thread(reactor::scheduler(), name, std::move(action), dispose)
   {}
 
   ThreadPtr
   Thread::make_tracked(const std::string& name,
-                       const Action& action)
+                       Action action)
   {
-    return make_tracked(*reactor::Scheduler::scheduler(), name, action);
+    return make_tracked(
+      *reactor::Scheduler::scheduler(), name, std::move(action));
   }
 
   ThreadPtr
   Thread::make_tracked(Scheduler& scheduler,
                        const std::string& name,
-                       const Action& action)
+                       Action action)
   {
-    ThreadPtr res = std::make_shared<Thread>(scheduler, name, action);
+    ThreadPtr res = std::make_shared<Thread>(
+      scheduler, name, std::move(action));
     res->_self = res;
     return res;
   }
@@ -298,7 +299,7 @@ namespace reactor
     ELLE_ASSERT_EQ(_state, state::running);
     ELLE_ASSERT(_waited.empty());
     bool freeze = false;
-    BOOST_FOREACH (Waitable* s, waitables)
+    for (Waitable* s: waitables)
       if (s->_wait(this, Waker()))
       {
         freeze = true;
@@ -416,7 +417,7 @@ namespace reactor
   {
     ELLE_TRACE("%s: abort wait because: %s", *this, reason);
     ELLE_ASSERT_EQ(state(), state::frozen);
-    BOOST_FOREACH (Waitable* waitable, _waited)
+    for (Waitable* waitable: _waited)
       waitable->_unwait(this);
     this->_waited.clear();
     this->_timeout_timer.cancel();

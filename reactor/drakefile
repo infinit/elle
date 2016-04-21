@@ -68,24 +68,14 @@ def configure(curl_config,
   local_cxx_config.lib_path_runtime('.')
   local_cxx_config.enable_debug_symbols()
 
-  # Lib coroutine
-  libcoroutine = None
+  class Backends(drake.enumeration.Enumerated,
+                 values = ['boost', 'io', 'threads']):
+    pass
+
   if cxx_toolkit.os in [drake.os.windows]:
-    libcoroutine_sources = drake.nodes(
-      'src/reactor/backend/coro_io/libcoroutine/asm.S',
-      'src/reactor/backend/coro_io/libcoroutine/context.cc',
-      'src/reactor/backend/coro_io/libcoroutine/coroutine.cc',
-      'src/reactor/backend/coro_io/libcoroutine/coroutine.hh',
-    )
-    libcoroutine_cxx_config = drake.cxx.Config(local_cxx_config)
-    libcoroutine_cxx_config.warnings.missing_declarations = None
-    if valgrind is not None:
-      libcoroutine_cxx_config.define('USE_VALGRIND')
-    libcoroutine = drake.cxx.StaticLib('lib/reactor/coroutine',
-                                       libcoroutine_sources,
-                                       cxx_toolkit,
-                                       libcoroutine_cxx_config)
-    library_coroutine = libcoroutine
+    backend = Backends.io
+  else:
+    backend = Backends.boost
 
   # Libcxabi through llvm
   if cxx_toolkit.os in [drake.os.macos, drake.os.ios] and cxx_toolkit.kind == drake.cxx.GccToolkit.Kind.clang:
@@ -264,22 +254,26 @@ def configure(curl_config,
     local_cxx_config += boost.config_signals(static = True)
     local_cxx_config += boost.config_system(static = True)
     local_cxx_config += boost.config_thread(static = True)
-    if cxx_toolkit.os != drake.os.windows:
-      # windows uses coro io
+    if backend == Backends.boost:
       local_cxx_config += boost.config_context(static = True)
   else:
-    local_cxx_config += boost.config_context(link = False)
-    local_cxx_config.library_add(
-      drake.copy(boost.context_dynamic, 'lib', strip_prefix = True, post_process = set_local_libcxx(cxx_toolkit)))
+    if backend == Backends.boost:
+      local_cxx_config += boost.config_context(link = False)
+      local_cxx_config.library_add(
+        drake.copy(boost.context_dynamic, 'lib', strip_prefix = True,
+                   post_process = set_local_libcxx(cxx_toolkit)))
     local_cxx_config += boost.config_signals(link = False)
     local_cxx_config.library_add(
-      drake.copy(boost.signals_dynamic, 'lib', strip_prefix = True, post_process = set_local_libcxx(cxx_toolkit)))
+      drake.copy(boost.signals_dynamic, 'lib', strip_prefix = True,
+                 post_process = set_local_libcxx(cxx_toolkit)))
     local_cxx_config += boost.config_system(link = False)
     local_cxx_config.library_add(
-      drake.copy(boost.system_dynamic, 'lib', strip_prefix = True, post_process = set_local_libcxx(cxx_toolkit)))
+      drake.copy(boost.system_dynamic, 'lib', strip_prefix = True,
+                 post_process = set_local_libcxx(cxx_toolkit)))
     local_cxx_config += boost.config_thread(link = False)
     local_cxx_config.library_add(
-      drake.copy(boost.thread_dynamic, 'lib', strip_prefix = True, post_process = set_local_libcxx(cxx_toolkit)))
+      drake.copy(boost.thread_dynamic, 'lib', strip_prefix = True,
+                 post_process = set_local_libcxx(cxx_toolkit)))
 
   # FUSE
   fuse_lib = None
@@ -374,7 +368,7 @@ def configure(curl_config,
         def execute(self):
           self.cmd('Mount DMG: %s' % self.__dmg,
           [
-            'hdiutil', 'attach', '-noautoopen',
+            'hdiutil', 'attach', '-noautoopen', '-nobrowse',
             '-mountpoint', self.__mountpoint,
             self.__dmg,
           ])
@@ -602,7 +596,7 @@ def configure(curl_config,
 
   lib_cxx_config = drake.cxx.Config(local_cxx_config)
 
-  backend = drake.cxx.StaticLib(
+  backend_lib = drake.cxx.StaticLib(
     'lib/reactor/backend',
     drake.nodes(
       'src/reactor/backend/backend.cc',
@@ -612,17 +606,33 @@ def configure(curl_config,
     lib_cxx_config,
   )
 
-  if libcoroutine is not None:
+  if backend == Backends.io:
+    libcoroutine_sources = drake.nodes(
+      'src/reactor/backend/coro_io/libcoroutine/asm.S',
+      'src/reactor/backend/coro_io/libcoroutine/context.cc',
+      'src/reactor/backend/coro_io/libcoroutine/coroutine.cc',
+      'src/reactor/backend/coro_io/libcoroutine/coroutine.hh',
+    )
+    libcoroutine_cxx_config = drake.cxx.Config(local_cxx_config)
+    libcoroutine_cxx_config.warnings.missing_declarations = None
+    if valgrind is not None:
+      libcoroutine_cxx_config.define('USE_VALGRIND')
+    libcoroutine = drake.cxx.StaticLib('lib/reactor/coroutine',
+                                       libcoroutine_sources,
+                                       cxx_toolkit,
+                                       libcoroutine_cxx_config)
     backend_coro_io = drake.cxx.StaticLib(
       'lib/reactor/backend_coro_io',
       drake.nodes(
         'src/reactor/backend/coro_io/backend.cc',
         'src/reactor/backend/coro_io/backend.hh',
-      ) + [backend, libcoroutine],
+      ) + [backend_lib, libcoroutine],
       cxx_toolkit,
       lib_cxx_config,
     )
+    library_coroutine = libcoroutine
   else:
+    libcoroutine = None
     backend_coro_io = None
 
   lib_cxx_config.add_local_include_path('libutp')
@@ -648,14 +658,14 @@ def configure(curl_config,
     miniupnpc.library,
     utp_lib,
   ]
-  if backend_coro_io is not None:
+  if backend == Backends.io:
     lib_dynamic_link_libs.append(backend_coro_io)
     lib_static_link_libs.append(backend_coro_io)
-  else:
+  elif backend == Backends.boost:
     lib_dynamic_link_libs.append(backend_boost_context)
-    lib_dynamic_link_libs.append(backend)
+    lib_dynamic_link_libs.append(backend_lib)
     lib_static_link_libs.append(backend_boost_context)
-    lib_static_link_libs.append(backend)
+    lib_static_link_libs.append(backend_lib)
   if dokan_lib is not None:
     lib_static_link_libs.append(dokan_lib)
   if fuse_lib is not None:
@@ -670,12 +680,12 @@ def configure(curl_config,
     miniupnpc.library,
     utp_lib,
   ]
-  if cxx_toolkit.os is drake.os.windows:
+  if backend == Backends.io:
     lib_dynamic_link_libs.append(libcoroutine)
     lib_dynamic_link_libs.append(backend_coro_io)
-  else:
+  elif backend == Backends.boost:
     lib_dynamic_link_libs.append(backend_boost_context)
-    lib_dynamic_link_libs.append(backend)
+    lib_dynamic_link_libs.append(backend_lib)
   if fuse_lib is not None:
     lib_dynamic_link_libs.append(fuse_lib)
   if cxx_toolkit.os in [drake.os.macos]:
@@ -720,6 +730,7 @@ def configure(curl_config,
     'rdv-server',
   ]
   cxx_config_bin = drake.cxx.Config(local_cxx_config)
+  cxx_config_bin.lib_path_runtime('../lib')
   for name in binaries_config:
     source = drake.node('bin/%s.cc' % name)
     bin = drake.cxx.Executable(
@@ -742,25 +753,27 @@ def configure(curl_config,
   rule_check = drake.TestSuite('check')
   rule_tests = drake.Rule('tests')
 
+  # (bin, libs, stdin)
   tests = [
-    ('backend', []),
-    ('fsm', []),
-    ('generator', []),
-    ('http', [curl_lib]),
-    ('logger', []),
-    ('network', []),
-    ('reactor', []),
-    ('upnp', []), # Not an auto test, just an utility.
-    ('ssl', openssl_libs),
-    ('utp', [utp_lib]),
-    ('rdv-cat', []),
-    ('rdv-utp-cat', []),
+    ('backend', [], None),
+    ('fsm', [], None),
+    ('generator', [], None),
+    ('http', [curl_lib], None),
+    ('logger', [], None),
+    ('network', [], None),
+    ('reactor', [], None),
+    ('upnp', [], None), # Not an auto test, just a utility.
+    ('ssl', openssl_libs, None),
+    ('utp', [utp_lib], None),
+    ('rdv-cat', [], None),
+    ('rdv-utp-cat', [], None),
     # 'reactor/file',
     ]
   if cxx_toolkit.os in [drake.os.linux, drake.os.macos]:
-    tests.append(('filesystem', []))
-    tests.append(('filesystem_bind', []))
-    tests.append(('filesystem_git', []))
+    tests.append(('fdstream', [], 'something'))
+    tests.append(('filesystem', [], None))
+    tests.append(('filesystem_bind', [], None))
+    tests.append(('filesystem_git', [], None))
 
   cxx_config_tests = drake.cxx.Config(local_cxx_config)
 
@@ -773,21 +786,25 @@ def configure(curl_config,
     cxx_config_tests.lib('atomic')
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
     cxx_config_tests += boost.config_test(static = True)
+    cxx_config_tests += boost.config_timer(static = True)
   else:
     cxx_config_tests += boost.config_test(link = False)
     cxx_config_tests.library_add(
       drake.copy(boost.test_dynamic, 'lib', strip_prefix = True))
+    cxx_config_tests += boost.config_timer(link = False)
+    cxx_config_tests.library_add(
+      drake.copy(boost.timer_dynamic, 'lib', strip_prefix = True))
 
-  for test_name, libraries in tests:
+  for test_name, libraries, stdin in tests:
     tests_config = drake.cxx.Config(cxx_config_tests)
     tests_config.lib_path_runtime('%s../lib' % ('../' * test_name.count('/')))
-    sources = drake.nodes('tests/%s.cc' % test_name) + [
+    test_sources = drake.nodes('tests/%s.cc' % test_name) + [
       library, elle_lib
       ] + libraries
     if cxx_toolkit.os == drake.os.macos:
-      sources += cxx_libs
+      test_sources += cxx_libs
     test = drake.cxx.Executable('tests/%s' % test_name,
-                                sources,
+                                test_sources,
                                 cxx_toolkit, tests_config)
     rule_tests << test
     if test_name in ['filesystem_git', 'filesystem_bind', 'rdv-cat','rdv-utp-cat',]:
@@ -808,10 +825,11 @@ def configure(curl_config,
         exe = test,
         valgrind = valgrind,
         env = env,
+        stdin = stdin,
         valgrind_args = ['--suppressions=%s' % (drake.path_source('../valgrind.suppr'))
         ])
     else:
-      runner = drake.Runner(exe = test, env = env)
+      runner = drake.Runner(exe = test, env = env,stdin = stdin)
     runner.reporting = drake.Runner.Reporting.on_failure
     rule_check << runner.status
 

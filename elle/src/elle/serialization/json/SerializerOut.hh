@@ -98,6 +98,11 @@ namespace elle
                    boost::posix_time::ptime& v) override;
         virtual
         void
+        _serialize_time_duration(std::int64_t& ticks,
+                                 std::int64_t& num,
+                                 std::int64_t& denom) override;
+        virtual
+        void
         _serialize_named_option(std::string const& name,
                                 bool filled,
                                 std::function<void ()> const& f) override;

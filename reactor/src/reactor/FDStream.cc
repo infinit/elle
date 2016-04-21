@@ -5,10 +5,6 @@
 
 namespace reactor
 {
-  FDStream::EOF::EOF()
-    : elle::Error("end of file")
-  {}
-
   FDStream::StreamBuffer::StreamBuffer(boost::asio::io_service& service,
                                        Handle handle)
     : _stream(service, handle)
@@ -30,9 +26,7 @@ namespace reactor
         done.open();
       });
     reactor::wait(done);
-    if (error == boost::asio::error::eof)
-      throw EOF();
-    else if (error)
+    if (error && error != boost::asio::error::eof)
       throw elle::Error(
         elle::sprintf("unable to read from %s: %s",
                       this->_handle, error.message()));

@@ -5,38 +5,80 @@
 
 # include <algorithm>
 # include <cmath>
-# include <iosfwd>
+# include <cstdlib>
+# include <string>
 
-// Avoid circular header dependencies. Maybe factor this in printf-pwd.hh or
-// something.
-namespace elle
-{
-  template <typename F, typename... T>
-  void
-  fprintf(std::ostream& out,
-          F&& fmt,
-          T&&... values);
-}
+# include <elle/err.hh>
 
 namespace std
 {
-  template <typename T, std::intmax_t Num, std::intmax_t Denom>
-  std::ostream&
-  operator << (std::ostream& o,
-               std::chrono::duration<T, std::ratio<Num, Denom>> const& t)
+  namespace chrono
   {
-    auto log = std::ceil(std::log10(t.count()));
-    auto significant = int(std::pow(10, std::max(log - 3, 0.)));
-    auto pretty = double(t.count() / significant) * significant;
-    if (Denom / Num / significant >= 1000000000)
-      elle::fprintf(o, "%sns", pretty * Num * 1000000000 / Denom);
-    else if (Denom / Num / significant >= 1000000)
-      elle::fprintf(o, "%sus", pretty * Num * 1000000 / Denom);
-    else if (Denom / Num / significant >= 1000)
-      elle::fprintf(o, "%sms", pretty * Num * 1000 / Denom);
-    else
-      elle::fprintf(o, "%ss", pretty * Num / Denom);
-    return o;
+    template <typename T, std::intmax_t Num, std::intmax_t Denom>
+    std::ostream&
+    operator << (std::ostream& o,
+                 std::chrono::duration<T, std::ratio<Num, Denom>> const& t)
+    {
+      auto log = std::ceil(std::log10(t.count()));
+      auto significant = int(std::pow(10, std::max(log - 3, 0.)));
+      auto pretty = double(t.count() / significant) * significant;
+      if (Denom / Num / significant >= 1000000000)
+        elle::fprintf(o, "%sns", pretty * Num * 1000000000 / Denom);
+      else if (Denom / Num / significant >= 1000000)
+        elle::fprintf(o, "%sus", pretty * Num * 1000000 / Denom);
+      else if (Denom / Num / significant >= 1000)
+        elle::fprintf(o, "%sms", pretty * Num * 1000 / Denom);
+      else
+        elle::fprintf(o, "%ss", pretty * Num / Denom);
+      return o;
+    }
+
+    template <typename Duration>
+    Duration
+    duration_from_string(std::string const& repr)
+    {
+      auto const pos = repr.find_first_not_of("0123456789");
+      if (pos == std::string::npos)
+        elle::err("missing duration unit");
+      if (pos == 0)
+        elle::err("invalide duration: %s");
+      auto ticks = std::atoi(repr.substr(0, pos).c_str());
+      auto const unit = repr.substr(pos);
+      if (unit == "d")
+        return std::chrono::duration_cast<Duration>(
+          std::chrono::duration<typename Duration::rep,
+          std::ratio<24 * 60 * 60, 1>>(ticks));
+      else if (unit == "h")
+        return std::chrono::duration_cast<Duration>(
+          std::chrono::hours(ticks));
+      else if (unit == "min")
+        return std::chrono::duration_cast<Duration>(
+          std::chrono::minutes(ticks));
+      else if (unit == "s")
+        return std::chrono::duration_cast<Duration>(
+          std::chrono::seconds(ticks));
+      else if (unit == "ms")
+        return std::chrono::duration_cast<Duration>(
+          std::chrono::milliseconds(ticks));
+      else if (unit == "us")
+        return
+          std::chrono::duration_cast<Duration>(
+            std::chrono::microseconds(ticks));
+      else if (unit == "ns")
+        return
+          std::chrono::duration_cast<Duration>(
+            std::chrono::nanoseconds(ticks));
+      else if (unit == "ps")
+        return std::chrono::duration_cast<Duration>(
+          std::chrono::duration<typename Duration::rep,
+          std::ratio<1, 1000000000000>>(ticks));
+      else if (unit == "fs")
+        return std::chrono::duration_cast<Duration>(
+          std::chrono::duration<typename Duration::rep,
+          std::ratio<1, 1000000000000000>>(ticks));
+      else
+        elle::err("invalid duration unit: %s", unit);
+    }
   }
 }
 

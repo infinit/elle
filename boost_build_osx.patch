@@ -1,0 +1,36 @@
+diff --git a/boostcpp.jam b/boostcpp.jam
+index f45d12e..bfb5263 100644
+--- a/boostcpp.jam
++++ b/boostcpp.jam
+@@ -141,6 +141,13 @@ rule tag ( name : type ? : property-set )
+                 -$(BUILD_ID)
+                 : $(name) : $(type) : $(property-set) ] ;
+         }
++        else if $(layout) = infinit_osx
++        {
++            result = [ common.format-name
++                <base> -$(BOOST_VERSION_TAG)
++                -$(BUILD_ID)
++                : $(name) : $(type) : $(property-set) ] ;
++        }
+         else
+         {
+             EXIT error: invalid layout '$(layout:E=)' ;
+@@ -312,6 +320,17 @@ rule declare_install_and_stage_proper_targets ( libraries * : headers * )
+     #~     $(p).mark-target-as-explicit install-unversioned ;
+     #~ }
+     #~ else
++    if $(layout-infinit_osx)
++    {
++        generate stage-unversioned : stage-proper :
++            <generating-rule>@boostcpp.make-unversioned-links ;
++        $(p).mark-target-as-explicit stage-unversioned ;
++
++        generate install-unversioned : install-proper :
++            <generating-rule>@boostcpp.make-unversioned-links ;
++        $(p).mark-target-as-explicit install-unversioned ;
++    }
++    else
+     {
+         # Create do-nothing aliases.
+         alias stage-unversioned ;

@@ -157,7 +157,7 @@ std::unique_ptr<UTPSocket> UTPServer::accept()
   _accept_queue.pop_back();
   if (_accept_queue.empty())
     _accept_barrier.close();
-  return std::move(sock);
+  return sock;
 }
 
 UTPServer::UTPServer()
@@ -483,7 +483,7 @@ elle::Buffer UTPSocket::read(size_t sz, DurationOpt opt)
   memmove(_read_buffer.contents(), _read_buffer.contents() + sz,
           _read_buffer.size() - sz);
   _read_buffer.size(_read_buffer.size() - sz);
-  return std::move(res);
+  return res;
 }
 
 elle::Buffer UTPSocket::read_some(size_t sz, DurationOpt opt)
@@ -510,7 +510,7 @@ elle::Buffer UTPSocket::read_some(size_t sz, DurationOpt opt)
   {
     elle::Buffer res;
     std::swap(res, _read_buffer);
-    return std::move(res);
+    return res;
   }
   elle::Buffer res;
   res.size(sz);
@@ -518,7 +518,7 @@ elle::Buffer UTPSocket::read_some(size_t sz, DurationOpt opt)
   memmove(_read_buffer.contents(), _read_buffer.contents() + sz,
           _read_buffer.size() - sz);
   _read_buffer.size(_read_buffer.size() - sz);
-  return std::move(res);
+  return res;
 }
 
 UTPSocket::EndPoint UTPSocket::peer()

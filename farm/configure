@@ -120,6 +120,8 @@ if options.os == 'android':
   parameters['compiler'] = '/root/arm-linux-androideabi-4.8/bin/arm-linux-androideabi-g++'
   parameters['python'] = False
   parameters['valgrind'] = False
+elif options.os == 'centos6':
+  pass
 elif options.os == 'trusty':
   parameters['valgrind'] = True
 elif options.os == 'jessie':

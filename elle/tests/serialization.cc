@@ -592,6 +592,41 @@ version()
   }
 }
 
+template <typename Format, typename Repr, typename Ratio>
+static
+void
+chrono_check(std::chrono::duration<Repr, Ratio> const& d)
+{
+  std::stringstream stream;
+  {
+    typename Format::SerializerOut output(stream);
+    output.serialize("duration", d);
+  }
+  std::cerr << stream.str() << std::endl;
+  {
+    std::chrono::duration<Repr, Ratio> res;
+    typename Format::SerializerIn input(stream);
+    input.serialize("duration", res);
+    BOOST_CHECK(d == res);
+  }
+}
+
+template <typename Format>
+static
+void
+chrono()
+{
+  chrono_check<Format>(std::chrono::system_clock::duration(601));
+  chrono_check<Format>(std::chrono::high_resolution_clock::duration(602));
+  chrono_check<Format>(std::chrono::nanoseconds(603));
+  chrono_check<Format>(std::chrono::microseconds(604));
+  chrono_check<Format>(std::chrono::milliseconds(605));
+  chrono_check<Format>(std::chrono::seconds(606));
+  chrono_check<Format>(std::chrono::minutes(607));
+  chrono_check<Format>(std::chrono::hours(608));
+  chrono_check<Format>(std::chrono::hours(609 * 24));
+}
+
 template <bool Versioned>
 class Super
   : public elle::serialization::VirtuallySerializable<Versioned>
@@ -1635,6 +1670,7 @@ ELLE_TEST_SUITE()
   FOR_ALL_SERIALIZATION_TYPES(buffer);
   FOR_ALL_SERIALIZATION_TYPES(date);
   FOR_ALL_SERIALIZATION_TYPES(version);
+  FOR_ALL_SERIALIZATION_TYPES(chrono);
   {
     boost::unit_test::test_suite* subsuite = BOOST_TEST_SUITE("hierarchy");
     {

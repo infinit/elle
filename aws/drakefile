@@ -116,6 +116,7 @@ def configure(cryptography,
     cxx_config_tests.lib('atomic')
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
     cxx_config_tests += boost.config_test(static = True)
+    cxx_config_tests += boost.config_timer(static = True)
     cxx_config_tests += boost.config_system(static = True)
     cxx_config_tests += boost.config_thread(static = True)
   else:
@@ -125,6 +126,9 @@ def configure(cryptography,
     cxx_config_tests += boost.config_test(link = False)
     cxx_config_tests.library_add(
       drake.copy(boost.test_dynamic, 'lib', strip_prefix = True))
+    cxx_config_tests += boost.config_timer(link = False)
+    cxx_config_tests.library_add(
+      drake.copy(boost.timer_dynamic, 'lib', strip_prefix = True))
     cxx_config_tests += boost.config_thread(link = False)
     cxx_config_tests.library_add(
       drake.copy(boost.thread_dynamic, 'lib', strip_prefix = True))

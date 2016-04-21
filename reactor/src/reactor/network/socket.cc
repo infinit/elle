@@ -54,34 +54,87 @@ namespace reactor
 
     namespace
     {
-      class StreamBuffer:
-        public elle::DynamicStreamBuffer
+      size_t constexpr buffer_size = 1 << 16;
+
+      class StreamBuffer
+        : public std::streambuf
       {
       public:
-        typedef elle::DynamicStreamBuffer Super;
-        typedef Super::Size Size;
-        StreamBuffer(Socket* socket):
-          Super(Socket::buffer_size),
-          _socket(socket),
-          _pacified(false)
-        {}
-
-        virtual
-        Size
-        read(char* buffer, Size size)
+        StreamBuffer(Socket* socket)
+          : _socket(socket)
+          , _pacified(false)
         {
-          if (!this->_pacified)
-            return this->_socket->read_some(network::Buffer(buffer, size));
-          else
-            return 0;
+          setg(0, 0, 0);
+          setp(0, 0);
         }
 
-        virtual
-        void
-        write(char* buffer, Size size)
+        char read_buffer[buffer_size];
+        std::exception_ptr read_exception;
+        int
+        underflow() override
         {
-          if (!this->_pacified)
-            this->_socket->write(elle::ConstWeakBuffer(buffer, size));
+          ELLE_TRACE_SCOPE("%s: underflow", *this);
+          if (this->read_exception)
+          {
+            ELLE_TRACE("rethrow exception: %s",
+                       elle::exception_string(this->read_exception));
+            auto exception = std::move(this->read_exception);
+            this->read_exception = std::exception_ptr();
+            std::rethrow_exception(exception);
+          }
+          if (this->_pacified)
+          {
+            setg(0, 0, 0);
+            return EOF;
+          }
+          int size = 0;
+          try
+          {
+            this->_socket->read_some(
+              network::Buffer(this->read_buffer, sizeof(this->read_buffer)),
+              {},
+              &size);
+          }
+          catch (...)
+          {
+            if (size == 0)
+              throw;
+            else
+            {
+              ELLE_TRACE("exception after %s bytes: %s",
+                         size, elle::exception_string());
+              this->read_exception = std::current_exception();
+            }
+          }
+          setg(this->read_buffer, this->read_buffer,
+               this->read_buffer + size);
+          return this->read_buffer[0];
+        }
+
+        char write_buffer[buffer_size];
+        int
+        overflow(int c) override
+        {
+          ELLE_TRACE_SCOPE("%s: overflow", *this);
+          this->sync();
+          setp(this->write_buffer,
+               this->write_buffer + sizeof(this->write_buffer));
+          this->write_buffer[0] = c;
+          pbump(1);
+          // Success is indicated by "A value different from EOF".
+          return EOF + 1;
+        }
+
+        int
+        sync() override
+        {
+          Size size = pptr() - pbase();
+          ELLE_TRACE_SCOPE("%s: sync %s bytes", *this, size);
+          setp(0, 0);
+          if (size > 0 && !this->_pacified)
+            this->_socket->write(
+              elle::ConstWeakBuffer(this->write_buffer, size));
+          return 0;
         }
 
         ELLE_ATTRIBUTE(Socket*, socket);
@@ -295,7 +348,7 @@ namespace reactor
     `-----*/
 
     void
-    Socket::read(network::Buffer, DurationOpt)
+    Socket::read(network::Buffer, DurationOpt, int*)
     {
       std::abort();
       // XXX[unused arguments for now, do something with it]
@@ -439,24 +492,27 @@ namespace reactor
     template <typename AsioSocket, typename EndPoint>
     void
     StreamSocket<AsioSocket, EndPoint>::read(Buffer buf,
-                                             DurationOpt timeout)
+                                             DurationOpt timeout,
+                                             int* bytes_read)
     {
-      this->_read(buf, timeout, false);
+      this->_read(buf, timeout, false, bytes_read);
     }
 
     template <typename AsioSocket, typename EndPoint>
     Size
     StreamSocket<AsioSocket, EndPoint>::read_some(Buffer buf,
-                                                  DurationOpt timeout)
+                                                  DurationOpt timeout,
+                                                  int* bytes_read)
     {
-      return this->_read(buf, timeout, true);
+      return this->_read(buf, timeout, true, bytes_read);
     }
 
     template <typename AsioSocket, typename EndPoint>
     Size
     StreamSocket<AsioSocket, EndPoint>::_read(Buffer buf,
                                               DurationOpt timeout,
-                                              bool some)
+                                              bool some,
+                                              int* bytes_read)
     {
       ELLE_TRACE_SCOPE("%s: read %s%s bytes%s",
                        *this,
@@ -474,6 +530,8 @@ namespace reactor
           ELLE_DEBUG("%s: completed read of %s (cached) bytes: %s",
                      *this, size, elle::ConstWeakBuffer(buf.data(),
                                                         buf.size()).string());
+          if (bytes_read)
+            *bytes_read = size;
           return size;
         }
         else if (size)
@@ -492,11 +550,15 @@ namespace reactor
       catch (...)
       {
         ELLE_TRACE("%s: read threw: %s", *this, elle::exception_string());
+        if (bytes_read)
+          *bytes_read = read.read();
         throw;
       }
       if (!finished)
       {
         ELLE_TRACE("%s: read timed out", *this);
+        if (bytes_read)
+          *bytes_read = read.read();
         throw TimeOut();
       }
       ELLE_TRACE("%s: completed read of %s bytes: %s",
@@ -509,7 +571,8 @@ namespace reactor
           return elle::format::hexadecimal::encode(data);
         });
       ELLE_DUMP("%s: data: 0x%s", *this, hex);
-
+      if (bytes_read)
+        *bytes_read = read.read();
       return read.read();
     }
 

@@ -51,14 +51,14 @@ namespace reactor
   public:
     Thread(Scheduler& scheduler,
            const std::string& name,
-           const Action& action,
+           Action action,
            bool dispose = false);
     Thread(const std::string& name,
-           const Action& action,
+           Action action,
            bool dispose = false);
     template <typename ... Args>
     Thread(const std::string& name,
-           const Action& action,
+           Action action,
            Args&& ... args);
     NAMED_ARGUMENT(dispose);
     NAMED_ARGUMENT(managed);
@@ -67,12 +67,12 @@ namespace reactor
     ThreadPtr
     make_tracked(Scheduler& scheduler,
                  const std::string& name,
-                 const Action& action);
+                 Action action);
     // Returned shared ptr will be kept live until action finished
     static
     ThreadPtr
     make_tracked(const std::string& name,
-                 const Action& action);
+                 Action action);
     virtual
     ~Thread();
   protected:
@@ -145,7 +145,7 @@ namespace reactor
   | Exceptions |
   `-----------*/
   public:
-    typedef boost::function<void ()> Injection;
+    typedef std::function<void ()> Injection;
     void inject(const Injection& injection);
     template <typename Exception, typename... Args>
     void raise(Args&&... args);
@@ -155,7 +155,7 @@ namespace reactor
     void
     _action_wrapper(const Thread::Action& action);
   protected:
-    boost::function<void ()> _injection;
+    std::function<void ()> _injection;
     /// Exception to be thrown by the thread upon wake-up.
     std::exception_ptr _exception;
     friend class Exception;
@@ -250,7 +250,7 @@ namespace reactor
   `---------*/
   public:
     typedef VThread<R> Self;
-    typedef boost::function<R ()> Action;
+    typedef std::function<R ()> Action;
 
     /*-------------.
     | Construction |
@@ -258,7 +258,7 @@ namespace reactor
     public:
       VThread(Scheduler& scheduler,
               const std::string& name,
-              const Action& action);
+              Action action);
 
     /*-------.
     | Result |

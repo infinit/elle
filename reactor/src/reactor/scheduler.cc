@@ -6,6 +6,7 @@
 #include <elle/finally.hh>
 #include <elle/log.hh>
 #include <elle/memory.hh>
+#include <elle/Plugin.hh>
 
 #include <reactor/BackgroundOperation.hh>
 #include <reactor/backend/backend.hh>
@@ -18,45 +19,51 @@
 #include <reactor/operation.hh>
 #include <reactor/thread.hh>
 
-#include <boost/foreach.hpp>
-
 ELLE_LOG_COMPONENT("reactor.Scheduler");
 
 namespace reactor
 {
+  namespace plugins
+  {
+    extern elle::Plugin<elle::log::Indenter> logger_indentation;
+    extern elle::Plugin<elle::log::Tag> logger_tags;
+  }
+
   /*-------------.
   | Construction |
   `-------------*/
 
-  Scheduler::Scheduler():
-    _done(false),
-    _shallstop(false),
-    _current(0),
-    _starting(),
-    _starting_mtx(),
-    _running(),
-    _frozen(),
-    _background_service(),
-    _background_service_work(
-      new boost::asio::io_service::work(this->_background_service)),
-    _background_pool(),
-    _background_pool_free(0),
-    _io_service(),
-    _io_service_work(new boost::asio::io_service::work(this->_io_service)),
+  Scheduler::Scheduler()
+    : _done(false)
+    , _shallstop(false)
+    , _current(0)
+    , _starting()
+    , _starting_mtx()
+    , _running()
+    , _frozen()
+    , _background_service()
+    , _background_service_work(
+        new boost::asio::io_service::work(this->_background_service))
+    , _background_pool()
+    , _background_pool_free(0)
+    , _io_service()
+    , _io_service_work(new boost::asio::io_service::work(this->_io_service))
 #ifdef INFINIT_WINDOWS
-    _manager(new backend::coro_io::Backend()),
+    , _manager(new backend::coro_io::Backend())
 #else
-    _manager(new backend::boost_context::Backend()),
+    , _manager(new backend::boost_context::Backend())
 #endif
-    _running_thread()
+    , _running_thread()
   {
     this->_eptr = nullptr;
+    plugins::logger_indentation.load();
+    plugins::logger_tags.load();
   }
 
   Scheduler::~Scheduler()
   {
-    delete _background_service_work;
-    delete _io_service_work;
+    delete this->_background_service_work;
+    delete this->_io_service_work;
   }
 
   /*------------------.
@@ -101,8 +108,8 @@ namespace reactor
   class PushScheduler
   {
   public:
-    PushScheduler(Scheduler* sched):
-      _previous(Scheduler::scheduler())
+    PushScheduler(Scheduler* sched)
+      : _previous(Scheduler::scheduler())
     {
       reactor::scheduler(sched);
     }
@@ -123,34 +130,32 @@ namespace reactor
       ELLE_TRACE_SCOPE("%s: run", *this);
     }
     this->_running_thread = std::this_thread::get_id();
-    while (step())
+    while (this->step())
       /* nothing */;
     this->_running_thread = std::thread::id();
     delete this->_background_service_work;
     this->_background_service_work = 0;
     for (auto& thread: this->_background_pool)
       thread.join();
-    delete _io_service_work;
-    _io_service_work = 0;
+    delete this->_io_service_work;
+    this->_io_service_work = 0;
     // Cancel all pending signal handlers.
     this->_signal_handlers.clear();
-    _io_service.run();
-    _done = true;
+    this->_io_service.run();
+    this->_done = true;
     {
       PushScheduler p(this);
       ELLE_TRACE("%s: done", *this);
     }
-    ELLE_ASSERT(_frozen.empty());
-    if (_eptr != nullptr)
-    {
+    ELLE_ASSERT(this->_frozen.empty());
+    if (this->_eptr != nullptr)
       this->_rethrow_exception(this->_eptr);
-    }
   }
 
   void
   Scheduler::_rethrow_exception(std::exception_ptr e) const
   {
-    std::rethrow_exception(_eptr);
+    std::rethrow_exception(this->_eptr);
   }
 
   static
@@ -177,10 +182,10 @@ namespace reactor
     PushScheduler p(this);
     // Could avoid locking if no jobs are pending with a boolean.
     {
-      boost::unique_lock<boost::mutex> lock(_starting_mtx);
+      boost::unique_lock<boost::mutex> lock(this->_starting_mtx);
       auto& ordered = this->_starting.get<1>();
-      _running.insert(ordered.begin(), ordered.end());
-      _starting.clear();
+      this->_running.insert(ordered.begin(), ordered.end());
+      this->_starting.clear();
     }
     auto& ordered = this->_running.get<1>();
     std::vector<Thread*> running(ordered.begin(), ordered.end());
@@ -190,22 +195,22 @@ namespace reactor
     ELLE_DUMP("%s: running: %s", *this, this->_running);
     ELLE_DUMP("%s: frozen: %s", *this, this->_frozen);
     ELLE_MEASURE("Scheduler round")
-      BOOST_FOREACH (Thread* t, running)
+      for (Thread* t: running)
       {
         // If the thread was stopped during this round, skip. Can be caused by
         // terminate_now, for instance.
-        if (_running.find(t) == _running.end())
+        if (this->_running.find(t) == this->_running.end())
           continue;
         ELLE_TRACE("Scheduler: schedule %s", *t);
-        _step(t);
+        this->_step(t);
       }
     ELLE_TRACE("%s: run asynchronous jobs", *this)
     {
       ELLE_MEASURE_SCOPE("Asio callbacks");
       try
       {
-        _io_service.reset();
-        auto n = _io_service.poll();
+        this->_io_service.reset();
+        auto n = this->_io_service.poll();
         ELLE_DEBUG("%s: %s callback called", *this, n);
       }
       catch (std::exception const& e)
@@ -222,21 +227,21 @@ namespace reactor
         this->terminate();
       }
     }
-    if (_running.empty() && _starting.empty())
+    if (this->_running.empty() && this->_starting.empty())
     {
-      if (_frozen.empty())
+      if (this->_frozen.empty())
       {
         ELLE_TRACE_SCOPE("%s: no threads left, we're done", *this);
         return false;
       }
       else
-        while (_running.empty() && _starting.empty())
+        while (this->_running.empty() && this->_starting.empty())
         {
           ELLE_TRACE_SCOPE("%s: nothing to do, "
                      "polling asio in a blocking fashion", *this);
-          _io_service.reset();
+          this->_io_service.reset();
           boost::system::error_code err;
-          std::size_t run = _io_service.run_one(err);
+          std::size_t run = this->_io_service.run_one(err);
           ELLE_DEBUG("%s: %s callback called", *this, run);
           if (err)
           {
@@ -263,12 +268,12 @@ namespace reactor
   Scheduler::_step(Thread* thread)
   {
     ELLE_ASSERT_EQ(thread->state(), Thread::State::running);
-    Thread* previous = _current;
-    _current = thread;
+    Thread* previous = this->_current;
+    this->_current = thread;
     try
     {
       thread->_step();
-      _current = previous;
+      this->_current = previous;
     }
     catch (...)
     {
@@ -281,7 +286,7 @@ namespace reactor
     if (thread->state() == Thread::state::done)
     {
       ELLE_TRACE("%s: %s finished", *this, *thread);
-      _running.erase(thread);
+      this->_running.erase(thread);
       thread->_scheduler_release();
     }
   }
@@ -300,9 +305,9 @@ namespace reactor
   Scheduler::_freeze(Thread& thread)
   {
     ELLE_ASSERT_EQ(thread.state(), Thread::state::running);
-    ELLE_ASSERT_NEQ(_running.find(&thread), _running.end());
-    _running.erase(&thread);
-    _frozen.insert(&thread);
+    ELLE_ASSERT_NEQ(this->_running.find(&thread), this->_running.end());
+    this->_running.erase(&thread);
+    this->_frozen.insert(&thread);
     thread.frozen()();
   }
 
@@ -315,10 +320,10 @@ namespace reactor
   {
     // FIXME: be thread safe only if needed
     {
-      boost::unique_lock<boost::mutex> lock(_starting_mtx);
-      _starting.insert(&thread);
+      boost::unique_lock<boost::mutex> lock(this->_starting_mtx);
+      this->_starting.insert(&thread);
       // Wake the scheduler.
-      _io_service.post(nothing);
+      this->_io_service.post(nothing);
     }
   }
 
@@ -326,11 +331,11 @@ namespace reactor
   Scheduler::_unfreeze(Thread& thread, std::string const& reason)
   {
     ELLE_ASSERT_EQ(thread.state(), Thread::state::frozen);
-    _frozen.erase(&thread);
-    _running.insert(&thread);
+    this->_frozen.erase(&thread);
+    this->_running.insert(&thread);
     thread.unfrozen()(reason);
-    if (_running.size() == 1)
-      _io_service.post(nothing);
+    if (this->_running.size() == 1)
+      this->_io_service.post(nothing);
   }
 
   void
@@ -346,21 +351,21 @@ namespace reactor
   {
     ELLE_TRACE_SCOPE("%s: terminate", *this);
     Threads terminated;
-    BOOST_FOREACH(Thread* t, _starting)
+    for(Thread* t: this->_starting)
     {
       // Threads expect to be done when deleted. For this very
       // particuliar case, hack the state before deletion.
       t->_state = Thread::state::done;
       t->_scheduler_release();
     }
-    _starting.clear();
-    BOOST_FOREACH(Thread* t, Threads(_running))
-      if (t != _current)
+    this->_starting.clear();
+    for(Thread* t: Threads(this->_running))
+      if (t != this->_current)
       {
         t->terminate();
         terminated.insert(t);
       }
-    BOOST_FOREACH(Thread* t, Threads(_frozen))
+    for(Thread* t: Threads(this->_frozen))
     {
       t->terminate();
       terminated.insert(t);
@@ -387,7 +392,7 @@ namespace reactor
       throw Terminate(thread->name());
     }
     // If the underlying coroutine was never run, nothing to do.
-    if (_starting.erase(thread))
+    if (this->_starting.erase(thread))
     {
       ELLE_DEBUG("%s: %s was starting, discard it", *this, *thread);
       thread->_state = Thread::state::done;
@@ -416,7 +421,7 @@ namespace reactor
     if (!suicide && this->current() == thread)
       return;
 
-    bool ready = _terminate(thread);
+    bool ready = this->_terminate(thread);
     if (ready)
       return;
 
@@ -469,7 +474,7 @@ namespace reactor
   }
 
   static void CallLaterHelper(Scheduler* sched,
-                              const boost::function<void ()>& f,
+                              const std::function<void ()>& f,
                               Duration delay)
   {
     sched->current()->sleep(delay);
@@ -477,17 +482,17 @@ namespace reactor
   }
 
   void
-  Scheduler::CallLater(const boost::function<void ()>&  f,
+  Scheduler::CallLater(const std::function<void ()>&  f,
                        const std::string&               name,
                        Duration                         delay)
   {
     new Thread(*this, name,
-               boost::bind(&CallLaterHelper, this, f, delay), true);
+               std::bind(&CallLaterHelper, this, f, delay), true);
   }
 
   static void
   every_helper(Scheduler* sched,
-               const boost::function<void ()>& f,
+               const std::function<void ()>& f,
                Duration delay)
   {
     while (true)
@@ -498,13 +503,13 @@ namespace reactor
   }
 
   Thread*
-  Scheduler::every(const boost::function<void ()>& f,
+  Scheduler::every(const std::function<void ()>& f,
                    const std::string& name,
                    Duration delay,
                    bool dispose)
   {
     return new Thread(*this, name,
-                      boost::bind(&every_helper, this, f, delay), dispose);
+                      std::bind(&every_helper, this, f, delay), dispose);
   }
 
   /*----------------.
@@ -618,7 +623,7 @@ namespace reactor
   boost::asio::io_service&
   Scheduler::io_service()
   {
-    return _io_service;
+    return this->_io_service;
   }
 
   /*----------------.
@@ -628,7 +633,7 @@ namespace reactor
   template <>
   void
   Scheduler::mt_run<void>(const std::string& name,
-                          const boost::function<void ()>& action)
+                          const std::function<void ()>& action)
   {
     ELLE_ASSERT_NEQ(this->_running_thread, std::this_thread::get_id());
     // Bounce on the non-void case with a dummy int value.
@@ -638,7 +643,7 @@ namespace reactor
   backend::Backend&
   Scheduler::manager()
   {
-    return *_manager;
+    return *this->_manager;
   }
 
   /*---------------.
@@ -725,21 +730,21 @@ namespace reactor
   }
 }
 
-
-#if defined(INFINIT_LINUX) || defined(INFINIT_ANDROID) || defined(INFINIT_WINDOWS) || defined(INFINIT_MACOSX) || defined(INFINIT_IOS)
-
-
+#if !defined(INFINIT_LINUX) && !defined(INFINIT_ANDROID)      \
+    && !defined(INFINIT_WINDOWS) && !defined(INFINIT_MACOSX)  \
+    && !defined(INFINIT_IOS)
+# error "Unsupported platform"
+#endif
 
 #if defined(__arm__) || defined(__clang__)
 // libc++
-
-#include <reactor/libcxx-exceptions/cxa_exception.hpp>
-#define THROW_SPEC
+# include <reactor/libcxx-exceptions/cxa_exception.hpp>
+# define THROW_SPEC
 
 #else
-//libstdc++
-#include <reactor/libcxx-exceptions/unwind-cxx.h>
-#define THROW_SPEC throw()
+// libstdc++
+# include <reactor/libcxx-exceptions/unwind-cxx.h>
+# define THROW_SPEC throw()
 
 #endif
 
@@ -748,7 +753,6 @@ namespace reactor
 * Add a per-scheduler-thread entry. Otherwise, std::current_exception leaks
 * between coroutines.
 */
-
 
 typedef std::unordered_map<std::thread::id,
   std::unique_ptr<__cxxabiv1::__cxa_eh_globals>> CXAThreadMap;
@@ -761,39 +765,37 @@ cxa_thread_map()
   return _cxa_thread_map;
 }
 
-namespace __cxxabiv1 {
+namespace __cxxabiv1
+{
 
-extern "C" {
-  __cxa_eh_globals * __cxa_get_globals() THROW_SPEC
+  extern "C"
   {
-    // Always fetch the map to avoid static initialization fiascos.
-    CXAThreadMap& map = cxa_thread_map();
-    reactor::Scheduler* sched = reactor::Scheduler::scheduler();
-    reactor::backend::Thread* t = nullptr;
-    if (sched != nullptr)
-      t = sched->manager().current();
-    if (sched == nullptr)
+    __cxa_eh_globals * __cxa_get_globals() THROW_SPEC
     {
-      auto &res = map[std::this_thread::get_id()];
-      if (!res)
-        res.reset(new __cxa_eh_globals());
-      return res.get();
+      // Always fetch the map to avoid static initialization fiascos.
+      CXAThreadMap& map = cxa_thread_map();
+      reactor::Scheduler* sched = reactor::Scheduler::scheduler();
+      reactor::backend::Thread* t = nullptr;
+      if (sched != nullptr)
+        t = sched->manager().current();
+      if (sched == nullptr)
+      {
+        auto &res = map[std::this_thread::get_id()];
+        if (!res)
+          res.reset(new __cxa_eh_globals());
+        return res.get();
+      }
+      if (t == nullptr)
+      {
+        static __cxa_eh_globals* nullthread_ceg = new __cxa_eh_globals();
+        return nullthread_ceg;
+      }
+      __cxa_eh_globals* ceg = (__cxa_eh_globals*)t->exception_storage();
+      return ceg;
     }
-    if (t == nullptr)
-    {
-      static __cxa_eh_globals* nullthread_ceg = new __cxa_eh_globals();
-      return nullthread_ceg;
-    }
-    __cxa_eh_globals* ceg = (__cxa_eh_globals*)t->exception_storage();
-    return ceg;
-  }
 
-  __cxa_eh_globals * __cxa_get_globals_fast() THROW_SPEC {
-    return __cxa_get_globals();
+    __cxa_eh_globals * __cxa_get_globals_fast() THROW_SPEC {
+      return __cxa_get_globals();
+    }
   }
 }
-}
-#else
-#error "Platform not supported."
-
-#endif

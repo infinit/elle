@@ -188,8 +188,6 @@ namespace elle
       std::lock_guard<std::recursive_mutex> lock(_mutex);
 
       int indent = this->indentation();
-      ELLE_ASSERT_GTE(indent, 1);
-
       std::vector<std::pair<std::string, std::string>> tags;
       for (auto const& tag: elle::Plugin<Tag>::plugins())
       {
@@ -197,8 +195,6 @@ namespace elle
         if (!content.empty())
           tags.push_back(std::make_pair(tag.second->name(), content));
       }
-
-
       auto time = this->_time_microsec ?
          ( this->_time_universal ?
         boost::posix_time::microsec_clock::universal_time() :
@@ -206,6 +202,14 @@ namespace elle
          :  ( this->_time_universal ?
         boost::posix_time::second_clock::universal_time() :
         boost::posix_time::second_clock::local_time());
+      if (indent < 1)
+      {
+        this->_message(
+          level, Type::error, component, time,
+          elle::sprintf("negative indentation level on log: %s", msg),
+          tags, 0, file, line, function);
+        std::abort();
+      }
       this->_message(level, type, component, time, msg, tags,
                      indent - 1, file, line, function);
     }

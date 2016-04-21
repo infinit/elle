@@ -617,6 +617,102 @@ ELLE_TEST_SCHEDULED(resolution_abort)
   };
 }
 
+ELLE_TEST_SCHEDULED(read_terminate_recover)
+{
+  char wbuf[100];
+  for (int i = 0; i < 100;++i)
+    wbuf[i] = rand();
+  reactor::network::TCPServer server;
+  server.listen();
+  reactor::Barrier terminated;
+  reactor::Barrier reading;
+  reactor::Thread accept(
+    "accept",
+    [&]
+    {
+      auto socket = server.accept();
+      char buffer[100] = {static_cast<char>(0xfd)};
+      int bytes_read = 0;
+      try
+      {
+        reading.open();
+        socket->read(reactor::network::Buffer(buffer, 100),
+                  elle::DurationOpt(), &bytes_read);
+      }
+      catch (reactor::Terminate const& e)
+      {
+        terminated.open();
+        BOOST_CHECK_EQUAL(bytes_read, 50);
+        BOOST_CHECK(!memcmp(buffer, wbuf, 50));
+        socket->read(reactor::network::Buffer(buffer+bytes_read, 100-bytes_read));
+        BOOST_CHECK(!memcmp(buffer, wbuf, 100));
+        throw;
+      }
+      BOOST_FAIL("unreachable");
+    });
+  reactor::network::TCPSocket socket(
+    "localhost", server.local_endpoint().port());
+  ELLE_LOG("write 50")
+    socket.write(elle::ConstWeakBuffer(wbuf, 50));
+  reactor::wait(reading);
+  ELLE_LOG("kill reader")
+    accept.terminate();
+  reactor::wait(terminated);
+  ELLE_LOG("write 50")
+    socket.write(elle::ConstWeakBuffer(wbuf+50, 50));
+  reactor::wait(accept);
+}
+
+ELLE_TEST_SCHEDULED(read_terminate_recover_iostream)
+{
+  char wbuf[100];
+  for (int i = 0; i < 100;++i)
+    wbuf[i] = rand();
+  reactor::network::TCPServer server;
+  server.listen();
+  reactor::Barrier terminated;
+  reactor::Barrier reading;
+  reactor::Thread accept(
+    "accept",
+    [&]
+    {
+      auto socket = server.accept();
+      char buffer[101] = {static_cast<char>(0xfd)};
+      int read = 0;
+      try
+      {
+        elle::IOStreamClear clearer(*socket);
+        reading.open();
+        ELLE_LOG("read 100 bytes")
+          while (read < 100)
+            read +=
+              std::readsome(*socket, buffer + read, sizeof(buffer) - read);
+      }
+      catch (reactor::Terminate const& e)
+      {
+        terminated.open();
+        while (read < 100)
+          read +=
+            std::readsome(*socket, buffer + read, sizeof(buffer) - read);
+        BOOST_CHECK(!memcmp(buffer, wbuf, 100));
+        throw;
+      }
+      BOOST_FAIL("unreachable");
+    });
+  reactor::network::TCPSocket socket(
+    "localhost", server.local_endpoint().port());
+  ELLE_LOG("write 50")
+    socket.write(elle::ConstWeakBuffer(wbuf, 50));
+  reactor::wait(reading);
+  ELLE_LOG("kill reader")
+    accept.terminate();
+  reactor::wait(terminated);
+  ELLE_LOG("write 50")
+    socket.write(elle::ConstWeakBuffer(wbuf + 50, 50));
+  socket.close();
+  reactor::wait(accept);
+}
+
 /*-----------.
 | Test suite |
 `-----------*/
@@ -648,4 +744,6 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(underflow), 0, 10);
   suite.add(BOOST_TEST_CASE(read_write_cancel), 0, 10);
   suite.add(BOOST_TEST_CASE(resolution_abort), 0, 2);
+  suite.add(BOOST_TEST_CASE(read_terminate_recover), 0, 1);
+  suite.add(BOOST_TEST_CASE(read_terminate_recover_iostream), 0, 1);
 }
