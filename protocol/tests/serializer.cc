@@ -154,7 +154,8 @@ static
 void
 dialog(std::function<void (SocketInstrumentation&)> const& conf,
        std::function<void (infinit::protocol::Serializer&)> const& a,
-       std::function<void (infinit::protocol::Serializer&)> const& b)
+       std::function<void (infinit::protocol::Serializer&)> const& b,
+       bool checksum = true)
 {
   reactor::Scheduler sched;
 
@@ -163,8 +164,8 @@ dialog(std::function<void (SocketInstrumentation&)> const& conf,
     [&] ()
     {
       SocketInstrumentation sockets;
-      infinit::protocol::Serializer alice(sockets.alice());
-      infinit::protocol::Serializer bob(sockets.bob());
+      infinit::protocol::Serializer alice(sockets.alice(), checksum);
+      infinit::protocol::Serializer bob(sockets.bob(), checksum);
       conf(sockets);
 
       elle::With<reactor::Scope>() << [&](reactor::Scope& scope)
@@ -304,6 +305,61 @@ corruption()
     });
 }
 
+
+static
+void
+termination()
+{
+  auto& t = *new reactor::Thread::unique_ptr;
+  auto& tready = *new reactor::Barrier;
+  dialog(
+    [] (SocketInstrumentation& sockets)
+    {
+    },
+    [&] (infinit::protocol::Serializer& s)
+    {
+      t.reset(new reactor::Thread("reader", [&] {
+          try
+          {
+            ELLE_LOG("read from thread");
+            tready.open();
+            s.read();
+            BOOST_CHECK(false);
+          }
+          catch (reactor::Terminate const& t)
+          {
+            ELLE_LOG("terminating first reader");
+            throw;
+          }
+      }));
+      reactor::wait(*t);
+      ELLE_LOG("second read");
+      auto buf = s.read();
+      ELLE_LOG("reader done");
+      BOOST_CHECK_EQUAL(buf.string(), "foobar");
+    },
+    [&] (infinit::protocol::Serializer& s)
+    {
+      ELLE_LOG("waitinng for thread");
+      reactor::wait(tready);
+      auto& backend = s.stream();
+      uint32_t sz = htonl(6);
+      backend.write(static_cast<const char*>((void*)&sz), 4);
+      backend.write("foo", 3);
+      backend.flush();
+      reactor::sleep(100_ms);
+      ELLE_LOG("killing thread");
+      t->terminate();
+      reactor::sleep(100_ms);
+      backend.write("baz", 3);
+      backend.write(static_cast<const char*>((void*)&sz), 4);
+      backend.write("foobar", 6);
+      backend.flush();
+      ELLE_LOG("writer done");
+    },
+    false);
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -311,4 +367,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(connection_lost_reader), 0, 3);
   suite.add(BOOST_TEST_CASE(connection_lost_sender), 0, 3);
   suite.add(BOOST_TEST_CASE(corruption), 0, 3);
+  suite.add(BOOST_TEST_CASE(termination), 0, 3);
 }

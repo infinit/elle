@@ -11,9 +11,6 @@
 #include <reactor/scheduler.hh>
 #include <reactor/exception.hh>
 #include <reactor/Barrier.hh>
-#include <reactor/network/socket.hh>
-#include <reactor/network/utp-socket.hh>
-#include <reactor/network/buffer.hh>
 
 #include <protocol/Serializer.hh>
 #include <protocol/exceptions.hh>
@@ -46,22 +43,10 @@ namespace infinit
     | Receiving |
     `----------*/
 
-    template<typename S>
-    uint32_t
-    read32(S* socket)
-    {
-      auto buf = socket->read(4);
-      uint32_t* i = reinterpret_cast<uint32_t*>(buf.contents());
-      return ntohl(*i);
-    }
-
     elle::Buffer
     Serializer::read()
     {
       reactor::Lock lock(_lock_read);
-      auto* s = dynamic_cast<reactor::network::Socket*>(&_stream);
-      auto* u = dynamic_cast<reactor::network::UTPSocket*>(&_stream);
-
       elle::IOStreamClear clearer(_stream);
       int state = 0;
       elle::SafeFinally state_checker([&] {
@@ -73,69 +58,45 @@ namespace infinit
         elle::Buffer hash;
         if (_checksum)
         {
-          uint32_t hash_size(s ? read32(s) : (u ? read32(u) : _uint32_get(_stream)));
+          uint32_t hash_size(_uint32_get(_stream));
           ELLE_DUMP("%s: checksum size: %s", *this, hash_size);
-          if (s)
-            hash = s->read(hash_size);
-          else if (u)
-            hash = u->read(hash_size);
-          else
-          {
-            hash.size(hash_size);
-            _stream.read(reinterpret_cast<char*>(hash.mutable_contents()),
-                         hash_size);
-          }
+
+          hash.size(hash_size);
+          _stream.read(reinterpret_cast<char*>(hash.mutable_contents()),
+                       hash_size);
           ELLE_DUMP("%s: checksum: %s", *this, hash);
         }
-        uint32_t size(s ? read32(s) : (u ? read32(u) : _uint32_get(_stream)));
+        uint32_t size(_uint32_get(_stream));
         ELLE_DEBUG("%s: packet size: %s", *this, size);
         state = 1;
-        elle::Buffer packet;
-        if (s)
+        elle::Buffer packet(static_cast<std::size_t>(size));
+        // read the full packet even if terminated to keep the stream
+        // in a consistent state
+        int nread = 0;
+        while (nread < signed(size))
         {
-          ELLE_TRACE("stream is a Socket");
-          packet.size(static_cast<std::size_t>(size));
-          int bytes_read = 0;
           try
           {
-            s->read(reactor::network::Buffer(packet.mutable_contents(), size),
-                    elle::DurationOpt(), &bytes_read);
+            elle::IOStreamClear clearer(_stream);
+            std::streamsize r = std::readsome(_stream,
+              (char*)(packet.mutable_contents()) +  nread, size - nread);
+            nread += r;
           }
-          catch (reactor::Terminate const& t)
+          catch (reactor::Terminate const&)
           {
-            ELLE_TRACE("%s: terminate called with %s/%s of packet read",
-                       *this, bytes_read, size);
-            s->read(reactor::network::Buffer(packet.mutable_contents() + bytes_read,
-                                             size - bytes_read),
-                    elle::DurationOpt(), &bytes_read);
+            while (nread < signed(size))
+            {
+              elle::IOStreamClear clearer(_stream);
+              std::streamsize r = std::readsome(_stream,
+                (char*)(packet.mutable_contents()) +  nread, size - nread);
+              nread += r;
+            }
             state = 2;
             throw;
           }
         }
-        else if (u)
-        {
-          ELLE_TRACE("stream is an UTPSocket");
-          try
-          {
-            packet = u->read(size);
-          }
-          catch (reactor::Terminate const& t)
-          { // The UTP socket implementation never makes partial copies
-            // from its internal buffer
-            ELLE_TRACE("%s: terminate called while reading utp payload", *this);
-            packet = u->read(size);
-            state = 2;
-            throw;
-          }
-        }
-        else
-        {
-          ELLE_TRACE("unknown stream type %s", typeid(_stream).name());
-          packet.size(static_cast<std::size_t>(size));
-          _stream.read((char*)(packet.mutable_contents()), size);
-        }
-        ELLE_DUMP("%s: packet data %s", *this, packet);
         state = 2;
+        ELLE_DUMP("%s: packet data %s", *this, packet);
         // Check hash.
         if (_checksum)
         {

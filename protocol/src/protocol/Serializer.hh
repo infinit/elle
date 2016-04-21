@@ -51,7 +51,7 @@ namespace infinit
     | Details |
     `--------*/
     private:
-      std::iostream& _stream;
+      ELLE_ATTRIBUTE_RX(std::iostream&, stream);
       reactor::Mutex _lock_write;
       reactor::Mutex _lock_read;
       bool           _checksum;
