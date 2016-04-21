@@ -187,3 +187,26 @@ namespace elle
       write((char *)this->_obuf, size);
   }
 }
+
+namespace std
+{
+  // Read up to \a n bytes, but at least one, unlike std::istream::readsome.
+  streamsize
+  readsome(std::istream& i, char* s, streamsize n)
+  {
+    if (n == 0)
+      return 0;
+    auto res = i.readsome(s, n);
+    if (res > 0)
+      return res;
+    if (i.eof())
+      return 0;
+    s[0] = i.get();
+    if (s[0] == EOF)
+      return 0;
+    res = 1;
+    if (n >= 1)
+      res += i.readsome(s + 1, n - 1);
+    return res;
+  }
+}
