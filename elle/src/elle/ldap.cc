@@ -60,7 +60,11 @@ namespace elle
       if (rc != LDAP_OPT_SUCCESS)
       throw elle::Error(
         elle::sprintf("ldap_set_option: %s", ldap_err2string(rc)));
-      Attr authuser = CN(user) / domain;
+      Attr authuser;
+      if (user.find('=') == user.npos)
+        authuser = CN(user) / domain;
+      else
+        authuser = Attr(user) / domain;
       ELLE_TRACE("binding with %s", authuser.value);
       /*
       std::string qbind = "cn=" + user + ",dc=" + domain;
