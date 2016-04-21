@@ -157,31 +157,20 @@ dialog(std::function<void (SocketInstrumentation&)> const& conf,
        std::function<void (infinit::protocol::Serializer&)> const& b,
        bool checksum = true)
 {
-  reactor::Scheduler sched;
+  SocketInstrumentation sockets;
+  infinit::protocol::Serializer alice(sockets.alice(), checksum);
+  infinit::protocol::Serializer bob(sockets.bob(), checksum);
+  conf(sockets);
 
-  reactor::Thread main(
-    sched, "main",
-    [&] ()
-    {
-      SocketInstrumentation sockets;
-      infinit::protocol::Serializer alice(sockets.alice(), checksum);
-      infinit::protocol::Serializer bob(sockets.bob(), checksum);
-      conf(sockets);
-
-      elle::With<reactor::Scope>() << [&](reactor::Scope& scope)
-      {
-        scope.run_background("alice", boost::bind(a, boost::ref(alice)));
-        scope.run_background("bob", boost::bind(b, boost::ref(bob)));
-        scope.wait();
-      };
-    });
-
-  sched.run();
+  elle::With<reactor::Scope>() << [&](reactor::Scope& scope)
+  {
+    scope.run_background("alice", boost::bind(a, boost::ref(alice)));
+    scope.run_background("bob", boost::bind(b, boost::ref(bob)));
+    scope.wait();
+  };
 }
 
-static
-void
-exchange_packets()
+ELLE_TEST_SCHEDULED(exchange_packets)
 {
   dialog([] (SocketInstrumentation&) {},
          [] (infinit::protocol::Serializer& s)
@@ -221,9 +210,7 @@ exchange_packets()
          });
 }
 
-static
-void
-connection_lost_reader()
+ELLE_TEST_SCHEDULED(connection_lost_reader)
 {
   dialog(
     [] (SocketInstrumentation& sockets)
@@ -247,9 +234,7 @@ connection_lost_reader()
     });
 }
 
-static
-void
-connection_lost_sender()
+ELLE_TEST_SCHEDULED(connection_lost_sender)
 {
   dialog(
     [] (SocketInstrumentation& sockets)
@@ -279,9 +264,7 @@ connection_lost_sender()
     {});
 }
 
-static
-void
-corruption()
+ELLE_TEST_SCHEDULED(corruption)
 {
   dialog(
     [] (SocketInstrumentation& sockets)
@@ -305,13 +288,10 @@ corruption()
     });
 }
 
-
-static
-void
-termination()
+ELLE_TEST_SCHEDULED(termination)
 {
-  auto& t = *new reactor::Thread::unique_ptr;
-  auto& tready = *new reactor::Barrier;
+  reactor::Thread::unique_ptr t;
+  reactor::Barrier tready;
   dialog(
     [] (SocketInstrumentation& sockets)
     {
