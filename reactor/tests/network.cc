@@ -625,6 +625,7 @@ ELLE_TEST_SCHEDULED(read_terminate_recover)
   reactor::network::TCPServer server;
   server.listen();
   reactor::Barrier terminated;
+  reactor::Barrier reading;
   reactor::Thread accept(
     "accept",
     [&]
@@ -634,6 +635,7 @@ ELLE_TEST_SCHEDULED(read_terminate_recover)
       int bytes_read = 0;
       try
       {
+        reading.open();
         socket->read(reactor::network::Buffer(buffer, 100),
                   elle::DurationOpt(), &bytes_read);
       }
@@ -652,6 +654,7 @@ ELLE_TEST_SCHEDULED(read_terminate_recover)
     "localhost", server.local_endpoint().port());
   ELLE_LOG("write 50")
     socket.write(elle::ConstWeakBuffer(wbuf, 50));
+  reactor::wait(reading);
   ELLE_LOG("kill reader")
     accept.terminate();
   reactor::wait(terminated);
@@ -668,6 +671,7 @@ ELLE_TEST_SCHEDULED(read_terminate_recover_iostream)
   reactor::network::TCPServer server;
   server.listen();
   reactor::Barrier terminated;
+  reactor::Barrier reading;
   reactor::Thread accept(
     "accept",
     [&]
@@ -678,6 +682,7 @@ ELLE_TEST_SCHEDULED(read_terminate_recover_iostream)
       try
       {
         elle::IOStreamClear clearer(*socket);
+        reading.open();
         ELLE_LOG("read 100 bytes")
           while (read < 100)
             read +=
@@ -698,6 +703,7 @@ ELLE_TEST_SCHEDULED(read_terminate_recover_iostream)
     "localhost", server.local_endpoint().port());
   ELLE_LOG("write 50")
     socket.write(elle::ConstWeakBuffer(wbuf, 50));
+  reactor::wait(reading);
   ELLE_LOG("kill reader")
     accept.terminate();
   reactor::wait(terminated);
@@ -738,6 +744,6 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(underflow), 0, 10);
   suite.add(BOOST_TEST_CASE(read_write_cancel), 0, 10);
   suite.add(BOOST_TEST_CASE(resolution_abort), 0, 2);
-  suite.add(BOOST_TEST_CASE(read_terminate_recover), 0, 10);
-  suite.add(BOOST_TEST_CASE(read_terminate_recover_iostream), 0, 10);
+  suite.add(BOOST_TEST_CASE(read_terminate_recover), 0, 1);
+  suite.add(BOOST_TEST_CASE(read_terminate_recover_iostream), 0, 1);
 }
