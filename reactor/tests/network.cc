@@ -630,7 +630,7 @@ ELLE_TEST_SCHEDULED(read_terminate_recover)
     [&]
     {
       auto socket = server.accept();
-      char buffer[100] = {0xfd};
+      char buffer[100] = {static_cast<char>(0xfd)};
       int bytes_read = 0;
       try
       {
@@ -673,7 +673,7 @@ ELLE_TEST_SCHEDULED(read_terminate_recover_iostream)
     [&]
     {
       auto socket = server.accept();
-      char buffer[101] = {0xfd};
+      char buffer[101] = {static_cast<char>(0xfd)};
       int read = 0;
       try
       {
