@@ -201,9 +201,10 @@ namespace std
       return res;
     if (i.eof())
       return 0;
-    s[0] = i.get();
-    if (s[0] == EOF)
-      return 0;
+    int first = i.get();
+    if (first == EOF)
+      return EOF;
+    s[0] = first;
     res = 1;
     if (n >= 1)
       res += i.readsome(s + 1, n - 1);

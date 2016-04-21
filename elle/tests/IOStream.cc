@@ -173,6 +173,14 @@ exceptions()
   }
 }
 
+static
+void
+readsome_eof()
+{
+  std::stringstream s;
+  char c;
+  BOOST_CHECK_EQUAL(readsome(s, &c, 1), EOF);
+}
 
 ELLE_TEST_SUITE()
 {
@@ -194,4 +202,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(std::bind(test_stream_buffer_write, 7)));
   suite.add(BOOST_TEST_CASE(std::bind(test_stream_buffer_write, 8)));
   suite.add(BOOST_TEST_CASE(exceptions));
+  suite.add(BOOST_TEST_CASE(readsome_eof));
 }
