@@ -60,7 +60,8 @@ namespace reactor
       | Pretty printing |
       `----------------*/
       public:
-        void print(std::ostream& s) const;
+        void
+        print(std::ostream& s) const override;
     };
   }
 }
