@@ -340,6 +340,32 @@ ELLE_TEST_SCHEDULED(termination)
     false);
 }
 
+ELLE_TEST_SCHEDULED(eof)
+{
+  static std::string const data(
+    "If the dream of humanity comes true, "
+    "will there be anyone around to witness it ?");
+  std::string packet;
+  {
+    std::stringstream output;
+    {
+      infinit::protocol::Serializer s(output);
+      elle::Buffer p(data);
+      s.write(p);
+    }
+    packet = output.str();
+  }
+  packet = packet.substr(0, packet.length() - 1);
+  {
+    std::stringstream input(packet);
+    {
+      infinit::protocol::Serializer s(input);
+      BOOST_CHECK_THROW(s.read(), infinit::protocol::Serializer::EOF);
+    }
+  }
+}
+
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -348,4 +374,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(connection_lost_sender), 0, 3);
   suite.add(BOOST_TEST_CASE(corruption), 0, 3);
   suite.add(BOOST_TEST_CASE(termination), 0, 3);
+  suite.add(BOOST_TEST_CASE(eof), 0, 3);
 }

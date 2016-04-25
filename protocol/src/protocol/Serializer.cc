@@ -21,6 +21,14 @@ namespace infinit
 {
   namespace protocol
   {
+    /*------.
+    | Types |
+    `------*/
+
+    Serializer::EOF::EOF()
+      : elle::Error("end of serializer stream")
+    {}
+
     /*-------------.
     | Construction |
     `-------------*/
@@ -48,11 +56,6 @@ namespace infinit
     {
       reactor::Lock lock(_lock_read);
       elle::IOStreamClear clearer(_stream);
-      int state = 0;
-      elle::SafeFinally state_checker([&] {
-        if (state == 1)
-          ELLE_ERR("serializer::read interrupted in unsafe state");
-      });
       ELLE_TRACE("%s: read packet", *this)
       {
         elle::Buffer hash;
@@ -60,7 +63,6 @@ namespace infinit
         {
           uint32_t hash_size(_uint32_get(_stream));
           ELLE_DUMP("%s: checksum size: %s", *this, hash_size);
-
           hash.size(hash_size);
           _stream.read(reinterpret_cast<char*>(hash.mutable_contents()),
                        hash_size);
@@ -68,7 +70,6 @@ namespace infinit
         }
         uint32_t size(_uint32_get(_stream));
         ELLE_DEBUG("%s: packet size: %s", *this, size);
-        state = 1;
         elle::Buffer packet(static_cast<std::size_t>(size));
         // read the full packet even if terminated to keep the stream
         // in a consistent state
@@ -77,25 +78,27 @@ namespace infinit
         {
           try
           {
-            elle::IOStreamClear clearer(_stream);
-            std::streamsize r = std::readsome(_stream,
-              (char*)(packet.mutable_contents()) +  nread, size - nread);
-            nread += r;
+            nread += std::readsome(
+              this->_stream,
+              reinterpret_cast<char*>(packet.mutable_contents()) +  nread,
+              size - nread);
+            if (this->_stream.eof())
+              throw EOF();
           }
-          catch (reactor::Terminate const&)
+          catch (...)
           {
             while (nread < signed(size))
             {
-              elle::IOStreamClear clearer(_stream);
+              if (this->_stream.eof())
+                throw;
+              this->_stream.clear();
               std::streamsize r = std::readsome(_stream,
                 (char*)(packet.mutable_contents()) +  nread, size - nread);
               nread += r;
             }
-            state = 2;
             throw;
           }
         }
-        state = 2;
         ELLE_DUMP("%s: packet data %s", *this, packet);
         // Check hash.
         if (_checksum)

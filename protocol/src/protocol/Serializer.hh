@@ -7,6 +7,10 @@
 
 # include <protocol/Stream.hh>
 
+# ifdef EOF
+#  undef EOF
+# endif
+
 namespace infinit
 {
   namespace protocol
@@ -18,6 +22,12 @@ namespace infinit
     `------*/
     public:
       typedef Stream Super;
+      class EOF
+        : public elle::Error
+      {
+      public:
+        EOF();
+      };
 
     /*-------------.
     | Construction |
