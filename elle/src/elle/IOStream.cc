@@ -203,7 +203,7 @@ namespace std
       return 0;
     int first = i.get();
     if (first == EOF)
-      return EOF;
+      return 0;
     s[0] = first;
     res = 1;
     if (n >= 1)
