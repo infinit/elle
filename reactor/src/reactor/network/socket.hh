@@ -249,7 +249,8 @@ namespace reactor
                 int* bytes_read = nullptr) override;
 
       elle::Buffer
-      read_until(std::string const& delimiter, DurationOpt opt = DurationOpt());
+      read_until(std::string const& delimiter,
+                 DurationOpt opt = DurationOpt()) override;
 
     private:
       virtual
@@ -264,7 +265,7 @@ namespace reactor
     public:
       virtual
       void
-      write(elle::ConstWeakBuffer buffer);
+      write(elle::ConstWeakBuffer buffer) override;
     protected:
       void
       _final_flush();
