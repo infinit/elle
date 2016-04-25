@@ -32,6 +32,8 @@ namespace elle
     public:
       LDAPClient(std::string const& url, Attr const& domain,
                  std::string const& user, std::string const& password);
+      LDAPClient(LDAPClient const& other) = delete;
+      LDAPClient(LDAPClient&& other);
       ~LDAPClient();
       Result search(Attr base, Attr query, std::vector<std::string> const& attrs = {});
     private:

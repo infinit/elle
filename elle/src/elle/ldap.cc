@@ -80,9 +80,17 @@ namespace elle
         elle::sprintf("ldap_sasl_bind: %s", ldap_err2string(rc)));
     }
 
+    LDAPClient::LDAPClient(LDAPClient&& other)
+    : _ld(other._ld)
+    , _domain(other._domain)
+    {
+      other._ld = nullptr;
+    }
+
     LDAPClient::~LDAPClient()
     {
-      ldap_unbind_ext_s(_ld, 0, 0);
+      if (_ld)
+        ldap_unbind_ext_s(_ld, 0, 0);
     }
 
     Result
