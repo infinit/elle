@@ -30,10 +30,16 @@ namespace reactor
       | Read |
       `-----*/
       public:
-        virtual void read(Buffer buffer,
-                          DurationOpt timeout = DurationOpt());
-        virtual Size read_some(Buffer buffer,
-                               DurationOpt timeout = DurationOpt());
+        virtual
+        void
+        read(Buffer buffer,
+             DurationOpt timeout = DurationOpt(),
+             int* bytes_read = nullptr) override;
+        virtual
+        Size
+        read_some(Buffer buffer,
+                  DurationOpt timeout = DurationOpt(),
+                  int* bytes_read = nullptr) override;
       private:
         friend class UDPServer;
         UDPServer* _server;
