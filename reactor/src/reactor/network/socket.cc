@@ -69,19 +69,10 @@ namespace reactor
         }
 
         char read_buffer[buffer_size];
-        std::exception_ptr read_exception;
         int
         underflow() override
         {
           ELLE_TRACE_SCOPE("%s: underflow", *this);
-          if (this->read_exception)
-          {
-            ELLE_TRACE("rethrow exception: %s",
-                       elle::exception_string(this->read_exception));
-            auto exception = std::move(this->read_exception);
-            this->read_exception = std::exception_ptr();
-            std::rethrow_exception(exception);
-          }
           if (this->_pacified)
           {
             setg(0, 0, 0);
@@ -97,14 +88,14 @@ namespace reactor
           }
           catch (...)
           {
-            if (size == 0)
-              throw;
-            else
+            if (size != 0)
             {
               ELLE_TRACE("exception after %s bytes: %s",
                          size, elle::exception_string());
-              this->read_exception = std::current_exception();
+              setg(this->read_buffer, this->read_buffer,
+                   this->read_buffer + size);
             }
+            throw;
           }
           setg(this->read_buffer, this->read_buffer,
                this->read_buffer + size);
