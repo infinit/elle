@@ -19,7 +19,7 @@ class Renderer(drake.Builder):
   def __init__(self, source, target = None):
     self.__source = source
     self.__target = target or drake.Node(
-      self.__source.path(True).with_extension('html')
+      self.__source.name_relative.with_extension('html')
     )
     drake.Builder.__init__(self, [self.__source], [self.__target])
 
