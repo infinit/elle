@@ -346,6 +346,7 @@ ELLE_TEST_SCHEDULED(eof)
     "If the dream of humanity comes true, "
     "will there be anyone around to witness it ?");
   std::string packet;
+  std::string valid_packet;
   {
     std::stringstream output;
     {
@@ -354,6 +355,7 @@ ELLE_TEST_SCHEDULED(eof)
       s.write(p);
     }
     packet = output.str();
+    valid_packet = packet;
   }
   packet = packet.substr(0, packet.length() - 1);
   {
@@ -362,6 +364,17 @@ ELLE_TEST_SCHEDULED(eof)
       infinit::protocol::Serializer s(input);
       BOOST_CHECK_THROW(s.read(), infinit::protocol::Serializer::EOF);
     }
+  }
+  {
+    std::stringstream input;
+    infinit::protocol::Serializer s(input);
+    BOOST_CHECK_THROW(s.read(), infinit::protocol::Serializer::EOF);
+  }
+  {
+   std::stringstream input(valid_packet);
+   infinit::protocol::Serializer s(input);
+   BOOST_CHECK_NO_THROW(s.read());
+   BOOST_CHECK_THROW(s.read(), infinit::protocol::Serializer::EOF);
   }
 }
 

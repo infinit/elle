@@ -78,15 +78,18 @@ namespace infinit
         {
           try
           {
-            nread += std::readsome(
+            auto res = std::readsome(
               this->_stream,
               reinterpret_cast<char*>(packet.mutable_contents()) +  nread,
               size - nread);
+            ELLE_DEBUG("read %s at %s/%s", res, nread, size);
+            nread += res;
             if (this->_stream.eof())
               throw EOF();
           }
           catch (...)
           {
+            ELLE_DEBUG("Exception intercepted, flushing reader");
             while (nread < signed(size))
             {
               if (this->_stream.eof())
@@ -142,7 +145,7 @@ namespace infinit
       reactor::Thread::NonInterruptible ni;
       reactor::Lock lock(_lock_write);
       elle::IOStreamClear clearer(_stream);
-      ELLE_TRACE("%s: send %s", *this, packet)
+      ELLE_TRACE("%s: send %f", *this, packet)
       if (_checksum)
       {
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
