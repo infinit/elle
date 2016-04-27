@@ -114,7 +114,7 @@ namespace infinit
               // FIXME: use helper to pop
               elle::Buffer packet(std::move(channel->_packets.front()));
               channel->_packets.pop_front();
-              ELLE_TRACE("%s: %s available.", *this, packet);
+              ELLE_TRACE("%s: %f available.", *this, packet);
               return packet;
             }
           ELLE_DEBUG("%s: no packet available.", *this);
@@ -130,6 +130,7 @@ namespace infinit
     ChanneledStream::_read(bool new_channel, int requested_channel)
     {
       ELLE_TRACE_SCOPE("%s: reading packets.", *this);
+      ELLE_ASSERT(!_reading);
       try
       {
         while (true)
@@ -144,7 +145,7 @@ namespace infinit
           auto it = this->_channels.find(channel_id);
           if (it != this->_channels.end())
           {
-            ELLE_DEBUG("%s: received %s on existing %s.",
+            ELLE_DEBUG("%s: received %f on existing %s.",
                        *this, p, *it->second);
             it->second->_packets.push_back(std::move(p));
             if (channel_id == requested_channel)
@@ -155,7 +156,7 @@ namespace infinit
           else
           {
             Channel res(*this, channel_id);
-            ELLE_DEBUG("%s: received %s on brand new %s.", *this, p, res);
+            ELLE_DEBUG("%s: received %f on brand new %s.", *this, p, res);
             res._packets.push_back(std::move(p));
             this->_channels_new.push_back(std::move(res));
             if (new_channel)
@@ -227,7 +228,7 @@ namespace infinit
     void
     ChanneledStream::_write(elle::Buffer const& packet, int id)
     {
-      ELLE_TRACE_SCOPE("%s: send %s on channel %s", *this, packet, id);
+      ELLE_TRACE_SCOPE("%s: send %f on channel %s", *this, packet, id);
 
       elle::Buffer backend_packet;
       uint32_put(backend_packet, id);

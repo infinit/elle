@@ -179,7 +179,7 @@ readsome_eof()
 {
   std::stringstream s;
   char c;
-  BOOST_CHECK_EQUAL(readsome(s, &c, 1), EOF);
+  BOOST_CHECK_EQUAL(readsome(s, &c, 1), 0);
 }
 
 ELLE_TEST_SUITE()

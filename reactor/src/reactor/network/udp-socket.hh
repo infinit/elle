@@ -62,9 +62,13 @@ namespace reactor
       | Write |
       `------*/
       public:
-        virtual void write(elle::ConstWeakBuffer buffer);
-        virtual elle::Buffer read_until(std::string const& delimiter,
-                                        DurationOpt opt = DurationOpt());
+        virtual
+        void
+        write(elle::ConstWeakBuffer buffer) override;
+        virtual
+        elle::Buffer
+        read_until(std::string const& delimiter,
+                   DurationOpt opt = DurationOpt()) override;
 
         void send_to(Buffer buffer,
                      EndPoint endpoint);
@@ -73,7 +77,8 @@ namespace reactor
       | Pretty printing |
       `----------------*/
       public:
-        void print(std::ostream& s) const;
+        void
+        print(std::ostream& s) const override;
     };
   }
 }

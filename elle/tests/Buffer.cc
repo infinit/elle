@@ -35,7 +35,8 @@ test_ctor_raw(size_t size)
     raw[i] = 0xaa;
   elle::Buffer b(raw, size);
   BOOST_CHECK_EQUAL(b.size(), size);
-  BOOST_CHECK_NE(b.contents(), raw);
+  if (size > 0) // malloc(0) can legitimately return the same address twice.
+    BOOST_CHECK_NE(static_cast<void*>(b.contents()), static_cast<void*>(raw));
   for (unsigned i = 0; i < size; ++i)
     raw[i] = 0;
   delete [] raw;

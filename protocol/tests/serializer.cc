@@ -752,6 +752,45 @@ ELLE_TEST_SCHEDULED(termination)
   _termination(elle::Version{0, 1, 0}, false);
 }
 
+ELLE_TEST_SCHEDULED(eof)
+{
+  static std::string const data(
+    "If the dream of humanity comes true, "
+    "will there be anyone around to witness it ?");
+  std::string packet;
+  std::string valid_packet;
+  {
+    std::stringstream output;
+    {
+      infinit::protocol::Serializer s(output);
+      elle::Buffer p(data);
+      s.write(p);
+    }
+    packet = output.str();
+    valid_packet = packet;
+  }
+  packet = packet.substr(0, packet.length() - 1);
+  {
+    std::stringstream input(packet);
+    {
+      infinit::protocol::Serializer s(input);
+      BOOST_CHECK_THROW(s.read(), infinit::protocol::Serializer::EOF);
+    }
+  }
+  {
+    std::stringstream input;
+    infinit::protocol::Serializer s(input);
+    BOOST_CHECK_THROW(s.read(), infinit::protocol::Serializer::EOF);
+  }
+  {
+   std::stringstream input(valid_packet);
+   infinit::protocol::Serializer s(input);
+   BOOST_CHECK_NO_THROW(s.read());
+   BOOST_CHECK_THROW(s.read(), infinit::protocol::Serializer::EOF);
+  }
+}
+
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -762,4 +801,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(corruption), 0, valgrind(3, 10));
   suite.add(BOOST_TEST_CASE(interruption), 0, valgrind(6, 10));
   suite.add(BOOST_TEST_CASE(termination), 0, valgrind(3, 10));
+  suite.add(BOOST_TEST_CASE(eof), 0, 3);
 }

@@ -143,7 +143,6 @@ namespace elle
     read(std::istream& stream)
     {
       ELLE_TRACE_SCOPE("read json from stream");
-      elle::IOStreamClear clearer(stream);
       json_spirit::Value value;
       if (!json_spirit::read(stream, value))
         throw ParseError(elle::sprintf("JSON error"));

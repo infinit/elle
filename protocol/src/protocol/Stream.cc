@@ -1,6 +1,7 @@
 #include <elle/log.hh>
 
 #include <protocol/Stream.hh>
+#include <protocol/Serializer.hh>
 
 #include <reactor/scheduler.hh>
 
@@ -81,7 +82,8 @@ namespace infinit
       if (!s.good())
         throw elle::Exception("stream is not good");
       s.read(reinterpret_cast<char*>(&res), sizeof(res));
-      ELLE_ASSERT_EQ(unsigned(s.gcount()), sizeof(res));
+      if (s.gcount() != sizeof(res))
+        throw Serializer::EOF();
       return ntohl(res);
     }
   }

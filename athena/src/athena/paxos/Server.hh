@@ -144,7 +144,7 @@ namespace athena
     `-------------*/
     public:
       Server(ServerId id, Quorum quorum,
-        elle::Version version = elle::Version(ELLE_MAJOR, ELLE_MINOR, ELLE_SUBMINOR));
+             elle::Version version = elle::serialization_tag::version);
       ELLE_ATTRIBUTE_R(ServerId, id);
       ELLE_ATTRIBUTE_R(Quorum, quorum);
       ELLE_ATTRIBUTE_R(boost::optional<T>, value);

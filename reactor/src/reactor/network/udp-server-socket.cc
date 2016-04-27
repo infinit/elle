@@ -40,17 +40,21 @@ namespace reactor
     `-----*/
 
     void
-    UDPServerSocket::read(Buffer buffer, DurationOpt timeout)
+    UDPServerSocket::read(Buffer buffer,
+                          DurationOpt timeout,
+                          int* bytes_read)
     {
       while (_read_buffer_size < buffer.size())
         scheduler().current()->wait(_read_ready);
       ELLE_ASSERT_GTE(_read_buffer_size, buffer.size());
-      Size size = read_some(buffer, timeout);
+      Size size = this->read_some(buffer, timeout, bytes_read);
       ELLE_ASSERT_EQ(size, buffer.size());
     }
 
     Size
-    UDPServerSocket::read_some(Buffer buffer, DurationOpt timeout)
+    UDPServerSocket::read_some(Buffer buffer,
+                               DurationOpt timeout,
+                               int* bytes_read)
     {
       ELLE_TRACE("%s: read at most %s bytes", *this, buffer.size());
       if (_read_buffer_size == 0)
@@ -66,6 +70,8 @@ namespace reactor
       if (size != _read_buffer_size)
         memmove(_read_buffer, _read_buffer + size, _read_buffer_size - size);
       _read_buffer_size -= size;
+      if (bytes_read)
+        *bytes_read = size;
       return size;
     }
 

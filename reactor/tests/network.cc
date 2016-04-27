@@ -626,6 +626,7 @@ ELLE_TEST_SCHEDULED(read_terminate_recover)
   server.listen();
   reactor::Barrier terminated;
   reactor::Barrier reading;
+  reactor::Barrier written;
   reactor::Thread accept(
     "accept",
     [&]
@@ -635,6 +636,9 @@ ELLE_TEST_SCHEDULED(read_terminate_recover)
       int bytes_read = 0;
       try
       {
+        // Wait until the data is written to ensure we have a chance to read it
+        // and not be killed right away.
+        reactor::wait(written);
         reading.open();
         socket->read(reactor::network::Buffer(buffer, 100),
                   elle::DurationOpt(), &bytes_read);
@@ -654,6 +658,7 @@ ELLE_TEST_SCHEDULED(read_terminate_recover)
     "localhost", server.local_endpoint().port());
   ELLE_LOG("write 50")
     socket.write(elle::ConstWeakBuffer(wbuf, 50));
+  written.open();
   reactor::wait(reading);
   ELLE_LOG("kill reader")
     accept.terminate();
@@ -713,6 +718,33 @@ ELLE_TEST_SCHEDULED(read_terminate_recover_iostream)
   reactor::wait(accept);
 }
 
+ELLE_TEST_SCHEDULED(read_terminate_deadlock)
+{
+  reactor::network::TCPServer server;
+  server.listen();
+  reactor::Barrier terminated;
+  reactor::Barrier reading;
+  reactor::Thread accept(
+    "accept",
+    [&]
+    {
+      auto socket = server.accept();
+      char buffer[8] = {static_cast<char>(0xfd)};
+      int read = 0;
+      elle::IOStreamClear clearer(*socket);
+      reading.open();
+      while (read < 8)
+        read += std::readsome(*socket, buffer + read, sizeof(buffer) - read);
+      reactor::sleep();
+    });
+  reactor::network::TCPSocket socket(
+    "localhost", server.local_endpoint().port());
+  reactor::wait(reading);
+  ELLE_LOG("write 8")
+    socket.write(elle::ConstWeakBuffer("abcdefgh", 8));
+  accept.terminate_now();
+}
+
 /*-----------.
 | Test suite |
 `-----------*/
@@ -746,4 +778,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(resolution_abort), 0, 2);
   suite.add(BOOST_TEST_CASE(read_terminate_recover), 0, 1);
   suite.add(BOOST_TEST_CASE(read_terminate_recover_iostream), 0, 1);
+  suite.add(BOOST_TEST_CASE(read_terminate_deadlock), 0, 1);
 }

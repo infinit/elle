@@ -130,6 +130,13 @@ namespace infinit
       void
       _write(elle::Buffer const&) final;
     };
+    /*------.
+    | Types |
+    `------*/
+
+    Serializer::EOF::EOF()
+      : elle::Error("end of serializer stream")
+    {}
 
     /*-------------.
     | Construction |
@@ -238,26 +245,28 @@ namespace infinit
         {
           ELLE_DEBUG_SCOPE("read from %s", nread);
           elle::IOStreamClear clearer(stream);
-          std::streamsize r = std::readsome(stream, where, size - nread);
-          ELLE_DEBUG("read: %sB", r);
-          nread += r;
+          nread += std::readsome(stream, where, size - nread);
+          if (stream.eof())
+            throw Serializer::EOF();
         }
-        catch (reactor::Terminate const& t)
+        catch (...)
         {
           ELLE_TRACE("reading %s interrupted", stream);
           while (nread < signed(size))
           {
             ELLE_DEBUG_SCOPE("read from %s", nread);
             char* where = beginning + nread;
-            elle::IOStreamClear clearer(stream);
+            if (stream.eof())
+              throw;
+            stream.clear();
             std::streamsize r = std::readsome(stream, where, size - nread);
             ELLE_DEBUG("read: %sB", r);
             nread += r;
           }
           throw;
         }
+        ELLE_DUMP("content: %x (size: %s)", content, content.size());
       }
-      ELLE_DUMP("content: %x (size: %s)", content, content.size());
     }
 
     static
@@ -348,11 +357,6 @@ namespace infinit
     elle::Buffer
     Version010Impl::_read()
     {
-      int state = 0;
-      elle::SafeFinally state_checker([&] {
-          if (state == 1)
-            ELLE_ERR("serializer::read interrupted in unsafe state");
-        });
       elle::Buffer hash;
       if (this->_checksum)
         ELLE_DEBUG("read checksum")
@@ -361,7 +365,6 @@ namespace infinit
       auto packet = infinit::protocol::read(this->_stream);
       ELLE_DEBUG("got packet '%f'", packet);
       ELLE_DUMP("packet content: '%x'", packet);
-      state = 2;
       // Check checksums match.
       if (this->_checksum)
         enforce_checksums_equal(packet, hash);

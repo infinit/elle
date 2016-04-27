@@ -755,8 +755,7 @@ ELLE_TEST_SCHEDULED(serialization)
   ELLE_LOG("unserialize and choose")
   {
     elle::serialization::Context ctx;
-    ctx.set<elle::Version>(
-      elle::Version(ELLE_MAJOR, ELLE_MINOR, ELLE_SUBMINOR));
+    ctx.set<elle::Version>(elle::serialization_tag::version);
     auto server_1 =
       elle::serialization::json::deserialize<Server>(s1, false, ctx);
     auto server_2 =

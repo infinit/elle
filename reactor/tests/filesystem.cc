@@ -147,9 +147,7 @@ static void run_filesystem(reactor::filesystem::FileSystem &fs,
     fs.mount(tmp, {});
     ELLE_TRACE("waiting on stop barrier");
     barrier.wait();
-    ELLE_TRACE("...unmounting...");
-    fs.unmount();
-    ELLE_TRACE("...unmounted");
+    ELLE_TRACE("exiting thread");
   });
   sched.run();
 }
