@@ -405,10 +405,13 @@ namespace reactor
     {
       thread->_terminating = true;
       thread->raise<Terminate>(thread->name());
-      if (thread->state() == Thread::state::frozen)
+      if (thread->interruptible())
       {
-        thread->_wait_abort("thread termination");
-        ELLE_ASSERT_EQ(thread->state(), Thread::state::running);
+        if (thread->state() == Thread::state::frozen)
+        {
+          thread->_wait_abort("thread termination");
+          ELLE_ASSERT_EQ(thread->state(), Thread::state::running);
+        }
       }
     }
     return thread->state() == Thread::state::done;
