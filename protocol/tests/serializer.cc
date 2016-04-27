@@ -694,8 +694,8 @@ void
 _termination(elle::Version const& version,
             bool checksum)
 {
-  auto& t = *new reactor::Thread::unique_ptr;
-  auto& tready = *new reactor::Barrier;
+  reactor::Thread::unique_ptr t;
+  reactor::Barrier tready;
   dialog<SocketInstrumentation>(
     version,
     checksum,
