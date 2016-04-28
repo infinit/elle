@@ -200,7 +200,7 @@ namespace infinit
     void
     Serializer::_write(elle::Buffer const& packet)
     {
-      ELLE_TRACE_SCOPE("%s: write packet '%f' (%s bytes)",
+      ELLE_TRACE_SCOPE("%s: write packet '%x' (%s bytes)",
                        *this, packet, packet.size());
       this->_impl->write(packet);
     }
@@ -230,7 +230,7 @@ namespace infinit
          uint32_t size,
          uint32_t offset = 0)
     {
-      ELLE_DEBUG_SCOPE("read %s bytes from %s at offset %s (to %f)",
+      ELLE_DEBUG_SCOPE("read %s bytes from %s at offset %s (to %x)",
                        size, stream, offset, content);
       // read the full packet even if terminated to keep the stream
       // in a consistent state
@@ -241,7 +241,7 @@ namespace infinit
         char* where = beginning + nread;
         try
         {
-          ELLE_DEBUG_SCOPE("read from %s", nread);
+          ELLE_DUMP_SCOPE("read from %s", nread);
           elle::IOStreamClear clearer(stream);
           nread += std::readsome(stream, where, size - nread);
           if (stream.eof())
@@ -286,7 +286,7 @@ namespace infinit
     elle::Buffer
     compute_checksum(elle::Buffer const& content)
     {
-      ELLE_DUMP("compute checksum of '%s'", content);
+      ELLE_DUMP("compute checksum of '%x'", content);
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
       auto _hash =
         infinit::cryptography::hash(
@@ -312,17 +312,15 @@ namespace infinit
     enforce_checksums_equal(elle::Buffer const& content,
                             elle::Buffer const& expected_checksum)
     {
-      ELLE_DEBUG_SCOPE("compare '%f' checksum with expected '%x'",
+      ELLE_DUMP_SCOPE("compare '%x' checksum with expected '%x'",
                        content, expected_checksum);
       auto checksum = compute_checksum(content);
-      ELLE_DEBUG("checksum: '%x'", checksum);
+      ELLE_DUMP("checksum: '%x'", checksum);
       if (checksum != expected_checksum)
       {
         ELLE_ERR("wrong packet checksum")
           throw ChecksumError();
       }
-      else
-        ELLE_DEBUG("checksums match");
     }
 
     static
@@ -334,19 +332,18 @@ namespace infinit
           boost::optional<elle::Buffer::Size> size = boost::none)
     {
       elle::Buffer::Size to_send = size ? size.get() : content.size();
-      ELLE_DEBUG_SCOPE("write %s '%x' (offset: %s)",
+      ELLE_DEBUG_SCOPE("write %s '%x' at offset  %s (write size: %s)",
                        to_send == content.size()
                        ? std::string{"whole"}
                        : elle::sprintf("%s bytes from", to_send),
                        content,
-                       offset);
+                       offset,
+                       write_size);
       if (write_size)
-        ELLE_DEBUG("write size: %s byte(s)", to_send)
-          Serializer::Super::uint32_put(stream, to_send);
-      ELLE_DEBUG("write content: '%x'", content)
-        stream.write(
-          reinterpret_cast<char*>(content.mutable_contents()) + offset,
-          to_send);
+        Serializer::Super::uint32_put(stream, to_send);
+      stream.write(
+        reinterpret_cast<char*>(content.mutable_contents()) + offset,
+        to_send);
     }
 
     /*--------------.
@@ -362,7 +359,7 @@ namespace infinit
           hash = infinit::protocol::read(this->_stream);
       ELLE_DEBUG("read actual data");
       auto packet = infinit::protocol::read(this->_stream);
-      ELLE_DEBUG("got packet '%f'", packet);
+      ELLE_DEBUG("got packet '%x'", packet);
       ELLE_DUMP("packet content: '%x'", packet);
       // Check checksums match.
       if (this->_checksum)
@@ -404,10 +401,10 @@ namespace infinit
     void
     check_control(Serializer::Inner& stream)
     {
-      ELLE_DEBUG_SCOPE("read control");
+      ELLE_DUMP_SCOPE("read control");
       char control = (char) Control::unknown;
       stream.read(&control, 1);
-      ELLE_DEBUG("control: '%f'", control);
+      ELLE_DUMP("control: '%x'", control);
       if (control == Control::keep_going)
         return;
       if (control == Control::interrupt)
@@ -420,7 +417,7 @@ namespace infinit
     write_control(Serializer::Inner& stream,
                   Control control)
     {
-      ELLE_DEBUG_SCOPE("send control %s", control);
+      ELLE_DUMP_SCOPE("send control %s", control);
       char c = static_cast<char>(control);
       stream.write(&c, 1);
     }
@@ -449,7 +446,7 @@ namespace infinit
         offset += size;
         ELLE_ASSERT_LTE(offset, total_size);
       }
-      ELLE_DEBUG("got packet '%f'", packet);
+      ELLE_DEBUG("got packet '%x'", packet);
       ELLE_DUMP("packet content: '%x'", packet);
       // Check hash.
       if (this->_checksum)
@@ -467,7 +464,7 @@ namespace infinit
           reactor::Thread::NonInterruptible ni;
           // Compute the hash and send it first.
           auto hash = compute_checksum(packet);
-          ELLE_DEBUG("send checksum %s", hash)
+          ELLE_DEBUG("send checksum %x", hash)
             infinit::protocol::write(this->_stream, hash);
         }
         {
