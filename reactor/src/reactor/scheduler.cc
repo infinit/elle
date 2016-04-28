@@ -405,7 +405,7 @@ namespace reactor
     {
       thread->_terminating = true;
       thread->raise<Terminate>(thread->name());
-      if (thread->interruptible())
+      if (thread->state() == Thread::state::frozen && thread->interruptible())
       {
         if (thread->state() == Thread::state::frozen)
         {

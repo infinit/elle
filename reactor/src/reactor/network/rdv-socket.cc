@@ -15,7 +15,6 @@ namespace reactor
 {
   namespace network
   {
-
     using Endpoint = boost::asio::ip::udp::endpoint;
     RDVSocket::RDVSocket()
       : _server_reached(elle::sprintf("%s: server reached", *this))

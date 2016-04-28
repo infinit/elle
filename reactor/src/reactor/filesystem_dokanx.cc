@@ -981,8 +981,14 @@ namespace reactor
         break;
       }
     }
+
     FileSystem::~FileSystem()
     {
+      // Without this flush, we get a strange trailing ",'" on stdout when
+      // closing stdin of `infinit-volume --run --script` which breaks the JSON
+      // output (tests/functional/passport-restrictions notably). This might be
+      // wine only.
+      std::cout.flush();
       unmount();
       delete _impl;
     }

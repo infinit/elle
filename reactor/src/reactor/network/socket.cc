@@ -99,7 +99,7 @@ namespace reactor
           }
           setg(this->read_buffer, this->read_buffer,
                this->read_buffer + size);
-          return this->read_buffer[0];
+          return static_cast<unsigned char>(this->read_buffer[0]);
         }
 
         char write_buffer[buffer_size];
