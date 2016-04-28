@@ -31,6 +31,7 @@ namespace infinit
     /*--------------------------.
     | Implementation definition |
     `--------------------------*/
+
     class Serializer::pImpl
     {
     protected:
@@ -42,8 +43,7 @@ namespace infinit
         , _checksum(checksum)
         , _lock_write()
         , _lock_read()
-      {
-      }
+      {}
 
     public:
       virtual
@@ -101,8 +101,7 @@ namespace infinit
                      elle::Buffer::Size chunk_size,
                      bool checksum)
         :  Serializer::pImpl(stream, chunk_size, checksum)
-      {
-      }
+      {}
 
     public:
       elle::Buffer
@@ -120,8 +119,7 @@ namespace infinit
                  elle::Buffer::Size chunk_size,
                  bool checksum)
         :  Serializer::pImpl(stream, chunk_size, checksum)
-      {
-      }
+      {}
 
     public:
       elle::Buffer
@@ -130,6 +128,7 @@ namespace infinit
       void
       _write(elle::Buffer const&) final;
     };
+
     /*------.
     | Types |
     `------*/
@@ -141,12 +140,12 @@ namespace infinit
     /*-------------.
     | Construction |
     `-------------*/
+
     Serializer::Serializer(std::iostream& stream,
                            elle::Version const& version,
                            bool checksum)
       : Serializer(*reactor::Scheduler::scheduler(), stream, version, checksum)
-    {
-    }
+    {}
 
     Serializer::Serializer(reactor::Scheduler& scheduler,
                            std::iostream& stream,
@@ -181,8 +180,7 @@ namespace infinit
     }
 
     Serializer::~Serializer()
-    {
-    }
+    {}
 
     /*----------.
     | Receiving |
@@ -354,6 +352,7 @@ namespace infinit
     /*--------------.
     | Version 0.1.0 |
     `--------------*/
+
     elle::Buffer
     Version010Impl::_read()
     {
@@ -391,6 +390,7 @@ namespace infinit
     /*--------------.
     | Version 0.2.0 |
     `--------------*/
+
     enum Control: unsigned char
     {
       keep_going = 0,
