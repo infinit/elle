@@ -3090,7 +3090,7 @@ ELLE_TEST_SUITE()
   boost::unit_test::test_suite* sleep = BOOST_TEST_SUITE("Sleep");
   boost::unit_test::framework::master_test_suite().add(sleep);
   sleep->add(BOOST_TEST_CASE(test_sleep_interleave), 0, valgrind(1, 5));
-  sleep->add(BOOST_TEST_CASE(test_sleep_timing), 0, valgrind(4, 3));
+  sleep->add(BOOST_TEST_CASE(test_sleep_timing), 0, valgrind(10, 3));
 
   boost::unit_test::test_suite* join = BOOST_TEST_SUITE("Join");
   boost::unit_test::framework::master_test_suite().add(join);
