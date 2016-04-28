@@ -200,8 +200,7 @@ namespace infinit
     void
     Serializer::_write(elle::Buffer const& packet)
     {
-      ELLE_TRACE_SCOPE("%s: write packet '%x' (%s bytes)",
-                       *this, packet, packet.size());
+      ELLE_TRACE_SCOPE("%s: write packet (%s bytes)", *this, packet.size());
       this->_impl->write(packet);
     }
 
@@ -252,7 +251,7 @@ namespace infinit
           ELLE_TRACE("reading %s interrupted", stream);
           while (nread < signed(size))
           {
-            ELLE_DEBUG_SCOPE("read from %s", nread);
+            ELLE_DUMP_SCOPE("read from %s", nread);
             char* where = beginning + nread;
             if (stream.eof())
               throw;
@@ -359,8 +358,7 @@ namespace infinit
           hash = infinit::protocol::read(this->_stream);
       ELLE_DEBUG("read actual data");
       auto packet = infinit::protocol::read(this->_stream);
-      ELLE_DEBUG("got packet '%x'", packet);
-      ELLE_DUMP("packet content: '%x'", packet);
+      ELLE_DUMP("packet content: '%f'", packet);
       // Check checksums match.
       if (this->_checksum)
         enforce_checksums_equal(packet, hash);
@@ -446,8 +444,7 @@ namespace infinit
         offset += size;
         ELLE_ASSERT_LTE(offset, total_size);
       }
-      ELLE_DEBUG("got packet '%x'", packet);
-      ELLE_DUMP("packet content: '%x'", packet);
+      ELLE_DUMP("packet content: '%f'", packet);
       // Check hash.
       if (this->_checksum)
         enforce_checksums_equal(packet, hash);
