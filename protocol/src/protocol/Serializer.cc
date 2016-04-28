@@ -409,7 +409,7 @@ namespace infinit
         return;
       if (control == Control::interrupt)
         throw InterruptionError();
-      elle::unreachable();
+      throw protocol::Error("invalid control byte");
     }
 
     static
