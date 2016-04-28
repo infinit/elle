@@ -900,7 +900,7 @@ now()
 
 ELLE_TEST_SCHEDULED(test_sleep_timing)
 {
-  reactor::Duration const delay = valgrind(200_ms, 10);
+  reactor::Duration const delay = valgrind(500_ms, 10);
 
   // The first sleep is erratic on valgrind, don't include it in the tests.
   if (RUNNING_ON_VALGRIND)
@@ -911,6 +911,7 @@ ELLE_TEST_SCHEDULED(test_sleep_timing)
     reactor::sleep(delay);
     double elapsed = (now() - start).total_milliseconds();
     double expected =  delay.total_milliseconds();
+    BOOST_CHECK_GE(elapsed, expected);
     BOOST_CHECK_CLOSE(elapsed, expected, double(25));
   }
 }
