@@ -451,13 +451,13 @@ _exchange(elle::Version const& version,
           bool checksum)
 {
   std::vector<elle::Buffer> packets={
-    infinit::cryptography::random::generate<std::string>(0),
-    infinit::cryptography::random::generate<std::string>(1),
-    infinit::cryptography::random::generate<std::string>(1000),
-    // Crypto is quite slow generating large strings.
+    infinit::cryptography::random::generate<elle::Buffer>(0),
+    infinit::cryptography::random::generate<elle::Buffer>(1),
+    infinit::cryptography::random::generate<elle::Buffer>(1000),
+    // Crypto is quite slow generating large buffers
     std::string((2 << 18) + 11, 'y'),
     // // XXX: Make sure it's always bigger than the chunk size.
-    // std::string((2 << 21) - 1, 'x')
+    std::string((2 << 21) - 1, 'x')
   };
   dialog<Connector>(version,
          checksum,
@@ -619,7 +619,8 @@ _interruption(elle::Version const& version,
     },
     [&] (infinit::protocol::Serializer& s)
     {
-      to_send.size(s.chunk_size() * 30);
+      to_send = infinit::cryptography::random::generate<elle::Buffer>(
+        s.chunk_size() * 30);
       try
       {
         ELLE_TRACE("write '%f'", to_send)
