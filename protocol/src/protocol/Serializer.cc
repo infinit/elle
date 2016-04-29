@@ -229,7 +229,7 @@ namespace infinit
          uint32_t size,
          uint32_t offset = 0)
     {
-      ELLE_DEBUG_SCOPE("read %s bytes from %s at offset %s (to %x)",
+      ELLE_DEBUG_SCOPE("read %s bytes from %s at offset %s (to %f)",
                        size, stream, offset, content);
       // read the full packet even if terminated to keep the stream
       // in a consistent state
@@ -331,7 +331,7 @@ namespace infinit
           boost::optional<elle::Buffer::Size> size = boost::none)
     {
       elle::Buffer::Size to_send = size ? size.get() : content.size();
-      ELLE_DEBUG_SCOPE("write %s '%x' at offset  %s (write size: %s)",
+      ELLE_DEBUG_SCOPE("write %s '%f' at offset %s (write size: %s)",
                        to_send == content.size()
                        ? std::string{"whole"}
                        : elle::sprintf("%s bytes from", to_send),
