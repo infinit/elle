@@ -390,23 +390,24 @@ namespace infinit
     {
       keep_going = 0,
       interrupt = 1,
+      message = 2,
       // Unknown.
-      unknown = 255
+      unknown = 3
     };
 
     // Check control byte.
     static
-    void
+    Control
     check_control(Serializer::Inner& stream)
     {
       ELLE_DUMP_SCOPE("read control");
       char control = (char) Control::unknown;
       stream.read(&control, 1);
-      ELLE_DUMP("control: '%x'", control);
-      if (control == Control::keep_going)
-        return;
+      ELLE_DUMP("control: '%x'", (int) control);
       if (control == Control::interrupt)
         throw InterruptionError();
+      if (control < Control::unknown)
+        return (Control) control;
       throw protocol::Error("invalid control byte");
     }
 
@@ -415,9 +416,18 @@ namespace infinit
     write_control(Serializer::Inner& stream,
                   Control control)
     {
-      ELLE_DUMP_SCOPE("send control %s", control);
+      ELLE_DUMP_SCOPE("send control %s", (int) control);
       char c = static_cast<char>(control);
       stream.write(&c, 1);
+    }
+
+    static
+    void
+    ignore_message(Serializer::Inner& stream)
+    {
+      // Version 0.2.0 handle but ignore messages.
+      auto res = infinit::protocol::read(stream);
+      ELLE_WARN("%f was ignored", res);
     }
 
     elle::Buffer
@@ -428,7 +438,8 @@ namespace infinit
       {
         ELLE_DEBUG("read checksum")
           hash = infinit::protocol::read(this->_stream);
-        check_control(this->_stream);
+        while (check_control(this->_stream) == Control::message)
+          ignore_message(this->_stream);
       }
       // Get the total size.
       uint32_t total_size(Serializer::Super::uint32_get(this->_stream));
@@ -436,7 +447,8 @@ namespace infinit
       elle::Buffer packet(static_cast<std::size_t>(total_size));
       for (elle::Buffer::Size offset = 0; offset < total_size;)
       {
-        check_control(this->_stream);
+        while (check_control(this->_stream) == Control::message)
+          ignore_message(this->_stream);
         uint32_t size = std::min(total_size - offset, this->_chunk_size);
         ELLE_DEBUG("read chunk of size %s", size);
         infinit::protocol::read(this->_stream, packet, size, offset);

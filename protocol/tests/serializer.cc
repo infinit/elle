@@ -791,6 +791,63 @@ ELLE_TEST_SCHEDULED(eof)
   }
 }
 
+ELLE_TEST_SCHEDULED(message_v020)
+{
+  uint32_t chunk_size = 0;
+  dialog<Connector>(
+    elle::Version{0, 2, 0},
+    false,
+    [] (Connector&)
+    {
+    },
+    [&] (infinit::protocol::Serializer& s)
+    {
+      chunk_size = s.chunk_size();
+      auto buf = s.read();
+      ELLE_LOG("recieved %f (size %s)", buf, buf.size());
+      elle::Buffer expected{std::string(chunk_size * 2, 'y')};
+      BOOST_CHECK_EQUAL(buf.size(), expected.size());
+      BOOST_CHECK_EQUAL(buf, expected);
+    },
+    [&] (infinit::protocol::Serializer& s)
+    {
+    },
+    [&] (reactor::Thread&, reactor::Thread&, Connector& connector)
+    {
+      // XXX: This could be better... Once we have the version that send
+      // messages, re-write that test.
+      while (chunk_size == 0)
+        reactor::yield();
+      auto size = 2 * chunk_size;
+      auto chunk = elle::Buffer{std::string(chunk_size, 'y')};
+      auto keep_going = [&] () {
+        unsigned char keep_going = 0;
+        connector._alice_buffer.append(&keep_going, 1);
+      };
+      // Send the size.
+      {
+        size = htonl(size);
+        connector._alice_buffer.append(&size, 4);
+      }
+      // Keep going.
+      keep_going();
+      // Write first part.
+      connector._alice_buffer.append(chunk.mutable_contents(), chunk.size());
+      // Put a message in the middle of the stream.
+      {
+        unsigned char message_control = 2;
+        std::string message = "this should be ignored";
+        uint32_t size = htonl(message.length());
+        connector._alice_buffer.append(&message_control, 1);
+        connector._alice_buffer.append(&size, 4);
+        connector._alice_buffer.append(message.c_str(), message.length());
+      }
+      // Keep going.
+      keep_going();
+      // Write the second part.
+      connector._alice_buffer.append(chunk.mutable_contents(), chunk.size());
+    });
+}
 
 ELLE_TEST_SUITE()
 {
@@ -803,4 +860,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(interruption), 0, valgrind(6, 10));
   suite.add(BOOST_TEST_CASE(termination), 0, valgrind(3, 10));
   suite.add(BOOST_TEST_CASE(eof), 0, 3);
+  suite.add(BOOST_TEST_CASE(message_v020), 0, 3);
 }
