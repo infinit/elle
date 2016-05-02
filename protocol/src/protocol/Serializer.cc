@@ -438,8 +438,6 @@ namespace infinit
       {
         ELLE_DEBUG("read checksum")
           hash = infinit::protocol::read(this->_stream);
-        while (check_control(this->_stream) == Control::message)
-          ignore_message(this->_stream);
       }
       // Get the total size.
       uint32_t total_size(Serializer::Super::uint32_get(this->_stream));
@@ -468,23 +466,22 @@ namespace infinit
     {
       try
       {
-        if (this->_checksum)
-        {
-          reactor::Thread::NonInterruptible ni;
-          // Compute the hash and send it first.
-          auto hash = compute_checksum(packet);
-          ELLE_DEBUG("send checksum %x", hash)
-            infinit::protocol::write(this->_stream, hash);
-        }
         {
           reactor::Thread::NonInterruptible ni;
           if (this->_checksum)
-            write_control(this->_stream, Control::keep_going);
-          // Send the size.
-          auto size = packet.size();
-          ELLE_DEBUG("send packet size %s", size)
-            Serializer::Super::uint32_put(this->_stream, size);
-          this->_stream.flush();
+          {
+            // Compute the hash and send it first.
+            auto hash = compute_checksum(packet);
+            ELLE_DEBUG("send checksum %x", hash)
+              infinit::protocol::write(this->_stream, hash);
+          }
+          {
+            // Send the size.
+            auto size = packet.size();
+            ELLE_DEBUG("send packet size %s", size)
+              Serializer::Super::uint32_put(this->_stream, size);
+            this->_stream.flush();
+          }
         }
         for (elle::Buffer::Size offset = 0;
              offset < packet.size();
