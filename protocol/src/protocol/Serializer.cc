@@ -443,16 +443,19 @@ namespace infinit
       uint32_t total_size(Serializer::Super::uint32_get(this->_stream));
       ELLE_DEBUG("packet size: %s", total_size);
       elle::Buffer packet(static_cast<std::size_t>(total_size));
-      for (elle::Buffer::Size offset = 0; offset < total_size;)
+      elle::Buffer::Size offset = 0;
+      while (true)
       {
-        while (check_control(this->_stream) == Control::message)
-          ignore_message(this->_stream);
         uint32_t size = std::min(total_size - offset, this->_chunk_size);
         ELLE_DEBUG("read chunk of size %s", size);
         infinit::protocol::read(this->_stream, packet, size, offset);
         ELLE_DUMP("current packet state: '%x'", packet);
         offset += size;
         ELLE_ASSERT_LTE(offset, total_size);
+        if (offset >= total_size)
+          break;
+        while (check_control(this->_stream) == Control::message)
+          ignore_message(this->_stream);
       }
       ELLE_DUMP("packet content: '%f'", packet);
       // Check hash.
@@ -466,34 +469,39 @@ namespace infinit
     {
       try
       {
+        elle::Buffer::Size offset = 0;
+        auto send = [&]
+          {
+            auto to_send = std::min(this->_chunk_size, packet.size() - offset);
+            ELLE_DEBUG("send actual data")
+            infinit::protocol::write(
+              this->_stream, packet, false, offset, to_send);
+            offset += to_send;
+            this->_stream.flush();
+          };
         {
           reactor::Thread::NonInterruptible ni;
           if (this->_checksum)
+          // Compute the hash and send it first.
           {
-            // Compute the hash and send it first.
             auto hash = compute_checksum(packet);
             ELLE_DEBUG("send checksum %x", hash)
               infinit::protocol::write(this->_stream, hash);
           }
+          // Send the size.
           {
-            // Send the size.
             auto size = packet.size();
             ELLE_DEBUG("send packet size %s", size)
               Serializer::Super::uint32_put(this->_stream, size);
-            this->_stream.flush();
           }
+          // Send first chunk
+          send();
         }
-        for (elle::Buffer::Size offset = 0;
-             offset < packet.size();
-             offset += this->_chunk_size)
+        while (offset < packet.size())
         {
           reactor::Thread::NonInterruptible ni;
           write_control(this->_stream, Control::keep_going);
-          auto to_send = std::min(this->_chunk_size, packet.size() - offset);
-          ELLE_DEBUG("send actual data")
-            infinit::protocol::write(
-              this->_stream, packet, false, offset, to_send);
-          this->_stream.flush();
+          send();
         }
       }
       catch (reactor::Terminate const&)

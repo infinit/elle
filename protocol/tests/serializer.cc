@@ -829,8 +829,6 @@ ELLE_TEST_SCHEDULED(message_v020)
         size = htonl(size);
         connector._alice_buffer.append(&size, 4);
       }
-      // Keep going.
-      keep_going();
       // Write first part.
       connector._alice_buffer.append(chunk.mutable_contents(), chunk.size());
       // Put a message in the middle of the stream.
