@@ -901,7 +901,6 @@ now()
 ELLE_TEST_SCHEDULED(test_sleep_timing)
 {
   reactor::Duration const delay = valgrind(500_ms, 10);
-
   // The first sleep is erratic on valgrind, don't include it in the tests.
   if (RUNNING_ON_VALGRIND)
     reactor::sleep(delay);
@@ -914,6 +913,35 @@ ELLE_TEST_SCHEDULED(test_sleep_timing)
     BOOST_CHECK_GE(elapsed, expected);
     BOOST_CHECK_CLOSE(elapsed, expected, double(25));
   }
+}
+
+/*------.
+| Every |
+`------*/
+
+ELLE_TEST_SCHEDULED(every)
+{
+  reactor::Duration const delay = valgrind(200_ms, 10);
+  static const int iter = 5;
+  // The first sleep is erratic on valgrind, don't include it in the tests.
+  if (RUNNING_ON_VALGRIND)
+    reactor::sleep(delay);
+  boost::posix_time::ptime start(now());
+  int i = 0;
+  reactor::Thread::unique_ptr thread = reactor::every(
+    delay, "inc",
+    [&]
+    {
+      if (++i >= iter)
+        thread->terminate();
+    });
+  reactor::wait(*thread);
+  BOOST_CHECK_EQUAL(i, iter);
+  double elapsed = (now() - start).total_milliseconds();
+  double expected =  delay.total_milliseconds() * iter;
+  BOOST_CHECK_GE(elapsed, expected);
+  reactor::sleep(delay * 3);
+  BOOST_CHECK_EQUAL(i, iter);
 }
 
 /*-----.
@@ -3087,10 +3115,17 @@ ELLE_TEST_SUITE()
     scope->add(BOOST_TEST_CASE(terminate_all), 0, valgrind(1, 5));
   }
 
-  boost::unit_test::test_suite* sleep = BOOST_TEST_SUITE("Sleep");
-  boost::unit_test::framework::master_test_suite().add(sleep);
-  sleep->add(BOOST_TEST_CASE(test_sleep_interleave), 0, valgrind(1, 5));
-  sleep->add(BOOST_TEST_CASE(test_sleep_timing), 0, valgrind(10, 3));
+  {
+    boost::unit_test::test_suite* sleep = BOOST_TEST_SUITE("sleep");
+    boost::unit_test::framework::master_test_suite().add(sleep);
+    sleep->add(BOOST_TEST_CASE(test_sleep_interleave), 0, valgrind(1, 5));
+    sleep->add(BOOST_TEST_CASE(test_sleep_timing), 0, valgrind(10, 3));
+  }
+
+  {
+    boost::unit_test::framework::master_test_suite().add(
+      BOOST_TEST_CASE(every), 0, valgrind(2));
+  }
 
   boost::unit_test::test_suite* join = BOOST_TEST_SUITE("Join");
   boost::unit_test::framework::master_test_suite().add(join);

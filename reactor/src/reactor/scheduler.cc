@@ -490,28 +490,6 @@ namespace reactor
                std::bind(&CallLaterHelper, this, f, delay), true);
   }
 
-  static void
-  every_helper(Scheduler* sched,
-               const std::function<void ()>& f,
-               Duration delay)
-  {
-    while (true)
-    {
-      sched->current()->sleep(delay);
-      f();
-    }
-  }
-
-  Thread*
-  Scheduler::every(const std::function<void ()>& f,
-                   const std::string& name,
-                   Duration delay,
-                   bool dispose)
-  {
-    return new Thread(*this, name,
-                      std::bind(&every_helper, this, f, delay), dispose);
-  }
-
   /*----------------.
   | Background jobs |
   `----------------*/
@@ -730,6 +708,10 @@ namespace reactor
   }
 }
 
+/*----------------------------.
+| Standdard library overrides |
+`----------------------------*/
+
 #if !defined(INFINIT_LINUX) && !defined(INFINIT_ANDROID)      \
     && !defined(INFINIT_WINDOWS) && !defined(INFINIT_MACOSX)  \
     && !defined(INFINIT_IOS)
@@ -767,7 +749,6 @@ cxa_thread_map()
 
 namespace __cxxabiv1
 {
-
   extern "C"
   {
     __cxa_eh_globals * __cxa_get_globals() THROW_SPEC

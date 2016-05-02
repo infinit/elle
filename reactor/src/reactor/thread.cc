@@ -508,4 +508,29 @@ namespace reactor
     }
     return s;
   }
+
+  /*------.
+  | Every |
+  `------*/
+
+  Thread::unique_ptr
+  every(Duration delay,
+        const std::string& name,
+        const std::function<void ()>& f,
+        bool dispose)
+  {
+    auto* sched = &reactor::scheduler();
+    ELLE_ASSERT(sched);
+    return new Thread(
+      *sched, name,
+      [sched, delay, f] ()
+      {
+        while (true)
+        {
+          sched->current()->sleep(delay);
+          f();
+        }
+      },
+      dispose);
+  }
 }
