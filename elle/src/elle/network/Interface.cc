@@ -180,6 +180,24 @@ namespace elle
           }
           map[iter->ifa_name].ipv4_address = oss.str();
           break;
+        case AF_INET6:
+          {
+            auto inet_addr = reinterpret_cast<sockaddr_in6*>(iter->ifa_addr);
+            tab = reinterpret_cast<uint8_t*>(&inet_addr->sin6_addr.s6_addr);
+            oss << std::hex << std::setfill('0') << std::setw(2);
+            for (size_t i = 0; i < sizeof(inet_addr->sin6_addr.s6_addr); i+=2)
+            {
+              if (i != 0)
+                oss << ':';
+              oss << std::setfill('0') << std::setw(2) << std::hex
+                  << static_cast<unsigned int>(tab[i])
+                  << std::setfill('0') << std::setw(2) << std::hex
+                  << static_cast<unsigned int>(tab[i+1])
+                  ;
+            }
+            map[iter->ifa_name].ipv6_address.push_back(oss.str());
+          }
+          break;
         case hw_addr_family:
           hw_addr = reinterpret_cast<hw_addr_type*>(iter->ifa_addr);
           for (size_t i = 0; i < hw_addr_len(hw_addr); ++i)

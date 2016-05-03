@@ -48,7 +48,7 @@ namespace reactor
         listen(const EndPoint& end_point);
 
         void
-        listen(int port = 0);
+        listen(int port = 0, bool ipv6 = false);
 
         EndPoint
         local_endpoint() const;

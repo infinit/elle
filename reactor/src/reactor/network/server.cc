@@ -108,9 +108,12 @@ namespace reactor
     }
 
     void
-    Server::listen(int port)
+    Server::listen(int port, bool v6)
     {
-      return listen(EndPoint(boost::asio::ip::tcp::v4(), port));
+      if (v6)
+        listen(EndPoint(boost::asio::ip::address_v6::any(), port));
+      else
+        listen(EndPoint(boost::asio::ip::address_v4::any(), port));
     }
 
     void

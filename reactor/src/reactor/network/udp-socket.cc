@@ -85,7 +85,10 @@ namespace reactor
     void
     UDPSocket::bind(boost::asio::ip::udp::endpoint const& endpoint)
     {
-      socket()->open(boost::asio::ip::udp::v4());
+      if (endpoint.address().is_v6())
+        socket()->open(boost::asio::ip::udp::v6()); // gives us mapped v4 too
+      else
+        socket()->open(boost::asio::ip::udp::v4());
       socket()->bind(endpoint);
     }
 

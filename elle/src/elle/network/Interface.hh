@@ -3,6 +3,7 @@
 
 # include <map>
 # include <string>
+# include <vector>
 
 namespace elle
 {
@@ -14,6 +15,7 @@ namespace elle
     public:
       std::string mac_address;
       std::string ipv4_address;
+      std::vector<std::string> ipv6_address;
 
     public:
       enum class Filter : int
