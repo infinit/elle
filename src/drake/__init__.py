@@ -20,6 +20,7 @@ import platform
 import re
 import shutil
 import stat
+import string
 import subprocess
 import sys
 import threading
@@ -3604,9 +3605,25 @@ class Runner(Builder):
       return False
 
   def _report_node(self, node):
-    with open(str(node.path()), 'r') as f:
-      for line in f:
-        print('  %s' % line, end = '')
+    with open(str(node.path()), 'rb') as f:
+      eol = True
+      while True:
+        b = f.read(4096)
+        if not b:
+          break
+        if eol:
+          eol = False
+          sys.stdout.write('  ')
+        for c in b:
+          if c == '\n':
+            eol = True
+          if chr(c) not in string.printable:
+            sys.stdout.write('\\x%x' % c)
+          elif c == '\\':
+            sys.stdout.write('\\\\')
+          else:
+            sys.stdout.write(chr(c))
+
 
   def _report_node_binary(self, node):
     with open(str(node.path()), 'rb') as f:
