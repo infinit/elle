@@ -21,7 +21,6 @@ test_operate_real()
     infinit::cryptography::random::generate<double>();
   double value2 =
     infinit::cryptography::random::generate<double>();
-
   // With very high probability.
   BOOST_CHECK_NE(value1, value2);
 }
@@ -32,9 +31,7 @@ test_operate_x(T minimum,
                T maximum)
 {
   infinit::cryptography::random::generate<T>();
-
   T value = infinit::cryptography::random::generate<T>(minimum, maximum);
-
   BOOST_CHECK_GE(value, minimum);
   BOOST_CHECK_LE(value, maximum);
 }
@@ -47,9 +44,9 @@ test_operate_string()
     infinit::cryptography::random::generate<std::string>(262);
   std::string value2 =
     infinit::cryptography::random::generate<std::string>(262);
-
   // With very high probability.
-  BOOST_CHECK_NE(value1, value2);
+  std::cerr << std::hex;
+  BOOST_CHECK_NE(elle::ConstWeakBuffer(value1), elle::ConstWeakBuffer(value2));
 }
 
 static
@@ -60,8 +57,8 @@ test_operate_buffer()
     infinit::cryptography::random::generate<elle::Buffer>(262);
   elle::Buffer value2 =
     infinit::cryptography::random::generate<elle::Buffer>(262);
-
   // With very high probability.
+  std::cerr << std::hex;
   BOOST_CHECK_NE(value1, value2);
 }
 
@@ -96,4 +93,3 @@ ELLE_TEST_SUITE()
 
   boost::unit_test::framework::master_test_suite().add(suite);
 }
-
