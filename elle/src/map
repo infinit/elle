@@ -4,15 +4,7 @@
 
 # include <ostream>
 # include_next <map>
-
-namespace elle
-{
-  template <typename F, typename... T>
-  void
-  fprintf(std::ostream& out,
-          F&& fmt,
-          T&&... values);
-}
+# include <elle/printf-fwd.hh>
 
 namespace std
 {
