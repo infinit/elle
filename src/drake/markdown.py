@@ -9,20 +9,31 @@ def id(text):
 
 class HeaderIdsRenderer(mistune.Renderer):
 
-  def header(self, text, level, raw=None):
+  def header(self, text, level, raw = None):
     header = super().header(text, level, raw)
     position = 3 # 1 + len('h%d' % level)
     return header[0:position] + ' id="' + id(text) + '"' + header[position:]
 
 class Renderer(drake.Builder):
 
-  def __init__(self, source, target = None):
+  def __init__(
+    self, source,
+    target = None,
+    replace_before = {
+      '_blank': '&lowbar;blank',
+    },
+    replace_after = {
+      '<code>--': '<code>&#8209;&#8209;',
+      '&quot;': '\"',
+    },
+  ):
     self.__source = source
     self.__target = target or drake.Node(
       self.__source.name_relative.with_extension('html')
     )
+    self.__replace_before = replace_before
+    self.__replace_after = replace_after
     drake.Builder.__init__(self, [self.__source], [self.__target])
-
 
   def execute(self):
     self.output('Render %s' % self.__target)
@@ -33,7 +44,13 @@ class Renderer(drake.Builder):
     )
     with open(str(self.__source.path())) as input:
       with open(str(self.__target.path()), 'w') as output:
-        output.write(markdown(input.read()))
+        text = input.read()
+        for k, v in self.__replace_before.items():
+          text = text.replace(k, v)
+        html = markdown(text)
+        for k, v in self.__replace_after.items():
+          html = html.replace(k, v)
+        output.write(html)
     return True
 
 class Source(drake.Node):
