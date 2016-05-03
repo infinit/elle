@@ -27,7 +27,16 @@ static uint64 on_sendto(utp_callback_arguments* args)
   UTPServer* server = (UTPServer*)utp_context_get_userdata(args->context);
   ELLE_ASSERT(server);
   ELLE_DEBUG("on_sendto %s %s", args->len, ep);
-  server->send_to(Buffer(args->buf, args->len), ep);
+  Buffer buf(args->buf, args->len);
+  elle::Buffer copy;
+  if (server->xorify())
+  {
+    copy.append(args->buf, args->len);
+    for (unsigned int i=0; i<args->len; ++i)
+      copy[i] ^= server->xorify();
+    buf = Buffer(copy.contents(), copy.size());
+  }
+  server->send_to(buf, ep);
   return 0;
 }
 
@@ -162,6 +171,7 @@ std::unique_ptr<UTPSocket> UTPServer::accept()
 
 UTPServer::UTPServer()
 {
+  _xorify = 0;
   _sending = false;
   ctx = utp_init(2);
   utp_context_set_userdata(ctx, this);
@@ -678,6 +688,11 @@ void UTPServer::listen(EndPoint const& ep)
           sz = _socket->receive_from(Buffer(buf.mutable_contents(), buf.size()),
                                     source);
           buf.size(sz);
+          if (this->_xorify)
+          {
+            for (int i=0; i<sz; ++i)
+              buf[i] ^= this->_xorify;
+          }
           auto* raw = source.data();
           ELLE_DEBUG("process_udp %s", sz);
           utp_process_udp(ctx, buf.contents(), sz, raw, source.size());
