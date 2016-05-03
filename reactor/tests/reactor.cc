@@ -2969,6 +2969,81 @@ ELLE_TEST_SCHEDULED(test_terminate_non_interruptible)
     t.terminate_now();
     BOOST_CHECK_EQUAL(status, 2);
   }
+  ELLE_LOG("test 3")
+  {
+    reactor::Scheduler sched;
+    reactor::Barrier ready("ready"), go("go"), terminated("terminated");
+    reactor::Thread t(
+      sched, "main",
+      [&]
+      {
+        elle::With<reactor::Scope>() << [&] (reactor::Scope& s)
+        {
+          auto& t1 = s.run_background(
+            "1",
+            [&]
+            {
+              try
+              {
+                ELLE_TRACE("open %s", ready)
+                  ready.open();
+                {
+                  reactor::Thread::NonInterruptible ni;
+                  // Because it's not interruptible, reactor should wait for ever...
+                  ELLE_TRACE("wait for %s", go)
+                    go.wait();
+                  ELLE_TRACE("go status: %s", (bool) go);
+                }
+              }
+              catch (reactor::Terminate const&)
+              {
+                BOOST_CHECK(ready);
+                BOOST_CHECK(go);
+                ELLE_TRACE("open %s", terminated)
+                  terminated.open();
+                throw;
+              }
+            });
+          auto& t2 = s.run_background(
+            "2",
+            [&]
+            {
+              ELLE_TRACE("wait for %s", ready)
+                ready.wait();
+              reactor::yield();
+              // Terminate shoulb be blocked until go is open.
+              ELLE_TRACE("terminate %s", t1);
+                t1.terminate_now();
+              BOOST_CHECK(go);
+              BOOST_CHECK(terminated);
+            });
+          s.run_background(
+            "3",
+            [&]
+            {
+              ELLE_TRACE("wait for %s", ready)
+                ready.wait();
+              reactor::yield();
+              reactor::yield();
+              BOOST_CHECK(!t1.done());
+              BOOST_CHECK(!t2.done());
+              ELLE_TRACE("open %s", go)
+                go.open();
+              BOOST_CHECK(!t1.done());
+              BOOST_CHECK(!t2.done());
+              ELLE_TRACE("wait fo %s", terminated)
+                terminated.wait(1_sec);
+              reactor::yield();
+              reactor::yield();
+              BOOST_CHECK(t1.done());
+              BOOST_CHECK(t2.done());
+            });
+          s.wait();
+        };
+      });
+    sched.run();
+  }
+
 }
 
 /*---------.

@@ -565,12 +565,30 @@ date()
     typename Format::SerializerOut output(stream);
     output.serialize("date", now);
   }
-  std::cerr << stream.str() << std::endl;
   {
     boost::posix_time::ptime res;
     typename Format::SerializerIn input(stream);
     input.serialize("date", res);
     BOOST_CHECK_EQUAL(now, res);
+  }
+}
+
+template <typename Format>
+static
+void
+version()
+{
+  std::stringstream stream;
+  auto version = elle::Version{2, 27, 123};
+  {
+    typename Format::SerializerOut output(stream);
+    output.serialize("version", version);
+  }
+  {
+    elle::Version res;
+    typename Format::SerializerIn input(stream);
+    input.serialize("version", res);
+    BOOST_CHECK_EQUAL(version, res);
   }
 }
 
@@ -591,7 +609,6 @@ chrono_check(std::chrono::duration<Repr, Ratio> const& d)
     input.serialize("duration", res);
     BOOST_CHECK(d == res);
   }
-
 }
 
 template <typename Format>
@@ -1652,6 +1669,7 @@ ELLE_TEST_SUITE()
   FOR_ALL_SERIALIZATION_TYPES(unordered_set);
   FOR_ALL_SERIALIZATION_TYPES(buffer);
   FOR_ALL_SERIALIZATION_TYPES(date);
+  FOR_ALL_SERIALIZATION_TYPES(version);
   FOR_ALL_SERIALIZATION_TYPES(chrono);
   {
     boost::unit_test::test_suite* subsuite = BOOST_TEST_SUITE("hierarchy");

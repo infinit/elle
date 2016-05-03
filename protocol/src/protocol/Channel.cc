@@ -13,23 +13,19 @@ namespace infinit
     | Construction |
     `-------------*/
 
-    // Factor those two by delegating the constructor.
-    Channel::Channel(ChanneledStream& backend)
-      : Super(backend.scheduler())
-      , _backend(backend)
-      , _id(backend._id_generate()) // FIXME: overflow
-    {
-      ELLE_DEBUG_SCOPE("%s: open %s", _backend, *this);
-      _backend._channels[_id] = this;
-    }
-
     Channel::Channel(ChanneledStream& backend, int id)
       : Super(backend.scheduler())
       , _backend(backend)
       , _id(id)
     {
-      ELLE_DEBUG_SCOPE("%s: open %s", _backend, *this);
-      _backend._channels[_id] = this;
+      ELLE_DEBUG_SCOPE("%s: open %s", this->_backend, *this);
+      this->_backend._channels[this->_id] = this;
+    }
+
+    // Factor those two by delegating the constructor.
+    Channel::Channel(ChanneledStream& backend)
+      : Channel(backend, backend._id_generate())
+    {
     }
 
     Channel::Channel(Channel&& source)
@@ -40,17 +36,19 @@ namespace infinit
       , _available(std::move(source._available))
     {
       source._id = 0;
-      assert(_backend._channels.find(_id) != _backend._channels.end());
-      _backend._channels[_id] = this;
+      ELLE_ASSERT_NEQ(this->_backend._channels.find(this->_id),
+                      this->_backend._channels.end());
+      this->_backend._channels[this->_id] = this;
     }
 
     Channel::~Channel()
     {
-      if (_id != 0)
+      if (this->_id != 0)
         {
-          ELLE_DEBUG_SCOPE("close channel %s", _id);
-          assert(_backend._channels.find(_id) != _backend._channels.end());
-          _backend._channels.erase(_id);
+          ELLE_DEBUG_SCOPE("close channel %s", this->_id);
+          ELLE_ASSERT_NEQ(this->_backend._channels.find(this->_id),
+                          this->_backend._channels.end());
+          this->_backend._channels.erase(this->_id);
         }
     }
 
@@ -61,17 +59,7 @@ namespace infinit
     void
     Channel::print(std::ostream& s) const
     {
-      s << "channel " << _id;
-    }
-
-    /*-----------.
-    | Properties |
-    `-----------*/
-
-    int
-    Channel::id() const
-    {
-      return this->_id;
+      s << "channel " << this->_id;
     }
 
     /*----------.
@@ -81,7 +69,7 @@ namespace infinit
     elle::Buffer
     Channel::read()
     {
-      return _backend._read(this);
+      return this->_backend._read(this);
     }
 
     /*--------.
@@ -89,9 +77,9 @@ namespace infinit
     `--------*/
 
     void
-    Channel::_write(elle::Buffer& packet)
+    Channel::_write(elle::Buffer const& packet)
     {
-      _backend._write(packet, _id);
+      this->_backend._write(packet, this->_id);
     }
   }
 }

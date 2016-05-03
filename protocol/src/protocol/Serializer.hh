@@ -6,6 +6,7 @@
 # include <reactor/mutex.hh>
 
 # include <protocol/Stream.hh>
+# include <elle/attribute.hh>
 
 # ifdef EOF
 #  undef EOF
@@ -15,13 +16,15 @@ namespace infinit
 {
   namespace protocol
   {
-    class Serializer: public Stream
+    class Serializer
+      : public Stream
     {
     /*------.
     | Types |
     `------*/
     public:
       typedef Stream Super;
+      typedef std::iostream Inner;
       class EOF
         : public elle::Error
       {
@@ -33,38 +36,50 @@ namespace infinit
     | Construction |
     `-------------*/
     public:
-      Serializer(std::iostream& stream, bool checksum = true);
-      Serializer(reactor::Scheduler& scheduler, std::iostream& stream,
+      Serializer(std::iostream& stream,
+                 elle::Version const& version = elle::Version(0, 1, 0),
                  bool checksum = true);
+
+      Serializer(reactor::Scheduler& scheduler,
+                 std::iostream& stream,
+                 elle::Version const& version  = elle::Version(0, 1, 0),
+                 bool checksum = true);
+
+    public:
+      ~Serializer();
 
     /*----------.
     | Receiving |
     `----------*/
     public:
-      elle::Buffer read();
+      elle::Buffer
+      read() override;
 
     /*--------.
     | Sending |
     `--------*/
     protected:
-      virtual
       void
-      _write(elle::Buffer& packet);
+      _write(elle::Buffer const& packet) override;
 
     /*----------.
     | Printable |
     `----------*/
     public:
-      virtual void print(std::ostream& stream) const;
+      void
+      print(std::ostream& stream) const override;
 
     /*--------.
     | Details |
     `--------*/
-    private:
       ELLE_ATTRIBUTE_RX(std::iostream&, stream);
-      reactor::Mutex _lock_write;
-      reactor::Mutex _lock_read;
-      bool           _checksum;
+      ELLE_ATTRIBUTE_R(elle::Version, version);
+      ELLE_ATTRIBUTE_R(elle::Buffer::Size, chunk_size);
+      ELLE_ATTRIBUTE_R(bool, checksum);
+    public:
+      class pImpl;
+    private:
+      ELLE_ATTRIBUTE(std::unique_ptr<pImpl>, impl);
     };
   }
 }

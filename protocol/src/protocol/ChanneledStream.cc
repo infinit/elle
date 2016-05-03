@@ -75,19 +75,19 @@ namespace infinit
     int
     ChanneledStream::_id_generate()
     {
-      int res = _id_current;
-      if (_master)
-        {
-          ++_id_current;
-          if (_id_current < 0)
-            _id_current = 1;
-        }
+      int res = this->_id_current;
+      if (this->_master)
+      {
+        ++this->_id_current;
+        if (this->_id_current < 0)
+          this->_id_current = 1;
+      }
       else
-        {
-          --_id_current;
-          if (_id_current > 0)
-            _id_current = -1;
-        }
+      {
+        --this->_id_current;
+        if (this->_id_current > 0)
+          this->_id_current = -1;
+      }
       return res;
     }
 
@@ -98,7 +98,7 @@ namespace infinit
     elle::Buffer
     ChanneledStream::read()
     {
-      return _default.read();
+      return this->_default.read();
     }
 
     elle::Buffer
@@ -119,7 +119,7 @@ namespace infinit
             }
           ELLE_DEBUG("%s: no packet available.", *this);
           if (!_reading)
-            _read(false, requested_channel);
+            this->_read(false, requested_channel);
           else
             ELLE_DEBUG("%s: reader already present, waiting.", *this)
               current->wait(channel->_available);
@@ -135,15 +135,15 @@ namespace infinit
       {
         while (true)
         {
-          _reading = true;
-          elle::Buffer p(_backend.read());
+          this->_reading = true;
+          elle::Buffer p(this->_backend.read());
           if (p.size() < 4)
             throw elle::Exception("packet is too small for channel id");
-          int channel_id = _uint32_get(p);
+          int channel_id = uint32_get(p);
           // FIXME: The size of the packet isn't
           // adjusted. This is cosmetic though.
-          auto it = _channels.find(channel_id);
-          if (it != _channels.end())
+          auto it = this->_channels.find(channel_id);
+          if (it != this->_channels.end())
           {
             ELLE_DEBUG("%s: received %f on existing %s.",
                        *this, p, *it->second);
@@ -158,35 +158,35 @@ namespace infinit
             Channel res(*this, channel_id);
             ELLE_DEBUG("%s: received %f on brand new %s.", *this, p, res);
             res._packets.push_back(std::move(p));
-            _channels_new.push_back(std::move(res));
+            this->_channels_new.push_back(std::move(res));
             if (new_channel)
               break;
             else
-              _channel_available.signal_one();
+              this->_channel_available.signal_one();
           }
         }
         // Wake another thread so it can read future packets.
-        _reading = false;
-        for (auto channel: _channels)
+        this->_reading = false;
+        for (auto channel: this->_channels)
           if (channel.second->_available.signal_one())
             return;
-        _channel_available.signal_one();
+        this->_channel_available.signal_one();
       }
       catch (...)
       {
         auto e = std::current_exception();
         // Wake another thread so it fails too.
         ELLE_DEBUG_SCOPE("%s: read failed, wake next thread.", *this);
-        _reading = false;
+        this->_reading = false;
         bool woken = false;
-        for (auto channel: _channels)
+        for (auto channel: this->_channels)
           if (channel.second->_available.signal_one())
           {
             woken = true;
             break;
           }
         if (!woken)
-          _channel_available.signal_one();
+          this->_channel_available.signal_one();
         std::rethrow_exception(e);
       }
     }
@@ -195,11 +195,11 @@ namespace infinit
     ChanneledStream::accept()
     {
       ELLE_TRACE_SCOPE("%s: wait for incoming channel", *this);
-      while (_channels_new.empty())
+      while (this->_channels_new.empty())
         {
           ELLE_DEBUG("%s: no channel available, waiting", *this);
-          if (!_reading)
-            _read(true, 0);
+          if (!this->_reading)
+            this->_read(true, 0);
           else
             {
               ELLE_DEBUG("%s: reader already present, waiting.", *this);
@@ -207,10 +207,10 @@ namespace infinit
               current->wait(this->_channel_available);
             }
         }
-      assert(!_channels_new.empty());
+      assert(!this->_channels_new.empty());
       // FIXME: use helper to pop
-      Channel res = std::move(_channels_new.front());
-      _channels_new.pop_front();
+      Channel res = std::move(this->_channels_new.front());
+      this->_channels_new.pop_front();
       ELLE_TRACE("%s: got %s", *this, res);
       return res;
     }
@@ -220,20 +220,20 @@ namespace infinit
     `--------*/
 
     void
-    ChanneledStream::_write(elle::Buffer& packet)
+    ChanneledStream::_write(elle::Buffer const& packet)
     {
-      _default.write(packet);
+      this->_default.write(packet);
     }
 
     void
-    ChanneledStream::_write(elle::Buffer& packet, int id)
+    ChanneledStream::_write(elle::Buffer const& packet, int id)
     {
       ELLE_TRACE_SCOPE("%s: send %f on channel %s", *this, packet, id);
 
       elle::Buffer backend_packet;
-      _uint32_put(backend_packet, id);
+      uint32_put(backend_packet, id);
       backend_packet.append(packet.contents(), packet.size());
-      _backend.write(backend_packet);
+      this->_backend.write(backend_packet);
     }
 
     /*----------.

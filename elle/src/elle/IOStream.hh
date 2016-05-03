@@ -27,7 +27,7 @@ namespace elle
     IOStream(IOStream&& buffer);
     ~IOStream();
 
-  private:
+  protected:
     std::streambuf* _buffer;
   };
 
