@@ -3608,6 +3608,14 @@ class Runner(Builder):
       for line in f:
         print('  %s' % line, end = '')
 
+  def _report_node_binary(self, node):
+    with open(str(node.path()), 'rb') as f:
+      while True:
+        b = f.read(4096)
+        if not b:
+          break
+        sys.stdout.buffer.write(b)
+
   def execute(self):
     import subprocess
     def run():
