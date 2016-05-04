@@ -886,12 +886,14 @@ namespace scope
         });
       reactor::yield();
       reactor::yield();
-      scope.run_background(
-        "3",
-        [&]
-        {
-          reactor::sleep();
-        });
+      BOOST_CHECK_THROW(
+        scope.run_background(
+          "3",
+          [&]
+          {
+            reactor::sleep();
+          }),
+        BeaconException);
       reactor::wait(scope);
     };
   }

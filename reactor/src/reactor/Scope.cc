@@ -33,7 +33,14 @@ namespace reactor
   Scope::run_background(std::string const& name,
                         Thread::Action const& a)
   {
-    ELLE_TRACE_SCOPE("%s: register background job %s", *this, name);
+    if (this->_exception)
+    {
+      // FIXME: remove this log when confirmed
+      ELLE_LOG("%s: discard background job %s (assert prevented!)", this, name);
+      reactor::wait(*this);
+      elle::unreachable();
+    }
+    ELLE_TRACE_SCOPE("%s: register background job %s", this, name);
     auto& sched = *Scheduler::scheduler();
     ++this->_running;
     auto idt = elle::log::logger().indentation();
