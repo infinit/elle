@@ -679,7 +679,6 @@ namespace scope
           BOOST_CHECK(beacon2);
         };
       });
-
     sched.run();
   }
 
@@ -757,7 +756,6 @@ namespace scope
         elle::With<reactor::Scope>() << [&] (reactor::Scope& s)
         {
           auto thrower = [] { throw BeaconException(); };
-
           s.run_background(
             "0",
             [&]
@@ -776,10 +774,8 @@ namespace scope
               }
               BOOST_FAIL("should have been killed");
             });
-
           for (int i = 1; i <= 2; ++i)
             s.run_background(elle::sprintf("%s", i), [&] { thrower(); });
-
           BOOST_CHECK_THROW(s.wait(), BeaconException);
           BOOST_CHECK(beacon);
         };
@@ -842,7 +838,6 @@ namespace scope
               while (true)
                 reactor::yield();
             });
-
           s.run_background(
             "2",
             [&]
@@ -850,7 +845,6 @@ namespace scope
               while (true)
                 reactor::yield();
             });
-
           sched.terminate_now();
         };
       });
