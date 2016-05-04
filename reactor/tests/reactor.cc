@@ -266,6 +266,20 @@ ELLE_TEST_SCHEDULED(unique_ptr)
   }
 }
 
+ELLE_TEST_SCHEDULED(deadlock)
+{
+  reactor::Thread::unique_ptr starting;
+  reactor::Thread killer(
+    "killer",
+    [&]
+    {
+      starting->terminate();
+    });
+  reactor::yield();
+  starting.reset(new reactor::Thread("starting", [] { reactor::sleep(); }));
+  reactor::wait(*starting);
+}
+
 /*-----.
 | Wait |
 `-----*/
@@ -3175,6 +3189,7 @@ ELLE_TEST_SUITE()
     basics->add(BOOST_TEST_CASE(managed), 0, valgrind(1, 5));
     basics->add(BOOST_TEST_CASE(non_managed), 0, valgrind(1, 5));
     basics->add(BOOST_TEST_CASE(unique_ptr), 0, valgrind(1, 5));
+    basics->add(BOOST_TEST_CASE(deadlock), 0, valgrind(1, 5));
   }
 
   {
