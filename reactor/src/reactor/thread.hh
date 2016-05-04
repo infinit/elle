@@ -224,8 +224,8 @@ namespace reactor
       NonInterruptible();
       ~NonInterruptible() noexcept(false);
     private:
-      Thread* _current;
-      bool    _initial_value;
+      ELLE_ATTRIBUTE(Thread*, current);
+      ELLE_ATTRIBUTE(bool, initial_value);
     };
 
   /*--------.
