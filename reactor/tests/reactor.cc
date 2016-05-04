@@ -2145,7 +2145,7 @@ test_exception_escape_collateral()
   BOOST_CHECK_EQUAL(beacon, 3);
 }
 
-// Check thread are not re-terminated.
+// Check thread are re-terminated.
 ELLE_TEST_SCHEDULED(test_terminate_twice)
 {
   reactor::Barrier waiting;
@@ -2163,7 +2163,7 @@ ELLE_TEST_SCHEDULED(test_terminate_twice)
       catch (reactor::Terminate const&)
       {
         rewaiting.open();
-        BOOST_CHECK_NO_THROW(reactor::wait(reterminated));
+        BOOST_CHECK_THROW(reactor::wait(reterminated), reactor::Terminate);
         throw;
       }
     });

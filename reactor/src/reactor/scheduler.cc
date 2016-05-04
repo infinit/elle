@@ -399,21 +399,21 @@ namespace reactor
       thread->_scheduler_release();
       return true;
     }
-    if (thread->_terminating)
-      ELLE_DEBUG("%s: %s already terminating", *this, *thread);
-    else
+    // if (thread->_terminating)
+    //   ELLE_DEBUG("%s: %s already terminating", *this, *thread);
+    // else
+    // {
+    thread->_terminating = true;
+    thread->raise<Terminate>(thread->name());
+    if (thread->state() == Thread::state::frozen && thread->interruptible())
     {
-      thread->_terminating = true;
-      thread->raise<Terminate>(thread->name());
-      if (thread->state() == Thread::state::frozen && thread->interruptible())
+      if (thread->state() == Thread::state::frozen)
       {
-        if (thread->state() == Thread::state::frozen)
-        {
-          thread->_wait_abort("thread termination");
-          ELLE_ASSERT_EQ(thread->state(), Thread::state::running);
-        }
+        thread->_wait_abort("thread termination");
+        ELLE_ASSERT_EQ(thread->state(), Thread::state::running);
       }
     }
+    // }
     return thread->state() == Thread::state::done;
   }
 
