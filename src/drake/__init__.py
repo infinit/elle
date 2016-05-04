@@ -3617,7 +3617,7 @@ class Runner(Builder):
         for c in b:
           if c == '\n':
             eol = True
-          if chr(c) not in string.printable:
+          if c > 127:
             sys.stdout.write('\\x%x' % c)
           elif c == '\\':
             sys.stdout.write('\\\\')
