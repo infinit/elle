@@ -850,6 +850,37 @@ namespace scope
       });
     sched.run();
   }
+
+  // Insert a new thread while the Scope is being terminated. Used to delete the
+  // new, still running thread.
+  ELLE_TEST_SCHEDULED(terminate_insert)
+  {
+    reactor::Barrier leave;
+    elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+    {
+      scope.run_background(
+        "1",
+        [&]
+        {
+          reactor::sleep();
+        });
+      scope.run_background(
+        "2",
+        [&]
+        {
+          throw BeaconException();
+        });
+      reactor::yield();
+      reactor::yield();
+      scope.run_background(
+        "3",
+        [&]
+        {
+          reactor::sleep();
+        });
+      reactor::wait(scope);
+    };
+  }
 }
 
 /*------.
@@ -3226,6 +3257,8 @@ ELLE_TEST_SUITE()
     scope->add(BOOST_TEST_CASE(terminate), 0, valgrind(1, 5));
     auto terminate_all = &scope::terminate_all;
     scope->add(BOOST_TEST_CASE(terminate_all), 0, valgrind(1, 5));
+    auto terminate_insert = &scope::terminate_insert;
+    scope->add(BOOST_TEST_CASE(terminate_insert), 0, valgrind(1, 5));
   }
 
   {
