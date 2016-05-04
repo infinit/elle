@@ -5,6 +5,7 @@
 # include <boost/system/error_code.hpp>
 
 # include <elle/Backtrace.hh>
+# include <elle/With.hh>
 # include <elle/named.hh>
 
 # include <reactor/asio.hh>
@@ -220,9 +221,11 @@ namespace reactor
     /// Marks current thread noniterruptible while this object lives
     class NonInterruptible
     {
-    public:
+    private:
       NonInterruptible();
       ~NonInterruptible() noexcept(false);
+      /// Let With manage us.
+      friend class elle::With<NonInterruptible>;
     private:
       ELLE_ATTRIBUTE(Thread*, current);
       ELLE_ATTRIBUTE(bool, initial_value);

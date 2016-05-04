@@ -2938,12 +2938,17 @@ namespace non_interruptible
     {
       reactor::Barrier b,c;
       int status = 0;
-      reactor::Thread t("test", [&] {
-          reactor::Thread::NonInterruptible ni;
-          status = 1;
-          b.open();
-          reactor::wait(c);
-          status = 2;
+      reactor::Thread t(
+        "test",
+        [&]
+        {
+          elle::With<reactor::Thread::NonInterruptible>() << [&]
+          {
+            status = 1;
+            b.open();
+            reactor::wait(c);
+            status = 2;
+          };
         });
       reactor::wait(b);
       b.close(); c.open();
@@ -2954,14 +2959,17 @@ namespace non_interruptible
     {
       reactor::Barrier b,c,d;
       int status = 0;
-      reactor::Thread t("test", [&] {
+      reactor::Thread t(
+        "test",
+        [&]
+        {
+          elle::With<reactor::Thread::NonInterruptible>() << [&]
           {
-            reactor::Thread::NonInterruptible ni;
             status = 1;
             b.open();
             reactor::wait(c);
             status = 2;
-          }
+          };
           reactor::wait(d);
           status = 3;
         });
@@ -2990,11 +2998,14 @@ namespace non_interruptible
                   ELLE_TRACE("open %s", ready)
                     ready.open();
                   {
-                    reactor::Thread::NonInterruptible ni;
-                    // Because it's not interruptible, reactor should wait for ever...
-                    ELLE_TRACE("wait for %s", go)
-                      go.wait();
-                    ELLE_TRACE("go status: %s", (bool) go);
+                    elle::With<reactor::Thread::NonInterruptible>() << [&]
+                    {
+                      // Because it's not interruptible, reactor should wait for
+                      // ever...
+                      ELLE_TRACE("wait for %s", go)
+                        go.wait();
+                      ELLE_TRACE("go status: %s", (bool) go);
+                    };
                   }
                 }
                 catch (reactor::Terminate const&)
@@ -3058,17 +3069,19 @@ namespace non_interruptible
       {
         try
         {
-          reactor::Thread::NonInterruptible ni;
-          sleeping.open();
-          poke.get();
-          throw BeaconException();
+          elle::With<reactor::Thread::NonInterruptible>() << [&]
+          {
+            sleeping.open();
+            poke.get();
+            throw BeaconException();
+          };
         }
         catch (BeaconException const&)
+        {}
+        catch (reactor::Terminate const&)
         {
           beacon = true;
         }
-        catch (reactor::Terminate const&)
-        {}
       });
     reactor::wait(sleeping);
     poke.put(42);
