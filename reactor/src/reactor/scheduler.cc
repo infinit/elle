@@ -396,6 +396,7 @@ namespace reactor
     {
       ELLE_DEBUG("%s: %s was starting, discard it", *this, *thread);
       thread->_state = Thread::state::done;
+      thread->Waitable::_signal();
       thread->_scheduler_release();
       return true;
     }
