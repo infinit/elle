@@ -370,16 +370,18 @@ namespace infinit
     {
       // The write must not be interrupted, otherwise it will break
       // the serialization protocol.
-      reactor::Thread::NonInterruptible ni;
-      if (this->_checksum)
+      elle::With<reactor::Thread::NonInterruptible>() << [&]
       {
-        auto hash = compute_checksum(packet);
-        ELLE_DEBUG("send checksum %x", hash)
+        if (this->_checksum)
+        {
+          auto hash = compute_checksum(packet);
+          ELLE_DEBUG("send checksum %x", hash)
           infinit::protocol::write(this->_stream, hash);
-      }
-      ELLE_DEBUG("send actual data")
-        infinit::protocol::write(this->_stream, packet);
-      this->_stream.flush();
+        }
+        ELLE_DEBUG("send actual data")
+          infinit::protocol::write(this->_stream, packet);
+        this->_stream.flush();
+      };
     }
 
     /*--------------.
@@ -480,28 +482,32 @@ namespace infinit
             this->_stream.flush();
           };
         {
-          reactor::Thread::NonInterruptible ni;
-          if (this->_checksum)
-          // Compute the hash and send it first.
+          elle::With<reactor::Thread::NonInterruptible>() << [&]
           {
-            auto hash = compute_checksum(packet);
-            ELLE_DEBUG("send checksum %x", hash)
-              infinit::protocol::write(this->_stream, hash);
-          }
-          // Send the size.
-          {
-            auto size = packet.size();
-            ELLE_DEBUG("send packet size %s", size)
-              Serializer::Super::uint32_put(this->_stream, size);
-          }
-          // Send first chunk
-          send();
+            if (this->_checksum)
+            // Compute the hash and send it first.
+            {
+              auto hash = compute_checksum(packet);
+              ELLE_DEBUG("send checksum %x", hash)
+                infinit::protocol::write(this->_stream, hash);
+            }
+            // Send the size.
+            {
+              auto size = packet.size();
+              ELLE_DEBUG("send packet size %s", size)
+                Serializer::Super::uint32_put(this->_stream, size);
+            }
+            // Send first chunk
+            send();
+          };
         }
         while (offset < packet.size())
         {
-          reactor::Thread::NonInterruptible ni;
-          write_control(this->_stream, Control::keep_going);
-          send();
+          elle::With<reactor::Thread::NonInterruptible>() << [&]
+          {
+            write_control(this->_stream, Control::keep_going);
+            send();
+          };
         }
       }
       catch (reactor::Terminate const&)
