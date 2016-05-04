@@ -894,7 +894,7 @@ namespace scope
             reactor::sleep();
           }),
         BeaconException);
-      reactor::wait(scope);
+      BOOST_CHECK_THROW(reactor::wait(scope), BeaconException);
     };
   }
 }
