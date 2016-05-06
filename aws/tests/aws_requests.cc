@@ -185,55 +185,52 @@ ELLE_TEST_SCHEDULED(sign_request)
     "c9d1c4e90e9f0b65ae4020a33bada35341ee2f8188c70b2a976e6e767414ed1f");
 }
 
-// Should only be run manually with generated crendentials.
-ELLE_TEST_SCHEDULED(s3_put)
-{
-  aws::S3 s3_handler(_PUT_credentials);
+// // Should only be run manually with generated crendentials.
+// ELLE_TEST_SCHEDULED(s3_put)
+// {
+//   aws::S3 s3_handler(_PUT_credentials);
+//   elle::ConstWeakBuffer object("a fair bit of stuff in a file!");
+//   BOOST_CHECK_NO_THROW(s3_handler.put_object(object, "test_object"));
+//   BOOST_CHECK_NO_THROW(s3_handler.put_object(object, "test_object_1"));
+//   BOOST_CHECK_NO_THROW(s3_handler.put_object(object, "x_different"));
+//   BOOST_CHECK_NO_THROW(s3_handler.put_object(object, "x_different_1"));
+// }
 
-  elle::ConstWeakBuffer object("a fair bit of stuff in a file!");
+// // Should only be run manually with generated credentials.
+// ELLE_TEST_SCHEDULED(s3_list)
+// {
+//   aws::S3 s3_handler(_GET_credentials);
+//   std::vector<std::pair<std::string, aws::S3::FileSize>> all =
+//     s3_handler.list_remote_folder();
+//   BOOST_CHECK_EQUAL(all.size(), 4);
+//   for (auto const& item: all)
+//   {
+//     ELLE_LOG("ALL filename: %s (%s)", item.first, item.second);
+//   }
+//   std::vector<std::pair<std::string, aws::S3::FileSize>> some =
+//     s3_handler.list_remote_folder("x");
+//   BOOST_CHECK_EQUAL(some.size(), 2);
+//   for (auto const& item: some)
+//   {
+//     ELLE_LOG("SOME filename: %s (%s)", item.first, item.second);
+//   }
+// }
 
-  BOOST_CHECK_NO_THROW(s3_handler.put_object(object, "test_object"));
-  BOOST_CHECK_NO_THROW(s3_handler.put_object(object, "test_object_1"));
-  BOOST_CHECK_NO_THROW(s3_handler.put_object(object, "x_different"));
-  BOOST_CHECK_NO_THROW(s3_handler.put_object(object, "x_different_1"));
-}
+// // Should only be run manually with generated credentials.
+// ELLE_TEST_SCHEDULED(s3_get)
+// {
+//   aws::S3 s3_handler(_GET_credentials);
+//   elle::ConstWeakBuffer expected("a fair bit of stuff in a file!");
+//   BOOST_CHECK_EQUAL(s3_handler.get_object("test_object"), expected);
+//   BOOST_CHECK_THROW(s3_handler.get_object("doesnt_exist"), aws::FileNotFound);
+// }
 
-// Should only be run manually with generated credentials.
-ELLE_TEST_SCHEDULED(s3_list)
-{
-  aws::S3 s3_handler(_GET_credentials);
-  std::vector<std::pair<std::string, aws::S3::FileSize>> all =
-    s3_handler.list_remote_folder();
-  BOOST_CHECK_EQUAL(all.size(), 4);
-  for (auto const& item: all)
-  {
-    ELLE_LOG("ALL filename: %s (%s)", item.first, item.second);
-  }
-
-  std::vector<std::pair<std::string, aws::S3::FileSize>> some =
-    s3_handler.list_remote_folder("x");
-  BOOST_CHECK_EQUAL(some.size(), 2);
-  for (auto const& item: some)
-  {
-    ELLE_LOG("SOME filename: %s (%s)", item.first, item.second);
-  }
-}
-
-// Should only be run manually with generated credentials.
-ELLE_TEST_SCHEDULED(s3_get)
-{
-  aws::S3 s3_handler(_GET_credentials);
-  elle::ConstWeakBuffer expected("a fair bit of stuff in a file!");
-  BOOST_CHECK_EQUAL(s3_handler.get_object("test_object"), expected);
-  BOOST_CHECK_THROW(s3_handler.get_object("doesnt_exist"), aws::FileNotFound);
-}
-
-// Should only be run manually with generated credentials.
-ELLE_TEST_SCHEDULED(s3_delete)
-{
-  aws::S3 s3_handler(_GET_credentials);
-  BOOST_CHECK_NO_THROW(s3_handler.delete_object("test_object"));
-}
+// // Should only be run manually with generated credentials.
+// ELLE_TEST_SCHEDULED(s3_delete)
+// {
+//   aws::S3 s3_handler(_GET_credentials);
+//   BOOST_CHECK_NO_THROW(s3_handler.delete_object("test_object"));
+// }
 
 ELLE_TEST_SUITE()
 {
@@ -243,7 +240,6 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(string_to_sign), 0, timeout);
   suite.add(BOOST_TEST_CASE(signing_key), 0, timeout);
   suite.add(BOOST_TEST_CASE(sign_request), 0, timeout);
-
 
   // Should only be run manually with generated crendentials.
   // suite.add(BOOST_TEST_CASE(s3_put), 0, timeout * 3);
