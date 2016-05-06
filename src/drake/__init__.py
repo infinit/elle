@@ -3737,17 +3737,20 @@ class HTTPDownload(Builder):
   def __init__(self, url, dest, fingerprint = None,
                disable_ssl_certificate_validation = False,
                **kwargs):
-    self.__url = url
+    self.__urls = [url] if isinstance(url, str) else url
     self.__dest = dest
     self.__fingerprint = fingerprint
     Builder.__init__(self, [], [self.__dest])
 
   def execute(self):
-    self.output('Download %s to %s' % (self.__url, self.__dest),
+    self.output('Download %s to %s' % (self.__urls, self.__dest),
                 'Download %s' % self.__dest)
     def job():
       import urllib.request
-      response = urllib.request.urlopen(self.__url)
+      for url in self.__urls:
+        response = urllib.request.urlopen(url)
+        if response.status == 200:
+          break
       return response.status, response.read()
     status, content = self._run_job(job)
     if status != 200:
