@@ -30,7 +30,7 @@ enum class hier_part_state {
   path
 };
 
-inline bool is_valid_port(v2::iterator_pair port) {
+inline bool is_valid_port(iterator_pair port) {
   const char* port_first = &(*port.first);
   char* port_last = 0;
   unsigned long value = std::strtoul(port_first, &port_last, 10);
@@ -38,7 +38,7 @@ inline bool is_valid_port(v2::iterator_pair port) {
 }
 } // namespace
 
-bool parse(string_view::const_iterator &it, string_view::const_iterator last, v2::uri_parts &parts) {
+bool parse(string_view::const_iterator &it, string_view::const_iterator last, uri_parts &parts) {
   auto state = uri_state::scheme;
 
   auto first = it;

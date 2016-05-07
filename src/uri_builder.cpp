@@ -82,7 +82,7 @@ uri_builder &uri_builder::clear_port() {
 }
 
 void uri_builder::set_authority(string_type authority) {
-  optional<detail::v2::iterator_pair> user_info, host, port;
+  optional<detail::iterator_pair> user_info, host, port;
   uri::string_view view(authority);
   uri::const_iterator it = std::begin(view), last = std::end(view);
   detail::parse_authority(it, last, user_info, host, port);

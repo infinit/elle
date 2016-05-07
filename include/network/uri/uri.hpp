@@ -34,10 +34,7 @@
 namespace network {
 #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
 namespace detail {
-// struct uri_parts;
-namespace v2 {
 struct uri_parts;
-} // namespace v2
 }  // namespace detail
 #endif  // !defined(DOXYGEN_SHOULD_SKIP_THIS)
 
@@ -567,7 +564,7 @@ class uri {
 
   string_type uri_;
   string_view uri_view_;
-  detail::v2::uri_parts* uri_parts_;
+  detail::uri_parts* uri_parts_;
 };
 
 /**

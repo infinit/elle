@@ -20,7 +20,7 @@ enum class authority_state {
   port
 };
 
-inline bool is_valid_port(v2::iterator_pair port) {
+inline bool is_valid_port(iterator_pair port) {
   const char* port_first = &(*port.first);
   char* port_last = 0;
   unsigned long value = std::strtoul(port_first, &port_last, 10);
@@ -30,9 +30,9 @@ inline bool is_valid_port(v2::iterator_pair port) {
 
 bool parse_authority(string_view::const_iterator &it,
                      string_view::const_iterator last,
-                     optional<v2::iterator_pair> &user_info,
-                     optional<v2::iterator_pair> &host,
-                     optional<v2::iterator_pair> &port) {
+                     optional<iterator_pair> &user_info,
+                     optional<iterator_pair> &host,
+                     optional<iterator_pair> &port) {
   auto first = it;
 
   auto state = authority_state::user_info;

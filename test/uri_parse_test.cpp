@@ -10,8 +10,8 @@
 #include "string_utility.hpp"
 
 using network::detail::parse;
-using network::detail::v2::iterator_pair;
-using network::detail::v2::uri_parts;
+using network::detail::iterator_pair;
+using network::detail::uri_parts;
 
 namespace {
 inline

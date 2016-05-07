@@ -12,7 +12,7 @@
 namespace network {
 namespace detail {
 bool parse_scheme(uri::const_iterator &it, uri::const_iterator last,
-                  v2::uri_parts &parts);
+                  uri_parts &parts);
 }  // namespace detail
 }  // namespace network
 

@@ -10,16 +10,11 @@
 
 namespace network {
 namespace detail {
-bool parse_authority(std::string &str,
-                     network_boost::optional<std::string> &user_info,
-                     network_boost::optional<std::string> &host,
-                     network_boost::optional<std::string> &port);
-
 bool parse_authority(string_view::const_iterator &first,
                      string_view::const_iterator last,
-                     optional<v2::iterator_pair> &user_info,
-                     optional<v2::iterator_pair> &host,
-                     optional<v2::iterator_pair> &port);
+                     optional<iterator_pair> &user_info,
+                     optional<iterator_pair> &host,
+                     optional<iterator_pair> &port);
 }  // namespace detail
 }  // namespace network
 

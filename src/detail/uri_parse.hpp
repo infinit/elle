@@ -12,13 +12,7 @@ namespace network {
 namespace detail {
 struct uri_parts;
 
-bool parse(uri::string_type& str, uri_parts& parts);
-
-namespace v2 {
-struct uri_parts;
-};
-
-bool parse(uri::const_iterator &first, uri::const_iterator last, v2::uri_parts &parts);
+bool parse(uri::const_iterator &first, uri::const_iterator last, uri_parts &parts);
 }  // namespace detail
 }  // namespace network
 

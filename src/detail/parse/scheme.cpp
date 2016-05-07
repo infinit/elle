@@ -18,7 +18,7 @@ inline bool is_valid_scheme_char(string_view::const_iterator &it) {
 }  // namespace
 
 bool parse_scheme(uri::const_iterator &it, uri::const_iterator last,
-                  v2::uri_parts &parts) {
+                  uri_parts &parts) {
   auto state = scheme_state::first_char;
 
   if (it == last) {

@@ -20,22 +20,22 @@
 
 namespace network {
 namespace {
-inline detail::v2::iterator_pair copy_range(detail::v2::iterator_pair range,
-                                            detail::v2::iterator_pair::first_type &it) {
+inline detail::iterator_pair copy_range(detail::iterator_pair range,
+                                        detail::iterator_pair::first_type &it) {
   auto first = range.first, last = range.second;
   auto part_first = it;
   std::advance(it, std::distance(first, last));
-  return detail::v2::iterator_pair(part_first, it);
+  return detail::iterator_pair(part_first, it);
 }
 
-inline detail::v2::iterator_pair copy_range(uri::string_view range,
-                                            detail::v2::iterator_pair::first_type &it) {
+inline detail::iterator_pair copy_range(uri::string_view range,
+                                        detail::iterator_pair::first_type &it) {
   auto first = std::begin(range), last = std::end(range);
   return copy_range(std::make_pair(first, last), it);
 }
 
-void advance_parts(string_view &range, detail::v2::uri_parts &parts,
-                   const detail::v2::uri_parts &existing_parts) {
+void advance_parts(string_view &range, detail::uri_parts &parts,
+                   const detail::uri_parts &existing_parts) {
   auto first = std::begin(range), last = std::end(range);
 
   auto it = first;
@@ -85,7 +85,7 @@ void advance_parts(string_view &range, detail::v2::uri_parts &parts,
 }
 
 inline std::pair<std::string::iterator, std::string::iterator> mutable_range(
-    std::string &str, detail::v2::iterator_pair range) {
+    std::string &str, detail::iterator_pair range) {
   auto view = string_view(str);
 
   auto first_index = std::distance(std::begin(view), range.first);
@@ -105,7 +105,7 @@ inline void to_lower(std::pair<std::string::iterator, std::string::iterator> ran
 }
 
 inline uri::string_view to_string_view(const uri::string_type &uri,
-                                       detail::v2::iterator_pair uri_part) {
+                                       detail::iterator_pair uri_part) {
   if (uri_part.first != uri_part.second) {
     const char *c_str = uri.c_str();
     const char *uri_part_begin = &(*(uri_part.first));
@@ -227,13 +227,13 @@ void uri::initialize(optional<string_type> scheme,
   }
 }
 
-uri::uri() : uri_view_(uri_), uri_parts_(new detail::v2::uri_parts{}) {}
+uri::uri() : uri_view_(uri_), uri_parts_(new detail::uri_parts{}) {}
 
-uri::uri(const uri &other) : uri_(other.uri_), uri_view_(uri_), uri_parts_(new detail::v2::uri_parts{}) {
+uri::uri(const uri &other) : uri_(other.uri_), uri_view_(uri_), uri_parts_(new detail::uri_parts{}) {
   advance_parts(uri_view_, *uri_parts_, *other.uri_parts_);
 }
 
-uri::uri(const uri_builder &builder) : uri_parts_(new detail::v2::uri_parts{}) {
+uri::uri(const uri_builder &builder) : uri_parts_(new detail::uri_parts{}) {
   initialize(builder.scheme_, builder.user_info_, builder.host_, builder.port_,
              builder.path_, builder.query_, builder.fragment_);
 }
@@ -244,7 +244,7 @@ uri::uri(uri &&other) noexcept : uri_(std::move(other.uri_)),
   advance_parts(uri_view_, *uri_parts_, *other.uri_parts_);
   other.uri_.clear();
   other.uri_view_ = string_view(other.uri_);
-  other.uri_parts_ = new detail::v2::uri_parts{};
+  other.uri_parts_ = new detail::uri_parts{};
 }
 
 uri::~uri() {
@@ -406,7 +406,7 @@ bool uri::is_opaque() const noexcept {
 uri uri::normalize(uri_comparison_level level) const {
   string_type normalized(uri_);
   string_view normalized_view(normalized);
-  detail::v2::uri_parts parts;
+  detail::uri_parts parts;
   advance_parts(normalized_view, parts, *uri_parts_);
 
   if (uri_comparison_level::syntax_based == level) {
@@ -625,7 +625,7 @@ int uri::compare(const uri &other, uri_comparison_level level) const noexcept {
 
 bool uri::initialize(const string_type &uri) {
   uri_ = detail::trim_copy(uri);
-  uri_parts_ = new detail::v2::uri_parts{};
+  uri_parts_ = new detail::uri_parts{};
   if (!uri_.empty()) {
     uri_view_ = string_view(uri_);
     const_iterator it = std::begin(uri_view_), last = std::end(uri_view_);

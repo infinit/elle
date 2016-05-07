@@ -15,23 +15,6 @@
 
 namespace network {
 namespace detail {
-using iterator_pair = network_boost::iterator_range<std::string::iterator>;
-
-struct hierarchical_part {
-  network_boost::optional<iterator_pair> user_info;
-  network_boost::optional<iterator_pair> host;
-  network_boost::optional<iterator_pair> port;
-  network_boost::optional<iterator_pair> path;
-};
-
-struct uri_parts {
-  network_boost::optional<iterator_pair> scheme;
-  hierarchical_part hier_part;
-  network_boost::optional<iterator_pair> query;
-  network_boost::optional<iterator_pair> fragment;
-};
-
-namespace v2 {
 using iterator_pair = std::pair<string_view::const_iterator, string_view::const_iterator>;
 
 struct hierarchical_part {
@@ -47,7 +30,6 @@ struct uri_parts {
   optional<iterator_pair> query;
   optional<iterator_pair> fragment;
 };
-}
 } // namespace detail
 } // namespace network
 
