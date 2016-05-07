@@ -7,6 +7,7 @@
 #include <iterator>
 #include "uri_parts.hpp"
 #include "parse/scheme.hpp"
+#include "parse/pchar.hpp"
 
 namespace network {
 namespace detail {
@@ -152,18 +153,30 @@ bool parse(uri::const_iterator &it, uri::const_iterator last, v2::uri_parts &par
     ++it;
   }
 
-  // Query
   if (state == uri_state::query) {
     while (it != last) {
-      if (*it == '#') {
-        parts.query = std::make_pair(first, it);
-        // move past the fragment delimiter
-        ++it;
-        first = it;
-        state = uri_state::fragment;
-        continue;
+      if (!is_pchar(it) && !is_in(it, "?/")) {
+        // If this is a fragment, keep going
+        if (*it == '#') {
+          parts.query = std::make_pair(first, it);
+          // move past the fragment delimiter
+          ++it;
+          first = it;
+          state = uri_state::fragment;
+          continue;
+        }
+        else {
+          return false;
+        }
       }
-      ++it;
+    }
+  }
+
+  if (state == uri_state::fragment) {
+    while (it != last) {
+      if (!is_pchar(it) && !is_in(it, "?/")) {
+        return false;
+      }
     }
   }
 
