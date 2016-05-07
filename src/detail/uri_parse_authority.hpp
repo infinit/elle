@@ -7,14 +7,14 @@
 #define NETWORK_DETAIL_URI_PARSE_AUTHORITY_INC
 
 #include <network/uri/uri.hpp>
-#include "../boost/optional.hpp"
+#include <network/optional.hpp>
 
 namespace network {
 namespace detail {
 bool parse_authority(uri::string_type &str,
-                     network_boost::optional<uri::string_type> &user_info,
-                     network_boost::optional<uri::string_type> &host,
-                     network_boost::optional<uri::string_type> &port);
+                     optional<uri::string_type> &user_info,
+                     optional<uri::string_type> &host,
+                     optional<uri::string_type> &port);
 }  // namespace detail
 }  // namespace network
 

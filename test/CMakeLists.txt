@@ -8,6 +8,7 @@ include_directories( ${gtest_SOURCE_DIR}/include)
 
 set(
   TESTS
+  uri_parse_test
   uri_test
   uri_encoding_test
   uri_normalization_test

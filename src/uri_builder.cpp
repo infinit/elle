@@ -81,7 +81,7 @@ uri_builder &uri_builder::clear_port() {
 }
 
 void uri_builder::set_authority(string_type authority) {
-  network_boost::optional<uri::string_type> user_info, host, port;
+  optional<uri::string_type> user_info, host, port;
   detail::parse_authority(authority, user_info, host, port);
 
   if (user_info) {

@@ -8,9 +8,9 @@
 namespace network {
 namespace detail {
 bool parse_authority(uri::string_type &str,
-                     network_boost::optional<uri::string_type> &user_info,
-                     network_boost::optional<uri::string_type> &host,
-                     network_boost::optional<uri::string_type> &port) {
+                     optional<uri::string_type> &user_info,
+                     optional<uri::string_type> &host,
+                     optional<uri::string_type> &port) {
   return false;
 }
 }  // namespace detail
