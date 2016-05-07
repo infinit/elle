@@ -5,8 +5,8 @@
 
 #include "uri_parse.hpp"
 #include <iterator>
-#include <cctype>
 #include "uri_parts.hpp"
+#include "parse/scheme.hpp"
 
 namespace network {
 namespace detail {
@@ -18,40 +18,18 @@ enum class uri_state {
   fragment
 };
 
-enum class scheme_state {
-  first_char,
-  other
-};
-
-inline
-bool is_valid_scheme_char(char c) {
-  return ((std::isalnum(c) != 0) || (c == '+') || (c == '-') || (c == '.'));
-}
-
 enum class hier_part_state {
+  first_slash,
+  second_slash,
   user_info,
   host,
   port,
   path
 };
-
-struct print_helper {
-
-  print_helper() {
-    std::printf(" <<< ");
-  }
-
-  ~print_helper() {
-    std::printf(" >>>\n");
-  }
-
-};
 } // namespace
-
 
 bool parse(uri::const_iterator &it, uri::const_iterator last, v2::uri_parts &parts) {
   auto state = uri_state::scheme;
-  auto hp_state = hier_part_state::user_info;
 
   uri::const_iterator first = it;
 
@@ -59,59 +37,118 @@ bool parse(uri::const_iterator &it, uri::const_iterator last, v2::uri_parts &par
     return false;
   }
 
-  // Scheme
-  auto s_state = scheme_state::first_char;
-  while (it != last) {
-    // first char is alpha
-    if (s_state == scheme_state::first_char) {
-      if (std::isalpha(*it) == 0) {
-        return false;
-      }
-
-      s_state = scheme_state::other;
-
-    }
-    else if (s_state == scheme_state::other) {
-      if (*it == ':') {
-        parts.scheme = std::make_pair(first, it);
-
-        // move past the scheme delimiter
-        ++it;
-        state = uri_state::hier_part;
-        break;
-      }
-      else if (!is_valid_scheme_char(*it)) {
-        return false;
-      }
-    }
-
-    ++it;
+  if (parse_scheme(it, last, parts)) {
+    state = uri_state::hier_part;
+  }
+  else {
+    return false;
   }
 
   // Hierarchical part
+  auto hp_state = hier_part_state::first_slash;
   while (it != last) {
-    if (hp_state == hier_part_state::user_info) {
+    if (hp_state == hier_part_state::first_slash) {
+      if (*it == '/') {
+        hp_state = hier_part_state::second_slash;
+        ++it;
+        continue;
+      }
+      else {
+        hp_state = hier_part_state::path;
+        first = it;
+      }
+    }
+    else if (hp_state == hier_part_state::second_slash) {
+      if (*it == '/') {
+        hp_state = hier_part_state::user_info;
+        ++it;
+        first = it;
+        continue;
+      }
+      else {
+        return false;
+      }
+    }
+    else if (hp_state == hier_part_state::user_info) {
+      if ((*first == '@') || (*first == ':')) {
+        return false;
+      }
 
       if (*it == '@') {
         parts.hier_part.user_info = std::make_pair(first, it);
+        hp_state = hier_part_state::host;
+        ++it;
+        first = it;
+        continue;
+      }
+      else if (*it == ':') {
+        // this is actually the host, and the next part is expected to be the port
+        parts.hier_part.host = std::make_pair(first, it);
+        hp_state = hier_part_state::port;
+        ++it;
+        first = it;
+        continue;
+      }
+      else if (*it == '/') {
+        // we skipped right past the host and port, and are at the path.
+        parts.hier_part.host = std::make_pair(first, it);
+        hp_state = hier_part_state::path;
+        first = it;
+        continue;
+      }
+    }
+    else if (hp_state == hier_part_state::host) {
+      if (*first == ':') {
+        return false;
       }
 
+      if (*it == ':') {
+        parts.hier_part.host = std::make_pair(first, it);
+        hp_state = hier_part_state::port;
+        ++it;
+        first = it;
+        continue;
+      }
+      else if (*it == '/') {
+        parts.hier_part.host = std::make_pair(first, it);
+        hp_state = hier_part_state::path;
+        first = it;
+        continue;
+      }
+    }
+    else if (hp_state == hier_part_state::port) {
+      if (*first == '/') {
+        // the port isn't set, but the path is
+        hp_state = hier_part_state::path;
+        continue;
+      }
+
+      if (*it == '/') {
+        parts.hier_part.port = std::make_pair(first, it);
+        hp_state = hier_part_state::path;
+        first = it;
+        continue;
+      }
+    }
+    else if (hp_state == hier_part_state::path) {
+      if (*it == '?') {
+        parts.hier_part.path = std::make_pair(first, it);
+        // move past the query delimiter
+        ++it;
+        first = it;
+        state = uri_state::query;
+        break;
+      }
+      else if (*it == '#') {
+        parts.hier_part.path = std::make_pair(first, it);
+        // move past the fragment delimiter
+        ++it;
+        first = it;
+        state = uri_state::fragment;
+        break;
+      }
     }
 
-
-    if (*it == '?') {
-
-      // move past the query delimiter
-      ++it;
-      state = uri_state::query;
-      continue;
-    }
-    else if (*it == '#') {
-      // move past the fragment delimiter
-      ++it;
-      state = uri_state::fragment;
-      continue;
-    }
     ++it;
   }
 
@@ -119,8 +156,10 @@ bool parse(uri::const_iterator &it, uri::const_iterator last, v2::uri_parts &par
   if (state == uri_state::query) {
     while (it != last) {
       if (*it == '#') {
+        parts.query = std::make_pair(first, it);
         // move past the fragment delimiter
         ++it;
+        first = it;
         state = uri_state::fragment;
         continue;
       }
@@ -128,12 +167,29 @@ bool parse(uri::const_iterator &it, uri::const_iterator last, v2::uri_parts &par
     }
   }
 
-  // Fragment
-  if (state == uri_state::fragment) {
-    while (it != last) {
-
-      ++it;
+  // we're done!
+  if (state == uri_state::hier_part) {
+    if (hp_state == hier_part_state::user_info) {
+      parts.hier_part.host = std::make_pair(first, last);
+      parts.hier_part.path = std::make_pair(last, last);
     }
+    else if (hp_state == hier_part_state::host) {
+      parts.hier_part.host = std::make_pair(first, last);
+      parts.hier_part.path = std::make_pair(last, last);
+    }
+    else if (hp_state == hier_part_state::port) {
+      parts.hier_part.port = std::make_pair(first, last);
+      parts.hier_part.path = std::make_pair(last, last);
+    }
+    else if (hp_state == hier_part_state::path) {
+      parts.hier_part.path = std::make_pair(first, last);
+    }
+  }
+  else if (state == uri_state::query) {
+    parts.query = std::make_pair(first, last);
+  }
+  else if (state == uri_state::fragment) {
+    parts.fragment = std::make_pair(first, last);
   }
 
   return true;
