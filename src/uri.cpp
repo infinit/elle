@@ -640,8 +640,6 @@ bool uri::initialize(const string_type &uri) {
   uri_ = detail::trim_copy(uri);
   uri_parts_ = new detail::v2::uri_parts{};
   if (!uri_.empty()) {
-    // bool is_valid = detail::parse(uri_, *uri_parts_);
-    // uri_view_ = string_view(uri_);
     uri_view_ = string_view(uri_);
     const_iterator it = std::begin(uri_view_), last = std::end(uri_view_);
     bool is_valid = detail::parse(it, last, *uri_parts_);

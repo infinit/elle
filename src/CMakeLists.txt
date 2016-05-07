@@ -8,7 +8,7 @@ set(Uri_SRCS
   ${CMAKE_CURRENT_SOURCE_DIR}/uri_builder.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/uri_errors.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/detail/uri_parse.cpp
-  # ${CMAKE_CURRENT_SOURCE_DIR}/detail/uri_parse_authority.cpp
+  ${CMAKE_CURRENT_SOURCE_DIR}/detail/uri_parse_authority.cpp
   # ${CMAKE_CURRENT_SOURCE_DIR}/detail/uri_parse_spirit.cpp
   # ${CMAKE_CURRENT_SOURCE_DIR}/detail/uri_parse_authority_spirit.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/detail/parse/scheme.cpp

@@ -658,7 +658,7 @@ TEST(builder_test, authority_with_port_test) {
   ASSERT_EQ("www.example.com:", builder.uri().authority());
 }
 
-TEST(builder_test, authority_without_host_test) {
+TEST(builder_test, DISABLED_authority_without_host_test) {
   network::uri_builder builder;
   builder
     .scheme("https")

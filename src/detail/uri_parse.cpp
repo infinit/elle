@@ -30,7 +30,7 @@ enum class hier_part_state {
   path
 };
 
-bool is_valid_port(v2::iterator_pair port) {
+inline bool is_valid_port(v2::iterator_pair port) {
   const char* port_first = &(*port.first);
   char* port_last = 0;
   unsigned long value = std::strtoul(port_first, &port_last, 10);
@@ -38,10 +38,10 @@ bool is_valid_port(v2::iterator_pair port) {
 }
 } // namespace
 
-bool parse(uri::const_iterator &it, uri::const_iterator last, v2::uri_parts &parts) {
+bool parse(string_view::const_iterator &it, string_view::const_iterator last, v2::uri_parts &parts) {
   auto state = uri_state::scheme;
 
-  uri::const_iterator first = it;
+  auto first = it;
 
   if (it == last) {
     return false;
@@ -141,7 +141,6 @@ bool parse(uri::const_iterator &it, uri::const_iterator last, v2::uri_parts &par
       }
 
       if (*it == ']') {
-        parts.hier_part.host = std::make_pair(first, it);
         ++it;
         // Then test if the next part is a host, part, or the end of the file
         if (it == last) {

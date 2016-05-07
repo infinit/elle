@@ -81,19 +81,21 @@ uri_builder &uri_builder::clear_port() {
 }
 
 void uri_builder::set_authority(string_type authority) {
-  network_boost::optional<uri::string_type> user_info, host, port;
-  // detail::parse_authority(authority, user_info, host, port);
+  optional<detail::v2::iterator_pair> user_info, host, port;
+  uri::string_view view(authority);
+  uri::const_iterator it = std::begin(view), last = std::end(view);
+  detail::parse_authority(it, last, user_info, host, port);
 
   if (user_info) {
-    set_user_info(*user_info);
+    set_user_info(string_type(user_info->first, user_info->second));
   }
 
   if (host) {
-    set_host(*host);
+    set_host(string_type(host->first, host->second));
   }
 
   if (port) {
-    set_port(*port);
+    set_port(string_type(port->first, port->second));
   }
 }
 

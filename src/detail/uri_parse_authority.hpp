@@ -6,21 +6,20 @@
 #ifndef NETWORK_DETAIL_URI_PARSE_AUTHORITY_INC
 #define NETWORK_DETAIL_URI_PARSE_AUTHORITY_INC
 
-#include <network/uri/uri.hpp>
-#include <network/optional.hpp>
-#include "../boost/optional.hpp"
+#include "uri_parts.hpp"
 
 namespace network {
 namespace detail {
-bool parse_authority(uri::string_type &str,
-                     network_boost::optional<uri::string_type> &user_info,
-                     network_boost::optional<uri::string_type> &host,
-                     network_boost::optional<uri::string_type> &port);
+bool parse_authority(std::string &str,
+                     network_boost::optional<std::string> &user_info,
+                     network_boost::optional<std::string> &host,
+                     network_boost::optional<std::string> &port);
 
-bool parse_authority(uri::string_type &str,
-                     optional<uri::string_type> &user_info,
-                     optional<uri::string_type> &host,
-                     optional<uri::string_type> &port);
+bool parse_authority(string_view::const_iterator &first,
+                     string_view::const_iterator last,
+                     optional<v2::iterator_pair> &user_info,
+                     optional<v2::iterator_pair> &host,
+                     optional<v2::iterator_pair> &port);
 }  // namespace detail
 }  // namespace network
 

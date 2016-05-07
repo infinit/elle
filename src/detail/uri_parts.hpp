@@ -32,7 +32,7 @@ struct uri_parts {
 };
 
 namespace v2 {
-using iterator_pair = std::pair<uri::const_iterator, uri::const_iterator>;
+using iterator_pair = std::pair<string_view::const_iterator, string_view::const_iterator>;
 
 struct hierarchical_part {
   optional<iterator_pair> user_info;
