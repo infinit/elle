@@ -5,6 +5,7 @@
 
 #include <cctype>
 #include "network/uri/uri_builder.hpp"
+#include "detail/uri_normalize.hpp"
 #include "detail/uri_parse_authority.hpp"
 #include "detail/algorithm.hpp"
 
