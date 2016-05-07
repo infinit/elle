@@ -20,17 +20,8 @@
 
 namespace network {
 namespace {
-// inline detail::iterator_pair copy_range(detail::iterator_pair range,
-//                                         detail::iterator_pair::iterator &it) {
-//   auto first = std::begin(range), last = std::end(range);
-//   auto part_first = it;
-//   std::advance(it, std::distance(first, last));
-//   return detail::iterator_pair(part_first, it);
-// }
-
 inline detail::v2::iterator_pair copy_range(detail::v2::iterator_pair range,
                                             detail::v2::iterator_pair::first_type &it) {
-  // auto first = std::begin(range), last = std::end(range);
   auto first = range.first, last = range.second;
   auto part_first = it;
   std::advance(it, std::distance(first, last));
@@ -40,9 +31,7 @@ inline detail::v2::iterator_pair copy_range(detail::v2::iterator_pair range,
 inline detail::v2::iterator_pair copy_range(uri::string_view range,
                                             detail::v2::iterator_pair::first_type &it) {
   auto first = std::begin(range), last = std::end(range);
-  auto part_first = it;
-  std::advance(it, std::distance(first, last));
-  return detail::v2::iterator_pair(part_first, it);
+  return copy_range(std::make_pair(first, last), it);
 }
 
 void advance_parts(string_view &range, detail::v2::uri_parts &parts,
@@ -95,10 +84,42 @@ void advance_parts(string_view &range, detail::v2::uri_parts &parts,
   }
 }
 
-template <class Range>
-inline void to_lower(Range &range) {
-  detail::transform(range, std::begin(range),
-                    [](char ch) { return std::tolower(ch); });
+inline std::pair<std::string::iterator, std::string::iterator> mutable_range(
+    std::string &str, detail::v2::iterator_pair range) {
+  auto view = string_view(str);
+
+  auto first_index = std::distance(std::begin(view), range.first);
+  auto first = std::begin(str);
+  std::advance(first, first_index);
+
+  auto last_index = std::distance(std::begin(view), range.second);
+  auto last = std::begin(str);
+  std::advance(last, last_index);
+
+  return std::make_pair(first, last);
+}
+
+inline void to_lower(std::pair<std::string::iterator, std::string::iterator> range) {
+  std::transform(range.first, range.second, range.first,
+                 [](char ch) { return std::tolower(ch); });
+}
+
+inline uri::string_view to_string_view(const uri::string_type &uri,
+                                       detail::v2::iterator_pair uri_part) {
+  if (uri_part.first != uri_part.second) {
+    const char *c_str = uri.c_str();
+    const char *uri_part_begin = &(*(uri_part.first));
+    std::advance(c_str, std::distance(c_str, uri_part_begin));
+    return uri::string_view(c_str, std::distance(uri_part.first, uri_part.second));
+  }
+  return uri::string_view();
+}
+
+inline uri::string_view to_string_view(
+    uri::string_view::const_iterator uri_part_begin,
+    uri::string_view::const_iterator uri_part_end) {
+  return uri::string_view(uri_part_begin,
+                          std::distance(uri_part_begin, uri_part_end));
 }
 }  // namespace
 
@@ -164,8 +185,7 @@ void uri::initialize(optional<string_type> scheme,
 
   auto it = std::begin(uri_view_);
   if (scheme) {
-    string_view scheme_view(*scheme);
-    uri_parts_->scheme = copy_range(scheme_view, it);
+    uri_parts_->scheme = copy_range(*scheme, it);
     // ignore : and ://
     if (':' == *it) {
       ++it;
@@ -246,37 +266,6 @@ void uri::swap(uri &other) noexcept {
 uri::const_iterator uri::begin() const noexcept { return uri_view_.begin(); }
 
 uri::const_iterator uri::end() const noexcept { return uri_view_.end(); }
-
-namespace {
-// inline uri::string_view to_string_view(const uri::string_type &uri,
-//                                        detail::iterator_pair uri_part) {
-//   if (!uri_part.empty()) {
-//     const char *c_str = uri.c_str();
-//     const char *uri_part_begin = &(*(std::begin(uri_part)));
-//     std::advance(c_str, std::distance(c_str, uri_part_begin));
-//     return uri::string_view(c_str, detail::distance(uri_part));
-//   }
-//   return uri::string_view();
-// }
-
-inline uri::string_view to_string_view(const uri::string_type &uri,
-                                       detail::v2::iterator_pair uri_part) {
-  if (uri_part.first != uri_part.second) {
-    const char *c_str = uri.c_str();
-    const char *uri_part_begin = &(*(uri_part.first));
-    std::advance(c_str, std::distance(c_str, uri_part_begin));
-    return uri::string_view(c_str, std::distance(uri_part.first, uri_part.second));
-  }
-  return uri::string_view();
-}
-
-inline uri::string_view to_string_view(
-    uri::string_view::const_iterator uri_part_begin,
-    uri::string_view::const_iterator uri_part_end) {
-  return uri::string_view(uri_part_begin,
-                          std::distance(uri_part_begin, uri_part_end));
-}
-}  // namespace
 
 bool uri::has_scheme() const noexcept {
   return static_cast<bool>(uri_parts_->scheme);
@@ -415,73 +404,71 @@ bool uri::is_opaque() const noexcept {
 }
 
 uri uri::normalize(uri_comparison_level level) const {
-  return uri();
-  // string_type normalized(uri_);
-  // string_view normalized_view(normalized);
-  // detail::v2::uri_parts parts;
-  // advance_parts(normalized_view, parts, *uri_parts_);
-  //
-  // if (uri_comparison_level::syntax_based == level) {
-  //   // All alphabetic characters in the scheme and host are
-  //   // lower-case...
-  //   if (parts.scheme) {
-  //     to_lower(*parts.scheme);
-  //   }
-  //
-  //   if (parts.hier_part.host) {
-  //     to_lower(*parts.hier_part.host);
-  //   }
-  //
-  //   // ...except when used in percent encoding
-  //   detail::for_each(normalized, detail::percent_encoded_to_upper());
-  //
-  //   // parts are invalidated here
-  //   // there's got to be a better way of doing this that doesn't
-  //   // mean parsing again (twice!)
-  //   normalized.erase(detail::decode_encoded_unreserved_chars(std::begin(normalized),
-  //                                                            std::end(normalized)),
-  //                    std::end(normalized));
-  //   normalized_view = string_view(normalized);
-  //
-  //   // need to parse the parts again as the underlying string has changed
-  //   const_iterator it = std::begin(normalized_view), last = std::end(normalized_view);
-  //   bool is_valid = detail::parse(it, last, parts);
-  //   assert(is_valid);
-  //
-  //   if (parts.hier_part.path) {
-  //     uri::string_type path = detail::normalize_path_segments(
-  //         to_string_view(normalized, *parts.hier_part.path));
-  //
-  //     // put the normalized path back into the uri
-  //     optional<string_type> query, fragment;
-  //     if (parts.query) {
-  //       query = string_type(parts.query->first, parts.query->second);
-  //     }
-  //
-  //     if (parts.fragment) {
-  //       fragment = string_type(parts.fragment->first, parts.fragment->second);
-  //     }
-  //
-  //     auto path_begin = std::begin(normalized_view);
-  //     std::advance(path_begin,
-  //                  std::distance<detail::v2::iterator_pair::first_type>(
-  //                      path_begin, std::begin(*parts.hier_part.path)));
-  //     normalized.erase(path_begin, std::end(normalized));
-  //     normalized.append(path);
-  //
-  //     if (query) {
-  //       normalized.append("?");
-  //       normalized.append(*query);
-  //     }
-  //
-  //     if (fragment) {
-  //       normalized.append("#");
-  //       normalized.append(*fragment);
-  //     }
-  //   }
-  // }
-  //
-  // return uri(normalized);
+  string_type normalized(uri_);
+  string_view normalized_view(normalized);
+  detail::v2::uri_parts parts;
+  advance_parts(normalized_view, parts, *uri_parts_);
+
+  if (uri_comparison_level::syntax_based == level) {
+    // All alphabetic characters in the scheme and host are
+    // lower-case...
+    if (parts.scheme) {
+      to_lower(mutable_range(normalized, *parts.scheme));
+    }
+
+    if (parts.hier_part.host) {
+      to_lower(mutable_range(normalized, *parts.hier_part.host));
+    }
+
+    // ...except when used in percent encoding
+    detail::for_each(normalized, detail::percent_encoded_to_upper());
+
+    // parts are invalidated here
+    // there's got to be a better way of doing this that doesn't
+    // mean parsing again (twice!)
+    normalized.erase(detail::decode_encoded_unreserved_chars(
+                         std::begin(normalized), std::end(normalized)),
+                     std::end(normalized));
+    normalized_view = string_view(normalized);
+
+    // need to parse the parts again as the underlying string has changed
+    const_iterator it = std::begin(normalized_view), last = std::end(normalized_view);
+    bool is_valid = detail::parse(it, last, parts);
+    assert(is_valid);
+
+    if (parts.hier_part.path) {
+      uri::string_type path = detail::normalize_path_segments(
+          to_string_view(normalized, *parts.hier_part.path));
+
+      // put the normalized path back into the uri
+      optional<string_type> query, fragment;
+      if (parts.query) {
+        query = string_type(parts.query->first, parts.query->second);
+      }
+
+      if (parts.fragment) {
+        fragment = string_type(parts.fragment->first, parts.fragment->second);
+      }
+
+      auto path_begin = std::begin(normalized);
+      auto path_range = mutable_range(normalized, *parts.hier_part.path);
+      std::advance(path_begin, std::distance(path_begin, path_range.first));
+      normalized.erase(path_begin, std::end(normalized));
+      normalized.append(path);
+
+      if (query) {
+        normalized.append("?");
+        normalized.append(*query);
+      }
+
+      if (fragment) {
+        normalized.append("#");
+        normalized.append(*fragment);
+      }
+    }
+  }
+
+  return uri(normalized);
 }
 
 uri uri::make_relative(const uri &other) const {

@@ -92,6 +92,12 @@ bool parse(string_view::const_iterator &it, string_view::const_iterator last, v2
         hp_state = hier_part_state::host;
         ++it;
         first = it;
+
+        if (*first == '[') {
+          // this is an IPv6 address
+          hp_state = hier_part_state::host_ipv6;
+        }
+
         continue;
       }
       else if (*it == '[') {
@@ -115,6 +121,24 @@ bool parse(string_view::const_iterator &it, string_view::const_iterator last, v2
         first = it;
         continue;
       }
+      else if (*it == '?') {
+        // the path is empty, but valid, and the next part is the query
+        parts.hier_part.host = std::make_pair(first, it);
+        parts.hier_part.path = std::make_pair(it, it);
+        state = uri_state::query;
+        ++it;
+        first = it;
+        break;
+      }
+      else if (*it == '#') {
+        // the path is empty, but valid, and the next part is the fragment
+        parts.hier_part.host = std::make_pair(first, it);
+        parts.hier_part.path = std::make_pair(it, it);
+        state = uri_state::fragment;
+        ++it;
+        first = it;
+        break;
+      }
     }
     else if (hp_state == hier_part_state::host) {
       if (*first == ':') {
@@ -133,6 +157,24 @@ bool parse(string_view::const_iterator &it, string_view::const_iterator last, v2
         hp_state = hier_part_state::path;
         first = it;
         continue;
+      }
+      else if (*it == '?') {
+        // the path is empty, but valid, and the next part is the query
+        parts.hier_part.host = std::make_pair(first, it);
+        parts.hier_part.path = std::make_pair(it, it);
+        state = uri_state::query;
+        ++it;
+        first = it;
+        break;
+      }
+      else if (*it == '#') {
+        // the path is empty, but valid, and the next part is the fragment
+        parts.hier_part.host = std::make_pair(first, it);
+        parts.hier_part.path = std::make_pair(it, it);
+        state = uri_state::fragment;
+        ++it;
+        first = it;
+        break;
       }
     }
     else if (hp_state == hier_part_state::host_ipv6) {
@@ -156,6 +198,22 @@ bool parse(string_view::const_iterator &it, string_view::const_iterator last, v2
           parts.hier_part.host = std::make_pair(first, it);
           hp_state = hier_part_state::path;
           first = it;
+        }
+        else if (*it == '?') {
+          parts.hier_part.host = std::make_pair(first, it);
+          parts.hier_part.path = std::make_pair(it, it);
+          state = uri_state::query;
+          ++it;
+          first = it;
+          break;
+        }
+        else if (*it == '#') {
+          parts.hier_part.host = std::make_pair(first, it);
+          parts.hier_part.path = std::make_pair(it, it);
+          state = uri_state::fragment;
+          ++it;
+          first = it;
+          break;
         }
         continue;
       }
