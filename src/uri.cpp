@@ -115,11 +115,11 @@ inline uri::string_view to_string_view(const uri::string_type &uri,
   return uri::string_view();
 }
 
-inline uri::string_view to_string_view(
-    uri::string_view::const_iterator uri_part_begin,
-    uri::string_view::const_iterator uri_part_end) {
-  return uri::string_view(uri_part_begin,
-                          std::distance(uri_part_begin, uri_part_end));
+inline optional<std::string> make_arg(optional<string_view> view) {
+  if (view) {
+    return view->to_string();
+  }
+  return nullopt;
 }
 }  // namespace
 
@@ -378,7 +378,7 @@ uri::string_view uri::authority() const noexcept {
     }
   }
 
-  return to_string_view(first, last);
+  return string_view(first, std::distance(first, last));
 }
 
 std::string uri::string() const { return uri_; }
@@ -511,15 +511,6 @@ uri uri::make_relative(const uri &other) const {
   return std::move(result);
 }
 
-namespace detail {
-inline optional<uri::string_type> make_arg(optional<uri::string_view> view) {
-  if (view) {
-    return view->to_string();
-  }
-  return nullopt;
-}
-}  // namespace detail
-
 uri uri::resolve(const uri &base) const {
   // This implementation uses the psuedo-code given in
   // http://tools.ietf.org/html/rfc3986#section-5.2.2
@@ -540,15 +531,15 @@ uri uri::resolve(const uri &base) const {
   if (has_authority()) {
     // g -> http://g
     if (has_user_info()) {
-      user_info = detail::make_arg(this->user_info());
+      user_info = make_arg(this->user_info());
     }
 
     if (has_host()) {
-      host = detail::make_arg(this->host());
+      host = make_arg(this->host());
     }
 
     if (has_port()) {
-      port = detail::make_arg(this->port());
+      port = make_arg(this->port());
     }
 
     if (has_path()) {
@@ -556,18 +547,18 @@ uri uri::resolve(const uri &base) const {
     }
 
     if (has_query()) {
-      query = detail::make_arg(this->query());
+      query = make_arg(this->query());
     }
   } else {
     if (!has_path() || this->path().empty()) {
       if (base.has_path()) {
-        path = detail::make_arg(base.path());
+        path = make_arg(base.path());
       }
 
       if (has_query()) {
-        query = detail::make_arg(this->query());
+        query = make_arg(this->query());
       } else if (base.has_query()) {
-        query = detail::make_arg(base.query());
+        query = make_arg(base.query());
       }
     } else {
       if (this->path().front() == '/') {
@@ -577,29 +568,29 @@ uri uri::resolve(const uri &base) const {
       }
 
       if (has_query()) {
-        query = detail::make_arg(this->query());
+        query = make_arg(this->query());
       }
     }
 
     if (base.has_user_info()) {
-      user_info = detail::make_arg(base.user_info());
+      user_info = make_arg(base.user_info());
     }
 
     if (base.has_host()) {
-      host = detail::make_arg(base.host());
+      host = make_arg(base.host());
     }
 
     if (base.has_port()) {
-      port = detail::make_arg(base.port());
+      port = make_arg(base.port());
     }
   }
 
   if (has_fragment()) {
-    fragment = detail::make_arg(this->fragment());
+    fragment = make_arg(this->fragment());
   }
 
   network::uri result;
-  result.initialize(detail::make_arg(base.scheme()), std::move(user_info),
+  result.initialize(make_arg(base.scheme()), std::move(user_info),
                     std::move(host), std::move(port), std::move(path),
                     std::move(query), std::move(fragment));
   return result;

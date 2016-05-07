@@ -9,14 +9,10 @@ set(Uri_SRCS
   ${CMAKE_CURRENT_SOURCE_DIR}/uri_errors.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/detail/uri_parse.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/detail/uri_parse_authority.cpp
-  # ${CMAKE_CURRENT_SOURCE_DIR}/detail/uri_parse_spirit.cpp
-  # ${CMAKE_CURRENT_SOURCE_DIR}/detail/uri_parse_authority_spirit.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/detail/parse/scheme.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/detail/uri_normalize.cpp
   ${CMAKE_CURRENT_SOURCE_DIR}/detail/uri_resolve.cpp
   )
 
-add_definitions("-DBOOST_SPIRIT_THREADSAFE")
 add_library(network-uri ${Uri_SRCS})
 target_link_libraries(network-uri)
 if(${CMAKE_CXX_COMPILER_ID} MATCHES Clang)

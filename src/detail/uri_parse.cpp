@@ -7,12 +7,13 @@
 #include <iterator>
 #include <limits>
 #include "uri_parts.hpp"
-#include "parse/scheme.hpp"
-#include "parse/pchar.hpp"
+#include "grammar.hpp"
 
 namespace network {
 namespace detail {
 namespace {
+enum class scheme_state { first_char, other };
+
 enum class uri_state {
   scheme,
   hier_part,
@@ -30,11 +31,49 @@ enum class hier_part_state {
   path
 };
 
-inline bool is_valid_port(iterator_pair port) {
-  const char* port_first = &(*port.first);
-  char* port_last = 0;
-  unsigned long value = std::strtoul(port_first, &port_last, 10);
-  return (value < std::numeric_limits<unsigned short>::max());
+bool parse_scheme(string_view::const_iterator &it,
+                  string_view::const_iterator last, uri_parts &parts) {
+  auto state = scheme_state::first_char;
+
+  if (it == last) {
+    return false;
+  }
+
+  auto first = it;
+  while (it != last) {
+    // first char is alpha
+    if (state == scheme_state::first_char) {
+      if (std::isalpha(*it) == 0) {
+        return false;
+      }
+
+      state = scheme_state::other;
+    }
+    else if (state == scheme_state::other) {
+      if (*it == ':') {
+        parts.scheme = std::make_pair(first, it);
+
+        // move past the scheme delimiter
+        ++it;
+        break;
+      }
+      else if (!is_valid_scheme(it)) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+}
+
+bool validate_user_info(string_view::const_iterator it,
+                        string_view::const_iterator last) {
+  while (it != last) {
+    if (!is_valid_user_info(it)) {
+      return false;
+    }
+  }
+  return true;
 }
 } // namespace
 
@@ -88,6 +127,9 @@ bool parse(string_view::const_iterator &it, string_view::const_iterator last, ur
       }
 
       if (*it == '@') {
+        if (!validate_user_info(first, it)) {
+          return false;
+        }
         parts.hier_part.user_info = std::make_pair(first, it);
         hp_state = hier_part_state::host;
         ++it;
@@ -221,10 +263,10 @@ bool parse(string_view::const_iterator &it, string_view::const_iterator last, ur
     else if (hp_state == hier_part_state::port) {
       if (*first == '/') {
         // the port is empty, but valid
-        parts.hier_part.port = std::make_pair(first, it);
-        if (!is_valid_port(*parts.hier_part.port)) {
+        if (!is_valid_port(first)) {
           return false;
         }
+        parts.hier_part.port = std::make_pair(first, it);
 
         // the port isn't set, but the path is
         hp_state = hier_part_state::path;
@@ -232,10 +274,10 @@ bool parse(string_view::const_iterator &it, string_view::const_iterator last, ur
       }
 
       if (*it == '/') {
-        parts.hier_part.port = std::make_pair(first, it);
-        if (!is_valid_port(*parts.hier_part.port)) {
+        if (!is_valid_port(first)) {
           return false;
         }
+        parts.hier_part.port = std::make_pair(first, it);
         hp_state = hier_part_state::path;
         first = it;
         continue;
@@ -276,7 +318,7 @@ bool parse(string_view::const_iterator &it, string_view::const_iterator last, ur
           ++it;
           first = it;
           state = uri_state::fragment;
-          continue;
+          break;
         }
         else {
           return false;
@@ -308,10 +350,10 @@ bool parse(string_view::const_iterator &it, string_view::const_iterator last, ur
       parts.hier_part.path = std::make_pair(last, last);
     }
     else if (hp_state == hier_part_state::port) {
-      parts.hier_part.port = std::make_pair(first, last);
-      if (!is_valid_port(*parts.hier_part.port)) {
+      if (!is_valid_port(first)) {
         return false;
       }
+      parts.hier_part.port = std::make_pair(first, last);
       parts.hier_part.path = std::make_pair(last, last);
     }
     else if (hp_state == hier_part_state::path) {

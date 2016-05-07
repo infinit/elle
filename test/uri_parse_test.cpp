@@ -613,3 +613,16 @@ TEST(uri_parse_test, test_fragment_with_user_info_empty_path_and_ipv6_address) {
   ASSERT_TRUE(uri.has_fragment());
   EXPECT_EQ("fragment", uri.fragment());
 }
+
+TEST(uri_parse_test, test_pct_encoded_user_info) {
+  test_uri uri("http://user%3f@www.example.com/");
+  EXPECT_TRUE(uri.parse_uri());
+  ASSERT_TRUE(uri.has_scheme());
+  EXPECT_EQ("http", uri.scheme());
+  ASSERT_TRUE(uri.has_user_info());
+  EXPECT_EQ("user%3f", uri.user_info());
+  ASSERT_TRUE(uri.has_host());
+  EXPECT_EQ("www.example.com", uri.host());
+  ASSERT_TRUE(uri.has_path());
+  EXPECT_EQ("/", uri.path());
+}

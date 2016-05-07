@@ -4,11 +4,11 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 #include "uri_parse_authority.hpp"
+#include <cstdlib>
 #include <iterator>
 #include <limits>
 #include "uri_parts.hpp"
-#include "parse/scheme.hpp"
-#include "parse/pchar.hpp"
+#include "grammar.hpp"
 
 namespace network {
 namespace detail {

@@ -8,8 +8,6 @@
 
 #include <string>
 #include <utility>
-#include "../boost/range/iterator_range.hpp"
-#include "../boost/optional.hpp"
 #include <network/optional.hpp>
 #include <network/string_view.hpp>
 

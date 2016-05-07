@@ -15,10 +15,10 @@
 namespace network {
 namespace detail {
 
-inline optional<char> percent_encode(std::string s) {
+inline optional<char> percent_encode(std::string::const_iterator it) {
   try {
     std::vector<char> output;
-    detail::decode_char(std::begin(s), std::back_inserter(output));
+    detail::decode_char(it, std::back_inserter(output));
     return output[0];
   } catch (percent_decoding_error &) {
     return optional<char>();
@@ -63,7 +63,7 @@ Iter decode_encoded_unreserved_chars(Iter first, Iter last) {
         std::advance(slast, 3);
         return slast;
       }();
-      const auto opt_char = percent_encode(std::string(sfirst, slast));
+      const auto opt_char = percent_encode(sfirst);
       if (opt_char && is_unreserved(*opt_char)) {
         *it2 = *opt_char;
         ++it; ++it;

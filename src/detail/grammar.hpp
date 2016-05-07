@@ -3,10 +3,11 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-#ifndef NETWORK_DETAIL_URI_PARSE_PCHAR_INC
-#define NETWORK_DETAIL_URI_PARSE_PCHAR_INC
+#ifndef NETWORK_DETAIL_URI_GRAMMAR_INC
+#define NETWORK_DETAIL_URI_GRAMMAR_INC
 
 #include <network/string_view.hpp>
+#include <cstdlib>
 #include <cctype>
 #include <cstring>
 
@@ -69,7 +70,27 @@ inline bool is_pchar(string_view::const_iterator &it) {
     is_in(it, ":@")
           ;
 }
+
+inline bool is_valid_scheme(string_view::const_iterator &it) {
+  return isalnum(it) || is_in(it, "+-.");
+}
+
+inline bool is_valid_user_info(string_view::const_iterator &it) {
+  return
+    is_unreserved(it) ||
+    is_pct_encoded(it) ||
+    is_sub_delim(it) ||
+    is_in(it, ":")
+    ;
+}
+
+inline bool is_valid_port(string_view::const_iterator it) {
+  const char* port_first = &(*it);
+  char* port_last = 0;
+  unsigned long value = std::strtoul(port_first, &port_last, 10);
+  return (value < std::numeric_limits<unsigned short>::max());
+}
 }  // namespace detail
 }  // namespace network
 
-#endif  // NETWORK_DETAIL_URI_PARSE_PCHAR_INC
+#endif  // NETWORK_DETAIL_URI_GRAMMAR_INC
