@@ -4,6 +4,7 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 #include "scheme.hpp"
+#include "pchar.hpp"
 #include <cctype>
 
 namespace network {
@@ -11,8 +12,8 @@ namespace detail {
 namespace {
 enum class scheme_state { first_char, other };
 
-inline bool is_valid_scheme_char(char c) {
-  return ((std::isalnum(c) != 0) || (c == '+') || (c == '-') || (c == '.'));
+inline bool is_valid_scheme_char(string_view::const_iterator &it) {
+  return isalnum(it) || is_in(it, "+-.");
 }
 }  // namespace
 
@@ -42,12 +43,11 @@ bool parse_scheme(uri::const_iterator &it, uri::const_iterator last,
         ++it;
         break;
       }
-      else if (!is_valid_scheme_char(*it)) {
+      else if (!is_valid_scheme_char(it)) {
         return false;
       }
     }
-
-    ++it;
+    // ++it;
   }
 
   return true;

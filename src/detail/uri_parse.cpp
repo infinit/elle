@@ -5,6 +5,7 @@
 
 #include "uri_parse.hpp"
 #include <iterator>
+#include <limits>
 #include "uri_parts.hpp"
 #include "parse/scheme.hpp"
 #include "parse/pchar.hpp"
@@ -24,9 +25,17 @@ enum class hier_part_state {
   second_slash,
   user_info,
   host,
+  host_ipv6,
   port,
   path
 };
+
+bool is_valid_port(v2::iterator_pair port) {
+  const char* port_first = &(*port.first);
+  char* port_last = 0;
+  unsigned long value = std::strtoul(port_first, &port_last, 10);
+  return (value < std::numeric_limits<unsigned short>::max());
+}
 } // namespace
 
 bool parse(uri::const_iterator &it, uri::const_iterator last, v2::uri_parts &parts) {
@@ -51,6 +60,8 @@ bool parse(uri::const_iterator &it, uri::const_iterator last, v2::uri_parts &par
     if (hp_state == hier_part_state::first_slash) {
       if (*it == '/') {
         hp_state = hier_part_state::second_slash;
+        // set the first iterator in case the second slash is not forthcoming
+        first = it;
         ++it;
         continue;
       }
@@ -67,11 +78,12 @@ bool parse(uri::const_iterator &it, uri::const_iterator last, v2::uri_parts &par
         continue;
       }
       else {
-        return false;
+        // it's a valid URI, and this is the beginning of the path
+        hp_state = hier_part_state::path;
       }
     }
     else if (hp_state == hier_part_state::user_info) {
-      if ((*first == '@') || (*first == ':')) {
+      if (is_in(first, "@:")) {
         return false;
       }
 
@@ -79,6 +91,12 @@ bool parse(uri::const_iterator &it, uri::const_iterator last, v2::uri_parts &par
         parts.hier_part.user_info = std::make_pair(first, it);
         hp_state = hier_part_state::host;
         ++it;
+        first = it;
+        continue;
+      }
+      else if (*it == '[') {
+        // this is an IPv6 address
+        hp_state = hier_part_state::host_ipv6;
         first = it;
         continue;
       }
@@ -117,8 +135,40 @@ bool parse(uri::const_iterator &it, uri::const_iterator last, v2::uri_parts &par
         continue;
       }
     }
+    else if (hp_state == hier_part_state::host_ipv6) {
+      if (*first != '[') {
+        return false;
+      }
+
+      if (*it == ']') {
+        parts.hier_part.host = std::make_pair(first, it);
+        ++it;
+        // Then test if the next part is a host, part, or the end of the file
+        if (it == last) {
+          break;
+        }
+        else if (*it == ':') {
+          parts.hier_part.host = std::make_pair(first, it);
+          hp_state = hier_part_state::port;
+          ++it;
+          first = it;
+        }
+        else if (*it == '/') {
+          parts.hier_part.host = std::make_pair(first, it);
+          hp_state = hier_part_state::path;
+          first = it;
+        }
+        continue;
+      }
+    }
     else if (hp_state == hier_part_state::port) {
       if (*first == '/') {
+        // the port is empty, but valid
+        parts.hier_part.port = std::make_pair(first, it);
+        if (!is_valid_port(*parts.hier_part.port)) {
+          return false;
+        }
+
         // the port isn't set, but the path is
         hp_state = hier_part_state::path;
         continue;
@@ -126,9 +176,15 @@ bool parse(uri::const_iterator &it, uri::const_iterator last, v2::uri_parts &par
 
       if (*it == '/') {
         parts.hier_part.port = std::make_pair(first, it);
+        if (!is_valid_port(*parts.hier_part.port)) {
+          return false;
+        }
         hp_state = hier_part_state::path;
         first = it;
         continue;
+      }
+      else if (!isdigit(it)) {
+        return false;
       }
     }
     else if (hp_state == hier_part_state::path) {
@@ -190,8 +246,15 @@ bool parse(uri::const_iterator &it, uri::const_iterator last, v2::uri_parts &par
       parts.hier_part.host = std::make_pair(first, last);
       parts.hier_part.path = std::make_pair(last, last);
     }
+    else if (hp_state == hier_part_state::host_ipv6) {
+      parts.hier_part.host = std::make_pair(first, last);
+      parts.hier_part.path = std::make_pair(last, last);
+    }
     else if (hp_state == hier_part_state::port) {
       parts.hier_part.port = std::make_pair(first, last);
+      if (!is_valid_port(*parts.hier_part.port)) {
+        return false;
+      }
       parts.hier_part.path = std::make_pair(last, last);
     }
     else if (hp_state == hier_part_state::path) {

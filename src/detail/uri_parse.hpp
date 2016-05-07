@@ -10,6 +10,8 @@
 
 namespace network {
 namespace detail {
+struct uri_parts;
+
 bool parse(uri::string_type& str, uri_parts& parts);
 
 namespace v2 {

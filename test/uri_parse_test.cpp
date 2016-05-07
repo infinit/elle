@@ -163,15 +163,6 @@ TEST(uri_parse_test, test_scheme_with_capital_letters) {
   EXPECT_EQ("HTTP", uri.scheme());
 }
 
-TEST(uri_parse_test, test_hierarchical_part_single_slash) {
-  test_uri uri("http:/www.example.com:80/path?query#fragment");
-  EXPECT_FALSE(uri.parse_uri());
-  ASSERT_FALSE(uri.has_user_info());
-  ASSERT_FALSE(uri.has_host());
-  ASSERT_FALSE(uri.has_port());
-  // ASSERT_FALSE(uri.has_path());
-}
-
 TEST(uri_parse_test, test_hierarchical_part_valid_user_info) {
   test_uri uri("http://user@www.example.com:80/path?query#fragment");
   EXPECT_TRUE(uri.parse_uri());
@@ -429,4 +420,63 @@ TEST(uri_parse_test, test_valid_query_with_sub_delim) {
   ASSERT_TRUE(uri.has_query());
   EXPECT_EQ("qu$ery", uri.query());
   ASSERT_FALSE(uri.has_fragment());
+}
+
+TEST(uri_parse_test, test_invalid_port_with_path) {
+  test_uri uri("http://123.34.23.56:6662626/");
+  EXPECT_FALSE(uri.parse_uri());
+}
+
+TEST(uri_parse_test, test_invalid_port) {
+  test_uri uri("http://123.34.23.56:6662626");
+  EXPECT_FALSE(uri.parse_uri());
+}
+
+TEST(uri_parse_test, test_empty_port_with_path) {
+  test_uri uri("http://123.34.23.56:/");
+  EXPECT_TRUE(uri.parse_uri());
+  ASSERT_TRUE(uri.has_port());
+  ASSERT_EQ("", uri.port());
+}
+
+TEST(uri_parse_test, test_empty_port) {
+  test_uri uri("http://123.34.23.56:");
+  EXPECT_TRUE(uri.parse_uri());
+  ASSERT_TRUE(uri.has_port());
+  ASSERT_EQ("", uri.port());
+}
+
+TEST(uri_parse_test, test_ipv6_address) {
+  test_uri uri("http://[1080:0:0:0:8:800:200C:417A]");
+  EXPECT_TRUE(uri.parse_uri());
+  ASSERT_TRUE(uri.has_host());
+  EXPECT_EQ("[1080:0:0:0:8:800:200C:417A]", uri.host());
+}
+
+TEST(uri_parse_test, test_ipv6_address_with_path) {
+  test_uri uri("http://[1080:0:0:0:8:800:200C:417A]/");
+  EXPECT_TRUE(uri.parse_uri());
+  ASSERT_TRUE(uri.has_host());
+  EXPECT_EQ("[1080:0:0:0:8:800:200C:417A]", uri.host());
+  ASSERT_TRUE(uri.has_path());
+  EXPECT_EQ("/", uri.path());
+}
+
+TEST(uri_parse_test, test_invalid_ipv6_address) {
+  test_uri uri("http://[1080:0:0:0:8:800:200C:417A");
+  EXPECT_FALSE(!uri.parse_uri());
+}
+
+TEST(uri_parse_test, test_invalid_ipv6_address_with_path) {
+  test_uri uri("http://[1080:0:0:0:8:800:200C:417A/");
+  EXPECT_FALSE(!uri.parse_uri());
+}
+
+TEST(uri_parse_test, test_opaque_uri_with_one_slash) {
+  test_uri uri("scheme:/path/");
+  EXPECT_TRUE(uri.parse_uri());
+  ASSERT_TRUE(uri.has_scheme());
+  EXPECT_EQ("scheme", uri.scheme());
+  ASSERT_TRUE(uri.has_path());
+  EXPECT_EQ("/path/", uri.path());
 }

@@ -12,51 +12,18 @@
 
 namespace network {
 namespace detail {
-inline bool is_sub_delim(char c) {
-  return (c == '!') || (c == '$') || (c == '&') || (c == '\'') || (c == '(') ||
-         (c == ')') || (c == '*') || (c == '+') || (c == ',') || (c == ';') ||
-         (c == '=');
-}
-
-inline bool is_sub_delim(string_view::const_iterator &it) {
-  if (is_sub_delim(*it)) {
+inline bool isalnum(string_view::const_iterator &it) {
+  if (std::isalnum(*it) != 0) {
     ++it;
     return true;
   }
   return false;
 }
 
-inline bool is_gen_delim(char c) {
-  return (c == ':') || (c == '/') || (c == '?') || (c == '#') || (c == '[') ||
-         (c == ']') || (c == '@');
-}
-
-inline bool is_reserved(char c) { return is_sub_delim(c) || is_gen_delim(c); }
-
-inline bool is_unreserved(char c) {
-  return std::isalnum(c) || (c == '-') || (c == '.') || (c == '_') ||
-         (c == '~');
-}
-
-inline bool is_unreserved(string_view::const_iterator &it) {
-  if (is_unreserved(*it)) {
+inline bool isdigit(string_view::const_iterator &it) {
+  if (std::isdigit(*it) != 0) {
     ++it;
     return true;
-  }
-  return false;
-}
-
-inline bool is_pct_encoded(string_view::const_iterator &it) {
-  if (*it == '%') {
-    ++it;
-
-    if (std::isxdigit(*it) != 0) {
-      ++it;
-      if (std::isxdigit(*it) != 0) {
-        ++it;
-        return true;
-      }
-    }
   }
   return false;
 }
@@ -67,6 +34,28 @@ inline bool is_in(string_view::const_iterator &it, const char *chars) {
     if (*it == chars[i]) {
       ++it;
       return true;
+    }
+  }
+  return false;
+}
+
+inline bool is_sub_delim(string_view::const_iterator &it) {
+  return is_in(it, "!$&'()*+,;=");
+}
+
+inline bool is_unreserved(string_view::const_iterator &it) {
+  return isalnum(it) || is_in(it, "-._~");
+}
+
+inline bool is_pct_encoded(string_view::const_iterator &it) {
+  if (*it == '%') {
+    ++it;
+    if (std::isxdigit(*it) != 0) {
+      ++it;
+      if (std::isxdigit(*it) != 0) {
+        ++it;
+        return true;
+      }
     }
   }
   return false;
