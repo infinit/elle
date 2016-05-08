@@ -19,8 +19,9 @@ std::string normalize_path_segments(string_view path) {
 
   if (!path.empty()) {
     std::vector<std::string> path_segments;
-    network_boost::split(path_segments, path,
-                 [](char ch) { return ch == '/'; });
+    network_boost::split(path_segments, path, [](char ch) {
+      return ch == '/';
+    });
 
     // remove single dot segments
     detail::remove_erase_if(
@@ -67,7 +68,7 @@ std::string normalize_path(string_view path, uri_comparison_level level) {
 
   if (uri_comparison_level::syntax_based == level) {
     // case normalization
-    detail::for_each(result, percent_encoded_to_upper());
+    detail::for_each(result, percent_encoded_to_upper<std::string>());
 
     // % encoding normalization
     result.erase(

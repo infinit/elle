@@ -31,8 +31,8 @@ CharT letter_to_hex(CharT in) {
   throw percent_decoding_error(uri_error::non_hex_input);
 }
 
-template <class InputIterator, class OutputIterator>
-InputIterator decode_char(InputIterator it, OutputIterator out) {
+template <class InputIterator, class charT>
+InputIterator decode_char(InputIterator it, charT *out) {
   assert(*it == '%');
   ++it;
   auto h0 = *it;
@@ -45,7 +45,7 @@ InputIterator decode_char(InputIterator it, OutputIterator out) {
     throw percent_decoding_error(uri_error::conversion_failed);
   }
   ++it;
-  *out = (0x10 * v0) + v1;
+  *out = static_cast<charT>((0x10 * v0) + v1);
   return it;
 }
 
@@ -59,7 +59,9 @@ OutputIterator decode(InputIterator in_begin, InputIterator in_end,
       if (std::distance(it, in_end) < 3) {
         throw percent_decoding_error(uri_error::not_enough_input);
       }
-      it = decode_char(it, out);
+      char c = '\0';
+      it = decode_char(it, &c);
+      out = c;
       ++out;
     } else {
       *out++ = *it++;

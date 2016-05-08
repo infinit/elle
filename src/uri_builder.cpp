@@ -3,7 +3,7 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-#include <cctype>
+#include <locale>
 #include "network/uri/uri_builder.hpp"
 #include "detail/uri_normalize.hpp"
 #include "detail/uri_parse_authority.hpp"
@@ -48,7 +48,7 @@ void uri_builder::set_scheme(string_type scheme) {
   // validate scheme is valid and normalize
   scheme_ = scheme;
   detail::transform(*scheme_, std::begin(*scheme_),
-                    [] (char ch) { return std::tolower(ch); });
+                    [] (char ch) { return std::tolower(ch, std::locale()); });
 }
 
 void uri_builder::set_user_info(string_type user_info) {
@@ -67,7 +67,7 @@ void uri_builder::set_host(string_type host) {
   auto end = network::uri::encode_host(std::begin(host), std::end(host),
                                        std::back_inserter(*host_));
   detail::transform(*host_, std::begin(*host_),
-                    [](char ch) { return std::tolower(ch); });
+                    [](char ch) { return std::tolower(ch, std::locale()); });
 }
 
 void uri_builder::set_port(string_type port) {

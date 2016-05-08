@@ -8,13 +8,14 @@
 
 #include <network/string_view.hpp>
 #include <cstdlib>
-#include <cctype>
+#include <locale>
 #include <cstring>
+#include <string>
 
 namespace network {
 namespace detail {
 inline bool isalnum(string_view::const_iterator &it) {
-  if (std::isalnum(*it) != 0) {
+  if (std::isalnum(*it, std::locale())) {
     ++it;
     return true;
   }
@@ -22,7 +23,7 @@ inline bool isalnum(string_view::const_iterator &it) {
 }
 
 inline bool isdigit(string_view::const_iterator &it) {
-  if (std::isdigit(*it) != 0) {
+  if (std::isdigit(*it, std::locale())) {
     ++it;
     return true;
   }
@@ -51,9 +52,9 @@ inline bool is_unreserved(string_view::const_iterator &it) {
 inline bool is_pct_encoded(string_view::const_iterator &it) {
   if (*it == '%') {
     ++it;
-    if (std::isxdigit(*it) != 0) {
+    if (std::isxdigit(*it, std::locale())) {
       ++it;
-      if (std::isxdigit(*it) != 0) {
+      if (std::isxdigit(*it, std::locale())) {
         ++it;
         return true;
       }

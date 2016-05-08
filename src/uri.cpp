@@ -5,11 +5,9 @@
 // http://www.boost.org/LICENSE_1_0.txt)
 
 #include <cassert>
-#include <cctype>
+#include <locale>
 #include <algorithm>
 #include <functional>
-#include <unordered_map>
-#include <vector>
 #include "network/uri/uri.hpp"
 #include "detail/uri_parts.hpp"
 #include "detail/uri_parse.hpp"
@@ -43,13 +41,13 @@ void advance_parts(string_view &range, detail::uri_parts &parts,
     parts.scheme = copy_range(*scheme, it);
 
     // ignore : for all URIs
-    if (':' == *it) {
+    if (*it == ':') {
       ++it;
     }
 
     // ignore // for hierarchical URIs
     if (existing_parts.hier_part.host) {
-      while ('/' == *it) {
+      while (*it == '/') {
         ++it;
       }
     }
@@ -101,7 +99,7 @@ inline std::pair<std::string::iterator, std::string::iterator> mutable_range(
 
 inline void to_lower(std::pair<std::string::iterator, std::string::iterator> range) {
   std::transform(range.first, range.second, range.first,
-                 [](char ch) { return std::tolower(ch); });
+                 [](char ch) { return std::tolower(ch, std::locale()); });
 }
 
 inline uri::string_view to_string_view(const uri::string_type &uri,
@@ -187,12 +185,12 @@ void uri::initialize(optional<string_type> scheme,
   if (scheme) {
     uri_parts_->scheme = copy_range(*scheme, it);
     // ignore : and ://
-    if (':' == *it) {
+    if (*it == ':') {
       ++it;
     }
-    if ('/' == *it) {
+    if (*it == '/') {
       ++it;
-      if ('/' == *it) {
+      if (*it == '/') {
         ++it;
       }
     }
@@ -421,7 +419,7 @@ uri uri::normalize(uri_comparison_level level) const {
     }
 
     // ...except when used in percent encoding
-    detail::for_each(normalized, detail::percent_encoded_to_upper());
+    detail::for_each(normalized, detail::percent_encoded_to_upper<std::string>());
 
     // parts are invalidated here
     // there's got to be a better way of doing this that doesn't

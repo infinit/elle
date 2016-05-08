@@ -43,7 +43,7 @@ bool parse_scheme(string_view::const_iterator &it,
   while (it != last) {
     // first char is alpha
     if (state == scheme_state::first_char) {
-      if (std::isalpha(*it) == 0) {
+      if (!std::isalpha(*it, std::locale())) {
         return false;
       }
 

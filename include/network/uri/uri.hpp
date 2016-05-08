@@ -103,6 +103,11 @@ class uri {
   typedef network::string_view string_view;
 
   /**
+   * \brief The char traits.
+   */
+  typedef string_view::traits_type traits_type;
+
+  /**
    * \brief The URI const_iterator type.
    */
   typedef string_view::const_iterator const_iterator;
