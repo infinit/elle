@@ -7,7 +7,6 @@
 #include <cstdlib>
 #include <iterator>
 #include <limits>
-#include "uri_parts.hpp"
 #include "grammar.hpp"
 
 namespace network {

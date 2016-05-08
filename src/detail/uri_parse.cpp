@@ -6,8 +6,8 @@
 #include "uri_parse.hpp"
 #include <iterator>
 #include <limits>
-#include "uri_parts.hpp"
 #include "grammar.hpp"
+#include <network/uri/detail/uri_parts.hpp>
 
 namespace network {
 namespace detail {

@@ -5,8 +5,8 @@
 
 #include <iterator>
 #include <gtest/gtest.h>
+#include <network/uri/detail/uri_parts.hpp>
 #include "../src/detail/uri_parse.hpp"
-#include "../src/detail/uri_parts.hpp"
 #include "string_utility.hpp"
 
 using network::detail::parse;

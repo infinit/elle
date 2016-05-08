@@ -6,7 +6,7 @@
 #ifndef NETWORK_DETAIL_URI_ADVANCE_INC
 #define NETWORK_DETAIL_URI_ADVANCE_INC
 
-#include "uri_parts.hpp"
+#include <network/uri/detail/uri_parts.hpp>
 
 namespace network {
 namespace detail {

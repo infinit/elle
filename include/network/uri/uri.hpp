@@ -23,6 +23,7 @@
 #include <network/optional.hpp>
 #include <network/uri/config.hpp>
 #include <network/uri/uri_errors.hpp>
+#include <network/uri/detail/uri_parts.hpp>
 #include <network/uri/detail/encode.hpp>
 #include <network/uri/detail/decode.hpp>
 #include <network/uri/detail/translate.hpp>
@@ -33,12 +34,6 @@
 #endif
 
 namespace network {
-#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
-namespace detail {
-struct uri_parts;
-}  // namespace detail
-#endif  // !defined(DOXYGEN_SHOULD_SKIP_THIS)
-
 /**
  * \enum uri_comparison_level
  * \brief Defines the steps on the URI comparison ladder.
@@ -566,7 +561,7 @@ class uri {
 
   string_type uri_;
   string_view uri_view_;
-  detail::uri_parts* uri_parts_;
+  detail::uri_parts uri_parts_;
 };
 
 /**
