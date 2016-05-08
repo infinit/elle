@@ -29,7 +29,7 @@ TEST(uri_normalization_test, normalize_case_capitalized_scheme) {
             instance.normalize(network::uri_comparison_level::syntax_based).string());
 }
 
-TEST(uri_normalization_test, normalize_case_capitalized_host) {
+TEST(uri_normalization_test, DISABLED_normalize_case_capitalized_host) {
   network::uri instance("http://WWW.EXAMPLE.COM/");
   ASSERT_EQ("http://www.example.com/",
             instance.normalize(network::uri_comparison_level::syntax_based).string());
