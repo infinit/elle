@@ -415,7 +415,26 @@ uri uri::normalize(uri_comparison_level level) const {
     }
 
     if (parts.hier_part.host) {
+      std::printf(" [ORIGINAL]     >>> %s\n", uri_.c_str());
+      std::printf(" [TO NORMALIZE] >>> %s\n", normalized.c_str());
+      const_iterator it, last;
+      std::tie(it, last) = *parts.hier_part.host;
+      std::printf(" [HOST]         >>> ");
+      while (it != last) {
+        std::printf("%c", *it);
+        ++it;
+      }
+      std::printf("\n");
       to_lower(mutable_range(normalized, *parts.hier_part.host));
+      std::printf(" [ORIGINAL]     >>> %s\n", uri_.c_str());
+      std::printf(" [NORMALIZED]   >>> %s\n", normalized.c_str());
+      std::tie(it, last) = *parts.hier_part.host;
+      std::printf(" [HOST]         >>> ");
+      while (it != last) {
+        std::printf("%c", *it);
+        ++it;
+      }
+      std::printf("\n");
     }
 
     // ...except when used in percent encoding
