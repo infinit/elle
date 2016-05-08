@@ -11,6 +11,7 @@
 #include "network/uri/uri.hpp"
 #include "detail/uri_parts.hpp"
 #include "detail/uri_parse.hpp"
+#include "detail/uri_advance_parts.hpp"
 #include "detail/uri_percent_encode.hpp"
 #include "detail/uri_normalize.hpp"
 #include "detail/uri_resolve.hpp"
@@ -18,101 +19,6 @@
 
 namespace network {
 namespace {
-inline detail::iterator_pair copy_range(detail::iterator_pair range,
-                                        detail::iterator_pair::first_type &it) {
-  auto first = range.first, last = range.second;
-  auto part_first = it;
-  std::advance(it, std::distance(first, last));
-  return detail::iterator_pair(part_first, it);
-}
-
-inline detail::iterator_pair copy_range(uri::string_view range,
-                                        detail::iterator_pair::first_type &it) {
-  auto first = std::begin(range), last = std::end(range);
-  return copy_range(std::make_pair(first, last), it);
-}
-
-void advance_parts(string_view &range, detail::uri_parts &parts,
-                   const detail::uri_parts &existing_parts) {
-  auto first = std::begin(range), last = std::end(range);
-
-  auto it = first;
-  if (auto scheme = existing_parts.scheme) {
-    parts.scheme = copy_range(*scheme, it);
-
-    // ignore : for all URIs
-    if (*it == ':') {
-      ++it;
-    }
-
-    // ignore // for hierarchical URIs
-    if (existing_parts.hier_part.host) {
-      while (*it == '/') {
-        ++it;
-      }
-    }
-  }
-
-  if (auto user_info = existing_parts.hier_part.user_info) {
-    parts.hier_part.user_info = copy_range(*user_info, it);
-    ++it;  // ignore @
-  }
-
-  if (auto host = existing_parts.hier_part.host) {
-    parts.hier_part.host = copy_range(*host, it);
-  }
-
-  if (auto port = existing_parts.hier_part.port) {
-    ++it;  // ignore :
-    parts.hier_part.port = copy_range(*port, it);
-  }
-
-  if (auto path = existing_parts.hier_part.path) {
-    parts.hier_part.path = copy_range(*path, it);
-  }
-
-  if (auto query = existing_parts.query) {
-    ++it;  // ignore ?
-    parts.query = copy_range(*query, it);
-  }
-
-  if (auto fragment = existing_parts.fragment) {
-    ++it;  // ignore #
-    parts.fragment = copy_range(*fragment, it);
-  }
-}
-
-inline std::pair<std::string::iterator, std::string::iterator> mutable_range(
-    std::string &str, detail::iterator_pair range) {
-  auto view = string_view(str);
-
-  auto first_index = std::distance(std::begin(view), range.first);
-  auto first = std::begin(str);
-  std::advance(first, first_index);
-
-  auto last_index = std::distance(std::begin(view), range.second);
-  auto last = std::begin(str);
-  std::advance(last, last_index);
-
-  return std::make_pair(first, last);
-}
-
-inline void to_lower(std::pair<std::string::iterator, std::string::iterator> range) {
-  std::transform(range.first, range.second, range.first,
-                 [](char ch) { return std::tolower(ch, std::locale()); });
-}
-
-inline uri::string_view to_string_view(const uri::string_type &uri,
-                                       detail::iterator_pair uri_part) {
-  if (uri_part.first != uri_part.second) {
-    const char *c_str = uri.c_str();
-    const char *uri_part_begin = &(*(uri_part.first));
-    std::advance(c_str, std::distance(c_str, uri_part_begin));
-    return uri::string_view(c_str, std::distance(uri_part.first, uri_part.second));
-  }
-  return uri::string_view();
-}
-
 inline optional<std::string> make_arg(optional<string_view> view) {
   if (view) {
     return view->to_string();
@@ -183,7 +89,7 @@ void uri::initialize(optional<string_type> scheme,
 
   auto it = std::begin(uri_view_);
   if (scheme) {
-    uri_parts_->scheme = copy_range(*scheme, it);
+    uri_parts_->scheme = detail::copy_part(*scheme, it);
     // ignore : and ://
     if (*it == ':') {
       ++it;
@@ -197,38 +103,38 @@ void uri::initialize(optional<string_type> scheme,
   }
 
   if (user_info) {
-    uri_parts_->hier_part.user_info = copy_range(*user_info, it);
+    uri_parts_->hier_part.user_info = detail::copy_part(*user_info, it);
     ++it;  // ignore @
   }
 
   if (host) {
-    uri_parts_->hier_part.host = copy_range(*host, it);
+    uri_parts_->hier_part.host = detail::copy_part(*host, it);
   }
 
   if (port) {
     ++it;  // ignore :
-    uri_parts_->hier_part.port = copy_range(*port, it);
+    uri_parts_->hier_part.port = detail::copy_part(*port, it);
   }
 
   if (path) {
-    uri_parts_->hier_part.path =  copy_range(*path, it);
+    uri_parts_->hier_part.path =  detail::copy_part(*path, it);
   }
 
   if (query) {
     ++it;  // ignore ?
-    uri_parts_->query = copy_range(*query, it);
+    uri_parts_->query = detail::copy_part(*query, it);
   }
 
   if (fragment) {
     ++it;  // ignore #
-    uri_parts_->fragment = copy_range(*fragment, it);
+    uri_parts_->fragment = detail::copy_part(*fragment, it);
   }
 }
 
 uri::uri() : uri_view_(uri_), uri_parts_(new detail::uri_parts{}) {}
 
 uri::uri(const uri &other) : uri_(other.uri_), uri_view_(uri_), uri_parts_(new detail::uri_parts{}) {
-  advance_parts(uri_view_, *uri_parts_, *other.uri_parts_);
+  detail::advance_parts(uri_view_, *uri_parts_, *other.uri_parts_);
 }
 
 uri::uri(const uri_builder &builder) : uri_parts_(new detail::uri_parts{}) {
@@ -239,7 +145,7 @@ uri::uri(const uri_builder &builder) : uri_parts_(new detail::uri_parts{}) {
 uri::uri(uri &&other) noexcept : uri_(std::move(other.uri_)),
                                  uri_view_(uri_),
                                  uri_parts_(std::move(other.uri_parts_)) {
-  advance_parts(uri_view_, *uri_parts_, *other.uri_parts_);
+  detail::advance_parts(uri_view_, *uri_parts_, *other.uri_parts_);
   other.uri_.clear();
   other.uri_view_ = string_view(other.uri_);
   other.uri_parts_ = new detail::uri_parts{};
@@ -270,7 +176,7 @@ bool uri::has_scheme() const noexcept {
 }
 
 uri::string_view uri::scheme() const noexcept {
-  return has_scheme() ? to_string_view(uri_, *uri_parts_->scheme)
+  return has_scheme() ? detail::to_string_view(uri_, *uri_parts_->scheme)
                       : string_view{};
 }
 
@@ -280,7 +186,7 @@ bool uri::has_user_info() const noexcept {
 
 uri::string_view uri::user_info() const noexcept {
   return has_user_info()
-             ? to_string_view(uri_, *uri_parts_->hier_part.user_info)
+             ? detail::to_string_view(uri_, *uri_parts_->hier_part.user_info)
              : string_view{};
 }
 
@@ -289,7 +195,7 @@ bool uri::has_host() const noexcept {
 }
 
 uri::string_view uri::host() const noexcept {
-  return has_host() ? to_string_view(uri_, *uri_parts_->hier_part.host)
+  return has_host() ? detail::to_string_view(uri_, *uri_parts_->hier_part.host)
                     : string_view{};
 }
 
@@ -298,7 +204,7 @@ bool uri::has_port() const noexcept {
 }
 
 uri::string_view uri::port() const noexcept {
-  return has_port() ? to_string_view(uri_, *uri_parts_->hier_part.port)
+  return has_port() ? detail::to_string_view(uri_, *uri_parts_->hier_part.port)
                     : string_view{};
 }
 
@@ -307,7 +213,7 @@ bool uri::has_path() const noexcept {
 }
 
 uri::string_view uri::path() const noexcept {
-  return has_path() ? to_string_view(uri_, *uri_parts_->hier_part.path)
+  return has_path() ? detail::to_string_view(uri_, *uri_parts_->hier_part.path)
                     : string_view{};
 }
 
@@ -316,7 +222,7 @@ bool uri::has_query() const noexcept {
 }
 
 uri::string_view uri::query() const noexcept {
-  return has_query() ? to_string_view(uri_, *uri_parts_->query) : string_view{};
+  return has_query() ? detail::to_string_view(uri_, *uri_parts_->query) : string_view{};
 }
 
 bool uri::has_fragment() const noexcept {
@@ -324,7 +230,7 @@ bool uri::has_fragment() const noexcept {
 }
 
 uri::string_view uri::fragment() const noexcept {
-  return has_fragment() ? to_string_view(uri_, *uri_parts_->fragment)
+  return has_fragment() ? detail::to_string_view(uri_, *uri_parts_->fragment)
                         : string_view{};
 }
 
@@ -405,36 +311,23 @@ uri uri::normalize(uri_comparison_level level) const {
   string_type normalized(uri_);
   string_view normalized_view(normalized);
   detail::uri_parts parts;
-  advance_parts(normalized_view, parts, *uri_parts_);
+  detail::advance_parts(normalized_view, parts, *uri_parts_);
 
   if (uri_comparison_level::syntax_based == level) {
     // All alphabetic characters in the scheme and host are
     // lower-case...
     if (parts.scheme) {
-      to_lower(mutable_range(normalized, *parts.scheme));
+      std::string::iterator first, last;
+      std::tie(first, last) = detail::mutable_part(normalized, *parts.scheme);
+      std::transform(first, last, first,
+                     [](char ch) { return std::tolower(ch, std::locale()); });
     }
 
     if (parts.hier_part.host) {
-      std::printf(" [ORIGINAL]     >>> %s\n", uri_.c_str());
-      std::printf(" [TO NORMALIZE] >>> %s\n", normalized.c_str());
-      const_iterator it, last;
-      std::tie(it, last) = *parts.hier_part.host;
-      std::printf(" [HOST]         >>> ");
-      while (it != last) {
-        std::printf("%c", *it);
-        ++it;
-      }
-      std::printf("\n");
-      to_lower(mutable_range(normalized, *parts.hier_part.host));
-      std::printf(" [ORIGINAL]     >>> %s\n", uri_.c_str());
-      std::printf(" [NORMALIZED]   >>> %s\n", normalized.c_str());
-      std::tie(it, last) = *parts.hier_part.host;
-      std::printf(" [HOST]         >>> ");
-      while (it != last) {
-        std::printf("%c", *it);
-        ++it;
-      }
-      std::printf("\n");
+      std::string::iterator first, last;
+      std::tie(first, last) = detail::mutable_part(normalized, *parts.hier_part.host);
+      std::transform(first, last, first,
+                     [](char ch) { return std::tolower(ch, std::locale()); });
     }
 
     // ...except when used in percent encoding
@@ -455,20 +348,20 @@ uri uri::normalize(uri_comparison_level level) const {
 
     if (parts.hier_part.path) {
       uri::string_type path = detail::normalize_path_segments(
-          to_string_view(normalized, *parts.hier_part.path));
+          detail::to_string_view(normalized, *parts.hier_part.path));
 
       // put the normalized path back into the uri
       optional<string_type> query, fragment;
       if (parts.query) {
-        query = string_type(parts.query->first, parts.query->second);
+        query = parts.query->to_string();
       }
 
       if (parts.fragment) {
-        fragment = string_type(parts.fragment->first, parts.fragment->second);
+        fragment = parts.fragment->to_string();
       }
 
       auto path_begin = std::begin(normalized);
-      auto path_range = mutable_range(normalized, *parts.hier_part.path);
+      auto path_range = detail::mutable_part(normalized, *parts.hier_part.path);
       std::advance(path_begin, std::distance(path_begin, path_range.first));
       normalized.erase(path_begin, std::end(normalized));
       normalized.append(path);

@@ -10,20 +10,16 @@
 #include "string_utility.hpp"
 
 using network::detail::parse;
-using network::detail::iterator_pair;
+using network::detail::uri_part;
 using network::detail::uri_parts;
 
 namespace {
-inline
-std::string to_string(iterator_pair part) {
-  return std::string(part.first, part.second);
-}
-
 struct test_uri {
 
   explicit test_uri(const std::string &uri_)
     : uri(uri_), view(uri) {
-    std::tie(it, last) = iterator_pair(std::begin(view), std::end(view));
+    it = std::begin(view);
+    last = std::end(view);
   }
 
   bool parse_uri() {
@@ -39,7 +35,7 @@ struct test_uri {
   }
 
   std::string scheme() const {
-    return to_string(*parts.scheme);
+    return (*parts.scheme).to_string();
   }
 
   bool has_user_info() const {
@@ -47,7 +43,7 @@ struct test_uri {
   }
 
   std::string user_info() const {
-    return to_string(*parts.hier_part.user_info);
+    return (*parts.hier_part.user_info).to_string();
   }
 
   bool has_host() const {
@@ -55,7 +51,7 @@ struct test_uri {
   }
 
   std::string host() const {
-    return to_string(*parts.hier_part.host);
+    return (*parts.hier_part.host).to_string();
   }
 
   bool has_port() const {
@@ -63,7 +59,7 @@ struct test_uri {
   }
 
   std::string port() const {
-    return to_string(*parts.hier_part.port);
+    return (*parts.hier_part.port).to_string();
   }
 
   bool has_path() const {
@@ -71,7 +67,7 @@ struct test_uri {
   }
 
   std::string path() const {
-    return to_string(*parts.hier_part.path);
+    return (*parts.hier_part.path).to_string();
   }
 
   bool has_query() const {
@@ -79,7 +75,7 @@ struct test_uri {
   }
 
   std::string query() const {
-    return to_string(*parts.query);
+    return (*parts.query).to_string();
   }
 
   bool has_fragment() const {
@@ -87,7 +83,7 @@ struct test_uri {
   }
 
   std::string fragment() const {
-    return to_string(*parts.fragment);
+    return (*parts.fragment).to_string();
   }
 
   std::string uri;

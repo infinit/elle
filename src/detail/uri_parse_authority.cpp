@@ -20,8 +20,8 @@ enum class authority_state {
   port
 };
 
-inline bool is_valid_port(iterator_pair port) {
-  const char* port_first = &(*port.first);
+inline bool is_valid_port(uri_part port) {
+  const char* port_first = &(*std::begin(port));
   char* port_last = 0;
   unsigned long value = std::strtoul(port_first, &port_last, 10);
   return (value < std::numeric_limits<unsigned short>::max());
@@ -30,9 +30,9 @@ inline bool is_valid_port(iterator_pair port) {
 
 bool parse_authority(string_view::const_iterator &it,
                      string_view::const_iterator last,
-                     optional<iterator_pair> &user_info,
-                     optional<iterator_pair> &host,
-                     optional<iterator_pair> &port) {
+                     optional<uri_part> &user_info,
+                     optional<uri_part> &host,
+                     optional<uri_part> &port) {
   auto first = it;
 
   auto state = authority_state::user_info;
@@ -43,7 +43,7 @@ bool parse_authority(string_view::const_iterator &it,
       }
 
       if (*it == '@') {
-        user_info = std::make_pair(first, it);
+        user_info = uri_part(first, it);
         state = authority_state::host;
         ++it;
         first = it;
@@ -57,7 +57,7 @@ bool parse_authority(string_view::const_iterator &it,
       }
       else if (*it == ':') {
         // this is actually the host, and the next part is expected to be the port
-        host = std::make_pair(first, it);
+        host = uri_part(first, it);
         state = authority_state::port;
         ++it;
         first = it;
@@ -70,7 +70,7 @@ bool parse_authority(string_view::const_iterator &it,
       }
 
       if (*it == ':') {
-        host = std::make_pair(first, it);
+        host = uri_part(first, it);
         state = authority_state::port;
         ++it;
         first = it;
@@ -83,14 +83,14 @@ bool parse_authority(string_view::const_iterator &it,
       }
 
       if (*it == ']') {
-        host = std::make_pair(first, it);
+        host = uri_part(first, it);
         ++it;
         // Then test if the next part is a host, part, or the end of the file
         if (it == last) {
           break;
         }
         else if (*it == ':') {
-          host = std::make_pair(first, it);
+          host = uri_part(first, it);
           state = authority_state::port;
           ++it;
           first = it;
@@ -100,7 +100,7 @@ bool parse_authority(string_view::const_iterator &it,
     else if (state == authority_state::port) {
       if (*first == '/') {
         // the port is empty, but valid
-        port = std::make_pair(first, it);
+        port = uri_part(first, it);
         if (!is_valid_port(*port)) {
           return false;
         }
@@ -117,16 +117,16 @@ bool parse_authority(string_view::const_iterator &it,
   }
 
   if (state == authority_state::user_info) {
-    host = std::make_pair(first, last);
+    host = uri_part(first, last);
   }
   else if (state == authority_state::host) {
-    host = std::make_pair(first, last);
+    host = uri_part(first, last);
   }
   else if (state == authority_state::host_ipv6) {
-    host = std::make_pair(first, last);
+    host = uri_part(first, last);
   }
   else if (state == authority_state::port) {
-    port = std::make_pair(first, last);
+    port = uri_part(first, last);
     if (!is_valid_port(*port)) {
       return false;
     }
