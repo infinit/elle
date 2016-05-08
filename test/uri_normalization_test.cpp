@@ -23,8 +23,14 @@ TEST(uri_normalization_test, string_comparison_with_case) {
       instance.normalize(network::uri_comparison_level::string_comparison).string());
 }
 
-TEST(uri_normalization_test, normalize_case) {
+TEST(uri_normalization_test, normalize_case_capitalized_scheme) {
   network::uri instance("HTTP://www.example.com/");
+  ASSERT_EQ("http://www.example.com/",
+            instance.normalize(network::uri_comparison_level::syntax_based).string());
+}
+
+TEST(uri_normalization_test, normalize_case_capitalized_host) {
+  network::uri instance("http://WWW.EXAMPLE.COM/");
   ASSERT_EQ("http://www.example.com/",
             instance.normalize(network::uri_comparison_level::syntax_based).string());
 }
