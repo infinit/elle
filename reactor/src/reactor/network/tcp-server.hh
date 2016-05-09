@@ -7,19 +7,20 @@ namespace reactor
 {
   namespace network
   {
-    class TCPServer:
-      public Server,
-      public ProtoServer<TCPSocket>
+    class TCPServer
+      : public Server
+      , public ProtoServer<TCPSocket>
     {
-      /*-------------.
-      | Construction |
-      `-------------*/
-      public:
-        typedef Server Super;
-        TCPServer(bool no_delay = false);
-
-        virtual
-        ~TCPServer();
+    /*-------------.
+    | Construction |
+    `-------------*/
+    public:
+      typedef Server Super;
+      TCPServer(bool no_delay = false);
+      virtual
+      ~TCPServer();
+      std::unique_ptr<TCPSocket>
+      accept();
 
     /*----------.
     | Accepting |
