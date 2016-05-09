@@ -167,7 +167,7 @@ void
 server();
 
 void
-serve(std::unique_ptr<reactor::network::Socket> socket);
+serve(std::unique_ptr<reactor::network::TCPSocket> socket);
 
 template <typename Server, typename Socket>
 void
@@ -195,7 +195,7 @@ server()
 }
 
 void
-serve(std::unique_ptr<reactor::network::Socket> socket)
+serve(std::unique_ptr<reactor::network::TCPSocket> socket)
 {
   std::string received;
   Byte buffer[512];
