@@ -178,17 +178,7 @@ namespace reactor
     void
     PlainSocket<AsioSocket, EndPoint>::print(std::ostream& s) const
     {
-      try
-      {
-        elle::fprintf(s, "%s(%s)", elle::type_info(*this), this->peer());
-      }
-      catch (boost::system::system_error const& e)
-      {
-        if (e.code() != boost::asio::error::bad_descriptor &&
-            e.code() != boost::asio::error::not_connected)
-          throw;
-        elle::fprintf(s, "%s()", elle::type_info(*this));
-      }
+      elle::fprintf(s, "%s(%s)", elle::type_info(*this), this->peer());
     }
 
     /*-------------.
@@ -385,8 +375,7 @@ namespace reactor
     EndPoint
     PlainSocket<AsioSocket, EndPoint>::peer() const
     {
-      typedef SocketSpecialization<AsioSocket> Spe;
-      return Spe::socket(*this->_socket).remote_endpoint();
+      return this->_peer;
     }
 
     template <typename AsioSocket, typename EndPoint>
