@@ -231,8 +231,8 @@ namespace reactor
             {
               std::unique_ptr<reactor::network::Socket> socket(
                 this->_server.accept());
-              ELLE_DEBUG("accept connection from %s", socket->peer());
-              auto name = elle::sprintf("request %s", socket->peer());
+              ELLE_DEBUG("accept connection from %s", socket);
+              auto name = elle::sprintf("request %s", socket);
               scope.run_background(
                 name,
                 std::bind(&Server::_serve, std::ref(*this),
@@ -250,9 +250,9 @@ namespace reactor
           Cookies cookies;
           try
           {
-            auto peer = socket->peer();
             CommandLine cmd(socket->read_until("\r\n"));
-            ELLE_LOG_SCOPE("%s: handle request from %s: %s", *this, peer, cmd);
+            ELLE_LOG_SCOPE("%s: handle request from %s: %s",
+                           *this, socket, cmd);
             auto route = this->_routes.find(cmd.path());
             if (route == this->_routes.end())
             {
@@ -344,7 +344,7 @@ namespace reactor
                   if (buffer == "\r\n")
                     break;
                   ELLE_DEBUG("%s: got content chunk from %s: %s",
-                             *this, peer, buffer.string());
+                             *this, socket, buffer.string());
                   content.append(buffer.contents(), buffer.size() - 2);
                 }
             else
@@ -390,7 +390,7 @@ namespace reactor
             ELLE_WARN("%s: internal error: %s", *this, e.what());
             this->_response(*socket, reactor::http::StatusCode::Internal_Server_Error, e.what(), cookies);
           }
-          ELLE_TRACE("%s: close connection with %s", *this, socket->peer());
+          ELLE_TRACE("%s: close connection with %s", *this, socket);
         }
 
       public:
@@ -435,7 +435,7 @@ namespace reactor
               answer += elle::sprintf("%s: %s\r\n", value.first, value.second);
             answer += "\r\n" + response;
             ELLE_TRACE("%s: send response to %s: %s %s",
-                       *this, socket.peer(), static_cast<int>(code), code)
+                       *this, socket, static_cast<int>(code), code)
             {
               ELLE_DUMP("%s", answer);
               socket.write(elle::ConstWeakBuffer(answer));

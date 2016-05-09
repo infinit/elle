@@ -200,9 +200,9 @@ concurrent()
         while (true)
         {
           std::shared_ptr<reactor::network::Socket> socket(server.accept());
-          ELLE_LOG("accept connection from %s", socket->peer());
+          ELLE_LOG("accept connection from %s", socket);
           scope.run_background(
-            elle::sprintf("request %s", socket->peer()),
+            elle::sprintf("request %s", socket),
             [&, socket]
             {
               char buffer[1024];
