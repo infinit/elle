@@ -4,7 +4,6 @@
 #include <reactor/network/exception.hh>
 #include <reactor/network/resolve.hh>
 #include <reactor/network/SocketOperation.hh>
-#include <reactor/network/udp-server.hh>
 #include <reactor/network/udp-socket.hh>
 #include <reactor/scheduler.hh>
 #include <reactor/thread.hh>

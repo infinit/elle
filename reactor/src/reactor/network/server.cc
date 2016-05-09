@@ -1,5 +1,7 @@
 #include <reactor/network/exception.hh>
 #include <reactor/network/server.hh>
+#include <reactor/network/ssl-socket.hh>
+#include <reactor/network/tcp-socket.hh>
 #include <reactor/operation.hh>
 #include <reactor/scheduler.hh>
 
@@ -12,13 +14,13 @@ namespace reactor
     /*-------------.
     | Construction |
     `-------------*/
-    Server::Server():
-      Server(reactor::scheduler())
+
+    Server::Server()
+      : Server(reactor::scheduler())
     {}
 
-    Server::Server(Scheduler& scheduler):
-      _scheduler(scheduler),
-      _acceptor()
+    Server::Server(Scheduler& scheduler)
+      : _scheduler(scheduler)
     {}
 
     Server::~Server()
@@ -27,12 +29,14 @@ namespace reactor
     /*----------.
     | Listening |
     `----------*/
+
+    template <typename Socket, typename EndPoint, typename Acceptor>
     void
-    Server::listen(const EndPoint& end_point)
+    ProtoServer<Socket, EndPoint, Acceptor>::listen(const EndPoint& end_point)
     {
       try
       {
-        this->_acceptor.reset(new TCPAcceptor(
+        this->_acceptor.reset(new Acceptor(
           this->_scheduler.io_service(), end_point));
       }
       catch (boost::system::system_error& e)
@@ -107,14 +111,10 @@ namespace reactor
       return this->_accept();
     }
 
+    template <typename Socket, typename EndPoint, typename Acceptor>
     void
-    Server::listen(int port)
-    {
-      return listen(EndPoint(boost::asio::ip::tcp::v4(), port));
-    }
-
-    void
-    Server::_accept(TCPSocket::AsioSocket& socket, EndPoint& peer)
+    ProtoServer<Socket, EndPoint, Acceptor>::_accept(
+      AsioSocket& socket, EndPoint& peer)
     {
       ELLE_TRACE_SCOPE("%s: wait for connection", *this);
       // FIXME: server should listen in ctor to avoid this crappy state ?
@@ -123,14 +123,9 @@ namespace reactor
       accept.run();
     }
 
-    int
-    Server::port() const
-    {
-      return local_endpoint().port();
-    }
-
-    Server::EndPoint
-    Server::local_endpoint() const
+    template <typename Socket, typename EndPoint, typename Acceptor>
+    EndPoint
+    ProtoServer<Socket, EndPoint, Acceptor>::local_endpoint() const
     {
       if (this->_acceptor == nullptr)
         throw Exception("The server is not listening.");
@@ -141,8 +136,9 @@ namespace reactor
     | Printable |
     `----------*/
 
+    template <typename Socket, typename EndPoint, typename Acceptor>
     void
-    Server::print(std::ostream& stream) const
+    ProtoServer<Socket, EndPoint, Acceptor>::print(std::ostream& stream) const
     {
       stream << "Server";
       if (this->_acceptor)
@@ -150,5 +146,14 @@ namespace reactor
         stream << "(" << this->_acceptor->local_endpoint() << ")";
       }
     }
+
+    /*------------------------.
+    | Explicit instantiations |
+    `------------------------*/
+
+    template
+    class ProtoServer<boost::asio::ip::tcp::socket,
+                      boost::asio::ip::tcp::endpoint,
+                      boost::asio::ip::tcp::acceptor>;
   }
 }

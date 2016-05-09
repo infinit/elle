@@ -27,6 +27,7 @@
 # include <reactor/network/buffer.hh>
 # include <reactor/network/socket.hh>
 # include <reactor/network/tcp-server.hh>
+# include <reactor/network/tcp-socket.hh>
 # include <reactor/thread.hh>
 
 namespace reactor
@@ -229,14 +230,16 @@ namespace reactor
           {
             while (true)
             {
-              std::unique_ptr<reactor::network::Socket> socket(
-                this->_server.accept());
+              auto socket = elle::utility::move_on_copy(this->_server.accept());
               ELLE_DEBUG("accept connection from %s", socket);
               auto name = elle::sprintf("request %s", socket);
               scope.run_background(
                 name,
-                std::bind(&Server::_serve, std::ref(*this),
-                          elle::utility::move_on_copy(socket)));
+                [this, socket]
+                {
+                  std::unique_ptr<reactor::network::TCPSocket> s = std::move(*socket);
+                  this->_serve(std::move(s));
+                });
             }
           };
         }

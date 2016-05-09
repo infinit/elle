@@ -6,6 +6,8 @@
 #include <reactor/network/exception.hh>
 #include <reactor/network/resolve.hh>
 #include <reactor/network/tcp-server.hh>
+#include <reactor/network/tcp-socket.hh>
+#include <reactor/network/server.hh>
 #include <reactor/network/socket.hh>
 #include <reactor/signal.hh>
 #include <reactor/thread.hh>

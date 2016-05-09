@@ -8,14 +8,17 @@ namespace reactor
   namespace network
   {
     class TCPServer
-      : public Server
-      , public ProtoServer<TCPSocket>
+      : public ProtoServer<boost::asio::ip::tcp::socket,
+                           boost::asio::ip::tcp::endpoint,
+                           boost::asio::ip::tcp::acceptor>
     {
     /*-------------.
     | Construction |
     `-------------*/
     public:
-      typedef Server Super;
+      typedef ProtoServer<boost::asio::ip::tcp::socket,
+                          boost::asio::ip::tcp::endpoint,
+                          boost::asio::ip::tcp::acceptor> Super;
       TCPServer(bool no_delay = false);
       virtual
       ~TCPServer();
@@ -25,12 +28,17 @@ namespace reactor
     /*----------.
     | Accepting |
     `----------*/
+    public:
+      using Super::listen;
+      void
+      listen(int port = 0);
+      int
+      port() const;
     protected:
       using Super::_accept;
       virtual
       std::unique_ptr<Socket>
       _accept() override;
-
       ELLE_ATTRIBUTE_RX(bool, no_delay);
     };
   }

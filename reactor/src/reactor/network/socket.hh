@@ -189,8 +189,8 @@ namespace reactor
 
     template <typename AsioSocket,
               typename EndPoint = typename AsioSocket::endpoint_type>
-    class StreamSocket:
-      public PlainSocket<AsioSocket, EndPoint>
+    class StreamSocket
+      : public PlainSocket<AsioSocket, EndPoint>
     {
     /*---------.
     | Typedefs |

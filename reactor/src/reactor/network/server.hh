@@ -6,84 +6,78 @@
 # include <reactor/asio.hh>
 # include <reactor/network/fwd.hh>
 # include <reactor/network/Protocol.hh>
-# include <reactor/network/tcp-socket.hh>
 # include <reactor/scheduler.hh>
 
 namespace reactor
 {
   namespace network
   {
-    class Server:
-      public elle::Printable
+    class Server
+      : public elle::Printable
     {
-      /*---------.
-      | Typedefs |
-      `---------*/
-      public:
-        typedef Server Self;
-        typedef boost::asio::ip::tcp::acceptor TCPAcceptor;
-        typedef boost::asio::ip::tcp::endpoint EndPoint;
+    /*------.
+    | Types |
+    `------*/
+    public:
+      typedef Server Self;
 
-      /*-------------.
-      | Construction |
-      `-------------*/
-      public:
-        /** Create a server.
-         *  @param sched The underlying scheduler.
-         */
-        Server();
-        Server(Scheduler& scheduler);
+    /*-------------.
+    | Construction |
+    `-------------*/
+    public:
+      /** Create a server.
+       *  @param sched The underlying scheduler.
+       */
+      Server();
+      Server(Scheduler& scheduler);
+      virtual
+      ~Server();
 
-        virtual
-        ~Server();
+    /*----------.
+    | Accepting |
+    `----------*/
+    public:
+      std::unique_ptr<Socket>
+      accept();
+    protected:
+      virtual
+      std::unique_ptr<Socket>
+      _accept() = 0;
+      ELLE_ATTRIBUTE(Scheduler&, scheduler, protected);
+    };
 
-      /*----------.
-      | Accepting |
-      `----------*/
-      public:
-        std::unique_ptr<Socket>
-        accept();
+    template <typename AsioSocket_, typename EndPoint_, typename Acceptor_>
+    class ProtoServer
+      : public Server
+    {
+    /*------.
+    | Types |
+    `------*/
+    public:
+      typedef AsioSocket_ AsioSocket;
+      typedef Acceptor_ Acceptor;
+      typedef EndPoint_ EndPoint;
 
-        void
-        listen(const EndPoint& end_point);
-
-        void
-        listen(int port = 0);
-
-        EndPoint
-        local_endpoint() const;
-
-        int
-        port() const;
-
-      protected:
-        virtual
-        std::unique_ptr<Socket>
-        _accept() = 0;
-        void
-        _accept(TCPSocket::AsioSocket& socket, EndPoint& peer);
-
-      protected:
-        Scheduler& _scheduler;
-
-      private:
-        ELLE_ATTRIBUTE_X(std::unique_ptr<TCPAcceptor>, acceptor);
+    /*----------.
+    | Listening |
+    `----------*/
+    public:
+      void
+      listen(EndPoint const& end_point);
+      EndPoint
+      local_endpoint() const;
+    protected:
+      void
+      _accept(AsioSocket& socket, EndPoint& peer);
+      ELLE_ATTRIBUTE_X(std::unique_ptr<Acceptor>, acceptor);
 
     /*----------.
     | Printable |
     `----------*/
     public:
-      /// Print pretty representation to \a stream.
       virtual
       void
       print(std::ostream& stream) const override;
-    };
-
-    template <typename Socket>
-    class ProtoServer
-    {
-      public:
-        typedef typename Socket::AsioSocket AsioSocket;
     };
   }
 }
