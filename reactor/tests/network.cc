@@ -424,8 +424,8 @@ private:
       {
         std::unique_ptr<reactor::network::Socket> socket(
           this->_server.accept());
-        ELLE_LOG("accept connection from %s", socket->peer());
-        auto name = elle::sprintf("request %s", socket->peer());
+        ELLE_LOG("accept connection: %s", socket);
+        auto name = elle::sprintf("request %s", socket);
         scope.run_background(
           name,
           std::bind(&Server::_serve, std::ref(*this),

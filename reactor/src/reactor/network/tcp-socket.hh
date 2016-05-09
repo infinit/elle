@@ -35,12 +35,6 @@ namespace reactor
       friend class TCPServer;
       TCPSocket(std::unique_ptr<AsioSocket> socket,
                 AsioSocket::endpoint_type const& endpoint);
-
-    /*----------------.
-    | Pretty printing |
-    `----------------*/
-    public:
-      void print(std::ostream& s) const;
     };
   }
 }

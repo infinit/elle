@@ -46,15 +46,5 @@ namespace reactor
                          AsioSocket::endpoint_type const& endpoint):
       Super(std::move(socket), endpoint)
     {}
-
-    /*----------------.
-    | Pretty Printing |
-    `----------------*/
-
-    void
-    TCPSocket::print(std::ostream& s) const
-    {
-      s << "TCPSocket(" << peer() << ")";
-    }
   }
 }

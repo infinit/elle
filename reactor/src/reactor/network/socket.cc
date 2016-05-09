@@ -178,7 +178,17 @@ namespace reactor
     void
     PlainSocket<AsioSocket, EndPoint>::print(std::ostream& s) const
     {
-      elle::fprintf(s, "reactor::network::Socket(%s)", this->peer());
+      try
+      {
+        elle::fprintf(s, "%s(%s)", elle::type_info(*this), this->peer());
+      }
+      catch (boost::system::system_error const& e)
+      {
+        if (e.code() != boost::asio::error::bad_descriptor &&
+            e.code() != boost::asio::error::not_connected)
+          throw;
+        elle::fprintf(s, "%s()", elle::type_info(*this));
+      }
     }
 
     /*-------------.
@@ -372,19 +382,19 @@ namespace reactor
     `-----------*/
 
     template <typename AsioSocket, typename EndPoint>
-    boost::asio::ip::tcp::endpoint
+    EndPoint
     PlainSocket<AsioSocket, EndPoint>::peer() const
     {
-      return boost::asio::ip::tcp::endpoint(_peer.address(), _peer.port());
+      typedef SocketSpecialization<AsioSocket> Spe;
+      return Spe::socket(*this->_socket).remote_endpoint();
     }
 
     template <typename AsioSocket, typename EndPoint>
-    boost::asio::ip::tcp::endpoint
+    EndPoint
     PlainSocket<AsioSocket, EndPoint>::local_endpoint() const
     {
       typedef SocketSpecialization<AsioSocket> Spe;
-      auto ep = Spe::socket(*this->_socket).local_endpoint();
-      return boost::asio::ip::tcp::endpoint(ep.address(), ep.port());
+      return Spe::socket(*this->_socket).local_endpoint();
     }
 
     /*-------------.
