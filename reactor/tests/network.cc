@@ -284,7 +284,8 @@ test_echo_server()
 
 ELLE_TEST_SCHEDULED(socket_destruction)
 {
-  reactor::Thread server("server", &silent_server<TCPServer, TCPSocket>);
+  reactor::Thread::unique_ptr server(
+    new reactor::Thread("server", &silent_server<TCPServer, TCPSocket>));
   auto socket = elle::make_unique<reactor::network::TCPSocket>("127.0.0.1",
                                                                4242);
   *socket << "foo";
@@ -293,7 +294,6 @@ ELLE_TEST_SCHEDULED(socket_destruction)
   // failed at it.
   // XXX: Sort this out when socket destruction is handled.
   /*BOOST_CHECK_THROW(*/delete socket.release()/*, elle::Exception)*/;
-  server.terminate_now();
 }
 
 
