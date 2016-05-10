@@ -41,7 +41,7 @@ namespace reactor
       accept();
       using Super::listen;
       void
-      listen(int port = 0);
+      listen(int port);
       int
       port() const;
     protected:
