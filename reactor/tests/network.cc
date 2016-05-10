@@ -40,25 +40,41 @@ using reactor::network::UnixDomainServer;
 using reactor::Thread;
 
 template <typename Server, typename Socket>
-void
-silent_server()
+class SilentServer
+  : public Server
 {
-  Server server{};
-  server.listen(4242);
-  std::unique_ptr<reactor::network::Socket> socket(server.accept());
-  while (true)
+public:
+  template <typename ... Args>
+  SilentServer(Args&& ... args)
+    : Server(std::forward<Args>(args)...)
   {
-    char buffer[512];
-    try
+    this->listen();
+    this->_server_thread.reset(
+      new reactor::Thread(elle::sprintf("%s: serve", this),
+                          [this] { this->silent_server(); }));
+  }
+
+  void
+  silent_server()
+  {
+    std::unique_ptr<reactor::network::Socket> socket(this->accept());
+    while (true)
     {
-      socket->read_some(reactor::network::Buffer(buffer, sizeof(buffer)));
-    }
-    catch (reactor::network::ConnectionClosed const&)
-    {
-      break;
+      char buffer[512];
+      try
+      {
+        socket->read_some(reactor::network::Buffer(buffer, sizeof(buffer)));
+      }
+      catch (reactor::network::ConnectionClosed const&)
+      {
+        break;
+      }
     }
   }
-}
+
+  ELLE_ATTRIBUTE(reactor::Thread::unique_ptr, server_thread);
+};
+
 
 /*---------------.
 | Destroy socket |
@@ -284,10 +300,9 @@ test_echo_server()
 
 ELLE_TEST_SCHEDULED(socket_destruction)
 {
-  reactor::Thread::unique_ptr server(
-    new reactor::Thread("server", &silent_server<TCPServer, TCPSocket>));
-  auto socket = elle::make_unique<reactor::network::TCPSocket>("127.0.0.1",
-                                                               4242);
+  SilentServer<TCPServer, TCPSocket> server;
+  auto socket =
+    elle::make_unique<reactor::network::TCPSocket>(server.local_endpoint());
   *socket << "foo";
   socket->socket()->close();
   // Check the IOStream doesn't try to flush the buffer if the TCPSocket
@@ -306,13 +321,12 @@ void
 socket_close()
 {
   reactor::Scheduler sched;
-
-  reactor::Thread server(sched, "server", &silent_server<TCPServer, TCPSocket>);
-
-  auto action = [&] ()
+  auto main =
+    [&]
     {
-      auto socket = elle::make_unique<reactor::network::TCPSocket>("127.0.0.1",
-                                                                   4242);
+      SilentServer<TCPServer, TCPSocket> server;
+      auto socket =
+        elle::make_unique<reactor::network::TCPSocket>(server.local_endpoint());
       elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
       {
         scope.run_background(
@@ -332,9 +346,7 @@ socket_close()
         scope.wait();
       };
     };
-
-  reactor::Thread t(sched, "client", action);
-
+  reactor::Thread t(sched, "client", main);
   sched.run();
 }
 

@@ -133,7 +133,7 @@ namespace reactor
     ProtoServer<Socket, EndPoint, Acceptor>::local_endpoint() const
     {
       if (this->_acceptor == nullptr)
-        throw Exception("The server is not listening.");
+        throw Exception("server is not listening");
       return this->_acceptor->local_endpoint();
     }
 
