@@ -140,7 +140,7 @@ namespace reactor
 #endif
       try
       {
-        Scheduler::scheduler()->current()->wait(join);
+        reactor::wait(join);
         break;
       }
       catch (...)
