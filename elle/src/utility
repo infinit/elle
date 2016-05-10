@@ -2,8 +2,7 @@
 #ifndef ELLE_UTILITY
 # define ELLE_UTILITY
 
-# include <ostream>
-# include <utility>
+# include_next <utility>
 # include <elle/printf-fwd.hh>
 
 namespace std
