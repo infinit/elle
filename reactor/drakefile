@@ -558,11 +558,15 @@ def configure(curl_config,
   )
   if cxx_toolkit.os in [drake.os.linux, drake.os.macos]:
     sources += drake.nodes(
-      'src/reactor/fuse.hh',
-      'src/reactor/fuse.cc',
       'src/reactor/filesystem_fuse.cc',
-      'src/reactor/pthread.hh',
+      'src/reactor/fuse.cc',
+      'src/reactor/fuse.hh',
+      'src/reactor/network/unix-domain-server.cc',
+      'src/reactor/network/unix-domain-server.hh',
+      'src/reactor/network/unix-domain-socket.cc',
+      'src/reactor/network/unix-domain-socket.hh',
       'src/reactor/pthread.cc',
+      'src/reactor/pthread.hh',
       )
   else:
     dokan = drake.include('dokany', cxx_toolkit, cxx_config)

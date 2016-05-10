@@ -749,5 +749,12 @@ namespace reactor
     // UDT
     // template
     // class PlainSocket<boost::asio::ip::udt::socket>;
+#ifdef REACTOR_NETWORK_UNIX_DOMAIN_SOCKET
+    // Unix Domain
+    template
+    class PlainSocket<boost::asio::local::stream_protocol::socket>;
+    template
+    class StreamSocket<boost::asio::local::stream_protocol::socket>;
+#endif
   }
 }

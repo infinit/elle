@@ -160,5 +160,11 @@ namespace reactor
     class ProtoServer<boost::asio::ip::tcp::socket,
                       boost::asio::ip::tcp::endpoint,
                       boost::asio::ip::tcp::acceptor>;
+#ifdef REACTOR_NETWORK_UNIX_DOMAIN_SOCKET
+    template
+    class ProtoServer<boost::asio::local::stream_protocol::socket,
+                      boost::asio::local::stream_protocol::endpoint,
+                      boost::asio::local::stream_protocol::acceptor>;
+#endif
   }
 }

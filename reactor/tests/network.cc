@@ -1,5 +1,10 @@
 #include "reactor.hh"
 
+#include <elle/log.hh>
+#include <elle/memory.hh>
+#include <elle/test.hh>
+#include <elle/utility/Move.hh>
+
 #include <reactor/asio.hh>
 #include <reactor/Scope.hh>
 #include <reactor/network/buffer.hh>
@@ -9,13 +14,12 @@
 #include <reactor/network/tcp-socket.hh>
 #include <reactor/network/server.hh>
 #include <reactor/network/socket.hh>
+#ifdef REACTOR_NETWORK_UNIX_DOMAIN_SOCKET
+# include <reactor/network/unix-domain-server.hh>
+# include <reactor/network/unix-domain-socket.hh>
+#endif
 #include <reactor/signal.hh>
 #include <reactor/thread.hh>
-
-#include <elle/utility/Move.hh>
-#include <elle/log.hh>
-#include <elle/memory.hh>
-#include <elle/test.hh>
 
 #include <boost/bind.hpp>
 #include <boost/foreach.hpp>
@@ -29,20 +33,11 @@ using reactor::network::Buffer;
 using reactor::Signal;
 using reactor::network::TCPSocket;
 using reactor::network::TCPServer;
+#ifdef REACTOR_NETWORK_UNIX_DOMAIN_SOCKET
+using reactor::network::UnixDomainSocket;
+using reactor::network::UnixDomainServer;
+#endif
 using reactor::Thread;
-
-reactor::Scheduler* sched = 0;
-
-Fixture::Fixture()
-{
-  sched = new reactor::Scheduler;
-}
-
-Fixture::~Fixture()
-{
-  delete sched;
-  sched = 0;
-}
 
 template <typename Server, typename Socket>
 void
@@ -117,87 +112,53 @@ destroy_socket()
 
 template <typename Server, typename Socket>
 void
-slowpoke_server()
-{
-  Server server{};
-  server.listen(4242);
-  std::unique_ptr<reactor::network::Socket> socket(server.accept());
-  sched->current()->sleep(boost::posix_time::seconds(2));
-  socket->write(elle::ConstWeakBuffer("0"));
-}
-
-template <typename Server, typename Socket>
-void
-timeout_read()
-{
-  Socket socket("127.0.0.1", 4242);
-  // Poke the server to establish the pseudo connection in the UDP case.
-  socket.write(elle::ConstWeakBuffer("poke"));
-  Byte b;
-  reactor::network::Buffer buffer(&b, 1);
-  BOOST_CHECK_THROW(
-    socket.read_some(buffer, boost::posix_time::milliseconds(200)),
-    reactor::network::TimeOut);
-  try
-  {
-    socket.read_some(buffer, boost::posix_time::seconds(4));
-  }
-  catch (reactor::network::TimeOut&)
-  {
-    BOOST_FAIL("read shouldn't have timed out.");
-  }
-  BOOST_CHECK(b == '0');
-}
-
-template <typename Server, typename Socket>
-void
 test_timeout_read()
 {
-  Fixture f;
-
-  reactor::Thread server(*sched, "server", &slowpoke_server<Server, Socket>);
-  reactor::Thread client(*sched, "read", &timeout_read<Server, Socket>);
-  sched->run();
+  reactor::Scheduler sched;
+  reactor::Thread main(
+    sched,
+    "main",
+    []
+    {
+      Server server;
+      server.listen();
+      reactor::Thread server_thread(
+        "server",
+        [&]
+        {
+          std::unique_ptr<reactor::network::Socket> socket(server.accept());
+          reactor::sleep(2_sec);
+          socket->write(elle::ConstWeakBuffer("0"));
+        });
+      Socket socket(server.local_endpoint());
+      // Poke the server to establish the pseudo connection in the UDP case.
+      socket.write(elle::ConstWeakBuffer("poke"));
+      Byte b;
+      reactor::network::Buffer buffer(&b, 1);
+      BOOST_CHECK_THROW(
+        socket.read_some(buffer, boost::posix_time::milliseconds(200)),
+        reactor::network::TimeOut);
+      try
+      {
+        socket.read_some(buffer, boost::posix_time::seconds(4));
+      }
+      catch (reactor::network::TimeOut&)
+      {
+        BOOST_FAIL("read shouldn't have timed out.");
+      }
+      BOOST_CHECK(b == '0');
+      reactor::wait(server_thread);
+     });
+  sched.run();
 }
 
 /*------------.
 | Echo Server |
 `------------*/
 
-template <typename Server, typename Socket>
+template <typename Socket>
 void
-server();
-
-void
-serve(std::unique_ptr<reactor::network::TCPSocket> socket);
-
-template <typename Server, typename Socket>
-void
-client(std::vector<std::string> messages);
-
-template <typename Server, typename Socket>
-void
-server()
-{
-  Server server{};
-  server.listen(4242);
-  int nclients = 2;
-  std::vector<reactor::Thread*> clients;
-  while (nclients--)
-  {
-    auto socket = server.accept();
-    clients.push_back(
-      new reactor::Thread(*sched, "serve",
-                          boost::bind(serve,
-                                      elle::utility::move_on_copy(socket))));
-  }
-  sched->current()->wait(reactor::Waitables(begin(clients), end(clients)));
-  BOOST_FOREACH(auto* thread, clients)
-    delete thread;
-}
-
-void
-serve(std::unique_ptr<reactor::network::TCPSocket> socket)
+serve(std::unique_ptr<Socket> socket)
 {
   std::string received;
   Byte buffer[512];
@@ -230,13 +191,13 @@ serve(std::unique_ptr<reactor::network::TCPSocket> socket)
 
 template <typename Server, typename Socket>
 void
-client(std::vector<std::string> messages, unsigned& check)
+client(typename Socket::EndPoint const& ep,
+       std::vector<std::string> messages, unsigned& check)
 {
-  Socket s("127.0.0.1", 4242);
+  Socket s(ep);
   BOOST_FOREACH (const std::string& message, messages)
   {
     s.write(elle::ConstWeakBuffer(message));
-
     Byte buf[256];
     reactor::network::Size read = s.read_some(Buffer(buf, 256));
     buf[read] = 0;
@@ -249,75 +210,90 @@ template <typename Server, typename Socket>
 void
 test_echo_server()
 {
-  sched = new reactor::Scheduler;
-  reactor::Thread s(*sched, "server", server<Server, Socket>);
-
+  reactor::Scheduler sched;
   unsigned check_1 = 0;
   std::vector<std::string> messages_1;
-  messages_1.push_back("Hello server!\n");
-  messages_1.push_back("How are you?\n");
-  reactor::Thread c1(*sched, "client1",
-                     boost::bind(client<Server, Socket>,
-                                 messages_1, boost::ref(check_1)));
-
   unsigned check_2 = 0;
   std::vector<std::string> messages_2;
-  messages_2.push_back("Lorem ipsum dolor sit amet, "
-                     "consectetur adipiscing elit.\n");
-  messages_2.push_back("Phasellus gravida auctor felis, "
-                     "sed eleifend turpis commodo pretium.\n");
-  messages_2.push_back("Vestibulum ante ipsum primis in faucibus orci "
-                     "luctus et ultrices posuere cubilia Curae; "
-                     "Proin porttitor cursus ornare.\n");
-  messages_2.push_back("Praesent sodales sodales est non placerat.\n");
-  messages_2.push_back("Etiam iaculis ultrices libero ac ultrices.\n");
-  messages_2.push_back("Integer ultricies pharetra tempus.\n");
-  messages_2.push_back("Morbi metus ligula, facilisis tristique interdum et,"
-                     "tincidunt eget tellus.\n");
-  messages_2.push_back("Sed a lacinia turpis.\n");
-  messages_2.push_back("Vestibulum leo tellus, ultrices a convallis eget, "
-                     "cursus id dolor.\n");
-  messages_2.push_back("Lorem ipsum dolor sit amet, "
-                     "consectetur adipiscing elit.\n");
-  messages_2.push_back("Aliquam erat volutpat.\n");
-  reactor::Thread c2(*sched, "client2",
-                     boost::bind(client<Server, Socket>,
-                                 messages_2, boost::ref(check_2)));
-
-  sched->run();
+  reactor::Thread main(
+    sched,
+    "main",
+    [&]
+    {
+      Server server;
+      server.listen();
+      reactor::Thread s(
+        "server",
+        [&]
+        {
+          int nclients = 2;
+          std::vector<reactor::Thread*> clients;
+          while (nclients--)
+          {
+            auto socket = server.accept();
+            clients.push_back(
+              new reactor::Thread(
+                "serve",
+                boost::bind(&serve<Socket>,
+                            elle::utility::move_on_copy(socket))));
+          }
+          reactor::wait(reactor::Waitables(begin(clients), end(clients)));
+          BOOST_FOREACH(auto* thread, clients)
+            delete thread;
+        });
+      messages_1.push_back("Hello server!\n");
+      messages_1.push_back("How are you?\n");
+      reactor::Thread c1("client1",
+                         boost::bind(client<Server, Socket>,
+                                     server.local_endpoint(),
+                                     messages_1, boost::ref(check_1)));
+      messages_2.push_back("Lorem ipsum dolor sit amet, "
+                           "consectetur adipiscing elit.\n");
+      messages_2.push_back("Phasellus gravida auctor felis, "
+                           "sed eleifend turpis commodo pretium.\n");
+      messages_2.push_back("Vestibulum ante ipsum primis in faucibus orci "
+                           "luctus et ultrices posuere cubilia Curae; "
+                           "Proin porttitor cursus ornare.\n");
+      messages_2.push_back("Praesent sodales sodales est non placerat.\n");
+      messages_2.push_back("Etiam iaculis ultrices libero ac ultrices.\n");
+      messages_2.push_back("Integer ultricies pharetra tempus.\n");
+      messages_2.push_back("Morbi metus ligula, facilisis tristique interdum et,"
+                           "tincidunt eget tellus.\n");
+      messages_2.push_back("Sed a lacinia turpis.\n");
+      messages_2.push_back("Vestibulum leo tellus, ultrices a convallis eget, "
+                           "cursus id dolor.\n");
+      messages_2.push_back("Lorem ipsum dolor sit amet, "
+                           "consectetur adipiscing elit.\n");
+      messages_2.push_back("Aliquam erat volutpat.\n");
+      reactor::Thread c2("client2",
+                         boost::bind(client<Server, Socket>,
+                                     server.local_endpoint(),
+                                     messages_2, boost::ref(check_2)));
+      reactor::wait(c1);
+      reactor::wait(c2);
+      reactor::wait(s);
+    });
+  sched.run();
   BOOST_CHECK_EQUAL(check_1, messages_1.size());
   BOOST_CHECK_EQUAL(check_2, messages_2.size());
-  delete sched;
 }
 
 /*-------------------.
 | Socket destruction |
 `-------------------*/
 
-static
-void
-socket_destruction()
+ELLE_TEST_SCHEDULED(socket_destruction)
 {
-  reactor::Scheduler sched;
-
-  reactor::Thread server(sched, "server", &silent_server<TCPServer, TCPSocket>);
-
-
-  auto action = [&] ()
-    {
-      auto socket = elle::make_unique<reactor::network::TCPSocket>("127.0.0.1",
-                                                                   4242);
-      *socket << "foo";
-      socket->socket()->close();
-      // Check the IOStream doesn't try to flush the buffer if the TCPSocket
-      // failed at it.
-      // XXX: Sort this out when socket destruction is handled.
-      /*BOOST_CHECK_THROW(*/delete socket.release()/*, elle::Exception)*/;
-    };
-
-  reactor::Thread t(sched, "client", action);
-
-  sched.run();
+  reactor::Thread server("server", &silent_server<TCPServer, TCPSocket>);
+  auto socket = elle::make_unique<reactor::network::TCPSocket>("127.0.0.1",
+                                                               4242);
+  *socket << "foo";
+  socket->socket()->close();
+  // Check the IOStream doesn't try to flush the buffer if the TCPSocket
+  // failed at it.
+  // XXX: Sort this out when socket destruction is handled.
+  /*BOOST_CHECK_THROW(*/delete socket.release()/*, elle::Exception)*/;
+  server.terminate_now();
 }
 
 
@@ -770,6 +746,9 @@ ELLE_TEST_SUITE()
   }                                                                     \
 
   INFINIT_REACTOR_NETWORK_TEST(TCP);
+#ifdef REACTOR_NETWORK_UNIX_DOMAIN_SOCKET
+  INFINIT_REACTOR_NETWORK_TEST(UnixDomain);
+#endif
 #undef INFINIT_REACTOR_NETWORK_TEST
   suite.add(BOOST_TEST_CASE(socket_destruction), 0, 10);
   suite.add(BOOST_TEST_CASE(socket_close), 0, 10);
@@ -781,4 +760,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(read_terminate_recover), 0, 1);
   suite.add(BOOST_TEST_CASE(read_terminate_recover_iostream), 0, 1);
   suite.add(BOOST_TEST_CASE(read_terminate_deadlock), 0, 1);
+  // suite.add(BOOST_TEST_CASE(unix_socket), 0, 100);
 }
