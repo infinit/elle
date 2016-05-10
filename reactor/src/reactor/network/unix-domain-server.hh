@@ -33,7 +33,7 @@ namespace reactor
       _default_endpoint() const override;
       using Super::_accept;
       std::unique_ptr<Socket>
-      _accept();
+      _accept() override;
       ELLE_ATTRIBUTE(
         boost::optional<elle::filesystem::TemporaryDirectory>, tmp, mutable);
     };
