@@ -8,31 +8,32 @@
 
 #include <string>
 #include <vector>
-#include <cctype>
+#include <locale>
 #include <network/optional.hpp>
 #include <network/uri/detail/decode.hpp>
 
 namespace network {
 namespace detail {
 
-inline optional<char> percent_encode(std::string s) {
+inline optional<char> percent_encode(std::string::const_iterator it) {
   try {
-    std::vector<char> output;
-    detail::decode_char(std::begin(s), std::back_inserter(output));
-    return output[0];
+    char output = '\0';
+    detail::decode_char(it, &output);
+    return output;
   } catch (percent_decoding_error &) {
     return optional<char>();
   }
 }
 
+template <class String>
 struct percent_encoded_to_upper {
   percent_encoded_to_upper() : count(0) {}
 
-  void operator()(char &c) {
+  void operator()(typename String::value_type &c) {
     if (c == '%') {
       count = 2;
     } else if (count > 0) {
-      c = std::toupper(c);
+      c = std::toupper(c, std::locale());
       --count;
     }
   }
@@ -47,7 +48,7 @@ Iter decode_encoded_unreserved_chars(Iter first, Iter last) {
 
   const auto is_unreserved = [](char c)
     {
-      return std::isalnum(c)
+      return std::isalnum(c, std::locale())
       || '-' == c
       || '.' == c
       || '_' == c
@@ -63,7 +64,7 @@ Iter decode_encoded_unreserved_chars(Iter first, Iter last) {
         std::advance(slast, 3);
         return slast;
       }();
-      const auto opt_char = percent_encode(std::string(sfirst, slast));
+      const auto opt_char = percent_encode(sfirst);
       if (opt_char && is_unreserved(*opt_char)) {
         *it2 = *opt_char;
         ++it; ++it;

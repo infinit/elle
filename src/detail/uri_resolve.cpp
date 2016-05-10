@@ -14,8 +14,8 @@
 namespace network {
 namespace detail {
 // remove_dot_segments
-template <typename Range>
-void remove_last_segment(Range& path) {
+inline
+void remove_last_segment(std::string& path) {
   while (!path.empty()) {
     if (path.back() == '/') {
       path.pop_back();
@@ -26,8 +26,8 @@ void remove_last_segment(Range& path) {
 }
 
 // implementation of http://tools.ietf.org/html/rfc3986#section-5.2.4
-uri::string_type remove_dot_segments(uri::string_type input) {
-  uri::string_type result;
+std::string remove_dot_segments(std::string input) {
+  std::string result;
 
   while (!input.empty()) {
     if (network_boost::starts_with(input, "../")) {
@@ -57,13 +57,13 @@ uri::string_type remove_dot_segments(uri::string_type input) {
   return result;
 }
 
-uri::string_type remove_dot_segments(uri::string_view path) {
+std::string remove_dot_segments(string_view path) {
   return remove_dot_segments(path.to_string());
 }
 
 // implementation of http://tools.ietf.org/html/rfc3986#section-5.2.3
-uri::string_type merge_paths(const uri& base, const uri& reference) {
-  uri::string_type result;
+std::string merge_paths(const uri& base, const uri& reference) {
+  std::string result;
 
   if (!base.has_path() || base.path().empty()) {
     result = "/";

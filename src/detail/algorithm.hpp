@@ -45,7 +45,7 @@ inline void remove_erase_if(Rng& rng, Pred&& pred) {
 inline std::string trim_front(const std::string& str) {
   auto first = std::begin(str), last = std::end(str);
   auto it = std::find_if(first, last, [](char ch) {
-    return std::isspace(ch, std::locale()) == 0;
+    return !std::isspace(ch, std::locale());
   });
   return std::string(it, last);
 }
@@ -56,7 +56,7 @@ inline std::string trim_back(const std::string& str) {
   auto first = reverse_iterator(std::end(str)),
        last = reverse_iterator(std::begin(str));
   auto it = std::find_if(first, last, [](char ch) {
-    return std::isspace(ch, std::locale()) == 0;
+    return !std::isspace(ch, std::locale());
   });
   std::string result(it, last);
   std::reverse(std::begin(result), std::end(result));

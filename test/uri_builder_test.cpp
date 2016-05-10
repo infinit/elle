@@ -213,7 +213,7 @@ TEST(builder_test, full_uri_doesnt_throw) {
   network::uri_builder builder;
   builder
     .scheme("http")
-    .user_info("user:password")
+    .user_info("user")
     .host("www.example.com")
     .port("80")
     .path("/path")
@@ -227,21 +227,21 @@ TEST(builder_test, full_uri) {
   network::uri_builder builder;
   builder
     .scheme("http")
-    .user_info("user:password")
+    .user_info("user")
     .host("www.example.com")
     .port("80")
     .path("/path")
     .query("query")
     .fragment("fragment")
     ;
-  ASSERT_EQ("http://user:password@www.example.com:80/path?query#fragment", builder.uri());
+  ASSERT_EQ("http://user@www.example.com:80/path?query#fragment", builder.uri());
 }
 
 TEST(builder_test, full_uri_has_scheme) {
   network::uri_builder builder;
   builder
     .scheme("http")
-    .user_info("user:password")
+    .user_info("user")
     .host("www.example.com")
     .port("80")
     .path("/path")
@@ -255,7 +255,7 @@ TEST(builder_test, full_uri_scheme_value) {
   network::uri_builder builder;
   builder
     .scheme("http")
-    .user_info("user:password")
+    .user_info("user")
     .host("www.example.com")
     .port("80")
     .path("/path")
@@ -269,7 +269,7 @@ TEST(builder_test, full_uri_has_user_info) {
   network::uri_builder builder;
   builder
     .scheme("http")
-    .user_info("user:password")
+    .user_info("user")
     .host("www.example.com")
     .port("80")
     .path("/path")
@@ -283,21 +283,21 @@ TEST(builder_test, full_uri_user_info_value) {
   network::uri_builder builder;
   builder
     .scheme("http")
-    .user_info("user:password")
+    .user_info("user")
     .host("www.example.com")
     .port("80")
     .path("/path")
     .query("query")
     .fragment("fragment")
     ;
-  ASSERT_EQ("user:password", builder.uri().user_info());
+  ASSERT_EQ("user", builder.uri().user_info());
 }
 
 TEST(builder_test, full_uri_has_host) {
   network::uri_builder builder;
   builder
     .scheme("http")
-    .user_info("user:password")
+    .user_info("user")
     .host("www.example.com")
     .port("80")
     .path("/path")
@@ -311,7 +311,7 @@ TEST(builder_test, full_uri_host_value) {
   network::uri_builder builder;
   builder
     .scheme("http")
-    .user_info("user:password")
+    .user_info("user")
     .host("www.example.com")
     .port("80")
     .path("/path")
@@ -325,7 +325,7 @@ TEST(builder_test, full_uri_has_port) {
   network::uri_builder builder;
   builder
     .scheme("http")
-    .user_info("user:password")
+    .user_info("user")
     .host("www.example.com")
     .port("80")
     .path("/path")
@@ -339,7 +339,7 @@ TEST(builder_test, full_uri_has_path) {
   network::uri_builder builder;
   builder
     .scheme("http")
-    .user_info("user:password")
+    .user_info("user")
     .host("www.example.com")
     .port("80")
     .path("/path")
@@ -353,7 +353,7 @@ TEST(builder_test, full_uri_path_value) {
   network::uri_builder builder;
   builder
     .scheme("http")
-    .user_info("user:password")
+    .user_info("user")
     .host("www.example.com")
     .port("80")
     .path("/path")
@@ -367,7 +367,7 @@ TEST(builder_test, full_uri_has_query) {
   network::uri_builder builder;
   builder
     .scheme("http")
-    .user_info("user:password")
+    .user_info("user")
     .host("www.example.com")
     .port("80")
     .path("/path")
@@ -381,7 +381,7 @@ TEST(builder_test, full_uri_query_value) {
   network::uri_builder builder;
   builder
     .scheme("http")
-    .user_info("user:password")
+    .user_info("user")
     .host("www.example.com")
     .port("80")
     .path("/path")
@@ -395,7 +395,7 @@ TEST(builder_test, full_uri_has_fragment) {
   network::uri_builder builder;
   builder
     .scheme("http")
-    .user_info("user:password")
+    .user_info("user")
     .host("www.example.com")
     .port("80")
     .path("/path")
@@ -409,7 +409,7 @@ TEST(builder_test, full_uri_fragment_value) {
   network::uri_builder builder;
   builder
     .scheme("http")
-    .user_info("user:password")
+    .user_info("user")
     .host("www.example.com")
     .port("80")
     .path("/path")
@@ -534,7 +534,7 @@ TEST(builder_test, DISABLED_builder_uri_and_remove_dot_segments_from_path) {
     .host("www.example.com")
     .path("/A/./path/")
     ;
-  ASSERT_EQ("http://www.example.com/A/path/", builder.uri());
+  ASSERT_EQ("http://www.example.com/A/path/", builder.uri().string());
 }
 
 TEST(builder_test, build_uri_with_qmark_in_path) {
@@ -658,7 +658,7 @@ TEST(builder_test, authority_with_port_test) {
   ASSERT_EQ("www.example.com:", builder.uri().authority());
 }
 
-TEST(builder_test, authority_without_host_test) {
+TEST(builder_test, DISABLED_authority_without_host_test) {
   network::uri_builder builder;
   builder
     .scheme("https")
@@ -668,38 +668,38 @@ TEST(builder_test, authority_without_host_test) {
 }
 
 TEST(builder_test, clear_user_info_test) {
-  network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
+  network::uri instance("http://user@www.example.com:80/path?query#fragment");
   network::uri_builder builder(instance);
   builder.clear_user_info();
   ASSERT_EQ("http://www.example.com:80/path?query#fragment", builder.uri());
 }
 
 TEST(builder_test, clear_port_test) {
-  network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
+  network::uri instance("http://user@www.example.com:80/path?query#fragment");
   network::uri_builder builder(instance);
   builder.clear_port();
-  ASSERT_EQ("http://user:password@www.example.com/path?query#fragment", builder.uri());
+  ASSERT_EQ("http://user@www.example.com/path?query#fragment", builder.uri());
 }
 
 TEST(builder_test, clear_path_test) {
-  network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
+  network::uri instance("http://user@www.example.com:80/path?query#fragment");
   network::uri_builder builder(instance);
   builder.clear_path();
-  ASSERT_EQ("http://user:password@www.example.com:80?query#fragment", builder.uri());
+  ASSERT_EQ("http://user@www.example.com:80?query#fragment", builder.uri());
 }
 
 TEST(builder_test, clear_query_test) {
-  network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
+  network::uri instance("http://user@www.example.com:80/path?query#fragment");
   network::uri_builder builder(instance);
   builder.clear_query();
-  ASSERT_EQ("http://user:password@www.example.com:80/path#fragment", builder.uri());
+  ASSERT_EQ("http://user@www.example.com:80/path#fragment", builder.uri());
 }
 
 TEST(builder_test, clear_fragment_test) {
-  network::uri instance("http://user:password@www.example.com:80/path?query#fragment");
+  network::uri instance("http://user@www.example.com:80/path?query#fragment");
   network::uri_builder builder(instance);
   builder.clear_fragment();
-  ASSERT_EQ("http://user:password@www.example.com:80/path?query", builder.uri());
+  ASSERT_EQ("http://user@www.example.com:80/path?query", builder.uri());
 }
 
 TEST(builder_test, empty_username) {

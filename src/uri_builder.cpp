@@ -3,8 +3,9 @@
 // (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 
-#include <cctype>
+#include <locale>
 #include "network/uri/uri_builder.hpp"
+#include "detail/uri_normalize.hpp"
 #include "detail/uri_parse_authority.hpp"
 #include "detail/algorithm.hpp"
 
@@ -47,7 +48,7 @@ void uri_builder::set_scheme(string_type scheme) {
   // validate scheme is valid and normalize
   scheme_ = scheme;
   detail::transform(*scheme_, std::begin(*scheme_),
-                    [] (char ch) { return std::tolower(ch); });
+                    [] (char ch) { return std::tolower(ch, std::locale()); });
 }
 
 void uri_builder::set_user_info(string_type user_info) {
@@ -66,7 +67,7 @@ void uri_builder::set_host(string_type host) {
   auto end = network::uri::encode_host(std::begin(host), std::end(host),
                                        std::back_inserter(*host_));
   detail::transform(*host_, std::begin(*host_),
-                    [](char ch) { return std::tolower(ch); });
+                    [](char ch) { return std::tolower(ch, std::locale()); });
 }
 
 void uri_builder::set_port(string_type port) {
@@ -81,19 +82,21 @@ uri_builder &uri_builder::clear_port() {
 }
 
 void uri_builder::set_authority(string_type authority) {
-  network_boost::optional<uri::string_type> user_info, host, port;
-  detail::parse_authority(authority, user_info, host, port);
+  optional<detail::uri_part> user_info, host, port;
+  uri::string_view view(authority);
+  uri::const_iterator it = std::begin(view), last = std::end(view);
+  detail::parse_authority(it, last, user_info, host, port);
 
   if (user_info) {
-    set_user_info(*user_info);
+    set_user_info(user_info->to_string());
   }
 
   if (host) {
-    set_host(*host);
+    set_host(host->to_string());
   }
 
   if (port) {
-    set_port(*port);
+    set_port(port->to_string());
   }
 }
 

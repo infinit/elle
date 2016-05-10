@@ -12,10 +12,10 @@
 namespace network {
 namespace detail {
 // implementation of http://tools.ietf.org/html/rfc3986#section-5.2.4
-uri::string_type remove_dot_segments(uri::string_view input);
+std::string remove_dot_segments(string_view input);
 
 // implementation of http://tools.ietf.org/html/rfc3986#section-5.2.3
-uri::string_type merge_paths(const uri &base, const uri &reference);
+std::string merge_paths(const uri &base, const uri &reference);
 }  // namespace detail
 }  // namespace network
 

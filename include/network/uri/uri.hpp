@@ -18,10 +18,12 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <cstdlib>
 #include <network/string_view.hpp>
 #include <network/optional.hpp>
 #include <network/uri/config.hpp>
 #include <network/uri/uri_errors.hpp>
+#include <network/uri/detail/uri_parts.hpp>
 #include <network/uri/detail/encode.hpp>
 #include <network/uri/detail/decode.hpp>
 #include <network/uri/detail/translate.hpp>
@@ -32,12 +34,6 @@
 #endif
 
 namespace network {
-#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
-namespace detail {
-struct uri_parts;
-}  // namespace detail
-#endif  // !defined(DOXYGEN_SHOULD_SKIP_THIS)
-
 /**
  * \enum uri_comparison_level
  * \brief Defines the steps on the URI comparison ladder.
@@ -101,6 +97,11 @@ class uri {
    * \brief A reference to the underlying string_type parts.
    */
   typedef network::string_view string_view;
+
+  /**
+   * \brief The char traits.
+   */
+  typedef string_view::traits_type traits_type;
 
   /**
    * \brief The URI const_iterator type.
@@ -271,17 +272,13 @@ class uri {
    * \return The port number.
    * \pre has_port()
    */
-  template <typename IntT>
-  IntT port(typename std::is_integral<IntT>::type * = 0) const {
+  template <typename intT>
+  intT port(typename std::is_integral<intT>::type * = 0) const {
     assert(has_port());
-
     auto p = port();
-    try {
-      return std::stoi(port().to_string());
-    }
-    catch (std::exception &) {
-      assert(!"Unable to parse port number.");
-    }
+    const char* port_first = &(*p.begin());
+    char* port_last = 0;
+    return static_cast<intT>(std::strtoul(port_first, &port_last, 10));
   }
 
   /**
@@ -340,18 +337,18 @@ class uri {
    * \brief Returns the URI as a std::basic_string object.
    * \return A URI string.
    */
-  template <typename CharT, class CharTraits = std::char_traits<CharT>,
-            class Alloc = std::allocator<CharT> >
-  std::basic_string<CharT, CharTraits, Alloc> to_string(
-      const Alloc &alloc = Alloc()) const {
-    return std::basic_string<CharT, CharTraits, Alloc>(begin(), end());
+  template <class charT, class traits = std::char_traits<charT>,
+            class Allocator = std::allocator<charT> >
+  std::basic_string<charT, traits, Allocator> to_string(
+      const Allocator &alloc = Allocator()) const {
+    return std::basic_string<charT, traits, Allocator>(begin(), end());
   }
 #else
 #if !defined(DOXYGEN_SHOULD_SKIP_THIS)
-  template <typename CharT, class CharTraits, class Alloc>
-  std::basic_string<CharT, CharTraits, Alloc> to_string(
-      const Alloc &alloc = Alloc()) const {
-    return std::basic_string<CharT, CharTraits, Alloc>(begin(), end());
+  template <class charT, class traits, class Allocator>
+  std::basic_string<charT, traits, Allocator> to_string(
+      const Allocator &alloc = Allocator()) const {
+    return std::basic_string<charT, traits, Allocator>(begin(), end());
   }
 #endif  // !defined(DOXYGEN_SHOULD_SKIP_THIS)
 #endif  // !/defined(NETWORK_URI_MSVC)
@@ -564,7 +561,7 @@ class uri {
 
   string_type uri_;
   string_view uri_view_;
-  detail::uri_parts* uri_parts_;
+  detail::uri_parts uri_parts_;
 };
 
 /**
