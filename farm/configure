@@ -133,6 +133,7 @@ elif options.os == 'osx':
   parameters['python'] = '/usr/local/Frameworks/Python.framework/Versions/3.4'
 elif options.os == 'windows':
   parameters['compiler'] = '%s-w64-mingw32-g++' % options.arch
+  parameters['flags'] = ('-gstabs',)
   parameters['boost_shared'] = False
   if options.arch == 'x86_64': # Use native python3 in order to run tests
     parameters['python'] = None # '/home/buildslave/local/python-mingw-64'
