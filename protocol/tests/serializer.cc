@@ -249,7 +249,7 @@ private:
     {
       auto route = [&] (reactor::network::Socket* sender,
                         reactor::network::Socket* recipient,
-                        size_t& routed,
+                        int64_t& routed,
                         Conf& conf)
         {
           try
@@ -259,8 +259,8 @@ private:
             {
               char buffer[1024];
               ELLE_DEBUG("reading");
-              size_t size = sender->read_some(Buffer(buffer, sizeof(buffer)),
-                                              1_sec);
+              int64_t size =
+                sender->read_some(Buffer(buffer, sizeof(buffer)), 1_sec);
               ELLE_DEBUG("read %s", size);
               conf(elle::ConstWeakBuffer(buffer, size));
               if (conf.corrupt_offset >= 0 && \
@@ -328,16 +328,16 @@ public:
     {
     }
 
-    size_t quota;
-    size_t corrupt_offset;
+    int64_t quota;
+    int64_t corrupt_offset;
     char corrupt_mask;
   };
 public:
   std::unique_ptr<Conf> alice_conf;
   std::unique_ptr<Conf> bob_conf;
 private:
-  ELLE_ATTRIBUTE_RW(size_t, alice_routed);
-  ELLE_ATTRIBUTE_RW(size_t, bob_routed);
+  ELLE_ATTRIBUTE_RW(int64_t, alice_routed);
+  ELLE_ATTRIBUTE_RW(int64_t, bob_routed);
 };
 
 template <typename SocketProvider>
