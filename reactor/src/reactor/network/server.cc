@@ -32,7 +32,7 @@ namespace reactor
 
     template <typename Socket, typename EndPoint, typename Acceptor>
     void
-    ProtoServer<Socket, EndPoint, Acceptor>::listen(const EndPoint& end_point)
+    ProtoServer<Socket, EndPoint, Acceptor>::listen(EndPoint const& end_point)
     {
       try
       {
@@ -44,6 +44,13 @@ namespace reactor
         throw Exception(elle::sprintf("unable to listen on %s: %s",
                                       end_point, e.what()));
       }
+    }
+
+    template <typename Socket, typename EndPoint, typename Acceptor>
+    void
+    ProtoServer<Socket, EndPoint, Acceptor>::listen()
+    {
+      this->listen(this->_default_endpoint());
     }
 
     template <typename Socket, typename EndPoint, typename Acceptor>

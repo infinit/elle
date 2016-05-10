@@ -39,7 +39,13 @@ namespace reactor
     void
     SSLServer::listen(int port)
     {
-       listen(EndPoint(boost::asio::ip::tcp::v4(), port));
+      this->listen(EndPoint(boost::asio::ip::tcp::v4(), port));
+    }
+
+    SSLServer::EndPoint
+    SSLServer::_default_endpoint() const
+    {
+      return EndPoint(boost::asio::ip::tcp::v4(), 0);
     }
 
     int

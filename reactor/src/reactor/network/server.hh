@@ -70,11 +70,16 @@ namespace reactor
     public:
       void
       listen(EndPoint const& end_point);
+      void
+      listen();
       EndPoint
       local_endpoint() const;
     protected:
       void
       _accept(AsioSocket& socket, EndPoint& peer);
+      virtual
+      EndPoint
+      _default_endpoint() const = 0;
       ELLE_ATTRIBUTE_X(std::unique_ptr<Acceptor>, acceptor);
 
     /*----------.

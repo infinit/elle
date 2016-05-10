@@ -26,7 +26,13 @@ namespace reactor
     void
     TCPServer::listen(int port)
     {
-       listen(EndPoint(boost::asio::ip::tcp::v4(), port));
+      this->listen(EndPoint(boost::asio::ip::tcp::v4(), port));
+    }
+
+    TCPServer::EndPoint
+    TCPServer::_default_endpoint() const
+    {
+      return EndPoint(boost::asio::ip::tcp::v4(), 0);
     }
 
     int

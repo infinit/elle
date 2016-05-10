@@ -49,6 +49,9 @@ namespace reactor
       virtual
       std::unique_ptr<Socket>
       _accept() override;
+      virtual
+      EndPoint
+      _default_endpoint() const override;
     private:
       void
       _handshake();

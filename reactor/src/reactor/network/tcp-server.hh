@@ -31,10 +31,13 @@ namespace reactor
     public:
       using Super::listen;
       void
-      listen(int port = 0);
+      listen(int port);
       int
       port() const;
     protected:
+      virtual
+      EndPoint
+      _default_endpoint() const override;
       using Super::_accept;
       virtual
       std::unique_ptr<Socket>
