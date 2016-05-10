@@ -46,26 +46,24 @@ namespace reactor
       }
     }
 
-    class TCPAccept:
+    template <typename Socket, typename EndPoint, typename Acceptor>
+    class Accept:
       public Operation
     {
     public:
-      typedef boost::asio::ip::tcp::acceptor TCPAcceptor;
-      typedef boost::asio::ip::tcp::endpoint EndPoint;
-
-      TCPAccept(TCPSocket::AsioSocket& socket,
-                EndPoint& peer,
-                TCPAcceptor& acceptor):
-        Operation(*reactor::Scheduler::scheduler()),
-        _acceptor(acceptor),
-        _peer(peer),
-        _socket(socket)
+      Accept(Socket& socket,
+             EndPoint& peer,
+             Acceptor& acceptor)
+        : Operation(*reactor::Scheduler::scheduler())
+        , _acceptor(acceptor)
+        , _peer(peer)
+        , _socket(socket)
       {}
 
       void
       print(std::ostream& stream) const
       {
-        stream << "accept on " << this->_acceptor.local_endpoint();
+        elle::fprintf(stream, "accept on %s", this->_acceptor.local_endpoint());
       }
 
     private:
@@ -82,7 +80,7 @@ namespace reactor
         this->_acceptor.async_accept(
           this->_socket,
           this->_peer,
-          boost::bind(&TCPAccept::_wakeup, this, _1));
+          boost::bind(&Accept::_wakeup, this, _1));
       }
 
       void
@@ -96,9 +94,9 @@ namespace reactor
       }
 
     private:
-      ELLE_ATTRIBUTE_R(TCPAcceptor&, acceptor);
+      ELLE_ATTRIBUTE_R(Acceptor&, acceptor);
       ELLE_ATTRIBUTE(EndPoint&, peer);
-      ELLE_ATTRIBUTE_X(TCPSocket::AsioSocket&, socket);
+      ELLE_ATTRIBUTE_X(Socket&, socket);
     };
 
     /*----------.
@@ -119,7 +117,7 @@ namespace reactor
       ELLE_TRACE_SCOPE("%s: wait for connection", *this);
       // FIXME: server should listen in ctor to avoid this crappy state ?
       ELLE_ASSERT_NEQ(this->acceptor(), nullptr);
-      TCPAccept accept(socket, peer, *this->_acceptor);
+      Accept<Socket, EndPoint, Acceptor> accept(socket, peer, *this->_acceptor);
       accept.run();
     }
 
