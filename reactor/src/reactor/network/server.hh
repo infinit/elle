@@ -59,6 +59,12 @@ namespace reactor
       typedef EndPoint_ EndPoint;
 
     /*----------.
+    | Accepting |
+    `----------*/
+    protected:
+      using Server::_accept;
+
+    /*----------.
     | Listening |
     `----------*/
     public:
