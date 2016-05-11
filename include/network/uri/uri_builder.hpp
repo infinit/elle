@@ -187,8 +187,8 @@ class uri_builder {
    * \returns \c *this
    */
   template <typename Source>
-  uri_builder &query(const Source &query) {
-    set_query(detail::translate(query));
+  uri_builder &append_query(const Source &query) {
+    append_query(detail::translate(query));
     return *this;
   }
 
@@ -205,7 +205,7 @@ class uri_builder {
    * \returns \c *this
    */
   template <typename Key, typename Value>
-    uri_builder &query(const Key &key, const Value &value) {
+    uri_builder &append_query_key_value_pair(const Key &key, const Value &value) {
     if (!query_) {
       query_ = string_type();
     }
@@ -252,7 +252,7 @@ class uri_builder {
   void set_port(string_type port);
   void set_authority(string_type authority);
   void set_path(string_type path);
-  void set_query(string_type query);
+  void append_query(string_type query);
   void set_fragment(string_type fragment);
 
   optional<string_type> scheme_, user_info_, host_, port_, path_, query_,

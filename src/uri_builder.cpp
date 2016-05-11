@@ -32,7 +32,7 @@ uri_builder::uri_builder(const network::uri &base_uri) {
   }
 
   if (base_uri.has_query()) {
-    set_query(base_uri.query().to_string());
+    append_query(base_uri.query().to_string());
   }
 
   if (base_uri.has_fragment()) {
@@ -111,8 +111,13 @@ uri_builder &uri_builder::clear_path() {
   return *this;
 }
 
-void uri_builder::set_query(string_type query) {
-  query_ = string_type();
+void uri_builder::append_query(string_type query) {
+  if (!query_) {
+    query_ = string_type();
+  }
+  else {
+    query_->append("&");
+  }
   network::uri::encode_query(std::begin(query), std::end(query),
                              std::back_inserter(*query_));
 }
