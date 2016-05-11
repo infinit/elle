@@ -44,10 +44,11 @@ namespace reactor
     auto& sched = *Scheduler::scheduler();
     ++this->_running;
     auto idt = elle::log::logger().indentation();
+    auto parent = sched.current();
     auto thread =
       new Thread(
         sched, name,
-        [this, a, name, idt]
+        [this, a, name, idt, parent]
         {
           elle::log::logger().indentation() = idt;
           try
@@ -76,6 +77,9 @@ namespace reactor
               this->_exception = std::current_exception();
               this->_raise(std::current_exception());
               this->_terminate_now();
+              parent->raise(std::current_exception());
+              if (parent->state() == Thread::State::frozen)
+                parent->_wait_abort(elle::sprintf("%s threw", this));
             }
             else
               ELLE_WARN("%s: exception already caught, losing exception: %s",

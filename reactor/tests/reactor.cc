@@ -696,14 +696,12 @@ namespace scope
     sched.run();
   }
 
-  static
-  void
-  exception()
+  ELLE_TEST_SCHEDULED(exception, (bool, wait))
   {
     reactor::Scheduler sched;
     reactor::Thread t(
       sched, "main",
-      []
+      [wait]
       {
         bool beacon = false;
         elle::With<reactor::Scope>() << [&] (reactor::Scope& s)
@@ -732,7 +730,10 @@ namespace scope
             {
               throw BeaconException();
             });
-          BOOST_CHECK_THROW(s.wait(), BeaconException);
+          if (wait)
+            BOOST_CHECK_THROW(s.wait(), BeaconException);
+          else
+            BOOST_CHECK_THROW(reactor::sleep(), BeaconException);
           BOOST_CHECK(beacon);
         };
       });
@@ -750,8 +751,13 @@ namespace scope
         {
           throw BeaconException();
         });
-      reactor::yield();
-      reactor::yield();
+      try
+      {
+        reactor::yield();
+        reactor::yield();
+      }
+      catch (BeaconException const&)
+      {}
       BOOST_CHECK(thread.done());
       BOOST_CHECK_THROW(s.wait(), BeaconException);
     };
@@ -3264,8 +3270,10 @@ ELLE_TEST_SUITE()
     scope->add(BOOST_TEST_CASE(empty), 0, valgrind(1, 5));
     auto wait = &scope::wait;
     scope->add(BOOST_TEST_CASE(wait), 0, valgrind(1, 5));
-    auto exception = &scope::exception;
-    scope->add(BOOST_TEST_CASE(exception), 0, valgrind(1, 5));
+    auto exception_wait = std::bind(&scope::exception, true);
+    scope->add(BOOST_TEST_CASE(exception_wait), 0, valgrind(1, 5));
+    auto exception_sleep = std::bind(&scope::exception, false);
+    scope->add(BOOST_TEST_CASE(exception_sleep), 0, valgrind(1, 5));
     auto exception_done = &scope::exception_done;
     scope->add(BOOST_TEST_CASE(exception_done), 0, valgrind(1, 5));
     auto multiple_exception = &scope::multiple_exception;

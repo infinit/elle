@@ -199,8 +199,9 @@ namespace reactor
       bool
       _wait(Thread* thread, Waker const& waker) override;
     private:
-      friend class Waitable;
+      friend class Scope;
       friend class TimeoutGuard;
+      friend class Waitable;
       void _wait_timeout(const boost::system::error_code& e,
                          std::string const& waited);
       void _wait_abort(std::string const& reason);
