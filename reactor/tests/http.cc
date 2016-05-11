@@ -19,11 +19,11 @@
 #include <reactor/semaphore.hh>
 #include <reactor/signal.hh>
 
-#include <http_server.hh>
+#include <reactor/network/http-server.hh>
 
 ELLE_LOG_COMPONENT("reactor.http.test");
 
-typedef reactor::http::tests::Server HTTPServer;
+typedef reactor::network::HttpServer HTTPServer;
 #define PERSIST_CHECK_EQUAL(a, b)                          \
   do                                                       \
   {                                                        \
@@ -94,7 +94,7 @@ ELLE_TEST_SCHEDULED(bad_request)
                             HTTPServer::Parameters const&,
                             elle::Buffer const&) -> std::string
                         {
-                          throw reactor::http::tests::Server::Exception(
+                          throw HTTPServer::Exception(
                             "", reactor::http::StatusCode::Bad_Request);
                         });
 
