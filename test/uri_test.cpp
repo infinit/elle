@@ -796,3 +796,9 @@ TEST(uri_test, uri_begins_with_a_number) {
 TEST(uri_test, uri_scheme_contains_an_invalid_character) {
   ASSERT_THROW(network::uri("ht%tp://example.com"), network::uri_syntax_error);
 }
+
+TEST(uri_test, default_constructed_assignment_test) {
+  network::uri instance("http://www.example.com/");
+  instance = network::uri(); // <-- CRASHES HERE
+  ASSERT_TRUE(instance.empty());
+}
