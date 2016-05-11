@@ -23,6 +23,16 @@ struct translate_impl<char[N]> {
   std::string operator()(const char *source) const { return source; }
 };
 
+template <>
+struct translate_impl<char *> {
+  std::string operator()(const char *source) const { return source; }
+};
+
+template <>
+struct translate_impl<const char *> {
+  std::string operator()(const char *source) const { return source; }
+};
+
 template <int N>
 struct translate_impl<const char[N]> {
   std::string operator()(const char *source) const { return source; }
@@ -45,6 +55,22 @@ struct translate_impl<const wchar_t[N]> {
 
 template <int N>
 struct translate_impl<wchar_t[N]> {
+  std::string operator()(const wchar_t *source) const {
+    translate_impl<std::wstring> impl;
+    return impl(source);
+  }
+};
+
+template <>
+struct translate_impl<wchar_t *> {
+  std::string operator()(const wchar_t *source) const {
+    translate_impl<std::wstring> impl;
+    return impl(source);
+  }
+};
+
+template <>
+struct translate_impl<const wchar_t *> {
   std::string operator()(const wchar_t *source) const {
     translate_impl<std::wstring> impl;
     return impl(source);

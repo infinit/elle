@@ -722,3 +722,29 @@ TEST(builder_test, path_should_be_prefixed_with_slash_2) {
     .scheme("ftp").host("127.0.0.1").path("noleadingslash/foo.txt");
   ASSERT_EQ("/noleadingslash/foo.txt", builder.uri().path());
 }
+
+TEST(builder, non_array_string_literals_should_work) {
+  const char* p = "http";
+  const char* q = "foo";
+  network::uri_builder builder;
+
+  builder
+    .scheme(p)
+    .host("example.com")
+    .path(q)
+    ;
+  ASSERT_EQ("http://example.com/foo", builder.uri());
+}
+
+TEST(builder, non_const_non_array_string_literals_should_work) {
+  const char* p = "http";
+  const char* q = "foo";
+  network::uri_builder builder;
+
+  builder
+    .scheme(const_cast<char *>(p))
+    .host("example.com")
+    .path(const_cast<char *>(q))
+    ;
+  ASSERT_EQ("http://example.com/foo", builder.uri());
+}
