@@ -52,20 +52,22 @@ namespace infinit
     crypto_lock(int mode, int n, const char* file, int line)
     {
       bool set = mode & CRYPTO_LOCK;
-      std::unordered_map<int, std::unique_ptr<std::mutex>>::iterator it;
+      std::mutex* mutex;
       {
         std::lock_guard<std::mutex> lock(crypto_lock_mutex());
-        it = mutexes().find(n);
+        std::unordered_map<int, std::unique_ptr<std::mutex>>::iterator it =
+          mutexes().find(n);
         if (it == mutexes().end())
         {
           it = mutexes().emplace(
             std::make_pair(n, elle::make_unique<std::mutex>())).first;
         }
+        mutex = it->second.get();
       }
       if (set)
-        it->second->lock();
+        mutex->lock();
       else
-        it->second->unlock();
+        mutex->unlock();
     }
 
     /*--------.
