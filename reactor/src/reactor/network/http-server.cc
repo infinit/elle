@@ -124,8 +124,8 @@ namespace reactor
         while (true)
         {
           auto socket = elle::utility::move_on_copy(this->_server->accept());
-          ELLE_DEBUG("accept connection from %s", socket);
-          auto name = elle::sprintf("request %s", socket);
+          ELLE_DEBUG("accept connection from %s", **socket);
+          auto name = elle::sprintf("request %s", **socket);
           scope.run_background(
             name,
             [this, socket]
