@@ -13,10 +13,10 @@ namespace reactor
       ELLE_LOG_COMPONENT("reactor.test.http");
       if (!this->_server)
       {
-        this->_server = elle::make_unique<TCPServer>();
-        TCPServer* ts = dynamic_cast<TCPServer*>(this->_server.get());
-        ts->listen(0);
-        this->_port = ts->port();
+        auto server = elle::make_unique<TCPServer>();
+        server->listen();
+        this->_port = server->port();
+        this->_server = std::move(server);
         ELLE_TRACE_SCOPE("%s: listen on port %s", *this, this->_port);
       }
       this->_accepter.reset(
