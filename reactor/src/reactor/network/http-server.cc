@@ -130,12 +130,23 @@ namespace reactor
             name,
             [this, socket]
             {
-              std::unique_ptr<reactor::network::Socket> s = std::move(*socket);
-              this->_serve(std::move(s));
+              try
+              {
+                std::unique_ptr<reactor::network::Socket> s =
+                  std::move(*socket);
+                this->_serve(std::move(s));
+              }
+              catch (...)
+              {
+                ELLE_ERR("%s: fatal error serving client: %s",
+                         this, elle::exception_string());
+                throw;
+              }
             });
         }
       };
     }
+
     void
     HttpServer::_serve(std::unique_ptr<reactor::network::Socket> socket)
     {
