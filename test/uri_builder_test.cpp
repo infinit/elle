@@ -732,3 +732,29 @@ TEST(builder_test, set_multiple_query_with_encoding_2) {
     ;
   ASSERT_EQ("http://example.com?q1=foo%20bar&q2=biz%20baz", builder.uri().string());
 }
+
+TEST(builder_test, non_array_string_literals_should_work) {
+  const char* p = "http";
+  const char* q = "foo";
+
+  network::uri_builder builder;
+  builder
+    .scheme(p)
+    .host("example.com")
+    .path(q)
+    ;
+  ASSERT_EQ("http://example.com/foo", builder.uri());
+}
+
+TEST(builder_test, non_const_non_array_string_literals_should_work) {
+  const char* p = "http";
+  const char* q = "foo";
+
+  network::uri_builder builder;
+  builder
+    .scheme(const_cast<char *>(p))
+    .host("example.com")
+    .path(const_cast<char *>(q))
+    ;
+  ASSERT_EQ("http://example.com/foo", builder.uri());
+}
