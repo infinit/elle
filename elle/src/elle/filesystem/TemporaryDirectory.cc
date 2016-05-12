@@ -1,8 +1,3 @@
-#if defined(INFINIT_MACOSX)
-# include <mach-o/dyld.h>
-# include <sys/param.h>
-#endif
-
 #include <elle/assert.hh>
 #include <elle/filesystem/TemporaryDirectory.hh>
 #include <elle/system/self-path.hh>

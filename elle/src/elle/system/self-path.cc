@@ -1,5 +1,11 @@
 #include <elle/system/self-path.hh>
 
+#if defined(INFINIT_MACOSX)
+# include <mach-o/dyld.h>
+# include <sys/param.h>
+#endif
+
+#include <elle/Exception.hh>
 #include <elle/windows.h>
 
 namespace elle
