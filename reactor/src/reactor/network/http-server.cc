@@ -5,15 +5,20 @@ namespace reactor
 {
   namespace network
   {
-    HttpServer::HttpServer()
-    : _server()
+    HttpServer::HttpServer(std::unique_ptr<Server> server)
+    : _server(std::move(server))
     , _port(0)
     , _accepter()
     {
       ELLE_LOG_COMPONENT("reactor.test.http");
-      this->_server.listen(0);
-      this->_port = this->_server.port();
-      ELLE_TRACE_SCOPE("%s: listen on port %s", *this, this->_port);
+      if (!this->_server)
+      {
+        this->_server = elle::make_unique<TCPServer>();
+        TCPServer* ts = dynamic_cast<TCPServer*>(this->_server.get());
+        ts->listen(0);
+        this->_port = ts->port();
+        ELLE_TRACE_SCOPE("%s: listen on port %s", *this, this->_port);
+      }
       this->_accepter.reset(
         new reactor::Thread(*reactor::Scheduler::scheduler(),
                             "accepter",
@@ -118,14 +123,14 @@ namespace reactor
       {
         while (true)
         {
-          auto socket = elle::utility::move_on_copy(this->_server.accept());
+          auto socket = elle::utility::move_on_copy(this->_server->accept());
           ELLE_DEBUG("accept connection from %s", socket);
           auto name = elle::sprintf("request %s", socket);
           scope.run_background(
             name,
             [this, socket]
             {
-              std::unique_ptr<reactor::network::TCPSocket> s = std::move(*socket);
+              std::unique_ptr<reactor::network::Socket> s = std::move(*socket);
               this->_serve(std::move(s));
             });
         }
