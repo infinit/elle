@@ -111,7 +111,7 @@ namespace elle
       int
       pid()
       {
-        return this->_impl->process_info().dwProcessId;
+        return this->_process_info.dwProcessId;
       }
 
     private:
