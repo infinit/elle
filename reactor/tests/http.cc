@@ -517,8 +517,11 @@ protected:
   void
   _serve(std::unique_ptr<reactor::network::Socket>) override
   {
-    reactor::sleep(3_sec);
+    this->_serving.open();
+    reactor::sleep();
   }
+
+  ELLE_ATTRIBUTE_RX(reactor::Barrier, serving);
 };
 
 ELLE_TEST_SCHEDULED(interrupted)
@@ -541,7 +544,8 @@ ELLE_TEST_SCHEDULED(interrupted)
       "application/json");
     r << "{}";
     r.finalize();
-    reactor::sleep(100_ms); // XXX: wait for curl to read.
+    reactor::wait(server.serving());
+    reactor::sleep(500_ms);
   }
 }
 
