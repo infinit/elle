@@ -18,7 +18,7 @@ namespace elle
 #if defined(INFINIT_LINUX)
       return boost::filesystem::read_symlink("/proc/self/exe");
 #elif defined(INFINIT_MACOSX)
-      uint32_t size = MAXPATHLEN;
+      uint32_t size = PATH_MAX;
       char result[size];
       if (_NSGetExecutablePath(result, &size) == 0)
         return result;
