@@ -25,7 +25,7 @@ namespace elle
     With(With<T>&& model);
     ~With();
   private:
-    ELLE_COMPILER_ALIGN(128)
+    ELLE_COMPILER_ALIGN(16)
     char _data[sizeof(T)];
     bool _used;
     T* _value;
