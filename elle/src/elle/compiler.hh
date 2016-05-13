@@ -6,7 +6,7 @@
 #  define ELLE_COMPILER_ATTRIBUTE_ALWAYS_INLINE
 #  define ELLE_COMPILER_ATTRIBUTE_NO_INLINE __declspec((noinline))
 #  define ELLE_COMPILER_PRETTY_FUNCTION __FUNCSIG__
-#  define ELLE_COMPILER_ALIGN(Alignment) __declspec(align(Alignment
+#  define ELLE_COMPILER_ALIGN(Alignment) __declspec(align(Alignment))
 #  define constexpr
 # else
 #  define ELLE_COMPILER_ATTRIBUTE_NORETURN __attribute__((noreturn))
