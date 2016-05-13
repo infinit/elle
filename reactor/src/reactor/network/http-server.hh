@@ -63,6 +63,8 @@ namespace reactor
         HttpServer(std::unique_ptr<Server> server = {});
         virtual
         ~HttpServer();
+        HttpServer(HttpServer&&) = delete;
+        HttpServer(HttpServer const&) = delete;
         void
         _finalize();
         std::string
