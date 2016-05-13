@@ -48,7 +48,8 @@ namespace reactor
     auto thread =
       new Thread(
         sched, name,
-        [this, a = std::move(a), name, idt, parent]
+        // Mutable lambda so the action can be moved.
+        [this, a = std::move(a), name, idt, parent] () mutable
         {
           elle::log::logger().indentation() = idt;
           try
@@ -58,7 +59,7 @@ namespace reactor
             // may hold objects that are expected to be destroyed - a
             // captured unique_ptr to a socket for instance, and one
             // would expect a disconnection when the thread is done.
-            auto action = std::move(a);
+            Thread::Action action(std::move(a));
             ELLE_TRACE("%s: background job %s starts", *this, name)
               action();
             ELLE_TRACE("%s: background job %s finished", *this, name);
