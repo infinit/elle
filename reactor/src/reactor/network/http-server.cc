@@ -44,9 +44,9 @@ namespace reactor
     }
 
     HttpServer::CommandLine::CommandLine(elle::Buffer const& buffer)
-    : _path()
-    , _method()
-    , _version()
+      : _path()
+      , _method()
+      , _version()
     {
        ELLE_LOG_COMPONENT("reactor.test.http");
        std::vector<std::string> words;
@@ -57,13 +57,10 @@ namespace reactor
            elle::join(words.begin(), words.end(), " "),
            http::StatusCode::Bad_Request,
            "request command line sould have 3 members");
-
        std::vector<std::string> path_and_args;
        boost::algorithm::split(path_and_args, words[1],
                                boost::algorithm::is_any_of("?"));
-
        this->_path = path_and_args[0];
-
        if (path_and_args.size() > 1)
        {
          std::vector<std::string> parameters;
@@ -91,6 +88,7 @@ namespace reactor
            e.what());
        }
     }
+
     http::Method const&
     HttpServer::CommandLine::method() const
     {
@@ -108,6 +106,7 @@ namespace reactor
       throw HttpServer::Exception(
         this->_path, reactor::http::StatusCode::Bad_Request, "No version");
     }
+
     void
     HttpServer::CommandLine::print(std::ostream& output) const
     {
