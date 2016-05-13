@@ -36,7 +36,7 @@ namespace reactor
         virtual
         std::unique_ptr<backend::Thread>
         make_thread(const std::string& name,
-                    const Action& action) override;
+                    Action action) override;
         virtual
         backend::Thread*
         current() const override;
