@@ -545,7 +545,7 @@ ELLE_TEST_SCHEDULED(interrupted)
     r << "{}";
     r.finalize();
     reactor::wait(server.serving());
-    reactor::sleep(500_ms);
+    reactor::sleep(500_ms); // FIXME: wait for Curl to read
   }
 }
 
