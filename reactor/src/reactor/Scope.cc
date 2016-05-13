@@ -31,7 +31,7 @@ namespace reactor
 
   Thread&
   Scope::run_background(std::string const& name,
-                        Thread::Action const& a)
+                        Thread::Action a)
   {
     if (this->_exception)
     {
@@ -48,7 +48,7 @@ namespace reactor
     auto thread =
       new Thread(
         sched, name,
-        [this, a, name, idt, parent]
+        [this, a = std::move(a), name, idt, parent]
         {
           elle::log::logger().indentation() = idt;
           try
