@@ -64,8 +64,8 @@ uri_builder &uri_builder::clear_user_info() {
 
 void uri_builder::set_host(string_type host) {
   host_ = string_type();
-  auto end = network::uri::encode_host(std::begin(host), std::end(host),
-                                       std::back_inserter(*host_));
+  network::uri::encode_host(std::begin(host), std::end(host),
+                            std::back_inserter(*host_));
   detail::transform(*host_, std::begin(*host_),
                     [](char ch) { return std::tolower(ch, std::locale()); });
 }

@@ -42,7 +42,7 @@ TEST(optional_test, value_constructor_string) {
 
 TEST(optional_test, rvalue_ref_constructor) {
   int value = 42;
-  network::optional<int> opt{std::move(42)};
+  network::optional<int> opt{std::move(value)};
   ASSERT_TRUE(opt);
   ASSERT_EQ(*opt, 42);
 }

@@ -31,7 +31,7 @@ script:
     - mkdir _builds
     - cd _builds
     # Note: clang not support libc++
-    - cmake -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS} -DCPP-NETLIB_DISABLE_LIBCXX=YES ..
+    - cmake -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS} -DUri_DISABLE_LIBCXX=YES -DUri_BUILD_TESTS=ON -DUri_BUILD_DOCS=OFF ..
     - make -j 8
     - make test
 

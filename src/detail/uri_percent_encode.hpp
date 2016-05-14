@@ -59,11 +59,6 @@ Iter decode_encoded_unreserved_chars(Iter first, Iter last) {
   while (it != last) {
     if (*it == '%') {
       const auto sfirst = it;
-      const auto slast = [&]() {
-        auto slast = it;
-        std::advance(slast, 3);
-        return slast;
-      }();
       const auto opt_char = percent_encode(sfirst);
       if (opt_char && is_unreserved(*opt_char)) {
         *it2 = *opt_char;

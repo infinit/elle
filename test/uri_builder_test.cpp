@@ -758,25 +758,3 @@ TEST(builder_test, non_const_non_array_string_literals_should_work) {
     ;
   ASSERT_EQ("http://example.com/foo", builder.uri());
 }
-
-TEST(builder_test, set_multiple_query_with_encoding) {
-  network::uri_builder builder;
-  builder
-    .scheme("http")
-    .host("example.com")
-    .append_query("q1=foo bar")
-    .append_query("q2=biz baz")
-    ;
-  ASSERT_EQ("http://example.com?q1=foo%20bar&q2=biz%20baz", builder.uri().string());
-}
-
-TEST(builder_test, set_multiple_query_with_encoding_2) {
-  network::uri_builder builder;
-  builder
-    .scheme("http")
-    .host("example.com")
-    .append_query_key_value_pair("q1", "foo bar")
-    .append_query_key_value_pair("q2", "biz baz")
-    ;
-  ASSERT_EQ("http://example.com?q1=foo%20bar&q2=biz%20baz", builder.uri().string());
-}
