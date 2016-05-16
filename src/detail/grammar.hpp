@@ -61,7 +61,7 @@ inline bool is_ucschar(string_view::const_iterator &it,
     return false;
   }
 
-  
+
 
   return false;
 }
@@ -115,21 +115,6 @@ inline bool is_pchar(string_view::const_iterator &it,
     is_sub_delim(it, last) ||
     is_in(it, last, ":@") ||
     is_ucschar(it, last)
-    ;
-}
-
-inline bool is_valid_scheme(string_view::const_iterator &it,
-                            string_view::const_iterator last) {
-  return isalnum(it, last) || is_in(it, last, "+-.");
-}
-
-inline bool is_valid_user_info(string_view::const_iterator &it,
-                               string_view::const_iterator last) {
-  return
-    is_unreserved(it, last) ||
-    is_pct_encoded(it, last) ||
-    is_sub_delim(it, last) ||
-    is_in(it, last, ":")
     ;
 }
 

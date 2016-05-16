@@ -12,8 +12,6 @@
 namespace network {
 namespace detail {
 namespace {
-enum class scheme_state { first_char, other };
-
 enum class uri_state {
   scheme,
   hier_part,
@@ -24,42 +22,31 @@ enum class uri_state {
 enum class hier_part_state {
   first_slash,
   second_slash,
-  user_info,
+  authority,
   host,
   host_ipv6,
   port,
   path
 };
 
-bool parse_scheme(string_view::const_iterator &it,
-                  string_view::const_iterator last, uri_parts &parts) {
-  auto state = scheme_state::first_char;
-
+bool validate_scheme(string_view::const_iterator &it,
+                     string_view::const_iterator last) {
   if (it == last) {
     return false;
   }
 
-  auto first = it;
+  // The first character must be a letter
+  if (!std::isalpha(*it, std::locale("C"))) {
+    return false;
+  }
+  ++it;
+
   while (it != last) {
-    // first char is alpha
-    if (state == scheme_state::first_char) {
-      if (!std::isalpha(*it, std::locale())) {
-        return false;
-      }
-
-      state = scheme_state::other;
+    if (*it == ':') {
+      break;
     }
-    else if (state == scheme_state::other) {
-      if (*it == ':') {
-        parts.scheme = uri_part(first, it);
-
-        // move past the scheme delimiter
-        ++it;
-        break;
-      }
-      else if (!is_valid_scheme(it, last)) {
-        return false;
-      }
+    else if (!isalnum(it, last) && !is_in(it, last, "+-.")) {
+      return false;
     }
   }
 
@@ -69,7 +56,10 @@ bool parse_scheme(string_view::const_iterator &it,
 bool validate_user_info(string_view::const_iterator it,
                         string_view::const_iterator last) {
   while (it != last) {
-    if (!is_valid_user_info(it, last)) {
+    if (!is_unreserved(it, last) &&
+        !is_pct_encoded(it, last) &&
+        !is_sub_delim(it, last) &&
+        !is_in(it, last, ":")) {
       return false;
     }
   }
@@ -94,6 +84,16 @@ bool set_host_and_port(string_view::const_iterator first,
   }
   return true;
 }
+
+bool validate_fragment(string_view::const_iterator &it,
+                       string_view::const_iterator last) {
+  while (it != last) {
+    if (!is_pchar(it, last) && !is_in(it, last, "?/")) {
+      return false;
+    }
+  }
+  return true;
+}
 } // namespace
 
 bool parse(string_view::const_iterator &it, string_view::const_iterator last,
@@ -106,7 +106,10 @@ bool parse(string_view::const_iterator &it, string_view::const_iterator last,
     return false;
   }
 
-  if (parse_scheme(it, last, parts)) {
+  if (validate_scheme(it, last)) {
+    parts.scheme = uri_part(first, it);
+    // move past the scheme delimiter
+    ++it;
     state = uri_state::hier_part;
   }
   else {
@@ -133,7 +136,7 @@ bool parse(string_view::const_iterator &it, string_view::const_iterator last,
     }
     else if (hp_state == hier_part_state::second_slash) {
       if (*it == '/') {
-        hp_state = hier_part_state::user_info;
+        hp_state = hier_part_state::authority;
         ++it;
         first = it;
         continue;
@@ -143,7 +146,7 @@ bool parse(string_view::const_iterator &it, string_view::const_iterator last,
         hp_state = hier_part_state::path;
       }
     }
-    else if (hp_state == hier_part_state::user_info) {
+    else if (hp_state == hier_part_state::authority) {
       if (is_in(first, last, "@:")) {
         return false;
       }
@@ -363,16 +366,14 @@ bool parse(string_view::const_iterator &it, string_view::const_iterator last,
   }
 
   if (state == uri_state::fragment) {
-    while (it != last) {
-      if (!is_pchar(it, last) && !is_in(it, last, "?/")) {
-        return false;
-      }
+    if (!validate_fragment(it, last)) {
+      return false;
     }
   }
 
   // we're done!
   if (state == uri_state::hier_part) {
-    if (hp_state == hier_part_state::user_info) {
+    if (hp_state == hier_part_state::authority) {
       if (!set_host_and_port(first, last, last_colon, parts)) {
         return false;
       }
