@@ -69,7 +69,7 @@ inline bool is_pchar(string_view::const_iterator &it) {
     is_pct_encoded(it) ||
     is_sub_delim(it) ||
     is_in(it, ":@")
-          ;
+    ;
 }
 
 inline bool is_valid_scheme(string_view::const_iterator &it) {

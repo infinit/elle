@@ -77,7 +77,8 @@ bool validate_user_info(string_view::const_iterator it,
 }
 } // namespace
 
-bool parse(string_view::const_iterator &it, string_view::const_iterator last, uri_parts &parts) {
+bool parse(string_view::const_iterator &it, string_view::const_iterator last,
+           uri_parts &parts) {
   auto state = uri_state::scheme;
 
   auto first = it;

@@ -18,13 +18,6 @@ enum class authority_state {
   host_ipv6,
   port
 };
-
-inline bool is_valid_port(uri_part port) {
-  const char* port_first = &(*std::begin(port));
-  char* port_last = 0;
-  unsigned long value = std::strtoul(port_first, &port_last, 10);
-  return (value < std::numeric_limits<unsigned short>::max());
-}
 }  // namespace
 
 bool parse_authority(string_view::const_iterator &it,
@@ -100,7 +93,7 @@ bool parse_authority(string_view::const_iterator &it,
       if (*first == '/') {
         // the port is empty, but valid
         port = uri_part(first, it);
-        if (!is_valid_port(*port)) {
+        if (!is_valid_port(std::begin(*port))) {
           return false;
         }
 
@@ -126,7 +119,7 @@ bool parse_authority(string_view::const_iterator &it,
   }
   else if (state == authority_state::port) {
     port = uri_part(first, last);
-    if (!is_valid_port(*port)) {
+    if (!is_valid_port(std::begin(*port))) {
       return false;
     }
   }
