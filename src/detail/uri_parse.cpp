@@ -57,7 +57,7 @@ bool parse_scheme(string_view::const_iterator &it,
         ++it;
         break;
       }
-      else if (!is_valid_scheme(it)) {
+      else if (!is_valid_scheme(it, last)) {
         return false;
       }
     }
@@ -69,9 +69,28 @@ bool parse_scheme(string_view::const_iterator &it,
 bool validate_user_info(string_view::const_iterator it,
                         string_view::const_iterator last) {
   while (it != last) {
-    if (!is_valid_user_info(it)) {
+    if (!is_valid_user_info(it, last)) {
       return false;
     }
+  }
+  return true;
+}
+
+bool set_host_and_port(string_view::const_iterator first,
+                       string_view::const_iterator last,
+                       string_view::const_iterator last_colon,
+                       uri_parts &parts) {
+  if (first == last_colon) {
+    parts.hier_part.host = uri_part(first, last);
+  }
+  else {
+    auto port_start = last_colon;
+    ++port_start;
+    parts.hier_part.host = uri_part(first, last_colon);
+    if (!is_valid_port(port_start)) {
+      return false;
+    }
+    parts.hier_part.port = uri_part(port_start, last);
   }
   return true;
 }
@@ -96,6 +115,8 @@ bool parse(string_view::const_iterator &it, string_view::const_iterator last,
 
   // Hierarchical part
   auto hp_state = hier_part_state::first_slash;
+  // this is used by the user_info/port
+  auto last_colon = first;
   while (it != last) {
     if (hp_state == hier_part_state::first_slash) {
       if (*it == '/') {
@@ -123,8 +144,13 @@ bool parse(string_view::const_iterator &it, string_view::const_iterator last,
       }
     }
     else if (hp_state == hier_part_state::user_info) {
-      if (is_in(first, "@:")) {
+      if (is_in(first, last, "@:")) {
         return false;
+      }
+
+      // reset the last colon
+      if (first == it) {
+        last_colon = first;
       }
 
       if (*it == '@') {
@@ -150,23 +176,22 @@ bool parse(string_view::const_iterator &it, string_view::const_iterator last,
         continue;
       }
       else if (*it == ':') {
-        // this is actually the host, and the next part is expected to be the port
-        parts.hier_part.host = uri_part(first, it);
-        hp_state = hier_part_state::port;
-        ++it;
-        first = it;
-        continue;
+        last_colon = it;
       }
       else if (*it == '/') {
         // we skipped right past the host and port, and are at the path.
-        parts.hier_part.host = uri_part(first, it);
+        if (!set_host_and_port(first, it, last_colon, parts)) {
+          return false;
+        }
         hp_state = hier_part_state::path;
         first = it;
         continue;
       }
       else if (*it == '?') {
         // the path is empty, but valid, and the next part is the query
-        parts.hier_part.host = uri_part(first, it);
+        if (!set_host_and_port(first, it, last_colon, parts)) {
+          return false;
+        }
         parts.hier_part.path = uri_part(it, it);
         state = uri_state::query;
         ++it;
@@ -175,7 +200,9 @@ bool parse(string_view::const_iterator &it, string_view::const_iterator last,
       }
       else if (*it == '#') {
         // the path is empty, but valid, and the next part is the fragment
-        parts.hier_part.host = uri_part(first, it);
+        if (!set_host_and_port(first, it, last_colon, parts)) {
+          return false;
+        }
         parts.hier_part.path = uri_part(it, it);
         state = uri_state::fragment;
         ++it;
@@ -283,7 +310,7 @@ bool parse(string_view::const_iterator &it, string_view::const_iterator last,
         first = it;
         continue;
       }
-      else if (!isdigit(it)) {
+      else if (!isdigit(it, last)) {
         return false;
       }
     }
@@ -304,6 +331,13 @@ bool parse(string_view::const_iterator &it, string_view::const_iterator last,
         state = uri_state::fragment;
         break;
       }
+
+      if (!is_pchar(it, last) && !is_in(it, last, "/")) {
+        return false;
+      }
+      else {
+        continue;
+      }
     }
 
     ++it;
@@ -311,7 +345,7 @@ bool parse(string_view::const_iterator &it, string_view::const_iterator last,
 
   if (state == uri_state::query) {
     while (it != last) {
-      if (!is_pchar(it) && !is_in(it, "?/")) {
+      if (!is_pchar(it, last) && !is_in(it, last, "?/")) {
         // If this is a fragment, keep going
         if (*it == '#') {
           parts.query = uri_part(first, it);
@@ -330,7 +364,7 @@ bool parse(string_view::const_iterator &it, string_view::const_iterator last,
 
   if (state == uri_state::fragment) {
     while (it != last) {
-      if (!is_pchar(it) && !is_in(it, "?/")) {
+      if (!is_pchar(it, last) && !is_in(it, last, "?/")) {
         return false;
       }
     }
@@ -339,15 +373,21 @@ bool parse(string_view::const_iterator &it, string_view::const_iterator last,
   // we're done!
   if (state == uri_state::hier_part) {
     if (hp_state == hier_part_state::user_info) {
-      parts.hier_part.host = uri_part(first, last);
+      if (!set_host_and_port(first, last, last_colon, parts)) {
+        return false;
+      }
       parts.hier_part.path = uri_part(last, last);
     }
     else if (hp_state == hier_part_state::host) {
-      parts.hier_part.host = uri_part(first, last);
+      if (!set_host_and_port(first, last, last_colon, parts)) {
+        return false;
+      }
       parts.hier_part.path = uri_part(last, last);
     }
     else if (hp_state == hier_part_state::host_ipv6) {
-      parts.hier_part.host = uri_part(first, last);
+      if (!set_host_and_port(first, last, last_colon, parts)) {
+        return false;
+      }
       parts.hier_part.path = uri_part(last, last);
     }
     else if (hp_state == hier_part_state::port) {

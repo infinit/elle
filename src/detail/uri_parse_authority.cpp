@@ -30,7 +30,7 @@ bool parse_authority(string_view::const_iterator &it,
   auto state = authority_state::user_info;
   while (it != last) {
     if (state == authority_state::user_info) {
-      if (is_in(first, "@:")) {
+      if (is_in(first, last, "@:")) {
         return false;
       }
 
@@ -100,7 +100,7 @@ bool parse_authority(string_view::const_iterator &it,
         continue;
       }
 
-      if (!isdigit(it)) {
+      if (!isdigit(it, last)) {
         return false;
       }
     }

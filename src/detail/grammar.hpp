@@ -14,26 +14,10 @@
 
 namespace network {
 namespace detail {
-inline bool isalnum(string_view::const_iterator &it) {
-  if (std::isalnum(*it, std::locale())) {
-    ++it;
-    return true;
-  }
-  return false;
-}
-
-inline bool isdigit(string_view::const_iterator &it) {
-  if (std::isdigit(*it, std::locale())) {
-    ++it;
-    return true;
-  }
-  return false;
-}
-
-inline bool is_in(string_view::const_iterator &it, const char *chars) {
-  auto length = std::strlen(chars);
-  for (std::size_t i = 0; i < length; ++i) {
-    if (*it == chars[i]) {
+inline bool isalnum(string_view::const_iterator &it,
+                    string_view::const_iterator last) {
+  if (it != last) {
+    if (std::isalnum(*it, std::locale("C"))) {
       ++it;
       return true;
     }
@@ -41,20 +25,23 @@ inline bool is_in(string_view::const_iterator &it, const char *chars) {
   return false;
 }
 
-inline bool is_sub_delim(string_view::const_iterator &it) {
-  return is_in(it, "!$&'()*+,;=");
-}
-
-inline bool is_unreserved(string_view::const_iterator &it) {
-  return isalnum(it) || is_in(it, "-._~");
-}
-
-inline bool is_pct_encoded(string_view::const_iterator &it) {
-  if (*it == '%') {
-    ++it;
-    if (std::isxdigit(*it, std::locale())) {
+inline bool isdigit(string_view::const_iterator &it,
+                    string_view::const_iterator last) {
+  if (it != last) {
+    if (std::isdigit(*it, std::locale("C"))) {
       ++it;
-      if (std::isxdigit(*it, std::locale())) {
+      return true;
+    }
+  }
+  return false;
+}
+
+inline bool is_in(string_view::const_iterator &it,
+                  string_view::const_iterator last, const char *chars) {
+  if (it != last) {
+    auto length = std::strlen(chars);
+    for (std::size_t i = 0; i < length; ++i) {
+      if (*it == chars[i]) {
         ++it;
         return true;
       }
@@ -63,25 +50,86 @@ inline bool is_pct_encoded(string_view::const_iterator &it) {
   return false;
 }
 
-inline bool is_pchar(string_view::const_iterator &it) {
+inline bool is_sub_delim(string_view::const_iterator &it,
+                         string_view::const_iterator last) {
+  return is_in(it, last, "!$&'()*+,;=");
+}
+
+inline bool is_ucschar(string_view::const_iterator &it,
+                       string_view::const_iterator last) {
+  if (it == last) {
+    return false;
+  }
+
+  
+
+  return false;
+}
+
+inline bool is_private(string_view::const_iterator &it,
+                       string_view::const_iterator last) {
+  return false;
+}
+
+inline bool is_unreserved(string_view::const_iterator &it,
+                          string_view::const_iterator last) {
+  return isalnum(it, last) || is_in(it, last, "-._~");
+}
+
+inline bool is_pct_encoded(string_view::const_iterator &it,
+                           string_view::const_iterator last) {
+  if (it == last) {
+    return false;
+  }
+
+  string_view::const_iterator it_copy = it;
+
+  if (*it_copy == '%') {
+    ++it_copy;
+    if (it_copy == last) {
+      return false;
+    }
+  }
+
+  if (std::isxdigit(*it_copy, std::locale("C"))) {
+    ++it_copy;
+    if (it_copy == last) {
+      return false;
+    }
+  }
+
+  if (std::isxdigit(*it_copy, std::locale("C"))) {
+    ++it_copy;
+    it = it_copy;
+    return true;
+  }
+
+  return false;
+}
+
+inline bool is_pchar(string_view::const_iterator &it,
+                     string_view::const_iterator last) {
   return
-    is_unreserved(it) ||
-    is_pct_encoded(it) ||
-    is_sub_delim(it) ||
-    is_in(it, ":@")
+    is_unreserved(it, last) ||
+    is_pct_encoded(it, last) ||
+    is_sub_delim(it, last) ||
+    is_in(it, last, ":@") ||
+    is_ucschar(it, last)
     ;
 }
 
-inline bool is_valid_scheme(string_view::const_iterator &it) {
-  return isalnum(it) || is_in(it, "+-.");
+inline bool is_valid_scheme(string_view::const_iterator &it,
+                            string_view::const_iterator last) {
+  return isalnum(it, last) || is_in(it, last, "+-.");
 }
 
-inline bool is_valid_user_info(string_view::const_iterator &it) {
+inline bool is_valid_user_info(string_view::const_iterator &it,
+                               string_view::const_iterator last) {
   return
-    is_unreserved(it) ||
-    is_pct_encoded(it) ||
-    is_sub_delim(it) ||
-    is_in(it, ":")
+    is_unreserved(it, last) ||
+    is_pct_encoded(it, last) ||
+    is_sub_delim(it, last) ||
+    is_in(it, last, ":")
     ;
 }
 

@@ -483,21 +483,24 @@ TEST(uri_parse_test, test_pct_encoded_user_info) {
 std::vector<std::string> create_urls(const std::string &filename) {
   std::vector<std::string> urls;
   std::ifstream ifs(filename);
+  std::cout << filename << std::endl;
   if (!ifs) {
+    std::cout << "Shit." << std::endl;
     throw std::runtime_error("Unable to open file: " + filename);
   }
   for (std::string url; std::getline(ifs, url);) {
-    urls.push_back(url);
+    if (url.front() != '#') {
+      urls.push_back(url);
+    }
   }
   return urls;
 }
-
 
 // All valid URLs in the list should pass
 class test_valid_urls : public ::testing::TestWithParam<std::string> {};
 
 INSTANTIATE_TEST_CASE_P(uri_parse_test, test_valid_urls,
-                        testing::ValuesIn(create_urls("tests/valid_urls.txt")));
+                        testing::ValuesIn(create_urls("valid_urls.txt")));
 
 TEST_P(test_valid_urls, urls_are_valid) {
   test::uri uri(GetParam());

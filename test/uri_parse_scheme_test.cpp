@@ -67,3 +67,13 @@ TEST(uri_parse_test, test_scheme_with_capital_letters) {
   ASSERT_TRUE(uri.has_scheme());
   EXPECT_EQ("HTTP", uri.scheme());
 }
+
+TEST(uri_parse_test, test_scheme_with_a_percent) {
+  test::uri uri("ht%tp://user@www.example.com:80/path?query#fragment");
+  EXPECT_FALSE(uri.parse_uri());
+}
+
+TEST(uri_parse_test, test_scheme_with_a_valid_percent_encoded_character) {
+  test::uri uri("ht%00tp://user@www.example.com:80/path?query#fragment");
+  EXPECT_FALSE(uri.parse_uri());
+}

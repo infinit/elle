@@ -36,4 +36,4 @@ foreach (test ${TESTS})
 endforeach (test)
 
 file(GLOB URI_LISTS *.txt)
-file(COPY ${URI_LISTS} DESTINATION ${Uri_BINARY_DIR}/tests)
+file(COPY ${URI_LISTS} DESTINATION ${Uri_BINARY_DIR}/test)
