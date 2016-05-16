@@ -57,6 +57,9 @@ inline optional<std::string> make_arg(optional<string_view> view) {
   }
   return nullopt;
 }
+
+template <class T>
+inline void ignore(T) {}
 }  // namespace
 
 void uri::initialize(optional<string_type> scheme,
@@ -374,6 +377,7 @@ uri uri::normalize(uri_comparison_level level) const {
     // need to parse the parts again as the underlying string has changed
     const_iterator it = std::begin(normalized_view), last = std::end(normalized_view);
     bool is_valid = detail::parse(it, last, parts);
+    ignore(is_valid);
     assert(is_valid);
 
     if (parts.hier_part.path) {
@@ -448,7 +452,7 @@ uri uri::make_relative(const uri &other) const {
   result.initialize(optional<string_type>(), optional<string_type>(),
                     optional<string_type>(), optional<string_type>(),
                     other_path, query, fragment);
-  return std::move(result);
+  return result;
 }
 
 uri uri::resolve(const uri &base) const {

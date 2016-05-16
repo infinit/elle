@@ -152,6 +152,7 @@ class basic_string_view {
   size_type copy(charT* s, size_type n, size_type pos = 0) const {
     size_type rlen = std::min(n, size() - pos);
     std::copy_n(begin() + pos, rlen, s);
+    return rlen;
   }
 
   constexpr basic_string_view substr(size_type pos = 0,
