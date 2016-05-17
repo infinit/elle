@@ -3761,8 +3761,10 @@ class HTTPDownload(Builder):
       import hashlib
       d = hashlib.md5()
       d.update(content)
-      if d.hexdigest() != self.__fingerprint:
-        print('checksum failed', file = sys.stderr)
+      h = d.hexdigest()
+      if h != self.__fingerprint:
+        print('wrong checksum for %s: %s' % (self.__dest, h),
+              file = sys.stderr)
         return False
     with open(str(self.__dest.path()), 'wb') as f:
       f.write(content)
