@@ -274,6 +274,10 @@ def configure(curl_config,
     local_cxx_config.library_add(
       drake.copy(boost.thread_dynamic, 'lib', strip_prefix = True,
                  post_process = set_local_libcxx(cxx_toolkit)))
+  if backend == Backends.io:
+    local_cxx_config.define('REACTOR_CORO_BACKEND_IO')
+  else:
+    local_cxx_config.define('REACTOR_CORO_BACKEND_BOOST_CONTEXT')
 
   # FUSE
   fuse_lib = None
