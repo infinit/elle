@@ -3824,12 +3824,13 @@ class ArchiveExtractor(Builder):
     return self.__destination
 
   def execute(self):
-    self.output('Extract %s' % self.__tarball)
-
-    self._run_job(lambda: self.extract())
+    self.output(
+      'Extract %s to %s' % (self.__tarball, self.destination),
+      'Extract %s' % self.__tarball)
+    self._run_job(self.extract)
     for patch in self.__patches:
       if not self.cmd(
-          'Apply %s with level %s' % patch,
+          'Apply %s' % patch[0],
           [
             'patch', '-N', '-p', str(patch[1]),
             '-d', str(self.__destination / self.__patch_dir),
