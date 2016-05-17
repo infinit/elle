@@ -804,15 +804,15 @@ def configure(cxx_toolkit = None,
   ## Boost ##
   ## ----- ##
 
+  boost_version = drake.Version(1, 60, 0)
   if boost is not None:
     boost = drake.cxx.boost.Boost(
       cxx_toolkit = cxx_toolkit,
       prefix = boost,
-      version_effective = drake.Version(1, 57, 0),
+      version_effective = boost_version,
       prefer_shared = cxx_toolkit.os not in [drake.os.windows, drake.os.ios],
     )
   else:
-    boost_version = drake.Version(1, 60, 0)
     boost_basename = 'boost_%s' % str(boost_version).replace('.', '_')
     boost_tarball = drake.node('boost/%s.tar.gz' % boost_basename)
     boost_prefix = drake.Path('boost')
@@ -892,7 +892,9 @@ def configure(cxx_toolkit = None,
     if cxx_toolkit.os is drake.os.macos:
       boost_static_format = '%s/lib/libboost_%s.a'
       boost_dynamic_format = '%s/lib/libboost_%s.dylib'
-      boost_dynamic_versioned_format = '%s/lib/libboost_%s-1_60.dylib'
+      boost_dynamic_versioned_format = \
+        '%%s/lib/libboost_%%s-%s_%s.dylib' % \
+        (boost_version.major, boost_version.minor)
     elif windows:
       boost_static_format = '%s/lib/libboost_%s-mt-s.a'
       boost_dynamic_format = None
@@ -904,7 +906,8 @@ def configure(cxx_toolkit = None,
     else:
       boost_static_format = '%s/lib/libboost_%s.a'
       boost_dynamic_format = '%s/lib/libboost_%s.so'
-      boost_dynamic_versioned_format = '%s/lib/libboost_%s.so.1.60.0'
+      boost_dynamic_versioned_format = \
+        '%%s/lib/libboost_%%s.so.%s' % boost_version
     boost_libraries = (
       [t(fmt % (boost_prefix, name))
        for t, fmt in (
@@ -1113,7 +1116,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
         for f in boost_attributes['patched_sources']
     ]
     boost_headers = [
-      drake.node('boost/1.60.0/%s' % n)
+      drake.node('boost/%s/%s' % (boost_version, n))
         for n in boost_attributes['headers']
     ]
     BoostBuilder(
