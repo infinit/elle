@@ -62,6 +62,8 @@ if (MSVC)
       string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
     endif(${flag_var} MATCHES "/MD")
   endforeach(flag_var)
+
+  add_definitions(-D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_DEPRECATE)
 endif(MSVC)
 
 include_directories(${Uri_SOURCE_DIR}/src ${Uri_SOURCE_DIR}/include)
