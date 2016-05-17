@@ -55,8 +55,6 @@ endif()
 
 
 if (MSVC)
-  message(FATAL_ERROR "The current implementation uses features that aren't fully implemented on MSVC.")
-
   foreach(flag_var
       CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
       CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
