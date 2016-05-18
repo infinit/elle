@@ -1918,7 +1918,7 @@ static size_t utp_process_incoming(UTPSocket *conn, const byte *packet, size_t l
 		if (pkt == 0 || pkt->transmissions == 0) continue;
 		assert((int)(pkt->payload) >= 0);
 		acked_bytes += pkt->payload;
-		if (conn->mtu_probe_seq && seq == conn->mtu_probe_seq) {
+		if (conn->mtu_probe_seq && seq == signed(conn->mtu_probe_seq)) {
 			conn->mtu_floor = conn->mtu_probe_size;
 			conn->mtu_search_update();
 			conn->log(UTP_LOG_MTU, "MTU [ACK] floor:%d ceiling:%d current:%d"
@@ -2440,7 +2440,8 @@ UTPSocket::~UTPSocket()
 	}
 
 	// Remove object from the global hash table
-	UTPSocketKeyData* kd = ctx->utp_sockets->Delete(UTPSocketKey(addr, conn_id_recv));
+	/* UTPSocketKeyData* kd = */
+        ctx->utp_sockets->Delete(UTPSocketKey(addr, conn_id_recv));
 	// can be null for socket that was never initialized assert(kd);
 
 	// remove the socket from ack_sockets if it was there also
@@ -3030,7 +3031,7 @@ static UTPSocket* parse_icmp_payload(utp_context *ctx, const byte *buffer, size_
 // @len: buffer length
 // @to: destination address of the original UDP pakcet
 // @tolen: address length
-// @next_hop_mtu: 
+// @next_hop_mtu:
 int utp_process_icmp_fragmentation(utp_context *ctx, const byte* buffer, size_t len, const struct sockaddr *to, socklen_t tolen, uint16 next_hop_mtu)
 {
 	UTPSocket* conn = parse_icmp_payload(ctx, buffer, len, to, tolen);
