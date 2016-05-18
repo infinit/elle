@@ -5,7 +5,6 @@
 #endif
 
 #include <elle/log.hh>
-#include <elle/elle.hh>
 
 #include <cryptography/hash.hh>
 
