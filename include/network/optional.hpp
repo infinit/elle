@@ -27,7 +27,7 @@
 #else
 #define NETWORK_ASSERTED_EXPRESSION(CHECK, EXPR) \
   ((CHECK) ? (EXPR) : (fail(#CHECK, __FILE__, __LINE__), (EXPR)))
-inline void fail(const char* expr, const char* file, unsigned line) {}
+inline void fail(const char*, const char*, unsigned) {}
 #endif  // NDEBUG
 #endif // !defined(DOXYGEN_SHOULD_SKIP_THIS)
 

@@ -146,7 +146,7 @@ class basic_string_view {
   template <class Allocator = std::allocator<charT>>
   std::basic_string<charT, traits, Allocator> to_string(
       const Allocator& a = Allocator()) const {
-    return std::basic_string<charT, traits, Allocator>(begin(), end());
+    return std::basic_string<charT, traits, Allocator>(begin(), end(), a);
   }
 
   size_type copy(charT* s, size_type n, size_type pos = 0) const {

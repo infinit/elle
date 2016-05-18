@@ -9,6 +9,8 @@ include_directories( ${gtest_SOURCE_DIR}/include)
 set(
   TESTS
   uri_parse_test
+  uri_parse_scheme_test
+  uri_parse_path_test
   uri_test
   uri_encoding_test
   uri_normalization_test
@@ -32,3 +34,6 @@ foreach (test ${TESTS})
   add_test(${test}
     ${Uri_BINARY_DIR}/tests/${test})
 endforeach (test)
+
+file(GLOB URI_LISTS *.txt)
+file(COPY ${URI_LISTS} DESTINATION ${Uri_BINARY_DIR}/test)
