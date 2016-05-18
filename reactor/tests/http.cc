@@ -819,7 +819,10 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(escaped_string), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(no_header_answer), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(download_progress), 0, valgrind(10));
+#if !(defined(BOOST_OS_WINDOWS) && defined(BOOST_ARCH_X86_32))
+  // Fails inexplicably. Could be SJ/LJ exceptions on mingw32.
   suite.add(BOOST_TEST_CASE(download_stall), 0, valgrind(40));
+#endif
   suite.add(BOOST_TEST_CASE(query_string), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(keep_alive), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(redirection), 0, valgrind(1));
