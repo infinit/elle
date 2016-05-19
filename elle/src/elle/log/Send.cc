@@ -47,12 +47,13 @@ namespace elle
         else
         {
           std::string path = elle::os::getenv("ELLE_LOG_FILE", "");
-
+          bool append = !elle::os::getenv("ELLE_LOG_FILE_APPEND", "").empty();
           if (path.empty() == false)
           {
             static std::ofstream out{
               path,
-                std::fstream::trunc | std::fstream::out
+                (append ? std::fstream::app : std::fstream::trunc)
+                  | std::fstream::out
                 };
             _logger().reset(new elle::log::TextLogger(out));
           }
