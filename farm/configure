@@ -82,6 +82,8 @@ if %(arch)r == 'arm':
   cxx_toolkit_host =  drake.cxx.GccToolkit()
   extra_args['cxx_toolkit_host'] = cxx_toolkit_host
 
+if %(beyond_public)r and %(project)r == 'Filesystem':
+  extra_args['beyond_public'] = True
 
 with drake.Drake(%(dir_source)r) as d:
   python = %(python)r
@@ -98,7 +100,6 @@ with drake.Drake(%(dir_source)r) as d:
           production_build = %(production_build)r,
           prefix = %(dir_install)r,
           codesign = codesign,
-          beyond_public = %(beyond_public)r,
           **extra_args)
 
   if cxx_toolkit.os == drake.os.macos and os.environ.get('MACMINI_KEYCHAIN_PASSWORD', None):
@@ -121,7 +122,8 @@ parameters = {
   'valgrind': False,
   'production_build': True,
   'arch': options.arch,
-  'drake_utils': '%s/../drake-utils.py' % os.path.dirname(os.path.realpath(__file__))
+  'drake_utils': '%s/../drake-utils.py' % os.path.dirname(os.path.realpath(__file__)),
+  'project': options.project,
 }
 
 parameters['beyond_public'] = options.public_beyond
