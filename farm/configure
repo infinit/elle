@@ -31,6 +31,13 @@ def parse_options():
                       type = str,
                       help = 'Project name',
                       required = True)
+  parser.add_argument('--public-beyond',
+                      metavar = 'PUBLIC_BEYOND',
+                      type = bool,
+                      help = 'Strip all credentials from beyond',
+                      required = False,
+                      default = False
+                      )
   for d in ['build', 'install', 'source']:
     parser.add_argument('--%s-dir' % d,
                         metavar = '%s_DIR' % d.upper(),
@@ -91,6 +98,7 @@ with drake.Drake(%(dir_source)r) as d:
           production_build = %(production_build)r,
           prefix = %(dir_install)r,
           codesign = codesign,
+          beyond_public = %(beyond_public)r,
           **extra_args)
 
   if cxx_toolkit.os == drake.os.macos and os.environ.get('MACMINI_KEYCHAIN_PASSWORD', None):
@@ -116,6 +124,7 @@ parameters = {
   'drake_utils': '%s/../drake-utils.py' % os.path.dirname(os.path.realpath(__file__))
 }
 
+parameters['beyond_public'] = options.public_beyond
 if options.os == 'android':
   parameters['compiler'] = '/root/arm-linux-androideabi-4.8/bin/arm-linux-androideabi-g++'
   parameters['python'] = False
