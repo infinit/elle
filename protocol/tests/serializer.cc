@@ -606,6 +606,8 @@ void
 _interruption(elle::Version const& version,
               bool checksum)
 {
+  // A packet of size 1 means interruption will happen while sending the last
+  // (and unique) block. This one should go through.
   for (auto number: std::vector<int>({30, 10, 1}))
   {
     reactor::Barrier interrupted("interrupted");
@@ -685,7 +687,7 @@ _interruption(elle::Version const& version,
               BOOST_CHECK(!received);
         }
       }
-      );
+    );
   }
 }
 
