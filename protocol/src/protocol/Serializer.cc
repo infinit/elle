@@ -515,10 +515,10 @@ namespace infinit
       }
       catch (reactor::Terminate const&)
       {
-        ELLE_DEBUG("terminated");
-        if (offset <  packet.size())
+        ELLE_DEBUG("interrupted after sending %s (over %s)",
+                   offset, packet.size());
+        if (offset < packet.size())
         {
-          ELLE_DEBUG("writing control interrupt");
           write_control(this->_stream, Control::interrupt);
           this->_stream.flush();
         }
