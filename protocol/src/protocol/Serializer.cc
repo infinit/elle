@@ -468,13 +468,15 @@ namespace infinit
     void
     Version020Impl::_write(elle::Buffer const& packet)
     {
+      ELLE_DEBUG_SCOPE("chunk writer, sz=%s, chunk=%s", packet.size(),
+                       this->_chunk_size);
+      elle::Buffer::Size offset = 0;
       try
       {
-        elle::Buffer::Size offset = 0;
         auto send = [&]
           {
             auto to_send = std::min(this->_chunk_size, packet.size() - offset);
-            ELLE_DEBUG("send actual data")
+            ELLE_DEBUG("send actual data: %s", to_send)
             infinit::protocol::write(
               this->_stream, packet, false, offset, to_send);
             offset += to_send;
@@ -502,6 +504,7 @@ namespace infinit
         }
         while (offset < packet.size())
         {
+          ELLE_DEBUG("writing control: o=%s, size=%s", offset, packet.size());
           elle::With<reactor::Thread::NonInterruptible>() << [&]
           {
             write_control(this->_stream, Control::keep_going);
@@ -511,8 +514,13 @@ namespace infinit
       }
       catch (reactor::Terminate const&)
       {
-        write_control(this->_stream, Control::interrupt);
-        this->_stream.flush();
+        ELLE_DEBUG("interrupted after sending %s (over %s)",
+                   offset, packet.size());
+        if (offset < packet.size())
+        {
+          write_control(this->_stream, Control::interrupt);
+          this->_stream.flush();
+        }
         throw;
       }
     }
