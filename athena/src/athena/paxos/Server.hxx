@@ -416,7 +416,7 @@ namespace athena
       ELLE_TRACE_SCOPE("%s: confirm proposal %s", *this, p);
       if (!this->_partial)
         _Details::check_quorum(*this, q);
-      if (this->_state && p < this->_state->proposal)
+      if (this->_state && p.version < this->_state->proposal.version)
       {
         ELLE_TRACE("discard obsolete confirm, current proposal is %s",
                    this->_state->proposal);
