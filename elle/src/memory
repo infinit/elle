@@ -105,20 +105,38 @@ namespace std
       *this = this->_payload;
     }
 
-    std::shared_ptr<T>&
+    shared_ptr<T>&
     payload()
     {
       return this->_payload;
     }
 
-    std::shared_ptr<T> const&
+    shared_ptr<T> const&
     payload() const
     {
       return this->_payload;
     }
+
   private:
-    std::shared_ptr<T> _payload;
+    template <typename U>
+    friend class ambivalent_ptr;
+    shared_ptr<T> _payload;
   };
+
+  template <class T, class U>
+  ambivalent_ptr<T>
+  dynamic_pointer_cast(const ambivalent_ptr<U>& sp) noexcept
+  {
+    if (auto locked = sp.lock())
+      if (auto p = std::dynamic_pointer_cast<T>(locked))
+      {
+        ambivalent_ptr<T> res(p);
+        if (sp.payload())
+          res.payload() = p;
+        return res;
+      }
+    return ambivalent_ptr<T>(nullptr);
+  }
 }
 
 #endif

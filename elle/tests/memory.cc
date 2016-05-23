@@ -148,6 +148,20 @@ ambivalent_ptr()
     BOOST_CHECK_EQUAL(count, 1);
     BOOST_CHECK(a.lock());
   }
+  {
+    int count = 0;
+    auto b = std::dynamic_pointer_cast<Child>(
+      std::ambivalent_ptr<Super>(new Super(count)));
+    BOOST_CHECK_EQUAL(count, 0);
+    BOOST_CHECK(!b.lock());
+  }
+  {
+    int count = 0;
+    auto b = std::dynamic_pointer_cast<Child>(
+      std::ambivalent_ptr<Super>(new Child(count)));
+    BOOST_CHECK_EQUAL(count, 2);
+    BOOST_CHECK(b.lock());
+  }
 }
 
 ELLE_TEST_SUITE()
