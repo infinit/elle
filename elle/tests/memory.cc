@@ -123,11 +123,38 @@ dynamic_pointer_cast()
   }
 }
 
+static
+void
+ambivalent_ptr()
+{
+  {
+    int count = 0;
+    auto i = std::make_shared<Super>(count);
+    BOOST_CHECK_EQUAL(count, 1);
+    std::ambivalent_ptr<Super> a(i);
+    BOOST_CHECK_EQUAL(count, 1);
+    BOOST_CHECK(a.lock());
+    i.reset();
+    BOOST_CHECK_EQUAL(count, 0);
+    BOOST_CHECK(!a.lock());
+  }
+  {
+    int count = 0;
+    std::ambivalent_ptr<Super> a(new Super(count));
+    BOOST_CHECK_EQUAL(count, 1);
+    std::shared_ptr<Super> p(a.lock());
+    BOOST_CHECK(a.lock());
+    p.reset();
+    BOOST_CHECK_EQUAL(count, 1);
+    BOOST_CHECK(a.lock());
+  }
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
-
   suite.add(BOOST_TEST_CASE(make_unique));
   suite.add(BOOST_TEST_CASE(generic_unique_ptr));
   suite.add(BOOST_TEST_CASE(dynamic_pointer_cast));
+  suite.add(BOOST_TEST_CASE(ambivalent_ptr));
 }
