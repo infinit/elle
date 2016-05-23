@@ -205,10 +205,21 @@ class InstrumentedPeer
 public:
   typedef paxos::Client<T, Version, ServerId> Client;
 
-  InstrumentedPeer(ServerId id, paxos::Server<T, Version, ServerId>& paxos)
+  InstrumentedPeer(ServerId id, paxos::Server<T, Version, ServerId>& paxos,
+                   bool go_through = false)
     : Peer<T, Version, ServerId>(id, paxos)
     , fail(false)
-  {}
+    , propose_barrier("propose barrier")
+    , accept_barrier("accept barrier")
+    , confirm_barrier("confirm barrier")
+  {
+    if (go_through)
+    {
+      this->propose_barrier.open();
+      this->accept_barrier.open();
+      this->confirm_barrier.open();
+    }
+  }
 
   ~InstrumentedPeer() noexcept(true)
   {}
@@ -464,6 +475,68 @@ ELLE_TEST_SCHEDULED(versions_aborted)
   paxos::Client<int, int, int> client_2(2, std::move(peers_2));
   BOOST_CHECK_THROW(client_1.choose(2, 2), elle::Error);
   BOOST_CHECK(!client_2.choose(1, 1));
+}
+
+ELLE_TEST_SCHEDULED(propose_before_current_proposal_acceptation)
+{
+  typedef paxos::Server<int, int, int> Server;
+  typedef paxos::Client<int, int, int> Client;
+  typedef Peer<int, int, int> Peer;
+  typedef Client::Peers Peers;
+  Server server_1(11, {11, 12, 13});
+  Server server_2(12, {11, 12, 13});
+  Server server_3(13, {11, 12, 13});
+  // Client 1.
+  Peers peers_1;
+  peers_1.push_back(elle::make_unique<Peer>(11, server_1));
+  peers_1.push_back(elle::make_unique<Peer>(12, server_2));
+  auto peer_1_3 = new InstrumentedPeer<int, int, int>(13, server_3, true);
+  peers_1.push_back(std::unique_ptr<paxos::Client<int, int, int>::Peer>(peer_1_3));
+  paxos::Client<int, int, int> client_1(1, std::move(peers_1));
+  // Client 2
+  Peers peers_2;
+  peers_2.push_back(elle::make_unique<Peer>(11, server_1));
+  peers_2.push_back(elle::make_unique<Peer>(12, server_2));
+  auto peer_2_3 = new InstrumentedPeer<int, int, int>(13, server_3, true);
+  peers_2.push_back(std::unique_ptr<paxos::Client<int, int, int>::Peer>(peer_2_3));
+  paxos::Client<int, int, int> client_2(2, std::move(peers_2));
+  // Do not confirm first proposal.
+  peer_1_3->confirm_barrier.close();
+  // Block acceptance of the seccond proposal.
+  peer_2_3->accept_barrier.close();
+  // Actions.
+  elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+  {
+    scope.run_background("client_1 choose",
+                         [&]
+                         {
+                           // Client 1 choose 1:1.
+                           client_1.choose(1, 1);
+                         });
+    scope.run_background("client_2 fetch & choose new version",
+                         [&]
+                         {
+                           reactor::wait(peer_1_3->confirm_signal);
+                           // Client 2 choose 2:1.
+                           auto v = client_2.get();
+                           BOOST_CHECK(v);
+                           BOOST_CHECK_EQUAL(*v, 1);
+                           client_2.choose(2, 2);
+                         });
+    scope.run_background("confirm",
+                         [&]
+                         {
+                           reactor::wait(peer_1_3->confirm_signal);
+                           reactor::wait(peer_2_3->propose_signal);
+                           peer_1_3->confirm_barrier.open();
+                           // XXX: Find a better way.
+                           reactor::yield();
+                           reactor::yield();
+                           reactor::yield();
+                           peer_2_3->accept_barrier.open();
+                         });
+    scope.wait();
+  };
 }
 
 ELLE_TEST_SCHEDULED(elect_extend)
@@ -903,6 +976,8 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(versions), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(versions_partial), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(versions_aborted), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(propose_before_current_proposal_acceptation),
+            0, valgrind(1));
   suite.add(BOOST_TEST_CASE(serialization), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(partial_state), 0, valgrind(5));
   suite.add(BOOST_TEST_CASE(non_partial_state), 0, valgrind(5));
