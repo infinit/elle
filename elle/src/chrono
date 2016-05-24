@@ -41,7 +41,7 @@ namespace std
       if (pos == std::string::npos)
         elle::err("missing duration unit");
       if (pos == 0)
-        elle::err("invalide duration: %s");
+        elle::err("invalid duration: %s", pos);
       auto ticks = std::atoi(repr.substr(0, pos).c_str());
       auto const unit = repr.substr(pos);
       if (unit == "d")
