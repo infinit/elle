@@ -66,9 +66,11 @@ namespace elle
                            bool enable_tid,
                            bool enable_time,
                            bool universal_time,
-                           bool microsec_time):
+                           bool microsec_time,
+                           bool warn_err_only):
       Logger(log_level),
-      _output(out)
+      _output(out),
+      _warn_err_only(warn_err_only)
     {
       if (elle::os::inenv("ELLE_LOG_DISPLAY_TYPE"))
       {
@@ -140,6 +142,8 @@ namespace elle
       unsigned int line,
       std::string const& function)
     {
+      if (_warn_err_only && type < Type::warning)
+        return;
       std::string trimmed_message = message;
       boost::algorithm::trim_if(
         trimmed_message,
