@@ -66,7 +66,7 @@ namespace elle
       std::unique_ptr<Indentation>
       clone() override
       {
-        auto res = elle::make_unique<PlainIndentation>();
+        std::unique_ptr<Indentation> res = elle::make_unique<PlainIndentation>();
         return res;
       }
 
