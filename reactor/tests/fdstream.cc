@@ -17,7 +17,7 @@ main(int argc, char** argv)
       ELLE_ASSERT(!stdin_stream.eof());
       char content[1024] = {0};
       stdin_stream.read(content, sizeof(content));
-      ELLE_ASSERT_EQ(stdin_stream.gcount(), expected.size());
+      ELLE_ASSERT_EQ(stdin_stream.gcount(), signed(expected.size()));
       ELLE_ASSERT_EQ(content, expected);
       ELLE_ASSERT(stdin_stream.eof());
     });
