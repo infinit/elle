@@ -112,13 +112,14 @@ namespace reactor
     }
 
     Result
-    rdv_utp(std::string const& host, int port)
+    rdv_utp(std::string const& host, int port, int xorit)
     {
       reactor::network::UTPServer server;
       server.listen(0);
+      server.xorify() = xorit;
       server.rdv_connect("connectivity", "rdv.infinit.sh:7890", 5_sec);
       reactor::network::UTPSocket s(server);
-      s.connect("connectivity-server", {}, 5_sec);
+      s.connect("connectivity-server" + std::to_string(port), {}, 5_sec);
       s << "foo" << std::endl;
       elle::Buffer reply = s.read_until("\n", 5_sec);
       std::string line = reply.string();
@@ -128,5 +129,21 @@ namespace reactor
       return {line.substr(0, p), server.local_endpoint().port()};
     }
 
+    Result
+    utp(std::string const& host, int port, int xorit)
+    {
+      reactor::network::UTPServer server;
+      server.listen(0);
+      reactor::network::UTPSocket s(server);
+      server.xorify() = xorit;
+      s.connect(host, port);
+      s << "foo" << std::endl;
+      elle::Buffer reply = s.read_until("\n", 5_sec);
+      std::string line = reply.string();
+      auto p = line.find(' ');
+      if (line.substr(p+1) != "foo\n")
+        throw std::runtime_error("Unexpected output: " + line);
+      return {line.substr(0, p), server.local_endpoint().port()};
+    }
   }
 }

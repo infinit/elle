@@ -27,7 +27,10 @@ namespace reactor
     nat(std::string const& host, int port);
 
     Result
-    rdv_utp(std::string const& host, int port);
+    rdv_utp(std::string const& host, int port, int xorit = 0);
+
+    Result
+    utp(std::string const& host, int port, int xorit = 0);
   }
 }
 

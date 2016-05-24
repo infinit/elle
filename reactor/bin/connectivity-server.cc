@@ -87,11 +87,12 @@ static void serve_rdv(int port)
   }
 }
 
-static void serve_utp(int port)
+static void serve_utp(int port, int xorit)
 {
   reactor::network::UTPServer server;
+  server.xorify() = xorit;
   server.listen(port);
-  server.rdv_connect("connectivity-server", "rdv.infinit.sh:7890");
+  server.rdv_connect("connectivity-server" + std::to_string(port), "rdv.infinit.sh:7890");
   while (true)
   {
     auto socket = server.accept().release();
@@ -125,8 +126,9 @@ static void run(int argc, char** argv)
   int port = 5456;
   new reactor::Thread("tcp", [port] { serve_tcp(port);});
   new reactor::Thread("udp", [port] { serve_udp(port);});
-  new reactor::Thread("rdv_utp", [port] { serve_utp(port+1);});
-  new reactor::Thread("rdv_utp", [port] { serve_rdv(0);});
+  new reactor::Thread("rdv_utp", [port] { serve_utp(port+1, 0);});
+  new reactor::Thread("rdv_utp_xor", [port] { serve_utp(port+2, 0xFF);});
+  new reactor::Thread("rdv_udp", [port] { serve_rdv(0);});
 }
 
 int main(int argc, char** argv)

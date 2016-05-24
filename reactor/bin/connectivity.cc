@@ -61,22 +61,45 @@ run(int argc, char** argv)
     std::string name,
     std::function<reactor::connectivity::Result(
                        std::string const& host,
-                       uint16_t port)> const& func)
+                       uint16_t port)> const& func,
+    int deltaport = 0)
   {
     std::cerr << "  " << name << " ";
     try
     {
-      auto address = func(host, port);
-      std::cerr << "OK: " << nated(public_ips, address) << std::endl;   \
+      reactor::Thread t(name, [&] {
+          auto address = func(host, port + deltaport);
+          std::cerr << "OK: " << nated(public_ips, address) << std::endl;
+      });
+      if (!reactor::wait(t, 5_sec))
+      {
+        t.terminate_now();
+        throw std::runtime_error("timeout");
+      }
     }
     catch (...)
     {
-      std::cerr << "NO: " << elle::exception_string() << std::endl;     \
+      std::cerr << "NO: " << elle::exception_string() << std::endl;
     }
   };
   report("TCP", reactor::connectivity::tcp);
   report("UDP", reactor::connectivity::udp);
-  report("RDV UTP", reactor::connectivity::rdv_utp);
+  report("UTP-XOR", std::bind(reactor::connectivity::utp,
+                              std::placeholders::_1,
+                              std::placeholders::_2,
+                              0xFF), 2);
+  report("UTP", std::bind(reactor::connectivity::utp,
+                              std::placeholders::_1,
+                              std::placeholders::_2,
+                              0), 1);
+  report("RDV UTP XOR", std::bind(reactor::connectivity::rdv_utp,
+                                  std::placeholders::_1,
+                                  std::placeholders::_2,
+                                  0xFF), 2);
+  report("RDV UTP", std::bind(reactor::connectivity::rdv_utp,
+                                  std::placeholders::_1,
+                                  std::placeholders::_2,
+                                  0), 1);
   std::cerr << "  NAT ";
   try
   {
