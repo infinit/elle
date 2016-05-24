@@ -41,7 +41,7 @@ namespace reactor
     std::unique_ptr<elle::log::Indentation>
     clone() override
     {
-      auto res = elle::make_unique<Indentation>(_factory);
+      std::unique_ptr<elle::log::Indentation> res = elle::make_unique<Indentation>(_factory);
       return res;
     }
 
