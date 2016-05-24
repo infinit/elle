@@ -143,6 +143,7 @@ namespace elle
                std::string const& file,
                unsigned int line,
                std::string const& function) = 0;
+      friend class CompositeLogger;
 
     /*-----------.
     | Components |
