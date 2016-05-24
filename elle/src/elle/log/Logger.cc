@@ -62,6 +62,14 @@ namespace elle
         this->indentation() -= 1;
       }
 
+      virtual
+      std::unique_ptr<Indentation>
+      clone() override
+      {
+        auto res = elle::make_unique<PlainIndentation>();
+        return res;
+      }
+
     private:
       boost::thread_specific_ptr<unsigned int> _indentation;
     };

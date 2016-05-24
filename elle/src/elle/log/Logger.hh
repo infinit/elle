@@ -36,6 +36,9 @@ namespace elle
       virtual
       void
       unindent() = 0;
+      virtual
+      std::unique_ptr<Indentation>
+      clone() = 0;
     };
 
     class Indenter
@@ -102,7 +105,7 @@ namespace elle
     public:
       friend struct detail::Send;
       friend
-      void
+      std::unique_ptr<Logger>
       logger(std::unique_ptr<Logger> logger);
       unsigned int&
       indentation();

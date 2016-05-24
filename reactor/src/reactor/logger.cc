@@ -37,6 +37,14 @@ namespace reactor
       return this->_indentation()->unindent();
     }
 
+    virtual
+    std::unique_ptr<elle::log::Indentation>
+    clone() override
+    {
+      auto res = elle::make_unique<Indentation>(_factory);
+      return res;
+    }
+
   private:
     std::unique_ptr<elle::log::Indentation>&
     _indentation()
