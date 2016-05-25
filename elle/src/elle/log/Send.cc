@@ -64,13 +64,15 @@ namespace elle
       return *_logger();
     }
 
-    void
+    std::unique_ptr<Logger>
     logger(std::unique_ptr<Logger> logger)
     {
       std::unique_lock<std::mutex> ulock{log_mutex()};
       if (_logger() != nullptr && logger != nullptr)
-        logger->_indentation = std::move(_logger()->_indentation);
+        logger->_indentation = _logger()->_indentation->clone();
+      std::unique_ptr<Logger> prev = std::move(_logger());
       _logger() = std::move(logger);
+      return prev;
     }
 
     namespace detail
