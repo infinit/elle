@@ -104,7 +104,11 @@ def configure(zlib_lib,
   cxx_config.lib_path_runtime('.')
 
   # Libraries
-  ldap = drake.cxx.find_library('ldap.h')
+  ldap = None
+  try:
+    ldap = drake.cxx.find_library('ldap.h')
+  except Exception:
+    pass
   if ldap:
     cxx_config.lib('ldap')
     cxx_config.define('HAVE_LDAP=1')
