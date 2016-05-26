@@ -20,41 +20,48 @@ namespace elle
       Attr(std::string const& v);
       std::string value;
     };
-    Attr operator / (Attr const& a, Attr const& b);
+    Attr
+    operator / (Attr const& a, Attr const& b);
 
-    // results = [result];  result = {attrname->attrvalues};  attrvalues=[string]
-    typedef std::vector<std::unordered_map<std::string, std::vector<std::string>>>
-    Result;
+    typedef std::vector<std::string> AttrValues;
+    typedef std::unordered_map<std::string, AttrValues> Result;
+    typedef std::vector<Result> Results;
 
     class LDAPClient
     {
     public:
-      LDAPClient(std::string const& url, Attr const& domain,
-                 std::string const& user, std::string const& password);
+      LDAPClient(std::string const& url,
+                 Attr const& domain,
+                 std::string const& user,
+                 std::string const& password);
       LDAPClient(LDAPClient const& other) = delete;
       LDAPClient(LDAPClient&& other);
       ~LDAPClient();
-      Result search(Attr base, Attr query, std::vector<std::string> const& attrs = {});
+      Results
+      search(Attr base, Attr query, std::vector<std::string> const& attrs = {});
     private:
-      LDAP* _ld;
-      Attr _domain;
+      ELLE_ATTRIBUTE(LDAP*, ld);
+      ELLE_ATTRIBUTE(Attr, domain);
     };
 
-    class CN: public Attr
+    class CN
+      : public Attr
     {
     public:
       using Attr::Attr;
       CN(std::string const& v);
     };
 
-    class OU: public Attr
+    class OU
+      : public Attr
     {
     public:
       using Attr::Attr;
       OU(std::string const& v);
     };
 
-    class DC: public Attr
+    class DC
+      : public Attr
     {
     public:
       using Attr::Attr;

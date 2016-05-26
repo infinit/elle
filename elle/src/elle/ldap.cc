@@ -76,7 +76,7 @@ namespace elle
                          Attr const& domain,
                          std::string const& user,
                          std::string const& password)
-    : _domain(domain)
+      : _domain(domain)
     {
       std::string url(url_);
       auto p = url.find("://");
@@ -90,15 +90,13 @@ namespace elle
         url = url + ":389";
       ELLE_TRACE("Using ldap url %s", url);
       int rc;
-      rc = ldap_initialize(&_ld, url.c_str());
+      rc = ldap_initialize(&this->_ld, url.c_str());
       if(rc != LDAP_SUCCESS)
-      throw elle::Error(
-        elle::sprintf("ldap_initialize: %s", ldap_err2string(rc)));
+        elle::err("ldap_initialize: %s", ldap_err2string(rc));
       int desired_version = 3;
       rc = ldap_set_option(_ld, LDAP_OPT_PROTOCOL_VERSION, &desired_version);
       if (rc != LDAP_OPT_SUCCESS)
-      throw elle::Error(
-        elle::sprintf("ldap_set_option: %s", ldap_err2string(rc)));
+        elle::err("ldap_set_option: %s", ldap_err2string(rc));
       Attr authuser;
       if (user.find('=') == user.npos)
         authuser = CN(user) / domain;
@@ -115,68 +113,66 @@ namespace elle
       rc = ldap_sasl_bind_s(_ld, authuser.value.c_str(),
         0, &cred, NULL, NULL, NULL);
       if (rc != LDAP_SUCCESS)
-      throw elle::Error(
-        elle::sprintf("ldap_sasl_bind: %s", ldap_err2string(rc)));
+        elle::err("ldap_sasl_bind: %s", ldap_err2string(rc));
     }
 
     LDAPClient::LDAPClient(LDAPClient&& other)
-    : _ld(other._ld)
-    , _domain(other._domain)
+      : _ld(other._ld)
+      , _domain(other._domain)
     {
       other._ld = nullptr;
     }
 
     LDAPClient::~LDAPClient()
     {
-      if (_ld)
-        ldap_unbind_ext_s(_ld, 0, 0);
+      if (this->_ld)
+        ldap_unbind_ext_s(this->_ld, 0, 0);
     }
 
-    Result
-    LDAPClient::search(Attr base, Attr query, std::vector<std::string> const& attrs)
+    Results
+    LDAPClient::search(Attr base,
+                       Attr query,
+                       std::vector<std::string> const& attrs)
     {
       std::vector<char*> cattrs;
-      cattrs.resize(attrs.size()+1);
-      for (int i=0; i<signed(attrs.size()); ++i)
+      cattrs.resize(attrs.size() + 1);
+      for (int i = 0; i < signed(attrs.size()); ++i)
         cattrs[i] = (char*)attrs[i].c_str();
       cattrs[attrs.size()] = nullptr;
-      base = base / _domain;
+      base = base / this->_domain;
       LDAPMessage* msg;
       if (query.value.empty())
         query.value = "(objectclass=*)";
       int rc = ldap_search_ext_s(_ld, base.value.c_str(),
-        LDAP_SCOPE_SUBTREE,
-        query.value.c_str(),
-        &cattrs.front(), 0,
-        NULL, NULL, NULL,
-        0, &msg
-        );
+                                 LDAP_SCOPE_SUBTREE,
+                                 query.value.c_str(),
+                                 &cattrs.front(), 0,
+                                 NULL, NULL, NULL,
+                                 0, &msg);
       if (rc != LDAP_SUCCESS)
-      throw elle::Error(
-        elle::sprintf("ldap_search: %s", ldap_err2string(rc)));
-      Result res;
+        elle::err("ldap_search: %s", ldap_err2string(rc));
+      Results res;
       LDAPMessage* entry;
-      for (entry = ldap_first_entry(_ld, msg); entry != NULL;
-        entry = ldap_next_entry(_ld, entry))
+      for (entry = ldap_first_entry(this->_ld, msg);
+           entry != NULL;
+           entry = ldap_next_entry(this->_ld, entry))
       {
-        std::unordered_map<std::string, std::vector<std::string>> p;
+        Result p;
         BerElement* ber;
-        char* dn = ldap_get_dn(_ld, entry);
+        char* dn = ldap_get_dn(this->_ld, entry);
         p["dn"].push_back(dn);
         ldap_memfree(dn);
         const char* attr;
-        for( attr = ldap_first_attribute(_ld, entry, &ber); attr != NULL;
-          attr = ldap_next_attribute(_ld, entry, ber))
+        for( attr = ldap_first_attribute(this->_ld, entry, &ber);
+             attr != NULL;
+             attr = ldap_next_attribute(this->_ld, entry, ber))
         {
           std::vector<std::string> vals;
           berval ** bvals = ldap_get_values_len(_ld, entry, attr);
           if (bvals)
-          {
-            for (int i=0; bvals[i] != NULL; ++i)
-            {
-              vals.emplace_back(bvals[i]->bv_val, bvals[i]->bv_val + bvals[i]->bv_len);
-            }
-          }
+            for (int i = 0; bvals[i] != NULL; ++i)
+              vals.emplace_back(bvals[i]->bv_val,
+                                bvals[i]->bv_val + bvals[i]->bv_len);
           p[attr] = std::move(vals);
         }
         res.emplace_back(std::move(p));
