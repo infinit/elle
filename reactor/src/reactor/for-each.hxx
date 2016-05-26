@@ -16,7 +16,7 @@ namespace reactor
     {
       for (auto& elt: c)
         scope.run_background(
-          elle::sprintf("%s: for_each: %s",
+          elle::sprintf("%s: for_each: %f",
                         reactor::scheduler().current()->name(),
                         elt),
           [&]
