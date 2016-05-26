@@ -11,6 +11,7 @@ lib_static = None
 lib_dynamic = None
 library = None
 python = None
+ldap = None
 
 rule_build = None
 rule_check = None
@@ -40,6 +41,7 @@ def configure(zlib_lib,
   global python
   global rule_build, rule_check, rule_install, rule_tests
   global python_plugin_datetime
+  global ldap
 
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
   cxx_config = drake.cxx.Config(cxx_config) or drake.cxx.Config()
@@ -102,6 +104,16 @@ def configure(zlib_lib,
   cxx_config.lib_path_runtime('.')
 
   # Libraries
+  ldap = None
+  try:
+    ldap = drake.cxx.find_library('ldap.h')
+  except Exception:
+    pass
+  if ldap:
+    cxx_config.lib('ldap')
+    cxx_config.define('HAVE_LDAP=1')
+    config.define('HAVE_LDAP=1')
+
   zlib_lib = drake.copy(zlib_lib, 'lib', strip_prefix = True)
   cxx_config += zlib_config
   libarchive_lib = drake.copy(libarchive_lib, 'lib',
@@ -300,6 +312,11 @@ def configure(zlib_lib,
     'src/utility',
     'src/vector',
   ]]
+  if ldap:
+    sources += drake.nodes(
+      'src/elle/ldap.hh',
+      'src/elle/ldap.cc',
+    )
   version = drake.node('src/elle/elle.hh')
   CxxVersionGenerator(output = version, git = drake.git.Git(),
                       prefix = 'ELLE')
