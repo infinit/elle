@@ -14,14 +14,20 @@ namespace elle
 {
   namespace ldap
   {
-    DC::DC(std::string const& v)
-    {
-      std::vector<std::string> comps;
-      boost::algorithm::split(comps, v, boost::is_any_of("."));
-      for (auto& s: comps)
-        s = "dc=" + s;
-      value = boost::algorithm::join(comps, ",");
-    }
+    /*-----.
+    | Attr |
+    `-----*/
+
+    Attr::Attr()
+    {}
+
+    Attr::Attr(std::string const& k, std::string const& v)
+      : value(k + "=" + v)
+    {}
+
+    Attr::Attr(std::string const& v)
+      : value(v)
+    {}
 
     Attr operator / (Attr const& a, Attr const& b)
     {
@@ -32,6 +38,39 @@ namespace elle
         res.value = res.value.substr(0, res.value.size()-1);
       return res;
     }
+
+    /*---.
+    | CN |
+    `---*/
+
+    CN::CN(std::string const& v)
+      : Attr("cn", v)
+    {}
+
+    /*---.
+    | OU |
+    `---*/
+
+    OU::OU(std::string const& v)
+      : Attr("ou", v)
+    {}
+
+    /*---.
+    | DC |
+    `---*/
+
+    DC::DC(std::string const& v)
+    {
+      std::vector<std::string> comps;
+      boost::algorithm::split(comps, v, boost::is_any_of("."));
+      for (auto& s: comps)
+        s = "dc=" + s;
+      value = boost::algorithm::join(comps, ",");
+    }
+
+    /*-----------.
+    | LDAPClient |
+    `-----------*/
 
     LDAPClient::LDAPClient(std::string const& url_,
                          Attr const& domain,

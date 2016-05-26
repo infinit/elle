@@ -15,10 +15,9 @@ namespace elle
     class Attr
     {
     public:
-      Attr() {}
-      Attr(std::string const& k, std::string const& v)
-      : value(k + "=" + v) {}
-      Attr(std::string const& v) : value(v) {}
+      Attr();
+      Attr(std::string const& k, std::string const& v);
+      Attr(std::string const& v);
       std::string value;
     };
     Attr operator / (Attr const& a, Attr const& b);
@@ -45,14 +44,16 @@ namespace elle
     {
     public:
       using Attr::Attr;
-      CN(std::string const& v) : Attr("cn", v) {}
+      CN(std::string const& v);
     };
+
     class OU: public Attr
     {
     public:
       using Attr::Attr;
-      OU(std::string const& v) : Attr("ou", v) {}
+      OU(std::string const& v);
     };
+
     class DC: public Attr
     {
     public:
