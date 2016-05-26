@@ -1,9 +1,11 @@
 #ifndef ELLE_LDAP_HH
 # define ELLE_LDAP_HH
 
-#include <string>
-#include <vector>
-#include <unordered_map>
+# include <string>
+# include <vector>
+# include <unordered_map>
+
+# include <elle/attribute.hh>
 
 struct ldap_ldap;
 typedef struct ldap_ldap LDAP;
