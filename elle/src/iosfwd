@@ -1,0 +1,14 @@
+// -*- c++ -*-
+#ifndef ELLE_IOSFWD
+# define ELLE_IOSFWD
+
+# include_next <iosfwd>
+
+namespace std
+{
+  template <typename charT, typename traits>
+  bool
+  is_fixed(basic_ostream<charT, traits> const& o);
+}
+
+#endif

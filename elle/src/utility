@@ -2,16 +2,23 @@
 #ifndef ELLE_UTILITY
 # define ELLE_UTILITY
 
+# include_next <iosfwd>
 # include_next <utility>
 # include <elle/printf-fwd.hh>
 
 namespace std
 {
+  bool
+  fixed();
+
   template <typename charT, typename traits, typename T1, typename T2>
   std::basic_ostream<charT, traits>&
   operator <<(std::basic_ostream<charT, traits>& o, std::pair<T1, T2> const& p)
   {
-    elle::fprintf(o, "(%s, %s)", p.first, p.second);
+    if (is_fixed(o))
+      elle::fprintf(o, "(%f, %f)", p.first, p.second);
+    else
+      elle::fprintf(o, "(%s, %s)", p.first, p.second);
     return o;
   }
 }
