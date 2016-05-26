@@ -160,11 +160,12 @@ namespace infinit
       if (this->version() >= elle::Version(0, 2, 0))
       {
         ELLE_TRACE("%s: send local version '%s'", *this, this->version())
-          elle::serialization::json::serialize(this->version(), stream);
+          elle::serialization::binary::serialize(this->version(), stream);
+        stream.flush();
         ELLE_TRACE("%s: read peer version", *this)
         {
           auto peer_version
-            = elle::serialization::json::deserialize<elle::Version>(
+            = elle::serialization::binary::deserialize<elle::Version>(
               stream);
           ELLE_DEBUG("peer version: %s", peer_version);
           this->_version = std::min(peer_version, this->version());
