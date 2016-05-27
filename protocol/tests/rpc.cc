@@ -15,6 +15,13 @@
 
 ELLE_LOG_COMPONENT("infinit.protocol.test");
 
+struct TestConfig
+{
+  bool sync;
+  bool checksum;
+  elle::Version version;
+};
+
 static
 reactor::Thread* suicide_thread(nullptr);
 
@@ -46,8 +53,8 @@ struct DummyRPC:
 class RPCServer
 {
 public:
-  RPCServer(bool sync)
-    : _sync(sync)
+  RPCServer(TestConfig config)
+    : _config(config)
     , _counter(0)
     , _server()
     , _thread(elle::sprintf("%s runner", *this), [this] { this->_run(); })
@@ -77,7 +84,7 @@ public:
   {
     auto& sched = *reactor::Scheduler::scheduler();
     auto socket = this->_server.accept();
-    infinit::protocol::Serializer s(sched, *socket);
+    infinit::protocol::Serializer s(sched, *socket, _config.version, _config.checksum);
     infinit::protocol::ChanneledStream channels(sched, s);
 
     DummyRPC rpc(channels);
@@ -108,7 +115,7 @@ public:
     rpc.wait = [this] { ++this->_counter; reactor::sleep(); };
     try
     {
-      if (this->_sync)
+      if (this->_config.sync)
         rpc.run();
       else
         rpc.parallel_run();
@@ -117,7 +124,7 @@ public:
     {}
   }
 
-  ELLE_ATTRIBUTE_R(bool, sync);
+  ELLE_ATTRIBUTE_R(TestConfig, config);
   ELLE_ATTRIBUTE_R(int, counter);
   ELLE_ATTRIBUTE_RX(reactor::Barrier, count_barrier)
   ELLE_ATTRIBUTE(reactor::network::TCPServer, server);
@@ -128,11 +135,11 @@ public:
 | Basic |
 `------*/
 
-ELLE_TEST_SCHEDULED(rpc, (bool, sync))
+ELLE_TEST_SCHEDULED(rpc, (TestConfig, config))
 {
-  RPCServer server(sync);
+  RPCServer server(config);
   reactor::network::TCPSocket socket("127.0.0.1", server.port());
-  infinit::protocol::Serializer s(socket);
+  infinit::protocol::Serializer s(socket, config.version, config.checksum);
   infinit::protocol::ChanneledStream channels(s);
   DummyRPC rpc(channels);
   BOOST_CHECK_EQUAL(rpc.answer(), 42);
@@ -145,15 +152,15 @@ ELLE_TEST_SCHEDULED(rpc, (bool, sync))
 | Terminate |
 `----------*/
 
-ELLE_TEST_SCHEDULED(terminate, (bool, sync))
+ELLE_TEST_SCHEDULED(terminate, (TestConfig, config))
 {
-  RPCServer server(sync);
+  RPCServer server(config);
   reactor::Thread thread(
     "judge dread",
     [&]
     {
       reactor::network::TCPSocket socket("127.0.0.1", server.port());
-      infinit::protocol::Serializer s(socket);
+      infinit::protocol::Serializer s(socket, config.version, config.checksum);
       infinit::protocol::ChanneledStream channels(s);
       DummyRPC rpc(channels);
       suicide_thread = &thread;
@@ -166,11 +173,11 @@ ELLE_TEST_SCHEDULED(terminate, (bool, sync))
 | Parallel |
 `---------*/
 
-ELLE_TEST_SCHEDULED(parallel, (bool, sync))
+ELLE_TEST_SCHEDULED(parallel, (TestConfig, config))
 {
-  RPCServer server(sync);
+  RPCServer server(config);
   reactor::network::TCPSocket socket("127.0.0.1", server.port());
-  infinit::protocol::Serializer s(socket);
+  infinit::protocol::Serializer s(socket, config.version, config.checksum);
   infinit::protocol::ChanneledStream channels(s);
   DummyRPC rpc(channels);
   std::vector<reactor::Thread*> threads;
@@ -179,20 +186,20 @@ ELLE_TEST_SCHEDULED(parallel, (bool, sync))
   {
     for (int i = 1; i <= 3; ++i)
     {
-      if (sync)
+      if (config.sync)
         inserted.push_back(i);
       scope.run_background(
         elle::sprintf("counter %s", i),
         [&]
         {
-          if (sync)
+          if (config.sync)
             inserted.remove(rpc.count());
           else
             BOOST_CHECK_EQUAL(rpc.count(), 3);
         });
     }
     // Let the RPC get executed once.
-    if (!sync)
+    if (!config.sync)
       do
       {
         reactor::yield();
@@ -208,11 +215,11 @@ ELLE_TEST_SCHEDULED(parallel, (bool, sync))
 | Disconnection |
 `--------------*/
 
-ELLE_TEST_SCHEDULED(disconnection, (bool, sync))
+ELLE_TEST_SCHEDULED(disconnection, (TestConfig, config))
 {
-  RPCServer server(sync);
+  RPCServer server(config);
   reactor::network::TCPSocket socket("127.0.0.1", server.port());
-  infinit::protocol::Serializer s(socket);
+  infinit::protocol::Serializer s(socket, config.version, config.checksum);
   infinit::protocol::ChanneledStream channels(s);
   DummyRPC rpc(channels);
   reactor::Thread call_1("call 1",
@@ -229,7 +236,7 @@ ELLE_TEST_SCHEDULED(disconnection, (bool, sync))
   {
     reactor::yield();
   }
-  while (server.counter() < (sync ? 1 : 2));
+  while (server.counter() < (config.sync ? 1 : 2));
   server.terminate();
   reactor::wait({&call_1, &call_2});
 }
@@ -244,16 +251,24 @@ ELLE_TEST_SCHEDULED(disconnection, (bool, sync))
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
-#define TEST(Name)                                                      \
-  auto BOOST_PP_CAT(Name, _sync) = std::bind(Name, true);               \
-  suite.add(BOOST_TEST_CASE(BOOST_PP_CAT(Name, _sync)),                 \
-            0, valgrind(1, 10));                                        \
-  auto BOOST_PP_CAT(Name, _async) = std::bind(Name, false);             \
-  suite.add(BOOST_TEST_CASE(BOOST_PP_CAT(Name, _async)),                \
-            0, valgrind(1, 10));
-
-  TEST(rpc);
-  TEST(terminate);
-  TEST(parallel);
-  TEST(disconnection);
+  TestConfig configs[] = {
+    {true,  false, elle::Version(0, 1, 0)},
+    {true,  false, elle::Version(0, 2, 0)},
+    {true,  true,  elle::Version(0, 1, 0)},
+    {true,  true,  elle::Version(0, 2, 0)},
+    {false, true,  elle::Version(0, 1, 0)},
+    {false, true,  elle::Version(0, 2, 0)},
+    {false, false, elle::Version(0, 1, 0)},
+    {false, false, elle::Version(0, 2, 0)},
+  };
+  auto test = [&](std::string const& name, std::function<void(TestConfig)> f)
+  {
+    for (int i=0; i<8; ++i)
+      suite.add(
+        BOOST_TEST_CASE(std::bind(f, configs[i])), 0, valgrind(1, 10));
+  };
+  test("rpc", &rpc);
+  test("terminate", &terminate);
+  test("parallel", &parallel);
+  test("disconnection", &disconnection);
 }
