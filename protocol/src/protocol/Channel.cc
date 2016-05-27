@@ -46,6 +46,12 @@ namespace infinit
       if (this->_id != 0)
         {
           ELLE_DEBUG_SCOPE("close channel %s", this->_id);
+          if (!this->_packets.empty())
+            ELLE_TRACE("closing channel %s with %s packets in queue.", this->_id,
+                      this->_packets.size());
+          if (!this->_available.waiters().empty())
+            ELLE_TRACE("closing channel %s with %s waiters in line.", this->_id,
+                      this->_available.waiters().size());
           ELLE_ASSERT_NEQ(this->_backend._channels.find(this->_id),
                           this->_backend._channels.end());
           this->_backend._channels.erase(this->_id);

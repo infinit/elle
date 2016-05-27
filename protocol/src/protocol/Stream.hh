@@ -58,7 +58,7 @@ namespace infinit
 
       static
       uint32_t
-      uint32_get(std::istream& s);
+      uint32_get(std::istream& s, int first_char = -1);
 
       static
       void

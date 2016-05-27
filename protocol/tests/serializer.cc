@@ -1,5 +1,7 @@
 #include <protocol/exceptions.hh>
 #include <protocol/Serializer.hh>
+#include <protocol/ChanneledStream.hh>
+#include <protocol/Channel.hh>
 
 #include <cryptography/random.hh>
 
@@ -853,6 +855,109 @@ ELLE_TEST_SCHEDULED(message_v020)
     });
 }
 
+ELLE_TEST_SCHEDULED(interruption2)
+{
+  // Check that terminating a Channel.read() call does not lose an unrelated
+  // packet.
+  namespace ip = infinit::protocol;
+
+  reactor::Barrier pinger_block;
+  dialog<Connector>(
+    elle::Version{0, 2, 0},
+    false,
+    [] (Connector&)
+    {
+    },
+    [&] (infinit::protocol::Serializer& s)
+    { // echo server, sending partial result until pinger_block is opened.
+      ip::ChanneledStream stream(s);
+      while (true)
+      {
+        ELLE_TRACE("accept");
+        ip::Channel c = stream.accept();
+        auto buf = c.read();
+
+        uint32_t len = buf.size() + 4;
+        len = htonl(len);
+        s.stream().write((const char*)&len, 4);
+        uint32_t id = c.id();
+        id = htonl(id);
+        s.stream().write((const char*)&id, 4);
+        s.stream().write((const char*)buf.contents(), buf.size()-1);
+        ELLE_TRACE("partial write, wait for signal");
+        reactor::wait(pinger_block);
+        ELLE_TRACE("finish write");
+        pinger_block.close();
+        s.stream().write((const char*)buf.contents() + buf.size()-1, 1);
+        s.stream().flush();
+        ELLE_TRACE("packet transmited");
+      }
+    },
+    [&] (infinit::protocol::Serializer& s)
+    {
+      ip::ChanneledStream stream(s);
+      ip::Channel c(stream);
+      c.write(elle::Buffer("foo"));
+      reactor::Barrier b;
+      b.close();
+      reactor::Thread t("c2read", [&] {
+          ip::Channel c2(stream);
+          ELLE_TRACE("open b and read");
+          b.open();
+          auto buf = c2.read();
+          elle::unreachable();
+      });
+      ELLE_TRACE("Wait b");
+      b.wait();
+      pinger_block.open();
+      ELLE_TRACE("kill t");
+      t.terminate_now();
+      ELLE_TRACE("t is gone");
+      ip::Channel c2(stream);
+      c2.write(elle::Buffer("bar"));
+      pinger_block.open();
+      ELLE_TRACE("read on %s", c.id());
+      auto buf = c.read();
+      BOOST_CHECK_EQUAL(buf.string(), "foo");
+      // just read some more to check we're still on
+      ip::Channel c3(stream);
+      c3.write(elle::Buffer("baz"));
+      while (pinger_block.opened())
+        reactor::yield();
+      pinger_block.open();
+      ELLE_TRACE("read c3");
+      buf = c3.read();
+      BOOST_CHECK_EQUAL(buf.string(), "baz");
+
+      // check killing reader thread before any data is read
+      b.close();
+      reactor::Thread t2("read nothing", [&] {
+          ip::Channel c2(stream);
+          ELLE_TRACE("open b and read");
+          b.open();
+          auto buf = c2.read();
+          elle::unreachable();
+      });
+      ELLE_TRACE("Wait b");
+      b.wait();
+      t2.terminate_now();
+      // check everything still works
+      ip::Channel c4(stream);
+      c4.write(elle::Buffer("maz"));
+      while (pinger_block.opened())
+        reactor::yield();
+      pinger_block.open();
+      ELLE_TRACE("read c4");
+      buf = c4.read();
+      BOOST_CHECK_EQUAL(buf.string(), "maz");
+    },
+    [&] (reactor::Thread& t1, reactor::Thread& t2, Connector& connector)
+    {
+      reactor::wait(t2);
+      t1.terminate_now();
+    });
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -862,6 +967,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(connection_lost_sender), 0, valgrind(3, 10));
   suite.add(BOOST_TEST_CASE(corruption), 0, valgrind(3, 10));
   suite.add(BOOST_TEST_CASE(interruption), 0, valgrind(6, 10));
+  suite.add(BOOST_TEST_CASE(interruption2), 0, valgrind(3, 10));
   suite.add(BOOST_TEST_CASE(termination), 0, valgrind(3, 10));
   suite.add(BOOST_TEST_CASE(eof), 0, 3);
   suite.add(BOOST_TEST_CASE(message_v020), 0, 3);

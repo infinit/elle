@@ -270,11 +270,14 @@ namespace infinit
     static
     elle::Buffer
     read(Serializer::Inner& stream,
-         boost::optional<uint32_t> size = boost::none)
+         boost::optional<uint32_t> size = boost::none,
+         int first_char = -1)
     {
       ELLE_DEBUG_SCOPE("read %s (size: %s)", stream, size);
+      if (first_char != -1 && size)
+        ELLE_ABORT("read with extra char and known size is not supported");
       if (!size)
-        size = Serializer::Super::uint32_get(stream);
+        size = Serializer::Super::uint32_get(stream, first_char);
       ELLE_DUMP("expected size: %s", *size);
       elle::Buffer content(*size);
       read(stream, content, *size);
@@ -353,12 +356,22 @@ namespace infinit
     elle::Buffer
     Version010Impl::_read()
     {
+      int c = -1;
+      {
+        reactor::Thread::Interruptible interruptible;
+        c = this->_stream.get();
+      }
+      if (c == -1)
+        throw Serializer::EOF();
       elle::Buffer hash;
       if (this->_checksum)
+      {
         ELLE_DEBUG("read checksum")
-          hash = infinit::protocol::read(this->_stream);
+          hash = infinit::protocol::read(this->_stream, {}, c);
+        c = -1;
+      }
       ELLE_DEBUG("read actual data");
-      auto packet = infinit::protocol::read(this->_stream);
+      auto packet = infinit::protocol::read(this->_stream, {}, c);
       ELLE_DUMP("packet content: '%f'", packet);
       // Check checksums match.
       if (this->_checksum)
@@ -436,14 +449,22 @@ namespace infinit
     elle::Buffer
     Version020Impl::_read()
     {
+      int c = -1;
+      {
+        reactor::Thread::Interruptible interruptible;
+        c = this->_stream.get();
+      }
+      if (c == -1)
+        throw Serializer::EOF();
       elle::Buffer hash;
       if (this->_checksum)
       {
         ELLE_DEBUG("read checksum")
-          hash = infinit::protocol::read(this->_stream);
+          hash = infinit::protocol::read(this->_stream, {}, c);
+        c = -1;
       }
       // Get the total size.
-      uint32_t total_size(Serializer::Super::uint32_get(this->_stream));
+      uint32_t total_size(Serializer::Super::uint32_get(this->_stream, c));
       ELLE_DEBUG("packet size: %s", total_size);
       elle::Buffer packet(static_cast<std::size_t>(total_size));
       elle::Buffer::Size offset = 0;
