@@ -74,16 +74,26 @@ namespace infinit
     }
 
     uint32_t
-    Stream::uint32_get(std::istream& s)
+    Stream::uint32_get(std::istream& s, int first_char)
     {
-      uint32_t res;
+      uint32_t res = 0;
       elle::IOStreamClear clearer(s);
       // FIXME: should rethrow the underlying streambuf error.
       if (!s.good())
         throw elle::Exception("stream is not good");
-      s.read(reinterpret_cast<char*>(&res), sizeof(res));
-      if (s.gcount() != sizeof(res))
+      if (first_char != -1)
+      {
+        res = first_char + ((unsigned int)first_char << 24);
+        s.read(reinterpret_cast<char*>(&res)+1, sizeof(res)-1);;
+      }
+      else
+      {
+        s.read(reinterpret_cast<char*>(&res), sizeof(res));
+      }
+      if (s.gcount() != signed(sizeof(res)) - ((first_char == -1) ? 0 : 1))
+      {
         throw Serializer::EOF();
+      }
       return ntohl(res);
     }
   }
