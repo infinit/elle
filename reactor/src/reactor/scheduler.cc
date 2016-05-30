@@ -7,6 +7,7 @@
 #include <elle/log.hh>
 #include <elle/memory.hh>
 #include <elle/Plugin.hh>
+#include <elle/os/environ.hh>
 
 #include <reactor/BackgroundOperation.hh>
 #include <reactor/backend/backend.hh>
@@ -60,6 +61,34 @@ namespace reactor
     this->_eptr = nullptr;
     plugins::logger_indentation.load();
     plugins::logger_tags.load();
+    // Thread dumper on SIGUSR2.
+    if (elle::os::inenv("REACTOR_SCHEDULER_DEBUG"))
+    {
+      this->signal_handle(
+        SIGUSR2,
+        [&]
+        {
+          auto print_thread = [&] (reactor::Thread const& thread)
+          {
+            std::cerr << "  " << thread << " (" << thread.state() << ")" << std::endl;
+            std::cerr << "    wating:" << std::endl;
+            for (auto t: thread.waited())
+              std::cerr << "      " << *t << std::endl;
+            std::cerr << "    waiters:" << std::endl;
+            for (auto t: thread.waiters())
+              std::cerr << "      " << *(t.first) << std::endl;
+          };
+          std::cerr << "== FROZEN THREADS ==" << std::endl;
+          for (auto thread: this->_frozen)
+            print_thread(*thread);
+          std::cerr << "== RUNNING THREADS ==" << std::endl;
+          for (auto thread: this->_running)
+            print_thread(*thread);
+          std::cerr << "== STARTING THREADS ==" << std::endl;
+          for (auto thread: this->_starting)
+            print_thread(*thread);
+        });
+    }
   }
 
   Scheduler::~Scheduler()
