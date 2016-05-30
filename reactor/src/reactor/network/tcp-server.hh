@@ -31,7 +31,7 @@ namespace reactor
     public:
       using Super::listen;
       void
-      listen(int port);
+      listen(int port, bool enable_ipv6=false);
       int
       port() const;
     protected:

@@ -20,10 +20,25 @@ namespace reactor
   {
 static uint64 on_sendto(utp_callback_arguments* args)
 {
+  UTPServer::EndPoint ep;
   struct sockaddr_in *sin = (struct sockaddr_in *) args->address;
-  UTPServer::EndPoint ep(
-    boost::asio::ip::address::from_string(inet_ntoa(sin->sin_addr)),
-    ntohs(sin->sin_port));
+  if (sin->sin_family == AF_INET)
+  {
+    ep = UTPServer::EndPoint(
+      boost::asio::ip::address::from_string(inet_ntoa(sin->sin_addr)),
+      ntohs(sin->sin_port));
+  }
+  else if (sin->sin_family == AF_INET6)
+  {
+    struct sockaddr_in6 *sin = (struct sockaddr_in6 *) args->address;
+    std::array<unsigned char, 16> addr {0};
+    memcpy(addr.data(), sin->sin6_addr.s6_addr, 16);
+    ep = UTPServer::EndPoint(
+      boost::asio::ip::address_v6(addr),
+      ntohs(sin->sin6_port));
+  }
+  else
+    throw elle::Error(elle::sprintf("unknown protocol %s", sin->sin_family));
   UTPServer* server = (UTPServer*)utp_context_get_userdata(args->context);
   ELLE_ASSERT(server);
   ELLE_DEBUG("on_sendto %s %s", args->len, ep);
@@ -375,14 +390,24 @@ void UTPSocket::connect(std::string const& id,
 void UTPSocket::connect(std::string const& host, int port)
 {
   auto lock = _pending_operations.lock();
-  struct addrinfo * ai;
+  struct addrinfo * ai = nullptr;
   addrinfo hints;
   memset(&hints, 0, sizeof(hints));
 	hints.ai_family = AF_INET;
 	hints.ai_socktype = SOCK_DGRAM;
 	hints.ai_protocol = IPPROTO_UDP;
-  getaddrinfo(host.c_str(), std::to_string(port).c_str(),
+  int res = getaddrinfo(host.c_str(), std::to_string(port).c_str(),
               &hints, &ai);
+  if (res)
+  {
+    if (ai)
+      freeaddrinfo(ai);
+    hints.ai_family = AF_INET6;
+    res = getaddrinfo(host.c_str(), std::to_string(port).c_str(),
+                &hints, &ai);
+  }
+  if (res)
+    throw elle::Error("Failed to resolve " + host);
   utp_connect(_socket, ai->ai_addr, ai->ai_addrlen);
   freeaddrinfo(ai);
   ELLE_DEBUG("waiting for connect...");
@@ -540,9 +565,12 @@ UTPSocket::EndPoint UTPSocket::peer()
     ntohs(addr.sin_port));
 }
 
-void UTPServer::listen(int port)
+void UTPServer::listen(int port, bool ipv6)
 {
-  listen(EndPoint(boost::asio::ip::address(), port));
+  if (ipv6)
+    listen(EndPoint(boost::asio::ip::address_v6::any(), port));
+  else
+    listen(EndPoint(boost::asio::ip::address_v4::any(), port));
 }
 
 void UTPServer::_check_icmp()

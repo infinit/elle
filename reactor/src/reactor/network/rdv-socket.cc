@@ -74,7 +74,14 @@ namespace reactor
         Size sz = UDPSocket::receive_from(buffer, endpoint, timeout);
         if (sz < 8)
           return sz;
-        if (endpoint == _server && !_server_reached.opened())
+        bool server_hit = (endpoint == _server);
+        auto addr = endpoint.address();
+        if (endpoint.port() == _server.port()
+          && addr.is_v6()
+          && addr.to_v6().is_v4_mapped()
+          && addr.to_v6().to_v4() == _server.address())
+          server_hit = true;
+        if (!_server_reached.opened() &&  server_hit)
         {
           ELLE_TRACE("message from server, open reached");
           _server_reached.open();

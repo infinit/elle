@@ -40,9 +40,10 @@ namespace reactor
     }
 
     void
-    UDPServer::listen(int port)
+    UDPServer::listen(int port, bool enable_ipv6)
     {
-      return listen(EndPoint(boost::asio::ip::udp::v4(), port));
+      return listen(EndPoint(
+        enable_ipv6 ? boost::asio::ip::udp::v6() : boost::asio::ip::udp::v4(), port));
     }
 
     /*----------.

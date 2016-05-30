@@ -29,7 +29,7 @@ namespace reactor
       | Listening |
       `----------*/
       public:
-        void listen(int port);
+        void listen(int port, bool enable_ipv6=false);
         void listen(const EndPoint& end_point);
 
       /*----------.

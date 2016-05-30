@@ -24,9 +24,12 @@ namespace reactor
     `----------*/
 
     void
-    TCPServer::listen(int port)
+    TCPServer::listen(int port, bool enable_ipv6)
     {
-      this->listen(EndPoint(boost::asio::ip::tcp::v4(), port));
+      if (enable_ipv6)
+        this->listen(EndPoint(boost::asio::ip::tcp::v6(), port));
+      else
+        this->listen(EndPoint(boost::asio::ip::tcp::v4(), port));
     }
 
     TCPServer::EndPoint

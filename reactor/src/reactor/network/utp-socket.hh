@@ -22,7 +22,7 @@ namespace reactor
       ~UTPServer();
       typedef boost::asio::ip::udp::endpoint EndPoint;
       void
-      listen(int port);
+      listen(int port, bool ipv6 = false);
       void
       listen(EndPoint const& end_point);
       EndPoint
