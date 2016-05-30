@@ -185,6 +185,7 @@ std::unique_ptr<UTPSocket> UTPServer::accept()
 }
 
 UTPServer::UTPServer()
+  : _accept_barrier("UTPServer accept")
 {
   _xorify = 0;
   _sending = false;
@@ -362,6 +363,9 @@ UTPSocket::UTPSocket(UTPServer& server, utp_socket* socket, bool open)
 , _socket(socket)
 , _open(open)
 , _closing(false)
+, _read_barrier("utp socket read")
+, _write_barrier("utp socket write")
+, _connect_barrier("connect barrier")
 {
   utp_set_userdata(_socket, this);
   if (open)
