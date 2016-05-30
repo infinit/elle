@@ -6,6 +6,7 @@
 # include <cryptography/random.hh>
 
 # include <reactor/Scope.hh>
+# include <reactor/for-each.hh>
 # include <reactor/scheduler.hh>
 
 namespace athena
@@ -92,22 +93,6 @@ namespace athena
       }
     }
 
-    template <typename C, typename F>
-    void
-    for_each_parallel(C const& c, F const& f)
-    {
-      elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
-      {
-        for (auto& elt: c)
-          scope.run_background(
-            elle::sprintf("%s: %s",
-                          reactor::scheduler().current()->name(),
-                          elt),
-            [&] { f(elt, scope); });
-        reactor::wait(scope);
-      };
-    }
-
     template <typename T, typename Version, typename ClientId>
     boost::optional<typename Client<T, Version, ClientId>::Accepted>
     Client<T, Version, ClientId>::choose(
@@ -129,7 +114,7 @@ namespace athena
         ELLE_DEBUG("%s: send proposal: %s", *this, proposal)
         {
           int reached = 0;
-          for_each_parallel(
+          reactor::for_each_parallel(
             this->_peers,
             [&] (std::unique_ptr<Peer> const& peer,
                  reactor::Scope&) -> void
@@ -139,6 +124,7 @@ namespace athena
                 ELLE_DEBUG_SCOPE("%s: send proposal %s to %s",
                                  *this, proposal, peer);
                 if (auto p = peer->propose(q, proposal))
+                {
                   if (!previous || previous->proposal < p->proposal)
                   {
                     // FIXME: what if previous was accepted and p is not ?
@@ -146,6 +132,7 @@ namespace athena
                                      *this, p->proposal, p->value);
                     previous = std::move(p);
                   }
+                }
                 ++reached;
               }
               catch (typename Peer::Unavailable const& e)
@@ -153,10 +140,12 @@ namespace athena
                 ELLE_TRACE("%s: peer %s unavailable: %s",
                            *this, peer, e.what());
               }
-            });
+            },
+            std::string("send proposal"));
           if (previous && previous->confirmed)
             return previous;
-          this->_check_headcount(q, reached);
+          ELLE_TRACE("check headcount")
+            this->_check_headcount(q, reached);
           if (previous)
           {
             ELLE_DEBUG("replace value with %s", previous->value);
@@ -173,7 +162,7 @@ namespace athena
         {
           int reached = 0;
           bool conflicted = false;
-          for_each_parallel(
+          reactor::for_each_parallel(
             this->_peers,
             [&] (std::unique_ptr<Peer> const& peer,
                  reactor::Scope& scope) -> void
@@ -202,7 +191,8 @@ namespace athena
                 ELLE_TRACE("%s: peer %s unavailable: %s",
                            *this, peer, e.what());
               }
-            });
+            },
+            std::string("send acceptation"));
           if (conflicted)
           {
             auto rn = infinit::cryptography::random::generate<uint8_t>(1, 8);
@@ -224,7 +214,7 @@ namespace athena
         ELLE_DEBUG("%s: send confirmation", *this)
         {
           auto reached = 0;
-          for_each_parallel(
+          reactor::for_each_parallel(
             this->_peers,
             [&] (std::unique_ptr<Peer> const& peer,
                  reactor::Scope&) -> void
@@ -241,7 +231,8 @@ namespace athena
                 ELLE_TRACE("%s: peer %s unavailable: %s",
                            *this, peer, e.what());
               }
-            });
+            },
+            std::string("send confirmation"));
           this->_check_headcount(q, reached);
         }
         break;
@@ -268,7 +259,7 @@ namespace athena
       ELLE_DUMP("quorum: %s", q);
       auto reached = 0;
       boost::optional<typename Client<T, Version, CId>::Accepted> res;
-      for_each_parallel(
+      reactor::for_each_parallel(
         this->_peers,
         [&] (std::unique_ptr<Peer> const& peer,
              reactor::Scope&) -> void
@@ -287,7 +278,8 @@ namespace athena
             ELLE_TRACE("%s: peer %s unavailable: %s",
                        *this, peer, e.what());
           }
-        });
+        },
+        std::string("get quorum"));
       this->_check_headcount(q, reached, true);
       typedef std::pair<boost::optional<T>, Quorum> Res;
       if (res)
