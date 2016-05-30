@@ -13,9 +13,11 @@ namespace reactor
   | Construction |
   `-------------*/
 
-  Scope::Scope():
-    _threads(),
-    _running(0)
+  Scope::Scope(std::string const& name)
+    : _threads()
+    , _running(0)
+    , _exception(nullptr)
+    , _name(name)
   {}
 
   Scope::~Scope() noexcept(false)
@@ -190,6 +192,8 @@ namespace reactor
   void
   Scope::print(std::ostream& stream) const
   {
-    stream << "Scope " << this;
+    stream << "Scope";
+    if (!this->name().empty())
+      stream << " (" << this->name() << ")";
   }
 }
