@@ -7,7 +7,8 @@
 namespace elle
 {
   template <typename IT>
-  std::string join(IT it, IT ite, std::string const& sep = ",");
+  std::string
+  join(IT it, IT ite, std::string const& sep = ",");
 }
 
 #include <elle/string/algorithm.hxx>

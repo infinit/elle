@@ -18,23 +18,31 @@ namespace reactor
 
     virtual
     unsigned int&
-    indentation()
+    indentation() override
     {
       return this->_indentation()->indentation();
     }
 
     virtual
     void
-    indent()
+    indent() override
     {
       return this->_indentation()->indent();
     }
 
     virtual
     void
-    unindent()
+    unindent() override
     {
       return this->_indentation()->unindent();
+    }
+
+    virtual
+    std::unique_ptr<elle::log::Indentation>
+    clone() override
+    {
+      std::unique_ptr<elle::log::Indentation> res = elle::make_unique<Indentation>(_factory);
+      return res;
     }
 
   private:

@@ -4,7 +4,6 @@
 
 #include <reactor/network/buffer.hh>
 #include <reactor/network/udp-socket.hh>
-#include <reactor/network/udp-server.hh>
 #include <reactor/network/tcp-socket.hh>
 #include <reactor/network/tcp-server.hh>
 #include <reactor/network/utp-socket.hh>
@@ -12,17 +11,22 @@
 
 ELLE_LOG_COMPONENT("connectivity-server");
 
-static void serve_tcp(int port)
+static
+void
+serve_tcp(int port)
 {
   auto server = elle::make_unique<reactor::network::TCPServer>();
   server->listen(port);
   while (true)
   {
     auto socket = elle::utility::move_on_copy(server->accept());
-    new reactor::Thread("serve", [socket] {
+    new reactor::Thread(
+      "serve",
+      [socket]
+      {
         try
         {
-          ELLE_TRACE("serving TCP %s", (*socket)->peer());
+          ELLE_TRACE("serving %s", socket);
           while (true)
           {
             std::string line;
@@ -38,7 +42,9 @@ static void serve_tcp(int port)
   }
 }
 
-static void serve_udp(int port)
+static
+void
+serve_udp(int port)
 {
   auto server = elle::make_unique<reactor::network::UDPSocket>();
   server->close();
@@ -81,11 +87,12 @@ static void serve_rdv(int port)
   }
 }
 
-static void serve_utp(int port)
+static void serve_utp(int port, int xorit)
 {
   reactor::network::UTPServer server;
+  server.xorify() = xorit;
   server.listen(port);
-  server.rdv_connect("connectivity-server", "rdv.infinit.sh:7890");
+  server.rdv_connect("connectivity-server" + std::to_string(port), "rdv.infinit.sh:7890");
   while (true)
   {
     auto socket = server.accept().release();
@@ -119,8 +126,9 @@ static void run(int argc, char** argv)
   int port = 5456;
   new reactor::Thread("tcp", [port] { serve_tcp(port);});
   new reactor::Thread("udp", [port] { serve_udp(port);});
-  new reactor::Thread("rdv_utp", [port] { serve_utp(port+1);});
-  new reactor::Thread("rdv_utp", [port] { serve_rdv(0);});
+  new reactor::Thread("rdv_utp", [port] { serve_utp(port+1, 0);});
+  new reactor::Thread("rdv_utp_xor", [port] { serve_utp(port+2, 0xFF);});
+  new reactor::Thread("rdv_udp", [port] { serve_rdv(0);});
 }
 
 int main(int argc, char** argv)

@@ -3,6 +3,10 @@
 
 # include <reactor/fwd.hh>
 
+# if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
+#  define REACTOR_NETWORK_UNIX_DOMAIN_SOCKET
+# endif
+
 namespace reactor
 {
   namespace network
@@ -19,7 +23,10 @@ namespace reactor
     class UDPServer;
     class UDPServerSocket;
     class UDPSocket;
-
+# ifdef REACTOR_NETWORK_UNIX_DOMAIN_SOCKET
+    class UnixDomainServer;
+    class UnixDomainSocket;
+# endif
     /// A byte travelling on the network.
     typedef unsigned char Byte;
     /// A number of bytes.

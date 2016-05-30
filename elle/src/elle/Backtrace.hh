@@ -13,7 +13,11 @@ namespace elle
     std::string symbol;
     std::string symbol_mangled;
     std::string symbol_demangled;
+# if defined(INFINIT_WINDOWS)
+    uint64_t address;
+# else
     int address;
+# endif
     int offset;
     operator std::string() const;
   };

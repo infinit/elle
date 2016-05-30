@@ -17,20 +17,17 @@ namespace elle
 {
   namespace system
   {
+
+#ifndef INFINIT_WINDOWS
     class Process::Impl
     {
     public:
       Impl(Process& owner)
         : _owner(owner)
-#ifndef INFINIT_WINDOWS
         , _pid(0)
-#else
-        , _process_info()
-#endif
         , _status(0)
         , _done(false)
       {
-#ifndef INFINIT_WINDOWS
         this->_pid = fork();
         if (this->_pid == 0)
         {
@@ -44,7 +41,42 @@ namespace elle
           ELLE_ERR("execvp(%s) error: %s", argv[0], strerror(errno));
           ::exit(1);
         }
+      }
+
+      void
+      wait()
+      {
+        pid_t waited;
+        do
+        {
+          waited = ::waitpid(this->_pid, &this->_status, 0);
+        }
+        while (waited == -1 && errno == EINTR);
+        if (waited == -1)
+          throw elle::Exception(elle::sprintf("unable to wait process: %s",
+                                              strerror(errno)));
+        assert(waited == this->_pid);
+        this->_done = true;
+      }
+
+    private:
+      ELLE_ATTRIBUTE(Process&, owner);
+      ELLE_ATTRIBUTE_R(pid_t, pid);
+      ELLE_ATTRIBUTE_R(int, status);
+      ELLE_ATTRIBUTE_R(bool, done);
+    };
+
 #else
+
+    class Process::Impl
+    {
+    public:
+      Impl(Process& owner)
+        : _owner(owner)
+        , _process_info()
+        , _status(0)
+        , _done(false)
+      {
         STARTUPINFO startup_info = {sizeof(STARTUPINFO)};
         std::string executable = this->_owner.arguments()[0];
         std::string command_line;
@@ -64,42 +96,31 @@ namespace elle
           throw elle::Exception(elle::sprintf("unable to start %s: %s",
                                               executable, ::GetLastError()));
         }
-#endif
       }
 
       void
       wait()
       {
-#ifndef INFINIT_WINDOWS
-        pid_t waited;
-        do
-        {
-          waited = ::waitpid(this->_pid, &this->_status, 0);
-        }
-        while (waited == -1 && errno == EINTR);
-        if (waited == -1)
-          throw elle::Exception(elle::sprintf("unable to wait process: %s",
-                                              strerror(errno)));
-        assert(waited == this->_pid);
-#else
         ::WaitForSingleObject(this->_process_info.hProcess, INFINITE);
         unsigned long status = 0;
         ::GetExitCodeProcess(this->_process_info.hProcess, &status);
         this->_status = status;
-#endif
         this->_done = true;
+      }
+
+      int
+      pid()
+      {
+        return this->_process_info.dwProcessId;
       }
 
     private:
       ELLE_ATTRIBUTE(Process&, owner);
-#ifndef INFINIT_WINDOWS
-      ELLE_ATTRIBUTE_R(pid_t, pid);
-#else
       ELLE_ATTRIBUTE_R(PROCESS_INFORMATION, process_info)
-#endif
       ELLE_ATTRIBUTE_R(int, status);
       ELLE_ATTRIBUTE_R(bool, done);
     };
+#endif
 
     Process::Process(std::vector<std::string> args)
       : _arguments(std::move(args))
@@ -107,6 +128,9 @@ namespace elle
     {
       ELLE_TRACE_SCOPE("%s: start", *this);
     }
+
+    Process::~Process()
+    {}
 
     int
     Process::wait()
@@ -116,16 +140,11 @@ namespace elle
       ELLE_ASSERT(this->_impl->done());
       return this->_impl->status();
     }
-     int
+
+    int
     Process::pid()
     {
-#ifndef INFINIT_WINDOWS
       return this->_impl->pid();
-#else
-      return this->_impl->process_info().dwProcessId;
-#endif
     }
-    Process::~Process()
-    {}
   }
 }

@@ -107,8 +107,8 @@ namespace reactor
       public:
         Thread(Backend& backend,
                const std::string& name,
-               const Action& action)
-          : Super(name, action)
+               Action action)
+          : Super(name, std::move(action))
           , _backend(backend)
           , _stack_size(StackAllocator::default_stack_size())
           , _stack_pointer(stack_allocator.allocate(this->_stack_size))
@@ -317,11 +317,10 @@ namespace reactor
       {}
 
       std::unique_ptr<backend::Thread>
-      Backend::make_thread(const std::string& name,
-                           const Action& action)
+      Backend::make_thread(const std::string& name, Action action)
       {
         return std::unique_ptr<backend::Thread>(
-          new Thread(*this, name, action));
+          new Thread(*this, name, std::move(action)));
       }
 
       Thread*

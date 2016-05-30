@@ -47,6 +47,7 @@ namespace reactor
       std::function<void(boost::system::error_code const&, size_t)> send_cont;
       utp_context* ctx;
       ELLE_ATTRIBUTE_R(std::unique_ptr<RDVSocket>, socket);
+      ELLE_ATTRIBUTE_RX(unsigned char, xorify);
       std::vector<std::unique_ptr<UTPSocket>> _accept_queue;
       Barrier _accept_barrier;
       std::unique_ptr<Thread> _listener;
@@ -103,7 +104,7 @@ namespace reactor
       Barrier _write_barrier;
       Mutex _write_mutex;
       Barrier _connect_barrier;
-      UTPServer&  _server;
+      ELLE_ATTRIBUTE_R(UTPServer&, server);
       utp_socket* _socket;
       elle::ConstWeakBuffer _write;
       MultiLockBarrier _pending_operations;

@@ -37,6 +37,24 @@ namespace reactor
     `----------*/
 
     void
+    SSLServer::listen(int port)
+    {
+      this->listen(EndPoint(boost::asio::ip::tcp::v4(), port));
+    }
+
+    SSLServer::EndPoint
+    SSLServer::_default_endpoint() const
+    {
+      return EndPoint(boost::asio::ip::tcp::v4(), 0);
+    }
+
+    int
+    SSLServer::port() const
+    {
+      return local_endpoint().port();
+    }
+
+    void
     SSLServer::_handshake()
     {
       elle::With<reactor::Scope>() << [this] (reactor::Scope& scope)

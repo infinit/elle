@@ -30,8 +30,8 @@ namespace reactor
     `-------------*/
 
     Thread::Thread(const std::string& name,
-                   const Action& action):
-      _action(action),
+                   Action action):
+      _action(std::move(action)),
       _name(name),
       _status(Status::starting),
       _unwinding(false),

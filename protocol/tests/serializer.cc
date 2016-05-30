@@ -9,6 +9,7 @@
 #include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/tcp-server.hh>
+#include <reactor/network/tcp-socket.hh>
 #include <reactor/scheduler.hh>
 
 #include <elle/test.hh>
@@ -248,7 +249,7 @@ private:
     {
       auto route = [&] (reactor::network::Socket* sender,
                         reactor::network::Socket* recipient,
-                        size_t& routed,
+                        int64_t& routed,
                         Conf& conf)
         {
           try
@@ -258,8 +259,8 @@ private:
             {
               char buffer[1024];
               ELLE_DEBUG("reading");
-              size_t size = sender->read_some(Buffer(buffer, sizeof(buffer)),
-                                              1_sec);
+              int64_t size =
+                sender->read_some(Buffer(buffer, sizeof(buffer)), 1_sec);
               ELLE_DEBUG("read %s", size);
               conf(elle::ConstWeakBuffer(buffer, size));
               if (conf.corrupt_offset >= 0 && \
@@ -327,16 +328,16 @@ public:
     {
     }
 
-    size_t quota;
-    size_t corrupt_offset;
+    int64_t quota;
+    int64_t corrupt_offset;
     char corrupt_mask;
   };
 public:
   std::unique_ptr<Conf> alice_conf;
   std::unique_ptr<Conf> bob_conf;
 private:
-  ELLE_ATTRIBUTE_RW(size_t, alice_routed);
-  ELLE_ATTRIBUTE_RW(size_t, bob_routed);
+  ELLE_ATTRIBUTE_RW(int64_t, alice_routed);
+  ELLE_ATTRIBUTE_RW(int64_t, bob_routed);
 };
 
 template <typename SocketProvider>
@@ -606,83 +607,89 @@ void
 _interruption(elle::Version const& version,
               bool checksum)
 {
-  reactor::Barrier interrupted("interrupted");
-  reactor::Barrier terminated("terminated");
-  reactor::Barrier received("received");
-  elle::Buffer to_send;
-  elle::Buffer to_send2 = elle::Buffer{std::string("ok")};
-  dialog<Connector>(
-    version,
-    checksum,
-    [] (Connector& sockets)
-    {
-    },
-    [&] (infinit::protocol::Serializer& s)
-    {
-      to_send = infinit::cryptography::random::generate<elle::Buffer>(
-        s.chunk_size() * 30);
-      try
+  // A packet of size 1 means interruption will happen while sending the last
+  // (and unique) block. This one should go through.
+  for (auto number: std::vector<int>({30, 10, 1}))
+  {
+    reactor::Barrier interrupted("interrupted");
+    reactor::Barrier terminated("terminated");
+    reactor::Barrier received("received");
+    elle::Buffer to_send;
+    elle::Buffer to_send2 = elle::Buffer{std::string("ok")};
+    dialog<Connector>(
+      version,
+      checksum,
+      [] (Connector& sockets)
       {
-        ELLE_TRACE("write '%f'", to_send)
-          s.write(to_send);
-      }
-      catch (reactor::Terminate const&)
+      },
+      [&] (infinit::protocol::Serializer& s)
       {
-        ELLE_LOG("terminated!!")
-          terminated.open();
-      }
-      ELLE_TRACE("write '%f'", to_send2)
-        s.write(to_send2);
-    },
-    [&] (infinit::protocol::Serializer& s)
-    {
-      // Read.
-      auto res = s.read();
-      // Sender in version 0.1.0 cannot be interrupted.
-      if (version == elle::Version{0, 1, 0})
-      {
-        received.open();
-        BOOST_CHECK_EQUAL(res, to_send);
-        // Read a second time.
-        res = s.read();
-      }
-      BOOST_CHECK_EQUAL(res, to_send2);
-    },
-    [&] (reactor::Thread& alice,
-         reactor::Thread& bob,
-         Connector& sockets)
-    {
-      // Wait for buffer to send to be filled.
-      while (to_send.size() == 0)
-        reactor::yield();
-      do
-      {
-        // Wait for the sending process to begin.
-        reactor::yield();
-        ELLE_DEBUG("bytes_written: %s", sockets.alice().bytes_written());
-        if (sockets.alice().bytes_written() > (to_send.size() / 5))
+        to_send = infinit::cryptography::random::generate<elle::Buffer>(
+          s.chunk_size() * number);
+        try
         {
-          ELLE_LOG("terminate after sending %s bytes (over %s bytes)",
-                   sockets.alice().bytes_written(), to_send.size());
-          alice.terminate_now();
-          break;
+          ELLE_TRACE("write '%f'", to_send)
+            s.write(to_send);
         }
-      } while (true);
-      // Version one will go throught even if a termination has been required.
-      ELLE_DEBUG("wait for %s", terminated)
-        terminated.wait(1_sec);
-      if (version == elle::Version{0, 1, 0})
+        catch (reactor::Terminate const&)
+        {
+          ELLE_LOG("terminated!!")
+            terminated.open();
+        }
+        ELLE_TRACE("write '%f'", to_send2)
+          s.write(to_send2);
+      },
+      [&] (infinit::protocol::Serializer& s)
       {
-        ELLE_DEBUG("wait for %s", received)
-          received.wait(1_sec);
-      }
-      else if (version == elle::Version{0, 2, 0})
+        // Read.
+        auto res = s.read();
+        // Sender in version 0.1.0 cannot be interrupted.
+        if (version == elle::Version{0, 1, 0} || number == 1)
+        {
+          received.open();
+          BOOST_CHECK_EQUAL(res, to_send);
+          // Read a second time.
+          res = s.read();
+        }
+        BOOST_CHECK_EQUAL(res, to_send2);
+      },
+      [&] (reactor::Thread& alice,
+           reactor::Thread& bob,
+           Connector& sockets)
       {
-        ELLE_DEBUG("make sure the original packet hasn't been received")
-          BOOST_CHECK(!received);
+        // Wait for buffer to send to be filled.
+        while (to_send.size() == 0)
+          reactor::yield();
+        do
+        {
+          // Wait for the sending process to begin.
+          reactor::yield();
+          ELLE_DEBUG("bytes_written: %s", sockets.alice().bytes_written());
+          if (sockets.alice().bytes_written() > (to_send.size() / 5))
+          {
+            ELLE_LOG("terminate after sending %s bytes (over %s bytes)",
+                     sockets.alice().bytes_written(), to_send.size());
+            alice.terminate_now();
+            break;
+          }
+        } while (true);
+        // Version one will go throught even if a termination has been required.
+        ELLE_DEBUG("wait for %s", terminated)
+          terminated.wait(1_sec);
+        if (version == elle::Version{0, 1, 0})
+        {
+          ELLE_DEBUG("wait for %s", received)
+            received.wait(1_sec);
+        }
+        else if (version == elle::Version{0, 2, 0})
+        {
+          ELLE_DEBUG("make sure the original packet hasn't been received")
+            if (number != 1)
+              BOOST_CHECK(!received);
+        }
       }
-    }
-  );
+    );
+  }
 }
 
 ELLE_TEST_SCHEDULED(interruption)

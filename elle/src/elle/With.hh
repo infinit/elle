@@ -3,6 +3,8 @@
 
 # include <utility>
 
+# include <elle/compiler.hh>
+
 namespace elle
 {
   template <typename T>
@@ -23,6 +25,7 @@ namespace elle
     With(With<T>&& model);
     ~With();
   private:
+    ELLE_COMPILER_ALIGN(alignof(T))
     char _data[sizeof(T)];
     bool _used;
     T* _value;

@@ -7,8 +7,8 @@ namespace reactor
 {
   namespace network
   {
-    class TCPSocket:
-      public StreamSocket<boost::asio::ip::tcp::socket>
+    class TCPSocket
+      : public StreamSocket<boost::asio::ip::tcp::socket>
     {
     /*---------.
     | Typedefs |
@@ -35,12 +35,6 @@ namespace reactor
       friend class TCPServer;
       TCPSocket(std::unique_ptr<AsioSocket> socket,
                 AsioSocket::endpoint_type const& endpoint);
-
-    /*----------------.
-    | Pretty printing |
-    `----------------*/
-    public:
-      void print(std::ostream& s) const;
     };
   }
 }

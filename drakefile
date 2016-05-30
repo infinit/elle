@@ -315,15 +315,16 @@ def configure(cxx_toolkit = None,
   openssl_tarball = drake.node('openssl/%s.tar.gz' % openssl_basename)
   openssl_prefix = drake.Path('openssl')
   openssl_build = openssl_prefix / openssl_basename
-  # FIXME: URL of latest OpenSSL is different to old versions. If they update,
-  # then our link will break. Use a mirror instead.
-  # openssl_url = \
-  #   'http://www.openssl.org/source/old/%s/%s.tar.gz' % (openssl_version,
-  #           openssl_basename)
-  openssl_url = \
-    'http://artfiles.org/openssl.org/source/%s.tar.gz' % openssl_basename
-  drake.HTTPDownload(openssl_url, openssl_tarball,
-                     fingerprint = 'f3c710c045cdee5fd114feb69feba7aa')
+  # Only the latest release is in source/ all other releases are in
+  # source/old/<version>. Use the old location as a fallback.
+  drake.HTTPDownload(
+    [
+      'http://www.openssl.org/source/%s.tar.gz' % openssl_basename,
+      'http://www.openssl.org/source/old/%s%s/%s' % (
+        openssl_version, openssl_release_tag, openssl_basename)
+    ],
+    openssl_tarball,
+    fingerprint = 'f3c710c045cdee5fd114feb69feba7aa')
   openssl_headers = [
     'include/openssl/aes.h',
     'include/openssl/asn1.h',
@@ -803,15 +804,15 @@ def configure(cxx_toolkit = None,
   ## Boost ##
   ## ----- ##
 
+  boost_version = drake.Version(1, 60, 0)
   if boost is not None:
     boost = drake.cxx.boost.Boost(
       cxx_toolkit = cxx_toolkit,
       prefix = boost,
-      version_effective = drake.Version(1, 57, 0),
+      version_effective = boost_version,
       prefer_shared = cxx_toolkit.os not in [drake.os.windows, drake.os.ios],
     )
   else:
-    boost_version = drake.Version(1, 60, 0)
     boost_basename = 'boost_%s' % str(boost_version).replace('.', '_')
     boost_tarball = drake.node('boost/%s.tar.gz' % boost_basename)
     boost_prefix = drake.Path('boost')
@@ -891,7 +892,9 @@ def configure(cxx_toolkit = None,
     if cxx_toolkit.os is drake.os.macos:
       boost_static_format = '%s/lib/libboost_%s.a'
       boost_dynamic_format = '%s/lib/libboost_%s.dylib'
-      boost_dynamic_versioned_format = '%s/lib/libboost_%s-1_60.dylib'
+      boost_dynamic_versioned_format = \
+        '%%s/lib/libboost_%%s-%s_%s.dylib' % \
+        (boost_version.major, boost_version.minor)
     elif windows:
       boost_static_format = '%s/lib/libboost_%s-mt-s.a'
       boost_dynamic_format = None
@@ -903,7 +906,8 @@ def configure(cxx_toolkit = None,
     else:
       boost_static_format = '%s/lib/libboost_%s.a'
       boost_dynamic_format = '%s/lib/libboost_%s.so'
-      boost_dynamic_versioned_format = '%s/lib/libboost_%s.so.1.60.0'
+      boost_dynamic_versioned_format = \
+        '%%s/lib/libboost_%%s.so.%s' % boost_version
     boost_libraries = (
       [t(fmt % (boost_prefix, name))
        for t, fmt in (
@@ -1112,7 +1116,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
         for f in boost_attributes['patched_sources']
     ]
     boost_headers = [
-      drake.node('boost/1.60.0/%s' % n)
+      drake.node('boost/%s/%s' % (boost_version, n))
         for n in boost_attributes['headers']
     ]
     BoostBuilder(

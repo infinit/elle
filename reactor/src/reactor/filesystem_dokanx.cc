@@ -866,6 +866,11 @@ namespace reactor
     }
     void FileSystem::unmount()
     {
+      // Without this flush, we get a strange trailing ",'" on stdout when
+      // closing stdin of `infinit-volume --run --script` which breaks the JSON
+      // output (tests/functional/passport-restrictions notably). This might be
+      // wine only.
+      std::cout.flush();
       std::wstring w = from_utf8(this->_where);
       DokanUnmount(w[0]);
     }
@@ -984,11 +989,6 @@ namespace reactor
 
     FileSystem::~FileSystem()
     {
-      // Without this flush, we get a strange trailing ",'" on stdout when
-      // closing stdin of `infinit-volume --run --script` which breaks the JSON
-      // output (tests/functional/passport-restrictions notably). This might be
-      // wine only.
-      std::cout.flush();
       unmount();
       delete _impl;
     }

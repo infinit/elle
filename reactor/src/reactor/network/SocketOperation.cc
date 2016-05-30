@@ -66,6 +66,9 @@ namespace reactor
 
     template class SocketOperation<boost::asio::ip::tcp::socket>;
     template class SocketOperation<boost::asio::ip::udp::socket>;
+#ifdef REACTOR_NETWORK_UNIX_DOMAIN_SOCKET
+    template class SocketOperation<boost::asio::local::stream_protocol::socket>;
+#endif
 
     /*--------------.
     | DataOperation |
@@ -98,5 +101,8 @@ namespace reactor
 
     template class DataOperation<boost::asio::ip::tcp::socket>;
     template class DataOperation<boost::asio::ip::udp::socket>;
+#ifdef REACTOR_NETWORK_UNIX_DOMAIN_SOCKET
+    template class DataOperation<boost::asio::local::stream_protocol::socket>;
+#endif
   }
 }

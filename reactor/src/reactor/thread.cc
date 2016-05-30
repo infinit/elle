@@ -476,15 +476,15 @@ namespace reactor
   }
 
   Thread::NonInterruptible::NonInterruptible()
-  : _current(reactor::scheduler().current())
-  , _initial_value(_current->interruptible())
+    : _current(reactor::scheduler().current())
+    , _initial_value(_current->interruptible())
   {
-    _current->interruptible(false);
+    this->_current->interruptible(false);
   }
 
   Thread::NonInterruptible::~NonInterruptible() noexcept(false)
   {
-    _current->interruptible(_initial_value);
+    this->_current->interruptible(this->_initial_value);
   }
 
   /*----------------.

@@ -5,7 +5,6 @@
 #endif
 
 #include <elle/log.hh>
-#include <elle/elle.hh>
 
 #include <cryptography/hash.hh>
 
@@ -370,16 +369,18 @@ namespace infinit
     {
       // The write must not be interrupted, otherwise it will break
       // the serialization protocol.
-      reactor::Thread::NonInterruptible ni;
-      if (this->_checksum)
+      elle::With<reactor::Thread::NonInterruptible>() << [&]
       {
-        auto hash = compute_checksum(packet);
-        ELLE_DEBUG("send checksum %x", hash)
+        if (this->_checksum)
+        {
+          auto hash = compute_checksum(packet);
+          ELLE_DEBUG("send checksum %x", hash)
           infinit::protocol::write(this->_stream, hash);
-      }
-      ELLE_DEBUG("send actual data")
-        infinit::protocol::write(this->_stream, packet);
-      this->_stream.flush();
+        }
+        ELLE_DEBUG("send actual data")
+          infinit::protocol::write(this->_stream, packet);
+        this->_stream.flush();
+      };
     }
 
     /*--------------.
@@ -467,47 +468,59 @@ namespace infinit
     void
     Version020Impl::_write(elle::Buffer const& packet)
     {
+      ELLE_DEBUG_SCOPE("chunk writer, sz=%s, chunk=%s", packet.size(),
+                       this->_chunk_size);
+      elle::Buffer::Size offset = 0;
       try
       {
-        elle::Buffer::Size offset = 0;
         auto send = [&]
           {
             auto to_send = std::min(this->_chunk_size, packet.size() - offset);
-            ELLE_DEBUG("send actual data")
+            ELLE_DEBUG("send actual data: %s", to_send)
             infinit::protocol::write(
               this->_stream, packet, false, offset, to_send);
             offset += to_send;
             this->_stream.flush();
           };
         {
-          reactor::Thread::NonInterruptible ni;
-          if (this->_checksum)
-          // Compute the hash and send it first.
+          elle::With<reactor::Thread::NonInterruptible>() << [&]
           {
-            auto hash = compute_checksum(packet);
-            ELLE_DEBUG("send checksum %x", hash)
-              infinit::protocol::write(this->_stream, hash);
-          }
-          // Send the size.
-          {
-            auto size = packet.size();
-            ELLE_DEBUG("send packet size %s", size)
-              Serializer::Super::uint32_put(this->_stream, size);
-          }
-          // Send first chunk
-          send();
+            if (this->_checksum)
+            // Compute the hash and send it first.
+            {
+              auto hash = compute_checksum(packet);
+              ELLE_DEBUG("send checksum %x", hash)
+                infinit::protocol::write(this->_stream, hash);
+            }
+            // Send the size.
+            {
+              auto size = packet.size();
+              ELLE_DEBUG("send packet size %s", size)
+                Serializer::Super::uint32_put(this->_stream, size);
+            }
+            // Send first chunk
+            send();
+          };
         }
         while (offset < packet.size())
         {
-          reactor::Thread::NonInterruptible ni;
-          write_control(this->_stream, Control::keep_going);
-          send();
+          ELLE_DEBUG("writing control: o=%s, size=%s", offset, packet.size());
+          elle::With<reactor::Thread::NonInterruptible>() << [&]
+          {
+            write_control(this->_stream, Control::keep_going);
+            send();
+          };
         }
       }
       catch (reactor::Terminate const&)
       {
-        write_control(this->_stream, Control::interrupt);
-        this->_stream.flush();
+        ELLE_DEBUG("interrupted after sending %s (over %s)",
+                   offset, packet.size());
+        if (offset < packet.size())
+        {
+          write_control(this->_stream, Control::interrupt);
+          this->_stream.flush();
+        }
         throw;
       }
     }

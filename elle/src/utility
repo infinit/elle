@@ -2,17 +2,8 @@
 #ifndef ELLE_UTILITY
 # define ELLE_UTILITY
 
-# include <ostream>
-# include <pair>
-
-namespace elle
-{
-  template <typename F, typename... T>
-  void
-  fprintf(std::ostream& out,
-          F&& fmt,
-          T&&... values);
-}
+# include_next <utility>
+# include <elle/printf-fwd.hh>
 
 namespace std
 {

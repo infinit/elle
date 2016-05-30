@@ -1,5 +1,7 @@
 #include <reactor/network/exception.hh>
 #include <reactor/network/server.hh>
+#include <reactor/network/ssl-socket.hh>
+#include <reactor/network/tcp-socket.hh>
 #include <reactor/operation.hh>
 #include <reactor/scheduler.hh>
 
@@ -12,13 +14,13 @@ namespace reactor
     /*-------------.
     | Construction |
     `-------------*/
-    Server::Server():
-      Server(reactor::scheduler())
+
+    Server::Server()
+      : Server(reactor::scheduler())
     {}
 
-    Server::Server(Scheduler& scheduler):
-      _scheduler(scheduler),
-      _acceptor()
+    Server::Server(Scheduler& scheduler)
+      : _scheduler(scheduler)
     {}
 
     Server::~Server()
@@ -27,12 +29,14 @@ namespace reactor
     /*----------.
     | Listening |
     `----------*/
+
+    template <typename Socket, typename EndPoint, typename Acceptor>
     void
-    Server::listen(const EndPoint& end_point)
+    ProtoServer<Socket, EndPoint, Acceptor>::listen(EndPoint const& end_point)
     {
       try
       {
-        this->_acceptor.reset(new TCPAcceptor(
+        this->_acceptor.reset(new Acceptor(
           this->_scheduler.io_service(), end_point));
       }
       catch (boost::system::system_error& e)
@@ -42,26 +46,31 @@ namespace reactor
       }
     }
 
-    class TCPAccept:
+    template <typename Socket, typename EndPoint, typename Acceptor>
+    void
+    ProtoServer<Socket, EndPoint, Acceptor>::listen()
+    {
+      this->listen(this->_default_endpoint());
+    }
+
+    template <typename Socket, typename EndPoint, typename Acceptor>
+    class Accept:
       public Operation
     {
     public:
-      typedef boost::asio::ip::tcp::acceptor TCPAcceptor;
-      typedef boost::asio::ip::tcp::endpoint EndPoint;
-
-      TCPAccept(TCPSocket::AsioSocket& socket,
-                EndPoint& peer,
-                TCPAcceptor& acceptor):
-        Operation(*reactor::Scheduler::scheduler()),
-        _acceptor(acceptor),
-        _peer(peer),
-        _socket(socket)
+      Accept(Socket& socket,
+             EndPoint& peer,
+             Acceptor& acceptor)
+        : Operation(*reactor::Scheduler::scheduler())
+        , _acceptor(acceptor)
+        , _peer(peer)
+        , _socket(socket)
       {}
 
       void
       print(std::ostream& stream) const
       {
-        stream << "accept on " << this->_acceptor.local_endpoint();
+        elle::fprintf(stream, "accept on %s", this->_acceptor.local_endpoint());
       }
 
     private:
@@ -78,7 +87,7 @@ namespace reactor
         this->_acceptor.async_accept(
           this->_socket,
           this->_peer,
-          boost::bind(&TCPAccept::_wakeup, this, _1));
+          boost::bind(&Accept::_wakeup, this, _1));
       }
 
       void
@@ -92,9 +101,9 @@ namespace reactor
       }
 
     private:
-      ELLE_ATTRIBUTE_R(TCPAcceptor&, acceptor);
+      ELLE_ATTRIBUTE_R(Acceptor&, acceptor);
       ELLE_ATTRIBUTE(EndPoint&, peer);
-      ELLE_ATTRIBUTE_X(TCPSocket::AsioSocket&, socket);
+      ELLE_ATTRIBUTE_X(Socket&, socket);
     };
 
     /*----------.
@@ -107,36 +116,24 @@ namespace reactor
       return this->_accept();
     }
 
+    template <typename Socket, typename EndPoint, typename Acceptor>
     void
-    Server::listen(int port, bool v6)
-    {
-      if (v6)
-        listen(EndPoint(boost::asio::ip::address_v6::any(), port));
-      else
-        listen(EndPoint(boost::asio::ip::address_v4::any(), port));
-    }
-
-    void
-    Server::_accept(TCPSocket::AsioSocket& socket, EndPoint& peer)
+    ProtoServer<Socket, EndPoint, Acceptor>::_accept(
+      AsioSocket& socket, EndPoint& peer)
     {
       ELLE_TRACE_SCOPE("%s: wait for connection", *this);
       // FIXME: server should listen in ctor to avoid this crappy state ?
       ELLE_ASSERT_NEQ(this->acceptor(), nullptr);
-      TCPAccept accept(socket, peer, *this->_acceptor);
+      Accept<Socket, EndPoint, Acceptor> accept(socket, peer, *this->_acceptor);
       accept.run();
     }
 
-    int
-    Server::port() const
-    {
-      return local_endpoint().port();
-    }
-
-    Server::EndPoint
-    Server::local_endpoint() const
+    template <typename Socket, typename EndPoint, typename Acceptor>
+    EndPoint
+    ProtoServer<Socket, EndPoint, Acceptor>::local_endpoint() const
     {
       if (this->_acceptor == nullptr)
-        throw Exception("The server is not listening.");
+        throw Exception("server is not listening");
       return this->_acceptor->local_endpoint();
     }
 
@@ -144,8 +141,9 @@ namespace reactor
     | Printable |
     `----------*/
 
+    template <typename Socket, typename EndPoint, typename Acceptor>
     void
-    Server::print(std::ostream& stream) const
+    ProtoServer<Socket, EndPoint, Acceptor>::print(std::ostream& stream) const
     {
       stream << "Server";
       if (this->_acceptor)
@@ -153,5 +151,20 @@ namespace reactor
         stream << "(" << this->_acceptor->local_endpoint() << ")";
       }
     }
+
+    /*------------------------.
+    | Explicit instantiations |
+    `------------------------*/
+
+    template
+    class ProtoServer<boost::asio::ip::tcp::socket,
+                      boost::asio::ip::tcp::endpoint,
+                      boost::asio::ip::tcp::acceptor>;
+#ifdef REACTOR_NETWORK_UNIX_DOMAIN_SOCKET
+    template
+    class ProtoServer<boost::asio::local::stream_protocol::socket,
+                      boost::asio::local::stream_protocol::endpoint,
+                      boost::asio::local::stream_protocol::acceptor>;
+#endif
   }
 }

@@ -1,6 +1,8 @@
 #include <elle/Exception.hh>
 #include <elle/log/Send.hh>
 #include <elle/log/TextLogger.hh>
+#include <elle/log/SysLogger.hh>
+#include <elle/system/getpid.hh>
 #include <elle/printf.hh>
 #include <elle/types.hh>
 
@@ -36,29 +38,41 @@ namespace elle
 
       if (!_logger())
       {
-        std::string path = elle::os::getenv("ELLE_LOG_FILE", "");
-
-        if (path.empty() == false)
+        auto syslog = elle::os::getenv("ELLE_LOG_SYSLOG", "");
+        if (!syslog.empty())
         {
-          static std::ofstream out{
-            path,
-              std::fstream::trunc | std::fstream::out
-              };
-          _logger().reset(new elle::log::TextLogger(out));
+          _logger().reset(new elle::log::SysLogger(
+            syslog + "[" + std::to_string(elle::system::getpid()) + "]"));
         }
         else
-          _logger().reset(new elle::log::TextLogger(std::cerr));
+        {
+          std::string path = elle::os::getenv("ELLE_LOG_FILE", "");
+          bool append = !elle::os::getenv("ELLE_LOG_FILE_APPEND", "").empty();
+          if (path.empty() == false)
+          {
+            static std::ofstream out{
+              path,
+                (append ? std::fstream::app : std::fstream::trunc)
+                  | std::fstream::out
+                };
+            _logger().reset(new elle::log::TextLogger(out));
+          }
+          else
+            _logger().reset(new elle::log::TextLogger(std::cerr));
+        }
       }
       return *_logger();
     }
 
-    void
+    std::unique_ptr<Logger>
     logger(std::unique_ptr<Logger> logger)
     {
       std::unique_lock<std::mutex> ulock{log_mutex()};
       if (_logger() != nullptr && logger != nullptr)
-        logger->_indentation = std::move(_logger()->_indentation);
+        logger->_indentation = _logger()->_indentation->clone();
+      std::unique_ptr<Logger> prev = std::move(_logger());
       _logger() = std::move(logger);
+      return prev;
     }
 
     namespace detail

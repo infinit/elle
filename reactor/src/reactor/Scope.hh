@@ -46,7 +46,7 @@ namespace reactor
     /// \param a    The action run by the managed thread.
     Thread&
     run_background(std::string const& name,
-                   Thread::Action const& a);
+                   Thread::Action a);
     void
     terminate_now();
   private:
@@ -64,8 +64,6 @@ namespace reactor
   protected:
     bool
     _wait(Thread* thread, Waker const& waker) override;
-  private:
-    ELLE_ATTRIBUTE(reactor::Barrier, barrier);
 
   /*----------.
   | Printable |

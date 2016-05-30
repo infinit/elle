@@ -205,10 +205,21 @@ class InstrumentedPeer
 public:
   typedef paxos::Client<T, Version, ServerId> Client;
 
-  InstrumentedPeer(ServerId id, paxos::Server<T, Version, ServerId>& paxos)
+  InstrumentedPeer(ServerId id, paxos::Server<T, Version, ServerId>& paxos,
+                   bool go_through = false)
     : Peer<T, Version, ServerId>(id, paxos)
     , fail(false)
-  {}
+    , propose_barrier("propose barrier")
+    , accept_barrier("accept barrier")
+    , confirm_barrier("confirm barrier")
+  {
+    if (go_through)
+    {
+      this->propose_barrier.open();
+      this->accept_barrier.open();
+      this->confirm_barrier.open();
+    }
+  }
 
   ~InstrumentedPeer() noexcept(true)
   {}
@@ -239,9 +250,21 @@ public:
     return Peer<T, Version, ServerId>::accept(q, p, value);
   }
 
+  virtual
+  void
+  confirm(typename Client::Quorum const& q,
+          typename Client::Proposal const& p) override
+  {
+    if (fail)
+      throw typename Peer<T, Version, ServerId>::Unavailable();
+    this->confirm_signal.signal();
+    reactor::wait(this->confirm_barrier);
+    return Peer<T, Version, ServerId>::confirm(q, p);
+  }
+
   bool fail;
-  reactor::Barrier propose_barrier, accept_barrier;
-  reactor::Signal propose_signal, accept_signal;
+  reactor::Barrier propose_barrier, accept_barrier, confirm_barrier;
+  reactor::Signal propose_signal, accept_signal, confirm_signal;
 };
 
 ELLE_TEST_SCHEDULED(concurrent)
@@ -452,6 +475,68 @@ ELLE_TEST_SCHEDULED(versions_aborted)
   paxos::Client<int, int, int> client_2(2, std::move(peers_2));
   BOOST_CHECK_THROW(client_1.choose(2, 2), elle::Error);
   BOOST_CHECK(!client_2.choose(1, 1));
+}
+
+ELLE_TEST_SCHEDULED(propose_before_current_proposal_acceptation)
+{
+  typedef paxos::Server<int, int, int> Server;
+  typedef paxos::Client<int, int, int> Client;
+  typedef Peer<int, int, int> Peer;
+  typedef Client::Peers Peers;
+  Server server_1(11, {11, 12, 13});
+  Server server_2(12, {11, 12, 13});
+  Server server_3(13, {11, 12, 13});
+  // Client 1.
+  Peers peers_1;
+  peers_1.push_back(elle::make_unique<Peer>(11, server_1));
+  peers_1.push_back(elle::make_unique<Peer>(12, server_2));
+  auto peer_1_3 = new InstrumentedPeer<int, int, int>(13, server_3, true);
+  peers_1.push_back(std::unique_ptr<paxos::Client<int, int, int>::Peer>(peer_1_3));
+  paxos::Client<int, int, int> client_1(1, std::move(peers_1));
+  // Client 2
+  Peers peers_2;
+  peers_2.push_back(elle::make_unique<Peer>(11, server_1));
+  peers_2.push_back(elle::make_unique<Peer>(12, server_2));
+  auto peer_2_3 = new InstrumentedPeer<int, int, int>(13, server_3, true);
+  peers_2.push_back(std::unique_ptr<paxos::Client<int, int, int>::Peer>(peer_2_3));
+  paxos::Client<int, int, int> client_2(2, std::move(peers_2));
+  // Do not confirm first proposal.
+  peer_1_3->confirm_barrier.close();
+  // Block acceptance of the seccond proposal.
+  peer_2_3->accept_barrier.close();
+  // Actions.
+  elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+  {
+    scope.run_background("client_1 choose",
+                         [&]
+                         {
+                           // Client 1 choose 1:1.
+                           client_1.choose(1, 1);
+                         });
+    scope.run_background("client_2 fetch & choose new version",
+                         [&]
+                         {
+                           reactor::wait(peer_1_3->confirm_signal);
+                           // Client 2 choose 2:1.
+                           auto v = client_2.get();
+                           BOOST_CHECK(v);
+                           BOOST_CHECK_EQUAL(*v, 1);
+                           client_2.choose(2, 2);
+                         });
+    scope.run_background("confirm",
+                         [&]
+                         {
+                           reactor::wait(peer_1_3->confirm_signal);
+                           reactor::wait(peer_2_3->propose_signal);
+                           peer_1_3->confirm_barrier.open();
+                           // XXX: Find a better way.
+                           reactor::yield();
+                           reactor::yield();
+                           reactor::yield();
+                           peer_2_3->accept_barrier.open();
+                         });
+    scope.wait();
+  };
 }
 
 ELLE_TEST_SCHEDULED(elect_extend)
@@ -830,6 +915,55 @@ ELLE_TEST_SCHEDULED(partial_state)
   //   +---------+---------+---------+
 }
 
+ELLE_TEST_SCHEDULED(non_partial_state)
+{
+  typedef paxos::Server<int, int, int> Server;
+  typedef paxos::Client<int, int, int> Client;
+  typedef Client::Peers Peers;
+  Server server(11, {11});
+  auto make_client = [&] (std::unique_ptr<Peer<int, int, int>> p)
+    {
+      Peers peers;
+      peers.emplace_back(std::move(p));
+      Client client(1, std::move(peers));
+      client.conflict_backoff(false);
+      return client;
+    };
+  auto p1 = new InstrumentedPeer<int, int, int>(11, server);
+  p1->propose_barrier.open();
+  p1->accept_barrier.open();
+  p1->confirm_barrier.open();
+  auto c1 = make_client(std::unique_ptr<Peer<int, int, int>>(p1));
+  auto p2 = new InstrumentedPeer<int, int, int>(11, server);
+  p2->propose_barrier.open();
+  auto c2 = make_client(std::unique_ptr<Peer<int, int, int>>(p2));
+  c1.choose(0, 0);
+  elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+  {
+    scope.run_background(
+      "client_1",
+      [&]
+      {
+        p1->confirm_barrier.close();
+        ELLE_LOG("choose 1");
+        BOOST_CHECK(!c1.choose(1, 1));
+        BOOST_CHECK_EQUAL(c1.get(), 1);
+        p2->accept_barrier.open();
+        p2->confirm_barrier.open();
+      });
+    scope.run_background(
+      "client_2",
+      [&]
+      {
+        reactor::wait(p1->confirm_signal);
+        BOOST_CHECK_EQUAL(c2.choose(1, 2)->value.get<int>(), 1);
+      });
+    reactor::wait(p2->accept_signal);
+    p1->confirm_barrier.open();
+    reactor::wait(scope);
+  };
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -842,8 +976,11 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(versions), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(versions_partial), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(versions_aborted), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(propose_before_current_proposal_acceptation),
+            0, valgrind(1));
   suite.add(BOOST_TEST_CASE(serialization), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(partial_state), 0, valgrind(5));
+  suite.add(BOOST_TEST_CASE(non_partial_state), 0, valgrind(5));
   {
     auto quorum = BOOST_TEST_SUITE("quorum");
     suite.add(quorum);

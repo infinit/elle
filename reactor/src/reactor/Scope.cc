@@ -31,16 +31,25 @@ namespace reactor
 
   Thread&
   Scope::run_background(std::string const& name,
-                        Thread::Action const& a)
+                        Thread::Action a)
   {
-    ELLE_TRACE_SCOPE("%s: register background job %s", *this, name);
+    if (this->_exception)
+    {
+      // FIXME: remove this log when confirmed
+      ELLE_LOG("%s: discard background job %s (assert prevented!)", this, name);
+      reactor::wait(*this);
+      elle::unreachable();
+    }
+    ELLE_TRACE_SCOPE("%s: register background job %s", this, name);
     auto& sched = *Scheduler::scheduler();
     ++this->_running;
     auto idt = elle::log::logger().indentation();
+    auto parent = sched.current();
     auto thread =
       new Thread(
         sched, name,
-        [this, a, name, idt]
+        // Mutable lambda so the action can be moved.
+        [this, a = std::move(a), name, idt, parent] () mutable
         {
           elle::log::logger().indentation() = idt;
           try
@@ -50,7 +59,7 @@ namespace reactor
             // may hold objects that are expected to be destroyed - a
             // captured unique_ptr to a socket for instance, and one
             // would expect a disconnection when the thread is done.
-            auto action = std::move(a);
+            Thread::Action action(std::move(a));
             ELLE_TRACE("%s: background job %s starts", *this, name)
               action();
             ELLE_TRACE("%s: background job %s finished", *this, name);
@@ -69,6 +78,9 @@ namespace reactor
               this->_exception = std::current_exception();
               this->_raise(std::current_exception());
               this->_terminate_now();
+              parent->raise(std::current_exception());
+              if (parent->state() == Thread::State::frozen)
+                parent->_wait_abort(elle::sprintf("%s threw", this));
             }
             else
               ELLE_WARN("%s: exception already caught, losing exception: %s",
@@ -133,7 +145,7 @@ namespace reactor
 #endif
       try
       {
-        Scheduler::scheduler()->current()->wait(join);
+        reactor::wait(join);
         break;
       }
       catch (...)

@@ -5,6 +5,7 @@
 # include <boost/system/error_code.hpp>
 
 # include <elle/Backtrace.hh>
+# include <elle/With.hh>
 # include <elle/named.hh>
 
 # include <reactor/asio.hh>
@@ -198,8 +199,9 @@ namespace reactor
       bool
       _wait(Thread* thread, Waker const& waker) override;
     private:
-      friend class Waitable;
+      friend class Scope;
       friend class TimeoutGuard;
+      friend class Waitable;
       void _wait_timeout(const boost::system::error_code& e,
                          std::string const& waited);
       void _wait_abort(std::string const& reason);
@@ -220,12 +222,14 @@ namespace reactor
     /// Marks current thread noniterruptible while this object lives
     class NonInterruptible
     {
-    public:
+    private:
       NonInterruptible();
       ~NonInterruptible() noexcept(false);
+      /// Let With manage us.
+      friend class elle::With<NonInterruptible>;
     private:
-      Thread* _current;
-      bool    _initial_value;
+      ELLE_ATTRIBUTE(Thread*, current);
+      ELLE_ATTRIBUTE(bool, initial_value);
     };
 
   /*--------.

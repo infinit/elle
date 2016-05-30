@@ -39,7 +39,7 @@ namespace reactor
       virtual
       std::unique_ptr<backend::Thread>
       make_thread(const std::string& name,
-                  const Action& action) = 0;
+                  Action action) = 0;
       /// The currently running thread.
       virtual
       Thread*
@@ -71,8 +71,7 @@ namespace reactor
     | Construction |
     `-------------*/
     public:
-      Thread(const std::string& name,
-             const Action& action);
+      Thread(const std::string& name, Action action);
       virtual
       ~Thread();
 

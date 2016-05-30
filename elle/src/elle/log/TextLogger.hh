@@ -19,7 +19,8 @@ namespace elle
                  bool enable_tid = false,
                  bool enable_time = false,
                  bool universal_time = false,
-                 bool microsec_time = false);
+                 bool microsec_time = false,
+                 bool warn_err_only = false);
     protected:
       virtual
       void
@@ -39,6 +40,7 @@ namespace elle
       ELLE_ATTRIBUTE_RW(bool, enable_pid);
       ELLE_ATTRIBUTE_RW(bool, enable_tid);
       ELLE_ATTRIBUTE_RW(bool, enable_time);
+      ELLE_ATTRIBUTE_RW(bool, warn_err_only);
     };
   }
 }

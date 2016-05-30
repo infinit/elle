@@ -178,7 +178,7 @@ namespace reactor
     void
     PlainSocket<AsioSocket, EndPoint>::print(std::ostream& s) const
     {
-      elle::fprintf(s, "reactor::network::Socket(%s)", this->peer());
+      elle::fprintf(s, "%s(%s)", elle::type_info(*this), this->peer());
     }
 
     /*-------------.
@@ -372,19 +372,18 @@ namespace reactor
     `-----------*/
 
     template <typename AsioSocket, typename EndPoint>
-    boost::asio::ip::tcp::endpoint
+    EndPoint
     PlainSocket<AsioSocket, EndPoint>::peer() const
     {
-      return boost::asio::ip::tcp::endpoint(_peer.address(), _peer.port());
+      return this->_peer;
     }
 
     template <typename AsioSocket, typename EndPoint>
-    boost::asio::ip::tcp::endpoint
+    EndPoint
     PlainSocket<AsioSocket, EndPoint>::local_endpoint() const
     {
       typedef SocketSpecialization<AsioSocket> Spe;
-      auto ep = Spe::socket(*this->_socket).local_endpoint();
-      return boost::asio::ip::tcp::endpoint(ep.address(), ep.port());
+      return Spe::socket(*this->_socket).local_endpoint();
     }
 
     /*-------------.
@@ -750,5 +749,12 @@ namespace reactor
     // UDT
     // template
     // class PlainSocket<boost::asio::ip::udt::socket>;
+#ifdef REACTOR_NETWORK_UNIX_DOMAIN_SOCKET
+    // Unix Domain
+    template
+    class PlainSocket<boost::asio::local::stream_protocol::socket>;
+    template
+    class StreamSocket<boost::asio::local::stream_protocol::socket>;
+#endif
   }
 }

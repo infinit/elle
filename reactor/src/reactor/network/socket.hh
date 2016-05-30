@@ -55,18 +55,6 @@ namespace reactor
         void
         _pacify_streambuffer();
 
-      /*-----------.
-      | Properties |
-      `-----------*/
-      public:
-        virtual
-        boost::asio::ip::tcp::endpoint
-        peer() const = 0;
-
-        virtual
-        boost::asio::ip::tcp::endpoint
-        local_endpoint() const = 0;
-
       /*------.
       | Close |
       `------*/
@@ -169,12 +157,12 @@ namespace reactor
     `-----------*/
     public:
       virtual
-      boost::asio::ip::tcp::endpoint
-      peer() const override;
+      EndPoint
+      peer() const;
 
       virtual
-      boost::asio::ip::tcp::endpoint
-      local_endpoint() const override;
+      EndPoint
+      local_endpoint() const;
 
     /*----------------.
     | Pretty printing |
@@ -201,8 +189,8 @@ namespace reactor
 
     template <typename AsioSocket,
               typename EndPoint = typename AsioSocket::endpoint_type>
-    class StreamSocket:
-      public PlainSocket<AsioSocket, EndPoint>
+    class StreamSocket
+      : public PlainSocket<AsioSocket, EndPoint>
     {
     /*---------.
     | Typedefs |

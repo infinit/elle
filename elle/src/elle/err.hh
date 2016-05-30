@@ -8,15 +8,15 @@
 
 namespace elle
 {
+  void
+  err(std::string const& msg);
+
   template <typename ... Args>
   void
   err(std::string const& fmt, Args&& ... args)
   {
     elle::err(sprintf(fmt, std::forward<Args>(args)...));
   }
-
-  void
-  err(std::string const& msg);
 }
 
 #endif

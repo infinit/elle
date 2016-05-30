@@ -58,6 +58,7 @@ def configure(curl_config,
   # Public C++ configuration
   config = drake.cxx.Config()
   config.add_local_include_path('src')
+  config.add_local_include_path('bin')
   config.standard = drake.cxx.Config.cxx_14
   config.lib_path('lib')
 
@@ -274,6 +275,10 @@ def configure(curl_config,
     local_cxx_config.library_add(
       drake.copy(boost.thread_dynamic, 'lib', strip_prefix = True,
                  post_process = set_local_libcxx(cxx_toolkit)))
+  if backend == Backends.io:
+    local_cxx_config.define('REACTOR_CORO_BACKEND_IO')
+  else:
+    local_cxx_config.define('REACTOR_CORO_BACKEND_BOOST_CONTEXT')
 
   # FUSE
   fuse_lib = None
@@ -491,6 +496,8 @@ def configure(curl_config,
     'src/reactor/network/fingerprinted-socket.cc',
     'src/reactor/network/fingerprinted-socket.hh',
     'src/reactor/network/fwd.hh',
+    'src/reactor/network/http-server.hh',
+    'src/reactor/network/http-server.cc',
     'src/reactor/network/proxy.cc',
     'src/reactor/network/proxy.hh',
     'src/reactor/network/rdv-socket.cc',
@@ -558,11 +565,15 @@ def configure(curl_config,
   )
   if cxx_toolkit.os in [drake.os.linux, drake.os.macos]:
     sources += drake.nodes(
-      'src/reactor/fuse.hh',
-      'src/reactor/fuse.cc',
       'src/reactor/filesystem_fuse.cc',
-      'src/reactor/pthread.hh',
+      'src/reactor/fuse.cc',
+      'src/reactor/fuse.hh',
+      'src/reactor/network/unix-domain-server.cc',
+      'src/reactor/network/unix-domain-server.hh',
+      'src/reactor/network/unix-domain-socket.cc',
+      'src/reactor/network/unix-domain-socket.hh',
       'src/reactor/pthread.cc',
+      'src/reactor/pthread.hh',
       )
   else:
     dokan = drake.include('dokany', cxx_toolkit, cxx_config)
@@ -593,6 +604,11 @@ def configure(curl_config,
     'src/reactor/http/exceptions.cc',
     'src/reactor/http/exceptions.hh',
   )
+  connectivity_sources = drake.nodes(
+    'src/reactor/connectivity/connectivity.hh',
+    'src/reactor/connectivity/connectivity.cc',
+  )
+  sources += connectivity_sources
 
   lib_cxx_config = drake.cxx.Config(local_cxx_config)
 
@@ -732,10 +748,10 @@ def configure(curl_config,
   cxx_config_bin = drake.cxx.Config(local_cxx_config)
   cxx_config_bin.lib_path_runtime('../lib')
   for name in binaries_config:
-    source = drake.node('bin/%s.cc' % name)
+    sources = drake.nodes('bin/%s.cc' % name)
     bin = drake.cxx.Executable(
-      'bin/%s' % name, [
-        source,
+      'bin/%s' % name,
+        sources + [
         library,
         elle_lib,
       ],

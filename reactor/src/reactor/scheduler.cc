@@ -10,9 +10,9 @@
 
 #include <reactor/BackgroundOperation.hh>
 #include <reactor/backend/backend.hh>
-#ifdef INFINIT_WINDOWS
+#if defined(REACTOR_CORO_BACKEND_IO)
 # include <reactor/backend/coro_io/backend.hh>
-#else
+#elif defined(REACTOR_CORO_BACKEND_BOOST_CONTEXT)
 # include <reactor/backend/boost_context/backend.hh>
 #endif
 #include <reactor/exception.hh>
@@ -48,10 +48,12 @@ namespace reactor
     , _background_pool_free(0)
     , _io_service()
     , _io_service_work(new boost::asio::io_service::work(this->_io_service))
-#ifdef INFINIT_WINDOWS
+#if defined(REACTOR_CORO_BACKEND_IO)
     , _manager(new backend::coro_io::Backend())
-#else
+#elif defined(REACTOR_CORO_BACKEND_BOOST_CONTEXT)
     , _manager(new backend::boost_context::Backend())
+#else
+# error "REACTOR_CORO_BACKEND not defined"
 #endif
     , _running_thread()
   {
@@ -396,6 +398,7 @@ namespace reactor
     {
       ELLE_DEBUG("%s: %s was starting, discard it", *this, *thread);
       thread->_state = Thread::state::done;
+      thread->Waitable::_signal();
       thread->_scheduler_release();
       return true;
     }

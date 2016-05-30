@@ -5,6 +5,7 @@
 #include <reactor/asio.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/tcp-server.hh>
+#include <reactor/network/tcp-socket.hh>
 #include <reactor/scheduler.hh>
 #include <reactor/scheduler.hh>
 #include <reactor/semaphore.hh>

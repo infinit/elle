@@ -416,6 +416,12 @@ namespace athena
       ELLE_TRACE_SCOPE("%s: confirm proposal %s", *this, p);
       if (!this->_partial)
         _Details::check_quorum(*this, q);
+      if (this->_state && p.version < this->_state->proposal.version)
+      {
+        ELLE_TRACE("discard obsolete confirm, current proposal is %s",
+                   this->_state->proposal);
+        return;
+      }
       if (!this->_state ||
           this->_state->proposal < p ||
           !this->_state->accepted)
@@ -423,12 +429,6 @@ namespace athena
         ELLE_WARN("%s: someone malicious sent a confirm before propose/accept",
                   this);
         throw elle::Error("propose and accept before confirming");
-      }
-      if (p < this->_state->proposal)
-      {
-        ELLE_TRACE("discard obsolete confirm, current proposal is %s",
-                   this->_state->proposal);
-        return;
       }
       auto& accepted = *this->_state->accepted;
       if (!accepted.confirmed)

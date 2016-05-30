@@ -266,6 +266,20 @@ ELLE_TEST_SCHEDULED(unique_ptr)
   }
 }
 
+ELLE_TEST_SCHEDULED(deadlock)
+{
+  reactor::Thread::unique_ptr starting;
+  reactor::Thread killer(
+    "killer",
+    [&]
+    {
+      starting->terminate();
+    });
+  reactor::yield();
+  starting.reset(new reactor::Thread("starting", [] { reactor::sleep(); }));
+  reactor::wait(*starting);
+}
+
 /*-----.
 | Wait |
 `-----*/
@@ -679,18 +693,15 @@ namespace scope
           BOOST_CHECK(beacon2);
         };
       });
-
     sched.run();
   }
 
-  static
-  void
-  exception()
+  ELLE_TEST_SCHEDULED(exception, (bool, wait))
   {
     reactor::Scheduler sched;
     reactor::Thread t(
       sched, "main",
-      []
+      [wait]
       {
         bool beacon = false;
         elle::With<reactor::Scope>() << [&] (reactor::Scope& s)
@@ -719,7 +730,10 @@ namespace scope
             {
               throw BeaconException();
             });
-          BOOST_CHECK_THROW(s.wait(), BeaconException);
+          if (wait)
+            BOOST_CHECK_THROW(s.wait(), BeaconException);
+          else
+            BOOST_CHECK_THROW(reactor::sleep(), BeaconException);
           BOOST_CHECK(beacon);
         };
       });
@@ -737,8 +751,13 @@ namespace scope
         {
           throw BeaconException();
         });
-      reactor::yield();
-      reactor::yield();
+      try
+      {
+        reactor::yield();
+        reactor::yield();
+      }
+      catch (BeaconException const&)
+      {}
       BOOST_CHECK(thread.done());
       BOOST_CHECK_THROW(s.wait(), BeaconException);
     };
@@ -757,7 +776,6 @@ namespace scope
         elle::With<reactor::Scope>() << [&] (reactor::Scope& s)
         {
           auto thrower = [] { throw BeaconException(); };
-
           s.run_background(
             "0",
             [&]
@@ -776,10 +794,8 @@ namespace scope
               }
               BOOST_FAIL("should have been killed");
             });
-
           for (int i = 1; i <= 2; ++i)
             s.run_background(elle::sprintf("%s", i), [&] { thrower(); });
-
           BOOST_CHECK_THROW(s.wait(), BeaconException);
           BOOST_CHECK(beacon);
         };
@@ -842,7 +858,6 @@ namespace scope
               while (true)
                 reactor::yield();
             });
-
           s.run_background(
             "2",
             [&]
@@ -850,11 +865,43 @@ namespace scope
               while (true)
                 reactor::yield();
             });
-
           sched.terminate_now();
         };
       });
     sched.run();
+  }
+
+  // Insert a new thread while the Scope is being terminated. Used to delete the
+  // new, still running thread.
+  ELLE_TEST_SCHEDULED(terminate_insert)
+  {
+    reactor::Barrier leave;
+    elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+    {
+      scope.run_background(
+        "1",
+        [&]
+        {
+          reactor::sleep();
+        });
+      scope.run_background(
+        "2",
+        [&]
+        {
+          throw BeaconException();
+        });
+      reactor::yield();
+      reactor::yield();
+      BOOST_CHECK_THROW(
+        scope.run_background(
+          "3",
+          [&]
+          {
+            reactor::sleep();
+          }),
+        BeaconException);
+      BOOST_CHECK_THROW(reactor::wait(scope), BeaconException);
+    };
   }
 }
 
@@ -2930,120 +2977,164 @@ namespace timeout_
   }
 }
 
-ELLE_TEST_SCHEDULED(test_terminate_non_interruptible)
+namespace non_interruptible
 {
-  ELLE_LOG("test 1");
+  ELLE_TEST_SCHEDULED(terminate)
   {
-    reactor::Barrier b,c;
-    int status = 0;
-    reactor::Thread t("test", [&] {
-        reactor::Thread::NonInterruptible ni;
-        status = 1;
-        b.open();
-        reactor::wait(c);
-        status = 2;
-    });
-    reactor::wait(b);
-    b.close(); c.open();
-    t.terminate_now();
-    BOOST_CHECK_EQUAL(status, 2);
-  }
-  ELLE_LOG("test 2");
-  {
-    reactor::Barrier b,c,d;
-    int status = 0;
-    reactor::Thread t("test", [&] {
+    ELLE_LOG("test 1");
+    {
+      reactor::Barrier b,c;
+      int status = 0;
+      reactor::Thread t(
+        "test",
+        [&]
         {
-          reactor::Thread::NonInterruptible ni;
-          status = 1;
-          b.open();
-          reactor::wait(c);
-          status = 2;
-        }
-        reactor::wait(d);
-        status = 3;
-    });
-    reactor::wait(b);
-    c.open();
-    reactor::yield();
-    t.terminate_now();
-    BOOST_CHECK_EQUAL(status, 2);
-  }
-  ELLE_LOG("test 3")
-  {
-    reactor::Scheduler sched;
-    reactor::Barrier ready("ready"), go("go"), terminated("terminated");
-    reactor::Thread t(
-      sched, "main",
-      [&]
-      {
-        elle::With<reactor::Scope>() << [&] (reactor::Scope& s)
+          elle::With<reactor::Thread::NonInterruptible>() << [&]
+          {
+            status = 1;
+            b.open();
+            reactor::wait(c);
+            status = 2;
+          };
+        });
+      reactor::wait(b);
+      b.close(); c.open();
+      t.terminate_now();
+      BOOST_CHECK_EQUAL(status, 2);
+    }
+    ELLE_LOG("test 2");
+    {
+      reactor::Barrier b,c,d;
+      int status = 0;
+      reactor::Thread t(
+        "test",
+        [&]
         {
-          auto& t1 = s.run_background(
-            "1",
-            [&]
-            {
-              try
+          elle::With<reactor::Thread::NonInterruptible>() << [&]
+          {
+            status = 1;
+            b.open();
+            reactor::wait(c);
+            status = 2;
+          };
+          reactor::wait(d);
+          status = 3;
+        });
+      reactor::wait(b);
+      c.open();
+      reactor::yield();
+      t.terminate_now();
+      BOOST_CHECK_EQUAL(status, 2);
+    }
+    ELLE_LOG("test 3")
+    {
+      reactor::Scheduler sched;
+      reactor::Barrier ready("ready"), go("go"), terminated("terminated");
+      reactor::Thread t(
+        sched, "main",
+        [&]
+        {
+          elle::With<reactor::Scope>() << [&] (reactor::Scope& s)
+          {
+            auto& t1 = s.run_background(
+              "1",
+              [&]
               {
-                ELLE_TRACE("open %s", ready)
-                  ready.open();
+                try
                 {
-                  reactor::Thread::NonInterruptible ni;
-                  // Because it's not interruptible, reactor should wait for ever...
-                  ELLE_TRACE("wait for %s", go)
-                    go.wait();
-                  ELLE_TRACE("go status: %s", (bool) go);
+                  ELLE_TRACE("open %s", ready)
+                    ready.open();
+                  {
+                    elle::With<reactor::Thread::NonInterruptible>() << [&]
+                    {
+                      // Because it's not interruptible, reactor should wait for
+                      // ever...
+                      ELLE_TRACE("wait for %s", go)
+                        go.wait();
+                      ELLE_TRACE("go status: %s", (bool) go);
+                    };
+                  }
                 }
-              }
-              catch (reactor::Terminate const&)
+                catch (reactor::Terminate const&)
+                {
+                  BOOST_CHECK(ready);
+                  BOOST_CHECK(go);
+                  ELLE_TRACE("open %s", terminated)
+                    terminated.open();
+                  throw;
+                }
+              });
+            auto& t2 = s.run_background(
+              "2",
+              [&]
               {
-                BOOST_CHECK(ready);
+                ELLE_TRACE("wait for %s", ready)
+                  ready.wait();
+                reactor::yield();
+                // Terminate shoulb be blocked until go is open.
+                ELLE_TRACE("terminate %s", t1);
+                  t1.terminate_now();
                 BOOST_CHECK(go);
-                ELLE_TRACE("open %s", terminated)
-                  terminated.open();
-                throw;
-              }
-            });
-          auto& t2 = s.run_background(
-            "2",
-            [&]
-            {
-              ELLE_TRACE("wait for %s", ready)
-                ready.wait();
-              reactor::yield();
-              // Terminate shoulb be blocked until go is open.
-              ELLE_TRACE("terminate %s", t1);
-                t1.terminate_now();
-              BOOST_CHECK(go);
-              BOOST_CHECK(terminated);
-            });
-          s.run_background(
-            "3",
-            [&]
-            {
-              ELLE_TRACE("wait for %s", ready)
-                ready.wait();
-              reactor::yield();
-              reactor::yield();
-              BOOST_CHECK(!t1.done());
-              BOOST_CHECK(!t2.done());
-              ELLE_TRACE("open %s", go)
-                go.open();
-              BOOST_CHECK(!t1.done());
-              BOOST_CHECK(!t2.done());
-              ELLE_TRACE("wait fo %s", terminated)
-                terminated.wait(1_sec);
-              reactor::yield();
-              reactor::yield();
-              BOOST_CHECK(t1.done());
-              BOOST_CHECK(t2.done());
-            });
-          s.wait();
-        };
-      });
-    sched.run();
+                BOOST_CHECK(terminated);
+              });
+            s.run_background(
+              "3",
+              [&]
+              {
+                ELLE_TRACE("wait for %s", ready)
+                  ready.wait();
+                reactor::yield();
+                reactor::yield();
+                BOOST_CHECK(!t1.done());
+                BOOST_CHECK(!t2.done());
+                ELLE_TRACE("open %s", go)
+                  go.open();
+                BOOST_CHECK(!t1.done());
+                BOOST_CHECK(!t2.done());
+                ELLE_TRACE("wait fo %s", terminated)
+                  terminated.wait(1_sec);
+                reactor::yield();
+                reactor::yield();
+                BOOST_CHECK(t1.done());
+                BOOST_CHECK(t2.done());
+              });
+            s.wait();
+          };
+        });
+      sched.run();
+    }
   }
 
+  ELLE_TEST_SCHEDULED(nested_exception)
+  {
+    bool beacon = false;
+    reactor::Barrier sleeping;
+    reactor::Channel<int> poke;
+    reactor::Thread cobaye(
+      "cobaye",
+      [&]
+      {
+        try
+        {
+          elle::With<reactor::Thread::NonInterruptible>() << [&]
+          {
+            sleeping.open();
+            poke.get();
+            throw BeaconException();
+          };
+        }
+        catch (BeaconException const&)
+        {}
+        catch (reactor::Terminate const&)
+        {
+          beacon = true;
+        }
+      });
+    reactor::wait(sleeping);
+    poke.put(42);
+    cobaye.terminate_now();
+    BOOST_CHECK(beacon);
+  }
 }
 
 /*---------.
@@ -3106,6 +3197,7 @@ ELLE_TEST_SUITE()
     basics->add(BOOST_TEST_CASE(managed), 0, valgrind(1, 5));
     basics->add(BOOST_TEST_CASE(non_managed), 0, valgrind(1, 5));
     basics->add(BOOST_TEST_CASE(unique_ptr), 0, valgrind(1, 5));
+    basics->add(BOOST_TEST_CASE(deadlock), 0, valgrind(1, 5));
   }
 
   {
@@ -3178,8 +3270,10 @@ ELLE_TEST_SUITE()
     scope->add(BOOST_TEST_CASE(empty), 0, valgrind(1, 5));
     auto wait = &scope::wait;
     scope->add(BOOST_TEST_CASE(wait), 0, valgrind(1, 5));
-    auto exception = &scope::exception;
-    scope->add(BOOST_TEST_CASE(exception), 0, valgrind(1, 5));
+    auto exception_wait = std::bind(&scope::exception, true);
+    scope->add(BOOST_TEST_CASE(exception_wait), 0, valgrind(1, 5));
+    auto exception_sleep = std::bind(&scope::exception, false);
+    scope->add(BOOST_TEST_CASE(exception_sleep), 0, valgrind(1, 5));
     auto exception_done = &scope::exception_done;
     scope->add(BOOST_TEST_CASE(exception_done), 0, valgrind(1, 5));
     auto multiple_exception = &scope::multiple_exception;
@@ -3188,6 +3282,8 @@ ELLE_TEST_SUITE()
     scope->add(BOOST_TEST_CASE(terminate), 0, valgrind(1, 5));
     auto terminate_all = &scope::terminate_all;
     scope->add(BOOST_TEST_CASE(terminate_all), 0, valgrind(1, 5));
+    auto terminate_insert = &scope::terminate_insert;
+    scope->add(BOOST_TEST_CASE(terminate_insert), 0, valgrind(1, 5));
   }
 
   {
@@ -3221,12 +3317,20 @@ ELLE_TEST_SUITE()
   terminate->add(BOOST_TEST_CASE(test_exception_escape), 0, valgrind(1, 5));
   terminate->add(BOOST_TEST_CASE(test_exception_escape_collateral), 0, valgrind(1, 5));
   terminate->add(BOOST_TEST_CASE(test_terminate_twice), 0, valgrind(1, 5));
-  terminate->add(BOOST_TEST_CASE(test_terminate_non_interruptible), 0, valgrind(1, 5));
   // See Thread::_step: uncaught_exception is broken, can't make this work. It's
   // a security anyway ...
   // terminate->add(BOOST_TEST_CASE(test_terminate_swallowed), 0, valgrind(1, 5));
   terminate->add(BOOST_TEST_CASE(test_terminate_not_swallowed_unwinding), 0, valgrind(1, 5));
   terminate->add(BOOST_TEST_CASE(test_terminate_not_swallowed_catch), 0, valgrind(1, 5));
+
+  boost::unit_test::test_suite* ni = BOOST_TEST_SUITE("non_interruptible");
+  boost::unit_test::framework::master_test_suite().add(ni);
+  {
+    auto terminate = non_interruptible::terminate;
+    ni->add(BOOST_TEST_CASE(terminate), 0, valgrind(1, 5));
+    auto nested_exception = non_interruptible::nested_exception;
+    ni->add(BOOST_TEST_CASE(nested_exception), 0, valgrind(1, 5));
+  }
 
   boost::unit_test::test_suite* timeout = BOOST_TEST_SUITE("Timeout");
   boost::unit_test::framework::master_test_suite().add(timeout);

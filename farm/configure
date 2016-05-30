@@ -31,6 +31,13 @@ def parse_options():
                       type = str,
                       help = 'Project name',
                       required = True)
+  parser.add_argument('--public-beyond',
+                      metavar = 'PUBLIC_BEYOND',
+                      type = bool,
+                      help = 'Strip all credentials from beyond',
+                      required = False,
+                      default = False
+                      )
   for d in ['build', 'install', 'source']:
     parser.add_argument('--%s-dir' % d,
                         metavar = '%s_DIR' % d.upper(),
@@ -75,6 +82,8 @@ if %(arch)r == 'arm':
   cxx_toolkit_host =  drake.cxx.GccToolkit()
   extra_args['cxx_toolkit_host'] = cxx_toolkit_host
 
+if %(beyond_public)r and %(project)r == 'Filesystem':
+  extra_args['beyond_public'] = True
 
 with drake.Drake(%(dir_source)r) as d:
   python = %(python)r
@@ -113,9 +122,11 @@ parameters = {
   'valgrind': False,
   'production_build': True,
   'arch': options.arch,
-  'drake_utils': '%s/../drake-utils.py' % os.path.dirname(os.path.realpath(__file__))
+  'drake_utils': '%s/../drake-utils.py' % os.path.dirname(os.path.realpath(__file__)),
+  'project': options.project,
 }
 
+parameters['beyond_public'] = options.public_beyond
 if options.os == 'android':
   parameters['compiler'] = '/root/arm-linux-androideabi-4.8/bin/arm-linux-androideabi-g++'
   parameters['python'] = False
@@ -133,6 +144,7 @@ elif options.os == 'osx':
   parameters['python'] = '/usr/local/Frameworks/Python.framework/Versions/3.4'
 elif options.os == 'windows':
   parameters['compiler'] = '%s-w64-mingw32-g++' % options.arch
+  parameters['flags'] = ('-gstabs',)
   parameters['boost_shared'] = False
   if options.arch == 'x86_64': # Use native python3 in order to run tests
     parameters['python'] = None # '/home/buildslave/local/python-mingw-64'

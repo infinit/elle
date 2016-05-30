@@ -3,6 +3,9 @@
 
 # include <elle/Exception.hh>
 # include <elle/compiler.hh>
+# include <elle/With.hh>
+# include <reactor/scheduler.hh>
+# include <reactor/Scope.hh>
 
 namespace reactor
 {
