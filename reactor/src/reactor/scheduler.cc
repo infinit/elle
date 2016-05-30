@@ -61,6 +61,7 @@ namespace reactor
     this->_eptr = nullptr;
     plugins::logger_indentation.load();
     plugins::logger_tags.load();
+#ifndef INFINIT_WINDOWS
     // Thread dumper on SIGUSR2.
     if (elle::os::inenv("REACTOR_SCHEDULER_DEBUG"))
     {
@@ -89,6 +90,7 @@ namespace reactor
             print_thread(*thread);
         });
     }
+#endif
   }
 
   Scheduler::~Scheduler()
