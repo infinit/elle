@@ -487,6 +487,18 @@ namespace reactor
     this->_current->interruptible(this->_initial_value);
   }
 
+  Thread::Interruptible::Interruptible()
+  : _current(reactor::scheduler().current())
+  , _initial_value(_current->interruptible())
+  {
+    this->_current->interruptible(true);
+  }
+
+  Thread::Interruptible::~Interruptible()
+  {
+    this->_current->interruptible(this->_initial_value);
+  }
+
   /*----------------.
   | Print operators |
   `----------------*/

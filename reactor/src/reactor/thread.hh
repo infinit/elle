@@ -232,6 +232,16 @@ namespace reactor
       ELLE_ATTRIBUTE(bool, initial_value);
     };
 
+    /// Mark thread interrutible for the lifetime of this object
+    class Interruptible
+    {
+    public:
+      Interruptible();
+      ~Interruptible();
+    private:
+      ELLE_ATTRIBUTE(Thread*, current);
+      ELLE_ATTRIBUTE(bool, initial_value);
+    };
   /*--------.
   | Backend |
   `--------*/
