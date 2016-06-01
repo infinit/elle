@@ -809,6 +809,24 @@ class Path:
                       virtual = self.__virtual,
                       volume = self.__volume)
 
+  def prefix_of(self, rhs):
+      """Whether self is a prefix of rhs.
+
+      >>> p = Path('foo/bar')
+      >>> p.prefix_of('foo/bar/baz/quux')
+      True
+      >>> p.prefix_of('foo/baz/bar/quux')
+      False
+      >>> p.prefix_of('nope')
+      False
+      """
+      rhs = drake.Path(rhs).canonize().__path
+      path = self.__path
+      while len(rhs) and len(path) and path[0] == rhs[0]:
+        rhs = rhs[1:]
+        path = path[1:]
+      return len(path) == 0
+
   def without_prefix(self, rhs, force = True):
       """Remove rhs prefix from self.
 
