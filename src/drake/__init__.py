@@ -1029,7 +1029,10 @@ class DepFile:
         self.__hashes = {}
 
     Hashed = object()
-    def up_to_date(self, oldest_target, oldest_mtime):
+    def up_to_date(self,
+                   oldest_target,
+                   oldest_mtime,
+                   mtime_implemented):
       '''Whether targets are up to date wrt sources.
 
       False if building is needed. The most recent source mtime as
@@ -1047,17 +1050,21 @@ class DepFile:
         #   continue
         n = node(path)
         if isinstance(n, Node):
-          mtime = n.mtime
-          if mtime < oldest_mtime:
-            continue
-          elif res is True or res < mtime:
-            res = mtime
-          sched.logger.log(
-            'drake.Builder.mtime',
-            drake.log.LogLevel.debug,
-            '%s: %s is more recent than %s (%s > %s)' % (
-              self.__builder, n.path(), oldest_target,
-              mtime, oldest_mtime))
+          try:
+            mtime = n.mtime
+          except NotImplementedError:
+            pass
+          else:
+            if mtime_implemented and mtime < oldest_mtime:
+              continue
+            elif res is True or res < mtime:
+              res = mtime
+            sched.logger.log(
+              'drake.Builder.mtime',
+              drake.log.LogLevel.debug,
+              '%s: %s is more recent than %s (%s > %s)' % (
+                self.__builder, n.path(), oldest_target,
+                mtime, oldest_mtime))
         try:
           h = n.hash()
         except Exception:
@@ -1400,13 +1407,16 @@ class BaseNode(object, metaclass = _BaseNodeType):
 
   def _skippable(self):
     if self.builder is None:
-      if isinstance(self, Node):
-        if self.missing():
-          return False
+      if self.missing():
+        return False
     else:
       if not self.builder._Builder__executed:
         return False
     return all(dep.skippable() for dep in self.dependencies)
+
+  @property
+  def mtime_local(self):
+    raise NotImplementedError()
 
 
 class VirtualNode(BaseNode):
@@ -1936,6 +1946,7 @@ class Builder:
               'some dynamic dependency couldn\'t be built: %s' % e)
             execute = True
         # If any non-virtual target is missing, we must rebuild.
+        mtime_implemented = True
         oldest_target = None
         oldest_mtime = None
         if not execute:
@@ -1945,11 +1956,13 @@ class Builder:
               execute = True
               break
             else:
-              mtime = dst.mtime_local
-              if oldest_target is None or mtime < oldest_mtime:
-                oldest_target = dst
-                oldest_mtime = mtime
-
+              try:
+                mtime = dst.mtime_local
+                if oldest_target is None or mtime < oldest_mtime:
+                  oldest_target = dst
+                  oldest_mtime = mtime
+              except NotImplementedError:
+                mtime_implemented = False
         # Load static dependencies
         self._depfile.read()
         if self._depfile._DepFile__invalid:
@@ -1988,10 +2001,12 @@ class Builder:
         # Check if we are up to date wrt all dependencies
         if not execute:
           for f in chain((self._depfile,), self._depfiles.values()):
-            res = f.up_to_date(oldest_target, oldest_mtime)
+            res = f.up_to_date(
+              oldest_target, oldest_mtime, mtime_implemented)
             if not res:
               execute = True
-          if not execute and isinstance(res, float):
+          if mtime_implemented and not execute \
+             and isinstance(res, float):
             for dst in self.__targets:
               if dst.mtime_local < oldest_mtime:
                 print('Adjust mtime of %s' % dst)
@@ -2073,10 +2088,9 @@ class Builder:
           drake.log.LogLevel.trace,
           '%s: check all targets were built', self):
         for dst in self.__targets:
+          if dst.missing():
+            raise Exception('%s wasn\'t created by %s' % (dst, self))
           if isinstance(dst, Node):
-            if dst.missing():
-              raise Exception('%s wasn\'t created by %s' \
-                              % (dst, self))
             dst._Node__hash = None
       # Update depfiles
       with logger.log('drake.Builder',
