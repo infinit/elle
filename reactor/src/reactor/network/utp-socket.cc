@@ -606,11 +606,27 @@ namespace reactor
     UTPSocket::EndPoint
     UTPSocket::peer()
     {
+      using namespace boost::asio::ip;
       struct sockaddr_in addr;
       socklen_t addrlen = sizeof(addr);
       utp_getpeername(this->_socket, (sockaddr*)&addr, &addrlen);
-      return EndPoint(boost::asio::ip::address_v4(ntohl(addr.sin_addr.s_addr)),
-        ntohs(addr.sin_port));
+      if (addr.sin_family == AF_INET)
+      {
+        return EndPoint(address_v4(ntohl(addr.sin_addr.s_addr)),
+                        ntohs(addr.sin_port));
+      }
+      else if (addr.sin_family == AF_INET6)
+      {
+        struct sockaddr_in6* addr6 = (struct sockaddr_in6*)&addr;
+        std::array<unsigned char, 16> addr_bytes {{0}};
+        memcpy(addr_bytes.data(), addr6->sin6_addr.s6_addr, 16);
+        return EndPoint(address_v6(addr_bytes), ntohs(addr6->sin6_port));
+      }
+      else
+      {
+        throw elle::Error(
+          elle::sprintf("unknown protocol %s", addr.sin_family));
+      }
     }
 
     void
