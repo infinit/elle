@@ -30,7 +30,7 @@ namespace reactor
       if (sin->sin_family == AF_INET)
       {
         ep = UTPServer::EndPoint(
-          boost::asio::ip::address::from_string(inet_ntoa(sin->sin_addr)),
+          boost::asio::ip::address_v4(ntohl(sin->sin_addr.s_addr)),
           ntohs(sin->sin_port));
       }
       else if (sin->sin_family == AF_INET6)
@@ -38,9 +38,8 @@ namespace reactor
         struct sockaddr_in6 *sin = (struct sockaddr_in6*)args->address;
         std::array<unsigned char, 16> addr {{0}};
         memcpy(addr.data(), sin->sin6_addr.s6_addr, 16);
-        ep = UTPServer::EndPoint(
-          boost::asio::ip::address_v6(addr),
-          ntohs(sin->sin6_port));
+        ep = UTPServer::EndPoint(boost::asio::ip::address_v6(addr),
+                                 ntohs(sin->sin6_port));
       }
       else
       {
@@ -151,7 +150,7 @@ namespace reactor
       {
         unsigned char* data =
           const_cast<unsigned char*>(this->_write.contents());
-        int sz = _write.size();
+        int sz = this->_write.size();
         while (this->_write_pos < sz)
         {
           ssize_t len = utp_write(this->_socket,
@@ -204,7 +203,7 @@ namespace reactor
       ELLE_DEBUG("accepting...");
       this->_accept_barrier.wait();
       ELLE_DEBUG("...accepted");
-      ELLE_ASSERT(_accept_barrier.opened());
+      ELLE_ASSERT(this->_accept_barrier.opened());
       std::unique_ptr<UTPSocket> sock(this->_accept_queue.back().release());
       this->_accept_queue.pop_back();
       if (this->_accept_queue.empty())
@@ -250,7 +249,7 @@ namespace reactor
         if (this->_checker)
         {
           this->_checker->terminate();
-          reactor::wait(*_checker);
+          reactor::wait(*this->_checker);
         }
         if (this->_listener)
         {
@@ -362,7 +361,7 @@ namespace reactor
       this->_read_barrier.open();
       this->_write_barrier.open();
       this->_connect_barrier.open();
-      utp_set_userdata(_socket, nullptr);
+      utp_set_userdata(this->_socket, nullptr);
       this->_socket = nullptr;
     }
 
@@ -380,7 +379,7 @@ namespace reactor
         Size
         read(char* buffer, Size size) override
         {
-          elle::Buffer buf = _socket->read_some(size);
+          elle::Buffer buf = this->_socket->read_some(size);
           memcpy(buffer, buf.contents(), buf.size());
           return buf.size();
         }
@@ -430,7 +429,7 @@ namespace reactor
     void
     UTPSocket::connect(std::string const& host, int port)
     {
-      auto lock = _pending_operations.lock();
+      auto lock = this->_pending_operations.lock();
       struct addrinfo* ai = nullptr;
       addrinfo hints;
       memset(&hints, 0, sizeof(hints));
@@ -438,14 +437,15 @@ namespace reactor
       hints.ai_socktype = SOCK_DGRAM;
       hints.ai_protocol = IPPROTO_UDP;
       int res = getaddrinfo(host.c_str(), std::to_string(port).c_str(),
-                  &hints, &ai);
+                            &hints, &ai);
+      // IPv4 failed, try IPv6.
       if (res)
       {
         if (ai)
           freeaddrinfo(ai);
         hints.ai_family = AF_INET6;
         res = getaddrinfo(host.c_str(), std::to_string(port).c_str(),
-                    &hints, &ai);
+                          &hints, &ai);
       }
       if (res)
         throw elle::Error("Failed to resolve " + host);
@@ -508,10 +508,14 @@ namespace reactor
       utp_socket_stats* st = utp_get_stats(this->_socket);
       if (st == nullptr)
         return;
-      std::cerr << "recv " << st->nbytes_recv << "\nsent " << st->nbytes_xmit
-      << "\nrexmit " << st->rexmit << "\nfastrexmit " << st->fastrexmit
-      << "\nnxmit " << st->nxmit <<"\nnrecv" << st->nrecv
-      << "\nnduprect " << st->nduprecv <<"\nmtu " << st->mtu_guess << std::endl;
+      std::cerr << "recv " << st->nbytes_recv
+                << "\nsent " << st->nbytes_xmit
+                << "\nrexmit " << st->rexmit
+                << "\nfastrexmit " << st->fastrexmit
+                << "\nnxmit " << st->nxmit
+                << "\nnrecv" << st->nrecv
+                << "\nnduprect " << st->nduprecv
+                <<"\nmtu " << st->mtu_guess << std::endl;
     }
 
     elle::Buffer
@@ -599,7 +603,7 @@ namespace reactor
       memcpy(res.mutable_contents(), this->_read_buffer.contents(), sz);
       memmove(this->_read_buffer.contents(), this->_read_buffer.contents() + sz,
               this->_read_buffer.size() - sz);
-      this->_read_buffer.size(_read_buffer.size() - sz);
+      this->_read_buffer.size(this->_read_buffer.size() - sz);
       return res;
     }
 
@@ -649,10 +653,10 @@ namespace reactor
       struct sockaddr_in remote;
       struct msghdr msg;
       ssize_t len;
-      struct cmsghdr *cmsg;
-      struct sock_extended_err *e;
-      struct sockaddr *icmp_addr;
-      struct sockaddr_in *icmp_sin;
+      struct cmsghdr* cmsg;
+      struct sock_extended_err* e;
+      struct sockaddr* icmp_addr;
+      struct sockaddr_in* icmp_sin;
 
       memset(&msg, 0, sizeof(msg));
 
@@ -689,8 +693,8 @@ namespace reactor
 
         if (remote.sin_family != AF_INET)
         {
-          ELLE_DEBUG(
-            "Address family is %s, not AF_INET?  Ignoring", remote.sin_family);
+          ELLE_DEBUG("Address family is %s, not AF_INET? Ignoring",
+                     remote.sin_family);
           continue;
         }
 
@@ -752,7 +756,7 @@ namespace reactor
             "ICMP type 3, code 4: Fragmentation error, discovered MTU %s",
             e->ee_info);
           utp_process_icmp_fragmentation(ctx, vec_buf, len,
-                                         (struct sockaddr *)&remote,
+                                         (struct sockaddr*)&remote,
                                          sizeof(remote), e->ee_info);
         }
         else
@@ -830,7 +834,7 @@ namespace reactor
               this->_check_icmp();
             }
           }
-          catch(std::exception const& e)
+          catch (std::exception const& e)
           {
             ELLE_DEBUG("exiting: %s", e.what());
             throw;
