@@ -1155,31 +1155,36 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     #ldap_url = 'ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/%s.tgz' % ldap_basename
     ldap_tarball = drake.node('openldap/%s.tgz' % ldap_basename)
     ldap_configure = drake.node('openldap/%s/configure' % ldap_basename)
-    ldap_prefix = drake.path_build('openldap')
-    ldap_prefix_absolute = drake.path_root() / ldap_prefix
+    ldap_prefix = drake.Path('openldap')
+    ldap_targets = [
+      drake.node(ldap_prefix / p) for p in [
+        'lib/liblber.a',
+        'lib/libldap_r.a',
+        'bin/ldapsearch',
+      ]]
+    # ldap_prefix_absolute = drake.path_root() / ldap_prefix
     drake.HTTPDownload(ldap_url, ldap_tarball,
                        fingerprint='693ac26de86231f8dcae2b4e9d768e51')
     drake.TarballExtractor(ldap_tarball, targets = ['%s/configure' % ldap_basename])
     GNUBuilder(
       cxx_toolkit,
       configure = ldap_configure,
-      configure_args = ['--prefix=%s' % ldap_prefix_absolute,
-                        '--disable-slapd',
-                        '--disable-shared',
-                        'CXXFLAGS=-fPIC',
-                        'CFLAGS=-fPIC'],
-      targets = [drake.node('%s/lib/liblber.a'% ldap_prefix_absolute),
-                 drake.node('%s/lib/libldap_r.a'% ldap_prefix_absolute),
-                 drake.node('%s/bin/ldapsearch' % ldap_prefix_absolute)],
+      configure_args = [
+        '--prefix=%s' % drake.path_build(ldap_prefix, absolute = True),
+        '--disable-slapd',
+        '--disable-shared',
+        'CXXFLAGS=-fPIC',
+        'CFLAGS=-fPIC'],
+      targets = ldap_targets,
       sources = [],
     )
     ldap_libs = drake.nodes(
-        '%s/lib/libldap_r.a' % ldap_prefix_absolute,
-        '%s/lib/liblber.a' % ldap_prefix_absolute,
+        '%s/lib/libldap_r.a' % ldap_prefix,
+        '%s/lib/liblber.a' % ldap_prefix,
         )
     ldap_config = drake.cxx.Config(cxx_config)
     ldap_config.add_local_include_path(ldap_prefix / 'include')
-    drake.Rule('openldap') << drake.node('openldap/bin/ldapsearch')
+    drake.Rule('openldap') << ldap_targets
 
   ## ------------- ##
   ## Configuration ##
