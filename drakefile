@@ -1178,6 +1178,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
         '--disable-shared',
         'CXXFLAGS=-fPIC',
         'CFLAGS=-fPIC'],
+      build_args = ['install', 'SOELIM=echo'],
       targets = ldap_targets,
       sources = [],
     )
