@@ -179,7 +179,7 @@ static void test_sum(void)
 #else
   ::usleep(500000);
 #endif
-  int s;
+  int s = -1;
   boost::filesystem::ifstream(tmp/"1"/"sum") >> s;
   BOOST_CHECK_EQUAL(s, 1);
   boost::filesystem::ifstream(tmp/"10"/"12"/"sum") >> s;
