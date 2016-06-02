@@ -284,6 +284,16 @@ def configure(curl_config,
   fuse_lib = None
   dokan_lib = None
   if fuse is None:
+    fuse_includes = drake.nodes(
+      'fuse/include/fuse/cuse_lowlevel.h',
+      'fuse/include/fuse/fuse_common_compat.h',
+      'fuse/include/fuse/fuse_common.h',
+      'fuse/include/fuse/fuse_compat.h',
+      'fuse/include/fuse/fuse.h',
+      'fuse/include/fuse/fuse_lowlevel_compat.h',
+      'fuse/include/fuse/fuse_lowlevel.h',
+      'fuse/include/fuse/fuse_opt.h'
+      )
     if cxx_toolkit.os is drake.os.linux:
       fuse_version = '2.9.4'
       fuse_version_us = fuse_version.replace(".", "_")
@@ -298,16 +308,6 @@ def configure(curl_config,
       fuse_prefix = drake.path_build('fuse')
       fuse_prefix_absolute = drake.path_root() / fuse_prefix
       fuse_lib =  drake.cxx.DynLib('fuse/lib/libfuse.so.2')
-      fuse_includes = drake.nodes(
-        'fuse/include/fuse/cuse_lowlevel.h',
-        'fuse/include/fuse/fuse_common_compat.h',
-        'fuse/include/fuse/fuse_common.h',
-        'fuse/include/fuse/fuse_compat.h',
-        'fuse/include/fuse/fuse.h',
-        'fuse/include/fuse/fuse_lowlevel_compat.h',
-        'fuse/include/fuse/fuse_lowlevel.h',
-        'fuse/include/fuse/fuse_opt.h'
-        )
       drake.HTTPDownload(fuse_url, fuse_tarball,
                          fingerprint='ecb712b5ffc6dffd54f4a405c9b372d8')
       drake.TarballExtractor(
@@ -334,7 +334,7 @@ def configure(curl_config,
       local_cxx_config += fuse_config
       fuse_lib = drake.copy(fuse_lib, 'lib', strip_prefix = True)
     elif cxx_toolkit.os is drake.os.macos:
-      osxfuse_version = drake.Version(3, 2, 0)
+      osxfuse_version = drake.Version(3, 3, 2)
       osxfuse_base_name = 'osxfuse-%s' % osxfuse_version
       osxfuse_url = 'https://github.com/osxfuse/osxfuse/releases/download'\
         '/%(name)s/%(name)s.dmg' % {'name': osxfuse_base_name}
@@ -342,19 +342,9 @@ def configure(curl_config,
       drake.HTTPDownload(
         osxfuse_url,
         osxfuse_dmg,
-        fingerprint = '028cb3f6edf6d7dea3bc8d4b4f426cfb',
+        fingerprint = '2733a06d40486fc0b46511f937a5a8e0',
       )
       osxfuse_package = drake.node('osxfuse/%s.pkg' % osxfuse_base_name)
-      fuse_includes = drake.nodes(
-        'osxfuse/fuse/include/cuse_lowlevel.h',
-        'osxfuse/fuse/include/fuse_common_compat.h',
-        'osxfuse/fuse/include/fuse_common.h',
-        'osxfuse/fuse/include/fuse_compat.h',
-        'osxfuse/fuse/include/fuse.h',
-        'osxfuse/fuse/include/fuse_lowlevel_compat.h',
-        'osxfuse/fuse/include/fuse_lowlevel.h',
-        'osxfuse/fuse/include/fuse_opt.h'
-        )
       fuse_includes = drake.copy(
         fuse_includes, 'osxfuse/include/fuse', strip_prefix = True)
       fuse_config = drake.cxx.Config()
