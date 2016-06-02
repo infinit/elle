@@ -1161,6 +1161,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
         'lib/liblber.a',
         'lib/libldap_r.a',
         'bin/ldapsearch',
+        'include/ldap.h',
       ]]
     # ldap_prefix_absolute = drake.path_root() / ldap_prefix
     drake.HTTPDownload(ldap_url, ldap_tarball,
