@@ -36,7 +36,9 @@ def configure(zlib_lib,
               valgrind = None,
               valgrind_tests = False,
               ldap_libs = None,
-              ldap_config = None
+              ldap_config = None,
+              openssl_lib_crypto = None,
+              openssl_lib_ssl = None,
             ):
 
   global config, lib_static, lib_dynamic, library, library_zlib
@@ -105,9 +107,12 @@ def configure(zlib_lib,
   cxx_config = cxx_config + config
   cxx_config.lib_path_runtime('.')
 
+  openssl_libs = None
   # Libraries
   if ldap_libs:
     ldap_libs = drake.copy(ldap_libs, 'lib', strip_prefix = True)
+    openssl_libs = drake.copy([openssl_lib_crypto, openssl_lib_ssl],
+                             'lib', strip_prefix = True)
 
     cxx_config = cxx_config + ldap_config
     cxx_config.define('HAVE_LDAP=1')
@@ -529,7 +534,7 @@ def configure(zlib_lib,
   )
   lib_dynamic = drake.cxx.DynLib(
     'lib/elle',
-    sources + [zlib_lib, libarchive_lib] + (ldap_libs and ldap_libs or []),
+    sources + [zlib_lib, libarchive_lib] + (ldap_libs and (ldap_libs + openssl_libs) or []),
     cxx_toolkit,
     cxx_config,
   )
