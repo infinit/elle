@@ -1171,6 +1171,8 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
       configure = ldap_configure,
       configure_args = [
         '--prefix=%s' % drake.path_build(ldap_prefix, absolute = True),
+        '--without-cyrus-sasl',
+        '--disable-spasswd',
         '--disable-slapd',
         '--disable-shared',
         'CXXFLAGS=-fPIC',
