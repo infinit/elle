@@ -1177,10 +1177,12 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
         '--disable-slapd',
         '--disable-shared',
         'CXXFLAGS=-fPIC',
-        'CFLAGS=-fPIC'],
+        'CFLAGS=-fPIC',
+        'CPPFLAGS=-I%s' % drake.path_build(openssl_prefix, absolute = True) + '/include',
+        ],
       build_args = ['install', 'SOELIM=echo'],
       targets = ldap_targets,
-      sources = [],
+      sources = [drake.node(openssl_prefix / p) for p in openssl_headers],
     )
     ldap_libs = drake.nodes(
         '%s/lib/libldap_r.a' % ldap_prefix,
