@@ -72,7 +72,7 @@ namespace reactor
           auto print_thread = [&] (reactor::Thread const& thread)
           {
             std::cerr << "  " << thread << " (" << thread.state() << ")" << std::endl;
-            std::cerr << "    wating:" << std::endl;
+            std::cerr << "    waiting:" << std::endl;
             for (auto t: thread.waited())
               std::cerr << "      " << *t << std::endl;
             std::cerr << "    waiters:" << std::endl;
