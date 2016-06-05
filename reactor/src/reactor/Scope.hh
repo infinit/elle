@@ -25,7 +25,7 @@ namespace reactor
   `-------------*/
   private:
     /// Create a scope.
-    Scope();
+    Scope(std::string const& name = std::string{});
     /// Destruct a scope, terminating all managed threads now.
     ///
     /// \throw Terminate if interrupted while killing managed threads.
@@ -65,6 +65,8 @@ namespace reactor
     bool
     _wait(Thread* thread, Waker const& waker) override;
 
+  private:
+    ELLE_ATTRIBUTE_R(std::string, name);
   /*----------.
   | Printable |
   `----------*/

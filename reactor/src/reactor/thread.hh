@@ -207,7 +207,7 @@ namespace reactor
       void _wait_abort(std::string const& reason);
       void _freeze();
       void _wake(Waitable* waitable);
-      std::set<Waitable*> _waited;
+      ELLE_ATTRIBUTE_R(std::set<Waitable*>, waited);
       bool _timeout;
       boost::asio::deadline_timer _timeout_timer;
 

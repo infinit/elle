@@ -197,21 +197,8 @@ namespace reactor
       return 0;
     }
 
-    std::unique_ptr<UTPSocket>
-    UTPServer::accept()
-    {
-      ELLE_DEBUG("accepting...");
-      this->_accept_barrier.wait();
-      ELLE_DEBUG("...accepted");
-      ELLE_ASSERT(this->_accept_barrier.opened());
-      std::unique_ptr<UTPSocket> sock(this->_accept_queue.back().release());
-      this->_accept_queue.pop_back();
-      if (this->_accept_queue.empty())
-        this->_accept_barrier.close();
-      return sock;
-    }
-
     UTPServer::UTPServer()
+      : _accept_barrier("UTPServer accept")
     {
       this->_xorify = 0;
       this->_sending = false;
@@ -228,6 +215,20 @@ namespace reactor
       utp_context_set_option(ctx, UTP_INITIAL_TIMEOUT, 300);
       utp_context_set_option(ctx, UTP_TIMEOUT_INCRASE_PERCENT, 150);
       utp_context_set_option(ctx, UTP_MAXIMUM_TIMEOUT, 5000);
+    }
+
+    std::unique_ptr<UTPSocket>
+    UTPServer::accept()
+    {
+      ELLE_DEBUG("accepting...");
+      this->_accept_barrier.wait();
+      ELLE_DEBUG("...accepted");
+      ELLE_ASSERT(this->_accept_barrier.opened());
+      std::unique_ptr<UTPSocket> sock(this->_accept_queue.back().release());
+      this->_accept_queue.pop_back();
+      if (this->_accept_queue.empty())
+        this->_accept_barrier.close();
+      return sock;
     }
 
     UTPServer::~UTPServer()
@@ -396,7 +397,11 @@ namespace reactor
 
     UTPSocket::UTPSocket(UTPServer& server, utp_socket* socket, bool open)
       : IOStream(new StreamBuffer(this))
+      , _read_barrier("utp socket read")
+      , _write_barrier("utp socket write")
+      , _write_mutex()
       , _server(server)
+      , _connect_barrier("connect barrier")
       , _socket(socket)
       , _open(open)
       , _closing(false)

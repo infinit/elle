@@ -18,7 +18,7 @@ namespace reactor
 
   template <typename C, typename F>
   void
-  for_each_parallel(C& c, F const& f);
+  for_each_parallel(C& c, F const& f, std::string const& name = std::string{});
 
   ELLE_COMPILER_ATTRIBUTE_NORETURN
   void

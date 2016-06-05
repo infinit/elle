@@ -16,7 +16,7 @@ namespace reactor
   {
     elle::Size read = 0;
     boost::system::error_code error;
-    reactor::Barrier done;
+    reactor::Barrier done("read done");
     this->_stream.async_read_some(
       boost::asio::buffer(buffer, size),
       [&] (boost::system::error_code const& e, std::size_t s)

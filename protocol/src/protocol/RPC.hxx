@@ -483,7 +483,7 @@ namespace infinit
       using elle::Exception;
       try
       {
-        elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+        elle::With<reactor::Scope>("RPC // run") << [&] (reactor::Scope& scope)
         {
           int i = 0;
           while (true)

@@ -106,7 +106,7 @@ namespace reactor
       , _input_done(false)
       , _input()
       , _input_current()
-      , _input_available()
+      , _input_available("input available")
       , _output_done(false)
       , _output(0)
       , _output_available(false)
