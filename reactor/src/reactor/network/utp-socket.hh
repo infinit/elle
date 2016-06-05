@@ -1,15 +1,16 @@
 #ifndef REACTOR_NETWORK_UTP_SOCKET_HH
-#define REACTOR_NETWORK_UTP_SOCKET_HH
+# define REACTOR_NETWORK_UTP_SOCKET_HH
 
-#include <deque>
+# include <deque>
 
-#include <boost/asio.hpp>
-#include <reactor/network/rdv-socket.hh>
-#include <reactor/Barrier.hh>
-#include <reactor/MultiLockBarrier.hh>
+# include <boost/asio.hpp>
+# include <reactor/network/rdv-socket.hh>
+# include <reactor/Barrier.hh>
+# include <reactor/MultiLockBarrier.hh>
 
-typedef struct UTPSocket					utp_socket;
-typedef struct struct_utp_context			utp_context;
+typedef struct UTPSocket utp_socket;
+typedef struct struct_utp_context utp_context;
+
 namespace reactor
 {
   namespace network
@@ -29,16 +30,19 @@ namespace reactor
       local_endpoint();
       std::unique_ptr<UTPSocket>
       accept();
-      void rdv_connect(std::string const& id,
-                       std::string const& address,
-                       DurationOpt timeout = DurationOpt());
-      void set_local_id(std::string const& id);
+      void
+      rdv_connect(std::string const& id,
+                  std::string const& address,
+                  DurationOpt timeout = DurationOpt());
+      void
+      set_local_id(std::string const& id);
       // For internal use
       void
       send_to(Buffer buf, EndPoint where);
       void
       on_accept(utp_socket* s);
-      bool rdv_connected() const;
+      bool
+      rdv_connected() const;
     private:
       void
       _check_icmp();
@@ -57,7 +61,8 @@ namespace reactor
       friend class UTPSocket;
     };
 
-    class UTPSocket: public elle::IOStream
+    class UTPSocket
+      : public elle::IOStream
     {
     public:
       typedef boost::asio::ip::udp::endpoint EndPoint;

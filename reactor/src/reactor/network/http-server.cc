@@ -1,4 +1,5 @@
 #include <reactor/network/http-server.hh>
+#include <reactor/network/exception.hh>
 
 
 namespace reactor
@@ -134,6 +135,14 @@ namespace reactor
                 std::unique_ptr<reactor::network::Socket> s =
                   std::move(*socket);
                 this->_serve(std::move(s));
+              }
+              catch (reactor::network::ConnectionClosed const& e)
+              {
+                ELLE_TRACE("ConnectionClosed: %s", e.backtrace());
+              }
+              catch (reactor::network::SocketClosed const& e)
+              {
+                ELLE_TRACE("SocketClosed: %s", e.backtrace());
               }
               catch (...)
               {

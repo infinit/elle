@@ -1338,11 +1338,11 @@ namespace elle
       s.serialize(name, o);
     }
 
-    template <typename Serialization, typename T>
+    template <typename Serialization, typename T, typename ... Args>
     void
-    serialize(T const& o, std::ostream& output, bool version = true)
+    serialize(T const& o, std::ostream& output, Args&&... args)
     {
-      typename Serialization::SerializerOut s(output, version);
+      typename Serialization::SerializerOut s(output, std::forward<Args>(args)...);
       s.serialize_forward(o);
     }
 

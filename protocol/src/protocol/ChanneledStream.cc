@@ -133,50 +133,57 @@ namespace infinit
       ELLE_ASSERT(!_reading);
       try
       {
-        while (true)
+        bool goon = true;
+        while (goon)
         {
-          this->_reading = true;
-          elle::Buffer p(this->_backend.read());
-          if (p.size() < 4)
-            throw elle::Exception("packet is too small for channel id");
-          int channel_id = uint32_get(p);
-          // FIXME: The size of the packet isn't
-          // adjusted. This is cosmetic though.
-          auto it = this->_channels.find(channel_id);
-          if (it != this->_channels.end())
+          elle::With<reactor::Thread::NonInterruptible>() << [&]
           {
-            ELLE_DEBUG("%s: received %f on existing %s.",
-                       *this, p, *it->second);
-            it->second->_packets.push_back(std::move(p));
-            if (channel_id == requested_channel)
-              break;
+            this->_reading = true;
+            elle::Buffer p(this->_backend.read());
+            if (p.size() < 4)
+              throw elle::Exception("packet is too small for channel id");
+            int channel_id = uint32_get(p);
+            // FIXME: The size of the packet isn't
+            // adjusted. This is cosmetic though.
+            auto it = this->_channels.find(channel_id);
+            if (it != this->_channels.end())
+            {
+              ELLE_DEBUG("%s: received %f on existing %s (requested %s).",
+                         *this, p, *it->second, requested_channel);
+              it->second->_packets.push_back(std::move(p));
+              if (channel_id == requested_channel)
+                {goon = false; return;}
+              else
+                it->second->_available.signal_one();
+            }
             else
-              it->second->_available.signal_one();
-          }
-          else
-          {
-            Channel res(*this, channel_id);
-            ELLE_DEBUG("%s: received %f on brand new %s.", *this, p, res);
-            res._packets.push_back(std::move(p));
-            this->_channels_new.push_back(std::move(res));
-            if (new_channel)
-              break;
-            else
-              this->_channel_available.signal_one();
-          }
+            {
+              ELLE_ASSERT(channel_id != requested_channel);
+              Channel res(*this, channel_id);
+              ELLE_DEBUG("%s: received %f on brand new %s (requested %s).",
+                         *this, p, res, requested_channel);
+              res._packets.push_back(std::move(p));
+              this->_channels_new.push_back(std::move(res));
+              if (new_channel)
+                {goon = false; return;}
+              else
+                this->_channel_available.signal_one();
+            }
+          };
         }
-        // Wake another thread so it can read future packets.
+        // Exited loop, Wake another thread so it can read future packets.
         this->_reading = false;
         for (auto channel: this->_channels)
           if (channel.second->_available.signal_one())
             return;
         this->_channel_available.signal_one();
       }
-      catch (...)
+      catch (std::exception const& ex)
       {
         auto e = std::current_exception();
         // Wake another thread so it fails too.
-        ELLE_DEBUG_SCOPE("%s: read failed, wake next thread.", *this);
+        ELLE_DEBUG_SCOPE("%s: read failed, wake next thread: %s.", *this,
+                         ex.what());
         this->_reading = false;
         bool woken = false;
         for (auto channel: this->_channels)

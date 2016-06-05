@@ -1144,6 +1144,55 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
   set_boost(boost)
 
   ## ------------- ##
+  ##    LDAP       ##
+  ## ------------- ##
+  ldap_config = None
+  ldap_libs = None
+  if not windows:
+    ldap_version = drake.Version(2, 4, 44)
+    ldap_basename = 'openldap-%s' % ldap_version
+    ldap_url = 'http://www.openldap.org/software/download/OpenLDAP/openldap-release/%s.tgz' % ldap_basename
+    #ldap_url = 'ftp://ftp.openldap.org/pub/OpenLDAP/openldap-release/%s.tgz' % ldap_basename
+    ldap_tarball = drake.node('openldap/%s.tgz' % ldap_basename)
+    ldap_configure = drake.node('openldap/%s/configure' % ldap_basename)
+    ldap_prefix = drake.Path('openldap')
+    ldap_targets = [
+      drake.node(ldap_prefix / p) for p in [
+        'lib/liblber.a',
+        'lib/libldap_r.a',
+        'bin/ldapsearch',
+        'include/ldap.h',
+      ]]
+    # ldap_prefix_absolute = drake.path_root() / ldap_prefix
+    drake.HTTPDownload(ldap_url, ldap_tarball,
+                       fingerprint='693ac26de86231f8dcae2b4e9d768e51')
+    drake.TarballExtractor(ldap_tarball, targets = ['%s/configure' % ldap_basename])
+    GNUBuilder(
+      cxx_toolkit,
+      configure = ldap_configure,
+      configure_args = [
+        '--prefix=%s' % drake.path_build(ldap_prefix, absolute = True),
+        '--without-cyrus-sasl',
+        '--disable-spasswd',
+        '--disable-slapd',
+        '--disable-shared',
+        'CXXFLAGS=-fPIC',
+        'CFLAGS=-fPIC',
+        'CPPFLAGS=-I%s' % drake.path_build(openssl_prefix, absolute = True) + '/include',
+        ],
+      build_args = ['install', 'SOELIM=echo'],
+      targets = ldap_targets,
+      sources = [drake.node(openssl_prefix / p) for p in openssl_headers],
+    )
+    ldap_libs = drake.nodes(
+        '%s/lib/libldap_r.a' % ldap_prefix,
+        '%s/lib/liblber.a' % ldap_prefix,
+        )
+    ldap_config = drake.cxx.Config(cxx_config)
+    ldap_config.add_local_include_path(ldap_prefix / 'include')
+    drake.Rule('openldap') << ldap_targets
+
+  ## ------------- ##
   ## Configuration ##
   ## ------------- ##
 
@@ -1199,6 +1248,10 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     prefix = prefix,
     valgrind = valgrind,
     valgrind_tests = valgrind_tests,
+    ldap_libs = ldap_libs,
+    ldap_config = ldap_config,
+    openssl_lib_crypto = openssl_lib_crypto,
+    openssl_lib_ssl = openssl_lib_ssl,
   )
   cryptography = drake.include(
     'cryptography',

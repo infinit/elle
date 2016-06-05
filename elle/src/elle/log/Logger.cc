@@ -40,7 +40,7 @@ namespace elle
 
       virtual
       unsigned int&
-      indentation()
+      indentation() override
       {
         if (!this->_indentation.get())
           this->_indentation.reset(new unsigned int(1));
@@ -49,14 +49,14 @@ namespace elle
 
       virtual
       void
-      indent()
+      indent() override
       {
         this->indentation() += 1;
       }
 
       virtual
       void
-      unindent()
+      unindent() override
       {
         ELLE_ASSERT_GTE(this->indentation(), 1u);
         this->indentation() -= 1;
