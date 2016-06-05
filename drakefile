@@ -25,6 +25,7 @@ def configure(prefix = '.'):
      'src/drake/__init__.py',
      'src/drake/air.py',
      'src/drake/enumeration.py',
+     'src/drake/docker.py',
      'src/drake/imagemagick.py',
      'src/drake/cxx/__init__.py',
      'src/drake/cxx/bison.py',
