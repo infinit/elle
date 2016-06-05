@@ -397,10 +397,10 @@ namespace reactor
 
     UTPSocket::UTPSocket(UTPServer& server, utp_socket* socket, bool open)
       : IOStream(new StreamBuffer(this))
-      , _server(server)
       , _read_barrier("utp socket read")
       , _write_barrier("utp socket write")
       , _write_mutex()
+      , _server(server)
       , _connect_barrier("connect barrier")
       , _socket(socket)
       , _open(open)
