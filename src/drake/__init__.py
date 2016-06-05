@@ -1049,6 +1049,9 @@ class DepFile:
         #   del self.__hashes[path]
         #   continue
         n = node(path)
+        if n.missing():
+          explain(self.__builder, '%s disappeared' % path)
+          return False
         if isinstance(n, Node):
           try:
             mtime = n.mtime
