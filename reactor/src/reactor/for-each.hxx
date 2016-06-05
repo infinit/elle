@@ -19,15 +19,15 @@ namespace reactor
     {
       for (auto& elt: c)
         scope.run_background(
-          elle::sprintf("%s (%s): for_each: %s",
+          elle::sprintf("%s: %s: %s",
                         reactor::scheduler().current()->name(),
-                        name,
+                        name.empty() ? "for-each" : name,
                         elt),
           [&]
           {
             try
             {
-              f(elt, scope);
+              f(elt);
             }
             catch (Break const&)
             {

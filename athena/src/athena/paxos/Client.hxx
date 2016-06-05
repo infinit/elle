@@ -116,8 +116,7 @@ namespace athena
           int reached = 0;
           reactor::for_each_parallel(
             this->_peers,
-            [&] (std::unique_ptr<Peer> const& peer,
-                 reactor::Scope&) -> void
+            [&] (std::unique_ptr<Peer> const& peer) -> void
             {
               try
               {
@@ -164,8 +163,7 @@ namespace athena
           bool conflicted = false;
           reactor::for_each_parallel(
             this->_peers,
-            [&] (std::unique_ptr<Peer> const& peer,
-                 reactor::Scope& scope) -> void
+            [&] (std::unique_ptr<Peer> const& peer) -> void
             {
               try
               {
@@ -182,7 +180,7 @@ namespace athena
                   version = minimum.version;
                   this->_round = minimum.round;
                   conflicted = true;
-                  scope.terminate_now();
+                  reactor::break_parallel();
                 }
                 ++reached;
               }
@@ -216,8 +214,7 @@ namespace athena
           auto reached = 0;
           reactor::for_each_parallel(
             this->_peers,
-            [&] (std::unique_ptr<Peer> const& peer,
-                 reactor::Scope&) -> void
+            [&] (std::unique_ptr<Peer> const& peer) -> void
             {
               try
               {
@@ -261,8 +258,7 @@ namespace athena
       boost::optional<typename Client<T, Version, CId>::Accepted> res;
       reactor::for_each_parallel(
         this->_peers,
-        [&] (std::unique_ptr<Peer> const& peer,
-             reactor::Scope&) -> void
+        [&] (std::unique_ptr<Peer> const& peer) -> void
         {
           try
           {

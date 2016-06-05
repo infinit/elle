@@ -3159,7 +3159,7 @@ namespace for_each
       });
     reactor::for_each_parallel(
       c,
-      [&] (int& c, reactor::Scope&)
+      [&] (int& c)
       {
         ++c;
         reactor::wait(b);
@@ -3172,7 +3172,7 @@ namespace for_each
     std::vector<int> c{0, 1, 2};
     reactor::for_each_parallel(
       c,
-      [&] (int& c, reactor::Scope&)
+      [&] (int& c)
       {
         if (c == 1)
           reactor::break_parallel();
