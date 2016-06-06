@@ -41,6 +41,7 @@ class DockerFile(drake.Node):
     self.__maintainer = maintainer
     self.__labels = labels
     self.__adds = {}
+    self.__runs = []
     DockerFile.Builder(self)
 
   def add(self, nodes, path):
@@ -49,6 +50,9 @@ class DockerFile(drake.Node):
         self.add(node, path)
     else:
       self.__adds.setdefault(drake.Path(path), []).append(nodes)
+
+  def run(self, cmd):
+    self.__runs.append(cmd)
 
   @property
   def image(self):
@@ -66,11 +70,16 @@ class DockerFile(drake.Node):
   def adds(self):
     return chain(*self.__adds.values())
 
+  @property
+  def runs(self):
+    return self.__runs
+
   def hash(self):
     return {
       'image': self.__image,
       'labels': self.__labels,
       'maintainer': self.__maintainer,
+      'runs': self.__runs,
     }
 
   class Builder(drake.Builder):
@@ -95,7 +104,13 @@ class DockerFile(drake.Node):
                                 for n in installed_files(nodes)
                                 if n is not drake.Path.dot)))))
           print('ADD %s %s/'  % (adds, p), file = f)
+        for run in self.__dockerfile.runs:
+          print('RUN %s' % run, file = f)
       return True
+
+    def hash(self):
+      return self.__dockerfile.hash()
+
 
 class DockerImage(drake.BaseNode):
 
