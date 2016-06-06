@@ -13,26 +13,24 @@ def parents(p):
 
 def rootify(paths):
   res = set()
-  for path in paths:
-    for p in parents(path):
-      insert = True
-      for e in set(res):
-        if e.prefix_of(p):
-          insert = False
-          break
-        elif p.prefix_of(e):
-          res.remove(e)
-      if insert:
-        res.add(p)
+  for p in paths:
+    insert = True
+    for e in set(res):
+      if e.prefix_of(p):
+        insert = False
+        break
+      elif p.prefix_of(e):
+        res.remove(e)
+    if insert:
+      res.add(p)
   return res
 
 def installed_files(nodes):
   res = set()
   for node in nodes:
     res.add(node)
-    if isinstance(node, drake.cxx.Executable):
-      for dep in node.dependencies_recursive:
-        res.add(dep)
+    for dep in node.dependencies_recursive:
+      res.add(dep)
   return res
 
 class DockerFile(drake.Node):
@@ -92,11 +90,10 @@ class DockerFile(drake.Node):
           print('LABEL %s="%s"' % (k, v), file = f)
         for p, nodes in self.__dockerfile._DockerFile__adds.items():
           adds = ' '.join(
-            chain(map(str,
-                      rootify(n.path().without_prefix(root)
-                              for n in installed_files(nodes)
-                              if n is not drake.Path.dot)),
-            ))
+            map(str,
+                rootify(chain(*(parents(n.path().without_prefix(root))
+                                for n in installed_files(nodes)
+                                if n is not drake.Path.dot)))))
           print('ADD %s %s/'  % (adds, p), file = f)
       return True
 
