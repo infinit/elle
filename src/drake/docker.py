@@ -90,6 +90,7 @@ class DockerFile(drake.Node):
 
     def execute(self):
       root = self.__dockerfile.path().dirname()
+      self.output('Generate %s' % self.__dockerfile)
       with open(str(self.__dockerfile.path()), 'w') as f:
         print('FROM %s' % self.__dockerfile.image, file = f)
         if self.__dockerfile.maintainer is not None:
