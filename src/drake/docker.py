@@ -1,6 +1,7 @@
 import collections
 import drake
 import os
+import shutil
 import subprocess
 
 from itertools import chain
