@@ -37,6 +37,8 @@ namespace reactor
     put(T data);
     T
     get();
+    std::vector<T>
+    get(size_t up_to);
     const T&
     peek();
     bool

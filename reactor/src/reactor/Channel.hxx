@@ -78,6 +78,15 @@ namespace reactor
   T
   Channel<T, Container>::get()
   {
+    auto v = this->get(1);
+    T res{std::move(v[0])};
+    return res;
+  }
+
+  template <typename T, typename Container>
+  std::vector<T>
+  Channel<T, Container>::get(size_t up_to)
+  {
     ELLE_LOG_COMPONENT("reactor.Channel");
     /// In case of the barrier was opened
     /// with a last element, and closed immediatly
@@ -91,8 +100,12 @@ namespace reactor
     }
     ELLE_TRACE("%s: get data", *this);
     ELLE_ASSERT(!this->_queue.empty());
-    T res(std::move(details::queue_front(this->_queue)));
-    this->_queue.pop();
+    std::vector<T> res;
+    while (!this->_queue.empty() && res.size() < up_to)
+    {
+      res.emplace_back(std::move(details::queue_front(this->_queue)));
+      this->_queue.pop();
+    }
     if (this->_queue.empty())
       this->_read_barrier.close();
     if (signed(this->_queue.size()) < this->_max_size)

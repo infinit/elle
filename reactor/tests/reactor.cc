@@ -2652,7 +2652,6 @@ ELLE_TEST_SCHEDULED(test_multiple_channel)
   };
 }
 
-
 ELLE_TEST_SCHEDULED(test_multiple_consumers)
 {
   reactor::Channel<int> channel;
@@ -2737,6 +2736,72 @@ namespace channel
           reactor::wait(gotcha);
         });
     reactor::wait(s);
+    };
+  }
+
+  ELLE_TEST_SCHEDULED(batch)
+  {
+    reactor::Channel<int> channel;
+    reactor::Barrier next_batch("next batch");
+    elle::With<reactor::Scope>() << [&](reactor::Scope &s)
+    {
+      auto action = [&]
+        {
+          // Get less than present.
+          {
+            static const std::vector<int> expected{{42}};
+            BOOST_CHECK_EQUAL(channel.get(1), std::vector<int>{{42}});
+          }
+          // Get more than present.
+          {
+            static const std::vector<int> expected{{43, 44}};
+            BOOST_CHECK_EQUAL(channel.get(4), expected);
+            next_batch.open();
+          }
+          // Get the exact same amount.
+          {
+            static const std::vector<int> expected{{52, 53, 54}};
+            BOOST_CHECK_EQUAL(channel.get(3), expected);
+          }
+        };
+      s.run_background("producer",
+                       [&]
+                       {
+                         channel.put(42);
+                         channel.put(43);
+                         channel.put(44);
+                         next_batch.wait();
+                         channel.put(52);
+                         channel.put(53);
+                         channel.put(54);
+                       });
+      s.run_background("consumer", action);
+      reactor::wait(s);
+    };
+  }
+
+  ELLE_TEST_SCHEDULED(batch_multi_consumers)
+  {
+    reactor::Channel<int> channel;
+    reactor::Barrier next_batch("next batch");
+    elle::With<reactor::Scope>() << [&](reactor::Scope &s)
+    {
+      auto action = [&] (bool first)
+        {
+          std::vector<int> expected;
+          for (size_t i = (first ? 0 : 50); i < (first ? 50 : 100); ++i)
+            expected.push_back(i);
+          BOOST_CHECK_EQUAL(channel.get(50), expected);
+        };
+      s.run_background("producer",
+                       [&]
+                       {
+                         for (size_t i = 0; i < 100; ++i)
+                           channel.put(i);
+                       });
+      s.run_background("consumer 1", std::bind(action, true));
+      s.run_background("consumer 2", std::bind(action, false));
+      reactor::wait(s);
     };
   }
 }
@@ -3210,6 +3275,10 @@ ELLE_TEST_SUITE()
     channels->add(BOOST_TEST_CASE(wake_clear), 0, valgrind(1, 5));
     auto open_close = &channel::open_close;
     channels->add(BOOST_TEST_CASE(open_close), 0, valgrind(1, 5));
+    auto batch = &channel::batch;
+    channels->add(BOOST_TEST_CASE(batch), 0, valgrind(1, 5));
+    auto batch_multi_consumers = &channel::batch_multi_consumers;
+    channels->add(BOOST_TEST_CASE(batch_multi_consumers), 0, valgrind(1, 5));
   }
 
   {
