@@ -97,14 +97,14 @@ class DockerFile(drake.Node):
                 file = f)
         for k, v in self.__dockerfile.labels.items():
           print('LABEL %s="%s"' % (k, v), file = f)
+        for run in self.__dockerfile.runs:
+          print('RUN %s' % run, file = f)
         for p, nodes in self.__dockerfile._DockerFile__adds.items():
           for add in rootify(
               chain(*(parents(n.path().without_prefix(root))
                       for n in installed_files(nodes)
                       if n is not drake.Path.dot))):
             print('ADD %s %s/%s'  % (add, p, add), file = f)
-        for run in self.__dockerfile.runs:
-          print('RUN %s' % run, file = f)
       return True
 
     def hash(self):
