@@ -105,6 +105,16 @@ namespace std
       *this = this->_payload;
     }
 
+    template <typename Y>
+    static
+    ambivalent_ptr<T>
+    own(std::shared_ptr<Y> p)
+    {
+      ambivalent_ptr<T> res(p);
+      res.payload() = std::move(p);
+      return res;
+    }
+
     shared_ptr<T>&
     payload()
     {

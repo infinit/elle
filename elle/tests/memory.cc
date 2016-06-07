@@ -127,6 +127,7 @@ static
 void
 ambivalent_ptr()
 {
+  // shared_ptr to ambivalent_ptr
   {
     int count = 0;
     auto i = std::make_shared<Super>(count);
@@ -138,6 +139,7 @@ ambivalent_ptr()
     BOOST_CHECK_EQUAL(count, 0);
     BOOST_CHECK(!a.lock());
   }
+  // ambivalent_ptr to shared_ptr
   {
     int count = 0;
     std::ambivalent_ptr<Super> a(new Super(count));
@@ -148,6 +150,39 @@ ambivalent_ptr()
     BOOST_CHECK_EQUAL(count, 1);
     BOOST_CHECK(a.lock());
   }
+  // copy ambivalent_ptr
+  {
+    int count = 0;
+    std::ambivalent_ptr<Super> a(new Super(count));
+    BOOST_CHECK_EQUAL(count, 1);
+    std::ambivalent_ptr<Super> b(a);
+    BOOST_CHECK(a.lock());
+    BOOST_CHECK(b.lock());
+    BOOST_CHECK_EQUAL(count, 1);
+    a.payload().reset();
+    BOOST_CHECK(a.lock());
+    BOOST_CHECK(b.lock());
+    BOOST_CHECK_EQUAL(count, 1);
+    b.payload().reset();
+    BOOST_CHECK(!a.lock());
+    BOOST_CHECK(!b.lock());
+    BOOST_CHECK_EQUAL(count, 0);
+  }
+  // move ambivalent_ptr
+  {
+    int count = 0;
+    std::ambivalent_ptr<Super> a(new Super(count));
+    BOOST_CHECK_EQUAL(count, 1);
+    std::ambivalent_ptr<Super> b(std::move(a));
+    BOOST_CHECK(!a.payload());
+    BOOST_CHECK(b.lock());
+    BOOST_CHECK_EQUAL(count, 1);
+    b.payload().reset();
+    BOOST_CHECK(!a.lock());
+    BOOST_CHECK(!b.lock());
+    BOOST_CHECK_EQUAL(count, 0);
+  }
+  // failed dynamic_cast
   {
     int count = 0;
     auto b = std::dynamic_pointer_cast<Child>(
@@ -155,6 +190,7 @@ ambivalent_ptr()
     BOOST_CHECK_EQUAL(count, 0);
     BOOST_CHECK(!b.lock());
   }
+  // successful dynamic_cast
   {
     int count = 0;
     auto b = std::dynamic_pointer_cast<Child>(
