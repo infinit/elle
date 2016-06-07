@@ -26,6 +26,22 @@ namespace reactor
                             std::bind(&HttpServer::_accept,
                               std::ref(*this))));
     }
+
+    HttpServer::HttpServer(int port)
+    {
+      ELLE_LOG_COMPONENT("reactor.test.http");
+      auto server = elle::make_unique<TCPServer>();
+      server->listen(port);
+      this->_port = server->port();
+      this->_server = std::move(server);
+      ELLE_TRACE_SCOPE("%s: listen on port %s", *this, this->_port);
+      this->_accepter.reset(
+        new reactor::Thread(*reactor::Scheduler::scheduler(),
+                            "accepter",
+                            std::bind(&HttpServer::_accept,
+                              std::ref(*this))));
+    }
+
     HttpServer::~HttpServer()
     {
       ELLE_LOG_COMPONENT("reactor.test.http");

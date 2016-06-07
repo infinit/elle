@@ -61,6 +61,7 @@ namespace reactor
 
       public:
         HttpServer(std::unique_ptr<Server> server = {});
+        HttpServer(int port);
         virtual
         ~HttpServer();
         HttpServer(HttpServer&&) = delete;
