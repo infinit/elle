@@ -1,6 +1,7 @@
 #include <reactor/network/http-server.hh>
 #include <reactor/network/exception.hh>
 
+#include <elle/os/environ.hh>
 
 namespace reactor
 {
@@ -352,6 +353,9 @@ namespace reactor
           "Server: Custom HTTP of doom\r\n",
           (int) code, code);
         headers["Content-Length"] = std::to_string(response.size());
+        static bool close = !elle::os::getenv("INFINIT_HTTP_NO_KEEPALIVE", "").empty();
+        if (close)
+          headers["Connection"] = "close";
         for (auto const& value: headers)
           answer += elle::sprintf("%s: %s\r\n", value.first, value.second);
         answer += "\r\n" + response;
