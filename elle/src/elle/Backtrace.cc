@@ -92,31 +92,33 @@ namespace elle
   Backtrace
   Backtrace::_current()
   {
-    auto initialize = []
-      {
-        HANDLE process = GetCurrentProcess();
-        if (!::SymInitialize(process, NULL, TRUE))
-          throw std::runtime_error("unable to initialize debug symbols");
-        return process;
-      };
-    static auto process = initialize();
-    void* stack[128];
-    long unsigned int hash = 0;
-    int frames = CaptureStackBackTrace(0, sizeof(stack), stack, &hash);
-    ::SYMBOL_INFO* symbol;
-    symbol = (SYMBOL_INFO*)calloc(sizeof(SYMBOL_INFO) + 256 * sizeof(char), 1);
-    symbol->MaxNameLen = 255;
-    symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
-
     Backtrace res;
-    for (int i = 0; i < frames; i++)
-    {
-      ::SymFromAddr(process, (DWORD64)(stack[i]), 0, symbol);
-      res.push_back(StackFrame{symbol->Name, symbol->Name, symbol->Name,
-                               symbol->Address, 0});
-    }
-    ::free(symbol);
-    return Backtrace();
+    /*
+      auto initialize = []
+        {
+          HANDLE process = GetCurrentProcess();
+          if (!::SymInitialize(process, NULL, TRUE))
+            throw std::runtime_error("unable to initialize debug symbols");
+          return process;
+        };
+      static auto process = initialize();
+      void* stack[128];
+      long unsigned int hash = 0;
+      int frames = CaptureStackBackTrace(0, sizeof(stack), stack, &hash);
+      ::SYMBOL_INFO* symbol;
+      symbol = (SYMBOL_INFO*)calloc(sizeof(SYMBOL_INFO) + 256 * sizeof(char), 1);
+      symbol->MaxNameLen = 255;
+      symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
+
+      for (int i = 0; i < frames; i++)
+      {
+        ::SymFromAddr(process, (DWORD64)(stack[i]), 0, symbol);
+        res.push_back(StackFrame{symbol->Name, symbol->Name, symbol->Name,
+              symbol->Address, 0});
+      }
+      ::free(symbol);
+    */
+    return res;
   }
 #elif !defined(INFINIT_ANDROID)
   Backtrace
