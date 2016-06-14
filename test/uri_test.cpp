@@ -32,6 +32,10 @@ TEST(uri_test, construct_uri_starting_with_ipv4_like) {
   EXPECT_NO_THROW(network::uri("http://198.51.100.0.example.com/"));
 }
 
+TEST(uri_test, construct_uri_starting_with_ipv4_like_glued) {
+  ASSERT_NO_THROW(network::uri("http://198.51.100.0example.com/"));
+}
+
 TEST(uri_test, construct_uri_like_short_ipv4) {
   EXPECT_NO_THROW(network::uri("http://198.51.100/"));
 }
