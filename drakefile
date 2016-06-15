@@ -880,6 +880,7 @@ def configure(cxx_toolkit = None,
       './bootstrap.sh',
       '--prefix=%s' % boost_prefix_abs,
       '--with-libraries=%s' % ','.join(boost_bootstrap_libraries),
+      '--without-icu',
     ]
     if python3 is not None and not windows:
       boost_bootstrap_command.append('--with-python=%s' % python_version)
@@ -1023,6 +1024,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
         self.__command = [
           './b2', '-q', 'install', '--ignore-site-config',
           'toolset=%s' % toolset,
+          '--disable-icu',
           '--user-config=user-config.jam',
         ]
         if windows:
