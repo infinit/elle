@@ -4,9 +4,10 @@
 # include <deque>
 
 # include <boost/asio.hpp>
-# include <reactor/network/rdv-socket.hh>
+
 # include <reactor/Barrier.hh>
 # include <reactor/MultiLockBarrier.hh>
+# include <reactor/network/rdv-socket.hh>
 
 typedef struct UTPSocket utp_socket;
 typedef struct struct_utp_context utp_context;
@@ -15,51 +16,7 @@ namespace reactor
 {
   namespace network
   {
-    class UTPSocket;
-    class UTPServer
-    {
-    public:
-      UTPServer();
-      ~UTPServer();
-      typedef boost::asio::ip::udp::endpoint EndPoint;
-      void
-      listen(int port, bool ipv6 = false);
-      void
-      listen(EndPoint const& end_point);
-      EndPoint
-      local_endpoint();
-      std::unique_ptr<UTPSocket>
-      accept();
-      void
-      rdv_connect(std::string const& id,
-                  std::string const& address,
-                  DurationOpt timeout = DurationOpt());
-      void
-      set_local_id(std::string const& id);
-      // For internal use
-      void
-      send_to(Buffer buf, EndPoint where);
-      void
-      on_accept(utp_socket* s);
-      bool
-      rdv_connected() const;
-    private:
-      void
-      _check_icmp();
-      void
-      _cleanup();
-      std::function<void(boost::system::error_code const&, size_t)> send_cont;
-      utp_context* ctx;
-      ELLE_ATTRIBUTE_R(std::unique_ptr<RDVSocket>, socket);
-      ELLE_ATTRIBUTE_RX(unsigned char, xorify);
-      std::vector<std::unique_ptr<UTPSocket>> _accept_queue;
-      Barrier _accept_barrier;
-      std::unique_ptr<Thread> _listener;
-      std::unique_ptr<Thread> _checker;
-      std::deque<std::pair<elle::Buffer, EndPoint>> _send_buffer;
-      bool _sending;
-      friend class UTPSocket;
-    };
+    class UTPServer;
 
     class UTPSocket
       : public elle::IOStream
@@ -104,18 +61,18 @@ namespace reactor
     private:
       void
       _read();
-      elle::Buffer _read_buffer;
-      Barrier _read_barrier;
-      Barrier _write_barrier;
-      Mutex _write_mutex;
-      Barrier _connect_barrier;
+      ELLE_ATTRIBUTE(elle::Buffer, read_buffer);
+      ELLE_ATTRIBUTE(Barrier, read_barrier);
+      ELLE_ATTRIBUTE(Barrier, write_barrier);
+      ELLE_ATTRIBUTE(Mutex, write_mutex);
+      ELLE_ATTRIBUTE(Barrier, connect_barrier);
       ELLE_ATTRIBUTE_R(UTPServer&, server);
-      utp_socket* _socket;
-      elle::ConstWeakBuffer _write;
-      MultiLockBarrier _pending_operations;
-      int _write_pos;
-      bool _open;
-      bool _closing;
+      ELLE_ATTRIBUTE(utp_socket*, socket);
+      ELLE_ATTRIBUTE(elle::ConstWeakBuffer, write);
+      ELLE_ATTRIBUTE(MultiLockBarrier, pending_operations);
+      ELLE_ATTRIBUTE(int, write_pos);
+      ELLE_ATTRIBUTE(bool, open);
+      ELLE_ATTRIBUTE(bool, closing);
     };
   }
 }
