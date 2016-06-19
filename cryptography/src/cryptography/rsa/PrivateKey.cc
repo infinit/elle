@@ -454,6 +454,15 @@ namespace infinit
         return (::EVP_PKEY_cmp(this->_key.get(), other._key.get()) == 1);
       }
 
+      PrivateKey&
+      PrivateKey::operator= (PrivateKey&& other)
+      {
+        this->_key = std::move(other._key);
+        cryptography::require();
+        this->_check();
+        return *this;
+      }
+
       /*--------------.
       | Serialization |
       `--------------*/
