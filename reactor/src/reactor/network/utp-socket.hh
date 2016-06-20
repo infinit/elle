@@ -20,6 +20,7 @@ namespace reactor
 
     class UTPSocket
       : public elle::IOStream
+      , public elle::Printable
     {
     public:
       typedef boost::asio::ip::udp::endpoint EndPoint;
@@ -58,9 +59,16 @@ namespace reactor
       destroyed();
       EndPoint
       peer();
+
     private:
       void
       _read();
+
+    private:
+      void
+      print(std::ostream&) const override;
+
+    private:
       ELLE_ATTRIBUTE(elle::Buffer, read_buffer);
       ELLE_ATTRIBUTE(Barrier, read_barrier);
       ELLE_ATTRIBUTE(Barrier, write_barrier);

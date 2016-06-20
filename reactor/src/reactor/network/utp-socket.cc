@@ -379,5 +379,12 @@ namespace reactor
     {
       this->_read_barrier.open();
     }
+
+    void
+    UTPSocket::print(std::ostream& out) const
+    {
+      out << "UTPSocket (server: " << this->_server << ")";
+    }
+
   }
 }

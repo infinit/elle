@@ -36,10 +36,11 @@ namespace reactor
     uint64
     on_log(utp_callback_arguments* args);
 
-    UTPServer::UTPServer()
+    UTPServer::UTPServer(std::string const& name)
       : _xorify(0)
       , _accept_barrier("accept")
       , _sending(false)
+      , _name(name)
     {
       auto* ctx = utp_init(2);
       utp_context_set_userdata(ctx, this);
@@ -368,6 +369,17 @@ namespace reactor
         }
       }
 #endif
+    }
+
+    void
+    UTPServer::print(std::ostream& out) const
+    {
+      out << "UTPServer (";
+      if (!this->_name.empty())
+        out << this->_name;
+      else
+        out << (void*) this;
+      out << ")";
     }
 
     void

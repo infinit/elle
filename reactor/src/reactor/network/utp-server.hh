@@ -5,6 +5,8 @@
 
 # include <boost/asio.hpp>
 
+# include <elle/Printable.hh>
+
 # include <reactor/Barrier.hh>
 # include <reactor/network/rdv-socket.hh>
 # include <reactor/network/utp-socket.hh>
@@ -17,9 +19,10 @@ namespace reactor
   namespace network
   {
     class UTPServer
+      : public elle::Printable
     {
     public:
-      UTPServer();
+      UTPServer(std::string const& name = "");
       ~UTPServer();
       typedef boost::asio::ip::udp::endpoint EndPoint;
       void
@@ -52,6 +55,10 @@ namespace reactor
       _cleanup();
 
     private:
+      void
+      print(std::ostream&) const override;
+
+    private:
       typedef
         std::function<void(boost::system::error_code const&, size_t)>
         SendContent;
@@ -67,6 +74,7 @@ namespace reactor
       typedef std::deque<std::pair<elle::Buffer, EndPoint>> SendBuffer;
       ELLE_ATTRIBUTE(SendBuffer, send_buffer);
       ELLE_ATTRIBUTE(bool, sending);
+      ELLE_ATTRIBUTE(std::string, name);
       friend class UTPSocket;
     };
   }
