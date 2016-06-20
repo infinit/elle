@@ -396,15 +396,25 @@ namespace reactor
         if (this->_checker)
           this->_checker->terminate_now();
         if (this->_listener)
+          this->_listener->terminate_now(false);
+        while (!this->_sockets.empty())
         {
-          this->_listener->terminate_now();
+          auto* socket = *this->_sockets.begin();
+          socket->close();
+          reactor::yield();
         }
-        this->_socket->socket()->close();
-        this->_socket->close();
-        this->_socket.reset(nullptr);
+        if (this->_socket)
+        {
+          this->_socket->close();
+          this->_socket->socket()->close();
+          this->_socket.reset(nullptr);
+        }
       }
-      utp_destroy(this->_ctx);
-      this->_ctx = nullptr;
+      if (this->_ctx)
+      {
+        utp_destroy(this->_ctx);
+        this->_ctx = nullptr;
+      }
     }
 
     uint64

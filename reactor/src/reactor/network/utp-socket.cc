@@ -63,6 +63,8 @@ namespace reactor
         ELLE_DEBUG("snd %s recv %s", utp_getsockopt(this->_socket, UTP_SNDBUF),
           utp_getsockopt(this->_socket, UTP_RCVBUF));
       }
+      // Register socket for future closing.
+      this->_server._sockets.emplace(this);
     }
 
     UTPSocket::UTPSocket(UTPServer& server)
@@ -316,6 +318,12 @@ namespace reactor
       if (this->_closing)
         return;
       this->_closing = true;
+      auto it = std::find(
+        this->_server._sockets.begin(),
+        this->_server._sockets.end(),
+        this);
+      if (it != this->_server._sockets.end())
+        this->_server._sockets.erase(it);
       if (!this->_socket)
         return;
       //if (_open)

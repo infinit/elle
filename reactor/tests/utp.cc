@@ -1,10 +1,16 @@
+#include <memory>
+
+#include <elle/test.hh>
+#include <elle/assert.hh>
+#include <elle/With.hh>
+
 #include <reactor/scheduler.hh>
 #include <reactor/network/utp-server.hh>
 #include <reactor/network/utp-socket.hh>
 #include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
-#include <elle/test.hh>
-#include <elle/assert.hh>
+#include <reactor/Scope.hh>
+
 
 ELLE_LOG_COMPONENT("utpcat");
 
@@ -26,14 +32,28 @@ ELLE_TEST_SCHEDULED(udp)
   delete t;
 }
 
-
-class SocketPair
+template <typename Server>
+class _SocketPair
 {
 public:
-  SocketPair();
-  reactor::network::UTPServer srv1, srv2;
+  _SocketPair()
+    : srv1("server 1")
+    , srv2("server 2")
+  {
+    srv1.listen(0);
+    srv2.listen(0);
+    s1.reset(new reactor::network::UTPSocket(srv2));
+    s1->connect("127.0.0.1", srv1.local_endpoint().port());
+    ELLE_LOG("SocketPair accepting");
+    s2 = srv1.accept();
+    ELLE_LOG("SocketPair ready");
+  }
+
+  Server srv1, srv2;
   std::unique_ptr<reactor::network::UTPSocket> s1, s2;
 };
+
+typedef _SocketPair<reactor::network::UTPServer> SocketPair;
 
 ELLE_TEST_SCHEDULED(basic)
 {
@@ -170,17 +190,92 @@ ELLE_TEST_SCHEDULED(many)
   sp.s2->stats();
 }
 
-SocketPair::SocketPair()
+ELLE_TEST_SCHEDULED(non_interruptible_readers)
 {
-  srv1.listen(0);
-  srv2.listen(0);
-  s1 = elle::make_unique<reactor::network::UTPSocket>(srv2);
-  s1->connect("127.0.0.1",
-              srv1.local_endpoint().port());
-  ELLE_LOG("SocketPair accepting");
-  s2 = srv1.accept();
-  ELLE_LOG("SocketPair ready");
+  reactor::Barrier read1, read2;
+  elle::With<reactor::Scope>() << [&] (reactor::Scope& s)
+  {
+    std::unique_ptr<SocketPair> sp{new SocketPair};
+    auto& t = s.run_background(
+      "to terminate",
+      [&]
+      {
+        try
+        {
+          reactor::sleep();
+        }
+        catch (reactor::Terminate const&)
+        {
+          sp.reset();
+          throw;
+        }
+      });
+    auto action = [&] (reactor::Barrier& barrier,
+                       reactor::network::UTPSocket* socket) -> void
+    {
+      while (!sp)
+        reactor::yield();
+      barrier.open();
+      std::unique_ptr<reactor::network::UTPSocket> s{socket};
+      elle::With<reactor::Thread::NonInterruptible>() << [&]
+      {
+        BOOST_CHECK_THROW(s->read(10, 1_sec), reactor::network::SocketClosed);
+      };
+    };
+    s.run_background("read1", std::bind(action, std::ref(read1), sp->s1.release()));
+    s.run_background("read2", std::bind(action, std::ref(read2), sp->s2.release()));
+
+    reactor::wait(read1);
+    reactor::wait(read2);
+    t.terminate_now();
+    s.wait();
+  };
 }
+
+class InterruptibleListenerUTPServer
+  : public reactor::network::UTPServer
+{
+public:
+  InterruptibleListenerUTPServer(std::string const& name)
+    : reactor::network::UTPServer(name)
+  {}
+
+public:
+  reactor::Thread&
+  listener()
+  {
+    return *this->_listener;
+  }
+};
+
+ELLE_TEST_SCHEDULED(terminate_listener)
+{
+  reactor::Barrier read1, read2;
+  elle::With<reactor::Scope>() << [&] (reactor::Scope& s)
+  {
+    typedef _SocketPair<InterruptibleListenerUTPServer> Sockets;
+    std::unique_ptr<Sockets> sp{new Sockets};
+    auto action = [&] (reactor::Barrier& barrier,
+                       reactor::network::UTPSocket* socket) -> void
+    {
+      while (!sp)
+        reactor::yield();
+      barrier.open();
+      std::unique_ptr<reactor::network::UTPSocket> s{socket};
+      elle::With<reactor::Thread::NonInterruptible>() << [&]
+      {
+        BOOST_CHECK_THROW(s->read(10, 1_sec), reactor::network::SocketClosed);
+      };
+    };
+    s.run_background("read1", std::bind(action, std::ref(read1), sp->s1.release()));
+    s.run_background("read2", std::bind(action, std::ref(read2), sp->s2.release()));
+    reactor::wait(read1);
+    reactor::wait(read2);
+    sp->srv1.listener().terminate_now();
+    s.wait();
+  };
+}
+
 
 static
 void
@@ -208,4 +303,6 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(streams), 0, valgrind(2));
   suite.add(BOOST_TEST_CASE(big), 0, valgrind(2));
   suite.add(BOOST_TEST_CASE(many), 0, valgrind(8));
+  suite.add(BOOST_TEST_CASE(non_interruptible_readers), 0, valgrind(1000));
+  suite.add(BOOST_TEST_CASE(terminate_listener), 0, valgrind(1000));
 }

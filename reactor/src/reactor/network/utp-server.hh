@@ -66,10 +66,11 @@ namespace reactor
       // ELLE_ATTRIBUTE_RX(std::shared_ptr<utp_context>, ctx);
       ELLE_ATTRIBUTE_RX(utp_context*, ctx);
       ELLE_ATTRIBUTE_R(std::unique_ptr<RDVSocket>, socket);
+      ELLE_ATTRIBUTE_X(std::set<UTPSocket*>, sockets);
       ELLE_ATTRIBUTE_RX(unsigned char, xorify);
       ELLE_ATTRIBUTE(std::vector<std::unique_ptr<UTPSocket>>, accept_queue);
       ELLE_ATTRIBUTE(Barrier, accept_barrier);
-      ELLE_ATTRIBUTE(std::unique_ptr<Thread>, listener);
+      ELLE_ATTRIBUTE(std::unique_ptr<Thread>, listener, protected);
       ELLE_ATTRIBUTE(std::unique_ptr<Thread>, checker);
       typedef std::deque<std::pair<elle::Buffer, EndPoint>> SendBuffer;
       ELLE_ATTRIBUTE(SendBuffer, send_buffer);

@@ -81,6 +81,8 @@ namespace reactor
       ELLE_ATTRIBUTE(int, write_pos);
       ELLE_ATTRIBUTE(bool, open);
       ELLE_ATTRIBUTE(bool, closing);
+    private:
+      friend class UTPServer;
     };
   }
 }
