@@ -12,6 +12,7 @@ python_lib = None
 dokan_lib = None
 cxx_lib = None
 connectivity = None
+fnetusermount_binaries = None
 
 library_coroutine = None
 
@@ -50,7 +51,7 @@ def configure(curl_config,
   global config, lib_static, lib_dynamic, library, cxx_lib
   global rule_build, rule_install
   global python_lib, dokan_lib
-  global connectivity
+  global connectivity, fnetusermount_binaries
 
   if cxx_toolkit.os is drake.os.macos:
     global osxfuse_package
@@ -760,6 +761,18 @@ def configure(curl_config,
     rule_build << bin
     if name == 'connectivity':
       connectivity = bin
+
+  if cxx_toolkit.os is drake.os.linux:
+    fnetusermount_binaries = []
+    for name in ['fnetusermount-client', 'fnetusermount-server']:
+      sources = drake.nodes('bin/%s.cc' % name)
+      bin = drake.cxx.Executable(
+        'bin/%s' % name,
+        sources,
+        cxx_toolkit,
+        cxx_config_bin)
+      rule_build << bin
+      fnetusermount_binaries.append(bin)
 
   ## ----- ##
   ## Tests ##
