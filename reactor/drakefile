@@ -313,7 +313,9 @@ def configure(curl_config,
       drake.TarballExtractor(
         fuse_tarball,
         targets = ['%s/configure' % fuse_basename],
-        patches = [(drake.node('fuse.patch'), 1),],
+        patches = [(drake.node('fuse.patch'), 1),
+                   (drake.node('fuse-fusermount-fallback.patch'), 1),
+        ],
         patch_dir = fuse_basename
       )
       GNUBuilder(

@@ -1,0 +1,22 @@
+--- fuse-2.9.4.old/lib/mount.c	2015-05-22 11:13:33.000000000 +0200
++++ fuse-2.9.4.new/lib/mount.c	2016-06-20 15:32:03.243204728 +0200
+@@ -315,8 +315,8 @@
+ 	}
+ 
+ 	if (geteuid() == 0) {
+-		fuse_mnt_umount("fuse", mountpoint, mountpoint,  1);
+-		return;
++		if (fuse_mnt_umount("fuse", mountpoint, mountpoint,  1) == 0)
++		  return;
+ 	}
+ 
+ 	res = umount2(mountpoint, 2);
+@@ -601,7 +601,7 @@
+ 		goto out;
+ 
+ 	res = fuse_mount_sys(mountpoint, &mo, mnt_opts);
+-	if (res == -2) {
++	if (res < 0) {
+ 		if (mo.fusermount_opts &&
+ 		    fuse_opt_add_opt(&mnt_opts, mo.fusermount_opts) == -1)
+ 			goto out;
