@@ -604,6 +604,12 @@ def configure(curl_config,
   )
   sources += connectivity_sources
 
+  if cxx_toolkit.os in [drake.os.ios, drake.os.macos]:
+    sources += drake.nodes(
+      'src/reactor/network/reachability.cc',
+      'src/reactor/network/reachability.hh',
+    )
+
   lib_cxx_config = drake.cxx.Config(local_cxx_config)
 
   backend_lib = drake.cxx.StaticLib(
