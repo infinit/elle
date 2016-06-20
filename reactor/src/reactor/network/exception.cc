@@ -1,6 +1,9 @@
 #include <elle/printf.hh>
+#include <elle/log.hh>
 
 #include <reactor/network/exception.hh>
+
+ELLE_LOG_COMPONENT("reactor.network.exceptions");
 
 namespace reactor
 {
@@ -8,7 +11,9 @@ namespace reactor
   {
     Exception::Exception(const std::string& message):
       Super(message)
-    {}
+    {
+      ELLE_DEBUG("%s", this);
+    }
 
     SocketClosed::SocketClosed()
       : Super("socket was closed")
