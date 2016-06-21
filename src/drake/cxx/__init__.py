@@ -578,6 +578,7 @@ class GccToolkit(Toolkit):
     self.__recursive_linkage = False
     self.cxx = compiler or 'g++'
     self.__patchelf = drake.Path('patchelf')
+    self.__splitted = None
     try:
       version = subprocess.check_output([self.cxx, '--version'])
     except:
@@ -631,7 +632,7 @@ class GccToolkit(Toolkit):
       self.__version = tuple(map(int, self.preprocess_values(vars)))
     else:
       raise Exception('unknown GCC kind')
-    self.c = compiler_c or '%sgcc' % self.prefix
+    self.c = compiler_c or '%sgcc%s' % (self.prefix, self.suffix)
     if archiver:
       self.ar = archiver
     else:
@@ -995,16 +996,29 @@ class GccToolkit(Toolkit):
     else:
       return path
 
+  def __split(self):
+    if self.__splitted is None:
+      if self.__kind is GccToolkit.Kind.gcc:
+        name = 'g\+\+'
+      elif self.__kind is GccToolkit.Kind.clang:
+        name = 'clang\+\+'
+      else:
+        raise Exception('unknown compiler kind: %s' % self.__kind)
+      r = re.compile(
+        '(.*)(%s)(-[0-9]+(\.[0-9]+(\.[0-9]+)?)?)?$' % name)
+      match = r.match(self.cxx)
+      if not match:
+        raise Exception('unrecognized compiler name: %s' % self.cxx)
+      self.__splitted = match.groups()[:3]
+    return self.__splitted
+
   @property
   def prefix(self):
-    if self.__kind is GccToolkit.Kind.gcc:
-      name = 'g\+\+'
-    elif self.__kind is GccToolkit.Kind.clang:
-      name = 'clang\+\+'
-    else:
-      raise Exception('unkown gcc toolkit kind: %s' % self.__kind)
-    return re.sub(r'%s(-[0-9]+(\.[0-9]+(\.[0-9]+)?)?)?$' % name,
-                  '', self.cxx)
+    return self.__split()[0]
+
+  @property
+  def suffix(self):
+    return self.__split()[2]
 
   @property
   def kind(self):
