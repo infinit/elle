@@ -325,6 +325,7 @@ def configure(curl_config,
         configure_args = [
         '--prefix=%s' % fuse_prefix_absolute,
         'CXX=%s' % cxx_toolkit.cxx,
+        'CC=%s' % cxx_toolkit.c,
         '--disable-util',
         '--disable-example',
         '--disable-static',

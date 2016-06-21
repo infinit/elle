@@ -1178,6 +1178,8 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
         '--disable-spasswd',
         '--disable-slapd',
         '--disable-shared',
+        'CC=%s' % cxx_toolkit_host.c,
+        'CXX=%s' % cxx_toolkit_host.cxx,
         'CXXFLAGS=-fPIC',
         'CFLAGS=-fPIC',
         'CPPFLAGS=-I%s' % drake.path_build(openssl_prefix, absolute = True) + '/include',
