@@ -3884,26 +3884,23 @@ class TarballExtractor(ArchiveExtractor):
 
   def extract(self):
     import tarfile
+    import tempfile
     # Make TarFile withable on python <= 3.1
     if not hasattr(tarfile.TarFile, '__enter__'):
       tarfile.TarFile.__enter__ = lambda self: self
     if not hasattr(tarfile.TarFile, '__exit__'):
       tarfile.TarFile.__exit__ = lambda self, v, tb, t: self.close()
-    with tarfile.open(str(self.tarball.path()), 'r') as f:
-      # Remove all target directories because tarfile will miserably
-      # fail at overwriting some existing files such as symlinks.
-      paths = set()
-      for member in f.getnames():
-        root = member.split('/')[0]
-        # Just some securities
-        assert root != '.'
-        assert root != '..'
-        assert not root.startswith('/')
-        paths.add(root)
-      import shutil
-      for path in paths:
-        shutil.rmtree(str(drake.path_build(self.destination / path)))
-      f.extractall(str(self.destination))
+    with tarfile.open(str(self.tarball.path()), 'r') as f, \
+         tempfile.TemporaryDirectory(
+           prefix = str(self.tarball.name().basename()) + '.',
+           dir = str(self.destination)) as tmp:
+      tmp = drake.Path(tmp)
+      f.extractall(str(tmp))
+      for f in _OS.listdir(str(tmp)):
+        destination = str(drake.path_build(self.destination / f))
+        if (_OS.path.exists(destination)):
+          shutil.rmtree(destination)
+        shutil.move(str(tmp / f), destination)
 
 class ZipExtractor(ArchiveExtractor):
 
