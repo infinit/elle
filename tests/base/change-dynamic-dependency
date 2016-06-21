@@ -5,25 +5,10 @@
 
 import drake
 import os
-import shutil
 import tempfile
+import utils
 
-class TestDrake:
-
-  def __init__(self, working_dir):
-    self.__working_dir = working_dir
-    super().__init__()
-
-  def __enter__(self):
-    os.chdir(self.__working_dir)
-    self.__drake = drake.Drake()
-    self.__drake.__enter__()
-    return self.__drake
-
-  def __exit__(self, *args):
-    self.__drake.__exit__(*args)
-
-class DependantBuilder(drake.TouchBuilder):
+class DependentBuilder(drake.TouchBuilder):
 
   def deps_handler(builder, path, t, data):
     return drake.node(path, t)
@@ -42,19 +27,19 @@ class DependantBuilder(drake.TouchBuilder):
 
 with tempfile.TemporaryDirectory() as working_dir:
 
-  def do_build(name):
-    with TestDrake(working_dir) as d:
+  def build(name):
+    with utils.Drake(working_dir) as d:
       dyn_dep = drake.node(name)
       drake.TouchBuilder([dyn_dep])
       target = drake.node('target')
-      DependantBuilder([target], [dyn_dep])
+      DependentBuilder([target], [dyn_dep])
       target.build()
       objs = os.listdir(working_dir)
       assert str(dyn_dep.path()) in objs
       assert str(target.path()) in objs
 
   # Build `target` and `dyn_dep_1` which it depends on dynamically.
-  do_build('dyn_dep_1')
+  build('dyn_dep_1')
 
   # Remove the `dyn_dep_1` file.
   os.remove('%s/dyn_dep_1' % working_dir)
@@ -62,4 +47,4 @@ with tempfile.TemporaryDirectory() as working_dir:
   assert 'dyn_dep_1' not in objs
 
   # Change the dynamic dependency to `dyn_dep_2` and rebuild.
-  do_build('dyn_dep_2')
+  build('dyn_dep_2')

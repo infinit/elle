@@ -4,27 +4,11 @@
    new dependency being built.'''
 
 import drake
+import drake.sched
 import os
-import shutil
 import tempfile
 import threading
-import time
-
-class TestDrake:
-
-  def __init__(self, working_dir):
-    self.__working_dir = working_dir
-    super().__init__()
-
-  def __enter__(self):
-    os.chdir(self.__working_dir)
-    self.__drake = drake.Drake()
-    self.__drake.__enter__()
-    return self.__drake
-
-  def __exit__(self, *args):
-    self.__drake.__exit__(*args)
-
+import utils
 
 class BlockBuilder(drake.TouchBuilder):
 
@@ -39,7 +23,7 @@ class BlockBuilder(drake.TouchBuilder):
     return self._run_job(job)
 
 
-class DependantBuilder(drake.TouchBuilder):
+class DependentBuilder(drake.TouchBuilder):
 
   def deps_handler(builder, path, t, data):
     return drake.node(path, t)
@@ -57,19 +41,20 @@ class DependantBuilder(drake.TouchBuilder):
       self.add_dynsrc(self.deps, dep)
 
 with tempfile.TemporaryDirectory() as working_dir:
-  with TestDrake(working_dir) as d:
+  with utils.Drake(working_dir) as d:
     dyn1 = drake.node('dyn1')
     drake.TouchBuilder([dyn1])
     dyn2 = drake.node('dyn2')
     drake.TouchBuilder([dyn2])
     target = drake.node('target')
-    DependantBuilder([target], [dyn1, dyn2])
+    DependentBuilder([target], [dyn1, dyn2])
+    target.build()
     drake.sched.Coroutine(target.build, str(target), d.scheduler)
     d.scheduler.run()
   os.remove('%s/target' % working_dir)
   os.remove('%s/dyn1' % working_dir)
   os.remove('%s/dyn2' % working_dir)
-  with TestDrake(working_dir) as d:
+  with utils.Drake(working_dir) as d:
     d.jobs_set(3)
     dyn1 = drake.node('dyn1')
     block = BlockBuilder([dyn1])
@@ -80,7 +65,7 @@ with tempfile.TemporaryDirectory() as working_dir:
         return False
     fail = FailBuilder([], [dyn2])
     target = drake.node('target')
-    DependantBuilder([target], [dyn1, dyn2])
+    DependentBuilder([target], [dyn1, dyn2])
     drake.sched.Coroutine(target.build, str(target), d.scheduler)
     try:
       d.scheduler.run()

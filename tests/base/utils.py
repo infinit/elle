@@ -5,13 +5,20 @@ import tempfile
 
 class Drake:
 
-  def __enter__(self):
-    self.__dir = tempfile.mkdtemp()
-    os.chdir(self.__dir)
+  def __init__(self, dir = None):
+    self.__dir = dir
+    self.__delete = False
     self.__drake = drake.Drake()
+
+  def __enter__(self):
+    if self.__dir is None:
+      self.__dir = tempfile.mkdtemp()
+      self.__delete = True
+    os.chdir(self.__dir)
     self.__drake.__enter__()
-    return drake
+    return self.__drake
 
   def __exit__(self, *args):
     self.__drake.__exit__(*args)
-    shutil.rmtree(self.__dir)
+    if self.__delete:
+      shutil.rmtree(self.__dir)
