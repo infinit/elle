@@ -1694,7 +1694,7 @@ class Builder:
     """Add a dependency handler."""
     self._deps_handlers[name] = f
 
-  def __init__(self, srcs, dsts):
+  def __init__(self, srcs, dsts, create_directories = True):
     """Create a builder.
 
     srcs -- List of source nodes, or source node if there is
@@ -1702,6 +1702,7 @@ class Builder:
     dsts -- List of target nodes, or target node if there is
             only one.
     """
+    self.__create_dirs = create_directories
     self.__sources = {}
     self.__sources_dyn = {}
     for src in srcs:
@@ -2039,9 +2040,10 @@ class Builder:
 
   def _execute(self, depfile_builder):
     self.cachedir.mkpath()
-    for target in self.__targets:
-      if isinstance(target, Node):
-        target.path().dirname().mkpath()
+    if self.__create_dirs:
+      for target in self.__targets:
+        if isinstance(target, Node):
+          target.path().dirname().mkpath()
     with logger.log('drake.Builder',
                     drake.log.LogLevel.trace,
                     '%s: needs execution', self):
@@ -3848,7 +3850,8 @@ class ArchiveExtractor(Builder):
     # self.__targets = nodes(*targets)
     patch_nodes = map(lambda x: x[0], self.__patches)
     Builder.__init__(self, list(chain((tarball,), patch_nodes)),
-                     self.__targets)
+                     self.__targets,
+                     create_directories = False)
 
   @property
   def tarball(self):
