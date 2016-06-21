@@ -190,6 +190,30 @@ ELLE_TEST_SCHEDULED(many)
   sp.s2->stats();
 }
 
+ELLE_TEST_SCHEDULED(terminate_reader)
+{
+  reactor::Barrier reading;
+  elle::With<reactor::Scope>() << [&] (reactor::Scope& s)
+  {
+    std::unique_ptr<SocketPair> sp{new SocketPair};
+    auto& t = s.run_background(
+      "server",
+      [&]
+      {
+        reading.open();
+        BOOST_CHECK_THROW(sp->s1->read(10, 1_sec), reactor::Terminate);
+      });
+    s.run_background(
+      "terminator",
+      [&]
+      {
+        reading.wait();
+        t.terminate_now();
+      });
+    s.wait();
+  };
+}
+
 ELLE_TEST_SCHEDULED(non_interruptible_readers)
 {
   reactor::Barrier read1, read2;
@@ -276,7 +300,6 @@ ELLE_TEST_SCHEDULED(terminate_listener)
   };
 }
 
-
 static
 void
 loop_socket(reactor::network::UTPSocket* ts)
@@ -303,6 +326,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(streams), 0, valgrind(2));
   suite.add(BOOST_TEST_CASE(big), 0, valgrind(2));
   suite.add(BOOST_TEST_CASE(many), 0, valgrind(8));
-  suite.add(BOOST_TEST_CASE(non_interruptible_readers), 0, valgrind(1000));
-  suite.add(BOOST_TEST_CASE(terminate_listener), 0, valgrind(1000));
+  suite.add(BOOST_TEST_CASE(terminate_reader), 0, valgrind(5));
+  suite.add(BOOST_TEST_CASE(non_interruptible_readers), 0, valgrind(5));
+  suite.add(BOOST_TEST_CASE(terminate_listener), 0, valgrind(5));
 }
