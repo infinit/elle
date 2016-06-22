@@ -1009,7 +1009,7 @@ class GccToolkit(Toolkit):
       match = r.match(self.cxx)
       if not match:
         raise Exception('unrecognized compiler name: %s' % self.cxx)
-      self.__splitted = match.groups()[:3]
+      self.__splitted = [s or '' for s in match.groups()[:3]]
     return self.__splitted
 
   @property
