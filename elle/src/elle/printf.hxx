@@ -11,7 +11,6 @@
 # include <elle/TypeInfo.hh>
 # include <elle/assert.hh>
 # include <elle/log.hh>
-# include <elle/print.hh>
 # include <elle/sfinae.hh>
 
 // Work around Clang 3.5.0 bug where having this helper in the elle namespace

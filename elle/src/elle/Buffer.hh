@@ -4,8 +4,6 @@
 # include <elle/IOStream.hh>
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
-# include <elle/serialize/construct.hh>
-# include <elle/serialize/fwd.hh>
 # include <elle/types.hh>
 
 # include <iosfwd>
@@ -23,8 +21,6 @@ namespace elle
     };
   }
 
-  class InputBufferArchive;
-  class OutputBufferArchive;
   class WeakBuffer;
 
   /*-------.
@@ -153,16 +149,6 @@ namespace elle
   | Serialization |
   `--------------*/
   public:
-    friend struct serialize::Serializer<Buffer>;
-    /// Load constructor.
-    ELLE_SERIALIZE_CONSTRUCT_DECLARE(Buffer);
-    /// Binary serialization write shorcut.
-    OutputBufferArchive
-    writer();
-    /// Binary serialization read shorcut.
-    InputBufferArchive
-    reader() const;
-
     /// Construct an output streambuf from the buffer.
     std::streambuf* ostreambuf();
 
@@ -291,9 +277,6 @@ namespace elle
   | Serialization |
   `--------------*/
   public:
-    InputBufferArchive
-    reader() const;
-
     /// Construct an input streambuf from the buffer.
     std::streambuf* istreambuf() const;
 

@@ -3,8 +3,6 @@
 
 # include <elle/BadAlloc.hh>
 # include <elle/assert.hh>
-# include <elle/serialize/Serializer.hh>
-# include <elle/serialize/BinaryArchive.hh>
 
 # include <stdexcept>
 # include <iosfwd>
@@ -12,15 +10,16 @@
 namespace elle
 {
   inline
-  Byte*
-  Buffer::mutable_contents() const
+  void
+  detail::MallocDeleter::operator ()(void* data)
   {
-    return this->_contents;
+    ::free(data);
   }
 
   /*-------------.
   | Construction |
   `-------------*/
+
   template <typename T,
             typename std::enable_if<std::is_integral<T>::value, int>::type>
   Buffer::Buffer(T size)
@@ -105,93 +104,12 @@ namespace elle
     return const_cast<Byte*>(this->contents());
   }
 
-  class InputBufferArchive:
-    public elle::serialize::InputBinaryArchive
+  inline
+  Byte*
+  Buffer::mutable_contents() const
   {
-  private:
-    std::istream* _istream;
-
-  public:
-    explicit
-    InputBufferArchive(ConstWeakBuffer const& buffer);
-    explicit
-    InputBufferArchive(Buffer const& buffer);
-    InputBufferArchive(InputBufferArchive&& other);
-    ~InputBufferArchive();
-
-  private:
-    InputBufferArchive(InputBufferArchive const& other);
-    InputBufferArchive&
-    operator =(InputBufferArchive const& other);
-  };
-
-  class OutputBufferArchive:
-    public elle::serialize::OutputBinaryArchive
-  {
-  private:
-    std::ostream* _ostream;
-
-  public:
-    explicit
-    OutputBufferArchive(Buffer& buffer);
-    OutputBufferArchive(OutputBufferArchive&& other);
-    ~OutputBufferArchive();
-
-  private:
-    OutputBufferArchive(OutputBufferArchive const& other);
-    OutputBufferArchive&
-    operator =(OutputBufferArchive const& other);
-  };
-
-}
-
-ELLE_SERIALIZE_SPLIT(elle::Buffer)
-
-ELLE_SERIALIZE_SPLIT_LOAD(elle::Buffer,
-                          archive,
-                          value,
-                          version)
-{
-  enforce(version == 0);
-  uint64_t size;
-  archive >> size;
-  try
-  {
-    value.size(size);
+    return this->_contents;
   }
-  catch (std::bad_alloc const& e)
-  {
-    throw elle::BadAlloc();
-  }
-  archive.LoadBinary(value._contents, size);
-}
-
-ELLE_SERIALIZE_SPLIT_SAVE(elle::Buffer,
-                          archive,
-                          value,
-                          version)
-{
-  enforce(version == 0);
-  archive << static_cast<uint64_t>(value.size());
-  archive.SaveBinary(value.contents(), value.size());
-}
-
-
-ELLE_SERIALIZE_SPLIT(elle::WeakBuffer)
-
-ELLE_SERIALIZE_SPLIT_SAVE(elle::WeakBuffer,
-                          archive,
-                          value,
-                          version)
-{
-  enforce(version == 0);
-  archive << static_cast<uint64_t>(value.size());
-  archive.SaveBinary(value.contents(), value.size());
-}
-
-ELLE_SERIALIZE_SPLIT_LOAD(elle::WeakBuffer,,,)
-{
-  elle::unreachable();
 }
 
 #endif

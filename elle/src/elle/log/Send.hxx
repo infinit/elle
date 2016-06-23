@@ -1,7 +1,6 @@
 #ifndef ELLE_LOG_SEND_HXX
 # define ELLE_LOG_SEND_HXX
 
-# include <elle/print.hh>
 # include <elle/printf.hh>
 
 namespace elle
@@ -34,14 +33,6 @@ namespace elle
       Send::operator bool() const
       {
         return false;
-      }
-
-      template <typename... Args>
-      std::string
-      print_function_params(Args&&... args)
-      {
-        return elle::sprint(elle::iomanip::Separator(", "),
-                            std::forward<Args>(args)...);
       }
     }
   }

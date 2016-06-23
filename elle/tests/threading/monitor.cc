@@ -4,7 +4,6 @@
 #include <vector>
 
 #include <elle/threading/Monitor.hh>
-#include <elle/print.hh>
 #include <elle/test.hh>
 
 static

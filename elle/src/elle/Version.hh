@@ -1,14 +1,11 @@
 #ifndef ELLE_VERSION_HH
 # define ELLE_VERSION_HH
 
-# include <elle/types.hh>
-# include <elle/operator.hh>
 # include <elle/attribute.hh>
-# include <elle/Printable.hh>
-# include <elle/serialize/fwd.hh>
-# include <elle/serialize/construct.hh>
-
+# include <elle/operator.hh>
 # include <elle/serialization/fwd.hh>
+# include <elle/types.hh>
+# include <elle/Printable.hh>
 
 namespace elle
 {
@@ -26,7 +23,6 @@ namespace elle
     Version(elle::Natural8 major,
             elle::Natural8 minor,
             elle::Natural8 subminor);
-    ELLE_SERIALIZE_CONSTRUCT_DECLARE(Version);
 
     /*-----------.
     | Interfaces |
@@ -35,9 +31,6 @@ namespace elle
     // printable
     void
     print(std::ostream& stream) const;
-
-    // serializable
-    ELLE_SERIALIZE_FRIEND_FOR(Version);
 
     /*----------.
     | Operators |

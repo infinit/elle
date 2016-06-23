@@ -18,9 +18,6 @@ namespace elle
     _subminor(0)
   {}
 
-  ELLE_SERIALIZE_CONSTRUCT_DEFINE(Version)
-  {}
-
   /*----------.
   | Printable |
   `----------*/

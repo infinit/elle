@@ -1,22 +1,21 @@
-#include <protocol/Serializer.hh>
-#include <protocol/exceptions.hh>
+#include <elle/With.hh>
+#include <elle/cast.hh>
+#include <elle/test.hh>
 
 #include <cryptography/random.hh>
 
+#include <reactor/Scope.hh>
 #include <reactor/asio.hh>
+#include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/tcp-server.hh>
 #include <reactor/network/tcp-socket.hh>
 #include <reactor/scheduler.hh>
-#include <reactor/network/buffer.hh>
-#include <elle/cast.hh>
-#include <reactor/Scope.hh>
 #include <reactor/semaphore.hh>
 #include <reactor/thread.hh>
 
-#include <elle/test.hh>
-#include <elle/With.hh>
-#include <elle/serialize/BinaryArchive.hh>
+#include <protocol/Serializer.hh>
+#include <protocol/exceptions.hh>
 
 ELLE_LOG_COMPONENT("infinit.protocol.test");
 
