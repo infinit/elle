@@ -13,8 +13,6 @@
 #include <openssl/crypto.h>
 #include <openssl/err.h>
 
-ELLE_LOG_COMPONENT("infinit.cryptography.dsa.low");
-
 namespace infinit
 {
   namespace cryptography
@@ -32,8 +30,6 @@ namespace infinit
         ::DSA*
         DSA_priv2pub(::DSA* private_key)
         {
-          ELLE_TRACE_FUNCTION(private_key);
-
           ELLE_ASSERT_NEQ(private_key, nullptr);
 
           unsigned char* buffer = nullptr;
@@ -70,8 +66,6 @@ namespace infinit
         ::DSA*
         DSA_dup(::DSA* key)
         {
-          ELLE_TRACE_FUNCTION(key);
-
           ELLE_ASSERT_NEQ(key, nullptr);
 
           // Increase the reference counter on this object rather

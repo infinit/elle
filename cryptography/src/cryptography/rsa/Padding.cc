@@ -10,8 +10,6 @@
 
 #include <cryptography/Error.hh>
 
-ELLE_LOG_COMPONENT("infinit.cryptography.rsa.Padding");
-
 namespace infinit
 {
   namespace cryptography
@@ -76,8 +74,6 @@ namespace infinit
         int
         resolve(Padding const name)
         {
-          ELLE_TRACE_FUNCTION(name);
-
           switch (name)
           {
             case Padding::none:
@@ -103,8 +99,6 @@ namespace infinit
         Padding
         resolve(int const value)
         {
-          ELLE_TRACE_FUNCTION(value);
-
           switch (value)
           {
             case RSA_NO_PADDING:

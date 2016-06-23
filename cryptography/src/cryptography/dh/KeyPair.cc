@@ -13,8 +13,6 @@
 #include <openssl/err.h>
 #include <openssl/evp.h>
 
-ELLE_LOG_COMPONENT("infinit.cryptography.dh.KeyPair");
-
 namespace infinit
 {
   namespace cryptography
@@ -143,8 +141,6 @@ namespace infinit
         KeyPair
         generate()
         {
-          ELLE_TRACE_FUNCTION("");
-
           // Make sure the cryptographic system is set up.
           cryptography::require();
 

@@ -31,8 +31,6 @@
 # include <cryptography/_legacy/raw.hh>
 #endif
 
-ELLE_LOG_COMPONENT("infinit.cryptography.rsa.PrivateKey");
-
 namespace infinit
 {
   namespace cryptography
@@ -230,8 +228,6 @@ namespace infinit
       void
       PrivateKey::_construct(::RSA* rsa)
       {
-        ELLE_DEBUG_FUNCTION(rsa);
-
         ELLE_ASSERT_NEQ(rsa, nullptr);
 
         // Initialise the private key structure.
@@ -254,8 +250,6 @@ namespace infinit
       void
       PrivateKey::_check() const
       {
-        ELLE_DEBUG_FUNCTION("");
-
         ELLE_ASSERT_NEQ(this->_key, nullptr);
         ELLE_ASSERT_NEQ(this->_key->pkey.rsa, nullptr);
         ELLE_ASSERT_NEQ(this->_key->pkey.rsa->n, nullptr);
@@ -274,9 +268,6 @@ namespace infinit
                        Cipher const cipher,
                        Mode const mode) const
       {
-        ELLE_TRACE_METHOD(cipher, mode);
-        ELLE_DUMP("code: %x", code);
-
         elle::IOStream _code(code.istreambuf());
         std::stringstream _plain;
 
@@ -294,8 +285,6 @@ namespace infinit
                        Cipher const cipher,
                        Mode const mode) const
       {
-        ELLE_TRACE_METHOD(cipher, mode);
-
         envelope::open(this->_key.get(),
                        cipher::resolve(cipher, mode),
                        code,
@@ -306,9 +295,6 @@ namespace infinit
       PrivateKey::decrypt(elle::ConstWeakBuffer const& code,
                           Padding const padding) const
       {
-        ELLE_TRACE_METHOD(padding);
-        ELLE_DUMP("code: %x", code);
-
         auto prolog =
           [this, padding](::EVP_PKEY_CTX* context)
           {
@@ -325,9 +311,6 @@ namespace infinit
                        Padding const padding,
                        Oneway const oneway) const
       {
-        ELLE_TRACE_METHOD(padding, oneway);
-        ELLE_DUMP("plain: %x", plain);
-
         elle::IOStream _plain(plain.istreambuf());
 
         return (this->sign(_plain,
@@ -340,8 +323,6 @@ namespace infinit
                        Padding const padding,
                        Oneway const oneway) const
       {
-        ELLE_TRACE_METHOD(padding, oneway);
-
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         types::EVP_PKEY_CTX context(
           context::create(this->_key.get(), ::EVP_PKEY_sign_init));
@@ -416,9 +397,6 @@ namespace infinit
       Seed
       PrivateKey::rotate(Seed const& seed) const
       {
-        ELLE_TRACE_METHOD("");
-        ELLE_DUMP("seed: %x", seed);
-
         auto prolog =
           [this](::EVP_PKEY_CTX* ctx)
           {

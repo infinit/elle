@@ -19,8 +19,6 @@
 #include <openssl/hmac.h>
 #include <openssl/rand.h>
 
-ELLE_LOG_COMPONENT("infinit.cryptography.raw");
-
 //
 // ---------- Asymmetric ------------------------------------------------------
 //
@@ -61,9 +59,6 @@ namespace infinit
                 std::function<void (::EVP_PKEY_CTX*)> prolog,
                 std::function<void (::EVP_PKEY_CTX*)> epilog)
         {
-          ELLE_DEBUG_FUNCTION(key, key, prolog, epilog);
-          ELLE_DUMP("plain: %s", plain);
-
           // Make sure the cryptographic system is set up.
           cryptography::require();
 
@@ -90,9 +85,6 @@ namespace infinit
                 std::function<void (::EVP_PKEY_CTX*)> prolog,
                 std::function<void (::EVP_PKEY_CTX*)> epilog)
         {
-          ELLE_DEBUG_FUNCTION(key, prolog, epilog);
-          ELLE_DUMP("code: %s", code);
-
           // Make sure the cryptographic system is set up.
           cryptography::require();
 
@@ -121,8 +113,6 @@ namespace infinit
              std::function<void (::EVP_MD_CTX*,
                                  ::EVP_PKEY_CTX*)> epilog)
         {
-          ELLE_DEBUG_FUNCTION(key, oneway, prolog, epilog);
-
           // Make sure the cryptographic system is set up.
           cryptography::require();
 
@@ -214,9 +204,6 @@ namespace infinit
                std::function<void (::EVP_MD_CTX*,
                                    ::EVP_PKEY_CTX*)> epilog)
         {
-          ELLE_DEBUG_FUNCTION(key, oneway, prolog, epilog);
-          ELLE_DUMP("signature: %s", signature);
-
           // Make sure the cryptographic system is set up.
           cryptography::require();
 
@@ -297,8 +284,6 @@ namespace infinit
               std::function<void (::EVP_PKEY_CTX*)> prolog,
               std::function<void (::EVP_PKEY_CTX*)> epilog)
         {
-          ELLE_DEBUG_FUNCTION(own, peer, prolog, epilog);
-
           // Prepare the context.
           types::EVP_PKEY_CTX context(
             context::create(own, ::EVP_PKEY_derive_init));
@@ -435,9 +420,6 @@ namespace infinit
                                size_t),
                elle::ConstWeakBuffer const& input)
         {
-          ELLE_DEBUG_FUNCTION(context, function);
-          ELLE_DUMP("input: %s", input);
-
           // Make sure the cryptographic system is set up.
           cryptography::require();
 
@@ -522,9 +504,6 @@ namespace infinit
                  std::function<void (::EVP_CIPHER_CTX*)> prolog,
                  std::function<void (::EVP_CIPHER_CTX*)> epilog)
         {
-          ELLE_DEBUG_FUNCTION(cipher, oneway, prolog, epilog);
-          ELLE_DUMP("secret: %s", secret);
-
           // Make sure the cryptographic system is set up.
           cryptography::require();
 
@@ -589,7 +568,6 @@ namespace infinit
           // that the algorithm can output on top of the encrypted input
           // plain text.
           int block_size = ::EVP_CIPHER_CTX_block_size(&context);
-          ELLE_DEBUG("block size: %s", block_size);
 
           // Encrypt the input stream.
           std::vector<unsigned char> _input(constants::stream_block_size);
@@ -668,9 +646,6 @@ namespace infinit
                  std::function<void (::EVP_CIPHER_CTX*)> prolog,
                  std::function<void (::EVP_CIPHER_CTX*)> epilog)
         {
-          ELLE_DEBUG_FUNCTION(cipher, oneway, prolog, epilog);
-          ELLE_DUMP("secret: %s", secret);
-
           // Make sure the cryptographic system is set up.
           cryptography::require();
 
@@ -736,7 +711,6 @@ namespace infinit
 
           // Retreive the cipher-specific block size.
           int block_size = ::EVP_CIPHER_CTX_block_size(&context);
-          ELLE_DEBUG("block size: %s", block_size);
 
           // Decipher the code's stream.
           std::vector<unsigned char> _input(constants::stream_block_size);
@@ -826,8 +800,6 @@ namespace infinit
            std::function<void (::EVP_MD_CTX*)> prolog,
            std::function<void (::EVP_MD_CTX*)> epilog)
       {
-        ELLE_DEBUG_FUNCTION(oneway, prolog, epilog);
-
         // Make sure the cryptographic system is set up.
         cryptography::require();
 
@@ -922,8 +894,6 @@ namespace infinit
              std::function<void (::EVP_MD_CTX*)> prolog,
              std::function<void (::EVP_MD_CTX*)> epilog)
         {
-          ELLE_DEBUG_FUNCTION(key, oneway, prolog, epilog);
-
           // Make sure the cryptographic system is set up.
           cryptography::require();
 
@@ -1017,9 +987,6 @@ namespace infinit
                std::function<void (::EVP_MD_CTX*)> prolog,
                std::function<void (::EVP_MD_CTX*)> epilog)
         {
-          ELLE_DEBUG_FUNCTION(key, oneway, prolog, epilog);
-          ELLE_DUMP("digest: %s", digest);
-
           // Make sure the cryptographic system is set up.
           cryptography::require();
 

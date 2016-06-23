@@ -22,8 +22,6 @@
 #include <cryptography/raw.hh>
 #include <cryptography/hash.hh>
 
-ELLE_LOG_COMPONENT("infinit.cryptography.dsa.PublicKey");
-
 //
 // ---------- Class -----------------------------------------------------------
 //
@@ -162,10 +160,6 @@ namespace infinit
       void
       PublicKey::_construct(::DSA* dsa)
       {
-        ELLE_DEBUG_FUNCTION(dsa);
-
-        ELLE_ASSERT_NEQ(dsa, nullptr);
-
         // Initialise the public key structure.
         ELLE_ASSERT_EQ(this->_key, nullptr);
         this->_key.reset(::EVP_PKEY_new());
@@ -196,12 +190,7 @@ namespace infinit
       PublicKey::verify(elle::ConstWeakBuffer const& signature,
                         elle::ConstWeakBuffer const& plain) const
       {
-        ELLE_TRACE_METHOD("");
-        ELLE_DUMP("signature: %x", signature);
-        ELLE_DUMP("plain: %x", plain);
-
         elle::IOStream _plain(plain.istreambuf());
-
         return (this->verify(signature, _plain));
       }
 
@@ -209,9 +198,6 @@ namespace infinit
       PublicKey::verify(elle::ConstWeakBuffer const& signature,
                         std::istream& plain) const
       {
-        ELLE_TRACE_METHOD("");
-        ELLE_DUMP("signature: %x", signature);
-
         return (raw::asymmetric::verify(
                   this->_key.get(),
                   oneway::resolve(this->_digest_algorithm),

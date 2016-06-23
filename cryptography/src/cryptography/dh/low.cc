@@ -11,8 +11,6 @@
 #include <openssl/crypto.h>
 #include <openssl/err.h>
 
-ELLE_LOG_COMPONENT("infinit.cryptography.dh.low");
-
 namespace infinit
 {
   namespace cryptography
@@ -28,8 +26,6 @@ namespace infinit
         ::DH*
         DH_priv2pub(::DH* private_key)
         {
-          ELLE_TRACE_FUNCTION(private_key);
-
           ELLE_ASSERT_NEQ(private_key, nullptr);
 
           // Duplicate the parameters and manually copy the public key.
@@ -44,8 +40,6 @@ namespace infinit
         ::DH*
         DH_dup(::DH* key)
         {
-          ELLE_TRACE_FUNCTION(key);
-
           ELLE_ASSERT_NEQ(key, nullptr);
 
           ::DH_up_ref(key);

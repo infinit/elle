@@ -17,8 +17,6 @@
 #include <cryptography/hash.hh>
 #include <cryptography/raw.hh>
 
-ELLE_LOG_COMPONENT("infinit.cryptography.dsa.PrivateKey");
-
 namespace infinit
 {
   namespace cryptography
@@ -129,8 +127,6 @@ namespace infinit
       void
       PrivateKey::_construct(::DSA* dsa)
       {
-        ELLE_DEBUG_FUNCTION(dsa);
-
         ELLE_ASSERT_NEQ(dsa, nullptr);
 
         // Initialise the private key structure.
@@ -162,9 +158,6 @@ namespace infinit
       elle::Buffer
       PrivateKey::sign(elle::ConstWeakBuffer const& plain) const
       {
-        ELLE_TRACE_METHOD("");
-        ELLE_DUMP("plain: %x", plain);
-
         elle::IOStream _plain(plain.istreambuf());
 
         return (this->sign(_plain));
@@ -173,8 +166,6 @@ namespace infinit
       elle::Buffer
       PrivateKey::sign(std::istream& plain) const
       {
-        ELLE_TRACE_METHOD("");
-
         return (raw::asymmetric::sign(
                   this->_key.get(),
                   oneway::resolve(this->_digest_algorithm),

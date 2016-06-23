@@ -8,8 +8,6 @@
 #include <cryptography/finally.hh>
 #include <cryptography/pem.hh>
 
-ELLE_LOG_COMPONENT("infinit.cryptography.dsa.pem");
-
 namespace infinit
 {
   namespace cryptography
@@ -26,9 +24,6 @@ namespace infinit
         import_K(boost::filesystem::path const& path,
                  Oneway const digest_algorithm)
         {
-          ELLE_TRACE_FUNCTION(path,
-                              digest_algorithm);
-
           ::EVP_PKEY* key = cryptography::pem::import_public(path);
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(key);
@@ -46,9 +41,6 @@ namespace infinit
                  std::string const& passphrase,
                  Oneway const digest_algorithm)
         {
-          ELLE_TRACE_FUNCTION(path, passphrase,
-                              digest_algorithm);
-
           ::EVP_PKEY* key = cryptography::pem::import_private(path,
                                                               passphrase);
 
@@ -67,9 +59,6 @@ namespace infinit
                        std::string const& passphrase,
                        Oneway const digest_algorithm)
         {
-          ELLE_TRACE_FUNCTION(path, passphrase,
-                              digest_algorithm);
-
           PrivateKey k = import_k(path, passphrase,
                                   digest_algorithm);
 
@@ -82,8 +71,6 @@ namespace infinit
         export_K(PublicKey const& K,
                  boost::filesystem::path const& path)
         {
-          ELLE_TRACE_FUNCTION(K, path);
-
           cryptography::pem::export_public(K.key().get(),
                                            path);
         }
@@ -95,8 +82,6 @@ namespace infinit
                  Cipher const& cipher,
                  Mode const& mode)
         {
-          ELLE_TRACE_FUNCTION(k, path, passphrase, cipher, mode);
-
           cryptography::pem::export_private(k.key().get(),
                                             path,
                                             passphrase,
@@ -110,8 +95,6 @@ namespace infinit
                        Cipher const& cipher,
                        Mode const& mode)
         {
-          ELLE_TRACE_FUNCTION(keypair, path, passphrase, cipher, mode);
-
           export_k(keypair.k(),
                    path,
                    passphrase,

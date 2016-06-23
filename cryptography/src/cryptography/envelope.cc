@@ -18,8 +18,6 @@
 #include <cryptography/raw.hh>
 #include <cryptography/constants.hh>
 
-ELLE_LOG_COMPONENT("infinit.cryptography.envelope");
-
 namespace infinit
 {
   namespace cryptography
@@ -36,8 +34,6 @@ namespace infinit
            std::istream& plain,
            std::ostream& code)
       {
-        ELLE_DEBUG_FUNCTION(key, cipher);
-
         // Make sure the cryptographic system is set up.
         cryptography::require();
 
@@ -127,7 +123,6 @@ namespace infinit
 
         // Compute the block size according to the
         int block_size = ::EVP_CIPHER_CTX_block_size(&context);
-        ELLE_DEBUG("block size: %s", block_size);
 
         // Encrypt the plain's stream.
         std::vector<unsigned char> _input(constants::stream_block_size);
@@ -206,8 +201,6 @@ namespace infinit
            std::istream& code,
            std::ostream& plain)
       {
-        ELLE_DEBUG_FUNCTION(key, cipher);
-
         // Make sure the cryptographic system is set up.
         cryptography::require();
 
@@ -261,7 +254,6 @@ namespace infinit
 
         // Compute the block size according to the
         int block_size = ::EVP_CIPHER_CTX_block_size(&context);
-        ELLE_DEBUG("block size: %s", block_size);
 
         // Decrypt the plain's stream.
         std::vector<unsigned char> _input(constants::stream_block_size);

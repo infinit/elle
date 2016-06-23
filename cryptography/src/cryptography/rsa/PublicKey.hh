@@ -27,8 +27,6 @@ ELLE_OPERATOR_RELATIONALS();
 # include <cryptography/rsa/Padding.hh>
 # include <cryptography/rsa/defaults.hh>
 
-ELLE_SERIALIZE_STATIC_FORMAT(infinit::cryptography::rsa::PublicKey, 1);
-
 namespace infinit
 {
   namespace cryptography

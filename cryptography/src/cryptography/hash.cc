@@ -4,8 +4,6 @@
 #include <elle/Buffer.hh>
 #include <elle/log.hh>
 
-ELLE_LOG_COMPONENT("infinit.cryptography.hash");
-
 namespace infinit
 {
   namespace cryptography
@@ -19,9 +17,6 @@ namespace infinit
     hash(elle::ConstWeakBuffer const& plain,
          Oneway const oneway)
     {
-      ELLE_TRACE_FUNCTION(oneway);
-      ELLE_DUMP("plain: %x", plain);
-
       elle::IOStream _plain(plain.istreambuf());
 
       // The cast is required because of the legacy functions.
@@ -33,7 +28,6 @@ namespace infinit
     hash(std::istream& plain,
          Oneway const oneway)
     {
-      ELLE_TRACE_FUNCTION(oneway);
 
       ::EVP_MD const* function = oneway::resolve(oneway);
 

@@ -25,9 +25,6 @@
     _type_                                                              \
     generate()                                                          \
     {                                                                   \
-      ELLE_LOG_COMPONENT("infinit.cryptography.random");                \
-      ELLE_TRACE_FUNCTION("");                                          \
-                                                                        \
       return (_generate<_type_>());                                     \
     }                                                                   \
                                                                         \
@@ -36,9 +33,6 @@
     generate(_type_ minimum,                                            \
              _type_ maximum)                                            \
     {                                                                   \
-      ELLE_LOG_COMPONENT("infinit.cryptography.random");                \
-      ELLE_TRACE_FUNCTION(minimum, maximum);                            \
-                                                                        \
       return (::infinit::cryptography::random::_rangify(                \
                 _generate<_type_>(), minimum, maximum));                \
     }                                                                   \
@@ -74,9 +68,6 @@ namespace infinit
                T const minimum,
                T const maximum)
       {
-        ELLE_LOG_COMPONENT("infinit.cryptography.random");
-        ELLE_DEBUG_FUNCTION(value, minimum, maximum);
-
         ELLE_ASSERT_LTE(minimum, maximum);
 
         T ranged =
@@ -94,9 +85,6 @@ namespace infinit
       T
       _generate()
       {
-        ELLE_LOG_COMPONENT("infinit.cryptography.random");
-        ELLE_DEBUG_FUNCTION("");
-
         // Make sure the cryptographic system is set up.
         cryptography::require();
 
@@ -131,9 +119,6 @@ namespace infinit
         bool
         generate()
         {
-          ELLE_LOG_COMPONENT("infinit.cryptography.random");
-          ELLE_TRACE_FUNCTION("");
-
           int32_t value = _generate<bool>();
 
           if (value > 0)
@@ -152,9 +137,6 @@ namespace infinit
         double
         generate()
         {
-          ELLE_LOG_COMPONENT("infinit.cryptography.random");
-          ELLE_TRACE_FUNCTION("");
-
           return (_generate<double>());
         }
       };
@@ -176,9 +158,6 @@ namespace infinit
         std::string
         generate(uint32_t const length)
         {
-          ELLE_LOG_COMPONENT("infinit.cryptography.random");
-          ELLE_TRACE_FUNCTION(length);
-
           // Make sure the cryptographic system is set up.
           cryptography::require();
 
@@ -210,9 +189,6 @@ namespace infinit
         elle::Buffer
         generate(uint32_t const size)
         {
-          ELLE_LOG_COMPONENT("infinit.cryptography.random");
-          ELLE_TRACE_FUNCTION(size);
-
           // Make sure the cryptographic system is set up.
           cryptography::require();
 
@@ -235,9 +211,6 @@ namespace infinit
       T
       generate(A... arguments)
       {
-        ELLE_LOG_COMPONENT("infinit.cryptography.random");
-        ELLE_TRACE_FUNCTION("");
-
         return (Generator<T>::generate(arguments...));
       }
     }

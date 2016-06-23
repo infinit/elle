@@ -8,8 +8,6 @@
 #include <cryptography/finally.hh>
 #include <cryptography/cryptography.hh>
 
-ELLE_LOG_COMPONENT("infinit.cryptography.pem");
-
 namespace infinit
 {
   namespace cryptography
@@ -44,8 +42,6 @@ namespace infinit
       ::EVP_PKEY*
       import_public(boost::filesystem::path const& path)
       {
-        ELLE_TRACE_FUNCTION(path);
-
         // Make sure the cryptographic system is set up.
         cryptography::require();
 
@@ -86,8 +82,6 @@ namespace infinit
       import_private(boost::filesystem::path const& path,
                      std::string const& passphrase)
       {
-        ELLE_TRACE_FUNCTION(path, passphrase);
-
         // Make sure the cryptographic system is set up.
         cryptography::require();
 
@@ -129,8 +123,6 @@ namespace infinit
       export_public(::EVP_PKEY* key,
                     boost::filesystem::path const& path)
       {
-        ELLE_TRACE_FUNCTION(key, path);
-
         // Make sure the cryptographic system is set up.
         cryptography::require();
 
@@ -163,8 +155,6 @@ namespace infinit
                      std::string const& passphrase,
                      ::EVP_CIPHER const* cipher)
       {
-        ELLE_TRACE_FUNCTION(key, path, passphrase, cipher);
-
         // Make sure the cryptographic system is set up.
         cryptography::require();
 

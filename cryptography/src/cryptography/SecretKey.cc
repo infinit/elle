@@ -7,8 +7,6 @@
 #include <elle/serialization/Serializer.hh>
 #include <elle/log.hh>
 
-ELLE_LOG_COMPONENT("infinit.cryptography.SecretKey");
-
 //
 // ---------- Class -----------------------------------------------------------
 //
@@ -99,9 +97,6 @@ namespace infinit
                         Mode const mode,
                         Oneway const oneway) const
     {
-      ELLE_TRACE_METHOD(cipher, mode, oneway);
-      ELLE_DUMP("plain: %x", plain);
-
       elle::IOStream _plain(plain.istreambuf());
       std::stringstream _code;
 
@@ -119,9 +114,6 @@ namespace infinit
                         Mode const mode,
                         Oneway const oneway) const
     {
-      ELLE_TRACE_METHOD(cipher, mode, oneway);
-      ELLE_DUMP("code: %x", code);
-
       elle::IOStream _code(code.istreambuf());
       std::stringstream _plain;
 
@@ -141,8 +133,6 @@ namespace infinit
                         Mode const mode,
                         Oneway const oneway) const
     {
-      ELLE_TRACE_METHOD(cipher, mode, oneway);
-
       ::EVP_CIPHER const* function_cipher = cipher::resolve(cipher, mode);
       ::EVP_MD const* function_oneway = oneway::resolve(oneway);
 
@@ -160,8 +150,6 @@ namespace infinit
                         Mode const mode,
                         Oneway const oneway) const
     {
-      ELLE_TRACE_METHOD(cipher, mode, oneway);
-
       ::EVP_CIPHER const* function_cipher = cipher::resolve(cipher, mode);
       ::EVP_MD const* function_oneway = oneway::resolve(oneway);
 
@@ -278,8 +266,6 @@ namespace infinit
 #endif
               )
       {
-        ELLE_TRACE_FUNCTION(length);
-
         // Convert the length in a bit-specific size.
         uint32_t size = length / 8;
 

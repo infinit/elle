@@ -30,12 +30,7 @@ namespace infinit
            K const& key,
            Oneway const oneway)
       {
-        ELLE_LOG_COMPONENT("infinit.cryptography.hmac");
-        ELLE_TRACE_FUNCTION(oneway);
-        ELLE_DUMP("key: %x", key);
-
         elle::IOStream _plain(plain.istreambuf());
-
         return (sign(_plain, key, oneway));
       }
 
@@ -46,12 +41,7 @@ namespace infinit
              K const& key,
              Oneway const oneway)
       {
-        ELLE_LOG_COMPONENT("infinit.cryptography.hmac");
-        ELLE_TRACE_FUNCTION(oneway);
-        ELLE_DUMP("key: %x", key);
-
         elle::IOStream _plain(plain.istreambuf());
-
         return (verify(digest, _plain, key, oneway));
       }
 
@@ -61,10 +51,6 @@ namespace infinit
            K const& key,
            Oneway const oneway)
       {
-        ELLE_LOG_COMPONENT("infinit.cryptography.hmac");
-        ELLE_TRACE_FUNCTION(oneway);
-        ELLE_DUMP("key: %x", key);
-
         ::EVP_MD const* function = oneway::resolve(oneway);
 
         // Apply the HMAC function with the given key.
@@ -81,10 +67,6 @@ namespace infinit
              K const& key,
              Oneway const oneway)
       {
-        ELLE_LOG_COMPONENT("infinit.cryptography.hmac");
-        ELLE_TRACE_FUNCTION(oneway);
-        ELLE_DUMP("key: %x", key);
-
         ::EVP_MD const* function = oneway::resolve(oneway);
 
         return (raw::hmac::verify(key.key().get(),

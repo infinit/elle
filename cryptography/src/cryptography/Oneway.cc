@@ -3,8 +3,6 @@
 
 #include <elle/log.hh>
 
-ELLE_LOG_COMPONENT("infinit.cryptography.Oneway");
-
 namespace infinit
 {
   namespace cryptography
@@ -71,8 +69,6 @@ namespace infinit
       ::EVP_MD const*
       resolve(Oneway const name)
       {
-        ELLE_TRACE_FUNCTION(name);
-
         switch (name)
         {
           case Oneway::md5:
@@ -100,8 +96,6 @@ namespace infinit
       Oneway
       resolve(::EVP_MD const* function)
       {
-        ELLE_TRACE_FUNCTION(function);
-
         static std::map< ::EVP_MD const*, Oneway > const functions =
           {
             { ::EVP_md5(), Oneway::md5 },

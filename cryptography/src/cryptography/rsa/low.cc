@@ -12,8 +12,6 @@
 #include <openssl/crypto.h>
 #include <openssl/err.h>
 
-ELLE_LOG_COMPONENT("infinit.cryptography.rsa.low");
-
 namespace infinit
 {
   namespace cryptography
@@ -29,8 +27,6 @@ namespace infinit
         ::RSA*
         RSA_priv2pub(::RSA* private_key)
         {
-          ELLE_TRACE_FUNCTION(private_key);
-
           ELLE_ASSERT_NEQ(private_key, nullptr);
 
           return (::RSAPublicKey_dup(private_key));
@@ -39,8 +35,6 @@ namespace infinit
         ::RSA*
         RSA_dup(::RSA* key)
         {
-          ELLE_TRACE_FUNCTION(key);
-
           ELLE_ASSERT_NEQ(key, nullptr);
 
           // Increase the reference counter on this object rather

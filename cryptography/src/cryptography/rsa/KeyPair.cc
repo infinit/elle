@@ -20,8 +20,6 @@
 # include <dopenssl/rsa.hh>
 #endif
 
-ELLE_LOG_COMPONENT("infinit.cryptography.rsa.KeyPair");
-
 namespace infinit
 {
   namespace cryptography
@@ -225,8 +223,6 @@ namespace infinit
 #endif
                 )
         {
-          ELLE_TRACE_FUNCTION(length);
-
           if ((length % 8) != 0)
             throw Error(
               elle::sprintf("the keypair length must be a multiple of 8"));

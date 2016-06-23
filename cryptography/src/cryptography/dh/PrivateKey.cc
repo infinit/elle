@@ -16,8 +16,6 @@
 #include <cryptography/hash.hh>
 #include <cryptography/raw.hh>
 
-ELLE_LOG_COMPONENT("infinit.cryptography.dh.PrivateKey");
-
 namespace infinit
 {
   namespace cryptography
@@ -97,8 +95,6 @@ namespace infinit
       void
       PrivateKey::_construct(::DH* dh)
       {
-        ELLE_DEBUG_FUNCTION(dh);
-
         ELLE_ASSERT_NEQ(dh, nullptr);
 
         // Initialise the private key structure.
@@ -130,8 +126,6 @@ namespace infinit
       SecretKey
       PrivateKey::agree(PublicKey const& peer_K) const
       {
-        ELLE_TRACE_METHOD(peer_K);
-
         return (raw::asymmetric::agree(this->_key.get(),
                                        peer_K.key().get()));
       }

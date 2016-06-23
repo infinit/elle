@@ -11,8 +11,6 @@
 #include <cryptography/cryptography.hh>
 #include <cryptography/pem.hh>
 
-ELLE_LOG_COMPONENT("infinit.cryptography.rsa.pem");
-
 namespace infinit
 {
   namespace cryptography
@@ -28,8 +26,6 @@ namespace infinit
         PublicKey
         import_K(boost::filesystem::path const& path)
         {
-          ELLE_TRACE_FUNCTION(path);
-
           ::EVP_PKEY* key = cryptography::pem::import_public(path);
 
           if (key->type != EVP_PKEY_RSA)
@@ -49,8 +45,6 @@ namespace infinit
         import_k(boost::filesystem::path const& path,
                  std::string const& passphrase)
         {
-          ELLE_TRACE_FUNCTION(path, passphrase);
-
           ::EVP_PKEY* key = cryptography::pem::import_private(path,
                                                               passphrase);
 
@@ -71,8 +65,6 @@ namespace infinit
         import_keypair(boost::filesystem::path const& path,
                        std::string const& passphrase)
         {
-          ELLE_TRACE_FUNCTION(path, passphrase);
-
           PrivateKey k = import_k(path, passphrase);
           PublicKey K(k);
 
@@ -83,8 +75,6 @@ namespace infinit
         export_K(PublicKey const& K,
                  boost::filesystem::path const& path)
         {
-          ELLE_TRACE_FUNCTION(K, path);
-
           cryptography::pem::export_public(K.key().get(),
                                            path);
         }
@@ -96,8 +86,6 @@ namespace infinit
                  Cipher const& cipher,
                  Mode const& mode)
         {
-          ELLE_TRACE_FUNCTION(k, path, passphrase, cipher, mode);
-
           cryptography::pem::export_private(k.key().get(),
                                             path,
                                             passphrase,
@@ -111,8 +99,6 @@ namespace infinit
                        Cipher const& cipher,
                        Mode const& mode)
         {
-          ELLE_TRACE_FUNCTION(keypair, path, passphrase, cipher, mode);
-
           export_k(keypair.k(),
                    path,
                    passphrase,

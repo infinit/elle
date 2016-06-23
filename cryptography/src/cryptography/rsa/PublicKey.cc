@@ -237,7 +237,6 @@ namespace infinit
                       Cipher const cipher,
                       Mode const mode) const
       {
-        ELLE_TRACE_METHOD(cipher, mode);
         ELLE_DUMP("plain: %x", plain);
 
         elle::IOStream _plain(plain.istreambuf());
@@ -257,8 +256,6 @@ namespace infinit
                       Cipher const cipher,
                       Mode const mode) const
       {
-        ELLE_TRACE_METHOD(cipher, mode);
-
         envelope::seal(this->_key.get(),
                        cipher::resolve(cipher, mode),
                        plain,
@@ -269,7 +266,6 @@ namespace infinit
       PublicKey::encrypt(elle::ConstWeakBuffer const& plain,
                          Padding const padding) const
       {
-        ELLE_TRACE_METHOD(padding);
         ELLE_DUMP("plain: %x", plain);
 
         auto prolog =
@@ -289,7 +285,6 @@ namespace infinit
                         Padding const padding,
                         Oneway const oneway) const
       {
-        ELLE_TRACE_METHOD(padding, oneway);
         ELLE_DUMP("signature: %x", signature);
         ELLE_DUMP("plain: %x", plain);
 
@@ -306,7 +301,6 @@ namespace infinit
                         Padding const padding,
                         Oneway const oneway) const
       {
-        ELLE_TRACE_METHOD(padding, oneway);
         ELLE_DUMP("signature: %x", signature);
 
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)

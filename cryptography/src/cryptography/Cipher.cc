@@ -3,8 +3,6 @@
 #include <cryptography/Cipher.hh>
 #include <cryptography/Error.hh>
 
-ELLE_LOG_COMPONENT("infinit.cryptography.cipher");
-
 namespace infinit
 {
   namespace cryptography
@@ -136,8 +134,6 @@ namespace infinit
       resolve(Cipher const cipher,
               Mode const mode)
       {
-        ELLE_TRACE_FUNCTION(cipher, mode);
-
         switch (cipher)
         {
           case Cipher::null:
@@ -357,8 +353,6 @@ namespace infinit
       std::pair<Cipher, Mode>
       resolve(::EVP_CIPHER const* function)
       {
-        ELLE_TRACE_FUNCTION(function);
-
         static std::map< ::EVP_CIPHER const*,
                          std::pair<Cipher, Mode> > const functions =
           {

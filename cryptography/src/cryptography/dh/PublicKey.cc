@@ -20,8 +20,6 @@
 #include <cryptography/finally.hh>
 #include <cryptography/hash.hh>
 
-ELLE_LOG_COMPONENT("infinit.cryptography.dh.PublicKey");
-
 //
 // ---------- Class -----------------------------------------------------------
 //
@@ -123,8 +121,6 @@ namespace infinit
       void
       PublicKey::_construct(::DH* dh)
       {
-        ELLE_DEBUG_FUNCTION(dh);
-
         ELLE_ASSERT_NEQ(dh, nullptr);
 
         // Initialise the public key structure.

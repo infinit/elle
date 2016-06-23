@@ -8,8 +8,6 @@
 #include <cryptography/finally.hh>
 #include <cryptography/Error.hh>
 
-ELLE_LOG_COMPONENT("infinit.cryptography.hmac");
-
 namespace infinit
 {
   namespace cryptography
@@ -26,11 +24,7 @@ namespace infinit
            std::string const& key,
            Oneway const oneway)
       {
-        ELLE_TRACE_FUNCTION(key, oneway);
-        ELLE_DUMP("plain: %x", plain);
-
         elle::IOStream _plain(plain.istreambuf());
-
         return (sign(_plain, key, oneway));
       }
 
@@ -40,12 +34,7 @@ namespace infinit
              std::string const& key,
              Oneway const oneway)
       {
-        ELLE_TRACE_FUNCTION(key, oneway);
-        ELLE_DUMP("digest: %x", digest);
-        ELLE_DUMP("plain: %x", plain);
-
         elle::IOStream _plain(plain.istreambuf());
-
         return (verify(digest, _plain, key, oneway));
       }
 #endif
@@ -55,8 +44,6 @@ namespace infinit
            std::string const& key,
            Oneway const oneway)
       {
-        ELLE_TRACE_FUNCTION(key, oneway);
-
         ::EVP_MD const* function = oneway::resolve(oneway);
 
         ::EVP_PKEY *_key = nullptr;
@@ -86,8 +73,6 @@ namespace infinit
              std::string const& key,
              Oneway const oneway)
       {
-        ELLE_TRACE_FUNCTION(key, oneway);
-
         elle::Buffer _digest = sign(plain, key, oneway);
 
         if (digest.size() != _digest.size())
