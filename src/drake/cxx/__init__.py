@@ -66,6 +66,7 @@ class Config:
             self.__rpath = []
             self.__warnings = Config.Warnings()
             self.__use_local_libcxx = None
+            self.__visibility_hidden = None
             self.__whole_archive = False
         else:
             self.__debug = model.__debug
@@ -85,7 +86,9 @@ class Config:
             self.__rpath = model.__rpath[:]
             self.__warnings = Config.Warnings(model.__warnings)
             self.__use_local_libcxx = model.__use_local_libcxx
+            self.__visibility_hidden = model.__visibility_hidden
             self.__whole_archive = model.__whole_archive
+
     class Warnings:
 
       Error = object()
@@ -425,6 +428,8 @@ class Config:
                     'merging C++ configurations with incompatible '
                     'standards: %s and %s' % (std_s, std_o))
         res.__standard = std_s or std_o
+        res.__visibility_hidden = \
+          merge_bool('_Config__visibility_hidden')
         return res
 
     class Standard:
@@ -488,6 +493,14 @@ class Config:
     @use_local_libcxx.setter
     def use_local_libcxx(self, val):
         self.__use_local_libcxx = bool(val)
+
+    @property
+    def visibility_hidden(self):
+      return self.__visibility_hidden
+
+    @visibility_hidden.setter
+    def visibility_hidden(self, value : bool):
+      self.__visibility_hidden = bool(value)
 
     def __repr__(self):
       content = {}
@@ -757,6 +770,9 @@ class GccToolkit(Toolkit):
         else:
           prefix = ''
         res.append('-W%s%s' % (prefix, warning))
+      if cfg.visibility_hidden:
+        res.append('-fvisibility=hidden')
+        res.append('-fvisibility-inlines-hidden')
       return res
 
   def ldflags(self, cfg):
