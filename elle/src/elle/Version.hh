@@ -10,7 +10,7 @@
 namespace elle
 {
   /// This class represents the version of the Infinit software.
-  class Version
+  class ELLE_API Version
     : public elle::Printable
   {
     /*-------------.
@@ -77,7 +77,7 @@ namespace elle
 namespace std
 {
   template <>
-  class hash<elle::Version>
+  class ELLE_API hash<elle::Version>
   {
   public:
     std::size_t

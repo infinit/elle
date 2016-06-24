@@ -817,4 +817,10 @@ namespace std
   {
     return std::hash<std::string>()(buffer.string());
   }
+
+  elle::Buffer::Size
+  hash<elle::Buffer>::operator()(elle::Buffer const& buffer) const
+  {
+    return hash<elle::ConstWeakBuffer>()(buffer);
+  }
 }

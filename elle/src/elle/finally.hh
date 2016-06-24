@@ -11,7 +11,7 @@
 
 namespace elle
 {
-  class SafeFinally
+  class ELLE_API SafeFinally
   {
     typedef std::function<void()> Action;
   /*-------------.
@@ -45,7 +45,7 @@ namespace elle
   ///
   /// Note that a method is provided (i.e abort()) for cancelling this final
   /// action.
-  class Finally
+  class ELLE_API Finally
   {
   /*-------------.
   | Construction |

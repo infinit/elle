@@ -829,6 +829,7 @@ def configure(cxx_toolkit = None,
       (drake.Node('boost_asio_ssl.patch'), 1),
       (drake.Node('boost_crypt.patch'), 1),
       (drake.Node('boost_optional.patch'), 1),
+      (drake.Node('boost_datetime_facet.patch'), 1),
     ]
     boost_locale_enabled = cxx_toolkit.os in [drake.os.windows]
     boost_attributes = {}

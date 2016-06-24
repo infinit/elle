@@ -5,12 +5,14 @@
 # include <string>
 # include <vector>
 
+# include <elle/compiler.hh>
+
 namespace elle
 {
   namespace network
   {
     /// Represents a network interface.
-    struct Interface
+    struct ELLE_API Interface
     {
     public:
       std::string mac_address;
@@ -33,6 +35,7 @@ namespace elle
       get_map(Filter filter = Filter::none);
     };
 
+    ELLE_API
     std::ostream&
     operator <<(std::ostream& stream, Interface const& interface);
 

@@ -11,8 +11,8 @@ namespace elle
   namespace serialization
   {
     template <typename T> struct is_nullable;
-    class SerializerIn:
-      public Serializer
+    class ELLE_API SerializerIn
+      : public Serializer
     {
     /*------.
     | Types |

@@ -9,6 +9,7 @@
 namespace elle
 {
   /// Print the message and abort program execution.
+  ELLE_API
   ELLE_COMPILER_ATTRIBUTE_NORETURN
   void
   _abort(std::string const& msg,
@@ -16,6 +17,7 @@ namespace elle
          int line);
 
   /// Abort the program. Flags unreachable code.
+  ELLE_API
   ELLE_COMPILER_ATTRIBUTE_NORETURN
   void
   unreachable();
@@ -31,7 +33,7 @@ namespace elle
   ///
   /// @note You should never catch directly `AssertError`, nor its base class
   /// `std::exception`, but in the main function of the program.
-  class AssertError:
+  class ELLE_API AssertError:
     public std::exception
   {
   private:
@@ -125,10 +127,12 @@ namespace elle
 namespace elle
 {
   // Throw an AssertError if the predicate is false.
-  void _elle_assert(bool predicate,
-                    std::string const& message,
-                    char const* file,
-                    int line);
+  ELLE_API
+  void
+  _elle_assert(bool predicate,
+               std::string const& message,
+               char const* file,
+               int line);
 
   // Generate a specialized assert function for operators.
 # define ELLE_ASSERT_OP_CHECK(_op_, _abbr_)                                   \

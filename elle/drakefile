@@ -87,6 +87,9 @@ def configure(zlib_lib,
   cxx_config.add_local_include_path('src/elle/json/json-spirit/include')
   cxx_config.define('JSON_SPIRIT_WVALUE_DISABLED')
 
+  if cxx_toolkit.os in [drake.os.windows, drake.os.ios]:
+    cxx_config.define('JSON_SPIRIT_STATIC_LINKED')
+
   config = drake.cxx.Config()
   config.standard = drake.cxx.Config.cxx_14
   config.add_local_include_path('src')
@@ -124,6 +127,9 @@ def configure(zlib_lib,
                               strip_prefix = True)
   if cxx_toolkit.os in [drake.os.macos, drake.os.ios]:
     cxx_config.framework_add('Foundation')
+
+  cxx_config_libs = drake.cxx.Config(cxx_config)
+  cxx_config_libs.visibility_hidden = True
 
   sources = drake.nodes(
     'src/elle/bytes.hh',
@@ -270,6 +276,8 @@ def configure(zlib_lib,
     'src/utility',
     'src/vector',
   ]]
+  if cxx_toolkit.os not in [drake.os.windows, drake.os.ios]:
+    sources.append(drake.node('src/elle/utility/Unicode-unix.cc'))
   if ldap_libs:
     sources += drake.nodes(
       'src/elle/ldap.hh',
@@ -412,14 +420,8 @@ def configure(zlib_lib,
       'src/elle/windows/string_conversion.cc',
     )
 
-  if cxx_toolkit.os in [drake.os.windows, drake.os.ios]:
-    cxx_config.define('JSON_SPIRIT_STATIC_LINKED')
-    #sources.append(drake.node('src/elle/utility/Unicode-win32.cc'))
-  else:
-    sources.append(drake.node('src/elle/utility/Unicode-unix.cc'))
-
   # Archive
-  cxx_archive_config = cxx_config + libarchive_config
+  cxx_archive_config = cxx_config_libs + libarchive_config
   for f in (
       'archive',
       'tar',
@@ -434,13 +436,13 @@ def configure(zlib_lib,
     'lib/elle',
     sources + [zlib_lib, libarchive_lib],
     cxx_toolkit,
-    cxx_config,
+    cxx_config_libs,
   )
   lib_dynamic = drake.cxx.DynLib(
     'lib/elle',
     sources + [zlib_lib, libarchive_lib] + (ldap_libs and (ldap_libs + openssl_libs) or []),
     cxx_toolkit,
-    cxx_config,
+    cxx_config_libs,
   )
 
   rule_build = drake.Rule('build')
@@ -466,7 +468,7 @@ def configure(zlib_lib,
                      'include/python3.2',
                      'include/python3.2m',
                      'include/python3.3m'])
-    python_cxx_config = drake.cxx.Config(cxx_config)
+    python_cxx_config = drake.cxx.Config(cxx_config_libs)
     # Required by python or else the symbol _Gestalt is not found.
     if cxx_toolkit.os is drake.os.macos:
       python_cxx_config.framework_add('CoreServices')

@@ -12,8 +12,8 @@ namespace elle
   {
     namespace binary
     {
-      class SerializerOut:
-        public serialization::SerializerOut
+      class ELLE_API SerializerOut
+        : public serialization::SerializerOut
       {
       /*------.
       | Types |

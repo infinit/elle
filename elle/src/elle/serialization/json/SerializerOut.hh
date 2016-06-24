@@ -14,8 +14,8 @@ namespace elle
   {
     namespace json
     {
-      class SerializerOut:
-        public serialization::SerializerOut
+      class ELLE_API SerializerOut
+        : public serialization::SerializerOut
       {
       /*------.
       | Types |

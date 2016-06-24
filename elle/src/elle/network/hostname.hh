@@ -1,13 +1,16 @@
 #ifndef ELLE_NETWORK_HOSTNAME_HH
 # define ELLE_NETWORK_HOSTNAME_HH
 
-# include <elle/types.hh>
+# include <string>
+
+# include <elle/compiler.hh>
 
 namespace elle
 {
   namespace network
   {
-    elle::String
+    ELLE_API
+    std::string
     hostname();
   }
 }

@@ -2,6 +2,7 @@
 # define ELLE_COMPILER_HH
 
 # ifdef _MSC_VER
+#  define ELLE_API __declspec(dllexport)
 #  define ELLE_COMPILER_ATTRIBUTE_NORETURN __declspec(noreturn)
 #  define ELLE_COMPILER_ATTRIBUTE_ALWAYS_INLINE
 #  define ELLE_COMPILER_ATTRIBUTE_NO_INLINE __declspec((noinline))
@@ -9,6 +10,7 @@
 #  define ELLE_COMPILER_ALIGN(Alignment) __declspec(align(Alignment))
 #  define constexpr
 # else
+#  define ELLE_API __attribute__ ((visibility ("default")))
 #  define ELLE_COMPILER_ATTRIBUTE_NORETURN __attribute__((noreturn))
 #  define ELLE_COMPILER_ATTRIBUTE_ALWAYS_INLINE __attribute__((always_inline))
 #  define ELLE_COMPILER_ATTRIBUTE_NO_INLINE __attribute__((noinline))

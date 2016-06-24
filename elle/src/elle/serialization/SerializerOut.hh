@@ -10,8 +10,8 @@ namespace elle
 {
   namespace serialization
   {
-    class SerializerOut:
-      public Serializer
+    class ELLE_API SerializerOut
+      : public Serializer
     {
     /*------.
     | Types |

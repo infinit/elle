@@ -2,13 +2,15 @@
 # define ELLE_BENCH_HH
 
 #include <elle/attribute.hh>
+#include <elle/compiler.hh>
 #include <elle/time.hh>
+
 namespace elle
 {
 
   /** Bench a block of code or display statistics about some data.
   */
-  class Bench
+  class ELLE_API Bench
   {
   public:
     /** Contructor.

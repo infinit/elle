@@ -9,10 +9,12 @@ namespace elle
 {
   namespace log
   {
+    ELLE_API
     Logger&
     logger();
+    ELLE_API
     std::unique_ptr<Logger>
-    logger(std::unique_ptr<Logger> l); ///< returns previous value
+    logger(std::unique_ptr<Logger> l);
 
     /// Here the simplest type possible is used (.rodata-located) so
     /// as to make sure that its initialization will always take place
@@ -20,7 +22,7 @@ namespace elle
     /// logging.
     namespace detail
     {
-      struct Send
+      struct ELLE_API Send
       {
       public:
         template <typename... Args>

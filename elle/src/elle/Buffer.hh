@@ -32,7 +32,7 @@ namespace elle
   /// The Buffer owns the pointed memory at every moment.
   ///
   /// @see WeakBuffer for a buffer that doesn't own the memory.
-  class Buffer:
+  class ELLE_API Buffer:
     private boost::totally_ordered<Buffer>
   {
   /*------.
@@ -181,6 +181,7 @@ namespace elle
     dump(const Natural32 shift = 0) const;
   };
 
+  ELLE_API
   std::ostream&
   operator <<(std::ostream& stream,
               Buffer const& buffer);
@@ -196,7 +197,7 @@ namespace elle
   /// represent C-style buffers as one entity, with some useful shortcuts and
   /// facilities.  It has no intelligence or memory managment whatsoever, and
   /// shouldn't have any.
-  class ConstWeakBuffer:
+  class ELLE_API ConstWeakBuffer:
     private boost::totally_ordered<ConstWeakBuffer>
   {
   /*------.
@@ -302,7 +303,7 @@ namespace elle
   };
 
   /// A ConstWeakBuffer with mutable data.
-  class WeakBuffer:
+  class ELLE_API WeakBuffer:
     public ConstWeakBuffer, private boost::totally_ordered<WeakBuffer>
   {
   /*-------------.
@@ -363,6 +364,7 @@ namespace elle
   | Operators |
   `----------*/
 
+  ELLE_API
   std::ostream&
   operator <<(std::ostream& stream,
               ConstWeakBuffer const& buffer);
@@ -376,19 +378,19 @@ namespace elle
 namespace std
 {
   template<>
+  ELLE_API
   struct hash<elle::ConstWeakBuffer>
   {
   public:
     elle::Buffer::Size operator()(elle::ConstWeakBuffer const& buffer) const;
   };
+
   template<>
+  ELLE_API
   struct hash<elle::Buffer>
   {
   public:
-    elle::Buffer::Size operator()(elle::Buffer const& buffer) const
-    {
-      return hash<elle::ConstWeakBuffer>()(buffer);
-    }
+    elle::Buffer::Size operator()(elle::Buffer const& buffer) const;
   };
 }
 

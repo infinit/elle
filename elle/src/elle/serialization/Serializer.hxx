@@ -1007,7 +1007,7 @@ namespace elle
     }
 
     template <typename T>
-    struct ExceptionMaker
+    struct ELLE_API ExceptionMaker
     {
       template <typename U>
       static
@@ -1017,7 +1017,7 @@ namespace elle
     };
 
     template <>
-    struct ExceptionMaker<elle::Exception>
+    struct ELLE_API ExceptionMaker<elle::Exception>
     {
       typedef ExceptionMaker<elle::Exception> Self;
 
@@ -1061,7 +1061,7 @@ namespace elle
     `----------*/
 
     template <typename T>
-    class Hierarchy
+    class ELLE_API Hierarchy
     {
     public:
       template <typename U>

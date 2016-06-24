@@ -6,7 +6,7 @@
 namespace elle
 {
   /// Exception for runtime errors.
-  class Error
+  class ELLE_API Error
     : public Exception
   {
   /*------.

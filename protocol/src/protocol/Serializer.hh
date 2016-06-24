@@ -5,8 +5,10 @@
 
 # include <reactor/mutex.hh>
 
-# include <protocol/Stream.hh>
 # include <elle/attribute.hh>
+# include <elle/compiler.hh>
+
+# include <protocol/Stream.hh>
 
 # ifdef EOF
 #  undef EOF
@@ -16,7 +18,7 @@ namespace infinit
 {
   namespace protocol
   {
-    class Serializer
+    class ELLE_API Serializer
       : public Stream
     {
     /*------.

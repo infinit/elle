@@ -7,9 +7,11 @@
 
 # include <boost/signals2.hpp>
 
+# include <elle/compiler.hh>
+
 namespace elle
 {
-  class BasePlugin
+  class ELLE_API BasePlugin
   {
   public:
     void
@@ -17,7 +19,7 @@ namespace elle
   };
 
   template <typename T>
-  class Plugin:
+  class ELLE_API Plugin:
     public BasePlugin
   {
   public:
@@ -42,7 +44,7 @@ namespace elle
     hook_added();
   };
 
-  class PluginLoad
+  class ELLE_API PluginLoad
   {
   public:
     template <typename ... Args>

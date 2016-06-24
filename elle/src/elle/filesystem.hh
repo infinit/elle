@@ -2,13 +2,14 @@
 # define ELLE_FILESYSTEM_HH
 
 # include <boost/filesystem.hpp>
-# include <boost/filesystem/fstream.hpp>
 # include <boost/functional/hash.hpp>
+
+# include <elle/compiler.hh>
 
 namespace std
 {
   template<>
-  struct hash<boost::filesystem::path>
+  struct ELLE_API hash<boost::filesystem::path>
   {
     typedef boost::filesystem::path argument_type;
     typedef std::size_t value_type;
