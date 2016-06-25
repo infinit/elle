@@ -1015,7 +1015,7 @@ class GccToolkit(Toolkit):
   def __split(self):
     if self.__splitted is None:
       r = re.compile(
-        '(.*)(g\+\+|clang\+\+)(-[0-9]+(\.[0-9]+(\.[0-9]+)?)?)?$')
+        '(.*-)?(g\+\+|clang\+\+)(-[0-9]+(\.[0-9]+(\.[0-9]+)?)?)?$')
       match = r.match(self.cxx)
       if not match:
         raise Exception('unrecognized compiler name: %s' % self.cxx)
