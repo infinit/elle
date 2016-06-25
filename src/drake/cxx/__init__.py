@@ -1014,14 +1014,8 @@ class GccToolkit(Toolkit):
 
   def __split(self):
     if self.__splitted is None:
-      if self.__kind is GccToolkit.Kind.gcc:
-        name = 'g\+\+'
-      elif self.__kind is GccToolkit.Kind.clang:
-        name = 'clang\+\+'
-      else:
-        raise Exception('unknown compiler kind: %s' % self.__kind)
       r = re.compile(
-        '(.*)(%s)(-[0-9]+(\.[0-9]+(\.[0-9]+)?)?)?$' % name)
+        '(.*)(g\+\+|clang\+\+)(-[0-9]+(\.[0-9]+(\.[0-9]+)?)?)?$')
       match = r.match(self.cxx)
       if not match:
         raise Exception('unrecognized compiler name: %s' % self.cxx)
