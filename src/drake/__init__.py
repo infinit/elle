@@ -2990,6 +2990,8 @@ def __copy(sources, to, strip_prefix, builder, post_process):
       'copy %s to %s (strip: %s)', sources, to, strip_prefix):
     to = drake.Path(to)
     multiple = isinstance(sources, collections.Iterable)
+    if multiple and not len(sources):
+      return
     if strip_prefix is not None:
       if strip_prefix is True:
         if multiple:
