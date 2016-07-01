@@ -791,7 +791,7 @@ namespace reactor
           elle::Buffer buf;
           while (true)
           {
-            buf.size(5000);
+            buf.size(20000);
             EndPoint source;
             ELLE_DEBUG("Receive from");
             int sz = 0;
