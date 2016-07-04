@@ -43,7 +43,9 @@ public:
 class OutPlace
 {
 public:
+  OutPlace() = default;
   OutPlace(OutPlace const&) = delete;
+  OutPlace(OutPlace&&) = default;
 
   void serialize(elle::serialization::Serializer&)
   {}
@@ -1192,7 +1194,7 @@ in_place()
   elle::serialization::json::SerializerIn input(stream);
 
   std::shared_ptr<InPlace> in;
-  std::shared_ptr<InPlace> out;
+  std::shared_ptr<OutPlace> out;
   input.serialize("in", in);
   input.serialize("out", out);
 }
