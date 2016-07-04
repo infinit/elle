@@ -252,10 +252,24 @@ namespace elle
                                  std::move(second.get()));
       }
 
+      template <typename T>
+      static
+      typename std::enable_if<_details::has_serialize_convert_api<T>(), T>::type
+      deserialize(SerializerIn& self, unsigned)
+      {
+        // FIXME: convert_api could be factored with the next version if
+        // _serialize_anonymous returned the deserialized object
+        typename Serialize<T>::Type value;
+        self._serialize_anonymous("", value);
+        return Serialize<T>::convert(value);
+      }
+
       // This overload initializes PODs with "= {}" to avoid warnings.
       template <typename T>
       static
-      typename std::enable_if<std::is_pod<T>::value, T>::type
+      typename std::enable_if<
+        std::is_pod<T>::value && !_details::has_serialize_convert_api<T>(),
+        T>::type
       deserialize(SerializerIn& self, unsigned)
       {
         T res = {};
@@ -265,7 +279,9 @@ namespace elle
 
       template <typename T>
       static
-      typename std::enable_if<!std::is_pod<T>::value, T>::type
+      typename std::enable_if<
+        !std::is_pod<T>::value && !_details::has_serialize_convert_api<T>(),
+        T>::type
       deserialize(SerializerIn& self, unsigned)
       {
         static_assert(

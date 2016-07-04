@@ -1562,9 +1562,13 @@ exceptions()
   }
 }
 
-struct Convertable
+class Convertable
 {
-  int64_t i;
+public:
+  Convertable(int64_t i)
+    : _i(i)
+  {}
+  ELLE_ATTRIBUTE_R(int64_t, i);
 };
 
 struct PConvertable
@@ -1585,14 +1589,14 @@ namespace elle
       int64_t
       convert(Convertable const& c)
       {
-        return c.i;
+        return c.i();
       }
 
       static
       Convertable
       convert(int64_t const& i)
       {
-        return Convertable{i};
+        return Convertable(i);
       }
     };
 
@@ -1630,12 +1634,16 @@ convert()
   {
     typename Format::SerializerOut serializer(stream, false);
     serializer.serialize("convertable", c);
+    serializer.serialize("convertable_value", c);
     serializer.serialize("pconvertable", pc.get());
   }
   {
     typename Format::SerializerIn serializer(stream, false);
     auto r = serializer.template deserialize<Convertable>("convertable");
-    BOOST_CHECK_EQUAL(r.i, c.i);
+    BOOST_CHECK_EQUAL(r.i(), c.i());
+    Convertable rv{1641};
+    serializer.serialize("convertable_value", rv);
+    BOOST_CHECK_EQUAL(rv.i(), c.i());
     std::unique_ptr<PConvertable> pr(
       serializer.template deserialize<PConvertable*>("pconvertable"));
     BOOST_CHECK_EQUAL(pr->i, pc->i);
