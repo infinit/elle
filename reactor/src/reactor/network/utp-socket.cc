@@ -786,14 +786,15 @@ namespace reactor
       setsockopt(this->_socket->socket()->native_handle(), SOL_IP, IP_RECVERR,
                  (char*)&on, sizeof(on));
 #endif
-      this->_listener.reset(new Thread(
-        "listener " + std::to_string(local_endpoint().port()), [this] {
+      this->_listener = elle::make_unique<Thread>(
+        elle::sprintf("UTPServer(%s)", local_endpoint().port()),
+        [this]
+        {
           elle::Buffer buf;
           while (true)
           {
             buf.size(20000);
             EndPoint source;
-            ELLE_DEBUG("Receive from");
             int sz = 0;
             try
             {
@@ -811,10 +812,9 @@ namespace reactor
                   buf[i] ^= this->_xorify;
               }
               auto* raw = source.data();
-              ELLE_DEBUG("process_udp %s", sz);
+              ELLE_TRACE("%s: received %s bytes", sz);
               utp_process_udp(ctx, buf.contents(), sz, raw, source.size());
               utp_issue_deferred_acks(ctx);
-
             }
             catch (reactor::Terminate const&)
             {
@@ -828,7 +828,7 @@ namespace reactor
               // with.
             }
           }
-      }));
+      });
       this->_checker.reset(new Thread("checker", [this] {
           try
           {
