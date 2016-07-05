@@ -1,9 +1,12 @@
-#include <reactor/scheduler.hh>
-#include <reactor/network/utp-socket.hh>
+#include <elle/assert.hh>
+#include <elle/test.hh>
+
 #include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
-#include <elle/test.hh>
-#include <elle/assert.hh>
+#include <reactor/network/udp-socket.hh>
+#include <reactor/network/utp-server.hh>
+#include <reactor/network/utp-socket.hh>
+#include <reactor/scheduler.hh>
 
 ELLE_LOG_COMPONENT("utpcat");
 

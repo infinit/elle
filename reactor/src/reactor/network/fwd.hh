@@ -23,6 +23,8 @@ namespace reactor
     class UDPServer;
     class UDPServerSocket;
     class UDPSocket;
+    class UTPSocket;
+    class UTPServer;
 # ifdef REACTOR_NETWORK_UNIX_DOMAIN_SOCKET
     class UnixDomainServer;
     class UnixDomainSocket;
