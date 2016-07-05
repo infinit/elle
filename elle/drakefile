@@ -110,6 +110,7 @@ def configure(zlib_lib,
   openssl_libs = None
   # Libraries
   if ldap_libs:
+    ldap = True
     ldap_libs = drake.copy(ldap_libs, 'lib', strip_prefix = True)
     openssl_libs = drake.copy([openssl_lib_crypto, openssl_lib_ssl],
                              'lib', strip_prefix = True)
