@@ -86,6 +86,14 @@ namespace reactor
     ELLE_ATTRIBUTE(bool, dispose);
     ELLE_ATTRIBUTE(bool, managed);
 
+  /*----------.
+  | Backtrace |
+  `----------*/
+  public:
+    elle::Backtrace
+    backtrace() const;
+    ELLE_ATTRIBUTE(elle::Backtrace, yield_backtrace);
+
     /*---------.
     | Tracking |
     `---------*/

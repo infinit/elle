@@ -3,6 +3,7 @@
 #include <elle/finally.hh>
 #include <elle/log.hh>
 #include <elle/optional.hh>
+#include <elle/os/environ.hh>
 
 #include <reactor/backend/backend.hh>
 #include <reactor/exception.hh>
@@ -89,6 +90,19 @@ namespace reactor
       delete this;
     else /* the else is not an option*/
       this->_self.reset();
+  }
+
+  /*----------.
+  | Backtrace |
+  `----------*/
+
+  elle::Backtrace
+  Thread::backtrace() const
+  {
+    if (this == reactor::scheduler().current())
+      return elle::Backtrace::current();
+    else
+      return this->_yield_backtrace;
   }
 
   /*---------.
@@ -208,8 +222,11 @@ namespace reactor
   void
   Thread::yield()
   {
+    static bool const debug = elle::os::inenv("REACTOR_SCHEDULER_DEBUG");
     ELLE_TRACE("%s: yield", *this)
     {
+      if (debug)
+        this->_yield_backtrace = elle::Backtrace::current();
       this->_thread->yield();
       ELLE_TRACE_SCOPE("%s: back from yield", *this);
       if (_injection)

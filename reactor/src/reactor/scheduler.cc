@@ -81,6 +81,9 @@ namespace reactor
             std::cerr << "    waiters:" << std::endl;
             for (auto t: thread.waiters())
               std::cerr << "      " << *(t.first) << std::endl;
+            std::cerr << "    backtrace:" << std::endl;
+            // FIXME: Indent the backtrace
+            std::cerr << thread.backtrace() << std::endl;
           };
           if (!this->_frozen.empty())
           {
