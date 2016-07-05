@@ -82,15 +82,24 @@ namespace reactor
             for (auto t: thread.waiters())
               std::cerr << "      " << *(t.first) << std::endl;
           };
-          std::cerr << "== FROZEN THREADS ==" << std::endl;
-          for (auto thread: this->_frozen)
-            print_thread(*thread);
-          std::cerr << "== RUNNING THREADS ==" << std::endl;
-          for (auto thread: this->_running)
-            print_thread(*thread);
-          std::cerr << "== STARTING THREADS ==" << std::endl;
-          for (auto thread: this->_starting)
-            print_thread(*thread);
+          if (!this->_frozen.empty())
+          {
+            std::cerr << "== FROZEN THREADS ==" << std::endl;
+            for (auto thread: this->_frozen)
+              print_thread(*thread);
+          }
+          if (!this->_running.empty())
+          {
+            std::cerr << "== RUNNING THREADS ==" << std::endl;
+            for (auto thread: this->_running)
+              print_thread(*thread);
+          }
+          if (!this->_starting.empty())
+          {
+            std::cerr << "== STARTING THREADS ==" << std::endl;
+            for (auto thread: this->_starting)
+              print_thread(*thread);
+          }
         });
     }
 #endif
