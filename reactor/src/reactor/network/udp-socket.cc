@@ -24,20 +24,23 @@ namespace reactor
 
     UDPSocket::UDPSocket(Scheduler& sched,
                          const std::string& hostname,
-                         const std::string& port):
-      Super(elle::make_unique<boost::asio::ip::udp::socket>(sched.io_service()),
-            resolve_udp(hostname, port),
-            DurationOpt())
+                         const std::string& port)
+      : Super(
+        elle::make_unique<boost::asio::ip::udp::socket>(sched.io_service()),
+        resolve_udp(hostname, port),
+        DurationOpt())
     {}
 
     UDPSocket::UDPSocket(Scheduler& sched,
                          const std::string& hostname,
-                         int port):
-      UDPSocket(sched, hostname, std::to_string(port))
+                         int port)
+      : UDPSocket(sched, hostname, std::to_string(port))
     {}
 
-    UDPSocket::UDPSocket():
-      UDPSocket(reactor::scheduler(), "127.0.0.1", 60000)
+    UDPSocket::UDPSocket()
+      : Super(
+        elle::make_unique<boost::asio::ip::udp::socket>(
+          reactor::scheduler().io_service()))
     {}
 
     // UDPSocket::UDPSocket(Scheduler& sched,

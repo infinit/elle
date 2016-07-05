@@ -187,12 +187,20 @@ namespace reactor
 
     template <typename AsioSocket, typename EndPoint>
     PlainSocket<AsioSocket, EndPoint>::PlainSocket(
+      std::unique_ptr<AsioSocket> socket)
+      : Super()
+      , _socket(std::move(socket))
+      , _peer()
+    {}
+
+    template <typename AsioSocket, typename EndPoint>
+    PlainSocket<AsioSocket, EndPoint>::PlainSocket(
       std::unique_ptr<AsioSocket> socket,
       const EndPoint& peer,
-      DurationOpt timeout):
-        Super(),
-        _socket(std::move(socket)),
-        _peer(peer)
+      DurationOpt timeout)
+      : Super()
+      , _socket(std::move(socket))
+      , _peer(peer)
     {
       this->_connect(peer, timeout);
     }
@@ -200,10 +208,10 @@ namespace reactor
     template <typename AsioSocket, typename EndPoint>
     PlainSocket<AsioSocket, EndPoint>::PlainSocket(
       std::unique_ptr<AsioSocket> socket,
-      EndPoint const& peer):
-        Super(),
-        _socket(std::move(socket)),
-        _peer(peer)
+      EndPoint const& peer)
+      : Super()
+      , _socket(std::move(socket))
+      , _peer(peer)
     {}
 
     template <typename AsioSocket, typename EndPoint>

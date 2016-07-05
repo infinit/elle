@@ -128,6 +128,8 @@ namespace reactor
     | Construction |
     `-------------*/
     protected:
+      /// Create an unbound socket.
+      PlainSocket(std::unique_ptr<AsioSocket> socket);
       /// Create and connect socket.
       PlainSocket(std::unique_ptr<AsioSocket> socket,
                   EndPoint const& peer,
