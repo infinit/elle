@@ -3,9 +3,11 @@
 #include <reactor/network/rdv.hh>
 
 #include <reactor/network/buffer.hh>
-#include <reactor/network/udp-socket.hh>
-#include <reactor/network/tcp-socket.hh>
+#include <reactor/network/rdv-socket.hh>
 #include <reactor/network/tcp-server.hh>
+#include <reactor/network/tcp-socket.hh>
+#include <reactor/network/udp-socket.hh>
+#include <reactor/network/utp-server.hh>
 #include <reactor/network/utp-socket.hh>
 #include <reactor/scheduler.hh>
 
