@@ -22,6 +22,16 @@ namespace reactor
     | Construction |
     `-------------*/
 
+    UDPSocket::UDPSocket(Scheduler& sched)
+      : Super(
+        elle::make_unique<boost::asio::ip::udp::socket>(
+          sched.io_service()))
+    {}
+
+    UDPSocket::UDPSocket()
+      : UDPSocket(reactor::scheduler())
+    {}
+
     UDPSocket::UDPSocket(Scheduler& sched,
                          const std::string& hostname,
                          const std::string& port)
@@ -31,16 +41,20 @@ namespace reactor
         DurationOpt())
     {}
 
+    UDPSocket::UDPSocket(const std::string& hostname,
+                         const std::string& port)
+      : UDPSocket(reactor::scheduler(), hostname, port)
+    {}
+
     UDPSocket::UDPSocket(Scheduler& sched,
                          const std::string& hostname,
                          int port)
       : UDPSocket(sched, hostname, std::to_string(port))
     {}
 
-    UDPSocket::UDPSocket()
-      : Super(
-        elle::make_unique<boost::asio::ip::udp::socket>(
-          reactor::scheduler().io_service()))
+    UDPSocket::UDPSocket(const std::string& hostname,
+                         int port)
+      : UDPSocket(reactor::scheduler(), hostname, port)
     {}
 
     UDPSocket::~UDPSocket()
