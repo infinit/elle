@@ -113,8 +113,8 @@ namespace reactor
     uint64
     on_state_change(utp_callback_arguments* args)
     {
-      ELLE_DEBUG("on_state_change %s", utp_state_names[args->state]);
       UTPSocket* s = (UTPSocket*)utp_get_userdata(args->socket);
+      ELLE_DEBUG("on_state_change %s on %s", utp_state_names[args->state], s);
       if (!s)
         return 0;
       switch(args->state)
@@ -239,6 +239,9 @@ namespace reactor
                 return;
               if (erc)
                 ELLE_TRACE("%s: send_to error: %s", *this, erc.message());
+              else
+                ELLE_DEBUG("%s: send_cont, wrote %s, %s remaining buffers",
+                           *this, sz, this->_send_buffer.size()-1);
               this->_send_buffer.pop_front();
               if (this->_send_buffer.empty())
                 this->_sending = false;
@@ -434,7 +437,7 @@ namespace reactor
                   buf[i] ^= this->_xorify;
               }
               auto* raw = source.data();
-              ELLE_TRACE("%s: received %s bytes", sz);
+              ELLE_TRACE("%s: received %s bytes", this, sz);
               utp_process_udp(ctx, buf.contents(), sz, raw, source.size());
               utp_issue_deferred_acks(ctx);
             }

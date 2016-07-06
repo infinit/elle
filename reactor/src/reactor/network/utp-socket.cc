@@ -74,11 +74,18 @@ namespace reactor
     UTPSocket::~UTPSocket()
     {
       ELLE_DEBUG("%s: ~UTPSocket", this);
-      this->on_close();
-      reactor::wait(_pending_operations);
-      reactor::wait(_destroyed_barrier);
+      try
+      {
+        this->on_close();
+        reactor::wait(_pending_operations);
+        reactor::wait(_destroyed_barrier);
+      }
+      catch (std::exception const& e)
+      {
+        ELLE_WARN("%s: ~UTPSocket: loosing exception %s", this, e);
+      }
       destroyed();
-      ELLE_DEBUG("~UTPSocket finished");
+      ELLE_DEBUG("%s: ~UTPSocket finished", this);
     }
 
     void
