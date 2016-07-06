@@ -3229,6 +3229,23 @@ void utp_check_timeouts(utp_context *ctx)
 	assert(ctx);
 	if (!ctx) return;
 
+	// Check for sockets ready to be destroyed before checking call interval
+	{
+		utp_hash_iterator_t it;
+		UTPSocketKeyData* keyData;
+		while ((keyData = ctx->utp_sockets->Iterate(it))) {
+		  UTPSocket *conn = keyData->socket;
+
+		  // Check if the object was deleted
+		  if (conn->state == CS_DESTROY) {
+		    #if UTP_DEBUG_LOGGING
+		    conn->log(UTP_LOG_DEBUG, "Destroying");
+		    #endif
+		    delete conn;
+		  }
+		}
+	}
+
 	ctx->current_ms = utp_call_get_milliseconds(ctx, NULL);
 
 	if (ctx->current_ms - ctx->last_check < TIMEOUT_CHECK_INTERVAL)
