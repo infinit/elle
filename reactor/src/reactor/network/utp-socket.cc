@@ -35,6 +35,7 @@ namespace reactor
         int sz = this->_write.size();
         while (this->_write_pos < sz)
         {
+          ELLE_DEBUG("%s: writing at offset %s/%s", this, this->_write_pos, sz);
           ssize_t len = utp_write(this->_socket,
                                   data + this->_write_pos,
                                   sz - this->_write_pos);
@@ -61,6 +62,7 @@ namespace reactor
     UTPSocket::UTPSocket(UTPServer& server)
       : UTPSocket(server, utp_create_socket(server.ctx), false)
     {
+      this->_destroyed_barrier.open();
     }
 
     UTPSocket::UTPSocket(UTPServer& server, std::string const& host, int port)
@@ -71,9 +73,11 @@ namespace reactor
 
     UTPSocket::~UTPSocket()
     {
-      ELLE_DEBUG("~UTPSocket");
+      ELLE_DEBUG("%s: ~UTPSocket", this);
       this->on_close();
       reactor::wait(_pending_operations);
+      reactor::wait(_destroyed_barrier);
+      destroyed();
       ELLE_DEBUG("~UTPSocket finished");
     }
 
@@ -83,6 +87,7 @@ namespace reactor
       this->_read_barrier.open();
       this->_write_barrier.open();
       this->_connect_barrier.open();
+      this->_destroyed_barrier.open();
       if (this->_socket)
         utp_set_userdata(_socket, nullptr);
       this->_socket = nullptr;
@@ -97,13 +102,12 @@ namespace reactor
       if (!this->_socket)
         return;
       //if (_open)
+      ELLE_DEBUG("%s: closing underlying socket", this);
       utp_close(this->_socket);
       this->_open = false;
       this->_read_barrier.open();
       this->_write_barrier.open();
       this->_connect_barrier.open();
-      utp_set_userdata(this->_socket, nullptr);
-      this->_socket = nullptr;
     }
 
     namespace
@@ -153,6 +157,8 @@ namespace reactor
         ELLE_DEBUG("snd %s recv %s", utp_getsockopt(this->_socket, UTP_SNDBUF),
           utp_getsockopt(this->_socket, UTP_RCVBUF));
       }
+      else
+        this->_destroyed_barrier.open();
     }
 
     void
@@ -194,6 +200,7 @@ namespace reactor
       }
       if (res)
         throw elle::Error("Failed to resolve " + host);
+      this->_destroyed_barrier.close();
       utp_connect(this->_socket, ai->ai_addr, ai->ai_addrlen);
       freeaddrinfo(ai);
       ELLE_DEBUG("waiting for connect...");

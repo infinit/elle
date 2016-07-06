@@ -95,15 +95,18 @@ ELLE_TEST_SCHEDULED(utp_close)
 
 ELLE_TEST_SCHEDULED(utp_timeout)
 {
+  char* megabuf;
+  {
   SocketPair sp;
   BOOST_CHECK_THROW(sp.s1->read(10, 100_ms), reactor::network::TimeOut);
   sp.s2->write("foooo");
   BOOST_CHECK_THROW(sp.s1->read(10, 100_ms), reactor::network::TimeOut);
-  char* megabuf = (char*)malloc(10000000);
+  megabuf = (char*)malloc(10000000);
   memset(megabuf, 0, 10000000);
   BOOST_CHECK_THROW(sp.s1->write(elle::ConstWeakBuffer(megabuf, 10000000),
                                  100_ms),
                     reactor::network::TimeOut);
+  }
   free(megabuf);
 }
 

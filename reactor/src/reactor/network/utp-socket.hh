@@ -67,6 +67,7 @@ namespace reactor
       Barrier _write_barrier;
       Mutex _write_mutex;
       Barrier _connect_barrier;
+      Barrier _destroyed_barrier;
       ELLE_ATTRIBUTE_R(UTPServer&, server);
       utp_socket* _socket;
       elle::ConstWeakBuffer _write;
