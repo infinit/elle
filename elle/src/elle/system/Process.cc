@@ -37,6 +37,13 @@ namespace elle
           for (auto const& arg: args)
             argv[i++] = arg.c_str();
           argv[i] = nullptr;
+          if (_owner.set_uid())
+          {
+            auto tgt = geteuid();
+            seteuid(getuid());
+            setgid(getegid());
+            setuid(tgt);
+          }
           execvp(argv[0], const_cast<char**>(argv.get()));
           ELLE_ERR("execvp(%s) error: %s", argv[0], strerror(errno));
           ::exit(1);
@@ -122,8 +129,9 @@ namespace elle
     };
 #endif
 
-    Process::Process(std::vector<std::string> args)
+    Process::Process(std::vector<std::string> args, bool set_uid)
       : _arguments(std::move(args))
+      , _set_uid(set_uid)
       , _impl(new Process::Impl(*this))
     {
       ELLE_TRACE_SCOPE("%s: start", *this);
