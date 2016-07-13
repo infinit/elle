@@ -86,20 +86,20 @@ x86_64-windows-mingw4:
     - windows
     - mingw4
 
-i686-windows-mingw4:
-  stage: build
-  script:
-    - git submodule update --init --recursive
-    - git fetch origin --tags
-    - mkdir -p ../elle-build ../elle-install
-    - farm/configure --arch i686 --os windows --compiler mingw4 --project Elle --source-dir . --build-dir ../elle-build --install-dir ../elle-install
-    - cd ../elle-build && python3 drake -j 4 //build
-    - cd ../elle-build && python3 drake -j 4 //check
-    - cd ../elle-build && python3 drake -j 4 //install
-  tags:
-    - i686
-    - windows
-    - mingw4
+#i686-windows-mingw4:
+#  stage: build
+#  script:
+#    - git submodule update --init --recursive
+#    - git fetch origin --tags
+#    - mkdir -p ../elle-build ../elle-install
+#    - farm/configure --arch i686 --os windows --compiler mingw4 --project Elle --source-dir . --build-dir ../elle-build --install-dir ../elle-install
+#    - cd ../elle-build && python3 drake -j 4 //build
+#    - cd ../elle-build && python3 drake -j 4 //check
+#    - cd ../elle-build && python3 drake -j 4 //install
+#  tags:
+#    - i686
+#    - windows
+#    - mingw4
 
 x86_64-osx-clang:
   stage: build
