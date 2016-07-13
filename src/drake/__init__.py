@@ -3809,6 +3809,11 @@ class HTTPDownload(Builder):
       f.write(content)
     return True
 
+  def __str__(self):
+    return 'Download of %s' % self.__dest
+
+  def __repr__(self):
+    return 'HTTPDownload(%s, %s)' % (self.__urls, self.__dest)
 
 def download(url,
              fingerprint,
