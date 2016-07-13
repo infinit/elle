@@ -1354,7 +1354,8 @@ class BaseNode(object, metaclass = _BaseNodeType):
     Drake.current.nodes[self._BaseNode__name] = self
 
   def dependency_add(self, dep):
-      self.__dependencies.add(dep)
+    assert dep is not None
+    self.__dependencies.add(dep)
 
   def dependencies_add(self, deps):
     for dep in deps:
