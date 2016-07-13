@@ -2989,6 +2989,8 @@ def __copy(sources, to, strip_prefix, builder, post_process):
       drake.log.LogLevel.trace,
       'copy %s to %s (strip: %s)', sources, to, strip_prefix):
     to = drake.Path(to)
+    if isinstance(sources, types.GeneratorType):
+      sources = list(sources)
     multiple = isinstance(sources, collections.Iterable)
     if multiple and not len(sources):
       return
