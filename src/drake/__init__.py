@@ -2994,7 +2994,7 @@ def __copy(sources, to, strip_prefix, builder, post_process):
       sources = list(sources)
     multiple = isinstance(sources, collections.Iterable)
     if multiple and not len(sources):
-      return
+      return []
     if strip_prefix is not None:
       if strip_prefix is True:
         if multiple:
