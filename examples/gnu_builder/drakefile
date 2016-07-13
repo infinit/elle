@@ -96,14 +96,7 @@ def configure(cxx_toolkit = None,
   zlib_prefix = drake.Path('zlib')
   zlib_build = zlib_prefix / zlib_basename
   zlib_configure = drake.node(zlib_build / 'configure')
-  # This url does not work due to Apache messing up with content-type
-  # headers:
-  # zlib_url = 'http://zlib.net/%s.tar.gz' % zlib_basename
-  zlib_url = \
-    'http://downloads.sourceforge.net/project/libpng/zlib/%s/%s.tar.gz' % (
-      zlib_version,
-      zlib_basename,
-    )
+  zlib_url = 'http://zlib.net/%s.tar.gz' % zlib_basename
 
   # Download the zlib tarball and check that the MD5 hash of the file matches
   # the fingerprint.
