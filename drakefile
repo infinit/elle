@@ -811,9 +811,9 @@ def configure(cxx_toolkit = None,
     boost_tarball = drake.node('boost/%s.tar.gz' % boost_basename)
     boost_prefix = drake.Path('boost')
     boost_prefix_abs = drake.Path(os.getcwd()) / drake.path_build() / boost_prefix
-    boost_url = \
-      'http://downloads.sourceforge.net/project/boost/boost/%s/%s.tar.gz' % \
-      (boost_version, boost_basename)
+    boost_host = \
+      'https://storage.googleapis.com/sh_infinit_releases/boost'
+    boost_url = '%s/%s.tar.gz' % (boost_host, boost_basename)
     drake.HTTPDownload(
       boost_url,
       boost_tarball,
