@@ -23,3 +23,17 @@ class Drake:
     self.__drake.__exit__(*args)
     if self.__delete:
       shutil.rmtree(self.__dir)
+
+
+class FailBuilder(drake.Builder):
+
+  def execute(self):
+    return False
+
+
+class TouchBuilder(drake.Builder):
+
+  def execute(self):
+    for node in self.targets():
+      node.path().touch()
+    return True

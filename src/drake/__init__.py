@@ -1418,6 +1418,8 @@ class BaseNode(object, metaclass = _BaseNodeType):
     else:
       if not self.builder._Builder__executed:
         return False
+      if self.builder._Builder__executed_exception is not None:
+        raise self.builder._Builder__executed_exception
     return all(dep.skippable() for dep in self.dependencies)
 
   @property
@@ -2001,8 +2003,6 @@ class Builder:
             logger.log('drake.Builder',
                        drake.log.LogLevel.debug,
                        '%s: everything is up to date', self)
-      except sched.Terminate:
-        pass
       except Exception as e:
         logger.log('drake.Builder',
                    drake.log.LogLevel.trace,
