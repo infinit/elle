@@ -1,0 +1,47 @@
+#!/usr/bin/env python3
+
+'''Check builders stop being launched when a failure occured.'''
+
+import drake
+import drake.sched
+
+from utils import *
+
+sem = drake.sched.Semaphore(0)
+
+class DelayBuilder(drake.Builder):
+
+  def execute(self):
+    try:
+      sem.lock()
+    except:
+      sem.lock()
+      raise
+    raise Exception('should never get there')
+
+class ForbiddenBuilder(drake.Builder):
+
+  def run(self):
+    sem.unlock()
+    return super().run()
+
+  def execute(self):
+    assert False
+
+with Drake(jobs = 2) as d:
+  failed = drake.node('failed')
+  failer = FailBuilder([], [failed])
+  delayed = drake.node('delayed')
+  delayer = DelayBuilder([], [delayed])
+  intermediate = drake.node('intermediate')
+  TouchBuilder([delayed, failed], [intermediate])
+  forbidden = drake.node('forbidden')
+  ForbiddenBuilder([], [forbidden])
+  root = drake.node('root')
+  TouchBuilder([intermediate, forbidden], [root])
+  try:
+    root.build()
+  except drake.Builder.Failed as e:
+    assert e.builder is failer
+  else:
+    raise Exception('build should have failed')
