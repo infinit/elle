@@ -117,7 +117,7 @@ class Drake:
         self.__drake._Drake__prefix = self.__previous
     return Recurser(self)
 
-  def __init__(self, root = None):
+  def __init__(self, root = None, jobs = None):
     if root is None:
       root = drake.Path('.')
     self.__jobs = 1
@@ -139,6 +139,8 @@ class Drake:
     else:
       self.__module = _Module({})
       self.__configure = None
+    if jobs is not None:
+      self.jobs_set(jobs)
 
   def run(self, *cfg, **kwcfg):
     try:

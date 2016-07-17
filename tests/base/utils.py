@@ -3,12 +3,13 @@ import os
 import shutil
 import tempfile
 
+
 class Drake:
 
-  def __init__(self, dir = None):
+  def __init__(self, dir = None, *args, **kwargs):
     self.__dir = dir
     self.__delete = False
-    self.__drake = drake.Drake()
+    self.__drake = drake.Drake(*args, **kwargs)
 
   def __enter__(self):
     if self.__dir is None:
