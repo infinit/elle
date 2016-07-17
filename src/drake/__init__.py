@@ -3761,9 +3761,9 @@ class HTTPDownload(Builder):
     Builder.__init__(self, [], [self.__dest])
 
   def execute(self):
-    self.output('Download %s to %s' % (self.__urls, self.__dest),
-                'Download %s' % self.__dest)
     def job():
+      self.output('Download %s to %s' % (self.__urls, self.__dest),
+                  'Download %s' % self.__dest)
       import urllib.request
       for url in self.__urls:
         response = urllib.request.urlopen(url)
