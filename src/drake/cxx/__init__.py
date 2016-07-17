@@ -21,7 +21,7 @@ import tempfile
 from drake.utils import property_memoize
 from itertools import chain
 
-from .. import ShellCommand, Builder, Node, Path, node, cmd, command_add, debug, Expander, FileExpander
+from .. import ShellCommand, Builder, Node, Path, node, command_add, debug, Expander, FileExpander
 from .. import utils
 from .. import sched
 

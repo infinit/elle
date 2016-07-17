@@ -1617,30 +1617,6 @@ def nodes(*paths, type = None):
     return list(map(lambda p: node(p, type = type), paths))
 
 
-def _cmd_escape(fmt, *args):
-    rg = re.compile('\'')
-    args = list(map(str, args))
-    for arg in args:
-        if rg.match(arg):
-            pass
-    return fmt % tuple(args)
-
-
-def cmd(cmd, cwd = None, stdout = None):
-    """Run the shell command.
-
-    cmd -- the shell command.
-    cwd -- the dir to chdir to before.
-    """
-    if cwd is not None:
-        cwd = str(cwd)
-    p = subprocess.Popen(cmd,
-                         shell = True,
-                         cwd = cwd,
-                         stdout = stdout)
-    p.wait()
-    return p.returncode == 0
-
 def command(cmd, cwd = None, stdout = None, env = None):
   """Run the shell command.
 
