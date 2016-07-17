@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-'''Check a non-zero return code is considered a failure.'''
+'''Check an interrupted build is not considered to have run
+successfully later.'''
 
 import drake
 import drake.sched
