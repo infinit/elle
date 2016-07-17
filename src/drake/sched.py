@@ -60,7 +60,13 @@ class CoroutineFrozen(Exception):
   pass
 
 class Terminate(Exception):
-  pass
+
+  def __init__(self, coroutine):
+    self.__coroutine = coroutine
+
+  def __str__(self):
+    return 'termination of %s' % self.__coroutine
+
 
 class Scope:
 
@@ -502,9 +508,9 @@ class Coroutine(Waitable):
       self.__done_set()
       self.scheduler._Scheduler__policy.remove(self)
     if self.current:
-      raise Terminate()
+      raise Terminate(self)
     else:
-      self.throw(Terminate())
+      self.throw(Terminate(self))
 
   @property
   def status(self):
