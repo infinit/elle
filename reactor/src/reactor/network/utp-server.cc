@@ -465,9 +465,9 @@ namespace reactor
               this->_check_icmp();
             }
           }
-          catch (std::exception const& e)
+          catch (...)
           {
-            ELLE_DEBUG("exiting: %s", e.what());
+            ELLE_DEBUG("exiting: %s", elle::exception_string());
             throw;
           }
       }));
