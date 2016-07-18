@@ -17,6 +17,97 @@ namespace reactor
 {
   namespace network
   {
+    /*-------------.
+    | StreamBuffer |
+    `-------------*/
+
+    namespace
+    {
+      class StreamBuffer
+        : public elle::DynamicStreamBuffer
+      {
+      public:
+        StreamBuffer(UTPSocket* socket)
+          : DynamicStreamBuffer(65536)
+          , _socket(socket)
+        {}
+
+        Size
+        read(char* buffer, Size size) override
+        {
+          elle::Buffer buf = this->_socket->read_some(size);
+          memcpy(buffer, buf.contents(), buf.size());
+          return buf.size();
+        }
+
+        void
+        write(char* buffer, Size size) override
+        {
+          this->_socket->write(elle::ConstWeakBuffer(buffer, size));
+        }
+
+        UTPSocket* _socket;
+      };
+    }
+
+    /*-------------.
+    | Construction |
+    `-------------*/
+
+    UTPSocket::UTPSocket(UTPServer& server, utp_socket* socket, bool open)
+      : IOStream(new StreamBuffer(this))
+      , _read_barrier(elle::sprintf("%s read", this))
+      , _write_barrier(elle::sprintf("%s write", this))
+      , _write_mutex()
+      , _connect_barrier(elle::sprintf("%s connection", this))
+      , _destroyed_barrier(elle::sprintf("%s desroyed", this))
+      , _server(server)
+      , _socket(socket)
+      , _pending_operations(elle::sprintf("%s pending operations", this))
+      , _write_pos(0)
+      , _open(open)
+      , _closing(false)
+    {
+      utp_set_userdata(this->_socket, this);
+      if (open)
+      {
+        this->_write_barrier.open();
+        ELLE_DEBUG("snd %s recv %s", utp_getsockopt(this->_socket, UTP_SNDBUF),
+          utp_getsockopt(this->_socket, UTP_RCVBUF));
+      }
+      else
+        this->_destroyed_barrier.open();
+    }
+
+    UTPSocket::UTPSocket(UTPServer& server)
+      : UTPSocket(server, utp_create_socket(server.ctx), false)
+    {
+      this->_destroyed_barrier.open();
+    }
+
+    UTPSocket::UTPSocket(UTPServer& server, std::string const& host, int port)
+      : UTPSocket(server, utp_create_socket(server.ctx), false)
+    {
+      connect(host, port);
+    }
+
+    UTPSocket::~UTPSocket()
+    {
+      ELLE_DEBUG("%s: ~UTPSocket", this);
+      try
+      {
+        this->on_close();
+        reactor::wait(_pending_operations);
+        reactor::wait(_destroyed_barrier);
+      }
+      catch (std::exception const& e)
+      {
+        ELLE_WARN("%s: ~UTPSocket: loosing exception %s", this, e);
+      }
+      destroyed();
+      ELLE_DEBUG("%s: ~UTPSocket finished", this);
+    }
+
     void
     UTPSocket::on_read(elle::ConstWeakBuffer const& data)
     {
@@ -59,35 +150,6 @@ namespace reactor
       this->_write_barrier.open();
     }
 
-    UTPSocket::UTPSocket(UTPServer& server)
-      : UTPSocket(server, utp_create_socket(server.ctx), false)
-    {
-      this->_destroyed_barrier.open();
-    }
-
-    UTPSocket::UTPSocket(UTPServer& server, std::string const& host, int port)
-      : UTPSocket(server, utp_create_socket(server.ctx), false)
-    {
-      connect(host, port);
-    }
-
-    UTPSocket::~UTPSocket()
-    {
-      ELLE_DEBUG("%s: ~UTPSocket", this);
-      try
-      {
-        this->on_close();
-        reactor::wait(_pending_operations);
-        reactor::wait(_destroyed_barrier);
-      }
-      catch (std::exception const& e)
-      {
-        ELLE_WARN("%s: ~UTPSocket: loosing exception %s", this, e);
-      }
-      destroyed();
-      ELLE_DEBUG("%s: ~UTPSocket finished", this);
-    }
-
     void
     UTPSocket::destroyed()
     {
@@ -115,57 +177,6 @@ namespace reactor
       this->_read_barrier.open();
       this->_write_barrier.open();
       this->_connect_barrier.open();
-    }
-
-    namespace
-    {
-      class StreamBuffer
-        : public elle::DynamicStreamBuffer
-      {
-      public:
-        StreamBuffer(UTPSocket* socket)
-          : DynamicStreamBuffer(65536)
-          , _socket(socket)
-        {}
-
-        Size
-        read(char* buffer, Size size) override
-        {
-          elle::Buffer buf = this->_socket->read_some(size);
-          memcpy(buffer, buf.contents(), buf.size());
-          return buf.size();
-        }
-
-        void
-        write(char* buffer, Size size) override
-        {
-          this->_socket->write(elle::ConstWeakBuffer(buffer, size));
-        }
-
-        UTPSocket* _socket;
-      };
-    }
-
-    UTPSocket::UTPSocket(UTPServer& server, utp_socket* socket, bool open)
-      : IOStream(new StreamBuffer(this))
-      , _read_barrier("utp socket read")
-      , _write_barrier("utp socket write")
-      , _write_mutex()
-      , _connect_barrier("connect barrier")
-      , _server(server)
-      , _socket(socket)
-      , _open(open)
-      , _closing(false)
-    {
-      utp_set_userdata(this->_socket, this);
-      if (open)
-      {
-        this->_write_barrier.open();
-        ELLE_DEBUG("snd %s recv %s", utp_getsockopt(this->_socket, UTP_SNDBUF),
-          utp_getsockopt(this->_socket, UTP_RCVBUF));
-      }
-      else
-        this->_destroyed_barrier.open();
     }
 
     void
