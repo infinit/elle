@@ -205,15 +205,16 @@ namespace reactor
                                              reachability_callback,
                                              &context))
         {
+          this->_run_loop = CFRunLoopGetCurrent();
+          CFRetain(this->_run_loop);
           if (SCNetworkReachabilityScheduleWithRunLoop(this->_reachability_ref,
-                                                       CFRunLoopGetCurrent(),
+                                                       this->_run_loop,
                                                        kCFRunLoopDefaultMode))
           {
             ELLE_DEBUG("%s: started", *this->_owner);
             SCNetworkReachabilityFlags flags;
             SCNetworkReachabilityGetFlags(this->_reachability_ref, &flags);
             reachability_callback(this->_reachability_ref, flags, this);
-            this->_run_loop = CFRunLoopGetCurrent();
             CFRunLoopRun();
           }
           else
@@ -236,13 +237,15 @@ namespace reactor
         return;
       ELLE_TRACE_SCOPE("%s: stopping...", *this->_owner);
       this->_running = false;
-      if (this->_reachability_ref)
+      if (this->_reachability_ref && this->_run_loop)
       {
         SCNetworkReachabilityUnscheduleFromRunLoop(this->_reachability_ref,
-                                                   CFRunLoopGetCurrent(),
+                                                   this->_run_loop,
                                                    kCFRunLoopDefaultMode);
         ELLE_DEBUG("%s: stopped", *this->_owner);
         CFRunLoopStop(this->_run_loop);
+        CFRelease(this->_run_loop);
+        this->_run_loop = NULL;
       }
       if (this->_thread && this->_thread->joinable())
         this->_thread->join();
