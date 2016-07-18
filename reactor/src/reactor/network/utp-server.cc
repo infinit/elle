@@ -191,6 +191,7 @@ namespace reactor
 
     UTPServer::~UTPServer()
     {
+      ELLE_TRACE_SCOPE("%s: destroy", this);
       this->_cleanup();
     }
 
