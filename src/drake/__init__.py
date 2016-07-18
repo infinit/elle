@@ -386,6 +386,27 @@ class Path:
       Path.cache[strkey] = res
     return res
 
+  def unfold(self):
+    p = self
+    while p != drake.Path.dot:
+      yield p
+      p = p.dirname()
+
+  @classmethod
+  def rootify(self, paths):
+    res = set()
+    for p in paths:
+      insert = True
+      for e in set(res):
+        if e.prefix_of(p):
+          insert = False
+          break
+        elif p.prefix_of(e):
+          res.remove(e)
+      if insert:
+        res.add(p)
+    return res
+
   def __parse(path):
     if Path.windows:
       volume = re.compile('^([a-zA-Z]):').match(path)
@@ -2184,6 +2205,27 @@ class Builder:
         return sched.background(job)
     else:
       return job()
+
+  def cleanup_source_directory(self, root_path):
+    root_path = drake.Path(root_path)
+    effective = set()
+    for path, dirs, files in _OS.walk(str(root_path)):
+      path = drake.Path(path)
+      for f in chain(files, dirs):
+        effective.add(path / f)
+    expected = set(
+      chain(*[n.path().unfold()
+              for s in self.sources().values()
+              for n in chain([s], s.dependencies_recursive)]))
+    for g in drake.Path.rootify(p.without_prefix(root_path)
+                                for p in (effective - expected)):
+      g = root_path / g
+      self.output('Cleanup %s' % g)
+      g = str(g)
+      if _OS.path.isdir(g):
+        shutil.rmtree(str(g))
+      else:
+        _OS.remove(g)
 
 
 class ShellCommand(Builder):

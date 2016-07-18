@@ -7,8 +7,10 @@
 # See the LICENSE file for more information.
 
 import drake
-import itertools
 import os
+import shutil
+
+from itertools import chain
 
 class Packager(drake.Builder):
 
@@ -25,6 +27,7 @@ class Packager(drake.Builder):
     super().__init__(sources, [self.__target])
 
   def execute(self):
+    self.cleanup_source_directory(self.__path)
     os.chmod(str(self.__path / 'DEBIAN'), 0o755)
     os.chmod(str(self.__path / 'DEBIAN/control'), 0o644)
     try:
@@ -52,17 +55,17 @@ class Packager(drake.Builder):
     import sys
     # OS X requires that the commands passed to fakeroot are properly quoted.
     if sys.platform == 'darwin':
-      res.append(pipes.quote(' '.join(itertools.chain(escape(chown),
-                                                      [';'],
-                                                      escape(chmod),
-                                                      [';'],
-                                                      escape(dpkg)))))
+      res.append(pipes.quote(' '.join(chain(escape(chown),
+                                            [';'],
+                                            escape(chmod),
+                                            [';'],
+                                            escape(dpkg)))))
     else:
-      res.append(' '.join(itertools.chain(escape(chown),
-                                     [';'],
-                                     escape(chmod),
-                                     [';'],
-                                     escape(dpkg))))
+      res.append(' '.join(chain(escape(chown),
+                                [';'],
+                                escape(chmod),
+                                [';'],
+                                escape(dpkg))))
     return res
 
   @property
