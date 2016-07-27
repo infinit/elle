@@ -1,4 +1,5 @@
 import drake
+import drake.git
 import os
 
 class Packager(drake.Builder):
@@ -11,17 +12,18 @@ class Packager(drake.Builder):
 
   def __init__(self, license_folder, out_file):
     self.__license_folder = license_folder
-    self.__context = drake.Drake.current.prefix
-    walk_dir = os.path.normpath(
-      str(drake.path_source() / self.__context / license_folder))
-    licenses = list()
-    for root, _, files in os.walk(walk_dir, followlinks = True):
-      rel_loc = root.split(str(license_folder))[-1][1:]
-      for f in files:
-        if not f.startswith('.'):
-          p = drake.Path('%s/%s/%s' % (license_folder, rel_loc, f))
-          licenses.append(drake.node(p))
     self.__target = out_file
+    self.__context = drake.Drake.current.prefix
+    licenses = list()
+    def traverse(folder, in_dir):
+      git = drake.git.Git(folder)
+      for f in git.ls_files():
+        path = str(drake.path_source() / in_dir / folder / f)
+        if os.path.isdir(path):
+          traverse('%s/%s' % (folder, f), '%s/%s' % (in_dir, folder))
+        else:
+          licenses.append(drake.node('%s/%s' % (folder, f)))
+    traverse(license_folder, self.__context)
     super().__init__(licenses, [out_file])
     self.__sorted_sources = \
       list(map(lambda s: str(s), self.sources().values()))
