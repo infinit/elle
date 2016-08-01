@@ -14,6 +14,10 @@ namespace reactor
       : Super("socket was closed")
     {}
 
+    ConnectionRefused::ConnectionRefused()
+      : Super("connection refused")
+    {}
+
     ConnectionClosed::ConnectionClosed()
       : Super("connection closed")
     {}

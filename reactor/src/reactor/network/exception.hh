@@ -26,6 +26,14 @@ namespace reactor
       SocketClosed();
     };
 
+    class ConnectionRefused
+      : public Exception
+    {
+    public:
+      typedef Exception Super;
+      ConnectionRefused();
+    };
+
     class ConnectionClosed
       : public Exception
     {

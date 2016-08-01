@@ -61,7 +61,10 @@ namespace reactor
     SocketOperation<AsioSocket>::_handle_error(
       const boost::system::error_code& error)
     {
-      this->_raise<Exception>(error.message());
+      if (error == boost::asio::error::connection_refused)
+        this->_raise<ConnectionRefused>();
+      else
+        this->_raise<Exception>(error.message());
     }
 
     template class SocketOperation<boost::asio::ip::tcp::socket>;
