@@ -1,7 +1,8 @@
 #ifndef ELLE_UNISTD_HH
 # define ELLE_UNISTD_HH
 
-# include <sys/types.h>
+# ifndef INFINIT_WINDOWS
+#  include <sys/types.h>
 
 namespace elle
 {
@@ -15,4 +16,5 @@ namespace elle
   setuid(uid_t uid);
 }
 
+# endif
 #endif

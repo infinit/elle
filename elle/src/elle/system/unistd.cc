@@ -1,13 +1,14 @@
-#include <errno.h>
-#include <string.h>
-#include <sys/types.h>
-#include <unistd.h>
+#ifndef INFINIT_WINDOWS
+# include <errno.h>
+# include <string.h>
+# include <sys/types.h>
+# include <unistd.h>
 
-#include <string>
+# include <string>
 
-#include <elle/err.hh>
-#include <elle/printf.hh>
-#include <elle/system/unistd.hh>
+# include <elle/err.hh>
+# include <elle/printf.hh>
+# include <elle/system/unistd.hh>
 
 namespace elle
 {
@@ -44,3 +45,6 @@ namespace elle
     checked_call(::setuid(uid), "setuid");
   }
 }
+
+#endif
+
