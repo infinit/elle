@@ -93,18 +93,4 @@ namespace reactor
     else
       return Super::_wait(thread, waker);
   }
-
-  /*----------.
-  | Printable |
-  `----------*/
-
-  void
-  MultiLockBarrier::print(std::ostream& stream) const
-  {
-    stream << "MultiLockBarrier ";
-    if (!this->name().empty())
-      stream << this->name();
-    else
-      stream << this;
-  }
 }
