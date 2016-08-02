@@ -29,6 +29,10 @@ ELLE_LOG_COMPONENT("reactor.filesystem.fuse");
 
 namespace reactor
 {
+  FuseContext::FuseContext()
+    : _mt_barrier(elle::sprintf("%s barrier", this))
+  {}
+
   void
   FuseContext::loop()
   {
