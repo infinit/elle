@@ -20,6 +20,7 @@ namespace reactor
       : _server_reached(elle::sprintf("%s: server reached", *this))
       , _breacher("breacher", [this] { this->loop_breach();})
       , _keep_alive("keep-alive", [this]  {this->loop_keep_alive();})
+      , _tasks(elle::sprintf("%s tasks barrier", this))
     {}
 
     RDVSocket::~RDVSocket()
