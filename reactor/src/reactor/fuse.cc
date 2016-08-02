@@ -93,7 +93,8 @@ namespace reactor
         ELLE_WARN("Exception escaped fuse_process: %s", e.what());
       }
     }
-    sched.run_later("exit notifier", this->on_loop_exited());
+    if (this->on_loop_exited())
+      sched.run_later("exit notifier", this->on_loop_exited());
   }
 
   void
@@ -338,6 +339,7 @@ namespace reactor
           this->_workers.pop_back();
         }, true));
     }
+    if (this->on_loop_exited())
 #ifdef INFINIT_MACOSX
       sched.mt_run<void>("exit notifier", this->on_loop_exited());
 #else
