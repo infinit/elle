@@ -272,7 +272,6 @@ namespace reactor
   void
   FuseContext::_loop_mt(Scheduler& sched)
   {
-    reactor::MultiLockBarrier barrier;
     fuse_session* s = fuse_get_session(this->_fuse);
     fuse_chan* ch = fuse_session_next_chan(s, NULL);
     size_t buffer_size = fuse_chan_bufsize(ch);
