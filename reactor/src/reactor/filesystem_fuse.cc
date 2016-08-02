@@ -758,6 +758,7 @@ namespace reactor
       if (!this->_where.empty())
       {
         this->_where = "";
+        this->_impl->on_loop_exited(std::function<void ()>());
         this->_impl->destroy();
         this->_signal();
       }
