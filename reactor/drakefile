@@ -374,7 +374,7 @@ def configure(curl_config,
           self.cmd('Copy .pkg',
           [
             'cp',
-            '%s/Extras/FUSE for OS X %s.pkg' % \
+            '%s/Extras/FUSE for macOS %s.pkg' % \
               (self.__mountpoint, self.__version),
             self.__destination,
           ])
