@@ -754,13 +754,20 @@ namespace reactor
     void
     FileSystem::unmount()
     {
-      ELLE_TRACE("unmount");
-      if (!_where.empty())
+      ELLE_TRACE("%s: unmount", this);
+      if (!this->_where.empty())
       {
-        _where = "";
-        _impl->destroy();
+        this->_where = "";
+        this->_impl->destroy();
         this->_signal();
       }
+    }
+
+    void
+    FileSystem::kill()
+    {
+      if (this->_impl)
+        this->_impl->kill();
     }
   }
 }

@@ -38,6 +38,8 @@ namespace reactor
     /// unmount and free ressources. Force-kill after "grace_time".
     void
     destroy(DurationOpt grace_time = DurationOpt());
+    void
+    kill();
     ELLE_ATTRIBUTE_RW(std::function<void()>, on_loop_exited);
   private:
     void

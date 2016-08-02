@@ -249,9 +249,13 @@ namespace reactor
       void
       mount(boost::filesystem::path const& where,
             std::vector<std::string> const& options);
-
+      /// Unmount waiting gracefully for current operations to end.
       void
       unmount();
+      /// Kill current operations and the process loop. Use only while
+      /// unmounting.
+      void
+      kill();
 
       std::shared_ptr<Path>
       path(std::string const& path);

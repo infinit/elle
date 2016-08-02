@@ -401,11 +401,7 @@ namespace reactor
     }
     catch (Timeout const&)
     {
-      ELLE_TRACE("killing...");
-      if (this->_loop)
-        this->_loop->terminate_now();
-      for (auto const& t: this->_workers)
-        t->terminate_now();
+      this->kill();
       reactor::wait(this->_mt_barrier);
     }
 #endif
@@ -452,6 +448,15 @@ namespace reactor
     this->_mac_unmount(grace_time);
 #endif
     ELLE_TRACE("finished");
+  }
+
+  void
+  FuseContext::kill()
+  {
+#ifndef INFINIT_MACOSX
+    if (this->_loop)
+      this->_loop->terminate_now();
+#endif
   }
 
 #ifdef INFINIT_MACOSX
