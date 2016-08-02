@@ -147,7 +147,12 @@ namespace reactor
   void
   Waitable::print(std::ostream& stream) const
   {
-    stream << elle::demangle(typeid(*this).name()) << "(" << this << ")";
+    stream << elle::type_info(*this) << "(";
+    if (this->_name.empty())
+      stream << this;
+    else
+      stream << this->_name;
+    stream << ")";
   }
 
   /*----------.
