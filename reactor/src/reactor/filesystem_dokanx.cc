@@ -864,6 +864,7 @@ namespace reactor
     {
       this->_operations->filesystem(this);
     }
+
     void FileSystem::unmount()
     {
       // Without this flush, we get a strange trailing ",'" on stdout when
@@ -874,6 +875,14 @@ namespace reactor
       std::wstring w = from_utf8(this->_where);
       DokanUnmount(w[0]);
     }
+
+    void
+    FileSystem::kill()
+    {
+      // FIXME
+      ELLE_ERR("terminate not yet implemented for Dokan");
+    }
+
     static void dokan_run(void* arg);
     void FileSystem::mount(boost::filesystem::path const& where,
                            std::vector<std::string> const& options)
