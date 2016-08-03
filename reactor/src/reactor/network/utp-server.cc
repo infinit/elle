@@ -5,6 +5,13 @@
 # include <netinet/ip_icmp.h>
 #endif
 
+#ifdef INFINIT_MACOSX
+# include <netinet/in_systm.h>
+# include <netinet/ip.h>
+# include <netinet/ip_icmp.h>
+# include <sys/socket.h>
+#endif
+
 #include <utp.h>
 
 #include <elle/Buffer.hh>
@@ -160,6 +167,7 @@ namespace reactor
     {
       this->_xorify = 0;
       this->_sending = false;
+      this->_icmp_fd = -1;
       ctx = utp_init(2);
       utp_context_set_userdata(ctx, this);
       utp_set_callback(ctx, UTP_ON_FIREWALL, &on_firewall);
@@ -292,8 +300,60 @@ namespace reactor
     void
     UTPServer::_check_icmp()
     {
+#if defined(INFINIT_MACOSX)
+      if (this->_icmp_fd == -1)
+      {
+        this->_icmp_fd = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_ICMP);
+        if (this->_icmp_fd < 0)
+          elle::err("Failed to create ICMP socket: %s", errno);
+        struct timeval tv;
+        if (fcntl(this->_icmp_fd, F_SETFL, O_NONBLOCK) == -1)
+          elle::err("Failed to set socket to non-blocking state: %s", errno);
+      }
+      unsigned char buf[4096];
+      struct sockaddr_in sa;
+      socklen_t sasz = sizeof(sa);
+      int res = recvfrom(this->_icmp_fd, buf, 4096, 0, (struct sockaddr*)&sa, &sasz);
+      if (res == -1 && (errno == EWOULDBLOCK || errno == EAGAIN))
+        return;
+      if (res == -1)
+      {
+        return;
+      }
+      ELLE_DUMP("%x", elle::Buffer(buf, res));
+      // We received a full ip packet
+      if (buf[9] != 1) // type ICMP
+      {
+        ELLE_DUMP("Not ICMP: %s", (unsigned int)buf[9]);
+        return;
+      }
+      static const int offset_icmp = 20;
+      static const int offset_payload_ip_dest = 44;
+      static const int offset_payload_udp_dport = 50;
+      static const int offset_udp_payload = 56;
+      if (res < offset_udp_payload)
+      {
+        ELLE_DUMP("Payload too short (%s)", res);
+        return;
+      }
+      sa.sin_addr.s_addr = *(uint32_t*)(buf + offset_payload_ip_dest);
+      sa.sin_port = *(uint16_t*)(buf + offset_payload_udp_dport);
+      int type = buf[offset_icmp];
+      int code = buf[offset_icmp+1];
+      ELLE_DEBUG("icmp type %s code %s ip %s port %s payload %s", type, code, inet_ntoa(sa.sin_addr), ntohs(sa.sin_port), res - offset_udp_payload);
+
+      if (type == 3 && code == 4)
+        utp_process_icmp_fragmentation(ctx, buf + offset_udp_payload, res - offset_udp_payload,
+          (struct sockaddr*)&sa,
+          sizeof(sa), 0); // FIXME properly fill next_hop_mtu
+      else
+        utp_process_icmp_error(ctx, buf+offset_udp_payload,
+          res - offset_udp_payload,
+          (struct sockaddr*)&sa,
+          sizeof(sa));
+#endif
       // Code comming straight from ucat libutp example.
-#ifdef INFINIT_LINUX
+#if defined(INFINIT_LINUX)
       int fd = this->_socket->socket()->native_handle();
       unsigned char vec_buf[4096], ancillary_buf[4096];
       struct iovec iov = { vec_buf, sizeof(vec_buf) };
@@ -467,7 +527,7 @@ namespace reactor
           }
           catch (...)
           {
-            ELLE_DEBUG("exiting: %s", elle::exception_string());
+            ELLE_DEBUG("%s: exiting checker: %s", this, elle::exception_string());
             throw;
           }
       }));

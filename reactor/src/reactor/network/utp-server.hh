@@ -54,6 +54,7 @@ namespace reactor
       std::unique_ptr<Thread> _checker;
       std::deque<std::pair<elle::Buffer, EndPoint>> _send_buffer;
       bool _sending;
+      int _icmp_fd;
       friend class UTPSocket;
     };
   }
