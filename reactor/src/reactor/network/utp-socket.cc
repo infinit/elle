@@ -98,7 +98,18 @@ namespace reactor
       {
         this->on_close();
         reactor::wait(_pending_operations);
-        reactor::wait(_destroyed_barrier);
+        ELLE_DEBUG("%s from %s: waiting for destroyed...", this, &this->_server);
+        if (!reactor::wait(_destroyed_barrier, 0_sec))
+        {
+          if (!this->_server._socket || !this->_server._checker
+             || this->_server._checker->done())
+            ELLE_WARN("%s: server %s was destroyed before us", this, this->_server);
+          else if (!reactor::wait(_destroyed_barrier, 90_sec))
+          {
+            ELLE_WARN("%s: timeout waiting for DESTROYED state", this);
+          }
+        }
+
       }
       catch (std::exception const& e)
       {
