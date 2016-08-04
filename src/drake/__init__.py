@@ -3809,10 +3809,17 @@ class HTTPDownload(Builder):
       self.output('Download %s to %s' % (self.__urls, self.__dest),
                   'Download %s' % self.__dest)
       import urllib.request
+      response = None
       for url in self.__urls:
-        response = urllib.request.urlopen(url)
-        if response.status == 200:
-          break
+        try:
+          response = urllib.request.urlopen(url)
+        except:
+          pass
+        else:
+          if response.status == 200:
+            break
+      if response is None:
+        raise Exception('Unable to download %s' % self.__urls)
       return response.status, response.read()
     status, content = self._run_job(job)
     if status != 200:
