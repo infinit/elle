@@ -314,8 +314,10 @@ def configure(cxx_toolkit = None,
   drake.HTTPDownload(
     [
       'http://www.openssl.org/source/%s.tar.gz' % openssl_basename,
-      'http://www.openssl.org/source/old/%s%s/%s' % (
-        openssl_version, openssl_release_tag, openssl_basename)
+      'http://www.openssl.org/source/old/%s/%s.tar.gz' % (
+        openssl_version, openssl_basename),
+      'http://www.openssl.org/source/old/%s%s/%s.tar.gz' % (
+        openssl_version, openssl_release_tag, openssl_basename),
     ],
     openssl_tarball,
     fingerprint = 'f3c710c045cdee5fd114feb69feba7aa')
