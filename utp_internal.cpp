@@ -3291,7 +3291,6 @@ int utp_getpeername(utp_socket *conn, struct sockaddr *addr, socklen_t *addrlen)
 	assert(conn);
 	if (!conn) return -1;
 
-	assert(conn->state != CS_UNINITIALIZED);
 	if (conn->state == CS_UNINITIALIZED) return -1;
 
 	socklen_t len;
