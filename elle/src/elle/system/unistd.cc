@@ -22,6 +22,12 @@ namespace elle
   }
 
   void
+  chown(std::string const& pathname, uid_t owner, gid_t group)
+  {
+    checked_call(::chown(pathname.c_str(), owner, group), "chown");
+  }
+
+  void
   setegid(gid_t egid)
   {
     checked_call(::setegid(egid), "setegid");

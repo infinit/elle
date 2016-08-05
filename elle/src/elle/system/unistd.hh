@@ -4,8 +4,12 @@
 # ifndef INFINIT_WINDOWS
 #  include <sys/types.h>
 
+# include <string>
+
 namespace elle
 {
+  void
+  chown(std::string const& pathname, uid_t owner, gid_t group);
   void
   setegid(gid_t egid);
   void
