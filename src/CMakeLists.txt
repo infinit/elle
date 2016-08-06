@@ -24,3 +24,9 @@ endif()
 
 #propagate sources to parent scope for one-lib-build
 set(Uri_SRCS ${Uri_SRCS} PARENT_SCOPE)
+
+install(
+  TARGETS network-uri
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+)
