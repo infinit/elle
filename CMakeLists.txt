@@ -90,3 +90,5 @@ if (Uri_BUILD_DOCS)
       COMMENT "Generating API documentation with Doxygen" VERBATIM)
   endif()
 endif()
+
+install(DIRECTORY include DESTINATION include)
