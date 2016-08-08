@@ -44,7 +44,10 @@ namespace reactor
       _check_icmp();
       void
       _cleanup();
-      std::function<void(boost::system::error_code const&, size_t)> send_cont;
+      void
+      _send();
+      void
+      _send_cont(boost::system::error_code const&, size_t);
       utp_context* ctx;
       ELLE_ATTRIBUTE_R(std::unique_ptr<RDVSocket>, socket);
       ELLE_ATTRIBUTE_RX(unsigned char, xorify);

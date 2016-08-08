@@ -60,7 +60,6 @@ namespace reactor
       }
       UTPServer* server = (UTPServer*)utp_context_get_userdata(args->context);
       ELLE_ASSERT(server);
-      ELLE_DEBUG("on_sendto %s %s", args->len, ep);
       Buffer buf(args->buf, args->len);
       elle::Buffer copy;
       if (server->xorify())
@@ -186,14 +185,14 @@ namespace reactor
     std::unique_ptr<UTPSocket>
     UTPServer::accept()
     {
-      ELLE_DEBUG("accepting...");
+      ELLE_TRACE_SCOPE("%s: accept", this);
       this->_accept_barrier.wait();
-      ELLE_DEBUG("...accepted");
       ELLE_ASSERT(this->_accept_barrier.opened());
       std::unique_ptr<UTPSocket> sock(this->_accept_queue.back().release());
       this->_accept_queue.pop_back();
       if (this->_accept_queue.empty())
         this->_accept_barrier.close();
+      ELLE_TRACE("%s: accepted %s", this, sock);
       return sock;
     }
 
@@ -232,44 +231,45 @@ namespace reactor
     }
 
     void
+    UTPServer::_send()
+    {
+      auto& buf = this->_send_buffer.front();
+      ELLE_TRACE_SCOPE(
+        "%s: send %s UDP bytes to %s", this, buf.first.size(), buf.second);
+      this->_socket->socket()->async_send_to(
+        boost::asio::buffer(
+          buf.first.contents(),
+          buf.first.size()),
+        buf.second,
+        [this] (boost::system::error_code const& errc, size_t size)
+        { this->_send_cont(errc, size); });
+    };
+
+    void
+    UTPServer::_send_cont(boost::system::error_code const& erc, size_t)
+    {
+      if (erc == boost::asio::error::operation_aborted)
+        return;
+      if (erc)
+        ELLE_WARN("%s: send_to error: %s", this, erc.message());
+      this->_send_buffer.pop_front();
+      if (this->_send_buffer.empty())
+        this->_sending = false;
+      else
+        this->_send();
+    }
+
+    void
     UTPServer::send_to(Buffer buf, EndPoint where)
     {
-      ELLE_DEBUG("server send_to %s %s", buf.size(), where);
       this->_send_buffer.emplace_back(elle::Buffer(buf.data(), buf.size()),
                                       where);
+      typedef boost::system::error_code errc;
+      std::function<void (errc const& erc, size_t sz)> send_cont;
       if (!this->_sending)
       {
         this->_sending = true;
-        send_cont =
-          static_cast<decltype(send_cont)>(
-            [this] (boost::system::error_code const& erc, size_t sz)
-            {
-              if (erc == boost::asio::error::operation_aborted)
-                return;
-              if (erc)
-                ELLE_TRACE("%s: send_to error: %s", *this, erc.message());
-              else
-                ELLE_DEBUG("%s: send_cont, wrote %s, %s remaining buffers",
-                           *this, sz, this->_send_buffer.size()-1);
-              this->_send_buffer.pop_front();
-              if (this->_send_buffer.empty())
-                this->_sending = false;
-              else
-              {
-                this->_socket->socket()->async_send_to(
-                  boost::asio::buffer(
-                    this->_send_buffer.front().first.contents(),
-                  this->_send_buffer.front().first.size()),
-                  this->_send_buffer.front().second,
-                  this->send_cont);
-              }
-            });
-        this->_socket->socket()->async_send_to(
-          boost::asio::buffer(
-            this->_send_buffer.front().first.contents(),
-            this->_send_buffer.front().first.size()),
-          this->_send_buffer.front().second,
-          send_cont);
+        this->_send();
       }
       else
         ELLE_DEBUG("already sending, data queued");
@@ -514,23 +514,25 @@ namespace reactor
               // with.
             }
           }
-      });
+        });
       this->_checker.reset(new Thread("checker", [this] {
-          try
-          {
-            while (true)
+            try
             {
-              utp_check_timeouts(ctx);
-              reactor::sleep(50_ms);
-              this->_check_icmp();
+              while (true)
+              {
+                utp_check_timeouts(ctx);
+                reactor::sleep(50_ms);
+                this->_check_icmp();
+              }
             }
-          }
-          catch (...)
-          {
-            ELLE_DEBUG("%s: exiting checker: %s", this, elle::exception_string());
-            throw;
-          }
-      }));
+            catch (...)
+            {
+              ELLE_DEBUG("%s: exiting checker: %s",
+                         this, elle::exception_string());
+              throw;
+            }
+          }));
+      ELLE_TRACE("%s: listening on %s", this, this->local_endpoint());
     }
 
     void
