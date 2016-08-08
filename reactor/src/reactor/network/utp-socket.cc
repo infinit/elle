@@ -209,6 +209,7 @@ namespace reactor
     void
     UTPSocket::connect(std::string const& host, int port)
     {
+      ELLE_TRACE_SCOPE("%s: connect to %s:%s", *this, host, port);
       auto lock = this->_pending_operations.lock();
       struct addrinfo* ai = nullptr;
       addrinfo hints;
@@ -232,9 +233,7 @@ namespace reactor
       this->_destroyed_barrier.close();
       utp_connect(this->_socket, ai->ai_addr, ai->ai_addrlen);
       freeaddrinfo(ai);
-      ELLE_DEBUG("waiting for connect...");
       this->_connect_barrier.wait();
-      ELLE_DEBUG("connected");
       if (!this->_open)
         throw SocketClosed();
     }
@@ -325,11 +324,11 @@ namespace reactor
     elle::Buffer
     UTPSocket::read(size_t sz, DurationOpt opt)
     {
+      ELLE_TRACE_SCOPE("%s: read up to %s bytes", this, sz);
       using namespace boost::posix_time;
       if (!this->_open)
         throw SocketClosed();
       auto lock = this->_pending_operations.lock();
-      ELLE_DEBUG("read");
       ptime start = microsec_clock::universal_time();
       while (this->_read_buffer.size() < sz)
       {
