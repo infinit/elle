@@ -389,7 +389,7 @@ namespace reactor
     }
 
     UTPSocket::EndPoint
-    UTPSocket::peer()
+    UTPSocket::peer() const
     {
       using namespace boost::asio::ip;
       struct sockaddr_in addr;

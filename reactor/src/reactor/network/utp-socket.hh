@@ -63,7 +63,7 @@ namespace reactor
       void
       destroyed();
       EndPoint
-      peer();
+      peer() const;
     private:
       void
       _read();
