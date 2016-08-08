@@ -21,6 +21,7 @@ namespace reactor
   {
     class UTPSocket
       : public elle::IOStream
+      , public elle::Printable
     {
     /*-------------.
     | Construction |
@@ -64,9 +65,19 @@ namespace reactor
       destroyed();
       EndPoint
       peer() const;
+
+    /*----------.
+    | Printable |
+    `----------*/
+    public:
+      virtual
+      void
+      print(std::ostream& output) const override;
+
     private:
       void
       _read();
+      utp_socket* _socket;
       elle::Buffer _read_buffer;
       Barrier _read_barrier;
       Barrier _write_barrier;
@@ -74,7 +85,6 @@ namespace reactor
       Barrier _connect_barrier;
       Barrier _destroyed_barrier;
       ELLE_ATTRIBUTE_R(UTPServer&, server);
-      utp_socket* _socket;
       elle::ConstWeakBuffer _write;
       MultiLockBarrier _pending_operations;
       int _write_pos;

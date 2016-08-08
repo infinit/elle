@@ -56,13 +56,13 @@ namespace reactor
 
     UTPSocket::UTPSocket(UTPServer& server, utp_socket* socket, bool open)
       : IOStream(new StreamBuffer(this))
+      , _socket(socket) // socket first because it is used when printing this
       , _read_barrier(elle::sprintf("%s read", this))
       , _write_barrier(elle::sprintf("%s write", this))
       , _write_mutex()
       , _connect_barrier(elle::sprintf("%s connection", this))
       , _destroyed_barrier(elle::sprintf("%s desroyed", this))
       , _server(server)
-      , _socket(socket)
       , _pending_operations(elle::sprintf("%s pending operations", this))
       , _write_pos(0)
       , _open(open)
@@ -414,6 +414,12 @@ namespace reactor
         throw elle::Error(
           elle::sprintf("unknown protocol %s", addr.sin_family));
       }
+    }
+
+    void
+    UTPSocket::print(std::ostream& output) const
+    {
+      elle::fprintf(output, "%s(%s)", elle::type_info(*this), this->peer());
     }
   }
 }
