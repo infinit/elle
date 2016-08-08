@@ -394,7 +394,9 @@ namespace reactor
       using namespace boost::asio::ip;
       struct sockaddr_in addr;
       socklen_t addrlen = sizeof(addr);
-      utp_getpeername(this->_socket, (sockaddr*)&addr, &addrlen);
+      if (!this->_socket ||
+          utp_getpeername(this->_socket, (sockaddr*)&addr, &addrlen) == -1)
+        return EndPoint(boost::asio::ip::address::from_string("0.0.0.0"), 0);
       if (addr.sin_family == AF_INET)
       {
         return EndPoint(address_v4(ntohl(addr.sin_addr.s_addr)),
