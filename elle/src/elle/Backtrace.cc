@@ -120,7 +120,7 @@ namespace elle
     */
     return res;
   }
-#elif !defined(INFINIT_ANDROID)
+#elif !defined(INFINIT_ANDROID) && !defined(NO_EXECINFO)
   Backtrace
   Backtrace::_current(void** callstack, size_t frames, unsigned skip)
   {
