@@ -2605,11 +2605,14 @@ class FunctionExpander(Expander):
 
 class _Module:
 
-    def __init__(self, globals):
-        self.globals = globals
+  def __init__(self, globals):
+    self.globals = globals
 
-    def __getattr__(self, name):
-        return self.globals[name]
+  def __getattr__(self, name):
+    return self.globals[name]
+
+  def __contains__(self, key):
+    return key in self.globals
 
 
 def include(path, *args, **kwargs):
@@ -2647,7 +2650,8 @@ def _raw_include(path, *args, **kwargs):
   with open(path) as f:
     exec(compile('__file__ = "%s"\n' % (path) + f.read(), path, 'exec'), g)
   res = _Module(g)
-  res.configure(*args, **kwargs)
+  if 'configure' in res:
+    res.configure(*args, **kwargs)
   return res
 
 def dot(node, *filters):
