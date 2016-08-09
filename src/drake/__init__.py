@@ -2640,7 +2640,9 @@ def include(path, *args, **kwargs):
 
 
 def _raw_include(path, *args, **kwargs):
-  g = {}
+  g = {
+    'drake': drake,
+  }
   #execfile(path, g)
   with open(path) as f:
     exec(compile('__file__ = "%s"\n' % (path) + f.read(), path, 'exec'), g)
