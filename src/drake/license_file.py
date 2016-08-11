@@ -16,14 +16,15 @@ class Packager(drake.Builder):
     self.__context = drake.Drake.current.prefix
     licenses = list()
     def traverse(folder, in_dir):
-      git = drake.git.Git(folder)
+      rel_dir = '%s/%s' % (in_dir, folder) if folder else in_dir
+      git = drake.git.Git(rel_dir)
       for f in git.ls_files():
-        path = str(drake.path_source() / in_dir / folder / f)
+        path = str(drake.path_source() / self.__context / rel_dir / f)
         if os.path.isdir(path):
-          traverse('%s/%s' % (folder, f), '%s/%s' % (in_dir, folder))
+          traverse(f, rel_dir)
         else:
-          licenses.append(drake.node('%s/%s' % (folder, f)))
-    traverse(license_folder, self.__context)
+          licenses.append(drake.node('%s/%s' % (rel_dir, f)))
+    traverse('', license_folder)
     super().__init__(licenses, [out_file])
     self.__sorted_sources = \
       list(map(lambda s: str(s), self.sources().values()))
