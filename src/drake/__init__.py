@@ -2927,7 +2927,7 @@ class Copy(Builder):
             else:
               drake.warn('%s is copied twice to %s '
                          'but with different builder types (%s and %s), '
-                         'which is thus not considere equivalent' % (
+                         'which is thus not considered equivalent' % (
                            original, self.__target,
                            self.__target.builder.name, self.name))
       raise
