@@ -803,7 +803,7 @@ def configure(curl_config,
     # 'reactor/file',
     ]
   if cxx_toolkit.os in [drake.os.linux, drake.os.macos]:
-    tests.append(('fdstream', [], 'something'))
+    tests.append(('fdstream', [], None))
     tests.append(('filesystem', [], None))
     tests.append(('filesystem_bind', [], None))
     tests.append(('filesystem_git', [], None))

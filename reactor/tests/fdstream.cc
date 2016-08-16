@@ -1,27 +1,30 @@
 /// Crash on OS X when using: echo "something" | /path/to/fdstream
 
+#include <elle/test.hh>
+
 #include <reactor/FDStream.hh>
 #include <reactor/scheduler.hh>
 
-int
-main(int argc, char** argv)
+ELLE_LOG_COMPONENT("reactor.FDStream.test");
+
+ELLE_TEST_SCHEDULED(basics)
 {
-  reactor::Scheduler sched;
-  reactor::Thread main_thread(
-    sched,
-    "main",
-    [&]
-    {
-      static const std::string expected("something");
-      reactor::FDStream stdin_stream(0);
-      ELLE_ASSERT(!stdin_stream.eof());
-      char content[1024] = {0};
-      stdin_stream.read(content, sizeof(content));
-      ELLE_ASSERT_EQ(static_cast<unsigned long>(stdin_stream.gcount()),
-                     expected.size());
-      ELLE_ASSERT_EQ(content, expected);
-      ELLE_ASSERT(stdin_stream.eof());
-    });
-  sched.run();
-  return 0;
+  int fds[2];
+  BOOST_CHECK_EQUAL(::pipe(fds), 0);
+  static const std::string data("something");
+  BOOST_CHECK_EQUAL(::write(fds[1], data.c_str(), data.size()), data.size());
+  BOOST_CHECK_EQUAL(::close(fds[1]), 0);
+  reactor::FDStream stream(fds[0]);
+  ELLE_ASSERT(!stream.eof());
+  char content[1024] = {0};
+  stream.read(content, sizeof(content));
+  ELLE_ASSERT_EQ(static_cast<unsigned long>(stream.gcount()), data.size());
+  ELLE_ASSERT_EQ(content, data);
+  ELLE_ASSERT(stream.eof());
+}
+
+ELLE_TEST_SUITE()
+{
+  boost::unit_test::framework::master_test_suite().add(
+    BOOST_TEST_CASE(basics), 0, 1);
 }
