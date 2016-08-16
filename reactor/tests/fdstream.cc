@@ -23,8 +23,28 @@ ELLE_TEST_SCHEDULED(basics)
   ELLE_ASSERT(stream.eof());
 }
 
+ELLE_TEST_SCHEDULED(destruction_segv)
+{
+  int fds[2];
+  BOOST_CHECK_EQUAL(::pipe(fds), 0);
+  auto stream = elle::make_unique<reactor::FDStream>(fds[0]);
+  reactor::Barrier reading;
+  reactor::Thread reader(
+    "reader",
+    [&]
+    {
+      ELLE_ASSERT(!stream->eof());
+      char content[1024] = {0};
+      reading.open();
+      stream->read(content, sizeof(content));
+    });
+  reactor::wait(reading);
+  reader.terminate_now();
+}
+
 ELLE_TEST_SUITE()
 {
-  boost::unit_test::framework::master_test_suite().add(
-    BOOST_TEST_CASE(basics), 0, 1);
+  auto& suite = boost::unit_test::framework::master_test_suite();
+  suite.add(BOOST_TEST_CASE(basics), 0, 1);
+  suite.add(BOOST_TEST_CASE(destruction_segv), 0, 1);
 }
