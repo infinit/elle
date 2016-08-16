@@ -25,6 +25,7 @@ with this program. If not, see <http://www.gnu.org/licenses/>.
 
 */
 
+#include "../dokan/dokani.h"
 #include "../dokan/dokan.h"
 #include <malloc.h>
 #include <npapi.h>
@@ -33,27 +34,21 @@ with this program. If not, see <http://www.gnu.org/licenses/>.
 #include <windows.h>
 #include <winnetwk.h>
 
-static VOID DokanDbgPrintW(LPCWSTR format, ...) {
-  const WCHAR *outputString;
-  WCHAR *buffer;
-  size_t length;
-  va_list argp;
+#ifndef _MSC_VER
+# define __in
+# define __out
+# define __inout
+#define WNNC_ENUM_SHAREABLE              0x00000008
+#define WNNC_DLG_GETRESOURCEPARENT       0x00000200
+#define WNNC_DLG_GETRESOURCEINFORMATION  0x00000800
+#endif
 
-  va_start(argp, format);
-  length = _vscwprintf(format, argp) + 1;
-  buffer = _malloca(length * sizeof(WCHAR));
-  if (buffer) {
-    StringCchVPrintfW(buffer, length, format, argp);
-    outputString = buffer;
-  } else {
-    outputString = format;
-  }
-  OutputDebugStringW(outputString);
-  _freea(buffer);
-  va_end(argp);
-}
 
-#define DbgPrintW(format, ...) DokanDbgPrintW(format, __VA_ARGS__)
+
+DWORD APIENTRY NPGetResourceInformation(__in LPNETRESOURCE NetResource,
+                                        __out LPVOID Buffer,
+                                        __out LPDWORD BufferSize,
+                                        __out LPWSTR *System);
 
 DWORD APIENTRY NPGetCaps(DWORD Index) {
   DWORD rc = 0;
@@ -456,7 +451,7 @@ DWORD APIENTRY NPGetResourceParent(__in LPNETRESOURCE NetResource,
   }
 
   pParent->lpRemoteName = (WCHAR *)((PBYTE)pParent + sizeof(NETRESOURCE));
-  lstrcpy(pParent->lpRemoteName, NetResource->lpRemoteName);
+  StringCbCopy(pParent->lpRemoteName, 1000000, NetResource->lpRemoteName);
 
   /* Remove last path component of the pParent->lpRemoteName. */
   WCHAR *pLastSlash = pParent->lpRemoteName + RemoteNameLength;
@@ -933,7 +928,7 @@ DWORD APIENTRY NPGetResourceInformation(__in LPNETRESOURCE NetResource,
     *System = pStrings;
   }
 
-  lstrcpy(pStrings, lp);
+  StringCbCopy(pStrings, 10000000, lp);
   pStrings += lstrlen(lp) + 1;
 
   DbgPrintW(L"NPGetResourceInformation: lpRemoteName: %ls, strings %p/%p\n",
@@ -943,7 +938,7 @@ DWORD APIENTRY NPGetResourceInformation(__in LPNETRESOURCE NetResource,
   return WN_SUCCESS;
 }
 
-DWORD APIENTRY NPGetUniversalName(__in LPCWSTR LocalPath, __in DWORD InfoLevel,
+DWORD APIENTRY NPGetUniversalName(__in LPWSTR LocalPath, __in DWORD InfoLevel,
                                   __in LPVOID Buffer, __in LPDWORD BufferSize) {
 
   DWORD dwStatus;

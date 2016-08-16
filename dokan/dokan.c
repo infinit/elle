@@ -834,14 +834,6 @@ BOOL WINAPI DllMain(HINSTANCE Instance, DWORD Reason, LPVOID Reserved) {
   return TRUE;
 }
 
-#ifdef DOKAN_STATIC_BUILD
-void init_main()  __attribute__((constructor));
-void init_main()
-{
-  DokanDllMain(0, DLL_PROCESS_ATTACH, 0);
-}
-#endif
-
 void DOKANAPI DokanMapKernelToUserCreateFileFlags(
     ULONG FileAttributes, ULONG CreateOptions, ULONG CreateDisposition,
     DWORD *outFileAttributesAndFlags, DWORD *outCreationDisposition) {

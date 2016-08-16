@@ -273,11 +273,16 @@ DokanFillIdInfo(PFILE_ID_INFORMATION IdInfo,
 
   IdInfo->VolumeSerialNumber = FileInfo->dwVolumeSerialNumber;
 
+#ifdef _MSC_VER
   ZeroMemory(IdInfo->FileId.Identifier, sizeof(IdInfo->FileId.Identifier));
 
   ((DWORD *)(IdInfo->FileId.Identifier))[0] = FileInfo->nFileIndexLow;
   ((DWORD *)(IdInfo->FileId.Identifier))[1] = FileInfo->nFileIndexHigh;
-
+#else
+  ZeroMemory(&IdInfo->FileId, sizeof(IdInfo->FileId));
+  IdInfo->FileId.LowPart = FileInfo->nFileIndexLow;
+  IdInfo->FileId.HighPart = FileInfo->nFileIndexHigh;
+#endif
   *RemainingLength -= sizeof(FILE_ID_INFORMATION);
 
   return STATUS_SUCCESS;

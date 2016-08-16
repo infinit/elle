@@ -52,7 +52,6 @@ extern BOOL g_DebugMode;
 // DokanOptions->UseStdErr is ON?
 extern BOOL g_UseStdErr;
 
-#ifdef _MSC_VER
 
 static VOID DokanDbgPrint(LPCSTR format, ...) {
   const char *outputString;
@@ -120,7 +119,6 @@ static VOID DokanDbgPrintW(LPCWSTR format, ...) {
   }                                                                            \
   while (0)
 
-#endif // MSVC
 
 VOID DOKANAPI DokanUseStdErr(BOOL Status);
 

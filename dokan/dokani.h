@@ -22,11 +22,20 @@ with this program. If not, see <http://www.gnu.org/licenses/>.
 #ifndef DOKANI_H_
 #define DOKANI_H_
 
-#define WIN32_NO_STATUS
-#include <windows.h>
-#undef WIN32_NO_STATUS
+#ifdef _MSC_VER
+# define WIN32_NO_STATUS
+# include <windows.h>
+# undef WIN32_NO_STATUS
 typedef DWORD NTSTATUS;
+#else
+# define __WINCRYPT_H__
+# include <windows.h>
+typedef DWORD NTSTATUS;
+#endif
+
 #include <stdio.h>
+#include <tchar.h>
+#include <strsafe.h>
 
 #include "dokan.h"
 #include "dokanc.h"
@@ -196,6 +205,7 @@ GetDokanOpenInfo(PEVENT_CONTEXT EventInfomation, PDOKAN_INSTANCE DokanInstance);
 
 VOID ReleaseDokanOpenInfo(PEVENT_INFORMATION EventInfomation,
                           PDOKAN_INSTANCE DokanInstance);
+
 
 #ifdef __cplusplus
 }

@@ -41,6 +41,7 @@ def configure(cxx_toolkit,
       'dokan/version.c',
       'dokan/volume.c',
       'dokan/write.c',
+      'dokan_np/dokannp.c',
   )
   config = drake.cxx.Config(cxx_config)
   config.add_local_include_path('.')
