@@ -1,9 +1,10 @@
 /*
-Dokan : user-mode file system library for Windows
+  Dokan : user-mode file system library for Windows
 
-Copyright (C) 2008 Hiroki Asakawa info@dokan-dev.net
+  Copyright (C) 2015 - 2016 Adrien J. <liryna.stark@gmail.com> and Maxime C. <maxime@islog.com>
+  Copyright (C) 2007 - 2011 Hiroki Asakawa <info@dokan-dev.net>
 
-http://dokan-dev.net/en
+  http://dokan-dev.github.io
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free
@@ -25,6 +26,8 @@ DokanDispatchPnp(__in PDEVICE_OBJECT DeviceObject, __in PIRP Irp) {
   PIO_STACK_LOCATION irpSp;
   NTSTATUS status = STATUS_SUCCESS;
 
+  UNREFERENCED_PARAMETER(DeviceObject);
+
   __try {
     DDbgPrint("==> DokanPnp\n");
 
@@ -45,7 +48,7 @@ DokanDispatchPnp(__in PDEVICE_OBJECT DeviceObject, __in PIRP Irp) {
       break;
     case IRP_MN_QUERY_DEVICE_RELATIONS:
       DDbgPrint("  IRP_MN_QUERY_DEVICE_RELATIONS\n");
-      status = QueryDeviceRelations(DeviceObject, Irp);
+      status = STATUS_NOT_IMPLEMENTED;
       break;
     default:
       DDbgPrint("   other minnor function %d\n", irpSp->MinorFunction);
@@ -69,6 +72,10 @@ QueryDeviceRelations(__in PDEVICE_OBJECT DeviceObject, __in PIRP Irp) {
   DEVICE_RELATION_TYPE type = irpSp->Parameters.QueryDeviceRelations.Type;
   PDEVICE_RELATIONS DeviceRelations;
   PDokanVCB vcb;
+
+  // QueryDeviceRelations is currently not used
+  // because it does not return proper informations and verifier complained
+  // We keep it for futur support of pnp
 
   vcb = DeviceObject->DeviceExtension;
 

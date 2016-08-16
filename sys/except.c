@@ -1,9 +1,10 @@
 /*
-Dokan : user-mode file system library for Windows
+  Dokan : user-mode file system library for Windows
 
-Copyright (C) 2008 Hiroki Asakawa info@dokan-dev.net
+  Copyright (C) 2015 - 2016 Adrien J. <liryna.stark@gmail.com> and Maxime C. <maxime@islog.com>
+  Copyright (C) 2007 - 2011 Hiroki Asakawa <info@dokan-dev.net>
 
-http://dokan-dev.net/en
+  http://dokan-dev.github.io
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free
@@ -39,8 +40,7 @@ DokanExceptionFilter(__in PIRP Irp, __in PEXCEPTION_POINTERS ExceptionPointer) {
 
   DbgBreakPoint();
 
-  if (Status == EXCEPTION_EXECUTE_HANDLER ||
-      FsRtlIsNtstatusExpected(ExceptionCode)) {
+  if (FsRtlIsNtstatusExpected(ExceptionCode)) {
     //
     // If the exception is expected execute our handler
     //
@@ -83,8 +83,8 @@ DokanExceptionHandler(__in PDEVICE_OBJECT DeviceObject, __in PIRP Irp,
       Status = STATUS_INVALID_PARAMETER;
     } else if (Vcb->Identifier.Type != VCB) {
       Status = STATUS_INVALID_PARAMETER;
-    } else if (!Vcb->Dcb->Mounted) {
-      Status = STATUS_VOLUME_DISMOUNTED;
+    } else if (IsUnmountPendingVcb(Vcb)) {
+      Status = STATUS_NO_SUCH_DEVICE;
     }
 
     if (Status == STATUS_PENDING) {

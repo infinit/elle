@@ -80,7 +80,7 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="dispatch.c">
-	  <Filter>Source Files</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="pnp.c">
       <Filter>Source Files</Filter>
@@ -98,5 +98,10 @@
     <ResourceCompile Include="dokan.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Inf Include="dokan.inf">
+      <Filter>Driver Files</Filter>
+    </Inf>
   </ItemGroup>
 </Project>

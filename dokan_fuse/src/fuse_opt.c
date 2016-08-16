@@ -50,8 +50,8 @@ int fuse_opt_add_arg(struct fuse_args *args, const char *arg)
 
     assert(!args->argv || args->allocated);
 
-    newargv = realloc(args->argv, (args->argc + 2) * sizeof(char *));
-    newarg = newargv ? _strdup(arg) : NULL;
+    newargv = (char **)realloc(args->argv, (args->argc + 2) * sizeof(char *));
+    newarg = newargv ? STRDUP(arg) : NULL;
 	if (!newargv || !newarg)
 	{
 		if (newargv)
@@ -100,10 +100,10 @@ int fuse_opt_add_opt(char **opts, const char *opt)
 {
     char *newopts;
     if (!*opts)
-        newopts = _strdup(opt);
+        newopts = STRDUP(opt);
     else {
 		size_t oldlen = strlen(*opts);
-        newopts = realloc(*opts, oldlen + 1 + strlen(opt) + 1);
+        newopts = (char *)realloc(*opts, oldlen + 1 + strlen(opt) + 1);
         if (newopts) {
             newopts[oldlen] = ',';
             strcpy(newopts + oldlen + 1, opt);
@@ -179,7 +179,7 @@ static int process_opt_param(void *var, const char *format, const char *param,
 {
     assert(format[0] == '%');
     if (format[1] == 's') {
-        char *copy = _strdup(param);
+        char *copy = STRDUP(param);
         if (!copy)
             return alloc_failed();
 
@@ -227,7 +227,7 @@ static int process_opt_sep_arg(struct fuse_opt_context *ctx,
         return -1;
 
     param = ctx->argv[ctx->argctr];
-    newarg = malloc(sep + strlen(param) + 1);
+    newarg = (char *)malloc(sep + strlen(param) + 1);
     if (!newarg)
         return alloc_failed();
 
@@ -284,7 +284,7 @@ static int process_option_group(struct fuse_opt_context *ctx, const char *opts)
     if (!sep)
         return process_gopt(ctx, opts, 1);
 
-    copy = _strdup(opts);
+    copy = STRDUP(opts);
     if (!copy) {
         fprintf(stderr, "fuse: memory allocation failed\n");
         return -1;

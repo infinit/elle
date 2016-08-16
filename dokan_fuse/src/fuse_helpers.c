@@ -10,6 +10,8 @@
 #include <errno.h>
 
 #ifdef __CYGWIN__
+#define _BSD_SOURCE
+#include <unistd.h>
 #include <semaphore.h>
 #endif
 
@@ -180,16 +182,22 @@ err:
 
 int fuse_daemonize(int foreground)
 {
-	/** No daemons on Windows */
-#ifdef __CYGWIN__
 	if (!foreground) {
+#ifdef __CYGWIN__
 		int res = daemon(0, 0);
 		if (res == -1) {
 			perror("fuse: failed to daemonize program\n");
 			return -1;
 		}
-	}
+#else
+		/** No daemons on Windows but we detach from current console **/
+		if (FreeConsole() == 0) {
+			DWORD currentError = GetLastError();
+			fprintf(stderr, "fuse: daemonize failed = %lu\n", currentError);
+			return -1;
+		}
 #endif
+	}
 	return 0;
 }
 
@@ -262,7 +270,7 @@ void fuse_remove_signal_handlers(struct fuse_session *se)
 
 int my_sem_init(sem_t *sem, int pshared, int initial)
 {
-	*sem=CreateSemaphore (NULL, initial, LONG_MAX, NULL);
+	*sem=(sem_t)CreateSemaphore (NULL, initial, SEM_VALUE_MAX, NULL);
 	return *sem==NULL?-1:0;
 }
 

@@ -1,9 +1,10 @@
 /*
   Dokan : user-mode file system library for Windows
 
-  Copyright (C) 2008 Hiroki Asakawa info@dokan-dev.net
+  Copyright (C) 2015 - 2016 Adrien J. <liryna.stark@gmail.com> and Maxime C. <maxime@islog.com>
+  Copyright (C) 2007 - 2011 Hiroki Asakawa <info@dokan-dev.net>
 
-  http://dokan-dev.net/en
+  http://dokan-dev.github.io
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free
@@ -18,7 +19,6 @@ You should have received a copy of the GNU Lesser General Public License along
 with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <ntstatus.h>
 #include "dokani.h"
 #include "fileinfo.h"
 
@@ -58,9 +58,9 @@ DokanFsVolumeInformation(PEVENT_INFORMATION EventInfo,
                          PEVENT_CONTEXT EventContext, PDOKAN_FILE_INFO FileInfo,
                          PDOKAN_OPERATIONS DokanOperations) {
   WCHAR volumeName[MAX_PATH];
-  DWORD volumeSerial;
-  DWORD maxComLength;
-  DWORD fsFlags;
+  DWORD volumeSerial = 0;
+  DWORD maxComLength = 0;
+  DWORD fsFlags = 0;
   WCHAR fsName[MAX_PATH];
   ULONG remainingLength;
   ULONG bytesToCopy;
@@ -68,11 +68,6 @@ DokanFsVolumeInformation(PEVENT_INFORMATION EventInfo,
 
   PFILE_FS_VOLUME_INFORMATION volumeInfo =
       (PFILE_FS_VOLUME_INFORMATION)EventInfo->Buffer;
-
-  if (!DokanOperations->GetVolumeInformation) {
-    // return STATUS_NOT_IMPLEMENTED;
-    DokanOperations->GetVolumeInformation = DokanGetVolumeInformation;
-  }
 
   remainingLength = EventContext->Operation.Volume.BufferLength;
 
@@ -83,15 +78,29 @@ DokanFsVolumeInformation(PEVENT_INFORMATION EventInfo,
   RtlZeroMemory(volumeName, sizeof(volumeName));
   RtlZeroMemory(fsName, sizeof(fsName));
 
-  status = DokanOperations->GetVolumeInformation(
-      volumeName,                         // VolumeNameBuffer
-      sizeof(volumeName) / sizeof(WCHAR), // VolumeNameSize
-      &volumeSerial,                      // VolumeSerialNumber
-      &maxComLength,                      // MaximumComponentLength
-      &fsFlags,                           // FileSystemFlags
-      fsName,                             // FileSystemNameBuffer
-      sizeof(fsName) / sizeof(WCHAR),     // FileSystemNameSize
-      FileInfo);
+  if (DokanOperations->GetVolumeInformation) {
+    status = DokanOperations->GetVolumeInformation(
+        volumeName,                         // VolumeNameBuffer
+        sizeof(volumeName) / sizeof(WCHAR), // VolumeNameSize
+        &volumeSerial,                      // VolumeSerialNumber
+        &maxComLength,                      // MaximumComponentLength
+        &fsFlags,                           // FileSystemFlags
+        fsName,                             // FileSystemNameBuffer
+        sizeof(fsName) / sizeof(WCHAR),     // FileSystemNameSize
+        FileInfo);
+  }
+
+  if (status == STATUS_NOT_IMPLEMENTED) {
+    status = DokanGetVolumeInformation(
+        volumeName,                         // VolumeNameBuffer
+        sizeof(volumeName) / sizeof(WCHAR), // VolumeNameSize
+        &volumeSerial,                      // VolumeSerialNumber
+        &maxComLength,                      // MaximumComponentLength
+        &fsFlags,                           // FileSystemFlags
+        fsName,                             // FileSystemNameBuffer
+        sizeof(fsName) / sizeof(WCHAR),     // FileSystemNameSize
+        FileInfo);
+  }
 
   if (status != STATUS_SUCCESS) {
     return status;
@@ -127,36 +136,43 @@ DokanFsSizeInformation(PEVENT_INFORMATION EventInfo,
   ULONGLONG freeBytes = 0;
   NTSTATUS status = STATUS_NOT_IMPLEMENTED;
 
+  ULONG allocationUnitSize = FileInfo->DokanOptions->AllocationUnitSize;
+  ULONG sectorSize = FileInfo->DokanOptions->SectorSize;
+
   PFILE_FS_SIZE_INFORMATION sizeInfo =
       (PFILE_FS_SIZE_INFORMATION)EventInfo->Buffer;
-
-  if (!DokanOperations->GetDiskFreeSpace) {
-    // return STATUS_NOT_IMPLEMENTED;
-    DokanOperations->GetDiskFreeSpace = DokanGetDiskFreeSpace;
-  }
 
   if (EventContext->Operation.Volume.BufferLength <
       sizeof(FILE_FS_SIZE_INFORMATION)) {
     return STATUS_BUFFER_OVERFLOW;
   }
 
-  status = DokanOperations->GetDiskFreeSpace(
-      &freeBytesAvailable, // FreeBytesAvailable
-      &totalBytes,         // TotalNumberOfBytes
-      &freeBytes,          // TotalNumberOfFreeBytes
-      FileInfo);
+  if (DokanOperations->GetDiskFreeSpace) {
+    status = DokanOperations->GetDiskFreeSpace(
+        &freeBytesAvailable, // FreeBytesAvailable
+        &totalBytes,         // TotalNumberOfBytes
+        &freeBytes,          // TotalNumberOfFreeBytes
+        FileInfo);
+  }
+
+  if (status == STATUS_NOT_IMPLEMENTED) {
+    status = DokanGetDiskFreeSpace(&freeBytesAvailable, // FreeBytesAvailable
+                                   &totalBytes,         // TotalNumberOfBytes
+                                   &freeBytes, // TotalNumberOfFreeBytes
+                                   FileInfo);
+  }
 
   if (status != STATUS_SUCCESS) {
     return status;
   }
 
   sizeInfo->TotalAllocationUnits.QuadPart =
-      totalBytes / DOKAN_ALLOCATION_UNIT_SIZE;
+      totalBytes / allocationUnitSize;
   sizeInfo->AvailableAllocationUnits.QuadPart =
-      freeBytesAvailable / DOKAN_ALLOCATION_UNIT_SIZE;
+      freeBytesAvailable / allocationUnitSize;
   sizeInfo->SectorsPerAllocationUnit =
-      DOKAN_ALLOCATION_UNIT_SIZE / DOKAN_SECTOR_SIZE;
-  sizeInfo->BytesPerSector = DOKAN_SECTOR_SIZE;
+	  allocationUnitSize / sectorSize;
+  sizeInfo->BytesPerSector = sectorSize;
 
   EventInfo->BufferLength = sizeof(FILE_FS_SIZE_INFORMATION);
 
@@ -170,8 +186,8 @@ DokanFsAttributeInformation(PEVENT_INFORMATION EventInfo,
                             PDOKAN_OPERATIONS DokanOperations) {
   WCHAR volumeName[MAX_PATH];
   DWORD volumeSerial;
-  DWORD maxComLength;
-  DWORD fsFlags;
+  DWORD maxComLength = 0;
+  DWORD fsFlags = 0;
   WCHAR fsName[MAX_PATH];
   ULONG remainingLength;
   ULONG bytesToCopy;
@@ -179,11 +195,6 @@ DokanFsAttributeInformation(PEVENT_INFORMATION EventInfo,
 
   PFILE_FS_ATTRIBUTE_INFORMATION attrInfo =
       (PFILE_FS_ATTRIBUTE_INFORMATION)EventInfo->Buffer;
-
-  if (!DokanOperations->GetVolumeInformation) {
-    DokanOperations->GetVolumeInformation = DokanGetVolumeInformation;
-    // return STATUS_NOT_IMPLEMENTED;
-  }
 
   remainingLength = EventContext->Operation.Volume.BufferLength;
 
@@ -194,15 +205,29 @@ DokanFsAttributeInformation(PEVENT_INFORMATION EventInfo,
   RtlZeroMemory(volumeName, sizeof(volumeName));
   RtlZeroMemory(fsName, sizeof(fsName));
 
-  status = DokanOperations->GetVolumeInformation(
-      volumeName,                         // VolumeNameBuffer
-      sizeof(volumeName) / sizeof(WCHAR), // VolumeNameSize
-      &volumeSerial,                      // VolumeSerialNumber
-      &maxComLength,                      // MaximumComponentLength
-      &fsFlags,                           // FileSystemFlags
-      fsName,                             // FileSystemNameBuffer
-      sizeof(fsName) / sizeof(WCHAR),     // FileSystemNameSize
-      FileInfo);
+  if (DokanOperations->GetVolumeInformation) {
+    status = DokanOperations->GetVolumeInformation(
+        volumeName,                         // VolumeNameBuffer
+        sizeof(volumeName) / sizeof(WCHAR), // VolumeNameSize
+        &volumeSerial,                      // VolumeSerialNumber
+        &maxComLength,                      // MaximumComponentLength
+        &fsFlags,                           // FileSystemFlags
+        fsName,                             // FileSystemNameBuffer
+        sizeof(fsName) / sizeof(WCHAR),     // FileSystemNameSize
+        FileInfo);
+  }
+
+  if (status == STATUS_NOT_IMPLEMENTED) {
+    status = DokanGetVolumeInformation(
+        volumeName,                         // VolumeNameBuffer
+        sizeof(volumeName) / sizeof(WCHAR), // VolumeNameSize
+        &volumeSerial,                      // VolumeSerialNumber
+        &maxComLength,                      // MaximumComponentLength
+        &fsFlags,                           // FileSystemFlags
+        fsName,                             // FileSystemNameBuffer
+        sizeof(fsName) / sizeof(WCHAR),     // FileSystemNameSize
+        FileInfo);
+  }
 
   if (status != STATUS_SUCCESS) {
     return status;
@@ -239,38 +264,45 @@ DokanFsFullSizeInformation(PEVENT_INFORMATION EventInfo,
   ULONGLONG freeBytes = 0;
   NTSTATUS status = STATUS_NOT_IMPLEMENTED;
 
+  ULONG allocationUnitSize = FileInfo->DokanOptions->AllocationUnitSize;
+  ULONG sectorSize = FileInfo->DokanOptions->SectorSize;
+
   PFILE_FS_FULL_SIZE_INFORMATION sizeInfo =
       (PFILE_FS_FULL_SIZE_INFORMATION)EventInfo->Buffer;
-
-  if (!DokanOperations->GetDiskFreeSpace) {
-    DokanOperations->GetDiskFreeSpace = DokanGetDiskFreeSpace;
-    // return STATUS_NOT_IMPLEMENTED;
-  }
 
   if (EventContext->Operation.Volume.BufferLength <
       sizeof(FILE_FS_FULL_SIZE_INFORMATION)) {
     return STATUS_BUFFER_OVERFLOW;
   }
 
-  status = DokanOperations->GetDiskFreeSpace(
-      &freeBytesAvailable, // FreeBytesAvailable
-      &totalBytes,         // TotalNumberOfBytes
-      &freeBytes,          // TotalNumberOfFreeBytes
-      FileInfo);
+  if (DokanOperations->GetDiskFreeSpace) {
+    status = DokanOperations->GetDiskFreeSpace(
+        &freeBytesAvailable, // FreeBytesAvailable
+        &totalBytes,         // TotalNumberOfBytes
+        &freeBytes,          // TotalNumberOfFreeBytes
+        FileInfo);
+  }
+
+  if (status == STATUS_NOT_IMPLEMENTED) {
+    status = DokanGetDiskFreeSpace(&freeBytesAvailable, // FreeBytesAvailable
+                                   &totalBytes,         // TotalNumberOfBytes
+                                   &freeBytes, // TotalNumberOfFreeBytes
+                                   FileInfo);
+  }
 
   if (status != STATUS_SUCCESS) {
     return status;
   }
 
   sizeInfo->TotalAllocationUnits.QuadPart =
-      totalBytes / DOKAN_ALLOCATION_UNIT_SIZE;
+      totalBytes / allocationUnitSize;
   sizeInfo->ActualAvailableAllocationUnits.QuadPart =
-      freeBytes / DOKAN_ALLOCATION_UNIT_SIZE;
+      freeBytes / allocationUnitSize;
   sizeInfo->CallerAvailableAllocationUnits.QuadPart =
-      freeBytesAvailable / DOKAN_ALLOCATION_UNIT_SIZE;
+      freeBytesAvailable / allocationUnitSize;
   sizeInfo->SectorsPerAllocationUnit =
-      DOKAN_ALLOCATION_UNIT_SIZE / DOKAN_SECTOR_SIZE;
-  sizeInfo->BytesPerSector = DOKAN_SECTOR_SIZE;
+	  allocationUnitSize / sectorSize;
+  sizeInfo->BytesPerSector = sectorSize;
 
   EventInfo->BufferLength = sizeof(FILE_FS_FULL_SIZE_INFORMATION);
 

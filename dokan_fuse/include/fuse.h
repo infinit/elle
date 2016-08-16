@@ -6,11 +6,11 @@
   See the file COPYING.LIB.
 */
 
-#ifndef _FUSE_H_
-#define _FUSE_H_
+#ifndef FUSE_H_
+#define FUSE_H_
 
 /* Include Windows compatibility stuff early*/
-#ifdef WIN32
+#ifdef _WIN32
 #include "fuse_win.h"
 typedef struct _FILETIME FILETIME;
 #else
@@ -445,7 +445,7 @@ struct fuse_operations {
 	 */
 	int (*bmap) (const char *, size_t blocksize, uint64_t *idx);
 
-#ifdef WIN32
+#ifdef _WIN32
 	/* these to support extented windows calls */
 	uint32_t (*win_get_attributes) (const char *fn);
 	int (*win_set_attributes) (const char *fn, uint32_t attr);
@@ -851,4 +851,4 @@ struct fuse_session *fuse_get_session(struct fuse *f);
 }
 #endif
 
-#endif /* _FUSE_H_ */
+#endif /* FUSE_H_ */

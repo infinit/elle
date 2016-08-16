@@ -1,9 +1,10 @@
 /*
   Dokan : user-mode file system library for Windows
 
-  Copyright (C) 2008 Hiroki Asakawa info@dokan-dev.net
+  Copyright (C) 2015 - 2016 Adrien J. <liryna.stark@gmail.com> and Maxime C. <maxime@islog.com>
+  Copyright (C) 2007 - 2011 Hiroki Asakawa <info@dokan-dev.net>
 
-  http://dokan-dev.net/en
+  http://dokan-dev.github.io
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free
@@ -38,7 +39,7 @@ VOID DokanUnmount(__in PDokanDCB Dcb) {
     ; // STATUS_INSUFFICIENT_RESOURCES;
     DDbgPrint(" Not able to allocate eventContext.\n");
     if (vcb) {
-      DokanEventRelease(vcb->DeviceObject);
+      DokanEventRelease(vcb->DeviceObject, NULL);
     }
     return;
   }
@@ -71,7 +72,7 @@ VOID DokanUnmount(__in PDokanDCB Dcb) {
   }
 
   if (vcb) {
-    DokanEventRelease(vcb->DeviceObject);
+    DokanEventRelease(vcb->DeviceObject, NULL);
   }
 
   if (completedEvent) {
@@ -83,7 +84,7 @@ VOID DokanUnmount(__in PDokanDCB Dcb) {
 
 VOID DokanCheckKeepAlive(__in PDokanDCB Dcb) {
   LARGE_INTEGER tickCount;
-  ULONG mounted;
+  PDokanVCB vcb;
 
   // DDbgPrint("==> DokanCheckKeepAlive\n");
 
@@ -93,14 +94,14 @@ VOID DokanCheckKeepAlive(__in PDokanDCB Dcb) {
 
   if (Dcb->TickCount.QuadPart < tickCount.QuadPart) {
 
-    mounted = Dcb->Mounted;
+    vcb = Dcb->Vcb;
 
     ExReleaseResourceLite(&Dcb->Resource);
 
     DDbgPrint("  Timeout, umount\n");
 
-    if (!mounted) {
-      // not mounted
+    if (IsUnmountPendingVcb(vcb)) {
+      DDbgPrint("  Volume is not mounted\n");
       KeLeaveCriticalRegion();
       return;
     }
@@ -259,6 +260,8 @@ Routine Description:
   PVOID pollevents[2];
   LARGE_INTEGER timeout = {0};
   BOOLEAN waitObj = TRUE;
+  LARGE_INTEGER LastTime = {0};
+  LARGE_INTEGER CurrentTime = {0};
 
   DDbgPrint("==> DokanTimeoutThread\n");
 
@@ -269,6 +272,8 @@ Routine Description:
 
   KeSetTimerEx(&timer, timeout, DOKAN_CHECK_INTERVAL, NULL);
 
+  KeQuerySystemTime(&LastTime);
+
   while (waitObj) {
     status = KeWaitForMultipleObjects(2, pollevents, WaitAny, Executive,
                                       KernelMode, FALSE, NULL, NULL);
@@ -278,8 +283,21 @@ Routine Description:
       // KillEvent or something error is occured
       waitObj = FALSE;
     } else {
-      ReleaseTimeoutPendingIrp(Dcb);
-      DokanCheckKeepAlive(Dcb);
+      // in this case the timer was executed and we are checking if the timer
+      // occured regulary using the period DOKAN_CHECK_INTERVAL. If not, this
+      // means the system was in sleep mode. If in this case the timer is
+      // faster awaken than the incoming IOCTL_KEEPALIVE
+      // the MountPoint would be removed by mistake (DokanCheckKeepAlive).
+      KeQuerySystemTime(&CurrentTime);
+      if ((CurrentTime.QuadPart - LastTime.QuadPart) >
+          ((DOKAN_CHECK_INTERVAL + 2000) * 10000)) {
+        DDbgPrint("  System seems to be awaken from sleep mode. So do not "
+                  "Check Keep Alive yet.\n");
+      } else {
+        ReleaseTimeoutPendingIrp(Dcb);
+        DokanCheckKeepAlive(Dcb);
+      }
+      KeQuerySystemTime(&LastTime);
     }
   }
 
@@ -331,7 +349,7 @@ Routine Description:
 
 --*/
 {
-  DDbgPrint("==> DokanStopCheckThread");
+  DDbgPrint("==> DokanStopCheckThread\n");
 
   if (KeSetEvent(&Dcb->KillEvent, 0, FALSE) > 0 && Dcb->TimeoutThread) {
     DDbgPrint("Waiting for Timeout thread to terminate.\n");
@@ -343,7 +361,7 @@ Routine Description:
     Dcb->TimeoutThread = NULL;
   }
 
-  DDbgPrint("<== DokanStopCheckThread");
+  DDbgPrint("<== DokanStopCheckThread\n");
 }
 
 NTSTATUS

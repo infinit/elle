@@ -1,9 +1,10 @@
 /*
   Dokan : user-mode file system library for Windows
 
-  Copyright (C) 2008 Hiroki Asakawa info@dokan-dev.net
+  Copyright (C) 2015 - 2016 Adrien J. <liryna.stark@gmail.com> and Maxime C. <maxime@islog.com>
+  Copyright (C) 2007 - 2011 Hiroki Asakawa <info@dokan-dev.net>
 
-  http://dokan-dev.net/en
+  http://dokan-dev.github.io
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free
@@ -18,15 +19,14 @@ You should have received a copy of the GNU Lesser General Public License along
 with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _DOKANI_H_
-#define _DOKANI_H_
+#ifndef DOKANI_H_
+#define DOKANI_H_
 
 #define WIN32_NO_STATUS
 #include <windows.h>
 #undef WIN32_NO_STATUS
 typedef DWORD NTSTATUS;
 #include <stdio.h>
-#include <stdlib.h>
 
 #include "dokan.h"
 #include "dokanc.h"
@@ -36,33 +36,65 @@ typedef DWORD NTSTATUS;
 extern "C" {
 #endif
 
+/**
+ * \struct DOKAN_INSTANCE
+ * \brief Dokan mount instance informations
+ *
+ * This struct is build from the information provided by the user at DokanMain call.
+ * \see DokanMain
+ * \see DOKAN_OPTIONS
+ * \see DOKAN_OPERATIONS
+ */
 typedef struct _DOKAN_INSTANCE {
-  // to ensure that unmount dispatch is called at once
+  /** to ensure that unmount dispatch is called at once */
   CRITICAL_SECTION CriticalSection;
 
-  // store CurrentDeviceName
-  // (when there are many mounts, each mount uses different DeviceName)
+  /**
+  * Current DeviceName.
+  * When there are many mounts, each mount uses different DeviceName.
+  */
   WCHAR DeviceName[64];
+  /** Mount point. Can be "M:\" (drive letter) or "C:\mount\dokan" (path in NTFS) */
   WCHAR MountPoint[MAX_PATH];
+  /** UNC name used for network volume */
   WCHAR UNCName[64];
 
+  /** Device number */
   ULONG DeviceNumber;
+  /** Mount ID */
   ULONG MountId;
 
+  /** DOKAN_OPTIONS linked to the mount */
   PDOKAN_OPTIONS DokanOptions;
+  /** DOKAN_OPERATIONS linked to the mount */
   PDOKAN_OPERATIONS DokanOperations;
 
+  /** Current list entry informations */
   LIST_ENTRY ListEntry;
 } DOKAN_INSTANCE, *PDOKAN_INSTANCE;
 
+/**
+ * \struct DOKAN_OPEN_INFO
+ * \brief Dokan open file informations
+ *
+ * This is created in CreateFile and will be freed in CloseFile.
+ */
 typedef struct _DOKAN_OPEN_INFO {
+  /** DOKAN_OPTIONS linked to the mount */
   BOOL IsDirectory;
+  /** Open count on the file */
   ULONG OpenCount;
+  /** Event context */
   PEVENT_CONTEXT EventContext;
+  /** Dokan instance linked to the open */
   PDOKAN_INSTANCE DokanInstance;
+  /** User Context see DOKAN_FILE_INFO.Context */
   ULONG64 UserContext;
+  /** Event Id */
   ULONG EventId;
+  /** Directories list. Used by FindFiles */
   PLIST_ENTRY DirListHead;
+  /** File streams list. Used by FindStreams */
   PLIST_ENTRY StreamListHead;
 } DOKAN_OPEN_INFO, *PDOKAN_OPEN_INFO;
 
@@ -76,7 +108,7 @@ LPWSTR
 GetRawDeviceName(LPCWSTR DeviceName, LPWSTR DestinationBuffer,
                  rsize_t DestinationBufferSizeInElements);
 
-void ALIGN_ALLOCATION_SIZE(PLARGE_INTEGER size);
+void ALIGN_ALLOCATION_SIZE(PLARGE_INTEGER size, PDOKAN_OPTIONS DokanOptions);
 
 UINT __stdcall DokanLoop(PVOID Param);
 
@@ -169,4 +201,4 @@ VOID ReleaseDokanOpenInfo(PEVENT_INFORMATION EventInfomation,
 }
 #endif
 
-#endif
+#endif // DOKANI_H_

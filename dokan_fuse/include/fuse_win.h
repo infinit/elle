@@ -2,14 +2,16 @@
 * Win32 helper functions                                       *
 * Compilation on MSVC requires /Zc:wchar_t compiler option     *
 * ----------------------------------------------------------- */
-#ifndef _FUSE_WIN_H_
-#define _FUSE_WIN_H_
+#ifndef FUSE_WIN_H_
+#define FUSE_WIN_H_
 
 #include <time.h>
 #include <sys/types.h>
 
 #ifdef _MSC_VER
+#define WIN32_NO_STATUS
 #include <windows.h>
+#undef WIN32_NO_STATUS
 #endif
 
 /** Only use the latest version on Windows */
@@ -70,6 +72,11 @@ struct timespec
 //Block sizes
 typedef unsigned __int64 fsfilcnt64_t;
 typedef unsigned __int64 fsblkcnt64_t;
+typedef struct timespec timestruc_t;
+typedef unsigned short nlink_t;
+typedef unsigned __int64 uint64_t;
+typedef unsigned int blksize_t;
+typedef unsigned __int64 blkcnt_t;
 
 /** Transplanted from <sys/statvfs.h>*/
 struct statvfs
@@ -211,4 +218,4 @@ struct stat64 {
 #define F_UNLCK	2
 #define F_SETLK	6
 
-#endif //_FUSE_WIN_H_
+#endif // FUSE_WIN_H_

@@ -1,9 +1,10 @@
 /*
-Dokan : user-mode file system library for Windows
+  Dokan : user-mode file system library for Windows
 
-Copyright (C) 2008 Hiroki Asakawa info@dokan-dev.net
+  Copyright (C) 2015 - 2016 Adrien J. <liryna.stark@gmail.com> and Maxime C. <maxime@islog.com>
+  Copyright (C) 2007 - 2011 Hiroki Asakawa <info@dokan-dev.net>
 
-http://dokan-dev.net/en
+  http://dokan-dev.github.io
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free
@@ -67,6 +68,19 @@ DokanDispatchRequest(__in PDEVICE_OBJECT DeviceObject, __in PIRP Irp) {
   PIO_STACK_LOCATION irpSp;
 
   irpSp = IoGetCurrentIrpStackLocation(Irp);
+
+  if (irpSp->MajorFunction != IRP_MJ_FILE_SYSTEM_CONTROL &&
+      irpSp->MajorFunction != IRP_MJ_SHUTDOWN &&
+      irpSp->MajorFunction != IRP_MJ_CLEANUP &&
+      irpSp->MajorFunction != IRP_MJ_CLOSE &&
+      irpSp->MajorFunction != IRP_MJ_PNP) {
+    if (IsUnmountPending(DeviceObject)) {
+      DDbgPrint("  Volume is not mounted so return STATUS_NO_SUCH_DEVICE\n");
+      NTSTATUS status = STATUS_NO_SUCH_DEVICE;
+      DokanCompleteIrpRequest(Irp, status, 0);
+      return status;
+    }
+  }
 
   // If volume is write protected and this request
   // would modify it then return write protected status.

@@ -1,5 +1,5 @@
-#ifndef FUSEMAIN_H
-#define FUSEMAIN_H
+#ifndef FUSEMAIN_H_
+#define FUSEMAIN_H_
 
 #include "../../dokan/dokan.h"
 #include "fuse.h"
@@ -27,7 +27,7 @@ private:
 public:
 	impl_file_locks() { InitializeCriticalSection(&lock); }
 	~impl_file_locks() { DeleteCriticalSection(&lock); };
-	int get_file(const std::string &name, bool is_dir, DWORD access_mode, DWORD shared_mode, std::auto_ptr<impl_file_handle>& out);
+	int get_file(const std::string &name, bool is_dir, DWORD access_mode, DWORD shared_mode, std::unique_ptr<impl_file_handle>& out);
 	void renamed_file(const std::string &name,const std::string &new_name);
 	void remove_file(const std::string& name);
 };
@@ -231,4 +231,4 @@ public:
 	int unlock(long long start, long long len) { return file_lock->unlock_file(this, start, len); }
 };
 
-#endif //FUSEMAIN_H
+#endif // FUSEMAIN_H_

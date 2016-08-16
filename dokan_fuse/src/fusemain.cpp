@@ -80,8 +80,8 @@ impl_fuse_context::impl_fuse_context(const struct fuse_operations *ops,
 {
   // Reset connection info
   memset(&conn_info_, 0, sizeof(fuse_conn_info));
-  conn_info_.max_write = ULONG_MAX;
-  conn_info_.max_readahead = ULONG_MAX;
+  conn_info_.max_write = UINT_MAX;
+  conn_info_.max_readahead = UINT_MAX;
   conn_info_.proto_major = FUSE_MAJOR_VERSION;
   conn_info_.proto_minor = FUSE_MINOR_VERSION;
 
@@ -107,7 +107,7 @@ int impl_fuse_context::do_open_dir(LPCWSTR FileName,
                                    PDOKAN_FILE_INFO DokanFileInfo) {
   if (ops_.opendir) {
     std::string fname = unixify(wchar_to_utf8_cstr(FileName));
-    std::auto_ptr<impl_file_handle> file;
+    std::unique_ptr<impl_file_handle> file;
     // TODO access_mode
     CHECKED(file_locks.get_file(
         fname, true, 0, FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
@@ -133,7 +133,7 @@ int impl_fuse_context::do_open_file(LPCWSTR FileName, DWORD share_mode,
   std::string fname = unixify(wchar_to_utf8_cstr(FileName));
   CHECKED(check_and_resolve(&fname));
 
-  std::auto_ptr<impl_file_handle> file;
+  std::unique_ptr<impl_file_handle> file;
   CHECKED(file_locks.get_file(fname, false, Flags, share_mode, file));
 
   fuse_file_info finfo = {0};
@@ -208,7 +208,7 @@ int impl_fuse_context::do_create_file(LPCWSTR FileName, DWORD Disposition,
     return do_open_file(FileName, share_mode, Flags, DokanFileInfo);
   }
 
-  std::auto_ptr<impl_file_handle> file;
+  std::unique_ptr<impl_file_handle> file;
   CHECKED(file_locks.get_file(fname, false, Flags, share_mode, file));
 
   fuse_file_info finfo = {0};
@@ -218,6 +218,7 @@ int impl_fuse_context::do_create_file(LPCWSTR FileName, DWORD Disposition,
 
   CHECKED(ops_.create(fname.c_str(), filemask_, &finfo));
 
+  file->set_finfo(finfo);
   DokanFileInfo->Context = reinterpret_cast<ULONG64>(file.release());
   return 0;
 }
@@ -281,16 +282,15 @@ int impl_fuse_context::walk_directory(void *buf, const char *name,
 
   struct FUSE_STAT stat = {0};
 
-  if (stbuf != NULL)
+  /* if (stbuf != NULL)
     stat = *stbuf;
-  else {
-    // No stat buffer - use 'getattr'.
-    // TODO: fill directory params here!!!
+  else { */
+    // stat (*stbuf) has only st_ino and st_mode -> request other info with getattr
     if (strcmp(name, ".") == 0 || strcmp(name, "..") == 0) // Special entries
-      stat.st_mode |= S_IFDIR;
+      stat.st_mode |= S_IFDIR; // TODO: fill directory params here!!!
     else
       CHECKED(wd->ctx->ops_.getattr((wd->dirname + name).c_str(), &stat));
-  }
+  //}
 
   if (S_ISLNK(stat.st_mode)) {
     std::string resolved;
@@ -397,7 +397,9 @@ int impl_fuse_context::cleanup(LPCWSTR file_name,
   // The one way to solve this is to keep a table of files 'still in flight'
   // and block until the file is closed. We're not doing this yet.
 
-  if (dokan_file_info->Context) {
+  // No context for directories when ops_.opendir is not set
+  if (dokan_file_info->Context
+    || (dokan_file_info->IsDirectory && !ops_.opendir)) {
     if (dokan_file_info->DeleteOnClose) {
       close_file(file_name, dokan_file_info);
       if (dokan_file_info->IsDirectory) {
@@ -872,8 +874,7 @@ int impl_fuse_context::get_disk_free_space(PULONGLONG free_bytes_available,
   }
 
   struct statvfs vfs = {0};
-  // Why do we need path argument??
-  CHECKED(ops_.statfs("", &vfs));
+  CHECKED(ops_.statfs("/", &vfs));
 
   if (free_bytes_available != NULL)
     *free_bytes_available = uint64_t(vfs.f_bsize) * vfs.f_bavail;
@@ -910,8 +911,6 @@ int impl_fuse_context::get_volume_information(LPWSTR volume_name_buffer,
 }
 
 int impl_fuse_context::mounted(PDOKAN_FILE_INFO DokanFileInfo) {
-	if (ops_.destroy)
-		ops_.destroy(user_data_); // Ignoring result
 	return 0;
 }
 
@@ -939,7 +938,7 @@ static DWORD required_share(DWORD access_mode) {
 
 int impl_file_locks::get_file(const std::string &name, bool is_dir,
                               DWORD access_mode, DWORD shared_mode,
-                              std::auto_ptr<impl_file_handle> &file) {
+                              std::unique_ptr<impl_file_handle> &file) {
   int res = 0;
   file.reset(new impl_file_handle(is_dir, shared_mode));
 
@@ -1095,7 +1094,7 @@ int impl_file_lock::unlock_file(impl_file_handle *file, long long start,
 ////// File handle
 ///////////////////////////////////////////////////////////////////////////////////////
 impl_file_handle::impl_file_handle(bool is_dir, DWORD shared_mode)
-    : is_dir_(is_dir), fh_(-1), next_file(NULL), shared_mode_(shared_mode) {}
+    : is_dir_(is_dir), fh_(-1), next_file(NULL), file_lock(NULL), shared_mode_(shared_mode) {}
 
 impl_file_handle::~impl_file_handle() { file_lock->remove_file(this); }
 

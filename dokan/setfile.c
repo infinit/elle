@@ -1,9 +1,10 @@
 /*
   Dokan : user-mode file system library for Windows
 
-  Copyright (C) 2008 Hiroki Asakawa info@dokan-dev.net
+  Copyright (C) 2015 - 2016 Adrien J. <liryna.stark@gmail.com> and Maxime C. <maxime@islog.com>
+  Copyright (C) 2007 - 2011 Hiroki Asakawa <info@dokan-dev.net>
 
-  http://dokan-dev.net/en
+  http://dokan-dev.github.io
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free
@@ -18,10 +19,6 @@ You should have received a copy of the GNU Lesser General Public License along
 with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#define WIN32_NO_STATUS
-#include <windows.h>
-#undef WIN32_NO_STATUS
-#include <ntstatus.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "dokani.h"
@@ -43,30 +40,24 @@ DokanSetAllocationInformation(PEVENT_CONTEXT EventContext,
   // is less than the end-of-file position, the end-of-file position is
   // automatically
   // adjusted to match the allocation size.
+  NTSTATUS status;
 
   if (DokanOperations->SetAllocationSize) {
-    return DokanOperations->SetAllocationSize(
-        EventContext->Operation.SetFile.FileName,
-        allocInfo->AllocationSize.QuadPart, FileInfo);
-  }
-  // How can we check the current end-of-file position?
-  if (allocInfo->AllocationSize.QuadPart == 0) {
-    return DokanOperations->SetEndOfFile(
+    status = DokanOperations->SetAllocationSize(
         EventContext->Operation.SetFile.FileName,
         allocInfo->AllocationSize.QuadPart, FileInfo);
   } else {
-    DbgPrint("  SetAllocationInformation %I64d, can't handle this parameter.\n",
-             allocInfo->AllocationSize.QuadPart);
+    status = STATUS_NOT_IMPLEMENTED;
   }
 
-  return STATUS_SUCCESS;
+  return status;
 }
 
 NTSTATUS
 DokanSetBasicInformation(PEVENT_CONTEXT EventContext, PDOKAN_FILE_INFO FileInfo,
                          PDOKAN_OPERATIONS DokanOperations) {
   FILETIME creation, lastAccess, lastWrite;
-  NTSTATUS status = STATUS_NOT_IMPLEMENTED;
+  NTSTATUS status;
 
   PFILE_BASIC_INFORMATION basicInfo = (PFILE_BASIC_INFORMATION)(
       (PCHAR)EventContext + EventContext->Operation.SetFile.BufferOffset);
@@ -81,7 +72,7 @@ DokanSetBasicInformation(PEVENT_CONTEXT EventContext, PDOKAN_FILE_INFO FileInfo,
       EventContext->Operation.SetFile.FileName, basicInfo->FileAttributes,
       FileInfo);
 
-  if (status > 0)
+  if (status != STATUS_SUCCESS)
     return status;
 
   creation.dwLowDateTime = basicInfo->CreationTime.LowPart;
@@ -109,6 +100,17 @@ DokanSetDispositionInformation(PEVENT_CONTEXT EventContext,
 
   if (!dispositionInfo->DeleteFile) {
     return STATUS_SUCCESS;
+  }
+
+  if (DokanOperations->GetFileInformation) {
+    BY_HANDLE_FILE_INFORMATION byHandleFileInfo;
+    ZeroMemory(&byHandleFileInfo, sizeof(BY_HANDLE_FILE_INFORMATION));
+    NTSTATUS result = DokanOperations->GetFileInformation(
+        EventContext->Operation.SetFile.FileName, &byHandleFileInfo, FileInfo);
+
+    if (result == STATUS_SUCCESS &&
+        (byHandleFileInfo.dwFileAttributes & FILE_ATTRIBUTE_READONLY) != 0)
+      return STATUS_CANNOT_DELETE;
   }
 
   if (FileInfo->IsDirectory) {
@@ -293,7 +295,7 @@ VOID DispatchSetInformation(HANDLE Handle, PEVENT_CONTEXT EventContext,
     }
   }
 
-  // DbgPrint("SetInfomation status = %d\n\n", status);
+  DbgPrint("\tDispatchSetInformation result =  %lx\n", status);
 
   SendEventInformation(Handle, eventInfo, sizeOfEventInfo, DokanInstance);
   free(eventInfo);

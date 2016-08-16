@@ -1,9 +1,10 @@
 /*
   Dokan : user-mode file system library for Windows
 
-  Copyright (C) 2008 Hiroki Asakawa info@dokan-dev.net
+  Copyright (C) 2015 - 2016 Adrien J. <liryna.stark@gmail.com> and Maxime C. <maxime@islog.com>
+  Copyright (C) 2007 - 2011 Hiroki Asakawa <info@dokan-dev.net>
 
-  http://dokan-dev.net/en
+  http://dokan-dev.github.io
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free
@@ -18,11 +19,14 @@ You should have received a copy of the GNU Lesser General Public License along
 with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#ifndef _PUBLIC_H_
-#define _PUBLIC_H_
+#ifndef PUBLIC_H_
+#define PUBLIC_H_
 
 #include <winioctl.h>
+#ifndef DOKAN_MAJOR_API_VERSION
 #define DOKAN_MAJOR_API_VERSION L"1"
+#endif
+
 #define DOKAN_DRIVER_VERSION 0x0000190
 
 #define EVENT_CONTEXT_MAX_SIZE (1024 * 32)
@@ -60,6 +64,9 @@ with this program. If not, see <http://www.gnu.org/licenses/>.
 #define IOCTL_GET_ACCESS_TOKEN                                                 \
   CTL_CODE(FILE_DEVICE_UNKNOWN, 0x80C, METHOD_BUFFERED, FILE_ANY_ACCESS)
 
+#define IOCTL_EVENT_MOUNTPOINT_LIST                                            \
+  CTL_CODE(FILE_DEVICE_UNKNOWN, 0x80D, METHOD_BUFFERED, FILE_ANY_ACCESS)
+
 #define DRIVER_FUNC_INSTALL 0x01
 #define DRIVER_FUNC_REMOVE 0x02
 
@@ -69,9 +76,9 @@ with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #define DOKAN_DEVICE_MAX 10
 
-#define DOKAN_SECTOR_SIZE 512
-#define DOKAN_ALLOCATION_UNIT_SIZE 512
-#define DOKAN_DISK_SIZE 1024 * 1024 * 1024
+#define DOKAN_DEFAULT_SECTOR_SIZE 512
+#define DOKAN_DEFAULT_ALLOCATION_UNIT_SIZE 512
+#define DOKAN_DEFAULT_DISK_SIZE 1024 * 1024 * 1024
 
 // used in CCB->Flags and FCB->Flags
 #define DOKAN_FILE_DIRECTORY 1
@@ -332,6 +339,7 @@ typedef struct _EVENT_INFORMATION {
 #define DOKAN_EVENT_REMOVABLE 4
 #define DOKAN_EVENT_MOUNT_MANAGER 8
 #define DOKAN_EVENT_CURRENT_SESSION 16
+#define DOKAN_EVENT_FILELOCK_USER_MODE 32
 
 typedef struct _EVENT_DRIVER_INFO {
   ULONG DriverVersion;
@@ -362,4 +370,4 @@ typedef struct _DOKAN_LINK_INFORMATION {
   WCHAR FileName[1];
 } DOKAN_LINK_INFORMATION, *PDOKAN_LINK_INFORMATION;
 
-#endif // _PUBLIC_H_
+#endif // PUBLIC_H_

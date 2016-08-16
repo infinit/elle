@@ -1,9 +1,10 @@
 /*
   Dokan : user-mode file system library for Windows
 
-  Copyright (C) 2010 Hiroki Asakawa info@dokan-dev.net
+  Copyright (C) 2015 - 2016 Adrien J. <liryna.stark@gmail.com> and Maxime C. <maxime@islog.com>
+  Copyright (C) 2007 - 2011 Hiroki Asakawa <info@dokan-dev.net>
 
-  http://dokan-dev.net/en
+  http://dokan-dev.github.io
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free
@@ -18,7 +19,6 @@ You should have received a copy of the GNU Lesser General Public License along
 with this program. If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <ntstatus.h>
 #include <process.h>
 #include "dokani.h"
 
@@ -70,17 +70,25 @@ UINT WINAPI DokanKeepAlive(PVOID DokanInstance_) {
   ULONG ReturnedLength;
   WCHAR rawDeviceName[MAX_PATH];
 
-  device = CreateFile(
-      GetRawDeviceName(DokanInstance->DeviceName, rawDeviceName, MAX_PATH),
-      GENERIC_READ | GENERIC_WRITE,       // dwDesiredAccess
-      FILE_SHARE_READ | FILE_SHARE_WRITE, // dwShareMode
-      NULL,                               // lpSecurityAttributes
-      OPEN_EXISTING,                      // dwCreationDistribution
-      0,                                  // dwFlagsAndAttributes
-      NULL                                // hTemplateFile
-      );
+  while (TRUE) {
 
-  while (device != INVALID_HANDLE_VALUE) {
+    device = CreateFile(
+        GetRawDeviceName(DokanInstance->DeviceName, rawDeviceName, MAX_PATH),
+        GENERIC_READ | GENERIC_WRITE,       // dwDesiredAccess
+        FILE_SHARE_READ | FILE_SHARE_WRITE, // dwShareMode
+        NULL,                               // lpSecurityAttributes
+        OPEN_EXISTING,                      // dwCreationDistribution
+        0,                                  // dwFlagsAndAttributes
+        NULL                                // hTemplateFile
+        );
+
+    if (device == INVALID_HANDLE_VALUE) {
+      DbgPrint(
+          "Dokan Error: DokanKeepAlive CreateFile failed %ws: %d\n",
+          GetRawDeviceName(DokanInstance->DeviceName, rawDeviceName, MAX_PATH),
+          GetLastError());
+      break;
+    }
 
     BOOL status = DeviceIoControl(device,          // Handle to device
                                   IOCTL_KEEPALIVE, // IO Control code
@@ -91,13 +99,15 @@ UINT WINAPI DokanKeepAlive(PVOID DokanInstance_) {
                                   &ReturnedLength, // Bytes placed in buffer.
                                   NULL             // synchronous call
                                   );
+
+    CloseHandle(device);
+
     if (!status) {
       break;
     }
+
     Sleep(DOKAN_KEEPALIVE_TIME);
   }
-
-  CloseHandle(device);
 
   _endthreadex(0);
   return STATUS_SUCCESS;

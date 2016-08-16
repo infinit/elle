@@ -1,9 +1,10 @@
 /*
   Dokan : user-mode file system library for Windows
 
-  Copyright (C) 2008 Hiroki Asakawa info@dokan-dev.net
+  Copyright (C) 2015 - 2016 Adrien J. <liryna.stark@gmail.com> and Maxime C. <maxime@islog.com>
+  Copyright (C) 2007 - 2011 Hiroki Asakawa <info@dokan-dev.net>
 
-  http://dokan-dev.net/en
+  http://dokan-dev.github.io
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free
@@ -20,30 +21,58 @@ with this program. If not, see <http://www.gnu.org/licenses/>.
 
 #include "dokani.h"
 #include <dbt.h>
+#include <Shlobj.h>
 #include <stdio.h>
-#include <windows.h>
 
+/**
+ * \struct REPARSE_DATA_BUFFER
+ * \brief Contains reparse point data for a Microsoft reparse point.
+ *
+ * Used to create a dokan mount point in CreateMountPoint function.
+ */
 typedef struct _REPARSE_DATA_BUFFER {
+  /**
+  * Reparse point tag. Must be a Microsoft reparse point tag.
+  */
   ULONG ReparseTag;
+  /**
+  * Size, in bytes, of the reparse data in the DataBuffer member.
+  */
   USHORT ReparseDataLength;
+  /**
+  * Length, in bytes, of the unparsed portion of the file name pointed
+  * to by the FileName member of the associated file object.
+  */
   USHORT Reserved;
   union {
     struct {
+      /** Offset, in bytes, of the substitute name string in the PathBuffer array. */
       USHORT SubstituteNameOffset;
+      /** Length, in bytes, of the substitute name string. */
       USHORT SubstituteNameLength;
+      /** Offset, in bytes, of the print name string in the PathBuffer array. */
       USHORT PrintNameOffset;
+      /** Length, in bytes, of the print name string. */
       USHORT PrintNameLength;
+      /** Used to indicate if the given symbolic link is an absolute or relative symbolic link. */
       ULONG Flags;
+      /** First character of the path string. This is followed in memory by the remainder of the string. */
       WCHAR PathBuffer[1];
     } SymbolicLinkReparseBuffer;
     struct {
+      /** Offset, in bytes, of the substitute name string in the PathBuffer array. */
       USHORT SubstituteNameOffset;
+      /** Length, in bytes, of the substitute name string. */
       USHORT SubstituteNameLength;
+      /** Offset, in bytes, of the print name string in the PathBuffer array. */
       USHORT PrintNameOffset;
+      /** Length, in bytes, of the print name string. */
       USHORT PrintNameLength;
+      /** First character of the path string. */
       WCHAR PathBuffer[1];
     } MountPointReparseBuffer;
     struct {
+      /** Microsoft-defined data for the reparse point. */
       UCHAR DataBuffer[1];
     } GenericReparseBuffer;
   } DUMMYUNIONNAME;
@@ -110,46 +139,48 @@ static BOOL DokanServiceControl(LPCWSTR ServiceName, ULONG Type) {
     return FALSE;
   }
 
-  QueryServiceStatus(serviceHandle, &ss);
-
-  if (Type == DOKAN_SERVICE_DELETE) {
-    if (DeleteService(serviceHandle)) {
-      DokanDbgPrintW(L"DokanServiceControl: Service (%s) deleted\n",
-                     ServiceName);
-      result = TRUE;
-    } else {
-      DokanDbgPrintW(
-          L"DokanServiceControl: Failed to delete service (%s). error = %d\n",
-          ServiceName, GetLastError());
-      result = FALSE;
+  if (QueryServiceStatus(serviceHandle, &ss) != 0) {
+    if (Type == DOKAN_SERVICE_DELETE) {
+      if (DeleteService(serviceHandle)) {
+        DokanDbgPrintW(L"DokanServiceControl: Service (%s) deleted\n",
+                       ServiceName);
+        result = TRUE;
+      } else {
+        DokanDbgPrintW(
+            L"DokanServiceControl: Failed to delete service (%s). error = %d\n",
+            ServiceName, GetLastError());
+        result = FALSE;
+      }
+    } else if (ss.dwCurrentState == SERVICE_STOPPED &&
+               Type == DOKAN_SERVICE_START) {
+      if (StartService(serviceHandle, 0, NULL)) {
+        DokanDbgPrintW(L"DokanServiceControl: Service (%s) started\n",
+                       ServiceName);
+        result = TRUE;
+      } else {
+        DokanDbgPrintW(
+            L"DokanServiceControl: Failed to start service (%s). error = %d\n",
+            ServiceName, GetLastError());
+        result = FALSE;
+      }
+    } else if (ss.dwCurrentState == SERVICE_RUNNING &&
+               Type == DOKAN_SERVICE_STOP) {
+      if (ControlService(serviceHandle, SERVICE_CONTROL_STOP, &ss)) {
+        DokanDbgPrintW(L"DokanServiceControl: Service (%s) stopped\n",
+                       ServiceName);
+        result = TRUE;
+      } else {
+        DokanDbgPrintW(
+            L"DokanServiceControl: Failed to stop service (%s). error = %d\n",
+            ServiceName, GetLastError());
+        result = FALSE;
+      }
     }
-
-  } else if (ss.dwCurrentState == SERVICE_STOPPED &&
-             Type == DOKAN_SERVICE_START) {
-    if (StartService(serviceHandle, 0, NULL)) {
-      DokanDbgPrintW(L"DokanServiceControl: Service (%s) started\n",
-                     ServiceName);
-      result = TRUE;
-    } else {
-      DokanDbgPrintW(
-          L"DokanServiceControl: Failed to start service (%s). error = %d\n",
-          ServiceName, GetLastError());
-      result = FALSE;
-    }
-
-  } else if (ss.dwCurrentState == SERVICE_RUNNING &&
-             Type == DOKAN_SERVICE_STOP) {
-
-    if (ControlService(serviceHandle, SERVICE_CONTROL_STOP, &ss)) {
-      DokanDbgPrintW(L"DokanServiceControl: Service (%s) stopped\n",
-                     ServiceName);
-      result = TRUE;
-    } else {
-      DokanDbgPrintW(
-          L"DokanServiceControl: Failed to stop service (%s). error = %d\n",
-          ServiceName, GetLastError());
-      result = FALSE;
-    }
+  } else {
+    DokanDbgPrintW(
+        L"DokanServiceControl: QueryServiceStatus Failed (%s). error = %d\n",
+        ServiceName, GetLastError());
+    result = FALSE;
   }
 
   CloseServiceHandle(serviceHandle);
@@ -226,11 +257,11 @@ BOOL DOKANAPI DokanUnmount(WCHAR DriveLetter) {
 }
 
 #define DOKAN_NP_SERVICE_KEY                                                   \
-  L"System\\CurrentControlSet\\Services\\Dokan" DOKAN_MAJOR_API_VERSION
+  L"System\\CurrentControlSet\\Services\\dokan" DOKAN_MAJOR_API_VERSION
 #define DOKAN_NP_DEVICE_NAME                                                   \
   L"\\Device\\DokanRedirector" DOKAN_MAJOR_API_VERSION
-#define DOKAN_NP_NAME L"DokanNP-" DOKAN_MAJOR_API_VERSION
-#define DOKAN_NP_PATH L"System32\\dokannp-" DOKAN_MAJOR_API_VERSION L".dll"
+#define DOKAN_NP_NAME L"Dokan" DOKAN_MAJOR_API_VERSION
+#define DOKAN_BINARY_NAME L"dokannp" DOKAN_MAJOR_API_VERSION L".dll"
 #define DOKAN_NP_ORDER_KEY                                                     \
   L"System\\CurrentControlSet\\Control\\NetworkProvider\\Order"
 
@@ -241,8 +272,22 @@ BOOL DOKANAPI DokanNetworkProviderInstall() {
   WCHAR commanp[64];
   WCHAR buffer[1024];
   DWORD buffer_size = sizeof(buffer);
+  WCHAR pBuf[MAX_PATH];
+
   ZeroMemory(&buffer, sizeof(buffer));
   ZeroMemory(commanp, sizeof(commanp));
+
+  int length = GetModuleFileName(NULL, pBuf, MAX_PATH);
+  if (length == 0) {
+    DokanDbgPrintW(
+        L"DokanNetworkProviderInstall: GetModuleFileName failed %d\n",
+        GetLastError());
+    return FALSE;
+  }
+
+  while (length >= 0 && pBuf[length] != '\\')
+    pBuf[length--] = '\0';
+  wcscat_s(pBuf, sizeof(pBuf) / sizeof(WCHAR), DOKAN_BINARY_NAME);
 
   RegCreateKeyEx(HKEY_LOCAL_MACHINE, DOKAN_NP_SERVICE_KEY L"\\NetworkProvider",
                  0, NULL, REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS, NULL, &key,
@@ -254,8 +299,8 @@ BOOL DOKANAPI DokanNetworkProviderInstall() {
   RegSetValueEx(key, L"Name", 0, REG_SZ, (BYTE *)DOKAN_NP_NAME,
                 (DWORD)(wcslen(DOKAN_NP_NAME) + 1) * sizeof(WCHAR));
 
-  RegSetValueEx(key, L"ProviderPath", 0, REG_SZ, (BYTE *)DOKAN_NP_PATH,
-                (DWORD)(wcslen(DOKAN_NP_PATH) + 1) * sizeof(WCHAR));
+  RegSetValueEx(key, L"ProviderPath", 0, REG_SZ, (BYTE *)pBuf,
+                (DWORD)(wcslen(pBuf) + 1) * sizeof(WCHAR));
 
   RegCloseKey(key);
 
@@ -325,8 +370,10 @@ BOOL CreateMountPoint(LPCWSTR MountPoint, LPCWSTR DeviceName) {
   USHORT targetLength;
   BOOL result;
   ULONG resultLength;
-  WCHAR targetDeviceName[MAX_PATH] = L"\\??";
+  WCHAR targetDeviceName[MAX_PATH];
 
+  ZeroMemory(targetDeviceName, sizeof(targetDeviceName));
+  wcscat_s(targetDeviceName, MAX_PATH, L"\\??");
   wcscat_s(targetDeviceName, MAX_PATH, DeviceName);
   wcscat_s(targetDeviceName, MAX_PATH, L"\\");
 
@@ -412,6 +459,68 @@ BOOL DeleteMountPoint(LPCWSTR MountPoint) {
   return result;
 }
 
+BOOL EnableTokenPrivilege(LPCTSTR lpszSystemName, BOOL bEnable) {
+  HANDLE hToken = NULL;
+  if (OpenProcessToken(GetCurrentProcess(),
+                       TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY, &hToken)) {
+    TOKEN_PRIVILEGES tp = {0};
+    if (LookupPrivilegeValue(NULL, lpszSystemName, &tp.Privileges[0].Luid)) {
+      tp.PrivilegeCount = 1;
+      tp.Privileges[0].Attributes = (bEnable ? SE_PRIVILEGE_ENABLED : 0);
+
+      if (AdjustTokenPrivileges(hToken, FALSE, &tp, sizeof(TOKEN_PRIVILEGES),
+                                (PTOKEN_PRIVILEGES)NULL, NULL)) {
+        return GetLastError() == ERROR_SUCCESS;
+      }
+    }
+    CloseHandle(hToken);
+  }
+  return FALSE;
+}
+
+void DokanBroadcastLink(WCHAR cLetter, BOOL bRemoved, BOOL safe) {
+  DWORD receipients;
+  DWORD device_event;
+  DEV_BROADCAST_VOLUME params;
+  WCHAR drive[4] = L"C:\\";
+  LONG wEventId;
+
+  if (!isalpha(cLetter)) {
+    DbgPrint("DokanBroadcastLink: invalid parameter\n");
+    return;
+  }
+
+  receipients = BSM_APPLICATIONS;
+  // Unsafe to call Advapi32.dll during DLL_PROCESS_DETACH
+  if (safe && EnableTokenPrivilege(SE_TCB_NAME, TRUE)) {
+    receipients |= BSM_ALLDESKTOPS;
+  }
+
+  device_event = bRemoved ? DBT_DEVICEREMOVECOMPLETE : DBT_DEVICEARRIVAL;
+
+  ZeroMemory(&params, sizeof(params));
+  params.dbcv_size = sizeof(params);
+  params.dbcv_devicetype = DBT_DEVTYP_VOLUME;
+  params.dbcv_reserved = 0;
+  params.dbcv_unitmask = (1 << (toupper(cLetter) - 'A'));
+  params.dbcv_flags = 0;
+
+  if (BroadcastSystemMessage(
+          BSF_NOHANG | BSF_FORCEIFHUNG | BSF_NOTIMEOUTIFNOTHUNG, &receipients,
+          WM_DEVICECHANGE, device_event, (LPARAM)&params) <= 0) {
+
+    DbgPrint("DokanBroadcastLink: BroadcastSystemMessage failed - %d\n",
+             GetLastError());
+  }
+
+  // Unsafe to call ole32.dll during DLL_PROCESS_DETACH
+  if (safe) {
+    drive[0] = towupper(cLetter);
+    wEventId = bRemoved ? SHCNE_DRIVEREMOVED : SHCNE_DRIVEADD;
+    SHChangeNotify(wEventId, SHCNF_PATH, drive, NULL);
+  }
+}
+
 BOOL DokanMount(LPCWSTR MountPoint, LPCWSTR DeviceName,
                 PDOKAN_OPTIONS DokanOptions) {
   UNREFERENCED_PARAMETER(DokanOptions);
@@ -423,12 +532,15 @@ BOOL DokanMount(LPCWSTR MountPoint, LPCWSTR DeviceName,
       // In that case we cannot use mount manager ; doesn't this should be done
       // kernel-mode too?
       return CreateMountPoint(MountPoint, DeviceName);
+    } else {
+      // Notify applications / explorer
+      DokanBroadcastLink(MountPoint[0], FALSE, TRUE);
     }
   }
   return TRUE;
 }
 
-BOOL DOKANAPI DokanRemoveMountPoint(LPCWSTR MountPoint) {
+BOOL DOKANAPI DokanRemoveMountPointEx(LPCWSTR MountPoint, BOOL Safe) {
   if (MountPoint != NULL) {
     size_t length = wcslen(MountPoint);
     if (length > 0) {
@@ -447,17 +559,24 @@ BOOL DOKANAPI DokanRemoveMountPoint(LPCWSTR MountPoint) {
       if (SendGlobalReleaseIRP(mountPoint)) {
         if (!IsMountPointDriveLetter(MountPoint)) {
           length = wcslen(mountPoint);
-          if (length < MAX_PATH) {
+          if (length + 1 < MAX_PATH) {
             mountPoint[length] = L'\\';
+            mountPoint[length + 1] = L'\0';
             // Required to remove reparse point (could also be done through
             // FSCTL_DELETE_REPARSE_POINT with DeleteMountPoint function)
             DeleteVolumeMountPoint(mountPoint);
           }
+        } else {
+          // Notify applications / explorer
+          DokanBroadcastLink(MountPoint[0], TRUE, Safe);
+          return TRUE;
         }
-        return TRUE;
       }
     }
   }
-
   return FALSE;
+}
+
+BOOL DOKANAPI DokanRemoveMountPoint(LPCWSTR MountPoint) {
+  return DokanRemoveMountPointEx(MountPoint, TRUE);
 }

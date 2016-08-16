@@ -1,9 +1,10 @@
 /*
   Dokan : user-mode file system library for Windows
 
-  Copyright (C) 2008 Hiroki Asakawa info@dokan-dev.net
+  Copyright (C) 2015 - 2016 Adrien J. <liryna.stark@gmail.com> and Maxime C. <maxime@islog.com>
+  Copyright (C) 2007 - 2011 Hiroki Asakawa <info@dokan-dev.net>
 
-  http://dokan-dev.net/en
+  http://dokan-dev.github.io
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free
@@ -102,13 +103,29 @@ Return Value:
     fileObject->Flags |= FO_CLEANUP_COMPLETE;
 
     eventContext->Context = ccb->UserContext;
-    eventContext->FileFlags |= fcb->Flags;
+    eventContext->FileFlags |= ccb->Flags;
     // DDbgPrint("   get Context %X\n", (ULONG)ccb->UserContext);
 
     // copy the filename to EventContext from ccb
     eventContext->Operation.Cleanup.FileNameLength = fcb->FileName.Length;
     RtlCopyMemory(eventContext->Operation.Cleanup.FileName,
                   fcb->FileName.Buffer, fcb->FileName.Length);
+
+    status = FsRtlCheckOplock(DokanGetFcbOplock(fcb), Irp, eventContext,
+                              DokanOplockComplete, DokanPrePostIrp);
+
+    //
+    //  if FsRtlCheckOplock returns STATUS_PENDING the IRP has been posted
+    //  to service an oplock break and we need to leave now.
+    //
+    if (status != STATUS_SUCCESS) {
+      if (status == STATUS_PENDING) {
+        DDbgPrint("   FsRtlCheckOplock returned STATUS_PENDING\n");
+      } else {
+        DokanFreeEventContext(eventContext);
+      }
+      __leave;
+    }
 
     // register this IRP to pending IRP list
     status = DokanRegisterPendingIrp(DeviceObject, Irp, eventContext, 0);
@@ -154,9 +171,21 @@ VOID DokanCompleteCleanup(__in PIRP_ENTRY IrpEntry,
 
   status = EventInfo->Status;
 
+  //
+  //  Unlock all outstanding file locks.
+  //
+  (VOID) FsRtlFastUnlockAll(&fcb->FileLock, fileObject,
+                            IoGetRequestorProcess(irp), NULL);
+
   if (fcb->Flags & DOKAN_FILE_DIRECTORY) {
     FsRtlNotifyCleanup(vcb->NotifySync, &vcb->DirNotifyList, ccb);
   }
+
+  KeEnterCriticalRegion();
+  ExAcquireResourceExclusiveLite(&fcb->Resource, TRUE);
+  IoRemoveShareAccess(irpSp->FileObject, &fcb->ShareAccess);
+  ExReleaseResourceLite(&fcb->Resource);
+  KeLeaveCriticalRegion();
 
   DokanCompleteIrpRequest(irp, status, 0);
 

@@ -1,9 +1,10 @@
 /*
   Dokan : user-mode file system library for Windows
 
-  Copyright (C) 2008 Hiroki Asakawa info@dokan-dev.net
+  Copyright (C) 2015 - 2016 Adrien J. <liryna.stark@gmail.com> and Maxime C. <maxime@islog.com>
+  Copyright (C) 2007 - 2011 Hiroki Asakawa <info@dokan-dev.net>
 
-  http://dokan-dev.net/en
+  http://dokan-dev.github.io
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free
@@ -26,6 +27,8 @@ with this program. If not, see <http://www.gnu.org/licenses/>.
 #endif
 
 ULONG g_Debug = DOKAN_DEBUG_DEFAULT;
+LOOKASIDE_LIST_EX g_DokanCCBLookasideList;
+LOOKASIDE_LIST_EX g_DokanFCBLookasideList;
 
 #if _WIN32_WINNT < 0x0501
 PFN_FSRTLTEARDOWNPERSTREAMCONTEXTS DokanFsRtlTeardownPerStreamContexts;
@@ -128,6 +131,24 @@ DokanFilterCallbackAcquireForCreateSection(__in PFS_FILTER_CALLBACK_DATA
   }
 }
 
+BOOLEAN
+DokanLookasideCreate(LOOKASIDE_LIST_EX *pCache, size_t cbElement) {
+#if _WIN32_WINNT > 0x601
+  NTSTATUS Status = ExInitializeLookasideListEx(
+      pCache, NULL, NULL, NonPagedPoolNx, 0, cbElement, TAG, 0);
+#else
+  NTSTATUS Status = ExInitializeLookasideListEx(
+      pCache, NULL, NULL, NonPagedPool, 0, cbElement, TAG, 0);
+#endif
+
+  if (!NT_SUCCESS(Status)) {
+    DDbgPrint("ExInitializeLookasideListEx failed, Status (0x%x)", Status);
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
 NTSTATUS
 DriverEntry(__in PDRIVER_OBJECT DriverObject, __in PUNICODE_STRING RegistryPath)
 
@@ -221,9 +242,14 @@ Return Value:
   fastIoDispatch->MdlWriteComplete = FsRtlMdlWriteCompleteDev;
 
   DriverObject->FastIoDispatch = fastIoDispatch;
-
+#if _WIN32_WINNT >= _WIN32_WINNT_WIN8
+  ExInitializeNPagedLookasideList(&DokanIrpEntryLookasideList, NULL, NULL,
+                                  POOL_NX_ALLOCATION, sizeof(IRP_ENTRY), TAG,
+                                  0);
+#else
   ExInitializeNPagedLookasideList(&DokanIrpEntryLookasideList, NULL, NULL, 0,
                                   sizeof(IRP_ENTRY), TAG, 0);
+#endif
 
 #if _WIN32_WINNT < 0x0501
   RtlInitUnicodeString(&functionName, L"FsRtlTeardownPerStreamContexts");
@@ -248,6 +274,21 @@ Return Value:
     DDbgPrint("  FsRtlRegisterFileSystemFilterCallbacks returned 0x%x\n",
               status);
     return status;
+  }
+
+  if (!DokanLookasideCreate(&g_DokanCCBLookasideList, sizeof(DokanCCB))) {
+    IoDeleteDevice(dokanGlobal->FsDiskDeviceObject);
+    IoDeleteDevice(dokanGlobal->FsCdDeviceObject);
+    IoDeleteDevice(dokanGlobal->DeviceObject);
+    return STATUS_INSUFFICIENT_RESOURCES;
+  }
+
+  if (!DokanLookasideCreate(&g_DokanFCBLookasideList, sizeof(DokanFCB))) {
+    IoDeleteDevice(dokanGlobal->FsDiskDeviceObject);
+    IoDeleteDevice(dokanGlobal->FsCdDeviceObject);
+    IoDeleteDevice(dokanGlobal->DeviceObject);
+    ExDeleteLookasideListEx(&g_DokanCCBLookasideList);
+    return STATUS_INSUFFICIENT_RESOURCES;
   }
 
   DDbgPrint("<== DriverEntry\n");
@@ -286,6 +327,7 @@ Return Value:
   if (GetIdentifierType(dokanGlobal) == DGL) {
     DDbgPrint("  Delete Global DeviceObject\n");
 
+    KeSetEvent(&dokanGlobal->KillDeleteDeviceEvent, 0, FALSE);
     RtlInitUnicodeString(&symbolicLinkName, symbolicLinkBuf);
     IoDeleteSymbolicLink(&symbolicLinkName);
 
@@ -298,6 +340,9 @@ Return Value:
   }
 
   ExDeleteNPagedLookasideList(&DokanIrpEntryLookasideList);
+
+  ExDeleteLookasideListEx(&g_DokanCCBLookasideList);
+  ExDeleteLookasideListEx(&g_DokanFCBLookasideList);
 
   DDbgPrint("<== DokanUnload\n");
   return;
@@ -375,6 +420,7 @@ VOID DokanPrintNTStatus(NTSTATUS Status) {
   PrintStatus(Status, STATUS_DEVICE_DOES_NOT_EXIST);
   PrintStatus(Status, STATUS_INVALID_DEVICE_REQUEST);
   PrintStatus(Status, STATUS_VOLUME_DISMOUNTED);
+  PrintStatus(Status, STATUS_NO_SUCH_DEVICE);
 }
 
 VOID DokanCompleteIrpRequest(__in PIRP Irp, __in NTSTATUS Status,
@@ -457,6 +503,7 @@ VOID PrintIdType(__in VOID *Id) {
 
 BOOLEAN
 DokanCheckCCB(__in PDokanDCB Dcb, __in_opt PDokanCCB Ccb) {
+  PDokanVCB vcb;
   ASSERT(Dcb != NULL);
   if (GetIdentifierType(Dcb) != DCB) {
     PrintIdType(Dcb);
@@ -474,7 +521,8 @@ DokanCheckCCB(__in PDokanDCB Dcb, __in_opt PDokanCCB Ccb) {
     return FALSE;
   }
 
-  if (!Dcb->Mounted) {
+  vcb = Dcb->Vcb;
+  if (!vcb || IsUnmountPendingVcb(vcb)) {
     DDbgPrint("  Not mounted\n");
     return FALSE;
   }

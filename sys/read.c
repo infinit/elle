@@ -1,9 +1,10 @@
 /*
   Dokan : user-mode file system library for Windows
 
-  Copyright (C) 2008 Hiroki Asakawa info@dokan-dev.net
+  Copyright (C) 2015 - 2016 Adrien J. <liryna.stark@gmail.com> and Maxime C. <maxime@islog.com>
+  Copyright (C) 2007 - 2011 Hiroki Asakawa <info@dokan-dev.net>
 
-  http://dokan-dev.net/en
+  http://dokan-dev.github.io
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free
@@ -49,8 +50,12 @@ Return Value:
   PDokanCCB ccb;
   PDokanFCB fcb;
   PDokanVCB vcb;
+  PVOID currentAddress = NULL;
   PEVENT_CONTEXT eventContext;
   ULONG eventLength;
+  BOOLEAN isPagingIo = FALSE;
+  BOOLEAN isSynchronousIo = FALSE;
+  BOOLEAN noCache = FALSE;
 
   __try {
 
@@ -63,12 +68,32 @@ Return Value:
     //  If this is a zero length read then return SUCCESS immediately.
     //
     if (irpSp->Parameters.Read.Length == 0) {
-      DDbgPrint("  Parameters.Read.Length == 0 \n") return STATUS_SUCCESS;
+      DDbgPrint("  Parameters.Read.Length == 0 \n");
+      Irp->IoStatus.Information = 0;
+      status = STATUS_SUCCESS;
+      __leave;
     }
 
     if (irpSp->MinorFunction == IRP_MN_COMPLETE) {
       Irp->MdlAddress = NULL;
-      return STATUS_SUCCESS;
+      status = STATUS_SUCCESS;
+      __leave;
+    }
+
+    if (fileObject == NULL && Irp->MdlAddress != NULL) {
+      DDbgPrint("  Reads by File System Recognizers\n");
+
+      currentAddress = MmGetSystemAddressForMdlNormalSafe(Irp->MdlAddress);
+      if (currentAddress == NULL) {
+        status = STATUS_INSUFFICIENT_RESOURCES;
+        __leave;
+      }
+
+      // here we could return the bootsector. If we don't have one
+      // the requested read lenght must be returned as requested
+      readLength = irpSp->Parameters.Read.Length;
+      status = STATUS_SUCCESS;
+      __leave;
     }
 
     if (fileObject == NULL) {
@@ -131,6 +156,26 @@ Return Value:
       __leave;
     }
 
+    if (Irp->Flags & IRP_PAGING_IO) {
+      isPagingIo = TRUE;
+    }
+    if (fileObject->Flags & FO_SYNCHRONOUS_IO) {
+      isSynchronousIo = TRUE;
+    }
+
+    if (Irp->Flags & IRP_NOCACHE) {
+      noCache = TRUE;
+    }
+
+    if (!isPagingIo && (fileObject->SectionObjectPointer != NULL) &&
+        (fileObject->SectionObjectPointer->DataSectionObject != NULL)) {
+      ExAcquireResourceExclusiveLite(&fcb->PagingIoResource, TRUE);
+      CcFlushCache(&fcb->SectionObjectPointers,
+                   &irpSp->Parameters.Read.ByteOffset,
+                   irpSp->Parameters.Read.Length, NULL);
+      ExReleaseResourceLite(&fcb->PagingIoResource);
+    }
+
     // length of EventContext is sum of file name length and itself
     eventLength = sizeof(EVENT_CONTEXT) + fcb->FileName.Length;
 
@@ -143,16 +188,16 @@ Return Value:
     eventContext->Context = ccb->UserContext;
     // DDbgPrint("   get Context %X\n", (ULONG)ccb->UserContext);
 
-    if (Irp->Flags & IRP_PAGING_IO) {
+    if (isPagingIo) {
       DDbgPrint("  Paging IO\n");
       eventContext->FileFlags |= DOKAN_PAGING_IO;
     }
-    if (fileObject->Flags & FO_SYNCHRONOUS_IO) {
+    if (isSynchronousIo) {
       DDbgPrint("  Synchronous IO\n");
       eventContext->FileFlags |= DOKAN_SYNCHRONOUS_IO;
     }
 
-    if (Irp->Flags & IRP_NOCACHE) {
+    if (noCache) {
       DDbgPrint("  Nocache\n");
       eventContext->FileFlags |= DOKAN_NOCACHE;
     }
@@ -168,6 +213,37 @@ Return Value:
     eventContext->Operation.Read.FileNameLength = fcb->FileName.Length;
     RtlCopyMemory(eventContext->Operation.Read.FileName, fcb->FileName.Buffer,
                   fcb->FileName.Length);
+
+    //
+    //  We now check whether we can proceed based on the state of
+    //  the file oplocks.
+    //
+    if (!FlagOn(Irp->Flags, IRP_PAGING_IO)) {
+      status = FsRtlCheckOplock(DokanGetFcbOplock(fcb), Irp, eventContext,
+                                DokanOplockComplete, DokanPrePostIrp);
+
+      //
+      //  if FsRtlCheckOplock returns STATUS_PENDING the IRP has been posted
+      //  to service an oplock break and we need to leave now.
+      //
+      if (status != STATUS_SUCCESS) {
+        if (status == STATUS_PENDING) {
+          DDbgPrint("   FsRtlCheckOplock returned STATUS_PENDING\n");
+        } else {
+          DokanFreeEventContext(eventContext);
+        }
+        __leave;
+      }
+
+      //
+      // We have to check for read access according to the current
+      // state of the file locks, and set FileSize from the Fcb.
+      //
+      if (!FsRtlCheckLockForReadAccess(&fcb->FileLock, Irp)) {
+        status = STATUS_FILE_LOCK_CONFLICT;
+        __leave;
+      }
+    }
 
     // register this IRP to pending IPR list and make it pending status
     status = DokanRegisterPendingIrp(DeviceObject, Irp, eventContext, 0);
@@ -209,7 +285,7 @@ VOID DokanCompleteRead(__in PIRP_ENTRY IrpEntry,
   // buffer which is used to copy Read info
   if (irp->MdlAddress) {
     // DDbgPrint("   use MDL Address\n");
-    buffer = MmGetSystemAddressForMdlSafe(irp->MdlAddress, NormalPagePriority);
+    buffer = MmGetSystemAddressForMdlNormalSafe(irp->MdlAddress);
   } else {
     // DDbgPrint("   use UserBuffer\n");
     buffer = irp->UserBuffer;

@@ -1,9 +1,10 @@
 /*
   Dokan : user-mode file system library for Windows
 
-  Copyright (C) 2008 Hiroki Asakawa info@dokan-dev.net
+  Copyright (C) 2015 - 2016 Adrien J. <liryna.stark@gmail.com> and Maxime C. <maxime@islog.com>
+  Copyright (C) 2007 - 2011 Hiroki Asakawa <info@dokan-dev.net>
 
-  http://dokan-dev.net/en
+  http://dokan-dev.github.io
 
 This program is free software; you can redistribute it and/or modify it under
 the terms of the GNU Lesser General Public License as published by the Free
@@ -159,8 +160,14 @@ DokanDispatchQueryInformation(__in PDEVICE_OBJECT DeviceObject, __in PIRP Irp) {
     case FileStreamInformation:
       DDbgPrint("  FileStreamInformation\n");
       break;
+    case FileStandardLinkInformation:
+      DDbgPrint("  FileStandardLinkInformation\n");
+      break;
     case FileNetworkPhysicalNameInformation:
       DDbgPrint("  FileNetworkPhysicalNameInformation\n");
+      break;
+    case FileRemoteProtocolInformation:
+      DDbgPrint("  FileRemoteProtocolInformation\n");
       break;
     default:
       DDbgPrint("  unknown type:%d\n",
@@ -284,6 +291,8 @@ DokanDispatchSetInformation(__in PDEVICE_OBJECT DeviceObject, __in PIRP Irp) {
   ULONG eventLength;
   PFILE_OBJECT targetFileObject;
   PEVENT_CONTEXT eventContext;
+  BOOLEAN isPagingIo = FALSE;
+  PFILE_END_OF_FILE_INFORMATION pInfoEoF = NULL;
 
   vcb = DeviceObject->DeviceExtension;
 
@@ -316,6 +325,10 @@ DokanDispatchSetInformation(__in PDEVICE_OBJECT DeviceObject, __in PIRP Irp) {
 
     buffer = Irp->AssociatedIrp.SystemBuffer;
 
+    if (Irp->Flags & IRP_PAGING_IO) {
+      isPagingIo = TRUE;
+    }
+
     switch (irpSp->Parameters.SetFile.FileInformationClass) {
     case FileAllocationInformation:
       DDbgPrint(
@@ -329,6 +342,28 @@ DokanDispatchSetInformation(__in PDEVICE_OBJECT DeviceObject, __in PIRP Irp) {
       DDbgPrint("  FileDispositionInformation\n");
       break;
     case FileEndOfFileInformation:
+      if ((fileObject->SectionObjectPointer != NULL) &&
+          (fileObject->SectionObjectPointer->DataSectionObject != NULL)) {
+        ExAcquireResourceExclusiveLite(&fcb->Resource, TRUE);
+
+        pInfoEoF = (PFILE_END_OF_FILE_INFORMATION)buffer;
+
+        if (!MmCanFileBeTruncated(fileObject->SectionObjectPointer,
+                                  &pInfoEoF->EndOfFile)) {
+          status = STATUS_USER_MAPPED_FILE;
+          ExReleaseResourceLite(&fcb->Resource);
+          __leave;
+        }
+
+        ExReleaseResourceLite(&fcb->Resource);
+
+        if (!isPagingIo) {
+          ExAcquireResourceExclusiveLite(&fcb->PagingIoResource, TRUE);
+          CcFlushCache(&fcb->SectionObjectPointers, NULL, 0, NULL);
+          CcPurgeCacheSection(&fcb->SectionObjectPointers, NULL, 0, FALSE);
+          ExReleaseResourceLite(&fcb->PagingIoResource);
+        }
+      }
       DDbgPrint("  FileEndOfFileInformation %lld\n",
                 ((PFILE_END_OF_FILE_INFORMATION)buffer)->EndOfFile.QuadPart);
       break;
@@ -440,12 +475,34 @@ DokanDispatchSetInformation(__in PDEVICE_OBJECT DeviceObject, __in PIRP Irp) {
                       targetFileObject->FileName.Length);
         renameContext->FileNameLength = targetFileObject->FileName.Length;
       }
+
+      if (irpSp->Parameters.SetFile.FileInformationClass ==
+          FileRenameInformation) {
+        DDbgPrint("   rename: %wZ => %ls, FileCount = %u\n", fcb->FileName,
+                  renameContext->FileName, (ULONG)fcb->FileCount);
+      }
     }
 
     // copy the file name
     eventContext->Operation.SetFile.FileNameLength = fcb->FileName.Length;
     RtlCopyMemory(eventContext->Operation.SetFile.FileName,
                   fcb->FileName.Buffer, fcb->FileName.Length);
+
+    status = FsRtlCheckOplock(DokanGetFcbOplock(fcb), Irp, eventContext,
+                              DokanOplockComplete, DokanPrePostIrp);
+
+    //
+    //  if FsRtlCheckOplock returns STATUS_PENDING the IRP has been posted
+    //  to service an oplock break and we need to leave now.
+    //
+    if (status != STATUS_SUCCESS) {
+      if (status == STATUS_PENDING) {
+        DDbgPrint("   FsRtlCheckOplock returned STATUS_PENDING\n");
+      } else {
+        DokanFreeEventContext(eventContext);
+      }
+      __leave;
+    }
 
     // register this IRP to waiting IRP list and make it pending status
     status = DokanRegisterPendingIrp(DeviceObject, Irp, eventContext, 0);
