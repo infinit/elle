@@ -4,7 +4,7 @@ stages:
 variables:
   PYTHONUNBUFFERED: "1"
 
-x86_64-trusty-gcc4:
+x86_64-ubuntu-gcc4:
   stage: check
   script:
     - git fetch origin --tags
@@ -15,7 +15,8 @@ x86_64-trusty-gcc4:
     - (cd examples/gnu_builder/_build/linux64 && ./drake //build && ./bin/http_request)
   tags:
     - x86_64
-    - trusty
+    - ubuntu
+    - gcc4
 
 x86_64-osx-clang:
   stage: check
