@@ -1,5 +1,6 @@
 import collections
 import drake
+import json
 import os
 import shutil
 import subprocess
@@ -41,7 +42,11 @@ class DockerFile(drake.Node):
     self.__maintainer = maintainer
     self.__labels = labels
     self.__adds = {}
+    self.__cmd = []
+    self.__entry_point = []
+    self.__ports = []
     self.__runs = []
+    self.__volumes = []
     DockerFile.Builder(self)
 
   def add(self, nodes, path):
@@ -50,6 +55,30 @@ class DockerFile(drake.Node):
         self.add(node, path)
     else:
       self.__adds.setdefault(drake.Path(path), []).append(nodes)
+
+  def cmd(self, cmd):
+    if isinstance(cmd, list):
+      self.__cmd = cmd
+    elif isinstance(cmd, str):
+      self.__cmd = cmd.split()
+    else:
+      raise Exception('invalid CMD type: %s' % type(cmd))
+
+  def entry_point(self, entry):
+    if isinstance(entry, list):
+      self.__entry_point = entry
+    elif isinstance(entry, str):
+      self.__entry_point = entry.split()
+    else:
+      raise Exception('invalid ENTRYPOINT type: %s' % type(cmd))
+
+  def ports(self, ports):
+    self.__ports = ports
+
+  def volumes(self, volumes):
+    if not isinstance(volumes, list):
+      raise Exception('invalid VOLUMES type: %s', type(volumes))
+    self.__volumes = volumes
 
   def run(self, cmd):
     self.__runs.append(cmd)
@@ -71,15 +100,36 @@ class DockerFile(drake.Node):
     return chain(*self.__adds.values())
 
   @property
+  def cmd_(self):
+    return self.__cmd
+
+  @property
+  def entry_point_(self):
+    return self.__entry_point
+
+  @property
+  def ports_(self):
+    return self.__ports
+
+  @property
   def runs(self):
     return self.__runs
 
+  @property
+  def volumes_(self):
+    return self.__volumes
+
   def hash(self):
     return {
+      'add': str(self.__adds),
+      'cmd': self.__cmd,
+      'entry-point': self.__entry_point,
       'image': self.__image,
       'labels': self.__labels,
       'maintainer': self.__maintainer,
+      'ports': self.__ports,
       'runs': self.__runs,
+      'volumes': self.__volumes,
     }
 
   class Builder(drake.Builder):
@@ -106,6 +156,15 @@ class DockerFile(drake.Node):
                       for n in installed_files(nodes)
                       if n is not drake.Path.dot))):
             print('ADD %s %s/%s'  % (add, p, add), file = f)
+        for p in self.__dockerfile.ports_:
+          print('EXPOSE %s' % p, file = f)
+        if self.__dockerfile.volumes_:
+          print('VOLUME %s' % json.dumps(self.__dockerfile.volumes_), file = f)
+        if self.__dockerfile.entry_point_:
+          print('ENTRYPOINT %s' % json.dumps(self.__dockerfile.entry_point_),
+                file = f)
+        if self.__dockerfile.cmd_:
+          print('CMD %s' % json.dumps(self.__dockerfile.cmd_), file = f)
       return True
 
     def hash(self):
