@@ -748,7 +748,28 @@ namespace reactor
                                       LONGLONG length,
                                       PDOKAN_FILE_INFO context)
     {
-      return STATUS_ACCESS_DENIED;
+      auto work = [&]()->NTSTATUS {
+      try
+      {
+        FileSystem* fs = (FileSystem*)context->DokanOptions->GlobalContext;
+        std::string path = to_utf8(fileName);
+        auto p = fs->path(path);
+        struct stat st;
+        p->stat(&st);
+        if (st.st_size > length)
+          p->truncate(length);
+      }
+      catch (Error const& e)
+      {
+        ELLE_TRACE("Filesystem error setting alloc size: %s", e);
+        return to_ntstatus(e.error_code());
+      }
+      return 0;
+      };
+      if (dokan_sync)
+        return work();
+      else
+        return le_scheduler->mt_run<NTSTATUS>("allocsize", work);
     }
     static
     __attribute__((__stdcall__))
