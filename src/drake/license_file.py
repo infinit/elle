@@ -32,12 +32,13 @@ class Packager(drake.Builder):
 
   def execute(self):
     print('Generating aggregated license file: %s' % self.__target)
-    with open(str(self.__target), 'w') as out:
+    with open(str(self.__target), 'w', encoding = 'utf-8') as out:
       for license in self.__sorted_sources:
         l_name = license.replace(
           '%s/%s/' % (self.__context, self.__license_folder), '')
         out.write('# Begin: %s\n(*%s\n' % (l_name, 78 * '-'))
-        with open(str(drake.path_source() / license), 'r') as f:
+        l_file = str(drake.path_source() / license)
+        with open(l_file, 'r', encoding = 'utf-8') as f:
           out.write(f.read())
         out.write('\n%s*)\n# End: %s\n\n' % (78 * '-', l_name))
     return True
