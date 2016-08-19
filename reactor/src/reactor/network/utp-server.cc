@@ -236,11 +236,15 @@ namespace reactor
       auto& buf = this->_send_buffer.front();
       ELLE_TRACE_SCOPE(
         "%s: send %s UDP bytes to %s", this, buf.first.size(), buf.second);
+      // At least on windows, passing a v4 address to send_to() on a  v6 socket is an error
+      auto endpoint = buf.second;
+      if (endpoint.address().is_v4() && this->local_endpoint().address().is_v6())
+        endpoint = EndPoint(boost::asio::ip::address_v6::v4_mapped(endpoint.address().to_v4()), endpoint.port());
       this->_socket->socket()->async_send_to(
         boost::asio::buffer(
           buf.first.contents(),
           buf.first.size()),
-        buf.second,
+        endpoint,
         [this] (boost::system::error_code const& errc, size_t size)
         { this->_send_cont(errc, size); });
     };
