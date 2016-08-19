@@ -212,13 +212,19 @@ namespace reactor
         int access = 0644;
         bool exists = false;
         struct stat st;
+        memset(&st, 0, sizeof(struct stat));
         try
         {
           p->stat(&st);
           exists = true;
         }
-        catch (Error const&)
-        {}
+        catch (Error const& e)
+        {
+          ELLE_DEBUG("stat failed: %s", e);
+        }
+        ELLE_DEBUG("stat, mode=%s", st.st_mode);
+        if (exists && !(st.st_mode & 0777))
+          return STATUS_ACCESS_DENIED;
         if (!exists && !(mode & O_CREAT))
         {
           ELLE_DEBUG("entry does not exists");
