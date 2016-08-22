@@ -27,6 +27,10 @@ class Packager(drake.Builder):
     self.__cleanup_source_directory = cleanup_source_directory
     super().__init__(sources, [self.__target])
 
+  @property
+  def path(self):
+    return self.__path
+
   def execute(self):
     if self.__cleanup_source_directory:
       self.cleanup_source_directory(self.__path)
