@@ -15,7 +15,7 @@ from itertools import chain
 class Packager(drake.Builder):
 
   def __init__(self, basename, sources, path, destination = '.',
-               preload = None):
+               preload = None, cleanup_source_directory = True):
     self.__destination = drake.Path(destination)
     basename = drake.Path(basename)
     self.__target = drake.node(self.__destination / basename)
@@ -24,10 +24,12 @@ class Packager(drake.Builder):
     self.__preload = preload
     if preload is not None:
       sources += [preload]
+    self.__cleanup_source_directory = cleanup_source_directory
     super().__init__(sources, [self.__target])
 
   def execute(self):
-    self.cleanup_source_directory(self.__path)
+    if self.__cleanup_source_directory:
+      self.cleanup_source_directory(self.__path)
     os.chmod(str(self.__path / 'DEBIAN'), 0o755)
     os.chmod(str(self.__path / 'DEBIAN/control'), 0o644)
     try:
