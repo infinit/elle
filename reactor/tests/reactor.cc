@@ -572,6 +572,39 @@ namespace barrier
       reactor::wait(!b);
     };
   }
+
+  ELLE_TEST_SCHEDULED(exception)
+  {
+    reactor::Barrier b;
+    reactor::Thread waiter(
+      "waiter",
+      [&] {
+        BOOST_CHECK(!b);
+        BOOST_CHECK_THROW(reactor::wait(b), BeaconException);
+        BOOST_CHECK(b);
+        BOOST_CHECK_THROW(reactor::wait(b), BeaconException);
+        BOOST_CHECK(b);
+      });
+    reactor::yield();
+    reactor::yield();
+    b.raise<BeaconException>();
+    reactor::yield();
+    reactor::yield();
+    BOOST_CHECK_THROW(reactor::wait(b), BeaconException);
+    b.open();
+    reactor::wait(b);
+    b.close();
+    reactor::Thread rewaiter(
+      "rewaiter",
+      [&] {
+        BOOST_CHECK(!b);
+        reactor::wait(b);
+      });
+    reactor::yield();
+    reactor::yield();
+    b.open();
+    reactor::wait(rewaiter);
+  }
 }
 
 /*------------------.
@@ -3226,6 +3259,7 @@ ELLE_TEST_SUITE()
     barrier->add(BOOST_TEST_CASE(closed), 0, valgrind(1, 5));
     barrier->add(BOOST_TEST_CASE(opened), 0, valgrind(1, 5));
     barrier->add(BOOST_TEST_CASE(inverted), 0, valgrind(1, 5));
+    barrier->add(BOOST_TEST_CASE(exception), 0, valgrind(1, 5));
   }
 
   boost::unit_test::test_suite* multilock_barrier =

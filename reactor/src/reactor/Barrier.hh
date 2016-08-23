@@ -62,6 +62,15 @@ namespace reactor
     _wait(Thread* thread, Waker const&) override;
 
   /*----------.
+  | Exception |
+  `----------*/
+
+  public:
+    template <typename E, typename ... Args>
+    void
+    raise(Args&& ... args);
+
+  /*----------.
   | Inversion |
   `----------*/
   private:
@@ -97,5 +106,7 @@ namespace reactor
     print(std::ostream& stream) const override;
   };
 }
+
+# include <reactor/Barrier.hxx>
 
 #endif
