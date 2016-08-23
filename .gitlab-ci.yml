@@ -23,7 +23,7 @@ x86_64-centos6-gcc4:
     - centos6
     - gcc4
 
-x86_64-trusty-gcc4:
+x86_64-ubuntu-gcc4:
   stage: build
   script:
     - git submodule update --init --recursive
@@ -35,7 +35,7 @@ x86_64-trusty-gcc4:
     - cd ../elle-build && python3 drake -j 4 //install
   tags:
     - x86_64
-    - trusty
+    - ubuntu
     - gcc4
 
 x86_64-jessie-gcc4:
