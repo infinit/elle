@@ -472,11 +472,9 @@ namespace reactor
   {
     if (!suicide && this->current() == thread)
       return;
-
     bool ready = this->_terminate(thread);
     if (ready)
       return;
-
     // Wait on the thread object and ignore exceptions until the wait is done.
     std::exception_ptr saved_exception(nullptr);
     while (true)
@@ -488,18 +486,17 @@ namespace reactor
       catch (...)
       {
         saved_exception = std::current_exception();
-        ELLE_TRACE("%s: terminate_now interrupted, delaying exception: %s",
-                   *this, elle::exception_string());
+        ELLE_TRACE(
+          "%s: terminatation of %s interrupted, delaying exception: %s",
+          this, thread, elle::exception_string());
         continue;
       }
-
       break;
     }
-
     if (saved_exception != nullptr)
     {
-      ELLE_TRACE("%s: terminate_now finished, re-throwing: %s",
-                 *this, elle::exception_string(saved_exception));
+      ELLE_TRACE("%s: termination of %s finished, re-throwing: %s",
+                 this, thread, elle::exception_string(saved_exception));
       std::rethrow_exception(saved_exception);
     }
   }
@@ -723,6 +720,7 @@ namespace reactor
     ELLE_ASSERT(sched);
     auto* current = sched->current();
     ELLE_ASSERT(current);
+    ELLE_TRACE("%s: sleep forever", current);
     reactor::wait(*current);
   }
 
