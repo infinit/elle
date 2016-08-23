@@ -517,43 +517,61 @@ test_signals_timeout()
 | Barrier |
 `--------*/
 
-static
-void
-barrier_closed()
+namespace barrier
 {
-  reactor::Scheduler sched;
-  reactor::Barrier barrier;
-  bool beacon = false;
-  reactor::Thread waiter(sched, "waiter", [&] {
-      BOOST_CHECK(!barrier.opened());
-      reactor::wait(barrier);
-      BOOST_CHECK(barrier.opened());
-      BOOST_CHECK(!beacon);
-      beacon = true;
-    });
-  reactor::Thread opener(sched, "opener", [&] {
-      reactor::yield();
-      reactor::yield();
-      reactor::yield();
-      BOOST_CHECK(!beacon);
-      barrier.open();
-    });
-  sched.run();
-  BOOST_CHECK(beacon);
-}
+  ELLE_TEST_SCHEDULED(closed)
+  {
+    reactor::Barrier barrier;
+    bool beacon = false;
+    reactor::Thread waiter("waiter", [&] {
+        BOOST_CHECK(!barrier.opened());
+        reactor::wait(barrier);
+        BOOST_CHECK(barrier.opened());
+        BOOST_CHECK(!beacon);
+        beacon = true;
+      });
+    reactor::Thread opener("opener", [&] {
+        reactor::yield();
+        reactor::yield();
+        reactor::yield();
+        BOOST_CHECK(!beacon);
+        barrier.open();
+      });
+    reactor::wait({waiter, opener});
+    BOOST_CHECK(beacon);
+  }
 
-static
-void
-barrier_opened()
-{
-  reactor::Scheduler sched;
-  reactor::Barrier barrier;
-  barrier.open();
-  BOOST_CHECK(barrier.opened());
-  reactor::Thread waiter(sched, "waiter", [&] {
-      reactor::wait(barrier);
-    });
-  sched.run();
+  ELLE_TEST_SCHEDULED(opened)
+  {
+    reactor::Barrier barrier;
+    barrier.open();
+    BOOST_CHECK(barrier.opened());
+    reactor::Thread waiter("waiter", [&] {
+        reactor::wait(barrier);
+      });
+    reactor::wait(waiter);
+  }
+
+  ELLE_TEST_SCHEDULED(inverted)
+  {
+    reactor::Barrier b;
+    reactor::wait(!b);
+    b.open();
+    elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+    {
+      reactor::Barrier timedout;
+      scope.run_background(
+        "closer",
+        [&]
+        {
+          reactor::wait(timedout);
+          b.close();
+        });
+      BOOST_CHECK(!reactor::wait(!b, 10_ms));
+      timedout.open();
+      reactor::wait(!b);
+    };
+  }
 }
 
 /*------------------.
@@ -587,7 +605,6 @@ multilock_barrier_basic()
       BOOST_CHECK(third_lock);
       beacon_waiter = true;
     });
-
   reactor::Thread closer(sched, "closer", [&] {
       reactor::yield();
       BOOST_CHECK(no_lock);
@@ -599,43 +616,17 @@ multilock_barrier_basic()
           second_lock = true;
           auto lock = barrier.lock();
           reactor::yield();
-
           {
             third_lock = true;
             auto copied_lock = lock;
             reactor::yield();
           }
         }
-
       }
       beacon_closer = true;
     });
   sched.run();
   BOOST_CHECK(beacon_waiter & beacon_closer);
-}
-
-namespace barrier
-{
-  ELLE_TEST_SCHEDULED(inverted)
-  {
-    reactor::Barrier b;
-    reactor::wait(!b);
-    b.open();
-    elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
-    {
-      reactor::Barrier timedout;
-      scope.run_background(
-        "closer",
-        [&]
-        {
-          reactor::wait(timedout);
-          b.close();
-        });
-      BOOST_CHECK(!reactor::wait(!b, 10_ms));
-      timedout.open();
-      reactor::wait(!b);
-    };
-  }
 }
 
 /*------.
@@ -3228,12 +3219,12 @@ ELLE_TEST_SUITE()
   signals->add(BOOST_TEST_CASE(test_signals_timeout), 0, valgrind(1, 5));
   signals->add(BOOST_TEST_CASE(test_signals_order), 0, valgrind(1, 5));
 
-  boost::unit_test::test_suite* barrier = BOOST_TEST_SUITE("Barrier");
-  boost::unit_test::framework::master_test_suite().add(barrier);
-  barrier->add(BOOST_TEST_CASE(barrier_closed), 0, valgrind(1, 5));
-  barrier->add(BOOST_TEST_CASE(barrier_opened), 0, valgrind(1, 5));
   {
-    auto inverted = &barrier::inverted;
+    auto barrier = BOOST_TEST_SUITE("barrier");
+    boost::unit_test::framework::master_test_suite().add(barrier);
+    using namespace barrier;
+    barrier->add(BOOST_TEST_CASE(closed), 0, valgrind(1, 5));
+    barrier->add(BOOST_TEST_CASE(opened), 0, valgrind(1, 5));
     barrier->add(BOOST_TEST_CASE(inverted), 0, valgrind(1, 5));
   }
 
