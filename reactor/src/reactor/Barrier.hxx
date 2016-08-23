@@ -7,9 +7,18 @@ namespace reactor
   void
   Barrier::raise(Args&& ... args)
   {
-    this->_raise<E>(std::forward(args)...);
+    std::exception_ptr e;
+    try
+    {
+      throw E(std::forward<Args>(args)...);
+    }
+    catch (...)
+    {
+      e = std::current_exception();
+    }
+    this->_raise(e);
     this->open();
-    this->_raise<E>(std::forward(args)...);
+    this->_raise(e);
   }
 
 }
