@@ -746,6 +746,17 @@ namespace reactor
     return current->wait(waitables, timeout);
   }
 
+  bool
+  wait(std::vector<std::reference_wrapper<Waitable>> const& waitables,
+       DurationOpt timeout)
+  {
+    Waitables conv;
+    conv.reserve(waitables.size());
+    for (auto& w: waitables)
+      conv.emplace_back(&w.get());
+    return wait(conv);
+  }
+
   /** Run the given operation in the next cycle.
    *
    *  \param name Descriptive name of the operation, for debugging.
