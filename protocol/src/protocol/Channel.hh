@@ -19,8 +19,9 @@ namespace infinit
     | Types |
     `------*/
     public:
-      typedef Channel Self;
-      typedef Stream Super;
+      using Self = Channel;
+      using Super = Stream;
+      using Id = int;
 
     /*-------------.
     | Construction |
@@ -59,7 +60,7 @@ namespace infinit
     private:
       friend class ChanneledStream;
       ELLE_ATTRIBUTE(ChanneledStream&, backend);
-      ELLE_ATTRIBUTE_R(int, id);
+      ELLE_ATTRIBUTE_R(Id, id);
       ELLE_ATTRIBUTE(std::list<elle::Buffer>, packets);
       ELLE_ATTRIBUTE(reactor::Signal, available);
     };
