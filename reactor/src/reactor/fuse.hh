@@ -21,6 +21,7 @@ namespace reactor
   `-------------*/
   public:
     FuseContext();
+    ~FuseContext();
     void
     create(std::string const& mountpoint,
            std::vector<std::string> const& arguments,
@@ -64,6 +65,7 @@ namespace reactor
     std::unique_ptr<std::thread> _loop_thread;
     std::vector<reactor::Thread*> _workers;
     std::mutex _mutex;
+    MultiLockBarrier _destroy_barrier;
   };
 
 }

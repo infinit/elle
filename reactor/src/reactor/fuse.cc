@@ -381,9 +381,15 @@ namespace reactor
   }
 #endif
 
+  FuseContext::~FuseContext()
+  {
+    reactor::wait(_destroy_barrier);
+  }
+
   void
   FuseContext::destroy(DurationOpt grace_time)
   {
+    auto lock = _destroy_barrier.lock();
     ELLE_TRACE("fuse_destroy");
     if (this->_fuse)
     {
@@ -445,8 +451,8 @@ namespace reactor
     ::fuse_destroy(this->_fuse);
     this->_fuse = nullptr;
     ELLE_TRACE("destroyed");
-#ifdef INFINIT_MACOSX
     this->_loop->terminate_now();
+#ifdef INFINIT_MACOSX
     this->_mac_unmount(grace_time);
 #endif
     ELLE_TRACE("finished");
