@@ -540,6 +540,8 @@ namespace reactor
           ELLE_DEBUG("got %s hits on %s", hits.size(), parent_path);
           for (auto const& path: hits)
           {
+            if (path == "." || path == "..")
+              continue; // we handle those ourselve
             ELLE_DEBUG("scanning entry %s/%s (%s)", parent_path, path, sizeof(struct stat));
             int g1 = 0xfefefefe;
             struct stat lst;
