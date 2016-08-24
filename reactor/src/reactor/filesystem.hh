@@ -296,6 +296,7 @@ namespace reactor
       ELLE_ATTRIBUTE_RW(bool, full_tree);
       std::string _where;
       std::unordered_map<std::string, std::shared_ptr<Path>> _cache;
+      bool _was_mounted;
     };
 
 

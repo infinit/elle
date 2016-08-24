@@ -671,6 +671,7 @@ namespace reactor
       : _impl(new FileSystemImpl())
       , _operations(std::move(op))
       , _full_tree(full_tree)
+      , _was_mounted(false)
     {
       this->_operations->filesystem(this);
       char* journal = getenv("INFINIT_FILESYSTEM_JOURNAL");
@@ -692,6 +693,7 @@ namespace reactor
     FileSystem::mount(boost::filesystem::path const& where,
                       std::vector<std::string> const& options)
     {
+      _was_mounted = true;
       _where = where.string();
       fuse_operations ops;
       memset(&ops, 0, sizeof(ops));
@@ -762,6 +764,8 @@ namespace reactor
         this->_impl->destroy();
         this->_signal();
       }
+      if (!this->_was_mounted)
+        this->_signal();
     }
 
     void
