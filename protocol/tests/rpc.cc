@@ -239,7 +239,7 @@ ELLE_TEST_SCHEDULED(disconnection, (TestConfig, config))
   }
   while (server.counter() < (config.sync ? 1 : 2));
   server.terminate();
-  reactor::wait({&call_1, &call_2});
+  reactor::wait({call_1, call_2});
 }
 
 /*-----------.
