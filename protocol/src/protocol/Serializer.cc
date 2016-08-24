@@ -448,6 +448,7 @@ namespace infinit
     elle::Buffer
     Version020Impl::_read()
     {
+      ELLE_TRACE_SCOPE("%s: read packet", this);
       int c = -1;
       {
         reactor::Thread::Interruptible interruptible;
@@ -484,6 +485,7 @@ namespace infinit
       // Check hash.
       if (this->_checksum)
         enforce_checksums_equal(packet, hash);
+      ELLE_TRACE("%s: got packet of size %s", this, total_size);
       return packet;
     }
 
@@ -536,10 +538,10 @@ namespace infinit
       }
       catch (reactor::Terminate const&)
       {
-        ELLE_DEBUG("interrupted after sending %s (over %s)",
-                   offset, packet.size());
         if (offset < packet.size())
         {
+          ELLE_DEBUG("interrupted after sending %s bytes over %s",
+                     offset, packet.size());
           write_control(this->_stream, Control::interrupt);
           this->_stream.flush();
         }
