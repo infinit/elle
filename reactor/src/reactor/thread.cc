@@ -205,9 +205,16 @@ namespace reactor
              && !this->_thread->unwinding()
              && !this->_thread->exception())
     {
-      ELLE_ERR("%s: terminate exception was swallowed", *this);
-      this->raise<Terminate>(elle::sprintf("re-terminate %s", *this));
-      this->_wait_abort("terminate exception was swallowed");
+      static bool const debug = elle::os::inenv("REACTOR_SCHEDULER_DEBUG");
+      if (debug)
+        ELLE_ERR("%s: terminate exception was swallowed: %s",
+                 *this, this->_yield_backtrace);
+      static bool reraise = elle::os::inenv("REACTOR_RE_RAISE_SWALLOWED_TERMINATE");
+      if (reraise)
+      {
+        this->raise<Terminate>(elle::sprintf("re-terminate %s", *this));
+        this->_wait_abort("terminate exception was swallowed");
+      }
     }
     if (this->_exception_thrown && !this->_managed)
     {
