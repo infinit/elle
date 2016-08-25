@@ -101,32 +101,36 @@ namespace reactor
 
     UTPSocket::~UTPSocket()
     {
-      ELLE_DEBUG("%s: ~UTPSocket", this);
-      try
-      {
-        this->_impl->on_close();
-        reactor::wait(this->_impl->_pending_operations);
-        ELLE_DEBUG("%s from %s: waiting for destroyed...",
-                   this, &this->_impl->_server);
-        if (!reactor::wait(this->_impl->_destroyed_barrier, 0_sec))
+      ELLE_DEBUG("%s: destroy", this);
+      auto name = elle::sprintf("%s shutdown", this);
+      reactor::run_later(
+        std::move(name),
+        [impl = std::shared_ptr<Impl>(this->_impl.release())]
         {
-          if (!this->_impl->_server._socket || !this->_impl->_server._checker
-             || this->_impl->_server._checker->done())
-            ELLE_WARN("%s: server %s was destroyed before us",
-                      this, this->_impl->_server);
-          else if (!reactor::wait(this->_impl->_destroyed_barrier, 90_sec))
+          try
           {
-            ELLE_WARN("%s: timeout waiting for DESTROYED state", this);
+            impl->on_close();
+            reactor::wait(impl->_pending_operations);
+            ELLE_DEBUG("%s from %s: waiting for destroyed ...",
+                       impl, &impl->_server);
+            if (!reactor::wait(impl->_destroyed_barrier, 0_sec))
+            {
+              if (!impl->_server._socket || !impl->_server._checker
+                  || impl->_server._checker->done())
+                ELLE_WARN("%s: server %s was destroyed before us",
+                          impl, impl->_server);
+              else if (reactor::wait(impl->_destroyed_barrier, 90_sec))
+              {
+                ELLE_WARN("%s: timeout waiting for DESTROYED state", impl);
+              }
+            }
           }
-        }
-      }
-      catch (std::exception const& e)
-      {
-        ELLE_ERR("%s: losing exception in UTP socket destructor: %s", this, e);
-        ELLE_ERR("%s", elle::Backtrace::current());
-      }
-      this->_impl->_destroyed();
-      ELLE_DEBUG("%s: ~UTPSocket finished", this);
+          catch (std::exception const& e)
+          {
+            ELLE_ERR("%s: exception in UTP shutdown: %s", impl, e);
+          }
+          impl->_destroyed();
+        });
     }
 
     /*----------.
