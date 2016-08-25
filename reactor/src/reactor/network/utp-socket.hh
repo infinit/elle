@@ -4,12 +4,10 @@
 # include <boost/asio.hpp>
 
 # include <elle/Buffer.hh>
+# include <elle/Duration.hh>
 # include <elle/IOStream.hh>
 
-# include <reactor/Barrier.hh>
-# include <reactor/MultiLockBarrier.hh>
-# include <reactor/mutex.hh>
-# include <reactor/network/fwd.hh>
+#include <reactor/network/fwd.hh>
 
 // FIXME: hide those
 typedef struct UTPSocket utp_socket;
@@ -27,7 +25,7 @@ namespace reactor
     | Construction |
     `-------------*/
     public:
-      typedef boost::asio::ip::udp::endpoint EndPoint;
+      using EndPoint = boost::asio::ip::udp::endpoint;
       UTPSocket(UTPServer& server);
       UTPSocket(UTPServer& server, utp_socket* socket, bool open);
       UTPSocket(UTPServer& server, std::string const& host, int port);
@@ -39,15 +37,15 @@ namespace reactor
       void
       connect(std::string const& id,
               std::vector<EndPoint> const& endpoints = {},
-              DurationOpt timeout = DurationOpt());
+              elle::DurationOpt timeout = {});
       void
-      write(elle::ConstWeakBuffer const& data, DurationOpt timeout = DurationOpt());
+      write(elle::ConstWeakBuffer const& data, elle::DurationOpt timeout = {});
       elle::Buffer
-      read(size_t sz, DurationOpt timeout = DurationOpt());
+      read(size_t sz, elle::DurationOpt timeout = {});
       elle::Buffer
-      read_some(size_t sz, DurationOpt timeout = DurationOpt());
+      read_some(size_t sz, elle::DurationOpt timeout = {});
       elle::Buffer
-      read_until(std::string const& delimiter, DurationOpt opt = DurationOpt());
+      read_until(std::string const& delimiter, elle::DurationOpt opt = {});
       void
       close();
       void
@@ -77,19 +75,8 @@ namespace reactor
     private:
       void
       _read();
-      utp_socket* _socket;
-      elle::Buffer _read_buffer;
-      Barrier _read_barrier;
-      Barrier _write_barrier;
-      Mutex _write_mutex;
-      Barrier _connect_barrier;
-      Barrier _destroyed_barrier;
-      ELLE_ATTRIBUTE_R(UTPServer&, server);
-      elle::ConstWeakBuffer _write;
-      MultiLockBarrier _pending_operations;
-      int _write_pos;
-      bool _open;
-      bool _closing;
+      struct Impl;
+      ELLE_ATTRIBUTE(std::unique_ptr<Impl>, impl);
     };
   }
 }
