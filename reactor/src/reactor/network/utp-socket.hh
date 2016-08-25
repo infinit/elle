@@ -50,17 +50,6 @@ namespace reactor
       close();
       void
       stats();
-      // For internal use
-      void
-      write_cont();
-      void
-      on_connect();
-      void
-      on_close();
-      void
-      on_read(elle::ConstWeakBuffer const&);
-      void
-      destroyed();
       EndPoint
       peer() const;
 
@@ -72,10 +61,12 @@ namespace reactor
       void
       print(std::ostream& output) const override;
 
-    private:
-      void
-      _read();
+    /*---------------.
+    | Implementation |
+    `---------------*/
+    public:
       struct Impl;
+    private:
       ELLE_ATTRIBUTE(std::unique_ptr<Impl>, impl);
     };
   }

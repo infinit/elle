@@ -1,11 +1,9 @@
-#include <reactor/network/utp-socket.hh>
+#include <reactor/network/utp-socket-impl.hh>
 
 #include <utp.h>
 
 #include <elle/log.hh>
 
-#include <reactor/Barrier.hh>
-#include <reactor/MultiLockBarrier.hh>
 #include <reactor/exception.hh>
 #include <reactor/mutex.hh>
 #include <reactor/network/buffer.hh>
@@ -54,32 +52,6 @@ namespace reactor
       };
     }
 
-    /*-----.
-    | Impl |
-    `-----*/
-
-    class UTPSocket::Impl
-    {
-    public:
-      friend class UTPSocket;
-
-      Impl(UTPServer& server, utp_socket* socket, bool open);
-
-      ELLE_ATTRIBUTE(utp_socket*, socket);
-      ELLE_ATTRIBUTE(elle::Buffer, read_buffer);
-      ELLE_ATTRIBUTE(Barrier, read_barrier);
-      ELLE_ATTRIBUTE(Barrier, write_barrier);
-      ELLE_ATTRIBUTE(Mutex, write_mutex);
-      ELLE_ATTRIBUTE(Barrier, connect_barrier);
-      ELLE_ATTRIBUTE(Barrier, destroyed_barrier);
-      ELLE_ATTRIBUTE_R(UTPServer&, server);
-      ELLE_ATTRIBUTE(elle::ConstWeakBuffer, write);
-      ELLE_ATTRIBUTE(MultiLockBarrier, pending_operations);
-      ELLE_ATTRIBUTE(int, write_pos);
-      ELLE_ATTRIBUTE(bool, open);
-      ELLE_ATTRIBUTE(bool, closing);
-    };
-
     /*-------------.
     | Construction |
     `-------------*/
@@ -88,7 +60,6 @@ namespace reactor
       : IOStream(new StreamBuffer(this))
       , _impl(elle::make_unique<Impl>(server, socket, open))
     {
-      utp_set_userdata(this->_impl->_socket, this);
       if (open)
       {
         this->_impl->_write_barrier.open();
@@ -112,7 +83,9 @@ namespace reactor
       , _write_pos(0)
       , _open(open)
       , _closing(false)
-    {}
+    {
+      utp_set_userdata(this->_socket, this);
+    }
 
     UTPSocket::UTPSocket(UTPServer& server)
       : UTPSocket(server, utp_create_socket(server.ctx), false)
@@ -131,7 +104,7 @@ namespace reactor
       ELLE_DEBUG("%s: ~UTPSocket", this);
       try
       {
-        this->on_close();
+        this->_impl->on_close();
         reactor::wait(this->_impl->_pending_operations);
         ELLE_DEBUG("%s from %s: waiting for destroyed...",
                    this, &this->_impl->_server);
@@ -152,7 +125,7 @@ namespace reactor
         ELLE_ERR("%s: losing exception in UTP socket destructor: %s", this, e);
         ELLE_ERR("%s", elle::Backtrace::current());
       }
-      destroyed();
+      this->_impl->_destroyed();
       ELLE_DEBUG("%s: ~UTPSocket finished", this);
     }
 
@@ -161,81 +134,91 @@ namespace reactor
     `----------*/
 
     void
-    UTPSocket::on_read(elle::ConstWeakBuffer const& data)
+    UTPSocket::Impl::on_connect()
     {
-      this->_impl->_read_buffer.append(data.contents(), data.size());
-      utp_read_drained(this->_impl->_socket);
-      this->_read();
+      this->_open = true;
+      this->_connect_barrier.open();
+      this->_write_barrier.open();
     }
 
     void
-    UTPSocket::write_cont()
+    UTPSocket::Impl::on_close()
     {
-      if (this->_impl->_write.size())
+      if (this->_closing)
+        return;
+      this->_closing = true;
+      if (!this->_socket)
+        return;
+      //if (_open)
+      ELLE_DEBUG("%s: closing underlying socket", this);
+      utp_close(this->_socket);
+      this->_open = false;
+      this->_read_barrier.open();
+      this->_write_barrier.open();
+      this->_connect_barrier.open();
+    }
+
+    void
+    UTPSocket::Impl::on_read(elle::ConstWeakBuffer const& data)
+    {
+      this->_read_buffer.append(data.contents(), data.size());
+      utp_read_drained(this->_socket);
+      this->_read();
+    }
+
+    /*-----------.
+    | Operations |
+    `-----------*/
+
+    void
+    UTPSocket::Impl::_destroyed()
+    {
+      this->_read_barrier.open();
+      this->_write_barrier.open();
+      this->_connect_barrier.open();
+      this->_destroyed_barrier.open();
+      if (this->_socket)
+        utp_set_userdata(this->_socket, nullptr);
+      this->_socket = nullptr;
+    }
+
+    void
+    UTPSocket::Impl::_read()
+    {
+      this->_read_barrier.open();
+    }
+
+    void
+    UTPSocket::Impl::_write_cont()
+    {
+      if (this->_write.size())
       {
         unsigned char* data =
-          const_cast<unsigned char*>(this->_impl->_write.contents());
-        int sz = this->_impl->_write.size();
-        while (this->_impl->_write_pos < sz)
+          const_cast<unsigned char*>(this->_write.contents());
+        int sz = this->_write.size();
+        while (this->_write_pos < sz)
         {
           ELLE_DEBUG("%s: writing at offset %s/%s",
-                     this, this->_impl->_write_pos, sz);
-          ssize_t len = utp_write(this->_impl->_socket,
-                                  data + this->_impl->_write_pos,
-                                  sz - this->_impl->_write_pos);
+                     this, this->_write_pos, sz);
+          ssize_t len = utp_write(this->_socket,
+                                  data + this->_write_pos,
+                                  sz - this->_write_pos);
           if (!len)
           {
             ELLE_DEBUG("from status: write buffer full");
             break;
           }
-          this->_impl->_write_pos += len;
+          this->_write_pos += len;
         }
-        if (this->_impl->_write_pos == sz)
-          this->_impl->_write_barrier.open();
+        if (this->_write_pos == sz)
+          this->_write_barrier.open();
       }
-    }
-
-    void
-    UTPSocket::on_connect()
-    {
-      this->_impl->_open = true;
-      this->_impl->_connect_barrier.open();
-      this->_impl->_write_barrier.open();
-    }
-
-    void
-    UTPSocket::destroyed()
-    {
-      this->_impl->_read_barrier.open();
-      this->_impl->_write_barrier.open();
-      this->_impl->_connect_barrier.open();
-      this->_impl->_destroyed_barrier.open();
-      if (this->_impl->_socket)
-        utp_set_userdata(this->_impl->_socket, nullptr);
-      this->_impl->_socket = nullptr;
-    }
-
-    void
-    UTPSocket::on_close()
-    {
-      if (this->_impl->_closing)
-        return;
-      this->_impl->_closing = true;
-      if (!this->_impl->_socket)
-        return;
-      //if (_open)
-      ELLE_DEBUG("%s: closing underlying socket", this);
-      utp_close(this->_impl->_socket);
-      this->_impl->_open = false;
-      this->_impl->_read_barrier.open();
-      this->_impl->_write_barrier.open();
-      this->_impl->_connect_barrier.open();
     }
 
     void
     UTPSocket::close()
     {
-      this->on_close();
+      this->_impl->on_close();
     }
 
     void UTPSocket::connect(std::string const& id,
@@ -317,12 +300,6 @@ namespace reactor
       }
       this->_impl->_write_pos = 0;
       this->_impl->_write = {};
-    }
-
-    void
-    UTPSocket::_read()
-    {
-      this->_impl->_read_barrier.open();
     }
 
     void
@@ -432,15 +409,24 @@ namespace reactor
       return res;
     }
 
+    /*-----------.
+    | Attributes |
+    `-----------*/
+
     UTPSocket::EndPoint
     UTPSocket::peer() const
+    {
+      return this->_impl->peer();
+    }
+
+    UTPSocket::EndPoint
+    UTPSocket::Impl::peer() const
     {
       using namespace boost::asio::ip;
       struct sockaddr_in addr;
       socklen_t addrlen = sizeof(addr);
-      if (!this->_impl->_socket ||
-          utp_getpeername(this->_impl->_socket,
-                          (sockaddr*)&addr, &addrlen) == -1)
+      if (!this->_socket ||
+          utp_getpeername(this->_socket, (sockaddr*)&addr, &addrlen) == -1)
         return EndPoint(boost::asio::ip::address::from_string("0.0.0.0"), 0);
       if (addr.sin_family == AF_INET)
       {
@@ -455,16 +441,24 @@ namespace reactor
         return EndPoint(address_v6(addr_bytes), ntohs(addr6->sin6_port));
       }
       else
-      {
-        throw elle::Error(
-          elle::sprintf("unknown protocol %s", addr.sin_family));
-      }
+        elle::err("unknown protocol %s", addr.sin_family);
     }
+
+    /*----------.
+    | Printable |
+    `----------*/
 
     void
     UTPSocket::print(std::ostream& output) const
     {
-      elle::fprintf(output, "%s(%s)", elle::type_info(*this), this->peer());
+      output << *this->_impl;
+    }
+
+    std::ostream&
+    operator <<(std::ostream& output, UTPSocket::Impl const& impl)
+    {
+      elle::fprintf(output, "UTPSocket(%s)", impl.peer());
+      return output;
     }
   }
 }

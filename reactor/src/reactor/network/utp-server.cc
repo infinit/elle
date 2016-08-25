@@ -19,6 +19,7 @@
 
 #include <reactor/network/buffer.hh> // FIXME: replace with elle::WeakBuffer
 #include <reactor/scheduler.hh>
+#include <reactor/network/utp-socket-impl.hh>
 
 ELLE_LOG_COMPONENT("reactor.network.UTPServer");
 
@@ -73,25 +74,22 @@ namespace reactor
       return 0;
     }
 
+    static inline
+    UTPSocket::Impl*
+    get(utp_callback_arguments* args)
+    {
+      return reinterpret_cast<UTPSocket::Impl*>(utp_get_userdata(args->socket));
+    }
+
     static
     uint64
     on_read(utp_callback_arguments* args)
     {
       ELLE_DEBUG("on_read");
-      UTPSocket* sock = (UTPSocket*)utp_get_userdata(args->socket);
-      if (!sock)
+      auto s = get(args);
+      if (!s)
         return 0;
-      sock->on_read(elle::ConstWeakBuffer(args->buf, args->len));
-      return 0;
-    }
-
-    static
-    uint64
-    on_accept(utp_callback_arguments* args)
-    {
-      ELLE_DEBUG("on_accept");
-      UTPServer* server = (UTPServer*)utp_context_get_userdata(args->context);
-      server->on_accept(args->socket);
+      s->on_read(elle::ConstWeakBuffer(args->buf, args->len));
       return 0;
     }
 
@@ -100,7 +98,7 @@ namespace reactor
     on_error(utp_callback_arguments* args)
     {
       ELLE_DEBUG("on_error %s", utp_error_code_names[args->error_code]);
-      UTPSocket* s = (UTPSocket*)utp_get_userdata(args->socket);
+      auto s = get(args);
       if (!s)
         return 0;
       s->on_close();
@@ -109,17 +107,9 @@ namespace reactor
 
     static
     uint64
-    on_log(utp_callback_arguments* args)
-    {
-      ELLE_DEBUG("utp: %s", args->buf);
-      return 0;
-    }
-
-    static
-    uint64
     on_state_change(utp_callback_arguments* args)
     {
-      UTPSocket* s = (UTPSocket*)utp_get_userdata(args->socket);
+      auto s = get(args);
       ELLE_DEBUG("on_state_change %s on %s", utp_state_names[args->state], s);
       if (!s)
         return 0;
@@ -127,14 +117,14 @@ namespace reactor
       {
         case UTP_STATE_CONNECT:
         case UTP_STATE_WRITABLE:
-          s->write_cont();
+          s->_write_cont();
           //s->_write_barrier.open();
           break;
         case UTP_STATE_EOF:
           s->on_close();
           break;
         case UTP_STATE_DESTROYING:
-          s->destroyed();
+          s->_destroyed();
           break;
       }
       return 0;
@@ -149,14 +139,32 @@ namespace reactor
 
     static
     uint64
+    on_accept(utp_callback_arguments* args)
+    {
+      ELLE_DEBUG("on_accept");
+      UTPServer* server = (UTPServer*)utp_context_get_userdata(args->context);
+      server->on_accept(args->socket);
+      return 0;
+    }
+
+    static
+    uint64
     on_connect(utp_callback_arguments* args)
     {
       ELLE_DEBUG("on_connect");
-      UTPSocket* s = (UTPSocket*)utp_get_userdata(args->socket);
+      auto s = get(args);
       if (!s)
         utp_close(args->socket);
       else
         s->on_connect();
+      return 0;
+    }
+
+    static
+    uint64
+    on_log(utp_callback_arguments* args)
+    {
+      ELLE_DEBUG("utp: %s", args->buf);
       return 0;
     }
 
