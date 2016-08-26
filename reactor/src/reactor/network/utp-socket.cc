@@ -272,7 +272,7 @@ namespace reactor
       freeaddrinfo(ai);
       this->_impl->_connect_barrier.wait();
       if (!this->_impl->_open)
-        throw SocketClosed();
+        throw ConnectionRefused();
     }
 
     void
@@ -281,7 +281,7 @@ namespace reactor
       ELLE_DEBUG("write %s", buf.size());
       using namespace boost::posix_time;
       if (!this->_impl->_open)
-        throw SocketClosed();
+        throw ConnectionClosed();
       auto lock = this->_impl->_pending_operations.lock();
       ptime start = microsec_clock::universal_time();
       Lock l(this->_impl->_write_mutex);
@@ -304,7 +304,7 @@ namespace reactor
           this->_impl->_write_barrier.wait(opt ? elapsed - *opt : opt);
           ELLE_DEBUG("write woken up");
           if (!this->_impl->_open)
-            throw SocketClosed();
+            throw ConnectionClosed();
           continue;
         }
         this->_impl->_write_pos += len;
@@ -334,7 +334,7 @@ namespace reactor
     {
       using namespace boost::posix_time;
       if (!this->_impl->_open)
-        throw SocketClosed();
+        throw ConnectionClosed();
       auto lock = this->_impl->_pending_operations.lock();
       ptime start = microsec_clock::universal_time();
       while (true)
@@ -348,7 +348,7 @@ namespace reactor
           throw TimeOut();
         this->_impl->_read_barrier.wait(opt ? elapsed - *opt : opt);
         if (!this->_impl->_open)
-          throw SocketClosed();
+          throw ConnectionClosed();
       }
     }
 
@@ -358,7 +358,7 @@ namespace reactor
       ELLE_TRACE_SCOPE("%s: read up to %s bytes", this, sz);
       using namespace boost::posix_time;
       if (!this->_impl->_open)
-        throw SocketClosed();
+        throw ConnectionClosed();
       auto lock = this->_impl->_pending_operations.lock();
       ptime start = microsec_clock::universal_time();
       while (this->_impl->_read_buffer.size() < sz)
@@ -371,7 +371,7 @@ namespace reactor
         this->_impl->_read_barrier.wait(opt ? elapsed - *opt : opt);
         ELLE_DEBUG("read wake %s", this->_impl->_read_buffer.size());
         if (!this->_impl->_open)
-          throw SocketClosed();
+          throw ConnectionClosed();
       }
       elle::Buffer res;
       res.size(sz);
@@ -388,7 +388,7 @@ namespace reactor
     {
       using namespace boost::posix_time;
       if (!this->_impl->_open)
-        throw SocketClosed();
+        throw ConnectionClosed();
       auto lock = this->_impl->_pending_operations.lock();
       ELLE_DEBUG("read_some");
       ptime start = microsec_clock::universal_time();
@@ -402,7 +402,7 @@ namespace reactor
         this->_impl->_read_barrier.wait(opt ? elapsed - *opt : opt);
         ELLE_DEBUG("read_some wake");
         if (!this->_impl->_open)
-          throw SocketClosed();
+          throw ConnectionClosed();
       }
       if (this->_impl->_read_buffer.size() <= sz)
       {
