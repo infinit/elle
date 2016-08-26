@@ -3337,10 +3337,11 @@ void utp_close(UTPSocket *conn)
 	  conn->state = CS_DESTROY_DELAY;
 	  return;
 	}
-	assert(conn->state != CS_UNINITIALIZED
-		&& conn->state != CS_DESTROY_DELAY
-		&& conn->state != CS_FIN_SENT
-		&& conn->state != CS_DESTROY);
+	if(conn->state == CS_UNINITIALIZED
+		|| conn->state == CS_DESTROY_DELAY
+		|| conn->state == CS_FIN_SENT
+		|| conn->state == CS_DESTROY)
+	  return;
 
 	#if UTP_DEBUG_LOGGING
 	conn->log(UTP_LOG_DEBUG, "UTP_Close in state:%s", statenames[conn->state]);
