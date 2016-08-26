@@ -24,6 +24,7 @@ namespace reactor
     `-------------*/
     public:
       Impl(UTPServer& server, utp_socket* socket, bool open);
+      ~Impl();
 
     /*-----------.
     | Attributes |

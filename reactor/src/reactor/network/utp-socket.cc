@@ -2,6 +2,7 @@
 
 #include <utp.h>
 
+#include <elle/finally.hh>
 #include <elle/log.hh>
 
 #include <reactor/exception.hh>
@@ -101,7 +102,7 @@ namespace reactor
 
     UTPSocket::~UTPSocket()
     {
-      ELLE_DEBUG("%s: destroy", this);
+      ELLE_TRACE_SCOPE("%s: destruct", this);
       auto name = elle::sprintf("%s shutdown", this);
       reactor::run_later(
         std::move(name),
@@ -125,12 +126,16 @@ namespace reactor
               }
             }
           }
-          catch (std::exception const& e)
+          catch (elle::Error const& e)
           {
             ELLE_ERR("%s: exception in UTP shutdown: %s", impl, e);
           }
-          impl->_destroyed();
         });
+    }
+
+    UTPSocket::Impl::~Impl()
+    {
+      this->_destroyed();
     }
 
     /*----------.
