@@ -357,8 +357,10 @@ namespace infinit
     {
       int c = -1;
       {
-        reactor::Thread::Interruptible interruptible;
-        c = this->_stream.get();
+        elle::With<reactor::Thread::Interruptible>() << [&]
+        {
+          c = this->_stream.get();
+        };
       }
       if (c == -1)
         throw Serializer::EOF();
@@ -451,8 +453,10 @@ namespace infinit
       ELLE_TRACE_SCOPE("%s: read packet", this);
       int c = -1;
       {
-        reactor::Thread::Interruptible interruptible;
-        c = this->_stream.get();
+        elle::With<reactor::Thread::Interruptible>() << [&]
+        {
+          c = this->_stream.get();
+        };
       }
       if (c == -1)
         throw Serializer::EOF();

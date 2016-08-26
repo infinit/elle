@@ -492,28 +492,37 @@ namespace reactor
     this->_exception = e;
   }
 
-  Thread::NonInterruptible::NonInterruptible()
-    : _current(reactor::scheduler().current())
-    , _initial_value(_current->interruptible())
+  /*--------.
+  | Context |
+  `--------*/
+
+  Thread::Context::Context()
+    : _current(*reactor::scheduler().current())
+    , _interruptible(_current.interruptible())
+  {}
+
+  Thread::Context::~Context() noexcept(false)
   {
-    this->_current->interruptible(false);
+    this->_current.interruptible(this->_interruptible);
   }
 
-  Thread::NonInterruptible::~NonInterruptible() noexcept(false)
+  bool
+  Thread::Context::interruptible(bool interruptible)
   {
-    this->_current->interruptible(this->_initial_value);
+    bool prev = this->_current.interruptible();
+    if (prev != interruptible)
+      this->_current.interruptible(interruptible);
+    return prev;
+  }
+
+  Thread::NonInterruptible::NonInterruptible()
+  {
+    this->interruptible(false);
   }
 
   Thread::Interruptible::Interruptible()
-  : _current(reactor::scheduler().current())
-  , _initial_value(_current->interruptible())
   {
-    this->_current->interruptible(true);
-  }
-
-  Thread::Interruptible::~Interruptible()
-  {
-    this->_current->interruptible(this->_initial_value);
+    this->interruptible(true);
   }
 
   /*----------------.

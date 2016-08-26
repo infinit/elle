@@ -71,7 +71,8 @@ namespace reactor
     }
     catch (...)
     {
-      ELLE_ABORT("Thread::unique_ptr release of %s threw", t);
+      ELLE_ABORT("Thread::unique_ptr release of %s threw: %s",
+                 t, elle::exception_string());
     }
   }
 
