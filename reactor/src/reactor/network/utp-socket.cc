@@ -119,7 +119,7 @@ namespace reactor
                   || impl->_server._checker->done())
                 ELLE_WARN("%s: server %s was destroyed before us",
                           impl, impl->_server);
-              else if (reactor::wait(impl->_destroyed_barrier, 90_sec))
+              else if (!reactor::wait(impl->_destroyed_barrier, 90_sec))
               {
                 ELLE_WARN("%s: timeout waiting for DESTROYED state", impl);
               }
