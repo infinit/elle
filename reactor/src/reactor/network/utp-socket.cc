@@ -148,14 +148,16 @@ namespace reactor
     void
     UTPSocket::Impl::on_close()
     {
+      if (this->_socket)
+      {
+        ELLE_DEBUG("%s: closing underlying socket", this);
+        utp_close(this->_socket);
+      }
       if (this->_closing)
         return;
       this->_closing = true;
       if (!this->_socket)
         return;
-      //if (_open)
-      ELLE_DEBUG("%s: closing underlying socket", this);
-      utp_close(this->_socket);
       this->_open = false;
       this->_read_barrier.open();
       this->_write_barrier.open();
