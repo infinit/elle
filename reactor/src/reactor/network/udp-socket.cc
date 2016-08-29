@@ -340,6 +340,10 @@ namespace reactor
     {
       ELLE_TRACE("%s: send_to %s bytes to %s",
                      *this, buffer.size(), endpoint);
+      // At least on windows and macos, passing a v4 address to send_to() on a  v6 socket is an error
+      if (endpoint.address().is_v4() && this->local_endpoint().address().is_v6())
+        endpoint = EndPoint(boost::asio::ip::address_v6::v4_mapped(endpoint.address().to_v4()), endpoint.port());
+
       UDPSendTo sendto(scheduler(), this, buffer, endpoint);
       sendto.run();
     }
