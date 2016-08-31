@@ -60,10 +60,10 @@ ELLE_TEST_SCHEDULED(utp_close)
   sp.s1->write("foo");
   sp.s1->close();
   reactor::sleep(100_ms);
-  BOOST_CHECK_THROW(sp.s1->write("bar"), reactor::network::SocketClosed);
-  BOOST_CHECK_THROW(sp.s1->read_some(10), reactor::network::SocketClosed);
-  BOOST_CHECK_THROW(sp.s2->read_some(10), reactor::network::SocketClosed);
-  BOOST_CHECK_THROW(sp.s2->write("bar"), reactor::network::SocketClosed);
+  BOOST_CHECK_THROW(sp.s1->write("bar"),  reactor::network::ConnectionClosed);
+  BOOST_CHECK_THROW(sp.s1->read_some(10), reactor::network::ConnectionClosed);
+  BOOST_CHECK_THROW(sp.s2->read_some(10), reactor::network::ConnectionClosed);
+  BOOST_CHECK_THROW(sp.s2->write("bar"),  reactor::network::ConnectionClosed);
   {
     UTPServer srv;
     reactor::network::UTPSocket sock(srv);
@@ -115,7 +115,7 @@ ELLE_TEST_SCHEDULED(utp_failures)
   SocketPair sp;
   reactor::network::UTPSocket socket(sp.srv1);
   ELLE_LOG("connect");
-  BOOST_CHECK_THROW(socket.connect("127.0.0.1", 65530), SocketClosed);
+  BOOST_CHECK_THROW(socket.connect("127.0.0.1", 65530), ConnectionRefused);
   // check other sockets are unaffected
   sp.s1->write("foo");
   ELLE_LOG("read");
