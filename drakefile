@@ -1372,7 +1372,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
 
   def recurse(rule, attr):
     for m in submodules:
-      r = getattr(m, 'rule_install')
+      r = getattr(m, attr)
       if r is not None:
         rule << r
 
