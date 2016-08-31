@@ -2415,7 +2415,7 @@ class Expander(Builder):
     >>> target.build()
     Traceback (most recent call last):
       ...
-    drake.Failed: MyExpander failed
+    drake.Builder.Failed: MyExpander failed
     >>> target.builder = None
     >>> builder = MyExpander('Kiwis are @kiwi-color@.',
     ...                      [colors, lengths], target,
