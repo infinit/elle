@@ -39,6 +39,13 @@ public:
 };
 
 static
+std::ostream&
+operator << (std::ostream& o, Count const& c)
+{
+  return o << "Count(" << c.count << ")";
+}
+
+static
 void
 option()
 {
@@ -83,6 +90,14 @@ public:
   Nope(Nope const&) = delete;
   int i;
 };
+
+static
+std::ostream&
+operator << (std::ostream& o, Nope const& n)
+{
+  return o << "Nope(" << n.i << ")";
+}
+
 
 static
 void
@@ -135,16 +150,26 @@ static
 void
 reset()
 {
-  int count = 0;
-  BOOST_CHECK_EQUAL(count, 0);
-  elle::Option<Count, Nope> opt{Count(count)};
-  BOOST_CHECK_EQUAL(count, 1);
-  opt.emplace(Count(count));
-  BOOST_CHECK_EQUAL(count, 1);
-  opt.emplace(Nope(42));
-  BOOST_CHECK_EQUAL(count, 0);
-  opt.emplace(Count(count));
-  BOOST_CHECK_EQUAL(count, 1);
+  {
+    int count = 0;
+    BOOST_CHECK_EQUAL(count, 0);
+    elle::Option<Count, Nope> opt{Count(count)};
+    BOOST_CHECK_EQUAL(count, 1);
+    opt.emplace(Count(count));
+    BOOST_CHECK_EQUAL(count, 1);
+    opt.emplace(Nope(42));
+    BOOST_CHECK_EQUAL(count, 0);
+    opt.emplace(Count(count));
+    BOOST_CHECK_EQUAL(count, 1);
+  }
+  {
+    int count = 0;
+    elle::Option<Count, Nope> opt = elle::Option<Count, Nope>(Count(count));
+    BOOST_CHECK_EQUAL(count, 1);
+    opt = Nope(42);
+    BOOST_CHECK_EQUAL(count, 0);
+    elle::sprintf("%s", opt);
+  }
 }
 
 static
