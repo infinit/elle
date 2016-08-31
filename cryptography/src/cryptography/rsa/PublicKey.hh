@@ -117,6 +117,7 @@ namespace infinit
         /// WARNING: This method cannot be used to encrypt large amount of
         ///          data as constrained by the key's modulus. Please refer
         ///          to the seal()/open() methods.
+        virtual
         elle::Buffer
         encrypt(elle::ConstWeakBuffer const& plain,
                 Padding const padding = defaults::encryption_padding) const;
