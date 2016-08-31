@@ -115,7 +115,9 @@ namespace elle
         if (source._index == Index)
         {
           char* buffer = source._buffer;
+          // FIXME: if this throws, the Option is UB
           new (this->_buffer) Head(reinterpret_cast<Head&&>(*buffer));
+          this->_index = Index;
         }
         else
           this->Super::_assign(std::move(source));
@@ -128,7 +130,9 @@ namespace elle
         if (source._index == Index)
         {
           char const* buffer = source._buffer;
+          // FIXME: if this throws, the Option is UB
           new (this->_buffer) Head(reinterpret_cast<Head const&>(*buffer));
+          this->_index = Index;
         }
         else
           this->Super::_assign(source);

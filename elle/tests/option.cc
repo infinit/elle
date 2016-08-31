@@ -168,7 +168,6 @@ reset()
     BOOST_CHECK_EQUAL(count, 1);
     opt = Nope(42);
     BOOST_CHECK_EQUAL(count, 0);
-    elle::sprintf("%s", opt);
   }
 }
 
