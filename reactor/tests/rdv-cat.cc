@@ -61,7 +61,7 @@ int main(int argc, char** argv)
       {
         std::string buf;
         std::getline(std::cin, buf);
-        sched.mt_run("data",
+        sched.mt_run<void>("data",
           boost::function<void()>([&] { send(buf);}));
       }
   });

@@ -1,5 +1,7 @@
+#include <reactor/Barrier.hh>
 #include <reactor/network/rdv.hh>
 #include <reactor/network/utp-socket.hh>
+#include <reactor/network/utp-server.hh>
 
 #include <reactor/network/buffer.hh>
 #include <reactor/scheduler.hh>
