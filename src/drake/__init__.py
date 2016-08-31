@@ -2412,10 +2412,10 @@ class Expander(Builder):
     >>> print(builder.missing_fatal())
     True
     >>> target.path().remove()
-    >>> target.build()
+    >>> target.build() # doctest:+ELLIPSIS
     Traceback (most recent call last):
       ...
-    drake.Builder.Failed: MyExpander failed
+    drake...Failed: MyExpander failed
     >>> target.builder = None
     >>> builder = MyExpander('Kiwis are @kiwi-color@.',
     ...                      [colors, lengths], target,
