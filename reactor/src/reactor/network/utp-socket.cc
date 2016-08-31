@@ -84,6 +84,7 @@ namespace reactor
       , _write_pos(0)
       , _open(open)
       , _closing(false)
+      , _server_beacon(server._beacon)
     {
       utp_set_userdata(this->_socket, this);
     }
@@ -116,7 +117,9 @@ namespace reactor
                        impl, &impl->_server);
             if (!reactor::wait(impl->_destroyed_barrier, 0_sec))
             {
-              if (!impl->_server._socket || !impl->_server._checker
+              if (!impl->_server_beacon.lock()
+                  || !impl->_server._socket
+                  || !impl->_server._checker
                   || impl->_server._checker->done())
                 ELLE_WARN("%s: server %s was destroyed before us",
                           impl, impl->_server);
@@ -153,7 +156,7 @@ namespace reactor
     void
     UTPSocket::Impl::on_close()
     {
-      if (this->_socket)
+      if (this->_socket && this->_server_beacon.lock())
       {
         ELLE_DEBUG("%s: closing underlying socket", this);
         utp_close(this->_socket);

@@ -58,6 +58,7 @@ namespace reactor
       std::deque<std::pair<elle::Buffer, EndPoint>> _send_buffer;
       bool _sending;
       int _icmp_fd;
+      std::shared_ptr<int> _beacon;
       friend class UTPSocket;
     };
   }

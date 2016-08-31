@@ -46,7 +46,7 @@ namespace reactor
       ELLE_ATTRIBUTE(int, write_pos);
       ELLE_ATTRIBUTE(bool, open);
       ELLE_ATTRIBUTE(bool, closing);
-
+      ELLE_ATTRIBUTE(std::weak_ptr<int>, server_beacon);
     /*----------.
     | Callbacks |
     `----------*/
