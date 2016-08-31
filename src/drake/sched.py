@@ -43,7 +43,6 @@ class Indentation:
     else:
       return self.__indentation[Coroutine.current]
 
-
 conf = None
 if 'DRAKE_LOG_LEVEL' in os.environ:
   conf = os.environ['DRAKE_LOG_LEVEL']
@@ -66,6 +65,16 @@ class Terminate(Exception):
 
   def __str__(self):
     return 'termination of %s' % self.__coroutine
+
+
+class NonInterruptible:
+
+  def __enter__(self):
+    self.__interruptible = Coroutine.current.interruptible
+    Coroutine.current.interruptible = False
+
+  def __exit__(self, t, v, tb):
+    Coroutine.current.interruptible = self.__interruptible
 
 
 class Scope:
@@ -349,6 +358,8 @@ class Coroutine(Waitable):
     self.__done_hooks = []
     self.__exception = None
     self.__frozen = False
+    self.__interrupted = False
+    self.__interruptible = True
     self.__joined = False
     self.__name = name
     self.__parent = parent
@@ -507,10 +518,14 @@ class Coroutine(Waitable):
     if not self.started:
       self.__done_set()
       self.scheduler._Scheduler__policy.remove(self)
-    if self.current:
-      raise Terminate(self)
+    if self.interruptible:
+      if self.current:
+        raise Terminate(self)
+      else:
+        self.throw(Terminate(self))
     else:
-      self.throw(Terminate(self))
+      print('DELAY')
+      self.__interrupted = True
 
   @property
   def status(self):
@@ -528,6 +543,20 @@ class Coroutine(Waitable):
   @property
   def exception(self):
     return self.__exception
+
+  @property
+  def interruptible(self):
+    return self.__interruptible
+
+  @interruptible.setter
+  def interruptible(self, interruptible):
+    previous = self.__interruptible
+    self.__interruptible = interruptible
+    if not previous and interruptible and self.__interrupted:
+      if self.current:
+        raise Terminate(self)
+      else:
+        self.throw(Terminate(self))
 
 class ThreadedOperation(Signal):
 

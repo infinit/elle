@@ -73,6 +73,7 @@ def configure(prefix = '.'):
     'base/failure-cmd',
     'base/interrupt-dynamic-dependency',
     'base/termination',
+    'base/termination-keep-successful',
   ]
 
   for test in tests:

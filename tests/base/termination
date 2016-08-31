@@ -63,7 +63,7 @@ class UnblockBuilder(drake.Copy):
     beacon = False # [6]
     raise Exception('should never get there')
 
-with Drake(jobs = 2) as d:
+with Drake(jobs = 2, kill_builders_on_failure = True) as d:
   failed = drake.node('failed')
   failer = FailBuilder([], [failed])
   interrupted = drake.node('interrupted')

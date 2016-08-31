@@ -117,11 +117,16 @@ class Drake:
         self.__drake._Drake__prefix = self.__previous
     return Recurser(self)
 
-  def __init__(self, root = None, jobs = None):
+  def __init__(self,
+               root = None,
+               jobs = None,
+               kill_builders_on_failure = False,
+  ):
     if root is None:
       root = drake.Path('.')
     self.__jobs = 1
     self.__jobs_lock = None
+    self.__kill_builders_on_failure = kill_builders_on_failure
     self.__source = drake.Path(root)
     self.__scheduler = Scheduler(policy = sched.DepthFirst())
     self.__prefix = drake.Path('.')
@@ -141,6 +146,10 @@ class Drake:
       self.__configure = None
     if jobs is not None:
       self.jobs_set(jobs)
+
+  @property
+  def kill_builders_on_failure(self):
+    return self.__kill_builders_on_failure
 
   def run(self, *cfg, **kwcfg):
     try:
@@ -2039,93 +2048,96 @@ class Builder:
         self.__executed_signal.signal()
 
   def _execute(self, depfile_builder):
-    self.cachedir.mkpath()
-    if self.__create_dirs:
-      for target in self.__targets:
-        if isinstance(target, Node):
-          target.path().dirname().mkpath()
-    with logger.log('drake.Builder',
-                    drake.log.LogLevel.trace,
-                    '%s: needs execution', self):
-      # Regenerate dynamic dependencies
-      self.__sources_dyn = {}
-      self._depfiles = {}
-      with logger.log(
-          'drake.Builder',
-          drake.log.LogLevel.debug,
-          '%s: recompute dynamic dependencies', self):
-        self.dependencies()
-      with logger.log(
-          'drake.Builder',
-          drake.log.LogLevel.debug,
-          '%s: build dynamic dependencies', self):
-        for node in self.__sources_dyn.values():
-          # FIXME: parallelize
-          node.build()
-      self._builder_hash = self.hash()
-      try:
-        with logger.log('drake.Builder',
-                        drake.log.LogLevel.trace,
-                        '%s: execute', self):
-          self._depfile.dirty = True
-          success = self.execute()
-          for dst in self.__targets:
-            dst._Node__mtime = None
-          logger.log('drake.Builder',
-                     drake.log.LogLevel.trace,
-                     '%s: executed', self)
-      except sched.Terminate:
-        raise
-      except Exception as e:
-        e_pretty = str(e)
-        if not e_pretty:
-          e_pretty = repr(e)
-        print('%s: %s' % (self, e_pretty), file = sys.stderr)
-        if 'DRAKE_DEBUG_BACKTRACE' in _OS.environ:
-          import traceback
-          traceback.print_exc()
-        raise Builder.Failed(self) from e
-      if not success:
-        raise Builder.Failed(self)
-      # Check every non-virtual target was built.
-      with logger.log(
-          'drake.Builder',
-          drake.log.LogLevel.trace,
-          '%s: check all targets were built', self):
-        for dst in self.__targets:
-          if dst.missing():
-            raise Exception('%s wasn\'t created by %s' % (dst, self))
-          if isinstance(dst, Node):
-            dst._Node__hash = None
-      # Update depfiles
+    with contextlib.ExitStack() as ctx:
+      if not Drake.current.kill_builders_on_failure:
+        ctx.enter_context(sched.NonInterruptible())
+      self.cachedir.mkpath()
+      if self.__create_dirs:
+        for target in self.__targets:
+          if isinstance(target, Node):
+            target.path().dirname().mkpath()
       with logger.log('drake.Builder',
-                      drake.log.LogLevel.debug,
-                      '%s: write dependencies file %s',
-                      self, self._depfile):
-        self._depfile.update()
-      if self._builder_hash is None:
-        logger.log('drake.Builder',
-                   drake.log.LogLevel.debug,
-                   '%s: remove builder dependency file %s',
-                   self, depfile_builder)
-        depfile_builder.remove()
-      else:
-        logger.log('drake.Builder',
-                   drake.log.LogLevel.debug,
-                   '%s: write builder dependency file %s',
-                   self, depfile_builder)
-        with open(str(depfile_builder), 'wb') as f:
-          pickle.Pickler(f).dump(self._builder_hash)
-      # FIXME: BUG: remove dynamic dependencies files
-      # that are no longer present, otherwise this will
-      # be rebuilt forever.
-      for f in self._depfiles.values():
-        logger.log('drake.Builder',
-                   drake.log.LogLevel.debug,
-                   '%s: write dependencies file %s',
-                   self, f)
-        f.update()
-      self.__executed = True
+                      drake.log.LogLevel.trace,
+                      '%s: needs execution', self):
+        # Regenerate dynamic dependencies
+        self.__sources_dyn = {}
+        self._depfiles = {}
+        with logger.log(
+            'drake.Builder',
+            drake.log.LogLevel.debug,
+            '%s: recompute dynamic dependencies', self):
+          self.dependencies()
+        with logger.log(
+            'drake.Builder',
+            drake.log.LogLevel.debug,
+            '%s: build dynamic dependencies', self):
+          for node in self.__sources_dyn.values():
+            # FIXME: parallelize
+            node.build()
+        self._builder_hash = self.hash()
+        try:
+          with logger.log('drake.Builder',
+                          drake.log.LogLevel.trace,
+                          '%s: execute', self):
+            self._depfile.dirty = True
+            success = self.execute()
+            for dst in self.__targets:
+              dst._Node__mtime = None
+            logger.log('drake.Builder',
+                       drake.log.LogLevel.trace,
+                       '%s: executed', self)
+        except sched.Terminate:
+          raise
+        except Exception as e:
+          e_pretty = str(e)
+          if not e_pretty:
+            e_pretty = repr(e)
+          print('%s: %s' % (self, e_pretty), file = sys.stderr)
+          if 'DRAKE_DEBUG_BACKTRACE' in _OS.environ:
+            import traceback
+            traceback.print_exc()
+          raise Builder.Failed(self) from e
+        if not success:
+          raise Builder.Failed(self)
+        # Check every non-virtual target was built.
+        with logger.log(
+            'drake.Builder',
+            drake.log.LogLevel.trace,
+            '%s: check all targets were built', self):
+          for dst in self.__targets:
+            if dst.missing():
+              raise Exception('%s wasn\'t created by %s' % (dst, self))
+            if isinstance(dst, Node):
+              dst._Node__hash = None
+        # Update depfiles
+        with logger.log('drake.Builder',
+                        drake.log.LogLevel.debug,
+                        '%s: write dependencies file %s',
+                        self, self._depfile):
+          self._depfile.update()
+        if self._builder_hash is None:
+          logger.log('drake.Builder',
+                     drake.log.LogLevel.debug,
+                     '%s: remove builder dependency file %s',
+                     self, depfile_builder)
+          depfile_builder.remove()
+        else:
+          logger.log('drake.Builder',
+                     drake.log.LogLevel.debug,
+                     '%s: write builder dependency file %s',
+                     self, depfile_builder)
+          with open(str(depfile_builder), 'wb') as f:
+            pickle.Pickler(f).dump(self._builder_hash)
+        # FIXME: BUG: remove dynamic dependencies files
+        # that are no longer present, otherwise this will
+        # be rebuilt forever.
+        for f in self._depfiles.values():
+          logger.log('drake.Builder',
+                     drake.log.LogLevel.debug,
+                     '%s: write dependencies file %s',
+                     self, f)
+          f.update()
+        self.__executed = True
 
   def __reload_dyndeps(self):
     cachedir = self.cachedir
