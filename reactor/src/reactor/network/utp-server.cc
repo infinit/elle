@@ -171,7 +171,7 @@ namespace reactor
 
     UTPServer::UTPServer()
       : _accept_barrier("UTPServer accept")
-      , _beacon(new int(0))
+      , _beacon(std::make_shared<int>(0))
     {
       this->_xorify = 0;
       this->_sending = false;
