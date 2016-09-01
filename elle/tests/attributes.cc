@@ -166,9 +166,9 @@ thread_safe()
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
-  suite.add(BOOST_TEST_CASE(test_r), 0, 1);
-  suite.add(BOOST_TEST_CASE(test_w), 0, 1);
-  suite.add(BOOST_TEST_CASE(test_x), 0, 1);
-  suite.add(BOOST_TEST_CASE(types), 0, 1);
-  suite.add(BOOST_TEST_CASE(thread_safe), 0, 10);
+  suite.add(BOOST_TEST_CASE(test_r), 0, valgrind(3));
+  suite.add(BOOST_TEST_CASE(test_w), 0, valgrind(3));
+  suite.add(BOOST_TEST_CASE(test_x), 0, valgrind(3));
+  suite.add(BOOST_TEST_CASE(types), 0, valgrind(3));
+  suite.add(BOOST_TEST_CASE(thread_safe), 0, valgrind(10));
 }
