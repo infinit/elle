@@ -11,17 +11,20 @@ namespace elle
 {
   namespace _details
   {
-    template <std::size_t Size, int Index, typename ... Types>
+    template <std::size_t Size,
+              std::size_t Align,
+              int Index,
+              typename ... Types>
     class OptionHelper;
   }
 
   template <typename ... Types>
   class Option
-    : public _details::OptionHelper<0u, 0, Types ...>
+    : public _details::OptionHelper<0u, 0u, 0, Types ...>
   {
   public:
-    typedef Option<Types ...> Self;
-    typedef _details::OptionHelper<0u, 0, Types ...> Super;
+    using Self = Option<Types ...>;
+    using Super =  _details::OptionHelper<0u, 0u, 0, Types ...>;
     using Super::Super;
     template <typename T>
     Option(T&& value);
