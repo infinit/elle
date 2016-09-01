@@ -105,13 +105,13 @@ namespace reactor
     {
       ELLE_TRACE_SCOPE("%s: destruct", this);
       auto name = elle::sprintf("%s shutdown", this);
+      this->_impl->on_close();
       reactor::run_later(
         std::move(name),
         [impl = std::shared_ptr<Impl>(this->_impl.release())]
         {
           try
           {
-            impl->on_close();
             reactor::wait(impl->_pending_operations);
             ELLE_DEBUG("%s from %s: waiting for destroyed ...",
                        impl, &impl->_server);
