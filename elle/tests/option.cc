@@ -229,6 +229,40 @@ serialization2()
   BOOST_CHECK_EQUAL(*o2.get<std::shared_ptr<int>>(), 42);
 }
 
+class Thrower
+{
+public:
+  explicit
+  Thrower()
+    : t(false)
+  {}
+
+  Thrower(Thrower&& t)
+  {
+    if (t.t)
+      throw elle::Error("Thrower");
+  }
+
+  bool t;
+};
+
+static
+void
+exceptions()
+{
+  typedef elle::Option<Count, Thrower> O;
+  int count = 0;
+  {
+    O o{Count(count)};
+    BOOST_CHECK_EQUAL(count, 1);
+    O thrower{Thrower()};
+    thrower.get<Thrower>().t = true;
+    BOOST_CHECK_THROW(o = std::move(thrower), elle::Error);
+    BOOST_CHECK_EQUAL(count, 0);
+  }
+  BOOST_CHECK_EQUAL(count, 0);
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -239,4 +273,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(print));
   suite.add(BOOST_TEST_CASE(serialization));
   suite.add(BOOST_TEST_CASE(serialization2));
+  suite.add(BOOST_TEST_CASE(exceptions));
 }

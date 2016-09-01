@@ -237,9 +237,10 @@ namespace elle
     {
       template <typename V>
       static void
-      apply(V& v, int)
+      apply(V& v, int& idx)
       {
         v.~V();
+        idx = -1;
       }
     };
   }
