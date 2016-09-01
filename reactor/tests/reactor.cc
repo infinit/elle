@@ -2361,30 +2361,14 @@ test_io_service_throw()
 
 namespace background
 {
-  static
-  void
-  operation()
+  ELLE_TEST_SCHEDULED(operation)
   {
     std::mutex mutex;
     std::condition_variable cv;
     bool backgrounded = false;
-    reactor::Scheduler sched;
     int i = 0;
-    reactor::Thread thread(
-      sched, "main",
-      [&]
-      {
-        reactor::background([&]
-                            {
-                              std::unique_lock<std::mutex> lock(mutex);
-                              backgrounded = true;
-                              cv.wait(lock);
-                              backgrounded = false;
-                            });
-        BOOST_CHECK_EQUAL(i, 3);
-      });
     reactor::Thread counter(
-      sched, "counter",
+      "counter",
       [&]
       {
         do
@@ -2404,83 +2388,70 @@ namespace background
         std::unique_lock<std::mutex> lock(mutex);
         cv.notify_one();
       });
-    sched.run();
+    reactor::background([&]
+                        {
+                          std::unique_lock<std::mutex> lock(mutex);
+                          backgrounded = true;
+                          cv.wait(lock);
+                          backgrounded = false;
+                        });
+    BOOST_CHECK_EQUAL(i, 3);
   }
 
-  static
-  void
-  operations()
+  ELLE_TEST_SCHEDULED(operations)
   {
-    reactor::Scheduler sched;
     static int const iterations = 16;
     reactor::Duration sleep_time = valgrind(500_ms, 5);
-    reactor::Thread main(
-      sched, "main",
-      [&]
-      {
-        // The first sleep is erratic on valgrind, don't include it in the
-        // tests.
-        if (RUNNING_ON_VALGRIND)
-          reactor::sleep(sleep_time);
-        // Run it three times to check the thread pool doesn't exceed 16.
-        for (int run = 0; run < 3; ++run)
-        {
-          int count = 0;
-          std::vector<reactor::Thread*> threads;
-          for (int i = 0; i < iterations; ++i)
-            threads.push_back(
-              new reactor::Thread(
-                elle::sprintf("thread %s", i),
-                [&count, &sleep_time]
+    // The first sleep is erratic on valgrind, don't include it in the
+    // tests.
+    if (RUNNING_ON_VALGRIND)
+      reactor::sleep(sleep_time);
+    // Run it three times to check the thread pool doesn't exceed 16.
+    for (int run = 0; run < 3; ++run)
+    {
+      int count = 0;
+      std::vector<reactor::Thread*> threads;
+      for (int i = 0; i < iterations; ++i)
+        threads.push_back(
+          new reactor::Thread(
+            elle::sprintf("thread %s", i),
+            [&count, &sleep_time]
+            {
+              reactor::background(
+                [&]
                 {
-                  reactor::background(
-                    [&]
-                    {
-                      ::usleep(sleep_time.total_microseconds());
-                    });
-                  ++count;
-                }));
-          auto start = boost::posix_time::microsec_clock::local_time();
-          reactor::wait(reactor::Waitables(begin(threads), end(threads)));
-          auto duration =
-            boost::posix_time::microsec_clock::local_time() - start;
-          BOOST_CHECK_EQUAL(count, iterations);
-          BOOST_CHECK_EQUAL(sched.background_pool_size(), iterations);
-          BOOST_CHECK_LT(duration, sleep_time * 3);
-          for (auto thread: threads)
-            delete thread;
-        }
-      });
-    sched.run();
+                  ::usleep(sleep_time.total_microseconds());
+                });
+              ++count;
+            }));
+      auto start = boost::posix_time::microsec_clock::local_time();
+      reactor::wait(reactor::Waitables(begin(threads), end(threads)));
+      auto duration =
+        boost::posix_time::microsec_clock::local_time() - start;
+      BOOST_CHECK_EQUAL(count, iterations);
+      BOOST_CHECK_EQUAL(
+        reactor::scheduler().background_pool_size(), iterations);
+      BOOST_CHECK_LT(duration, sleep_time * 3);
+      for (auto thread: threads)
+        delete thread;
+    }
   }
 
-  static
-  void
-  exception()
+  ELLE_TEST_SCHEDULED(exception)
   {
-    reactor::Scheduler sched;
-    reactor::Thread thread(
-      sched, "main",
-      [&]
-      {
-        BOOST_CHECK_THROW(reactor::background([] { throw BeaconException(); }),
-                          std::exception);
-        BOOST_CHECK_THROW(reactor::background([] { throw BeaconException(); }),
-                          std::exception);
-        BOOST_CHECK_THROW(reactor::background([] { throw BeaconException(); }),
-                          std::exception);
-        BOOST_CHECK_EQUAL(sched.background_pool_size(), 1);
-      });
-    sched.run();
+    BOOST_CHECK_THROW(reactor::background([] { throw BeaconException(); }),
+                      std::exception);
+    BOOST_CHECK_THROW(reactor::background([] { throw BeaconException(); }),
+                      std::exception);
+    BOOST_CHECK_THROW(reactor::background([] { throw BeaconException(); }),
+                      std::exception);
+    BOOST_CHECK_EQUAL(reactor::scheduler().background_pool_size(), 1);
   }
 
-  static
-  void
-  aborted()
+  ELLE_TEST_SCHEDULED(aborted)
   {
-    reactor::Scheduler sched;
     reactor::Thread main(
-      sched, "main",
+      "main",
       [&]
       {
         auto done = std::make_shared<bool>(false);
@@ -2501,12 +2472,12 @@ namespace background
         BOOST_ERROR("background task was not terminated");
       });
     reactor::Thread kill(
-      sched, "kill",
+      "kill",
       [&]
       {
         main.terminate();
       });
-    sched.run();
+    reactor::wait(main);
   }
 
   ELLE_TEST_SCHEDULED(aborted_throw)
