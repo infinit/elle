@@ -18,6 +18,7 @@ public:
   Count(Count&& source)
     : count(source.count)
     , dec(true)
+    , destroyed(false)
   {
     source.dec = false;
   }
@@ -25,6 +26,7 @@ public:
   Count(Count const& source)
     : count(source.count)
     , dec(true)
+    , destroyed(false)
   {
     ++count;
   }
