@@ -186,22 +186,84 @@ print()
   BOOST_CHECK_EQUAL(elle::sprintf("%s", s), "quarante deux");
 }
 
+template <int I>
+class Checker
+{
+public:
+  Checker()
+  {
+    ++this->count;
+  }
+
+  Checker(Checker const&) = delete;
+
+  Checker(Checker&&)
+  {
+    ++this->count;
+  }
+
+  ~Checker()
+  {
+    --this->count;
+  }
+
+  void
+  serialize(elle::serialization::Serializer&)
+  {}
+
+  static int count;
+};
+
+template <int I>
+int Checker<I>::count = 0;
+
+template <typename Format, typename Opt>
+static
+void
+_serialization_inplace()
+{
+  {
+    Checker<0>::count = 0;
+    Checker<1>::count = 0;
+    Opt o{Checker<1>()};
+    BOOST_CHECK_EQUAL(Checker<1>::count, 1);
+    auto data = elle::serialization::serialize<Format>(Opt{Checker<0>()}, false);
+    BOOST_CHECK_EQUAL(Checker<0>::count, 0);
+    elle::IOStream s(data.istreambuf());
+    typename Format::SerializerIn input(s, false);
+    o.serialize(input);
+    BOOST_CHECK_EQUAL(Checker<0>::count, 1);
+    BOOST_CHECK_EQUAL(Checker<1>::count, 0);
+  }
+  BOOST_CHECK_EQUAL(Checker<0>::count, 0);
+  BOOST_CHECK_EQUAL(Checker<1>::count, 0);
+}
+
+
 template <typename Format>
 static
 void
 _serialization()
 {
-  typedef elle::Option<int, std::string> Opt;
-  Opt i(42);
-  BOOST_CHECK_EQUAL(
-    (elle::serialization::deserialize<Format, Opt>(
-      elle::serialization::serialize<Format>(i))).template get<int>(),
-    42);
-  Opt s(std::string("quarante deux"));
-  BOOST_CHECK_EQUAL(
-    (elle::serialization::deserialize<Format, Opt>(
-      elle::serialization::serialize<Format>(s))).template get<std::string>(),
-    "quarante deux");
+  {
+    using Opt = elle::Option<int, std::string>;
+    {
+      Opt i(42);
+      BOOST_CHECK_EQUAL(
+        (elle::serialization::deserialize<Format, Opt>(
+          elle::serialization::serialize<Format>(i))).template get<int>(),
+        42);
+    }
+    {
+      Opt s(std::string("quarante deux"));
+      BOOST_CHECK_EQUAL(
+        (elle::serialization::deserialize<Format, Opt>(
+          elle::serialization::serialize<Format>(s))).template get<std::string>(),
+        "quarante deux");
+    }
+  }
+  _serialization_inplace<Format, elle::Option<Checker<0>, Checker<1>>>();
+  _serialization_inplace<Format, elle::Option<Checker<1>, Checker<0>>>();
 }
 
 static
