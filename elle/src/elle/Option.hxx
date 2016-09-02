@@ -66,6 +66,7 @@ namespace elle
 
       static constexpr std::size_t size = Size;
     protected:
+      static_assert(Align > 0, "alignment should not be null");
       ELLE_COMPILER_ALIGN(Align)
       char _buffer[size];
       int _index;
