@@ -588,6 +588,7 @@ def configure(cxx_toolkit = None,
     curl_configure_args.append('DYLD_FALLBACK_LIBRARY_PATH=%s' % path)
   elif windows:
     curl_environment['LIBS'] = '-lcrypt32 -lgdi32'
+    curl_configure_args.append('--build=%s' % cxx_toolkit.prefix[:-1])
   elif cxx_toolkit.os is drake.os.ios:
     curl_configure_args.append('--with-sysroot=%s' % os.environ['SDKROOT'])
   elif cxx_toolkit.os is drake.os.android:
