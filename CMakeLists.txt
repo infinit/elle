@@ -11,6 +11,7 @@ option(Uri_BUILD_TESTS "Build the URI tests." ON)
 option(Uri_BUILD_DOCS "Build the URI documentation." ON)
 option(Uri_FULL_WARNINGS "Build the library with all warnings turned on." ON)
 option(Uri_WARNINGS_AS_ERRORS "Treat warnings as errors." ON)
+option(Uri_USE_STATIC_CRT "Use static C Runtime library (/MT or MTd)." ON)
 
 find_package(Threads REQUIRED)
 
@@ -55,13 +56,16 @@ endif()
 
 
 if (MSVC)
-  foreach(flag_var
-      CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
-      CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
-    if(${flag_var} MATCHES "/MD")
-      string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
-    endif(${flag_var} MATCHES "/MD")
-  endforeach(flag_var)
+  if (Uri_USE_STATIC_CRT)
+    # Replace dynamic MSVCRT linker flags with static version.
+    foreach(flag_var
+        CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
+        CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
+      if(${flag_var} MATCHES "/MD")
+        string(REGEX REPLACE "/MD" "/MT" ${flag_var} "${${flag_var}}")
+      endif(${flag_var} MATCHES "/MD")
+    endforeach(flag_var)
+  endif(Uri_USE_STATIC_CRT)
 
   add_definitions(-D_SCL_SECURE_NO_WARNINGS -D_CRT_SECURE_NO_DEPRECATE)
 endif(MSVC)
