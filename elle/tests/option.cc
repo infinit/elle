@@ -276,9 +276,49 @@ serialization()
   _serialization<elle::serialization::Json>();
 }
 
+class SerThrower
+{
+public:
+  SerThrower(int /* token */)
+    : built(true)
+  {}
+
+  SerThrower(elle::serialization::SerializerIn& s)
+    : built(false)
+  {
+    this->serialize(s);
+  }
+
+  void
+  serialize(elle::serialization::Serializer& s)
+  {
+    if (s.in())
+      elle::err("nope");
+  }
+
+  ~SerThrower()
+  {
+    BOOST_CHECK(this->built);
+  }
+
+  bool built;
+};
+
 static
 void
-serialization2()
+serialization_throw()
+{
+  using O = elle::Option<int, SerThrower>;
+  auto data = elle::serialization::binary::serialize(O(SerThrower{42}), false);
+  O filled(42);
+  elle::IOStream s(data.istreambuf());
+  elle::serialization::binary::SerializerIn input(s, false);
+  BOOST_CHECK_THROW(filled.serialize(input), elle::Error);
+}
+
+static
+void
+serialization_fry()
 {
   typedef elle::Option<int, std::shared_ptr<int>> O;
   O o1(std::make_shared<int>(42));
@@ -341,6 +381,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(reset));
   suite.add(BOOST_TEST_CASE(print));
   suite.add(BOOST_TEST_CASE(serialization));
-  suite.add(BOOST_TEST_CASE(serialization2));
+  suite.add(BOOST_TEST_CASE(serialization_throw));
+  suite.add(BOOST_TEST_CASE(serialization_fry));
   suite.add(BOOST_TEST_CASE(exceptions));
 }

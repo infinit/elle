@@ -348,8 +348,16 @@ namespace elle
       this->template _apply<_details::OptionReset>();
     s.serialize("type", this->_index);
     if (s.in())
-      this->template _apply<_details::OptionDeserialize>(
-        static_cast<serialization::SerializerIn&>(s));
+      try
+      {
+        this->template _apply<_details::OptionDeserialize>(
+          static_cast<serialization::SerializerIn&>(s));
+      }
+      catch (...)
+      {
+        this->_index = -1;
+        throw;
+      }
     else
       this->template _apply<_details::OptionSerialize>(s);
   }
