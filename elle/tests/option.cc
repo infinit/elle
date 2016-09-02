@@ -10,6 +10,7 @@ public:
   Count(int& count)
     : count(count)
     , dec(true)
+    , destroyed(false)
   {
     ++count;
   }
@@ -30,12 +31,16 @@ public:
 
   ~Count()
   {
+    BOOST_CHECK(!this->destroyed);
     if (this->dec)
       --count;
+    this->destroyed = true;
   }
 
   int& count;
   bool dec;
+  bool destroyed;
+
 };
 
 static
