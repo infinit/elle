@@ -37,3 +37,12 @@ class TouchBuilder(drake.Builder):
     for node in self.targets():
       node.path().touch()
     return True
+
+
+class BeaconException(Exception):
+  pass
+
+
+def assertEq(a, b):
+  if a != b:
+    raise Exception('%r != %r' % (a, b))

@@ -1,0 +1,90 @@
+#!/usr/bin/env python3
+
+import drake
+import os
+import tempfile
+
+from utils import *
+
+class Unhashable(drake.Node):
+
+  def __init__(self, *args, **kwargs):
+    self.hashed = False
+    super().__init__(*args, **kwargs)
+
+  def hash(self):
+    self.hashed = True
+    return super().hash()
+
+with tempfile.TemporaryDirectory() as wd:
+
+  os.chdir(wd)
+  with open('unhashable', 'w') as f:
+    print('foo', file = f)
+  import time
+  time.sleep(2)
+
+  def drakefile():
+    n = Unhashable('unhashable')
+    d = drake.node('dest')
+    TouchBuilder([n], [d])
+    return n, d
+
+  with drake.Drake(wd, use_mtime = True) as d:
+    n, d = drakefile()
+    d.build()
+    assert n.hashed
+
+  def with_mtime():
+    n, d = drakefile()
+    d.build()
+    assert not n.hashed
+
+  def without_mtime():
+    n, d = drakefile()
+    d.build()
+    assert n.hashed
+
+
+  # Force mtime usage
+  print('-' * 72)
+  with drake.Drake(wd, use_mtime = True) as d:
+    with_mtime()
+
+  # Disable mtime usage
+  print('-' * 72)
+  with drake.Drake(wd, use_mtime = False) as d:
+    without_mtime()
+
+  # Disable mtime usage through env
+  print('-' * 72)
+  try:
+    os.environ['DRAKE_MTIME'] = '0'
+    with drake.Drake(wd) as d:
+      without_mtime()
+  finally:
+    del os.environ['DRAKE_MTIME']
+
+  # Default mtime usage (true)
+  print('-' * 72)
+  with drake.Drake(wd) as d:
+    with_mtime()
+
+  # Touch source file
+  with open('unhashable', 'w') as f:
+    print('foo', file = f)
+
+  # Without mtime, should rehash
+  print('-' * 72)
+  with drake.Drake(wd, use_mtime = False) as d:
+    without_mtime()
+
+  # With mtime, should rehash and touch dest file
+  print('-' * 72)
+  with drake.Drake(wd, use_mtime = True) as d:
+    without_mtime()
+
+  # With mtime, should now be stable and not rehash
+  print('-' * 72)
+  with drake.Drake(wd, use_mtime = True) as d:
+    with_mtime()

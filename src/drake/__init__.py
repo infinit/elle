@@ -117,20 +117,31 @@ class Drake:
         self.__drake._Drake__prefix = self.__previous
     return Recurser(self)
 
+  def __option(self, name, default, override = None):
+    if override is not None:
+      return override
+    v = _OS.environ.get('DRAKE_%s' % name)
+    if v is None:
+      return default
+    else:
+      return bool(int(v))
+
   def __init__(self,
                root = None,
                jobs = None,
                kill_builders_on_failure = False,
+               use_mtime = None,
   ):
     if root is None:
       root = drake.Path('.')
     self.__jobs = 1
     self.__jobs_lock = None
     self.__kill_builders_on_failure = kill_builders_on_failure
-    self.__source = drake.Path(root)
-    self.__scheduler = Scheduler(policy = sched.DepthFirst())
-    self.__prefix = drake.Path('.')
     self.__nodes = {}
+    self.__prefix = drake.Path('.')
+    self.__scheduler = Scheduler(policy = sched.DepthFirst())
+    self.__source = drake.Path(root)
+    self.__use_mtime = self.__option('MTIME', True, use_mtime)
     # Load the root drakefile
     self.__globals = {}
     path = str(self.path_source / 'drakefile')
@@ -150,6 +161,10 @@ class Drake:
   @property
   def kill_builders_on_failure(self):
     return self.__kill_builders_on_failure
+
+  @property
+  def use_mtime(self):
+    return self.__use_mtime
 
   def run(self, *cfg, **kwcfg):
     try:
@@ -1084,7 +1099,7 @@ class DepFile:
         if n.missing():
           explain(self.__builder, '%s disappeared' % path)
           return False
-        if isinstance(n, Node):
+        if Drake.current.use_mtime and isinstance(n, Node):
           try:
             mtime = n.mtime
           except NotImplementedError:
@@ -2023,7 +2038,7 @@ class Builder:
           if mtime_implemented and not execute \
              and isinstance(res, float):
             for dst in self.__targets:
-              if dst.mtime_local < oldest_mtime:
+              if dst.mtime_local <= oldest_mtime:
                 print('Adjust mtime of %s' % dst)
                 dst.touch(res)
         if execute:
