@@ -2037,7 +2037,7 @@ class Builder:
           if mtime_implemented and not execute \
              and isinstance(res, float):
             for dst in self.__targets:
-              if dst.mtime_local <= oldest_mtime:
+              if dst.mtime_local <= res:
                 print('Adjust mtime of %s' % dst)
                 dst.touch(res)
         if execute:
