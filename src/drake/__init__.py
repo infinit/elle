@@ -181,6 +181,10 @@ class Drake:
     return self.__adjust_mtime
 
   @property
+  def adjust_mtime_future(self):
+    return self.__adjust_mtime_future
+
+  @property
   def adjust_mtime_second(self):
     return self.__adjust_mtime_second
 
