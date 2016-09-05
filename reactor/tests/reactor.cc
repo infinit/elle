@@ -3386,7 +3386,7 @@ ELLE_TEST_SUITE()
   boost::unit_test::framework::master_test_suite().add(background);
   {
     using namespace background;
-    background->add(BOOST_TEST_CASE(operation), 0, valgrind(1, 5));
+    background->add(BOOST_TEST_CASE(operation), 0, valgrind(3, 5));
     background->add(BOOST_TEST_CASE(operations), 0, valgrind(3, 5));
     background->add(BOOST_TEST_CASE(exception), 0, valgrind(1, 5));
     background->add(BOOST_TEST_CASE(thread_exception_yield), 0, valgrind(1, 5));
