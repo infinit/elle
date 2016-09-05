@@ -81,7 +81,7 @@ with tempfile.TemporaryDirectory() as wd:
 
   # With mtime, should rehash and touch dest file
   print('-' * 72)
-  with drake.Drake(wd, use_mtime = True) as d:
+  with drake.Drake(wd, adjust_mtime_second = True) as d:
     without_mtime()
 
   # With mtime, should now be stable and not rehash

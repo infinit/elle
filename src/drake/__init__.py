@@ -131,6 +131,8 @@ class Drake:
                jobs = None,
                kill_builders_on_failure = False,
                use_mtime = None,
+               adjust_mtime = None,
+               adjust_mtime_second = None,
   ):
     if root is None:
       root = drake.Path('.')
@@ -141,7 +143,12 @@ class Drake:
     self.__prefix = drake.Path('.')
     self.__scheduler = Scheduler(policy = sched.DepthFirst())
     self.__source = drake.Path(root)
-    self.__use_mtime = self.__option('MTIME', True, use_mtime)
+    self.__use_mtime = self.__option(
+      'MTIME', True, use_mtime)
+    self.__adjust_mtime = self.__option(
+      'ADJUST_MTIME', True, adjust_mtime)
+    self.__adjust_mtime_second = self.__option(
+      'ADJUST_MTIME_SECOND', False, adjust_mtime_second)
     # Load the root drakefile
     self.__globals = {}
     path = str(self.path_source / 'drakefile')
@@ -165,6 +172,14 @@ class Drake:
   @property
   def use_mtime(self):
     return self.__use_mtime
+
+  @property
+  def adjust_mtime(self):
+    return self.__adjust_mtime
+
+  @property
+  def adjust_mtime_second(self):
+    return self.__adjust_mtime_second
 
   def run(self, *cfg, **kwcfg):
     try:
@@ -1618,7 +1633,13 @@ class Node(BaseNode):
     _OS.utime(str(self.path()), (t + 0.001, t + 0.001))
     self.__mtime = None
     if self.mtime_local <= t:
-      print('Failed to adjust mtime of %s' % self)
+      if Drake.current.adjust_mtime_second:
+        while self.mtime_local <= t:
+          time.sleep(.1)
+          _OS.utime(str(self.path()))
+          self.__mtime = None
+      else:
+        print('Failed to adjust mtime of %s' % self)
 
 def node(path, type = None):
   """Create or get a BaseNode.
@@ -2034,8 +2055,10 @@ class Builder:
               oldest_target, oldest_mtime, mtime_implemented)
             if not res:
               execute = True
-          if mtime_implemented and not execute \
-             and isinstance(res, float):
+          if Drake.current.adjust_mtime and \
+             mtime_implemented and \
+             not execute and \
+             isinstance(res, float):
             for dst in self.__targets:
               if dst.mtime_local <= res:
                 print('Adjust mtime of %s' % dst)
