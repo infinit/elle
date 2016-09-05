@@ -1615,11 +1615,10 @@ class Node(BaseNode):
     return self.__mtime
 
   def touch(self, t):
-    _OS.utime(str(self.path()), None)
+    _OS.utime(str(self.path()), (t + 1, t + 1))
     self.__mtime = None
-    while self.mtime <= t:
-      _OS.utime(str(self.path()), None)
-      self.__mtime = None
+    if self.mtime_local <= t:
+      print('Failed to adjust mtime of %s' % self)
 
 def node(path, type = None):
   """Create or get a BaseNode.
