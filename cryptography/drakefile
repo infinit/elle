@@ -88,8 +88,10 @@ def configure(openssl_config,
     boost_filesystem = drake.cxx.Config(boost.config_filesystem(link = False))
     boost_filesystem.library_add(drake.copy(boost.filesystem_dynamic, 'lib', strip_prefix = True))
 
-  elle_lib_static = elle.lib_static
-  elle_lib_dynamic = drake.copy(elle.lib_dynamic, 'lib', strip_prefix = True)
+  elle_lib_static = drake.copy(
+    elle.lib_static, 'lib', strip_prefix = True)
+  elle_lib_dynamic = drake.copy(
+    elle.lib_dynamic, 'lib', strip_prefix = True)
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
     elle_library = elle_lib_static
   else:
