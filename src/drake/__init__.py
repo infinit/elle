@@ -1644,9 +1644,9 @@ class Node(BaseNode):
           time.sleep(t - now)
         else:
           raise NotImplementedError()
-      _OS.utime(str(self.path()), (t + 0.001, t + 0.001))
+      _OS.utime(str(self.path()), (t, t))
       self.__mtime = None
-      return self.mtime_local > t
+      return self.mtime_local >= t
     try:
       if not Drake.current.adjust_mtime_second and set(t + 0.001):
         return True
