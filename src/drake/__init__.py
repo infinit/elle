@@ -132,6 +132,7 @@ class Drake:
                kill_builders_on_failure = False,
                use_mtime = None,
                adjust_mtime = None,
+               adjust_mtime_future = None,
                adjust_mtime_second = None,
   ):
     if root is None:
@@ -147,6 +148,8 @@ class Drake:
       'MTIME', True, use_mtime)
     self.__adjust_mtime = self.__option(
       'ADJUST_MTIME', True, adjust_mtime)
+    self.__adjust_mtime_future = self.__option(
+      'ADJUST_MTIME_FUTURE', False, adjust_mtime_future)
     self.__adjust_mtime_second = self.__option(
       'ADJUST_MTIME_SECOND', False, adjust_mtime_second)
     # Load the root drakefile
@@ -1630,16 +1633,26 @@ class Node(BaseNode):
     return self.__mtime
 
   def touch(self, t):
-    _OS.utime(str(self.path()), (t + 0.001, t + 0.001))
-    self.__mtime = None
-    if self.mtime_local <= t:
-      if Drake.current.adjust_mtime_second:
-        while self.mtime_local <= t:
-          time.sleep(.1)
-          _OS.utime(str(self.path()))
-          self.__mtime = None
-      else:
-        print('Failed to adjust mtime of %s' % self)
+    now = time.time()
+    def set(t):
+      if t > now:
+        if Drake.current.adjust_mtime_future:
+          time.sleep(t - now)
+        else:
+          raise NotImplementedError()
+      _OS.utime(str(self.path()), (t + 0.001, t + 0.001))
+      self.__mtime = None
+      return self.mtime_local > t
+    try:
+      if not Drake.current.adjust_mtime_second and set(t + 0.001):
+        return True
+      if set(t + 1):
+        return True
+      print('Failed to adjust mtime of %s' % self)
+      return False
+    except NotImplementedError:
+      print('Refusing to adjust mtime of %s in the future' % self)
+      return False
 
 def node(path, type = None):
   """Create or get a BaseNode.
@@ -2061,8 +2074,8 @@ class Builder:
              isinstance(res, float):
             for dst in self.__targets:
               if dst.mtime_local <= res:
-                print('Adjust mtime of %s' % dst)
-                dst.touch(res)
+                if (dst.touch(res)):
+                  print('Adjust mtime of %s' % dst)
         if execute:
           self._execute(depfile_builder)
         else:
