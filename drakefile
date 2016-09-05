@@ -69,6 +69,7 @@ def configure(prefix = '.'):
 
   tests = [
     'base/change-dynamic-dependency',
+    'base/dependency',
     'base/failure',
     'base/failure-cmd',
     'base/interrupt-dynamic-dependency',
@@ -88,7 +89,6 @@ def configure(prefix = '.'):
   # Old style tests
 
   tests = [
-    'base/dependency',
     'base/deps-dyn',
     'base/no-builder-to-make',
     'base/path',

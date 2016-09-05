@@ -3,7 +3,6 @@ import os
 import shutil
 import tempfile
 
-
 class Drake:
 
   def __init__(self, dir = None, *args, **kwargs):
@@ -12,6 +11,7 @@ class Drake:
     self.__drake = drake.Drake(*args, **kwargs)
 
   def __enter__(self):
+    print('>>> %s' % self.__dir)
     if self.__dir is None:
       self.__dir = tempfile.mkdtemp()
       self.__delete = True

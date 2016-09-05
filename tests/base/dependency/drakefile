@@ -1,6 +1,0 @@
-import drake
-
-def configure():
-  exe = drake.node('main.py')
-  exe.dependency_add(drake.node('utils.py'))
-  runner = drake.Runner(exe)
