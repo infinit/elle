@@ -1615,7 +1615,7 @@ class Node(BaseNode):
     return self.__mtime
 
   def touch(self, t):
-    _OS.utime(str(self.path()), (t + 1, t + 1))
+    _OS.utime(str(self.path()), (t + 0.001, t + 0.001))
     self.__mtime = None
     if self.mtime_local <= t:
       print('Failed to adjust mtime of %s' % self)
