@@ -139,13 +139,13 @@ _test_suite()                                           \
                              BOOST_PP_SEQ_TAIL(Seq))                    \
 
 # ifdef INFINIT_WINDOWS
-#  define ELLE_TEST_HANDLE_SIGALRM(Sched)
+#  define ELLE_TEST_HANDLE_SIGALRM(Sched, Name)
 # else
-#  define ELLE_TEST_HANDLE_SIGALRM(Sched)                             \
+#  define ELLE_TEST_HANDLE_SIGALRM(Sched, Name)                       \
   Sched.signal_handle(SIGALRM,                                        \
                       []                                              \
                       {                                               \
-                        ELLE_ERR("test timeout: SIGALRM");            \
+                        ELLE_ERR("test %s timeout: SIGALRM", #Name);  \
                         throw elle::Error("test timeout");            \
                       });
 # endif
@@ -161,7 +161,7 @@ void                                                                  \
 Name(ELLE_TEST_PROTOTYPE(Args))                                       \
 {                                                                     \
   reactor::Scheduler sched;                                           \
-  ELLE_TEST_HANDLE_SIGALRM(sched);                                    \
+  ELLE_TEST_HANDLE_SIGALRM(sched, Name);                              \
   reactor::Thread main(                                               \
     sched, "main",                                                    \
     [&]                                                               \
