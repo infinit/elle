@@ -151,12 +151,18 @@ namespace elle
     }
 
     void
-    write(std::ostream& stream, boost::any const& any, bool with_endl)
+    write(std::ostream& stream,
+          boost::any const& any,
+          bool with_endl,
+          bool pretty_print)
     {
       ELLE_TRACE_SCOPE("write json to stream");
       auto spirit = to_spirit(any);
       elle::IOStreamClear clearer(stream);
-      json_spirit::write(spirit, stream, json_spirit::raw_utf8);
+      int options = json_spirit::raw_utf8;
+      if (pretty_print)
+        options |= json_spirit::pretty_print;
+      json_spirit::write(spirit, stream, options);
       if (with_endl)
         stream << "\n";
       stream.flush();
@@ -165,8 +171,9 @@ namespace elle
     std::string
     pretty_print(boost::any const& any)
     {
-      auto spirit = to_spirit(any);
-      return json_spirit::write_formatted(spirit);
+      std::stringstream stream;
+      elle::json::write(stream, any, false, true);
+      return stream.str();
     }
   }
 }

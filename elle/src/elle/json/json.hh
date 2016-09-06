@@ -23,7 +23,10 @@ namespace elle
     read(std::istream& stream);
 
     void
-    write(std::ostream& stream, boost::any const& any, bool with_endl = true);
+    write(std::ostream& stream,
+          boost::any const& any,
+          bool with_endl = true,
+          bool pretty_print = false);
 
     std::string
     pretty_print(boost::any const& any);
