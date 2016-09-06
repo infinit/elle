@@ -24,27 +24,27 @@ namespace elle
 
   std::string	demangle(const std::string& sym);
 
-  class Backtrace: public std::vector<StackFrame>
+  class Backtrace
   {
   public:
     Backtrace();
-    typedef std::vector<StackFrame> SuperType;
+    Backtrace(std::vector<StackFrame> const&);
     typedef StackFrame Frame;
     static inline ELLE_COMPILER_ATTRIBUTE_ALWAYS_INLINE
     Backtrace
     current(unsigned skip = 0);
     void
     strip_base(const Backtrace& base);
+    std::vector<StackFrame> const&
+    frames() const;
   private:
-# if defined(INFINIT_WINDOWS)
-    static
-    Backtrace
-    _current();
-# elif !defined(INFINIT_ANDROID)
-    static
-    Backtrace
-    _current(void** callstack, size_t frames, unsigned skip);
-# endif
+    void _resolve();
+    std::vector<StackFrame> _frames;
+    bool _resolved;
+    unsigned _skip;
+    static const size_t _callstack_size = 128;
+    void* _callstack[_callstack_size];
+    unsigned _frame_count;
   };
 
   std::ostream& operator<< (std::ostream& output, const StackFrame& frame);

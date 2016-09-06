@@ -23,7 +23,7 @@ BOOST_AUTO_TEST_CASE(ExceptionBacktrace)
   {
     BOOST_CHECK_EQUAL(e.what(), "test message");
 #if ! defined INFINIT_WINDOWS && ! defined INFINIT_ANDROID
-    BOOST_CHECK_EQUAL(e.backtrace().front().symbol, "thrower()");
+    BOOST_CHECK_EQUAL(e.backtrace().frames().front().symbol, "thrower()");
 #endif
   }
   catch (...)
