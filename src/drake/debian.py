@@ -14,24 +14,37 @@ from itertools import chain
 
 class Packager(drake.Builder):
 
-  def __init__(self, basename, sources, path, destination = '.',
-               preload = None, cleanup_source_directory = True):
+  def __init__(self,
+               basename,
+               attributes,
+               sources,
+               path,
+               destination = '.',
+               preload = None,
+               cleanup_source_directory = True):
+    path = drake.Path(path)
     self.__destination = drake.Path(destination)
     basename = drake.Path(basename)
     self.__target = drake.node(self.__destination / basename)
     self.__destination = drake.path_build(self.__destination)
     self.__path = drake.path_build(path)
     self.__preload = preload
+    self.__attrs = attributes
+    self.__control = drake.node(path / 'DEBIAN/control')
     if preload is not None:
       sources += [preload]
     self.__cleanup_source_directory = cleanup_source_directory
-    super().__init__(sources, [self.__target])
+    super().__init__(
+      sources, [self.__control, self.__target])
 
   @property
   def path(self):
     return self.__path
 
   def execute(self):
+    with open(str(self.__control.path()), 'w') as f:
+      for k, v in self.__attrs.items():
+        print('%s: %s' % (k, v), file = f)
     if self.__cleanup_source_directory:
       self.cleanup_source_directory(self.__path)
     os.chmod(str(self.__path / 'DEBIAN'), 0o755)
