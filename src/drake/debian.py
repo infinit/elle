@@ -7,6 +7,7 @@
 # See the LICENSE file for more information.
 
 import drake
+import math
 import os
 import shutil
 
@@ -42,6 +43,11 @@ class Packager(drake.Builder):
     return self.__path
 
   def execute(self):
+    if 'Installed-Size' not in self.__attrs:
+      self.__attrs['Installed-Size'] = math.ceil(sum(
+        os.path.getsize(os.path.join(p, f))
+        for p, _, files in os.walk(str(self.__path))
+        for f in files) / 1024)
     with open(str(self.__control.path()), 'w') as f:
       for k, v in self.__attrs.items():
         print('%s: %s' % (k, v), file = f)
