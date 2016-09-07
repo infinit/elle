@@ -2280,9 +2280,10 @@ class Builder:
       for f in chain(files, dirs):
         effective.add(path / f)
     expected = set(
-      chain(*[n.path().unfold()
-              for s in self.sources().values()
-              for n in chain([s], s.dependencies_recursive)]))
+      chain(*[
+        n.path().unfold()
+        for s in chain(self.sources().values(), self.targets())
+        for n in chain([s], s.dependencies_recursive)]))
     for g in drake.Path.rootify(p.without_prefix(root_path)
                                 for p in (effective - expected)):
       g = root_path / g
