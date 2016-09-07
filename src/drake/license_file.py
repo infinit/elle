@@ -36,9 +36,13 @@ class Packager(drake.Builder):
       for license in self.__sorted_sources:
         l_name = license.replace(
           '%s/%s/' % (self.__context, self.__license_folder), '')
-        out.write('# Begin: %s\n(*%s\n' % (l_name, 78 * '-'))
         l_file = str(drake.path_source() / license)
-        with open(l_file, 'r', encoding = 'utf-8') as f:
-          out.write(f.read())
-        out.write('\n%s*)\n# End: %s\n\n' % (78 * '-', l_name))
+        Packager.print_entry(out, l_name, l_file)
     return True
+
+  @staticmethod
+  def print_entry(out, name, file):
+    out.write('# Begin: %s\n(*%s\n' % (name, 78 * '-'))
+    with open(file, 'r', encoding = 'utf-8') as f:
+      out.write(f.read())
+    out.write('\n%s*)\n# End: %s\n\n' % (78 * '-', name))
