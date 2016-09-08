@@ -394,16 +394,6 @@ multiline()
   BOOST_CHECK_EQUAL(output.str(),expected);
 }
 
-#ifndef BOOST_CHECK_NOT_EQUAL
-template<typename T>
-static
-void
-BOOST_CHECK_NOT_EQUAL(T a, T b)
-{
-  BOOST_CHECK_PREDICATE(std::not_equal_to<T>(), (a)(b));
-}
-#endif
-
 static
 void
 trim()
