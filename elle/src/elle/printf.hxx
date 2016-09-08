@@ -204,10 +204,10 @@ namespace elle
     {
       ELLE_LOG_COMPONENT("elle.printf");
       // Don't use printf to handle printf fatal errors.
-      std::stringstream ss;
-      ss << "format error with \"" << fmt << "\": " << e.what();
-      ELLE_ERR("%s", ss.str());
-      throw elle::Exception(ss.str());
+      static boost::format const f("format error with \"%s\": %s");
+      auto msg = (boost::format(f) % fmt % e.what()).str();
+      ELLE_ERR("%s", msg);
+      elle::err(msg);
     }
   }
 
