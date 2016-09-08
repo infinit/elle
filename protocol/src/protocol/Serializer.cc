@@ -229,8 +229,8 @@ namespace infinit
          uint32_t size,
          uint32_t offset = 0)
     {
-      ELLE_DEBUG_SCOPE("read %s bytes from %s at offset %s (to %f)",
-                       size, stream, offset, content);
+      ELLE_DEBUG_SCOPE("read %s bytes from %s at offset %s",
+                       size, stream, offset);
       // read the full packet even if terminated to keep the stream
       // in a consistent state
       int nread = 0;
@@ -262,7 +262,6 @@ namespace infinit
           }
           throw;
         }
-        ELLE_DUMP("content: %x (size: %s)", content, content.size());
       }
     }
 
