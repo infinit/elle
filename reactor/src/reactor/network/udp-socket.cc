@@ -355,17 +355,14 @@ namespace reactor
     void
     UDPSocket::print(std::ostream& s) const
     {
-      // XXX: Accessing local_endpoint on an unbound socket will result on a
-      // boost::system::system_error: Bad File Descriptor.
-      // Until 'socket()->bound()', just try catch that error.
-      try
-      {
-        s << "UDP Socket " << socket()->local_endpoint();
-      }
-      catch (boost::system::system_error const&)
-      {
-        s << "UDP Socket (" << (void*) this << ")";
-      }
+      // Accessing local_endpoint on an unbound socket will result in a bad file
+      // descriptor error.
+      boost::system::error_code e;
+      auto ep = this->socket()->local_endpoint(e);
+      if (e)
+        elle::fprintf(s, "UDPSocket(%s)", (void*)(this));
+      else
+        elle::fprintf(s, "UDPSocket(%s)", ep);
     }
 
     elle::Buffer
