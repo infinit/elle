@@ -393,10 +393,11 @@ dialog(elle::Version const& version,
 }
 
 #define CASES(function)                                                 \
-  for (auto const& version: {elle::Version{0, 1, 0}, elle::Version{0, 2, 0}}) \
+  for (auto const& version: {elle::Version{0, 1, 0},                    \
+                             elle::Version{0, 2, 0}})                   \
     for (auto checksum: {true, false})                                  \
-      ELLE_TRACE("version: %s, checksum: %s", version, checksum)        \
-        function(version, checksum)
+      ELLE_LOG("case: version = %s, checksum = %s", version, checksum)  \
+        function(version, checksum)                                     \
 
 static
 void
@@ -967,9 +968,9 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(connection_lost_reader), 0, valgrind(3, 10));
   suite.add(BOOST_TEST_CASE(connection_lost_sender), 0, valgrind(3, 10));
   suite.add(BOOST_TEST_CASE(corruption), 0, valgrind(3, 10));
-  suite.add(BOOST_TEST_CASE(interruption), 0, valgrind(6, 10));
+  suite.add(BOOST_TEST_CASE(interruption), 0, valgrind(6, 15));
   suite.add(BOOST_TEST_CASE(interruption2), 0, valgrind(3, 10));
   suite.add(BOOST_TEST_CASE(termination), 0, valgrind(3, 10));
-  suite.add(BOOST_TEST_CASE(eof), 0, 3);
-  suite.add(BOOST_TEST_CASE(message_v020), 0, 3);
+  suite.add(BOOST_TEST_CASE(eof), 0, valgrind(3));
+  suite.add(BOOST_TEST_CASE(message_v020), 0, valgrind(3));
 }
