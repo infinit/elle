@@ -8,7 +8,6 @@
 # include <boost/multi_index/member.hpp>
 
 # include <elle/attribute.hh>
-# include <elle/elle.hh>
 # include <elle/Error.hh>
 # include <elle/Option.hh>
 # include <elle/Printable.hh>
