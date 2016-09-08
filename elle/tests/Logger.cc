@@ -428,11 +428,13 @@ error()
     BOOST_CHECK_THROW(ELLE_LOG("invalid log", 42), elle::Error);
     BOOST_CHECK_THROW(ELLE_DUMP("invalid log %s"), elle::Error);
     BOOST_CHECK_GT(output.str().size(), 0);
+    elle::log::detail::debug_formats(false);
   }
 }
 
 ELLE_TEST_SUITE()
 {
+  elle::log::detail::debug_formats(false);
   auto& suite = boost::unit_test::framework::master_test_suite();
 
   elle::os::setenv("ELLE_LOG_COLOR", "1", 0);
