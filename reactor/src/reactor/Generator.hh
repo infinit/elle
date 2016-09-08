@@ -2,6 +2,7 @@
 # define REACTOR_GENERATOR_HH
 
 # include <elle/Error.hh>
+# include <elle/optional.hh>
 
 # include <reactor/Channel.hh>
 # include <reactor/thread.hh>
