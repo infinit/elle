@@ -480,7 +480,6 @@ namespace infinit
         uint32_t size = std::min(total_size - offset, this->_chunk_size);
         ELLE_DEBUG("read chunk of size %s", size);
         infinit::protocol::read(this->_stream, packet, size, offset);
-        ELLE_DUMP("current packet state: '%x'", packet);
         offset += size;
         ELLE_ASSERT_LTE(offset, total_size);
         if (offset >= total_size)
