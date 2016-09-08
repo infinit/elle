@@ -246,6 +246,10 @@ namespace infinit
           if (stream.eof())
             throw Serializer::EOF();
         }
+        catch (Serializer::EOF const&)
+        {
+          throw;
+        }
         catch (...)
         {
           ELLE_TRACE("reading %s interrupted", stream);
