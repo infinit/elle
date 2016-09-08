@@ -1,6 +1,7 @@
 #ifndef ELLE_LOG_SEND_HXX
 # define ELLE_LOG_SEND_HXX
 
+# include <elle/fwd.hh>
 # include <elle/print.hh>
 # include <elle/printf.hh>
 
@@ -24,10 +25,26 @@ namespace elle
         _proceed(this->_enabled(type, level, component)),
         _indentation(nullptr)
       {
-        if (!_proceed)
-          return;
-        this->_send(level, type, indent, component, file, line, function,
-                    elle::sprintf(fmt, std::forward<Args>(args)...));
+        try
+        {
+          if (this->_proceed)
+            this->_send(level, type, indent, component, file, line, function,
+                        elle::sprintf(fmt, std::forward<Args>(args)...));
+        }
+        // Catching ellipsys to avoid header dependencies. AFAICT only
+        // elle::print can throw, and it only throw elle::Error.
+        catch (...)
+        {
+          this->_send(Logger::Level::log,
+                      Logger::Type::error,
+                      false,
+                      "elle.log",
+                      __FILE__,
+                      __LINE__,
+                      ELLE_COMPILER_PRETTY_FUNCTION,
+                      elle::sprintf("%s:%s: invalid log: %s", file, line, fmt)
+            );
+        }
       }
 
       inline

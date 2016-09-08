@@ -407,6 +407,15 @@ trim()
   BOOST_CHECK_EQUAL(output.str(), "[trim] This message is trimmed !\n");
 }
 
+static
+void
+error()
+{
+  ELLE_LOG_COMPONENT("error");
+  ELLE_LOG("invalid log", 42);
+  ELLE_LOG("invalid log %s");
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -424,6 +433,7 @@ ELLE_TEST_SUITE()
 
   boost::unit_test::test_suite* format = BOOST_TEST_SUITE("format");
   suite.add(format);
+  concurrency->add(BOOST_TEST_CASE(error));
   concurrency->add(BOOST_TEST_CASE(multiline));
   concurrency->add(BOOST_TEST_CASE(trim));
 #endif
