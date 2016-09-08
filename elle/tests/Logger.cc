@@ -419,20 +419,22 @@ trim()
 
 ELLE_TEST_SUITE()
 {
+  auto& suite = boost::unit_test::framework::master_test_suite();
+
   elle::os::setenv("ELLE_LOG_COLOR", "1", 0);
-  boost::unit_test::test_suite* logger = BOOST_TEST_SUITE("Logger");
-  boost::unit_test::framework::master_test_suite().add(logger);
+  boost::unit_test::test_suite* logger = BOOST_TEST_SUITE("logger");
+  suite.add(logger);
   logger->add(BOOST_TEST_CASE(message_test));
   logger->add(BOOST_TEST_CASE(environment_format_test));
 
 #ifndef INFINIT_ANDROID
-  boost::unit_test::test_suite* concurrency = BOOST_TEST_SUITE("Concurrency");
-  boost::unit_test::framework::master_test_suite().add(concurrency);
+  boost::unit_test::test_suite* concurrency = BOOST_TEST_SUITE("concurrency");
+  suite.add(concurrency);
   concurrency->add(BOOST_TEST_CASE(std::bind(parallel_write)));
 
-  boost::unit_test::test_suite* format = BOOST_TEST_SUITE("Format");
-  boost::unit_test::framework::master_test_suite().add(format);
-  concurrency->add(BOOST_TEST_CASE(std::bind(multiline)));
-  concurrency->add(BOOST_TEST_CASE(std::bind(trim)));
+  boost::unit_test::test_suite* format = BOOST_TEST_SUITE("format");
+  suite.add(format);
+  concurrency->add(BOOST_TEST_CASE(multiline));
+  concurrency->add(BOOST_TEST_CASE(trim));
 #endif
 }
