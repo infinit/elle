@@ -580,8 +580,8 @@ namespace reactor
     Request::Impl::progress_set(curl_off_t dltotal, curl_off_t dlnow,
                                 curl_off_t ultotal, curl_off_t ulnow)
     {
-      ELLE_DEBUG("%s: progress set to %s", *this->_request, this->_progress);
       this->_progress = Progress {dlnow, dltotal, ulnow, ultotal};
+      ELLE_DEBUG("%s: progress set to %s", *this->_request, this->_progress);
       this->_progress_changed(this->_progress);
     }
 
