@@ -31,9 +31,9 @@ x86_64-ubuntu-gcc4:
     - mkdir -p ../elle-build ../elle-install
     - farm/configure --arch x86_64 --os trusty --compiler gcc4 --project Elle --source-dir . --build-dir ../elle-build --install-dir ../elle-install
     - export ELLE_LOG_CHECK_FORMATS=1
-    - cd ../elle-build && python3 drake -j 4 //build
-    - cd ../elle-build && python3 drake -j 4 //check
-    - cd ../elle-build && python3 drake -j 4 //install
+    - cd ../elle-build && python3 drake -j $(nproc) //build
+    - cd ../elle-build && python3 drake -j $(($(nproc) / 4)) //check
+    - cd ../elle-build && python3 drake -j $(nproc) //install
   tags:
     - x86_64
     - ubuntu
