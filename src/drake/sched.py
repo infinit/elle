@@ -524,7 +524,6 @@ class Coroutine(Waitable):
       else:
         self.throw(Terminate(self))
     else:
-      print('DELAY')
       self.__interrupted = True
 
   @property
