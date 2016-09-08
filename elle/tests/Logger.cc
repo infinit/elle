@@ -412,8 +412,23 @@ void
 error()
 {
   ELLE_LOG_COMPONENT("error");
-  ELLE_LOG("invalid log", 42);
-  ELLE_LOG("invalid log %s");
+  {
+    std::stringstream output;
+    elle::log::logger(
+      std::unique_ptr<elle::log::Logger>{new elle::log::TextLogger{output}});
+    ELLE_LOG("invalid log", 42);
+    ELLE_LOG("invalid log %s");
+    BOOST_CHECK_GT(output.str().size(), 0);
+  }
+  {
+    std::stringstream output;
+    elle::log::detail::debug_formats(true);
+    elle::log::logger(
+      std::unique_ptr<elle::log::Logger>{new elle::log::TextLogger{output}});
+    BOOST_CHECK_THROW(ELLE_LOG("invalid log", 42), elle::Error);
+    BOOST_CHECK_THROW(ELLE_DUMP("invalid log %s"), elle::Error);
+    BOOST_CHECK_GT(output.str().size(), 0);
+  }
 }
 
 ELLE_TEST_SUITE()
@@ -433,8 +448,8 @@ ELLE_TEST_SUITE()
 
   boost::unit_test::test_suite* format = BOOST_TEST_SUITE("format");
   suite.add(format);
-  concurrency->add(BOOST_TEST_CASE(error));
-  concurrency->add(BOOST_TEST_CASE(multiline));
-  concurrency->add(BOOST_TEST_CASE(trim));
+  format->add(BOOST_TEST_CASE(error));
+  format->add(BOOST_TEST_CASE(multiline));
+  format->add(BOOST_TEST_CASE(trim));
 #endif
 }

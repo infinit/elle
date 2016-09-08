@@ -11,6 +11,11 @@ namespace elle
   {
     namespace detail
     {
+      bool
+      debug_formats();
+      void
+      debug_formats(bool v);
+
       template <typename... Args>
       inline
       Send::Send(elle::log::Logger::Level level,
@@ -25,11 +30,14 @@ namespace elle
         _proceed(this->_enabled(type, level, component)),
         _indentation(nullptr)
       {
+        bool debug = debug_formats();
         try
         {
           if (this->_proceed)
             this->_send(level, type, indent, component, file, line, function,
                         elle::sprintf(fmt, std::forward<Args>(args)...));
+          else if (debug)
+            elle::sprintf(fmt, std::forward<Args>(args)...);
         }
         // Catching ellipsys to avoid header dependencies. AFAICT only
         // elle::print can throw, and it only throw elle::Error.
@@ -44,6 +52,8 @@ namespace elle
                       ELLE_COMPILER_PRETTY_FUNCTION,
                       elle::sprintf("%s:%s: invalid log: %s", file, line, fmt)
             );
+          if (debug)
+            throw;
         }
       }
 

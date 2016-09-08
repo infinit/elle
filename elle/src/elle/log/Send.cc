@@ -127,6 +127,26 @@ namespace elle
           this->_indentation = nullptr;
         }
       }
+
+      static
+      bool&
+      _debug_formats()
+      {
+        static bool res = elle::os::inenv("ELLE_LOG_CHECK_FORMATS");
+        return res;
+      }
+
+      bool
+      debug_formats()
+      {
+        return _debug_formats();
+      }
+
+      void
+      debug_formats(bool v)
+      {
+        _debug_formats() = v;
+      }
     }
   }
 }
