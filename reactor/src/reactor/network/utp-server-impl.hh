@@ -42,6 +42,7 @@ namespace reactor
         (std::deque<std::pair<elle::Buffer, EndPoint>>), send_buffer);
       ELLE_ATTRIBUTE(bool, sending);
       ELLE_ATTRIBUTE(int, icmp_fd);
+      ELLE_ATTRIBUTE_RX(std::vector<Thread::unique_ptr>, socket_shutdown_threads);
       friend class UTPServer;
       friend class UTPSocket;
     };

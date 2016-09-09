@@ -110,8 +110,8 @@ namespace reactor
       auto name = elle::sprintf("%s shutdown", this);
       this->_impl->on_close();
       reactor::run_later(
-        std::move(name),
-        [impl = std::shared_ptr<Impl>(this->_impl.release())]
+        name,
+        [name, impl = std::shared_ptr<Impl>(this->_impl.release())]
         {
           try
           {
@@ -126,8 +126,11 @@ namespace reactor
                   server->_checker &&
                   !server->_checker->done())
               {
-                if (!reactor::wait(impl->_destroyed_barrier, 90_sec))
-                  ELLE_WARN("%s: timeout on UTP shutdown", impl);
+                server->socket_shutdown_threads().emplace_back(
+                  new Thread(name, [impl] {
+                    if (!reactor::wait(impl->_destroyed_barrier, 90_sec))
+                      ELLE_WARN("%s: timeout on UTP shutdown", impl);
+                }));
               }
               else
                 ELLE_WARN("%s: UTP server was destroyed before us", impl);

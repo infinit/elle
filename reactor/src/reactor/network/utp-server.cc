@@ -521,6 +521,14 @@ namespace reactor
             {
               while (true)
               {
+                auto& sst = this->_socket_shutdown_threads;
+                auto it = std::remove_if(sst.begin(), sst.end(),
+                  [](Thread::unique_ptr const& t)
+                  {
+                    return !t || t->done();
+                  });
+                sst.erase(it, sst.end());
+
                 utp_check_timeouts(this->_ctx);
                 reactor::sleep(50_ms);
                 this->_check_icmp();

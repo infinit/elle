@@ -182,6 +182,27 @@ ELLE_TEST_SCHEDULED(many)
   sp.s2->stats();
 }
 
+ELLE_TEST_SCHEDULED(destruction)
+{
+  for (int y=0; y<20; ++y)
+  {
+    SocketPair sp;
+    sp.s1->write("foo");
+    ELLE_ASSERT_EQ(sp.s2->read_some(3).string(), "foo");
+    sp.s2->write("bar");
+    ELLE_ASSERT(sp.s1->read_some(3).string() == "bar");
+    sp.s1->write("baz");
+    sp.s2->write("bam");
+    ELLE_ASSERT(sp.s1->read_some(3).string() == "bam");
+    ELLE_ASSERT(sp.s2->read_some(3).string() == "baz");
+    ELLE_LOG("done");
+    sp.s1.reset();
+    sp.s2.reset();
+    for (int i=0; i<y; ++i)
+      reactor::yield();
+  }
+}
+
 SocketPair::SocketPair()
 {
   srv1.listen(0);
@@ -221,4 +242,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(streams), 0, valgrind(2));
   suite.add(BOOST_TEST_CASE(big), 0, valgrind(2));
   suite.add(BOOST_TEST_CASE(many), 0, valgrind(8));
+  suite.add(BOOST_TEST_CASE(destruction), 0, valgrind(2));
 }
