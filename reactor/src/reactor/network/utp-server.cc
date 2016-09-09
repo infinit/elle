@@ -304,7 +304,6 @@ namespace reactor
         this->_icmp_fd = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_ICMP);
         if (this->_icmp_fd < 0)
           elle::err("Failed to create ICMP socket: %s", errno);
-        struct timeval tv;
         if (fcntl(this->_icmp_fd, F_SETFL, O_NONBLOCK) == -1)
           elle::err("Failed to set socket to non-blocking state: %s", errno);
       }
