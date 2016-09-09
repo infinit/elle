@@ -219,9 +219,9 @@ namespace reactor
       {
         if (!endpoints.empty())
         { // try known endpoints
-          ELLE_TRACE("pinging id=%s, tmpid=%s", id, tempid);
+          ELLE_TRACE("pinging id=%s", contactid);
           for (auto const& ep: endpoints)
-            send_ping(ep, tempid);
+            send_ping(ep, contactid);
         }
         // try establishing link through rdv
         auto const& c = _contacts.at(contactid);
