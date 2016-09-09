@@ -1,12 +1,9 @@
 #ifndef REACTOR_NETWORK_UTP_SERVER_HH
 # define REACTOR_NETWORK_UTP_SERVER_HH
 
-# include <deque>
-
 # include <reactor/Barrier.hh>
 # include <reactor/network/fwd.hh>
 # include <reactor/network/rdv-socket.hh>
-# include <reactor/network/utp-socket.hh>
 
 namespace reactor
 {
@@ -14,9 +11,23 @@ namespace reactor
   {
     class UTPServer
     {
+    /*-------------.
+    | Construction |
+    `-------------*/
     public:
       UTPServer();
       ~UTPServer();
+
+    /*-----------.
+    | Attributes |
+    `-----------*/
+    public:
+      ELLE_attribute_rw(unsigned char, xorify);
+
+    /*-----------.
+    | Networking |
+    `-----------*/
+    public:
       typedef boost::asio::ip::udp::endpoint EndPoint;
       void
       listen(int port, bool ipv6 = false);
@@ -32,34 +43,18 @@ namespace reactor
                   DurationOpt timeout = DurationOpt());
       void
       set_local_id(std::string const& id);
-      // For internal use
-      void
-      send_to(Buffer buf, EndPoint where);
-      void
-      on_accept(utp_socket* s);
       bool
       rdv_connected() const;
     private:
-      void
-      _check_icmp();
-      void
-      _cleanup();
-      void
-      _send();
-      void
-      _send_cont(boost::system::error_code const&, size_t);
-      utp_context* ctx;
-      ELLE_ATTRIBUTE_R(std::unique_ptr<RDVSocket>, socket);
-      ELLE_ATTRIBUTE_RX(unsigned char, xorify);
-      std::vector<std::unique_ptr<UTPSocket>> _accept_queue;
-      Barrier _accept_barrier;
-      std::unique_ptr<Thread> _listener;
-      std::unique_ptr<Thread> _checker;
-      std::deque<std::pair<elle::Buffer, EndPoint>> _send_buffer;
-      bool _sending;
-      int _icmp_fd;
-      std::shared_ptr<int> _beacon;
       friend class UTPSocket;
+
+    /*---------------.
+    | Implementation |
+    `---------------*/
+    public:
+      struct Impl;
+    private:
+      ELLE_ATTRIBUTE(std::shared_ptr<Impl>, impl);
     };
   }
 }

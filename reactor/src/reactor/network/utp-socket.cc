@@ -10,7 +10,7 @@
 #include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/fwd.hh>
-#include <reactor/network/utp-server.hh>
+#include <reactor/network/utp-server-impl.hh>
 #include <reactor/scheduler.hh>
 #include <reactor/thread.hh>
 
@@ -57,7 +57,7 @@ namespace reactor
     | Construction |
     `-------------*/
 
-    UTPSocket::UTPSocket(UTPServer& server, utp_socket* socket, bool open)
+    UTPSocket::UTPSocket(UTPServer::Impl& server, utp_socket* socket, bool open)
       : IOStream(new StreamBuffer(this))
       , _impl(elle::make_unique<Impl>(server, socket, open))
     {
@@ -72,7 +72,8 @@ namespace reactor
         this->_impl->_destroyed_barrier.open();
     }
 
-    UTPSocket::Impl::Impl(UTPServer& server, utp_socket* socket, bool open)
+    UTPSocket::Impl::Impl(
+      UTPServer::Impl& server, utp_socket* socket, bool open)
       : _socket(socket) // socket first because it is used when printing this
       , _read_barrier(elle::sprintf("%s read", this))
       , _write_barrier(elle::sprintf("%s write", this))
@@ -90,13 +91,13 @@ namespace reactor
     }
 
     UTPSocket::UTPSocket(UTPServer& server)
-      : UTPSocket(server, utp_create_socket(server.ctx), false)
+      : UTPSocket(*server._impl, utp_create_socket(server._impl->_ctx), false)
     {
       this->_impl->_destroyed_barrier.open();
     }
 
     UTPSocket::UTPSocket(UTPServer& server, std::string const& host, int port)
-      : UTPSocket(server, utp_create_socket(server.ctx), false)
+      : UTPSocket(*server._impl, utp_create_socket(server._impl->_ctx), false)
     {
       connect(host, port);
     }

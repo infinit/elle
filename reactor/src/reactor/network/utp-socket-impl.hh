@@ -23,7 +23,7 @@ namespace reactor
     | Construction |
     `-------------*/
     public:
-      Impl(UTPServer& server, utp_socket* socket, bool open);
+      Impl(UTPServer::Impl& server, utp_socket* socket, bool open);
       ~Impl();
 
     /*-----------.
@@ -40,13 +40,14 @@ namespace reactor
       ELLE_ATTRIBUTE(Mutex, write_mutex);
       ELLE_ATTRIBUTE(Barrier, connect_barrier);
       ELLE_ATTRIBUTE(Barrier, destroyed_barrier);
-      ELLE_ATTRIBUTE_R(UTPServer&, server);
+      ELLE_ATTRIBUTE_R(UTPServer::Impl&, server);
       ELLE_ATTRIBUTE(elle::ConstWeakBuffer, write);
       ELLE_ATTRIBUTE(MultiLockBarrier, pending_operations);
       ELLE_ATTRIBUTE(int, write_pos);
       ELLE_ATTRIBUTE(bool, open);
       ELLE_ATTRIBUTE(bool, closing);
       ELLE_ATTRIBUTE(std::weak_ptr<int>, server_beacon);
+
     /*----------.
     | Callbacks |
     `----------*/

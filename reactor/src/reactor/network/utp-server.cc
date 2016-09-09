@@ -19,6 +19,7 @@
 
 #include <reactor/network/buffer.hh> // FIXME: replace with elle::WeakBuffer
 #include <reactor/scheduler.hh>
+#include <reactor/network/utp-server-impl.hh>
 #include <reactor/network/utp-socket-impl.hh>
 
 ELLE_LOG_COMPONENT("reactor.network.UTPServer");
@@ -32,6 +33,21 @@ namespace reactor
     on_firewall(utp_callback_arguments *a)
     {
       return 0;
+    }
+
+    static inline
+    UTPSocket::Impl*
+    get(utp_callback_arguments* args)
+    {
+      return reinterpret_cast<UTPSocket::Impl*>(utp_get_userdata(args->socket));
+    }
+
+    static inline
+    UTPServer::Impl*
+    get_server(utp_callback_arguments* args)
+    {
+      return reinterpret_cast<UTPServer::Impl*>(
+        utp_context_get_userdata(args->context));
     }
 
     static
@@ -59,7 +75,7 @@ namespace reactor
         throw elle::Error(
           elle::sprintf("unknown protocol %s", sin->sin_family));
       }
-      UTPServer* server = (UTPServer*)utp_context_get_userdata(args->context);
+      auto server = get_server(args);
       ELLE_ASSERT(server);
       Buffer buf(args->buf, args->len);
       elle::Buffer copy;
@@ -72,13 +88,6 @@ namespace reactor
       }
       server->send_to(buf, ep);
       return 0;
-    }
-
-    static inline
-    UTPSocket::Impl*
-    get(utp_callback_arguments* args)
-    {
-      return reinterpret_cast<UTPSocket::Impl*>(utp_get_userdata(args->socket));
     }
 
     static
@@ -130,19 +139,12 @@ namespace reactor
       return 0;
     }
 
-    void
-    UTPServer::on_accept(utp_socket* s)
-    {
-      this->_accept_queue.emplace_back(new UTPSocket(*this, s, true));
-      this->_accept_barrier.open();
-    }
-
     static
     uint64
     on_accept(utp_callback_arguments* args)
     {
       ELLE_DEBUG("on_accept");
-      UTPServer* server = (UTPServer*)utp_context_get_userdata(args->context);
+      auto server = get_server(args);
       server->on_accept(args->socket);
       return 0;
     }
@@ -168,150 +170,128 @@ namespace reactor
       return 0;
     }
 
+    /*-------------.
+    | Construction |
+    `-------------*/
 
     UTPServer::UTPServer()
-      : _accept_barrier("UTPServer accept")
-      , _beacon(std::make_shared<int>(0))
+      : _impl(std::make_shared<UTPServer::Impl>())
+    {}
+
+    UTPServer::~UTPServer()
+    {}
+
+    /*-----------.
+    | Attributes |
+    `-----------*/
+
+    unsigned char
+    UTPServer::xorify() const
     {
-      this->_xorify = 0;
-      this->_sending = false;
-      this->_icmp_fd = -1;
-      ctx = utp_init(2);
-      utp_context_set_userdata(ctx, this);
-      utp_set_callback(ctx, UTP_ON_FIREWALL, &on_firewall);
-      utp_set_callback(ctx, UTP_ON_ACCEPT, &network::on_accept);
-      utp_set_callback(ctx, UTP_ON_ERROR, &on_error);
-      utp_set_callback(ctx, UTP_ON_STATE_CHANGE, &on_state_change);
-      utp_set_callback(ctx, UTP_ON_READ, &on_read);
-      utp_set_callback(ctx, UTP_ON_CONNECT, &on_connect);
-      utp_set_callback(ctx, UTP_SENDTO, &on_sendto);
-      utp_set_callback(ctx, UTP_LOG, &on_log);
-      utp_context_set_option(ctx, UTP_INITIAL_TIMEOUT, 300);
-      utp_context_set_option(ctx, UTP_TIMEOUT_INCRASE_PERCENT, 150);
-      utp_context_set_option(ctx, UTP_MAXIMUM_TIMEOUT, 5000);
+      return this->_impl->_xorify;
     }
+
+    void
+    UTPServer::xorify(unsigned char v)
+    {
+      this->_impl->_xorify = v;
+    }
+
+    /*-----------.
+    | Networking |
+    `-----------*/
 
     std::unique_ptr<UTPSocket>
     UTPServer::accept()
     {
-      ELLE_TRACE_SCOPE("%s: accept", this);
-      this->_accept_barrier.wait();
-      ELLE_ASSERT(this->_accept_barrier.opened());
-      std::unique_ptr<UTPSocket> sock(this->_accept_queue.back().release());
-      this->_accept_queue.pop_back();
-      if (this->_accept_queue.empty())
-        this->_accept_barrier.close();
-      ELLE_TRACE("%s: accepted %s", this, sock);
-      return sock;
-    }
-
-    UTPServer::~UTPServer()
-    {
-      ELLE_TRACE_SCOPE("%s: destroy", this);
-      this->_cleanup();
-    }
-
-    void
-    UTPServer::_cleanup()
-    {
-      ELLE_TRACE_SCOPE("%s: cleanup", *this);
-      // Run any completed callback before deleting this.
-      {
-        reactor::scheduler().io_service().reset();
-        reactor::scheduler().io_service().poll();
-      }
-      if (this->_socket)
-      { // Was never initialized.
-        if (this->_checker)
-        {
-          this->_checker->terminate();
-          reactor::wait(*this->_checker);
-        }
-        if (this->_listener)
-        {
-          this->_listener->terminate();
-          reactor::wait(*this->_listener);
-        }
-        this->_socket->socket()->close();
-        this->_socket->close();
-        this->_socket.reset(nullptr);
-      }
-      utp_destroy(ctx);
-    }
-
-    void
-    UTPServer::_send()
-    {
-      auto& buf = this->_send_buffer.front();
-      ELLE_TRACE_SCOPE(
-        "%s: send %s UDP bytes to %s", this, buf.first.size(), buf.second);
-      // At least on windows, passing a v4 address to send_to() on a  v6 socket is an error
-      auto endpoint = buf.second;
-      if (endpoint.address().is_v4() && this->local_endpoint().address().is_v6())
-        endpoint = EndPoint(boost::asio::ip::address_v6::v4_mapped(endpoint.address().to_v4()), endpoint.port());
-      this->_socket->socket()->async_send_to(
-        boost::asio::buffer(
-          buf.first.contents(),
-          buf.first.size()),
-        endpoint,
-        [this] (boost::system::error_code const& errc, size_t size)
-        { this->_send_cont(errc, size); });
-    };
-
-    void
-    UTPServer::_send_cont(boost::system::error_code const& erc, size_t)
-    {
-      if (erc == boost::asio::error::operation_aborted)
-        return;
-      if (erc)
-        ELLE_WARN("%s: send_to error: %s", this, erc.message());
-      this->_send_buffer.pop_front();
-      if (this->_send_buffer.empty())
-        this->_sending = false;
-      else
-        this->_send();
-    }
-
-    void
-    UTPServer::send_to(Buffer buf, EndPoint where)
-    {
-      this->_send_buffer.emplace_back(elle::Buffer(buf.data(), buf.size()),
-                                      where);
-      typedef boost::system::error_code errc;
-      std::function<void (errc const& erc, size_t sz)> send_cont;
-      if (!this->_sending)
-      {
-        this->_sending = true;
-        this->_send();
-      }
-      else
-        ELLE_DEBUG("already sending, data queued");
+      return this->_impl->accept();
     }
 
     UTPServer::EndPoint
     UTPServer::local_endpoint()
     {
-      auto ep = this->_socket->local_endpoint();
+      auto ep = this->_impl->_socket->local_endpoint();
       return EndPoint(ep.address(), ep.port());
     }
 
     bool
     UTPServer::rdv_connected() const
     {
-      return this->_socket->rdv_connected();
+      return this->_impl->_socket->rdv_connected();
     }
 
     void
     UTPServer::listen(int port, bool ipv6)
     {
       if (ipv6)
-        listen(EndPoint(boost::asio::ip::address_v6::any(), port));
+        this->listen(EndPoint(boost::asio::ip::address_v6::any(), port));
       else
-        listen(EndPoint(boost::asio::ip::address_v4::any(), port));
+        this->listen(EndPoint(boost::asio::ip::address_v4::any(), port));
+    }
+
+
+    void
+    UTPServer::listen(EndPoint const& ep)
+    {
+      this->_impl->listen(ep);
+    }
+
+
+    void
+    UTPServer::rdv_connect(
+      std::string const& id, std::string const& address, DurationOpt timeout)
+    {
+      int port = 7890;
+      std::string host = address;
+      auto p = host.find_first_of(':');
+      if (p != host.npos)
+      {
+        port = std::stoi(host.substr(p+1));
+        host = host.substr(0, p);
+      }
+      this->_impl->_socket->rdv_connect(id, host, port, timeout);
     }
 
     void
-    UTPServer::_check_icmp()
+    UTPServer::set_local_id(std::string const& id)
+    {
+      this->_impl->_socket->set_local_id(id);
+    }
+
+    /*-----.
+    | Impl |
+    `-----*/
+
+    UTPServer::Impl::Impl()
+      : _ctx(utp_init(2))
+      , _xorify(0)
+      , _accept_barrier("UTPServer accept")
+      , _sending(false)
+      , _icmp_fd(-1)
+      , _beacon(std::make_shared<int>(0))
+    {
+      utp_context_set_userdata(this->_ctx, this);
+      utp_set_callback(this->_ctx, UTP_ON_FIREWALL, &on_firewall);
+      utp_set_callback(this->_ctx, UTP_ON_ACCEPT, &network::on_accept);
+      utp_set_callback(this->_ctx, UTP_ON_ERROR, &on_error);
+      utp_set_callback(this->_ctx, UTP_ON_STATE_CHANGE, &on_state_change);
+      utp_set_callback(this->_ctx, UTP_ON_READ, &on_read);
+      utp_set_callback(this->_ctx, UTP_ON_CONNECT, &on_connect);
+      utp_set_callback(this->_ctx, UTP_SENDTO, &on_sendto);
+      utp_set_callback(this->_ctx, UTP_LOG, &on_log);
+      utp_context_set_option(this->_ctx, UTP_INITIAL_TIMEOUT, 300);
+      utp_context_set_option(this->_ctx, UTP_TIMEOUT_INCRASE_PERCENT, 150);
+      utp_context_set_option(this->_ctx, UTP_MAXIMUM_TIMEOUT, 5000);
+    }
+
+    UTPServer::Impl::~Impl()
+    {
+      ELLE_TRACE_SCOPE("%s: destroy", this);
+      this->_cleanup();
+    }
+
+    void
+    UTPServer::Impl::_check_icmp()
     {
 #if defined(INFINIT_MACOSX)
       if (this->_icmp_fd == -1)
@@ -326,7 +306,8 @@ namespace reactor
       unsigned char buf[4096];
       struct sockaddr_in sa;
       socklen_t sasz = sizeof(sa);
-      int res = recvfrom(this->_icmp_fd, buf, 4096, 0, (struct sockaddr*)&sa, &sasz);
+      int res =
+        recvfrom(this->_icmp_fd, buf, 4096, 0, (struct sockaddr*)&sa, &sasz);
       if (res == -1 && (errno == EWOULDBLOCK || errno == EAGAIN))
         return;
       if (res == -1)
@@ -353,14 +334,16 @@ namespace reactor
       sa.sin_port = *(uint16_t*)(buf + offset_payload_udp_dport);
       int type = buf[offset_icmp];
       int code = buf[offset_icmp+1];
-      ELLE_DEBUG("icmp type %s code %s ip %s port %s payload %s", type, code, inet_ntoa(sa.sin_addr), ntohs(sa.sin_port), res - offset_udp_payload);
-
+      ELLE_DEBUG("icmp type %s code %s ip %s port %s payload %s",
+                 type, code, inet_ntoa(sa.sin_addr), ntohs(sa.sin_port),
+                 res - offset_udp_payload);
       if (type == 3 && code == 4)
-        utp_process_icmp_fragmentation(ctx, buf + offset_udp_payload, res - offset_udp_payload,
+        utp_process_icmp_fragmentation(
+          this->_ctx, buf + offset_udp_payload, res - offset_udp_payload,
           (struct sockaddr*)&sa,
           sizeof(sa), 0); // FIXME properly fill next_hop_mtu
       else
-        utp_process_icmp_error(ctx, buf+offset_udp_payload,
+        utp_process_icmp_error(this->_ctx, buf+offset_udp_payload,
           res - offset_udp_payload,
           (struct sockaddr*)&sa,
           sizeof(sa));
@@ -427,7 +410,8 @@ namespace reactor
         ELLE_DEBUG("    ee_origin: %s", e->ee_origin);
         ELLE_DEBUG("    ee_type:   %s", e->ee_type);
         ELLE_DEBUG("    ee_code:   %s", e->ee_code);
-        ELLE_DEBUG("    ee_info:   %s", e->ee_info);  // discovered MTU for EMSGSIZE errors
+        // discovered MTU for EMSGSIZE errors
+        ELLE_DEBUG("    ee_info:   %s", e->ee_info);
         ELLE_DEBUG("    ee_data:   %s", e->ee_data);
         // "Node that caused the error"
         // "Node that generated the error"
@@ -459,14 +443,14 @@ namespace reactor
           ELLE_TRACE(
             "ICMP type 3, code 4: Fragmentation error, discovered MTU %s",
             e->ee_info);
-          utp_process_icmp_fragmentation(ctx, vec_buf, len,
+          utp_process_icmp_fragmentation(this->_ctx, vec_buf, len,
                                          (struct sockaddr*)&remote,
                                          sizeof(remote), e->ee_info);
         }
         else
         {
           ELLE_TRACE("ICMP type %s, code %s", e->ee_type, e->ee_code);
-          utp_process_icmp_error(ctx, vec_buf, len,
+          utp_process_icmp_error(this->_ctx, vec_buf, len,
                                  (struct sockaddr *)&remote, sizeof(remote));
         }
       }
@@ -474,7 +458,7 @@ namespace reactor
     }
 
     void
-    UTPServer::listen(EndPoint const& ep)
+    UTPServer::Impl::listen(EndPoint const& ep)
     {
       this->_socket = elle::make_unique<RDVSocket>();
       this->_socket->close();
@@ -486,7 +470,7 @@ namespace reactor
                  (char*)&on, sizeof(on));
 #endif
       this->_listener = elle::make_unique<Thread>(
-        elle::sprintf("UTPServer(%s)", local_endpoint().port()),
+        elle::sprintf("UTPServer(%s)", this->_socket->local_endpoint().port()),
         [this]
         {
           elle::Buffer buf;
@@ -512,8 +496,8 @@ namespace reactor
               }
               auto* raw = source.data();
               ELLE_TRACE("%s: received %s bytes", this, sz);
-              utp_process_udp(ctx, buf.contents(), sz, raw, source.size());
-              utp_issue_deferred_acks(ctx);
+              utp_process_udp(this->_ctx, buf.contents(), sz, raw, source.size());
+              utp_issue_deferred_acks(this->_ctx);
             }
             catch (reactor::Terminate const&)
             {
@@ -533,7 +517,7 @@ namespace reactor
             {
               while (true)
               {
-                utp_check_timeouts(ctx);
+                utp_check_timeouts(this->_ctx);
                 reactor::sleep(50_ms);
                 this->_check_icmp();
               }
@@ -545,28 +529,108 @@ namespace reactor
               throw;
             }
           }));
-      ELLE_TRACE("%s: listening on %s", this, this->local_endpoint());
+      ELLE_TRACE("%s: listening on %s", this, this->_socket->local_endpoint());
     }
 
     void
-    UTPServer::rdv_connect(
-      std::string const& id, std::string const& address, DurationOpt timeout)
+    UTPServer::Impl::send_to(Buffer buf, EndPoint where)
     {
-      int port = 7890;
-      std::string host = address;
-      auto p = host.find_first_of(':');
-      if (p != host.npos)
+      this->_send_buffer.emplace_back(elle::Buffer(buf.data(), buf.size()),
+                                      where);
+      typedef boost::system::error_code errc;
+      std::function<void (errc const& erc, size_t sz)> send_cont;
+      if (!this->_sending)
       {
-        port = std::stoi(host.substr(p+1));
-        host = host.substr(0, p);
+        this->_sending = true;
+        this->_send();
       }
-      this->_socket->rdv_connect(id, host, port, timeout);
+      else
+        ELLE_DEBUG("already sending, data queued");
     }
 
     void
-    UTPServer::set_local_id(std::string const& id)
+    UTPServer::Impl::on_accept(utp_socket* s)
     {
-      this->_socket->set_local_id(id);
+      this->_accept_queue.emplace_back(new UTPSocket(*this, s, true));
+      this->_accept_barrier.open();
+    }
+
+    std::unique_ptr<UTPSocket>
+    UTPServer::Impl::accept()
+    {
+      ELLE_TRACE_SCOPE("%s: accept", this);
+      this->_accept_barrier.wait();
+      ELLE_ASSERT(this->_accept_barrier.opened());
+      std::unique_ptr<UTPSocket> sock(this->_accept_queue.back().release());
+      this->_accept_queue.pop_back();
+      if (this->_accept_queue.empty())
+        this->_accept_barrier.close();
+      ELLE_TRACE("%s: accepted %s", this, sock);
+      return sock;
+    }
+
+    void
+    UTPServer::Impl::_send()
+    {
+      auto& buf = this->_send_buffer.front();
+      ELLE_TRACE_SCOPE(
+        "%s: send %s UDP bytes to %s", this, buf.first.size(), buf.second);
+      // At least on windows, passing a v4 address to send_to() on a v6 socket
+      // is an error
+      auto endpoint = buf.second;
+      if (endpoint.address().is_v4() &&
+          this->_socket->local_endpoint().address().is_v6())
+        endpoint = EndPoint(boost::asio::ip::address_v6::v4_mapped(
+                              endpoint.address().to_v4()), endpoint.port());
+      this->_socket->socket()->async_send_to(
+        boost::asio::buffer(
+          buf.first.contents(),
+          buf.first.size()),
+        endpoint,
+        [this] (boost::system::error_code const& errc, size_t size)
+        { this->_send_cont(errc, size); });
+    };
+
+    void
+    UTPServer::Impl::_send_cont(boost::system::error_code const& erc, size_t)
+    {
+      if (erc == boost::asio::error::operation_aborted)
+        return;
+      if (erc)
+        ELLE_WARN("%s: send_to error: %s", this, erc.message());
+      this->_send_buffer.pop_front();
+      if (this->_send_buffer.empty())
+        this->_sending = false;
+      else
+        this->_send();
+    }
+
+    void
+    UTPServer::Impl::_cleanup()
+    {
+      ELLE_TRACE_SCOPE("%s: cleanup", *this);
+      // Run any completed callback before deleting this.
+      {
+        reactor::scheduler().io_service().reset();
+        reactor::scheduler().io_service().poll();
+      }
+      if (this->_socket)
+      { // Was never initialized.
+        if (this->_checker)
+        {
+          this->_checker->terminate();
+          reactor::wait(*this->_checker);
+        }
+        if (this->_listener)
+        {
+          this->_listener->terminate();
+          reactor::wait(*this->_listener);
+        }
+        this->_socket->socket()->close();
+        this->_socket->close();
+        this->_socket.reset(nullptr);
+      }
+      utp_destroy(this->_ctx);
     }
   }
 }

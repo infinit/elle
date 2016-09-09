@@ -7,7 +7,8 @@
 # include <elle/Duration.hh>
 # include <elle/IOStream.hh>
 
-#include <reactor/network/fwd.hh>
+# include <reactor/network/fwd.hh>
+# include <reactor/network/utp-server.hh>
 
 // FIXME: hide those
 typedef struct UTPSocket utp_socket;
@@ -27,9 +28,10 @@ namespace reactor
     public:
       using EndPoint = boost::asio::ip::udp::endpoint;
       UTPSocket(UTPServer& server);
-      UTPSocket(UTPServer& server, utp_socket* socket, bool open);
       UTPSocket(UTPServer& server, std::string const& host, int port);
       ~UTPSocket();
+    private:
+      UTPSocket(UTPServer::Impl& server, utp_socket* socket, bool open);
 
     public:
       void
@@ -68,6 +70,7 @@ namespace reactor
       struct Impl;
     private:
       ELLE_ATTRIBUTE(std::unique_ptr<Impl>, impl);
+      friend class UTPServer;
     };
   }
 }
