@@ -10,6 +10,7 @@ namespace reactor
   namespace network
   {
     class UTPServer::Impl
+      : public std::enable_shared_from_this<UTPServer::Impl>
     {
     public:
       Impl();
@@ -41,7 +42,6 @@ namespace reactor
         (std::deque<std::pair<elle::Buffer, EndPoint>>), send_buffer);
       ELLE_ATTRIBUTE(bool, sending);
       ELLE_ATTRIBUTE(int, icmp_fd);
-      ELLE_ATTRIBUTE(std::shared_ptr<int>, beacon);
       friend class UTPServer;
       friend class UTPSocket;
     };

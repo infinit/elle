@@ -268,7 +268,6 @@ namespace reactor
       , _accept_barrier("UTPServer accept")
       , _sending(false)
       , _icmp_fd(-1)
-      , _beacon(std::make_shared<int>(0))
     {
       utp_context_set_userdata(this->_ctx, this);
       utp_set_callback(this->_ctx, UTP_ON_FIREWALL, &on_firewall);
@@ -552,7 +551,8 @@ namespace reactor
     UTPServer::Impl::on_accept(utp_socket* s)
     {
       this->_accept_queue.emplace_back(
-        new UTPSocket(elle::make_unique<UTPSocket::Impl>(*this, s, true)));
+        new UTPSocket(elle::make_unique<UTPSocket::Impl>(
+                        this->shared_from_this(), s, true)));
       this->_accept_barrier.open();
     }
 

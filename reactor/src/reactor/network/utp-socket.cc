@@ -63,7 +63,7 @@ namespace reactor
     {}
 
     UTPSocket::Impl::Impl(
-      UTPServer::Impl& server, utp_socket* socket, bool open)
+      std::weak_ptr<UTPServer::Impl> server, utp_socket* socket, bool open)
       : _socket(socket) // socket first because it is used when printing this
       , _read_barrier(elle::sprintf("%s read", this))
       , _write_barrier(elle::sprintf("%s write", this))
@@ -75,7 +75,6 @@ namespace reactor
       , _write_pos(0)
       , _open(open)
       , _closing(false)
-      , _server_beacon(server._beacon)
     {
       utp_set_userdata(this->_socket, this);
       if (open)
@@ -90,7 +89,7 @@ namespace reactor
     }
 
     UTPSocket::UTPSocket(UTPServer& server)
-      : UTPSocket(elle::make_unique<Impl>(*server._impl,
+      : UTPSocket(elle::make_unique<Impl>(server._impl,
                                           utp_create_socket(server._impl->_ctx),
                                           false))
     {
@@ -98,7 +97,7 @@ namespace reactor
     }
 
     UTPSocket::UTPSocket(UTPServer& server, std::string const& host, int port)
-      : UTPSocket(elle::make_unique<Impl>(*server._impl,
+      : UTPSocket(elle::make_unique<Impl>(server._impl,
                                           utp_create_socket(server._impl->_ctx),
                                           false))
     {
@@ -119,18 +118,19 @@ namespace reactor
             reactor::wait(impl->_pending_operations);
             ELLE_DEBUG("%s from %s: waiting for destroyed ...",
                        impl, &impl->_server);
-            if (!reactor::wait(impl->_destroyed_barrier, 0_sec))
+            if (!impl->_destroyed_barrier.opened())
             {
-              if (!impl->_server_beacon.lock()
-                  || !impl->_server._socket
-                  || !impl->_server._checker
-                  || impl->_server._checker->done())
-                ELLE_WARN("%s: server %s was destroyed before us",
-                          impl, impl->_server);
-              else if (!reactor::wait(impl->_destroyed_barrier, 90_sec))
+              auto server = impl->_server.lock();
+              if (server &&
+                  server->_socket &&
+                  server->_checker &&
+                  !server->_checker->done())
               {
-                ELLE_WARN("%s: timeout waiting for DESTROYED state", impl);
+                if (!reactor::wait(impl->_destroyed_barrier, 90_sec))
+                  ELLE_WARN("%s: timeout on UTP shutdown", impl);
               }
+              else
+                ELLE_WARN("%s: UTP server was destroyed before us", impl);
             }
           }
           catch (elle::Error const& e)
@@ -160,7 +160,8 @@ namespace reactor
     void
     UTPSocket::Impl::on_close()
     {
-      if (this->_socket && this->_server_beacon.lock())
+      auto server = this->_server.lock();
+      if (this->_socket && server)
       {
         ELLE_DEBUG("%s: closing underlying socket", this);
         utp_close(this->_socket);
@@ -243,11 +244,15 @@ namespace reactor
                             std::vector<EndPoint> const& endpoints,
                             DurationOpt timeout)
     {
-      ELLE_TRACE("Contacting %s at %s", id, endpoints);
-      EndPoint res =
-        this->_impl->_server._socket->contact(id, endpoints, timeout);
-      ELLE_TRACE("Got contact at %s", res);
-      connect(res.address().to_string(), res.port());
+      if (auto server = this->_impl->_server.lock())
+      {
+        ELLE_TRACE_SCOPE("%s: connect to %s with id %s", endpoints, id);
+        EndPoint res = server->_socket->contact(id, endpoints, timeout);
+        ELLE_DEBUG("got contact: %s", res);
+        this->connect(res.address().to_string(), res.port());
+      }
+      else
+        elle::err("unable to connect: UTP server was destroyed");
     }
 
     void
