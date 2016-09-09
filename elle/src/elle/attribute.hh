@@ -164,9 +164,9 @@ namespace elle
 
 # define ELLE_ATTRIBUTE_r(_type_, _name_, ...)                          \
   ELLE_ATTRIBUTE(_type_, _name_, __VA_ARGS__)                           \
-  ELLE_ATTRIBUTE_r_ACCESSOR(_type_, _name_)                             \
+  ELLE_attribute_r(_type_, _name_, __VA_ARGS__)                         \
 
-# define ELLE_attribute_r(_type_, _name_)                               \
+# define ELLE_attribute_r(_type_, _name_, ...)                          \
   ELLE_ATTRIBUTE_r_ACCESSOR(_type_, _name_)                             \
 
 # define ELLE_ATTRIBUTE_W(_type_, _name_, ...)                          \
@@ -192,10 +192,13 @@ namespace elle
   ELLE_ATTRIBUTE_R_ACCESSOR(_type_, _name_)                             \
   ELLE_ATTRIBUTE_w_ACCESSOR(_type_, _name_)                             \
 
-# define ELLE_ATTRIBUTE_rw(_type_, _name_, ...)                         \
-  ELLE_ATTRIBUTE(_type_, _name_, __VA_ARGS__)                           \
+# define ELLE_attribute_rw(_type_, _name_, ...)                         \
   ELLE_ATTRIBUTE_r_ACCESSOR(_type_, _name_);                            \
   ELLE_ATTRIBUTE_w_ACCESSOR(_type_, _name_);                            \
+
+# define ELLE_ATTRIBUTE_rw(_type_, _name_, ...)                         \
+  ELLE_ATTRIBUTE(_type_, _name_, __VA_ARGS__)                           \
+  ELLE_attribute_rw(_type_, _name_, __VA_ARGS__)                        \
 
 # define ELLE_ATTRIBUTE_rx(_type_, _name_, ...)                         \
   ELLE_ATTRIBUTE(_type_, _name_, __VA_ARGS__)                           \
