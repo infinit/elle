@@ -321,7 +321,7 @@
 `-----------*/
 
 # define ELLE_ATTRIBUTE_PROPERTY__PRE
-# define ELLE_ATTRIBUTE_PROPERTY_mutable_PRE public:
+# define ELLE_ATTRIBUTE_PROPERTY_mutable_PRE
 # define ELLE_ATTRIBUTE_PROPERTY_protected_PRE protected:
 # define ELLE_ATTRIBUTE_PROPERTY_public_PRE public:
 # define ELLE_ATTRIBUTE_PROPERTY_static_PRE
