@@ -116,10 +116,9 @@ namespace reactor
           try
           {
             reactor::wait(impl->_pending_operations);
-            ELLE_DEBUG("%s from %s: waiting for destroyed ...",
-                       impl, &impl->_server);
             if (!impl->_destroyed_barrier.opened())
             {
+              ELLE_DEBUG("%s: wait for destruction", impl);
               auto server = impl->_server.lock();
               if (server &&
                   server->_socket &&
