@@ -60,17 +60,7 @@ namespace reactor
     UTPSocket::UTPSocket(std::unique_ptr<Impl> impl)
       : IOStream(new StreamBuffer(this))
       , _impl(std::move(impl))
-    {
-      if (open)
-      {
-        this->_impl->_write_barrier.open();
-        ELLE_DEBUG("snd %s recv %s",
-                   utp_getsockopt(this->_impl->_socket, UTP_SNDBUF),
-                   utp_getsockopt(this->_impl->_socket, UTP_RCVBUF));
-      }
-      else
-        this->_impl->_destroyed_barrier.open();
-    }
+    {}
 
     UTPSocket::Impl::Impl(
       UTPServer::Impl& server, utp_socket* socket, bool open)
@@ -88,6 +78,15 @@ namespace reactor
       , _server_beacon(server._beacon)
     {
       utp_set_userdata(this->_socket, this);
+      if (open)
+      {
+        this->_write_barrier.open();
+        ELLE_DEBUG("snd %s recv %s",
+                   utp_getsockopt(this->_socket, UTP_SNDBUF),
+                   utp_getsockopt(this->_socket, UTP_RCVBUF));
+      }
+      else
+        this->_destroyed_barrier.open();
     }
 
     UTPSocket::UTPSocket(UTPServer& server)
