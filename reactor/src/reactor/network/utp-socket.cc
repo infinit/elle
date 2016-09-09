@@ -246,7 +246,7 @@ namespace reactor
     {
       if (auto server = this->_impl->_server.lock())
       {
-        ELLE_TRACE_SCOPE("%s: connect to %s with id %s", endpoints, id);
+        ELLE_TRACE_SCOPE("%s: connect to %s with id %s", this, endpoints, id);
         EndPoint res = server->_socket->contact(id, endpoints, timeout);
         ELLE_DEBUG("got contact: %s", res);
         this->connect(res.address().to_string(), res.port());
