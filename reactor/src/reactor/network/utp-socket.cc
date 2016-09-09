@@ -77,15 +77,6 @@ namespace reactor
       , _closing(false)
     {
       utp_set_userdata(this->_socket, this);
-      if (open)
-      {
-        this->_write_barrier.open();
-        ELLE_DEBUG("snd %s recv %s",
-                   utp_getsockopt(this->_socket, UTP_SNDBUF),
-                   utp_getsockopt(this->_socket, UTP_RCVBUF));
-      }
-      else
-        this->_destroyed_barrier.open();
     }
 
     UTPSocket::UTPSocket(UTPServer& server)
