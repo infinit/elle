@@ -37,6 +37,13 @@ public:
   std::unique_ptr<reactor::network::UTPSocket> s1, s2;
 };
 
+ELLE_TEST_SCHEDULED(not_connected)
+{
+  UTPServer s;
+  UTPSocket sock(s);
+  BOOST_CHECK_THROW(sock.read(1), reactor::network::Exception);
+}
+
 ELLE_TEST_SCHEDULED(basic)
 {
   {
@@ -203,6 +210,7 @@ loop_socket(reactor::network::UTPSocket* ts)
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
+  suite.add(BOOST_TEST_CASE(not_connected), 0, valgrind(2));
   suite.add(BOOST_TEST_CASE(udp), 0, valgrind(2));
   suite.add(BOOST_TEST_CASE(utp_close), 0, valgrind(2));
   suite.add(BOOST_TEST_CASE(basic), 0, valgrind(2));
