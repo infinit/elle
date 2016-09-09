@@ -551,7 +551,8 @@ namespace reactor
     void
     UTPServer::Impl::on_accept(utp_socket* s)
     {
-      this->_accept_queue.emplace_back(new UTPSocket(*this, s, true));
+      this->_accept_queue.emplace_back(
+        new UTPSocket(elle::make_unique<UTPSocket::Impl>(*this, s, true)));
       this->_accept_barrier.open();
     }
 

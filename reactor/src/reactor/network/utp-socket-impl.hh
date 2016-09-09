@@ -7,6 +7,9 @@
 # include <reactor/MultiLockBarrier.hh>
 # include <reactor/mutex.hh>
 
+typedef struct UTPSocket utp_socket;
+typedef struct struct_utp_context utp_context;
+
 namespace reactor
 {
   namespace network

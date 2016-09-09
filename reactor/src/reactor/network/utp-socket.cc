@@ -57,9 +57,9 @@ namespace reactor
     | Construction |
     `-------------*/
 
-    UTPSocket::UTPSocket(UTPServer::Impl& server, utp_socket* socket, bool open)
+    UTPSocket::UTPSocket(std::unique_ptr<Impl> impl)
       : IOStream(new StreamBuffer(this))
-      , _impl(elle::make_unique<Impl>(server, socket, open))
+      , _impl(std::move(impl))
     {
       if (open)
       {
@@ -91,13 +91,17 @@ namespace reactor
     }
 
     UTPSocket::UTPSocket(UTPServer& server)
-      : UTPSocket(*server._impl, utp_create_socket(server._impl->_ctx), false)
+      : UTPSocket(elle::make_unique<Impl>(*server._impl,
+                                          utp_create_socket(server._impl->_ctx),
+                                          false))
     {
       this->_impl->_destroyed_barrier.open();
     }
 
     UTPSocket::UTPSocket(UTPServer& server, std::string const& host, int port)
-      : UTPSocket(*server._impl, utp_create_socket(server._impl->_ctx), false)
+      : UTPSocket(elle::make_unique<Impl>(*server._impl,
+                                          utp_create_socket(server._impl->_ctx),
+                                          false))
     {
       connect(host, port);
     }
