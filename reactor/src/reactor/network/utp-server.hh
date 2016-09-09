@@ -45,6 +45,8 @@ namespace reactor
       set_local_id(std::string const& id);
       bool
       rdv_connected() const;
+      std::unique_ptr<RDVSocket> const&
+      socket();
     private:
       friend class UTPSocket;
 

@@ -258,6 +258,12 @@ namespace reactor
       this->_impl->_socket->set_local_id(id);
     }
 
+    std::unique_ptr<RDVSocket> const &
+    UTPServer::socket()
+    {
+      return this->_impl->socket();
+    }
+
     /*-----.
     | Impl |
     `-----*/
