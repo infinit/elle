@@ -163,6 +163,22 @@ thread_safe()
   reader.join();
 }
 
+class Virtual
+{
+  ELLE_ATTRIBUTE_RWX(int, x, virtual);
+};
+
+class Child:
+  public Virtual
+{
+  int
+  x() const override;
+  void
+  x(int v) override;
+  int&
+  x() override;
+};
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
