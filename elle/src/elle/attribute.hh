@@ -31,6 +31,8 @@
   typename ::elle::_detail::attribute_r_type                        \
   <ELLE_ATTRIBUTE_STRIP_PARENS(Type)>::type                         \
   Name() const                                                      \
+  ELLE_ATTRIBUTE_PROPERTIES_POSTFUN(                                 \
+    BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))                          \
 
 /// Define and implement an accessor for attribute Name.
 # define ELLE_attribute_R(Type, Name, ...)                          \
@@ -59,6 +61,8 @@
   void                                                              \
   Name(typename boost::call_traits                                  \
          <ELLE_ATTRIBUTE_STRIP_PARENS(Type)>::param_type name)      \
+  ELLE_ATTRIBUTE_PROPERTIES_POSTFUN(                                 \
+    BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))                          \
 
 /// Define and implement a setter for attribute Name.
 # define ELLE_attribute_W(Type, Name, ...)                          \
@@ -87,6 +91,8 @@
   typename boost::call_traits                                       \
   <ELLE_ATTRIBUTE_STRIP_PARENS(Type)>::reference                    \
   Name()                                                            \
+  ELLE_ATTRIBUTE_PROPERTIES_POSTFUN(                                 \
+    BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))                          \
 
 /// Define and implement a mutating accessor for property Name.
 # define ELLE_attribute_X(Type, Name, ...)                          \
@@ -328,6 +334,7 @@
 
 # define ELLE_ATTRIBUTE_PROPERTY__PRE
 # define ELLE_ATTRIBUTE_PROPERTY_mutable_PRE
+# define ELLE_ATTRIBUTE_PROPERTY_override_PRE
 # define ELLE_ATTRIBUTE_PROPERTY_protected_PRE protected:
 # define ELLE_ATTRIBUTE_PROPERTY_public_PRE public:
 # define ELLE_ATTRIBUTE_PROPERTY_static_PRE
@@ -335,6 +342,7 @@
 
 # define ELLE_ATTRIBUTE_PROPERTY__PRETYPE
 # define ELLE_ATTRIBUTE_PROPERTY_mutable_PRETYPE mutable
+# define ELLE_ATTRIBUTE_PROPERTY_override_PRETYPE
 # define ELLE_ATTRIBUTE_PROPERTY_protected_PRETYPE
 # define ELLE_ATTRIBUTE_PROPERTY_public_PRETYPE
 # define ELLE_ATTRIBUTE_PROPERTY_static_PRETYPE static
@@ -342,10 +350,20 @@
 
 # define ELLE_ATTRIBUTE_PROPERTY__PREFUN
 # define ELLE_ATTRIBUTE_PROPERTY_mutable_PREFUN
+# define ELLE_ATTRIBUTE_PROPERTY_override_PREFUN
 # define ELLE_ATTRIBUTE_PROPERTY_protected_PREFUN
 # define ELLE_ATTRIBUTE_PROPERTY_public_PREFUN
 # define ELLE_ATTRIBUTE_PROPERTY_static_PREFUN
 # define ELLE_ATTRIBUTE_PROPERTY_virtual_PREFUN virtual
+
+
+# define ELLE_ATTRIBUTE_PROPERTY__POSTFUN
+# define ELLE_ATTRIBUTE_PROPERTY_mutable_POSTFUN
+# define ELLE_ATTRIBUTE_PROPERTY_override_POSTFUN override
+# define ELLE_ATTRIBUTE_PROPERTY_protected_POSTFUN
+# define ELLE_ATTRIBUTE_PROPERTY_public_POSTFUN
+# define ELLE_ATTRIBUTE_PROPERTY_static_POSTFUN
+# define ELLE_ATTRIBUTE_PROPERTY_virtual_POSTFUN
 
 /*--------.
 | Helpers |
@@ -370,6 +388,8 @@
   BOOST_PP_SEQ_FOR_EACH(ELLE_ATTRIBUTE_PROPERTY, _PRETYPE, Properties)
 # define ELLE_ATTRIBUTE_PROPERTIES_PREFUN(Properties)                   \
   BOOST_PP_SEQ_FOR_EACH(ELLE_ATTRIBUTE_PROPERTY, _PREFUN, Properties)
+# define ELLE_ATTRIBUTE_PROPERTIES_POSTFUN(Properties)                   \
+  BOOST_PP_SEQ_FOR_EACH(ELLE_ATTRIBUTE_PROPERTY, _POSTFUN, Properties)
 # define ELLE_ATTRIBUTE_PROPERTY(R, Data, Elem)                         \
   BOOST_PP_CAT(BOOST_PP_CAT(ELLE_ATTRIBUTE_PROPERTY_, Elem), Data)
 
