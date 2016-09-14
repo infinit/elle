@@ -18,7 +18,8 @@ namespace aws
                            std::string const& bucket,
                            std::string const& folder,
                            boost::posix_time::ptime expiration,
-                           boost::posix_time::ptime server_time)
+                           boost::posix_time::ptime server_time,
+                           boost::optional<std::string> endpoint)
     : _access_key_id(access_key_id)
     , _secret_access_key(secret_access_key)
     , _session_token(session_token)
@@ -29,6 +30,7 @@ namespace aws
     , _expiry(std::move(expiration))
     , _skew()
     , _federated_user(true)
+    , _endpoint(endpoint)
   {
     this->_initialize();
   }
@@ -37,7 +39,8 @@ namespace aws
                            std::string const& secret_access_key,
                            std::string const& region,
                            std::string const& bucket,
-                           std::string const& folder)
+                           std::string const& folder,
+                           boost::optional<std::string> endpoint)
     : _access_key_id(access_key_id)
     , _secret_access_key(secret_access_key)
     , _session_token()
@@ -48,6 +51,7 @@ namespace aws
     , _expiry(boost::posix_time::pos_infin)
     , _skew()
     , _federated_user(false)
+    , _endpoint(endpoint)
   {
     this->_initialize();
   }
@@ -128,6 +132,7 @@ namespace aws
       this->_expiry = boost::posix_time::pos_infin;
       this->_server_time = boost::posix_time::second_clock::universal_time();
     }
+    s.serialize("endpoint", this->_endpoint);
     if (s.in())
       this->_initialize();
   }
@@ -139,6 +144,8 @@ namespace aws
     stream << "aws::Credentials(access_id = \"" << this->_access_key_id << "\"";
     if (this->federated_user())
       stream << ", expiry = " << this->_expiry;
+    if (this->endpoint())
+      stream << ", endpoint = " << this->endpoint().get();
     stream << ")";
   }
 }

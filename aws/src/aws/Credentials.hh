@@ -30,13 +30,15 @@ namespace aws
                   std::string const& bucket,
                   std::string const& folder,
                   boost::posix_time::ptime expiration,
-                  boost::posix_time::ptime server_time);
+                  boost::posix_time::ptime server_time,
+                  boost::optional<std::string> endpoint = {});
       /// Constructor for normal user (i.e.: No session_token).
       Credentials(std::string const& access_key_id,
                   std::string const& secret_access_key,
                   std::string const& region,
                   std::string const& bucket,
-                  std::string const& folder);
+                  std::string const& folder,
+                  boost::optional<std::string> endpoint = {});
       std::string
       credential_string(RequestTime const& request_time,
                         Service const& aws_service);
@@ -56,6 +58,7 @@ namespace aws
       // Estimated skew between trusted server time and local universal time.
       ELLE_ATTRIBUTE_RW(boost::posix_time::time_duration, skew);
       ELLE_ATTRIBUTE_R(bool, federated_user);
+      ELLE_ATTRIBUTE_R(boost::optional<std::string>, endpoint);
 
       /*--------------.
       | Serialization |
