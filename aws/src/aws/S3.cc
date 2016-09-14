@@ -195,7 +195,6 @@ namespace aws
       query["marker"] =
         elle::sprintf("%s/%s", this->_credentials.folder(), marker);
     }
-
     auto request = this->_build_send_request(
       RequestKind::data, "/", "list", reactor::http::Method::GET, query);
     return this->_parse_list_xml(*request);
@@ -632,25 +631,26 @@ namespace aws
                         request_time,
                         _credentials.region(),
                         Service::s3);
-    std::map<std::string, std::string> auth;
-    // Make credential string.
-    auth["AWS4-HMAC-SHA256 Credential"] =
-      this->_credentials.credential_string(request_time, aws::Service::s3);
-    // Make signed headers string.
+    // Make authentication string.
+    // Order matters for services like minio.
+    // Add credential string.
+    std::string auth_str = elle::sprintf(
+      "AWS4-HMAC-SHA256 Credential=%s",
+      this->_credentials.credential_string(request_time, aws::Service::s3));
+    // Add signed headers string.
     std::string signed_headers_str;
     for (auto const& header: headers)
-      signed_headers_str += elle::sprintf("%s;", header.first);
+    {
+      auto key = header.first;
+      boost::algorithm::to_lower(key);
+      signed_headers_str += elle::sprintf("%s;", key);
+    }
     signed_headers_str =
       signed_headers_str.substr(0, signed_headers_str.size() - 1);
-    auth["SignedHeaders"] = signed_headers_str;
-    // Make signature string.
-    auth["Signature"] =
-      key.sign_message(string_to_sign.string());
-    // Make authorization header string.
-    std::string auth_str;
-    for (auto const& item: auth)
-      auth_str += elle::sprintf("%s=%s, ", item.first, item.second);
-    auth_str = auth_str.substr(0, auth_str.size() - 2);
+    auth_str += elle::sprintf(", SignedHeaders=%s", signed_headers_str);
+    // Add signature string.
+    auth_str += elle::sprintf(", Signature=%s",
+                              key.sign_message(string_to_sign.string()));
     ELLE_DUMP("Final authorization string: '%s'", auth_str);
     headers["Authorization"] = auth_str;
 
@@ -811,7 +811,7 @@ namespace aws
   std::unique_ptr<reactor::http::Request>
   S3::_build_send_request(
     RequestKind kind,
-    std::string const& url,
+    std::string const& uri,
     std::string const& operation,
     reactor::http::Method method,
     RequestQuery const& query,
@@ -864,11 +864,13 @@ namespace aws
       if (!content_type.empty())
         headers["Content-Type"] = content_type;
 
-      std::string url_encoded = uri_encode(url, false);
+      std::string canonical_uri = uri;
+      if (!hostname.path.empty())
+        canonical_uri = elle::sprintf("%s%s", hostname.path, uri);
       // false means no encoding the slashes, see:
       // http://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-header-based-auth.html
       CanonicalRequest canonical_request(
-        method, url_encoded,  query, headers,
+        method, uri_encode(canonical_uri, false), query, headers,
         this->_signed_headers(headers), this->_sha256_hexdigest(payload)
       );
       reactor::http::Request::Configuration cfg(this->_initialize_request(
@@ -876,7 +878,7 @@ namespace aws
       std::string full_url = elle::sprintf(
         "%s%s%s",
         hostname.join(),
-        url_encoded,
+        uri_encode(uri, false),
         query_parameters(query)
         );
       ELLE_DEBUG("full url: %s", full_url);
@@ -907,7 +909,7 @@ namespace aws
         ++attempt;
         // we have nothing better to do, so keep retrying
         ELLE_WARN("S3 request error: %s (attempt %s)", e.what(), attempt);
-        AWSException aws_exception(operation, url, attempt,
+        AWSException aws_exception(operation, uri, attempt,
                                    std::current_exception());
         if (this->_on_error)
           this->_on_error(aws_exception,
@@ -927,7 +929,7 @@ namespace aws
         ++attempt;
         // we have nothing better to do, so keep retrying
         ELLE_WARN("S3 request error: %s (attempt %s)", e.error(), attempt);
-        AWSException aws_exception(operation, url, attempt,
+        AWSException aws_exception(operation, uri, attempt,
                                    std::current_exception());
         if (this->_on_error)
           this->_on_error(aws_exception, !max_attempts || attempt < max_attempts);
@@ -944,13 +946,13 @@ namespace aws
 
       try
       {
-        _check_request_status(*request, url);
+        _check_request_status(*request, uri);
       }
       catch (CredentialsExpired const& e)
       {
         ELLE_TRACE("%s: aws credentials expired at %s (can_query=%s)",
                    *this, this->_credentials.expiry(), !!_query_credentials);
-        AWSException aws_exception(operation, url, 0,
+        AWSException aws_exception(operation, uri, 0,
                                    std::current_exception());
         if (this->_on_error)
           this->_on_error(aws_exception, !!_query_credentials);
@@ -964,7 +966,7 @@ namespace aws
       catch (TransientError const& err)
       {
         ++attempt;
-        AWSException aws_exception(operation, url, attempt,
+        AWSException aws_exception(operation, uri, attempt,
                                    std::current_exception());
         // we have nothing better to do, so keep retrying
         ELLE_WARN("S3 transient error '%s' (attempt %s)", err.what(), attempt);
@@ -997,7 +999,7 @@ namespace aws
         {
           continue;
         }
-        AWSException aws_exception(operation, url, attempt,
+        AWSException aws_exception(operation, uri, attempt,
                                    std::current_exception());
         if (this->_on_error)
           this->_on_error(aws_exception, false);
@@ -1012,20 +1014,35 @@ namespace aws
   S3::hostname(Credentials const& credentials,
                boost::optional<std::string> override_host) const
   {
-    static std::string us_east_1 = "us-east-1";
-    // docs.aws.amazon.com/AmazonS3/latest/dev/VirtualHosting.html
-    // Use a region-specific domain to avoid being redirected.
-    // http://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region.
-    // us-east-1 is the exception.
-    std::string host = override_host
-      ? override_host.get()
-      : elle::sprintf(
-        "%s.s3%s.amazonaws.com",
-        credentials.bucket(),
-        credentials.region() != us_east_1
-        ? elle::sprintf("-%s", credentials.region())
-        : std::string{});
-    return URL{"https://", host, ""};
+    if (credentials.endpoint()) // We're not using AWS.
+    {
+      std::string scheme = "https://";
+      std::string host = credentials.endpoint().get();
+      auto pos = host.find("://");
+      if (pos != std::string::npos)
+      {
+        scheme = host.substr(0, pos + 3);
+        host = host.substr(pos + 3, host.size());
+      }
+      return URL{scheme, host, elle::sprintf("/%s", credentials.bucket())};
+    }
+    else // We're using AWS.
+    {
+      static std::string us_east_1 = "us-east-1";
+      // docs.aws.amazon.com/AmazonS3/latest/dev/VirtualHosting.html
+      // Use a region-specific domain to avoid being redirected.
+      // http://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region.
+      // us-east-1 is the exception.
+      std::string host = override_host
+        ? override_host.get()
+        : elle::sprintf(
+          "%s.s3%s.amazonaws.com",
+          credentials.bucket(),
+          credentials.region() != us_east_1
+          ? elle::sprintf("-%s", credentials.region())
+          : std::string{});
+      return URL{"https://", host, ""};
+    }
   }
 
   std::string
