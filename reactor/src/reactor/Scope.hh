@@ -29,6 +29,7 @@ namespace reactor
     /// Destruct a scope, terminating all managed threads now.
     ///
     /// \throw Terminate if interrupted while killing managed threads.
+    virtual
     ~Scope() noexcept(false);
     /// Let With manage us.
     friend class elle::With<Scope>;
