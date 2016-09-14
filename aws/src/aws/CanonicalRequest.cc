@@ -11,7 +11,7 @@
 # include <cryptography/_legacy/Digest.hh>
 #endif
 
-// ELLE_LOG_COMPONENT("aws.CanonicalRequest");
+ELLE_LOG_COMPONENT("aws.CanonicalRequest");
 
 namespace aws
 {
@@ -31,6 +31,7 @@ namespace aws
         this->_canonical_headers_string(headers),
         this->_signed_headers_string(signed_headers),
         payload_sha256));
+    ELLE_DUMP("%s", this->_canonical_request);
   }
 
   std::string
