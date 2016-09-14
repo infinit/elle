@@ -248,16 +248,21 @@ namespace aws
                                 headers);
     auto response = request->response();
     std::string calcd_md5(this->_md5_digest(response));
-    std::string aws_md5(request->headers().at("ETag"));
-    // Remove quotes around MD5 sum from AWS.
-    aws_md5 = aws_md5.substr(1, aws_md5.size() - 2);
-    // AWS sends as ETAG for ranged get FULLMD5-CHUNK, we cannot validate it.
-    if (aws_md5.find('-') == std::string::npos && calcd_md5 != aws_md5)
+    if (request->headers().find("Etag") != request->headers().end())
     {
-      throw aws::CorruptedData(
-        elle::sprintf("%s: GET data corrupt: %s != %s", *this, calcd_md5,
-                      aws_md5));
+      std::string aws_md5(request->headers().at("ETag"));
+      // Remove quotes around MD5 sum from AWS.
+      aws_md5 = aws_md5.substr(1, aws_md5.size() - 2);
+      // AWS sends as ETAG for ranged get FULLMD5-CHUNK, we cannot validate it.
+      if (aws_md5.find('-') == std::string::npos && calcd_md5 != aws_md5)
+      {
+        throw aws::CorruptedData(
+          elle::sprintf("%s: GET data corrupt: %s != %s", *this, calcd_md5,
+                        aws_md5));
+      }
     }
+    else
+      ELLE_DUMP("server did not include ETag");
     return response;
   }
 
