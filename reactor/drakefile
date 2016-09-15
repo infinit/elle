@@ -338,7 +338,7 @@ def configure(curl_config,
       local_cxx_config += fuse_config
       fuse_lib = drake.copy(fuse_lib, 'lib', strip_prefix = True)
     elif cxx_toolkit.os is drake.os.macos:
-      osxfuse_version = drake.Version(3, 4, 1)
+      osxfuse_version = drake.Version(3, 5, 0)
       osxfuse_base_name = 'osxfuse-%s' % osxfuse_version
       osxfuse_url = 'https://github.com/osxfuse/osxfuse/releases/download'\
         '/%(name)s/%(name)s.dmg' % {'name': osxfuse_base_name}
@@ -346,7 +346,7 @@ def configure(curl_config,
       drake.HTTPDownload(
         osxfuse_url,
         osxfuse_dmg,
-        fingerprint = 'ec99e3cf2a34d9439ece2616630b4086',
+        fingerprint = '9c50838293a16509471d2ef39318c00f',
       )
       osxfuse_package = drake.node('osxfuse/%s.pkg' % osxfuse_base_name)
       fuse_includes = drake.copy(
