@@ -77,12 +77,6 @@ namespace elle
 
     namespace detail
     {
-      Send::~Send()
-      {
-        if (!_proceed)
-          return;
-        this->_unindent();
-      }
 
       bool
       Send::_enabled(elle::log::Logger::Type,

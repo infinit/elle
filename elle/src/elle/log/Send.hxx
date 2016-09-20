@@ -16,6 +16,12 @@ namespace elle
       void
       debug_formats(bool v);
 
+      inline
+      Send::Send()
+      : _proceed(false)
+      , _indentation(nullptr)
+      {
+      }
       template <typename... Args>
       inline
       Send::Send(elle::log::Logger::Level level,
@@ -27,7 +33,7 @@ namespace elle
                  char const* function,
                  char const* fmt,
                  Args&&... args):
-        _proceed(this->_enabled(type, level, component)),
+        _proceed(true),
         _indentation(nullptr)
       {
         bool debug = debug_formats();
@@ -61,6 +67,14 @@ namespace elle
       Send::operator bool() const
       {
         return false;
+      }
+
+      inline
+      Send::~Send()
+      {
+        if (!_proceed)
+          return;
+        this->_unindent();
       }
 
       template <typename... Args>
