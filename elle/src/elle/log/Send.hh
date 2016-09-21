@@ -33,6 +33,7 @@ namespace elle
              char const* function,
              char const* fmt,
              Args&&... args);
+        Send(); // no-op sender
         ~Send();
         operator bool() const;
 

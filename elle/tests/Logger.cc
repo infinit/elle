@@ -16,7 +16,7 @@
 #include <sstream>
 #include <thread>
 
-static
+template<bool b>
 void
 _message_test(bool env)
 {
@@ -80,8 +80,8 @@ static
 void
 message_test()
 {
-  _message_test(false);
-  _message_test(true);
+  _message_test<false>(false);
+  _message_test<true>(true);
 }
 
 static
@@ -416,6 +416,11 @@ error()
     std::stringstream output;
     elle::log::logger(
       std::unique_ptr<elle::log::Logger>{new elle::log::TextLogger{output}});
+    {
+      // We are passing through already executed code with a different logger
+      ELLE_LOG_COMPONENT("elle.printf");
+      ELLE_LOG("force component creation");
+    }
     ELLE_LOG("invalid log", 42);
     ELLE_LOG("invalid log %s");
     BOOST_CHECK_GT(output.str().size(), 0);
@@ -425,8 +430,13 @@ error()
     elle::log::detail::debug_formats(true);
     elle::log::logger(
       std::unique_ptr<elle::log::Logger>{new elle::log::TextLogger{output}});
+    {
+      // We are passing through already executed code with a different logger
+      ELLE_LOG_COMPONENT("elle.printf");
+      ELLE_LOG("force component creation");
+    }
     BOOST_CHECK_THROW(ELLE_LOG("invalid log", 42), elle::Error);
-    BOOST_CHECK_THROW(ELLE_DUMP("invalid log %s"), elle::Error);
+    BOOST_CHECK_THROW(ELLE_LOG("invalid log %s"), elle::Error);
     BOOST_CHECK_GT(output.str().size(), 0);
     elle::log::detail::debug_formats(false);
   }
