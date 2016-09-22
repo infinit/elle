@@ -22,9 +22,21 @@ namespace elle
   }
 
   void
+  chdir(char const* path)
+  {
+    checked_call(::chdir(path), "chdir");
+  }
+
+  void
   chown(std::string const& pathname, uid_t owner, gid_t group)
   {
     checked_call(::chown(pathname.c_str(), owner, group), "chown");
+  }
+
+  void
+  fchdir(int fd)
+  {
+    checked_call(::fchdir(fd), "fchdir");
   }
 
   void
@@ -53,4 +65,3 @@ namespace elle
 }
 
 #endif
-

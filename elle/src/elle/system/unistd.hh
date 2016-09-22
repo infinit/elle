@@ -9,7 +9,11 @@
 namespace elle
 {
   void
+  chdir(char const* path);
+  void
   chown(std::string const& pathname, uid_t owner, gid_t group);
+  void
+  fchdir(int fd);
   void
   setegid(gid_t egid);
   void
