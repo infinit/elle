@@ -108,6 +108,7 @@ def configure(cryptography,
     'rpc',
     'serializer',
     'split',
+    'stream',
   ]
 
   cxx_config_tests = drake.cxx.Config(local_cxx_config)
