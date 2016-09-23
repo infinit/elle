@@ -111,6 +111,11 @@ namespace elle
         virtual
         void
         _leave(std::string const& name) override;
+      public:
+        static
+        size_t
+        serialize_number(std::istream& output,
+                         int64_t& value);
       private:
         int64_t _serialize_number();
         template <typename T>

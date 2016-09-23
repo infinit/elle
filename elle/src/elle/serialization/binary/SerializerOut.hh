@@ -109,6 +109,12 @@ namespace elle
         _serialize_option(std::string const& name,
                           bool filled,
                           std::function<void ()> const& f) override;
+      public:
+        static
+        size_t
+        serialize_number(std::ostream& output,
+                         int64_t number);
+
       private:
         void
         _serialize_number(int64_t number);
