@@ -10,6 +10,7 @@ namespace reactor
     public:
       Semaphore(int count = 0);
       int count() const;
+      bool acquire() override;
       bool release() override;
 
     protected:

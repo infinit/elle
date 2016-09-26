@@ -622,7 +622,7 @@ protected:
     do
     {
       if (_wait_sem)
-        sem.wait();
+        while (!sem.acquire()) sem.wait();
       if (_delay)
         reactor::sleep(*_delay);
       s->write(_reply.substr(p, _chunk));
