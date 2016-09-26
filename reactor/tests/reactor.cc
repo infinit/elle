@@ -1206,7 +1206,8 @@ test_timeout_threw()
   reactor::Semaphore sem(0);
 
   reactor::Thread thrower(sched, "thrower", [&] {
-      reactor::wait(sem);
+      while (!sem.acquire())
+        reactor::wait(sem);
       throw BeaconException();
     });
   reactor::Thread waiter(sched, "waiter", [&] {
@@ -1373,8 +1374,10 @@ semaphore_noblock_wait(reactor::Semaphore& s)
 {
   BOOST_CHECK_EQUAL(s.count(), 2);
   reactor::wait(s);
+  BOOST_CHECK(s.acquire());
   BOOST_CHECK_EQUAL(s.count(), 1);
   reactor::wait(s);
+  BOOST_CHECK(s.acquire());
   BOOST_CHECK_EQUAL(s.count(), 0);
 }
 
@@ -1394,7 +1397,12 @@ void
 semaphore_block_wait(reactor::Semaphore& s)
 {
   BOOST_CHECK_EQUAL(s.count(), 0);
-  reactor::wait(s);
+  while (!s.acquire())
+  {
+    ELLE_LOG("nope");
+    reactor::wait(s);
+  }
+  ELLE_LOG("yes");
   BOOST_CHECK_EQUAL(s.count(), 0);
 }
 
@@ -1405,9 +1413,10 @@ semaphore_block_post(reactor::Semaphore& s)
   reactor::yield();
   reactor::yield();
   reactor::yield();
-  BOOST_CHECK_EQUAL(s.count(), -1);
-  s.release();
   BOOST_CHECK_EQUAL(s.count(), 0);
+  ELLE_LOG("release");
+  s.release();
+  BOOST_CHECK_EQUAL(s.count(), 1);
 }
 
 static
@@ -1431,7 +1440,7 @@ test_semaphore_multi()
   reactor::Semaphore s;
   int step = 0;
 
-  auto multi_wait = [&] { reactor::wait(s); ++step; };
+  auto multi_wait = [&] { while (!s.acquire()) reactor::wait(s); ++step; };
 
   reactor::Thread wait1(sched, "wait1", multi_wait);
   reactor::Thread wait2(sched, "wait2", multi_wait);
@@ -1439,12 +1448,13 @@ test_semaphore_multi()
       reactor::yield();
       reactor::yield();
       reactor::yield();
-      BOOST_CHECK_EQUAL(s.count(), -2);
+      BOOST_CHECK_EQUAL(s.count(), 0);
       BOOST_CHECK_EQUAL(step, 0);
       s.release();
+      BOOST_CHECK_EQUAL(s.count(), 1);
       reactor::yield();
       reactor::yield();
-      BOOST_CHECK_EQUAL(s.count(), -1);
+      BOOST_CHECK_EQUAL(s.count(), 0);
       BOOST_CHECK_EQUAL(step, 1);
       s.release();
       reactor::yield();
