@@ -316,7 +316,7 @@ namespace reactor
     catch (...)
     {
       ELLE_TRACE_SCOPE("%s: exception escaped, terminating: %s",
-                       *this, elle::exception_string());
+                       thread, elle::exception_string());
       this->_current = previous;
       this->_eptr = std::current_exception();
       this->terminate();
