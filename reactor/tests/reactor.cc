@@ -1458,55 +1458,55 @@ test_semaphore_multi()
 /*------.
 | Mutex |
 `------*/
-
-static const int mutex_yields = 32;
-
-static
-void
-mutex_count(int& i,
-            reactor::Mutex& mutex,
-            int yields)
+namespace mutex
 {
-  int count = 0;
-  int prev = -1;
-  while (count < mutex_yields)
+
+  static const int mutex_yields = 32;
+
+  static
+  void
+  mutex_count(int& i,
+              reactor::Mutex& mutex,
+              int yields)
   {
+    int count = 0;
+    int prev = -1;
+    while (count < mutex_yields)
     {
-      reactor::Lock lock(mutex);
-      // For now, mutex do guarantee fairness between lockers.
-      //BOOST_CHECK_NE(i, prev);
-      (void)prev;
-      BOOST_CHECK_EQUAL(i % 2, 0);
-      ++i;
-      for (int c = 0; c < yields; ++c)
       {
-        ++count;
-        reactor::yield();
+        reactor::Lock lock(mutex);
+        // For now, mutex do guarantee fairness between lockers.
+        //BOOST_CHECK_NE(i, prev);
+        (void)prev;
+        BOOST_CHECK_EQUAL(i % 2, 0);
+        ++i;
+        for (int c = 0; c < yields; ++c)
+        {
+          ++count;
+          reactor::yield();
+        }
+        ++i;
+        prev = i;
       }
-      ++i;
-      prev = i;
+      reactor::yield();
     }
-    reactor::yield();
   }
-}
 
-static
-void
-test_mutex()
-{
-  reactor::Scheduler sched;
-  reactor::Mutex mutex;
-  int step = 0;
-  reactor::Thread c1(sched, "counter1",
-                     boost::bind(&mutex_count,
-                                 boost::ref(step), boost::ref(mutex), 1));
-  reactor::Thread c2(sched, "counter2",
-                     boost::bind(&mutex_count,
-                                 boost::ref(step), boost::ref(mutex), 1));
-  reactor::Thread c3(sched, "counter3",
-                     boost::bind(&mutex_count,
-                                 boost::ref(step), boost::ref(mutex), 1));
-  sched.run();
+  ELLE_TEST_SCHEDULED(basics)
+  {
+    reactor::Mutex mutex;
+    int step = 0;
+    reactor::Thread c1("counter1",
+                       boost::bind(&mutex_count,
+                                   boost::ref(step), boost::ref(mutex), 1));
+    reactor::Thread c2("counter2",
+                       boost::bind(&mutex_count,
+                                   boost::ref(step), boost::ref(mutex), 1));
+    reactor::Thread c3("counter3",
+                       boost::bind(&mutex_count,
+                                   boost::ref(step), boost::ref(mutex), 1));
+    reactor::wait({c1, c2, c3});
+  }
 }
 
 /*--------.
@@ -3356,9 +3356,12 @@ ELLE_TEST_SUITE()
   sem->add(BOOST_TEST_CASE(test_semaphore_block), 0, valgrind(1, 5));
   sem->add(BOOST_TEST_CASE(test_semaphore_multi), 0, valgrind(1, 5));
 
-  boost::unit_test::test_suite* mtx = BOOST_TEST_SUITE("Mutex");
-  boost::unit_test::framework::master_test_suite().add(mtx);
-  mtx->add(BOOST_TEST_CASE(test_mutex), 0, valgrind(1, 5));
+  {
+    boost::unit_test::test_suite* mtx = BOOST_TEST_SUITE("mutex");
+    boost::unit_test::framework::master_test_suite().add(mtx);
+    auto basics = &mutex::basics;
+    mtx->add(BOOST_TEST_CASE(basics), 0, valgrind(1, 5));
+  }
 
   boost::unit_test::test_suite* rwmtx = BOOST_TEST_SUITE("RWMutex");
   boost::unit_test::framework::master_test_suite().add(rwmtx);
