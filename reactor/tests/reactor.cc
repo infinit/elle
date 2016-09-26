@@ -1531,6 +1531,7 @@ namespace mutex
         reactor::wait(locked);
         try
         {
+          relocked.open();
           reactor::Lock l(mutex);
           BOOST_FAIL("bailer should have been terminated");
         }
