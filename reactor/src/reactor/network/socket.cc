@@ -5,6 +5,7 @@
 #include <elle/Lazy.hh>
 #include <elle/format/hexadecimal.hh>
 
+#include <reactor/lockable.hh>
 #include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/socket.hh>
@@ -719,20 +720,10 @@ namespace reactor
     void
     StreamSocket<AsioSocket, EndPoint>::write(elle::ConstWeakBuffer buffer)
     {
-      reactor::wait(this->_write_mutex);
+      Lock lock(this->_write_mutex);
       ELLE_TRACE_SCOPE("%s: write %s bytes", *this, buffer.size());
-      try
-      {
-        Write<Self, AsioSocket> write(*this, *this->socket(), buffer);
-        write.run();
-      }
-      catch (...)
-      {
-        auto e = std::current_exception();
-        this->_write_mutex.release();
-        std::rethrow_exception(e);
-      }
-      this->_write_mutex.release();
+      Write<Self, AsioSocket> write(*this, *this->socket(), buffer);
+      write.run();
     }
 
     /*------------------------.

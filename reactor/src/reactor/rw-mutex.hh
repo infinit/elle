@@ -17,6 +17,9 @@ namespace reactor
     virtual
     bool
     release() override;
+    virtual
+    bool
+    acquire() override;
 
     class WriteMutex
       : public Lockable
@@ -28,6 +31,9 @@ namespace reactor
       virtual
       bool
       release() override;
+      virtual
+      bool
+      acquire() override;
 
     protected:
       virtual

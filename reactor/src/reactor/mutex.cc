@@ -21,13 +21,18 @@ namespace reactor
   Mutex::release()
   {
     ELLE_ASSERT(_locked);
-    if (!_signal_one())
-    {
-      _locked = false;
+    _locked = false;
+    _signal();
+    return false;
+  }
+
+  bool
+  Mutex::acquire()
+  {
+    if (_locked)
       return false;
-    }
-    else
-      return true;
+    _locked = true;
+    return true;
   }
 
   bool
@@ -41,7 +46,6 @@ namespace reactor
     }
     else
     {
-      _locked = true;
       return false;
     }
   }

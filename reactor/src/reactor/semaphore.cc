@@ -13,17 +13,28 @@ namespace reactor
   }
 
   bool
+  Semaphore::acquire()
+  {
+    if (this->_count > 0)
+    {
+      --this->_count;
+      return true;
+    }
+    else
+      return false;
+  }
+
+  bool
   Semaphore::release()
   {
     ++this->_count;
-    return this->_signal_one();
+    return this->_signal();
   }
 
   bool
   Semaphore::_wait(Thread* thread, Waker const& waker)
   {
-    --this->_count;
-    if (this->_count < 0)
+    if (this->_count <= 0)
     {
       this->Waitable::_wait(thread, waker);
       return true;
