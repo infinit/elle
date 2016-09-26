@@ -119,34 +119,24 @@ namespace reactor
   `------------------*/
 
   static
-  std::unordered_map<std::thread::id, Scheduler*>&
-  _schedulers()
+  Scheduler*&
+  _scheduler()
   {
-    static std::unordered_map<std::thread::id, Scheduler*> map;
-    return map;
-  }
-
-  static
-  std::mutex&
-  _schedulers_mutex()
-  {
-    static std::mutex mutex;
-    return mutex;
+    static thread_local Scheduler* sched = nullptr;
+    return sched;
   }
 
   Scheduler*
   Scheduler::scheduler()
   {
-    std::unique_lock<std::mutex> ulock(_schedulers_mutex());
-    return _schedulers()[std::this_thread::get_id()];
+    return _scheduler();
   }
 
   static
   void
   scheduler(Scheduler* v)
   {
-    std::unique_lock<std::mutex> ulock(_schedulers_mutex());
-    _schedulers()[std::this_thread::get_id()] = v;
+    _scheduler() = v;
   }
 
   /*----.
