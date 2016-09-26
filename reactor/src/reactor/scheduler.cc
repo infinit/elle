@@ -118,6 +118,41 @@ namespace reactor
   | Current Scheduler |
   `------------------*/
 
+#ifdef __clang__
+
+  static
+  std::unordered_map<std::thread::id, Scheduler*>&
+  _schedulers()
+  {
+    static std::unordered_map<std::thread::id, Scheduler*> map;
+    return map;
+  }
+
+  static
+  std::mutex&
+  _schedulers_mutex()
+  {
+    static std::mutex mutex;
+    return mutex;
+  }
+
+  Scheduler*
+  Scheduler::scheduler()
+  {
+    std::unique_lock<std::mutex> ulock(_schedulers_mutex());
+    return _schedulers()[std::this_thread::get_id()];
+  }
+
+  static
+  void
+  scheduler(Scheduler* v)
+  {
+    std::unique_lock<std::mutex> ulock(_schedulers_mutex());
+    _schedulers()[std::this_thread::get_id()] = v;
+  }
+
+#else
+
   static
   Scheduler*&
   _scheduler()
@@ -138,6 +173,8 @@ namespace reactor
   {
     _scheduler() = v;
   }
+
+#endif
 
   /*----.
   | Run |
