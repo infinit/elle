@@ -1507,6 +1507,44 @@ namespace mutex
                                    boost::ref(step), boost::ref(mutex), 1));
     reactor::wait({c1, c2, c3});
   }
+
+  ELLE_TEST_SCHEDULED(deadlock)
+  {
+    reactor::Mutex mutex;
+    reactor::Barrier locked;
+    reactor::Barrier relocked;
+    bool beacon = false;
+    reactor::Thread bailer(
+      "bailer",
+      [&]
+      {
+        reactor::wait(locked);
+        try
+        {
+          reactor::Lock l(mutex);
+          BOOST_FAIL("bailer should have been terminated");
+        }
+        catch (...)
+        {
+          reactor::Lock l(mutex);
+          beacon = true;
+          throw;
+        }
+      });
+    reactor::Thread locker(
+      "locker",
+      [&]
+      {
+        {
+          locked.open();
+          reactor::Lock l(mutex);
+          reactor::wait(relocked);
+        }
+        bailer.terminate();
+      });
+    reactor::wait({bailer, locker});
+    BOOST_CHECK(beacon);
+  }
 }
 
 /*--------.
@@ -3361,6 +3399,8 @@ ELLE_TEST_SUITE()
     boost::unit_test::framework::master_test_suite().add(mtx);
     auto basics = &mutex::basics;
     mtx->add(BOOST_TEST_CASE(basics), 0, valgrind(1, 5));
+    auto deadlock = &mutex::deadlock;
+    mtx->add(BOOST_TEST_CASE(deadlock), 0, valgrind(1, 5));
   }
 
   boost::unit_test::test_suite* rwmtx = BOOST_TEST_SUITE("RWMutex");
