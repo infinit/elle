@@ -291,8 +291,17 @@ namespace reactor
 
     UTPServer::Impl::~Impl()
     {
-      ELLE_TRACE_SCOPE("%s: destroy", this);
-      this->_cleanup();
+      try
+      {
+        ELLE_TRACE_SCOPE("%s: destroy", this);
+        this->_cleanup();
+      }
+      catch (...)
+      {
+        ELLE_ERR("UTPServer exceptioned while shutting down: %s",
+                 elle::exception_string());
+        std::abort();
+      }
     }
 
     void
