@@ -146,6 +146,8 @@ _test_suite()                                           \
                       []                                              \
                       {                                               \
                         ELLE_ERR("test %s timeout: SIGALRM", #Name);  \
+                        if (auto s = reactor::Scheduler::scheduler()) \
+                          s->dump_state();                            \
                         throw elle::Error("test timeout");            \
                       });
 # endif
