@@ -322,8 +322,16 @@ namespace elle
   template <typename ... Types>
   Option<Types ...>::Option(serialization::SerializerIn& s)
   {
-    s.serialize("type", this->_index);
-    this->template _apply<_details::OptionDeserialize>(s);
+    try
+    {
+      s.serialize("type", this->_index);
+      this->template _apply<_details::OptionDeserialize>(s);
+    }
+    catch (...)
+    {
+      this->_index = -1;
+      throw;
+    }
   }
 
   namespace _details
