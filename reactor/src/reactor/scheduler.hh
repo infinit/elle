@@ -46,6 +46,13 @@ namespace reactor
     Scheduler*
     scheduler();
 
+  /*------.
+  | Debug |
+  `------*/
+  public:
+    void
+    dump_state();
+
   /*----.
   | Run |
   `----*/
