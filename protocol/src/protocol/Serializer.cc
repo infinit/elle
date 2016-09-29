@@ -272,14 +272,11 @@ namespace infinit
     static
     elle::Buffer
     read(Serializer::Inner& stream,
-         boost::optional<uint32_t> size = boost::none,
-         int first_char = -1)
+         boost::optional<uint32_t> size = boost::none)
     {
       ELLE_DEBUG_SCOPE("read %s (size: %s)", stream, size);
-      if (first_char != -1 && size)
-        ELLE_ABORT("read with extra char and known size is not supported");
       if (!size)
-        size = Serializer::Super::uint32_get(stream, first_char);
+        size = Serializer::Super::uint32_get(stream);
       ELLE_DUMP("expected size: %s", *size);
       elle::Buffer content(*size);
       read(stream, content, *size);
@@ -358,24 +355,19 @@ namespace infinit
     elle::Buffer
     Version010Impl::_read()
     {
-      int c = -1;
-      {
-        elle::With<reactor::Thread::Interruptible>() << [&]
-        {
-          c = this->_stream.get();
-        };
-      }
-      if (c == -1)
+      if (elle::With<reactor::Thread::Interruptible>() << [&]
+         {
+           return this->_stream.peek();
+         } == std::iostream::traits_type::eof())
         throw Serializer::EOF();
       elle::Buffer hash;
       if (this->_checksum)
       {
         ELLE_DEBUG("read checksum")
-          hash = infinit::protocol::read(this->_stream, {}, c);
-        c = -1;
+          hash = infinit::protocol::read(this->_stream, {});
       }
       ELLE_DEBUG("read actual data");
-      auto packet = infinit::protocol::read(this->_stream, {}, c);
+      auto packet = infinit::protocol::read(this->_stream, {});
       ELLE_DUMP("packet content: '%f'", packet);
       // Check checksums match.
       if (this->_checksum)
@@ -454,24 +446,19 @@ namespace infinit
     Version020Impl::_read()
     {
       ELLE_TRACE_SCOPE("%s: read packet", this);
-      int c = -1;
-      {
-        elle::With<reactor::Thread::Interruptible>() << [&]
-        {
-          c = this->_stream.get();
-        };
-      }
-      if (c == -1)
+      if (elle::With<reactor::Thread::Interruptible>() << [&]
+         {
+           return this->_stream.peek();
+         } == std::iostream::traits_type::eof())
         throw Serializer::EOF();
       elle::Buffer hash;
       if (this->_checksum)
       {
         ELLE_DEBUG("read checksum")
-          hash = infinit::protocol::read(this->_stream, {}, c);
-        c = -1;
+          hash = infinit::protocol::read(this->_stream, {});
       }
       // Get the total size.
-      uint32_t total_size(Serializer::Super::uint32_get(this->_stream, c));
+      uint32_t total_size(Serializer::Super::uint32_get(this->_stream));
       ELLE_DEBUG("packet size: %s", total_size);
       elle::Buffer packet(static_cast<std::size_t>(total_size));
       elle::Buffer::Size offset = 0;
