@@ -134,6 +134,11 @@ namespace std
       this->_payload.reset();
     }
 
+    operator bool()
+    {
+      return this != nullptr;
+    }
+
   private:
     template <typename U>
     friend class ambivalent_ptr;
