@@ -86,7 +86,7 @@ public:
     auto& sched = *reactor::Scheduler::scheduler();
     auto socket = this->_server.accept();
     infinit::protocol::Serializer s(sched, *socket, _config.version, _config.checksum);
-    infinit::protocol::ChanneledStream channels(sched, s);
+    infinit::protocol::ChanneledStream channels(sched, s, _config.version);
 
     DummyRPC rpc(channels);
     rpc.answer = [] { return 42; };
@@ -141,7 +141,7 @@ ELLE_TEST_SCHEDULED(rpc, (TestConfig, config))
   RPCServer server(config);
   reactor::network::TCPSocket socket("127.0.0.1", server.port());
   infinit::protocol::Serializer s(socket, config.version, config.checksum);
-  infinit::protocol::ChanneledStream channels(s);
+  infinit::protocol::ChanneledStream channels(s, config.version);
   DummyRPC rpc(channels);
   BOOST_CHECK_EQUAL(rpc.answer(), 42);
   BOOST_CHECK_EQUAL(rpc.square(8), 64);
@@ -162,7 +162,7 @@ ELLE_TEST_SCHEDULED(terminate, (TestConfig, config))
     {
       reactor::network::TCPSocket socket("127.0.0.1", server.port());
       infinit::protocol::Serializer s(socket, config.version, config.checksum);
-      infinit::protocol::ChanneledStream channels(s);
+      infinit::protocol::ChanneledStream channels(s, config.version);
       DummyRPC rpc(channels);
       suicide_thread = &thread;
       BOOST_CHECK_THROW(rpc.suicide(), std::runtime_error);
@@ -179,7 +179,7 @@ ELLE_TEST_SCHEDULED(parallel, (TestConfig, config))
   RPCServer server(config);
   reactor::network::TCPSocket socket("127.0.0.1", server.port());
   infinit::protocol::Serializer s(socket, config.version, config.checksum);
-  infinit::protocol::ChanneledStream channels(s);
+  infinit::protocol::ChanneledStream channels(s, config.version);
   DummyRPC rpc(channels);
   std::vector<reactor::Thread*> threads;
   std::list<int> inserted;
@@ -221,7 +221,7 @@ ELLE_TEST_SCHEDULED(disconnection, (TestConfig, config))
   RPCServer server(config);
   reactor::network::TCPSocket socket("127.0.0.1", server.port());
   infinit::protocol::Serializer s(socket, config.version, config.checksum);
-  infinit::protocol::ChanneledStream channels(s);
+  infinit::protocol::ChanneledStream channels(s, config.version);
   DummyRPC rpc(channels);
   reactor::Thread call_1("call 1",
                          [&]

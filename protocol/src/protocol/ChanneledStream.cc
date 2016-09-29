@@ -21,8 +21,10 @@ namespace infinit
     `-------------*/
 
     ChanneledStream::ChanneledStream(reactor::Scheduler& scheduler,
-                                     Stream& backend)
+                                     Stream& backend,
+                                     elle::Version const& version)
       : Super(scheduler)
+      , _version(version)
       , _master(this->_handshake(backend))
       , _id_current(0)
       , _reading(false)
@@ -33,8 +35,9 @@ namespace infinit
       , _default(*this)
     {}
 
-    ChanneledStream::ChanneledStream(Stream& backend)
-      : ChanneledStream(*reactor::Scheduler::scheduler(), backend)
+    ChanneledStream::ChanneledStream(Stream& backend,
+                                     elle::Version const& version)
+      : ChanneledStream(*reactor::Scheduler::scheduler(), backend, version)
     {}
 
     bool
@@ -140,9 +143,7 @@ namespace infinit
           {
             this->_reading = true;
             elle::Buffer p(this->_backend.read());
-            if (p.size() < 4)
-              throw elle::Exception("packet is too small for channel id");
-            int channel_id = uint32_get(p);
+            int channel_id = uint32_get(p, this->version());
             // FIXME: The size of the packet isn't
             // adjusted. This is cosmetic though.
             auto it = this->_channels.find(channel_id);
@@ -245,7 +246,7 @@ namespace infinit
       ELLE_TRACE_SCOPE("%s: send %f on channel %s", *this, packet, id);
 
       elle::Buffer backend_packet;
-      uint32_put(backend_packet, id);
+      uint32_put(backend_packet, id, this->version());
       backend_packet.append(packet.contents(), packet.size());
       this->_backend.write(backend_packet);
     }

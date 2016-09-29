@@ -742,7 +742,7 @@ _termination(elle::Version const& version,
       ELLE_TRACE("waitinng for thread")
         reactor::wait(tready);
       auto& backend = s.stream();
-      infinit::protocol::Stream::uint32_put(backend, 6);
+      infinit::protocol::Stream::uint32_put(backend, 6, version);
       backend.write("foo", 3);
       backend.flush();
       reactor::sleep(10_ms);
@@ -750,7 +750,7 @@ _termination(elle::Version const& version,
         t->terminate();
       reactor::sleep(10_ms);
       backend.write("baz", 3);
-      infinit::protocol::Stream::uint32_put(backend, 6);
+      infinit::protocol::Stream::uint32_put(backend, 6, version);
       backend.write("foobar", 6);
       backend.flush();
       ELLE_TRACE("writer done");
@@ -761,6 +761,7 @@ ELLE_TEST_SCHEDULED(termination)
 {
   _termination(elle::Version{0, 1, 0}, false);
   _termination(elle::Version{0, 2, 0}, false);
+  _termination(elle::Version{0, 3, 0}, false);
 }
 
 ELLE_TEST_SCHEDULED(eof)
@@ -801,9 +802,9 @@ ELLE_TEST_SCHEDULED(eof)
   }
 }
 
-ELLE_TEST_SCHEDULED(message_v020)
+ELLE_TEST_SCHEDULED(message)
 {
-  for (auto version: {elle::Version{0, 2, 0}})
+  for (auto version: {elle::Version{0, 2, 0}, elle::Version{0, 3, 0}})
   {
     uint32_t chunk_size = 0;
     dialog<Connector>(
@@ -839,7 +840,7 @@ ELLE_TEST_SCHEDULED(message_v020)
         // Send the size.
         {
           infinit::protocol::Stream::uint32_put(
-            connector._alice_buffer, size);
+            connector._alice_buffer, size, version);
         }
         // Write first part.
         connector._alice_buffer.append(chunk.mutable_contents(), chunk.size());
@@ -850,7 +851,7 @@ ELLE_TEST_SCHEDULED(message_v020)
 
           connector._alice_buffer.append(&message_control, 1);
           infinit::protocol::Stream::uint32_put(
-            connector._alice_buffer, message.length());
+            connector._alice_buffer, message.length(), version);
           // connector._alice_buffer.append(&size, 4);
           connector._alice_buffer.append(message.c_str(), message.length());
         }
@@ -868,7 +869,7 @@ ELLE_TEST_SCHEDULED(interruption2)
   // packet.
   namespace ip = infinit::protocol;
 
-  for (auto version: {elle::Version{0, 2, 0}})
+  for (auto version: {elle::Version{0, 2, 0}, elle::Version{0, 3, 0}})
   {
     reactor::Barrier pinger_block;
     dialog<Connector>(
@@ -879,19 +880,19 @@ ELLE_TEST_SCHEDULED(interruption2)
       },
       [&] (infinit::protocol::Serializer& s)
       { // echo server, sending partial result until pinger_block is opened.
-        ip::ChanneledStream stream(s);
+        ip::ChanneledStream stream(s, version);
         while (true)
         {
           ELLE_TRACE("accept");
           ip::Channel c = stream.accept();
           auto buf = c.read();
           elle::Buffer message;
-          infinit::protocol::Stream::uint32_put(message, c.id());
+          infinit::protocol::Stream::uint32_put(message, c.id(), version);
           {
             elle::IOStream m(message.ostreambuf());
             m.write((const char*)buf.contents(), buf.size());
           }
-          infinit::protocol::Stream::uint32_put(s.stream(), message.size());
+          infinit::protocol::Stream::uint32_put(s.stream(), message.size(), version);
           {
             s.stream().write((const char*)message.contents(), message.size() - 1);
           }
@@ -899,14 +900,17 @@ ELLE_TEST_SCHEDULED(interruption2)
           reactor::wait(pinger_block);
           ELLE_TRACE("finish write");
           pinger_block.close();
-          s.stream().write((const char*)buf.contents() + buf.size()-1, 1);
+          if (version >= elle::Version{0, 3, 0})
+            s.stream().write((const char*)message.contents() + message.size()-1, 1);
+          else
+            s.stream().write((const char*)buf.contents() + buf.size()-1, 1);
           s.stream().flush();
           ELLE_TRACE("packet transmited");
         }
       },
       [&] (infinit::protocol::Serializer& s)
       {
-        ip::ChanneledStream stream(s);
+        ip::ChanneledStream stream(s, version);
         ip::Channel c(stream);
         c.write(elle::Buffer("foo"));
         reactor::Barrier b;
@@ -982,5 +986,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(interruption2), 0, valgrind(3, 10));
   suite.add(BOOST_TEST_CASE(termination), 0, valgrind(3, 10));
   suite.add(BOOST_TEST_CASE(eof), 0, valgrind(3));
-  suite.add(BOOST_TEST_CASE(message_v020), 0, valgrind(3));
+  suite.add(BOOST_TEST_CASE(message), 0, valgrind(3));
 }

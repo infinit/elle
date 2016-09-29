@@ -21,66 +21,72 @@
 
 ELLE_LOG_COMPONENT("infinit.protocol.test");
 
-// struct Stream
-//   : public infinit::protocol::Stream
-// {
-//   elle::Buffer
-//   read() override
-//   {
-//     return {};
-//   }
+static const std::vector<uint32_t> to_test = {
+  std::numeric_limits<uint32_t>::min(),
+  std::numeric_limits<uint32_t>::max(),
+  std::numeric_limits<uint8_t>::max() + 1,
+  std::numeric_limits<uint8_t>::max() - 1,
+  std::numeric_limits<uint16_t>::max() + 1,
+  std::numeric_limits<uint16_t>::max() - 1
+};
 
-//   void
-//   _write(elle::Buffer const& packet) override
-//   {
-//   }
-// };
+static
+void
+_buffer(elle::Version const& version)
+{
+  elle::Buffer x;
+  for (auto i: to_test)
+    infinit::protocol::Stream::uint32_put(x, i, version);
+  for (auto i: to_test)
+    BOOST_CHECK_EQUAL(infinit::protocol::Stream::uint32_get(x, version), i);
+  BOOST_CHECK_EQUAL(x.size(), 0);
+}
 
 ELLE_TEST_SCHEDULED(buffer)
 {
+  for (auto version: {elle::Version{0, 2, 0}, elle::Version{0, 3, 0}})
+    _buffer(version);
+}
+
+static
+void
+_stream(elle::Version const& version)
+{
   elle::Buffer x;
-  infinit::protocol::Stream::uint32_put(x, std::numeric_limits<uint32_t>::min());
-  infinit::protocol::Stream::uint32_put(x, std::numeric_limits<uint32_t>::max());
-  infinit::protocol::Stream::uint32_put(x, std::numeric_limits<uint32_t>::min());
-  infinit::protocol::Stream::uint32_put(x, 3);
-  BOOST_CHECK_EQUAL(infinit::protocol::Stream::uint32_get(x), std::numeric_limits<uint32_t>::min());
-  BOOST_CHECK_EQUAL(infinit::protocol::Stream::uint32_get(x), std::numeric_limits<uint32_t>::max());
-  BOOST_CHECK_EQUAL(infinit::protocol::Stream::uint32_get(x), std::numeric_limits<uint32_t>::min());
-  BOOST_CHECK_EQUAL(infinit::protocol::Stream::uint32_get(x), 3);
-  BOOST_CHECK_EQUAL(x.size(), 0);
+  {
+    elle::IOStream output(x.ostreambuf());
+    for (auto i: to_test)
+      infinit::protocol::Stream::uint32_put(output, i, version);
+  }
+  // XXX.
+  {
+    elle::IOStream input(x.istreambuf());
+    for (auto i: to_test)
+      BOOST_CHECK_EQUAL(infinit::protocol::Stream::uint32_get(input, version), i);
+  }
+  // XXX.
+  {
+    {
+      elle::IOStream input(x.istreambuf());
+      BOOST_CHECK_EQUAL(
+        infinit::protocol::Stream::uint32_get(input, version), to_test[0]);
+      BOOST_CHECK_EQUAL(
+        infinit::protocol::Stream::uint32_get(input, version), to_test[1]);
+    }
+    {
+      elle::IOStream input(x.istreambuf());
+      BOOST_CHECK_EQUAL(
+        infinit::protocol::Stream::uint32_get(input, version), to_test[0]);
+      BOOST_CHECK_EQUAL(
+        infinit::protocol::Stream::uint32_get(input, version), to_test[1]);
+    }
+  }
 }
 
 ELLE_TEST_SCHEDULED(stream)
 {
-  elle::Buffer x;
-  {
-    elle::IOStream o(x.ostreambuf());
-    infinit::protocol::Stream::uint32_put(o, std::numeric_limits<uint32_t>::min());
-    infinit::protocol::Stream::uint32_put(o, std::numeric_limits<uint32_t>::max());
-    infinit::protocol::Stream::uint32_put(o, std::numeric_limits<uint32_t>::min());
-    infinit::protocol::Stream::uint32_put(o, 3);
-  }
-  // XXX.
-  {
-    elle::IOStream i(x.istreambuf());
-    BOOST_CHECK_EQUAL(infinit::protocol::Stream::uint32_get(i), std::numeric_limits<uint32_t>::min());
-    BOOST_CHECK_EQUAL(infinit::protocol::Stream::uint32_get(i), std::numeric_limits<uint32_t>::max());
-    BOOST_CHECK_EQUAL(infinit::protocol::Stream::uint32_get(i), std::numeric_limits<uint32_t>::min());
-    BOOST_CHECK_EQUAL(infinit::protocol::Stream::uint32_get(i), 3);
-  }
-  // XXX.
-  {
-    {
-      elle::IOStream i(x.istreambuf());
-      BOOST_CHECK_EQUAL(infinit::protocol::Stream::uint32_get(i), std::numeric_limits<uint32_t>::min());
-      BOOST_CHECK_EQUAL(infinit::protocol::Stream::uint32_get(i), std::numeric_limits<uint32_t>::max());
-    }
-    {
-      elle::IOStream i(x.istreambuf());
-      BOOST_CHECK_EQUAL(infinit::protocol::Stream::uint32_get(i), std::numeric_limits<uint32_t>::min());
-      BOOST_CHECK_EQUAL(infinit::protocol::Stream::uint32_get(i), std::numeric_limits<uint32_t>::max());
-    }
-  }
+  for (auto version: {elle::Version{0, 2, 0}, elle::Version{0, 3, 0}})
+    _stream(version);
 }
 
 ELLE_TEST_SUITE()

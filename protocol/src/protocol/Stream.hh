@@ -22,7 +22,8 @@ namespace infinit
     public:
       Stream(reactor::Scheduler& scheduler);
       Stream();
-      virtual ~Stream();
+      virtual
+      ~Stream();
 
     /*-----------.
     | Properties |
@@ -54,19 +55,19 @@ namespace infinit
     public:
       static
       void
-      uint32_put(std::ostream& s, uint32_t  i);
+      uint32_put(std::ostream& s, uint32_t i, elle::Version const& v);
 
       static
       uint32_t
-      uint32_get(std::istream& s);
+      uint32_get(std::istream& s, elle::Version const& v);
 
       static
       void
-      uint32_put(elle::Buffer& s, uint32_t  i);
+      uint32_put(elle::Buffer& s, uint32_t  i, elle::Version const& v);
 
       static
       uint32_t
-      uint32_get(elle::Buffer& s);
+      uint32_get(elle::Buffer& s, elle::Version const& v);
     };
   }
 }

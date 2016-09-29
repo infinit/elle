@@ -26,8 +26,14 @@ namespace infinit
     | Construction |
     `-------------*/
     public:
-      ChanneledStream(reactor::Scheduler& scheduler, Stream& backend);
-      ChanneledStream(Stream& backend);
+      ChanneledStream(reactor::Scheduler& scheduler, Stream& backend,
+                      elle::Version const& version);
+      ChanneledStream(Stream& backend, elle::Version const& version);
+
+    /*--------.
+    | Version |
+    `--------*/
+      ELLE_ATTRIBUTE_R(elle::Version, version);
 
     /*----.
     | IDs |
