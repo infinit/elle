@@ -262,7 +262,7 @@ private:
               char buffer[1024];
               ELLE_DEBUG("reading");
               int64_t size =
-                sender->read_some(Buffer(buffer, sizeof(buffer)), 250_ms);
+                sender->read_some(Buffer(buffer, sizeof(buffer)), valgrind(250_ms, 10));
               ELLE_DEBUG("read %s", size);
               conf(elle::ConstWeakBuffer(buffer, size));
               if (conf.corrupt_offset >= 0 && \
@@ -548,7 +548,7 @@ _connection_lost_sender(elle::Version const& version,
       {
         while (true)
         {
-          reactor::sleep(10_ms);
+          reactor::sleep(valgrind(10_ms, 10));
           s.write(p);
         }
       }
@@ -678,11 +678,11 @@ _interruption(elle::Version const& version,
         } while (true);
         // Version one will go throught even if a termination has been required.
         ELLE_DEBUG("wait for %s", terminated)
-          terminated.wait(250_ms);
+          terminated.wait(valgrind(250_ms, 10));
         if (version == elle::Version{0, 1, 0})
         {
           ELLE_DEBUG("wait for %s", received)
-            received.wait(250_ms);
+            received.wait(valgrind(250_ms, 10));
         }
         else if (version >= elle::Version{0, 2, 0})
         {
@@ -745,10 +745,10 @@ _termination(elle::Version const& version,
       infinit::protocol::Stream::uint32_put(backend, 6, version);
       backend.write("foo", 3);
       backend.flush();
-      reactor::sleep(10_ms);
+      reactor::sleep(valgrind(10_ms, 10));
       ELLE_TRACE("killing thread")
         t->terminate();
-      reactor::sleep(10_ms);
+      reactor::sleep(valgrind(10_ms, 10));
       backend.write("baz", 3);
       infinit::protocol::Stream::uint32_put(backend, 6, version);
       backend.write("foobar", 6);
