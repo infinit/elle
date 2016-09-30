@@ -136,7 +136,7 @@ namespace std
 
     operator bool()
     {
-      return this != nullptr;
+      return this->lock() != nullptr;
     }
 
   private:
