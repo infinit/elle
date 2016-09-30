@@ -33,6 +33,8 @@ namespace elle
       //
     public:
       Time();
+      virtual
+      ~Time();
 
       //
       // methods
