@@ -21,6 +21,7 @@ namespace reactor
                           boost::asio::local::stream_protocol::endpoint,
                           boost::asio::local::stream_protocol::acceptor> Super;
       UnixDomainServer();
+      ~UnixDomainServer();
       std::unique_ptr<UnixDomainSocket>
       accept();
       using Super::listen;
@@ -36,6 +37,7 @@ namespace reactor
       _accept() override;
       ELLE_ATTRIBUTE(
         boost::optional<elle::filesystem::TemporaryDirectory>, tmp, mutable);
+      ELLE_ATTRIBUTE(boost::filesystem::path, endpoint_path);
     };
   }
 }
