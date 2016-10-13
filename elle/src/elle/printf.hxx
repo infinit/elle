@@ -212,14 +212,14 @@ namespace elle
   }
 
   template<typename F, typename ... T>
-  void
+  std::ostream&
   fprintf(std::ostream& stream, F&& fmt, T&& ... values)
   {
     try
     {
       boost::format format(fmt);
       _details::Feed<T ...>::args(format, std::forward<T>(values) ...);
-      stream << format;
+      return stream << format;
     }
     catch (boost::io::format_error const& e)
     {
