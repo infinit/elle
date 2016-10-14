@@ -304,7 +304,7 @@ def configure(cxx_toolkit = None,
   ## ------- ##
   openssl_rule = drake.Rule('openssl')
   openssl_version = '1.0.2'
-  openssl_release_tag = 'g'
+  openssl_release_tag = 'j'
   openssl_basename = 'openssl-%s' % (openssl_version + openssl_release_tag)
   openssl_tarball = drake.node('openssl/%s.tar.gz' % openssl_basename)
   openssl_prefix = drake.Path('openssl')
@@ -320,7 +320,7 @@ def configure(cxx_toolkit = None,
         openssl_version, openssl_release_tag, openssl_basename),
     ],
     openssl_tarball,
-    fingerprint = 'f3c710c045cdee5fd114feb69feba7aa')
+    fingerprint = '96322138f0b69e61b7212bc53d5e912b')
   openssl_headers = [
     'include/openssl/aes.h',
     'include/openssl/asn1.h',
