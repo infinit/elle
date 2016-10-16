@@ -82,6 +82,34 @@ namespace elle
       static constexpr auto value = index_of_helper<0, T, Elts...>::value;
     };
 
+    /*----.
+    | Map |
+    `----*/
+
+    namespace
+    {
+      template <template <typename> class F, typename ... Elts>
+      struct map_helper
+      {
+        using type = List<>;
+      };
+
+      template <template <typename> class F, typename Head, typename ... Tail>
+      struct map_helper<F, Head, Tail...>
+      {
+        using type = typename List<Tail...>
+          ::template map<F>::type
+          ::template prepend<typename F<Head>::type>::type;
+      };
+    }
+
+    template <typename ... Elts>
+    template <template <typename> class F>
+    struct List<Elts...>::map
+    {
+      using type = typename map_helper<F, Elts...>::type;
+    };
+
     /*--------.
     | Prepend |
     `--------*/

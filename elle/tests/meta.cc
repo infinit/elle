@@ -36,6 +36,28 @@ namespace list
                   "list::index_of yielded the wrong index");
   }
 
+  namespace map
+  {
+    typedef List<int, float, std::string> l;
+    template <typename T>
+    struct voidify
+    {
+      using type = void;
+    };
+    static_assert(
+      std::is_same<l::map<voidify>::type, List<void, void, void>>::value,
+      "list::map yielded the wrong type");
+    template <typename T>
+    struct pointerize
+    {
+      using type = T*;
+    };
+    static_assert(
+      std::is_same<l::map<pointerize>::type,
+                   List<int*, float*, std::string*>>::value,
+      "list::map yielded the wrong type");
+  }
+
   namespace prepend
   {
     typedef List<int, void> l;
