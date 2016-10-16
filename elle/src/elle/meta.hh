@@ -26,6 +26,11 @@ namespace elle
       template <typename T>
       struct
       prepend;
+
+      /// List<F<Elts>...>
+      template <int = 0>
+      struct
+      tail;
     };
   }
 }

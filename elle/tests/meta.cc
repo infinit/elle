@@ -43,6 +43,14 @@ namespace list
                                List<float, int, void>>::value,
                   "list::prepend yielded the wrong type");
   }
+
+  namespace tail
+  {
+    typedef List<int, float, void> l;
+    static_assert(
+      std::is_same<l::tail<>::type, List<float, void>>::value,
+      "list::tail yielded the wrong type");
+  }
 }
 
 static

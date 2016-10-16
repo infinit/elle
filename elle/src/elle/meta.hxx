@@ -93,6 +93,30 @@ namespace elle
       typedef List<T, Elts...> type;
     };
 
+    /*-----.
+    | Tail |
+    `-----*/
+
+
+    namespace
+    {
+      template <typename ... List>
+      struct tail_helper
+      {};
+
+      template <typename Head, typename ... Tail>
+      struct tail_helper<Head, Tail...>
+      {
+        using type = List<Tail...>;
+      };
+    }
+
+    template <typename ... Elts>
+    template <int>
+    struct List<Elts...>::tail
+    {
+      using type = typename tail_helper<Elts...>::type;
+    };
   }
 }
 
