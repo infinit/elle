@@ -4,6 +4,7 @@
 # include <type_traits>
 
 # define DAS_SYMBOL(Name)                       \
+  constexpr                                     \
   class Symbol_##Name                           \
     : public ::das::Symbol                      \
   {                                             \
@@ -26,7 +27,10 @@
       return o.Name;                            \
     }                                           \
                                                 \
-    static constexpr char const* name = #Name;  \
+    static std::string name()                   \
+    {                                           \
+      return #Name;                             \
+    }                                           \
   } Name;                                       \
 
 #endif

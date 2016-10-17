@@ -78,11 +78,12 @@ namespace list
 template <typename T>
 struct print_type
 {
+  using type = std::string;
   static
-  std::string
-  value()
+  type
+  value(std::string const& prefix, std::string const& suffix)
   {
-    return elle::type_info<T>().name();
+    return prefix + elle::type_info<T>().name() + suffix;
   }
 };
 
@@ -96,8 +97,8 @@ map()
     std::is_same<map::type, List<std::string, std::string, std::string>>::value,
     "list::map yielded the wrong type");
   static_assert(elle::meta::map_runtime<print_type, int>(0), "blerg");
-  BOOST_CHECK(l::map<print_type>::value() ==
-              std::make_tuple("int", "float", "std::string"));
+  BOOST_CHECK(l::map<print_type>::value("<", ">") ==
+              std::make_tuple("<int>", "<float>", "<std::string>"));
 }
 
 ELLE_TEST_SUITE()

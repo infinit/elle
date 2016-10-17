@@ -98,7 +98,7 @@ namespace elle
       template <template <typename> class F, typename Head>
       static constexpr
       typename std::enable_if_exists<
-        decltype(F<Head>::value()), bool>::type
+        decltype(F<Head>::value), bool>::type
       map_runtime(int)
       {
         return true;
@@ -112,33 +112,12 @@ namespace elle
         return false;
       }
 
-      template <bool runtime, template <typename> class F, typename Head>
-      struct
-      map_applier
-      {
-        using type = typename F<Head>::type;
-      };
-
-      template <template <typename> class F, typename Head>
-      struct
-      map_applier<true, F, Head>
-      {
-        using type = decltype(F<Head>::value());
-        static
-        type
-        value(Head const& o)
-        {
-          return F<Head>::value();
-        }
-      };
-
       template <template <typename> class F, typename Head, typename ... Tail>
       struct map_helper<F, Head, Tail...>
       {
         using type = typename List<Tail...>
           ::template map<F>::type
-          ::template prepend<
-            typename map_applier<map_runtime<F, Head>(0), F, Head>::type>::type;
+          ::template prepend<typename F<Head>::type>::type;
       };
 
       template <typename Res,
@@ -152,9 +131,10 @@ namespace elle
                 typename ... Elts>
       struct map_value_apply<std::tuple<>, true, F, Elts...>
       {
+        template <typename ... Args>
         static
         std::tuple<>
-        value()
+        value(Args&& ...)
         {
           return {};
         }
@@ -167,22 +147,25 @@ namespace elle
                 typename ... Tail>
       struct map_value_apply<std::tuple<RHead, RTail...>, true, F, Head, Tail...>
       {
+        template <typename ... Args>
         static
         std::tuple<RHead, RTail...>
-        value()
+        value(Args&& ... args)
         {
           return std::tuple_cat(
-            std::make_tuple(F<Head>::value()),
-            map_value_apply<std::tuple<RTail...>, true, F, Tail...>::value());
+            std::make_tuple(F<Head>::value(std::forward<Args>(args)...)),
+            map_value_apply<std::tuple<RTail...>, true, F, Tail...>::value(
+              std::forward<Args>(args)...));
         }
       };
 
       template <typename Res, template <typename> class F, typename ... Elts>
       struct map_value_helper
       {
+        template <typename ... Args>
         static
         std::tuple<>
-        value()
+        value(Args&& ...)
         {
           return {};
         }
