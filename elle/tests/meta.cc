@@ -75,13 +75,33 @@ namespace list
   }
 }
 
+template <typename T>
+struct print_type
+{
+  static
+  std::string
+  value()
+  {
+    return elle::type_info<T>().name();
+  }
+};
+
 static
 void
-dummy()
-{}
+map()
+{
+  using l = List<int, float, std::string>;
+  using map = l::map<print_type>;
+  static_assert(
+    std::is_same<map::type, List<std::string, std::string, std::string>>::value,
+    "list::map yielded the wrong type");
+  static_assert(elle::meta::map_runtime<print_type, int>(0), "blerg");
+  BOOST_CHECK(l::map<print_type>::value() ==
+              std::make_tuple("int", "float", "std::string"));
+}
 
 ELLE_TEST_SUITE()
 {
   auto& master = boost::unit_test::framework::master_test_suite();
-  master.add(BOOST_TEST_CASE(dummy));
+  master.add(BOOST_TEST_CASE(map));
 }
