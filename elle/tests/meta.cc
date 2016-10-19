@@ -97,8 +97,8 @@ map()
     std::is_same<map::type, List<std::string, std::string, std::string>>::value,
     "list::map yielded the wrong type");
   static_assert(elle::meta::map_runtime<print_type, int>(0), "blerg");
-  BOOST_CHECK(l::map<print_type>::value("<", ">") ==
-              std::make_tuple("<int>", "<float>", "<std::string>"));
+  BOOST_CHECK_EQUAL(l::map<print_type>::value("<", ">"),
+                    std::make_tuple("<int>", "<float>", "<std::string>"));
 }
 
 ELLE_TEST_SUITE()
