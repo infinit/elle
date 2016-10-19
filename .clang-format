@@ -1,0 +1,9 @@
+---
+AlwaysBreakAfterReturnType:                     All
+AlwaysBreakTemplateDeclarations:                true
+BreakBeforeBraces:                              Allman
+BreakConstructorInitializersBeforeComma:        true
+Language:                                       Cpp
+NamespaceIndentation:                           All
+PenaltyReturnTypeOnItsOwnLine:                  0
+PointerAlignment:                               Left
