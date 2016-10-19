@@ -2,7 +2,6 @@
 #ifndef ELLE_TUPLE
 # define ELLE_TUPLE
 
-# include <ostream>
 # include_next <tuple>
 # include <elle/printf-fwd.hh>
 
@@ -20,8 +19,9 @@ namespace std
     print_tuple(std::ostream& s, T const& v, bool first)
     {
       if (!first)
-        s << ", ";
-      s << get<idx>(v);
+        elle::fprintf(s, ", %s", get<idx>(v));
+      else
+        elle::fprintf(s, "%s", get<idx>(v));
       print_tuple<idx + 1, T>(s, v, false);
     };
   }
@@ -30,9 +30,9 @@ namespace std
   ostream&
   operator <<(ostream& out, tuple<Elts...> const& v)
   {
-    out << "(";
+    elle::fprintf(out, "(");
     print_tuple<0, tuple<Elts...>>(out, v, true);
-    out << ")";
+    elle::fprintf(out, ")");
     return out;
   }
 }
