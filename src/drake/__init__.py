@@ -3693,15 +3693,18 @@ class Runner(Builder):
                stdin = None,
                prefix = None,
                targets = None,
-               sources = []
+               sources = [],
+               runs = 1,
   ):
     self.__args = args or list()
     self.__exe = exe
     self.__out = node('%s.out' % exe.name_relative)
     self.__err = node('%s.err' % exe.name_relative)
     self.__status = node('%s.status' % exe.name_relative)
+    self.__bench = node('%s.bench' % exe.name_relative)
     self.__sources = [exe] + sources
     self.__env = env
+    self.__runs = runs
     if stdin is None:
       self.__input = None
     elif isinstance(stdin, bytes):
@@ -3720,7 +3723,7 @@ class Runner(Builder):
     Builder.__init__(
       self,
       self.__sources,
-      [self.__out, self.__err, self.__status] + (targets or []))
+      [self.__out, self.__err, self.__status, self.__bench] + (targets or []))
 
   @property
   def status(self):
@@ -3770,37 +3773,56 @@ class Runner(Builder):
 
   def execute(self):
     import subprocess
+    import time
     def run():
+      count = 0
       with open(str(self.__out.path()), 'w') as out, \
            open(str(self.__err.path()), 'w') as err, \
+           open(str(self.__bench.path()), 'w') as bench, \
            open(str(self.__status.path()), 'w') as rv:
-        if self.__env is not None:
-          output_env = ('%s=%s ' % (var, pipes.quote(str(value)))
-                        for var, value in self.__env.items())
-        else:
-          output_env = ()
-        output_cmd = (pipes.quote(str(a)) for a in self.command)
-        self.output(' '.join(chain(output_env, output_cmd)),
-                    'Run %s' % self.__exe)
-        env = dict(_OS.environ)
-        if self.__env is not None:
-          env.update(self.__env)
-          env = { k: str(v) for k, v in env.items() }
-        try:
-          p = subprocess.Popen(map(str, self.command),
-                               stdout = out,
-                               stderr = err,
-                               stdin = subprocess.PIPE,
-                               env = env)
-          if self.__input:
-            p.communicate(self.__input)
-          p.wait()
-          status = p.returncode
-          print(status, file = rv)
-        except Exception:
-          import traceback
-          traceback.print_exc()
-          return False
+        while count < self.__runs:
+          count += 1
+          if self.__runs > 1:
+            run_name = 'Run %s/%s' % (count, self.__runs)
+            line = str('-' * len(run_name))
+            header = '%s%s\n%s\n%s\n' % (
+              '' if count == 1 else '\n', line, run_name, line)
+            print(header, file = out, flush = True)
+            print(header, file = err, flush = True)
+          if self.__env is not None:
+            output_env = ('%s=%s ' % (var, pipes.quote(str(value)))
+                          for var, value in self.__env.items())
+          else:
+            output_env = ()
+          output_cmd = (pipes.quote(str(a)) for a in self.command)
+          self.output(' '.join(chain(output_env, output_cmd)),
+            'Run %s%s' % (
+              self.__exe,
+              ' (%s/%s)' % (count, self.__runs) if self.__runs > 1 else ''))
+          env = dict(_OS.environ)
+          if self.__env is not None:
+            env.update(self.__env)
+            env = { k: str(v) for k, v in env.items() }
+          try:
+            start_time = time.time()
+            p = subprocess.Popen(map(str, self.command),
+                                 stdout = out,
+                                 stderr = err,
+                                 stdin = subprocess.PIPE,
+                                 env = env)
+            if self.__input:
+              p.communicate(self.__input)
+            p.wait()
+            end_time = time.time()
+            print('%s' % (end_time - start_time), file = bench)
+            status = p.returncode
+            if status != 0:
+              break
+          except Exception:
+            import traceback
+            traceback.print_exc()
+            return False
+        print(status, file = rv)
         return status
     status = self._run_job(run)
     if status is False:
