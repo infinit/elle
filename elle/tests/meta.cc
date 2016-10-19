@@ -91,14 +91,14 @@ static
 void
 map()
 {
-  using l = List<int, float, std::string>;
+  using l = List<int, float, char>;
   using map = l::map<print_type>;
   static_assert(
     std::is_same<map::type, List<std::string, std::string, std::string>>::value,
     "list::map yielded the wrong type");
   static_assert(elle::meta::map_runtime<print_type, int>(0), "blerg");
   BOOST_CHECK_EQUAL(l::map<print_type>::value("<", ">"),
-                    std::make_tuple("<int>", "<float>", "<std::string>"));
+                    std::make_tuple("<int>", "<float>", "<char>"));
 }
 
 ELLE_TEST_SUITE()
