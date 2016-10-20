@@ -1,0 +1,400 @@
+#!/usr/bin/env python3
+
+import collections
+import datetime
+import json
+import os.path
+import pickle
+import sh
+import shutil
+import sys
+
+SELF = os.path.realpath(sys.argv[0])
+ROOT = os.path.dirname(SELF)
+
+def json_converter(o):
+  if isinstance(o, datetime.datetime):
+    return o.isoformat()
+  raise TypeError('%s is not JSON serializable' % o)
+
+def copy(f, t):
+  shutil.copytree(f, t)
+
+def mv(f, t):
+  os.rename(f, t)
+
+def mkpath(p):
+  try:
+    os.makedirs(p)
+  except OSError as e:
+    if e.args[0] != 17: # EEXIST
+      raise
+
+def rm(p):
+  try:
+    if not os.path.isdir(p) or os.path.islink(p):
+      os.unlink(p)
+    else:
+      shutil.rmtree(p)
+  except OSError as e:
+    if e.args[0] != 2: # ENOENT
+      raise
+
+
+class CLError(Exception):
+  pass
+
+class State:
+
+  def __init__(self):
+    self.__parser = self.__options_parser()
+    self.__opts = self.__parser.parse_args()
+    self.__branch = self.__opts.branch
+    self.__cache = None
+    self.__git = None
+
+  @property
+  def state_path(self):
+    return '%s/.state' % self.__opts.build_trees_root
+
+  def __enter__(self):
+    mkpath(self.__opts.build_trees_root)
+    try:
+      with open(self.state_path, 'rb') as f:
+        self.__state = pickle.load(f)
+      if self.__state is None:
+        self.__state = {}
+    except OSError:
+      self.__state = {}
+    return self
+
+  def __exit__(self, t, v, tb):
+    if not self.__opts.dry_run and t is None:
+      tmp = '%s.tmp' % self.state_path
+      try:
+        with open(tmp, 'wb') as f:
+          pickle.dump(self.__state, f)
+      except:
+        rm(tmp)
+        raise
+      else:
+        mv(tmp, self.state_path)
+
+  def __options_parser(self):
+    import argparse
+    # Parse options
+    parser = argparse.ArgumentParser(add_help = False,
+                                     description = 'To infinity!')
+    parser.add_argument('-h', '--help',
+                        action = 'help',
+                        default = argparse.SUPPRESS,
+                        help = 'Show this help message and exit',
+    )
+    parser.add_argument('-b', '--branch',
+                        type = str,
+                        help = 'Built branch',
+    )
+    parser.add_argument('-B', '--build-trees-root',
+                        type = str,
+                        default = '%s/_builds' % ROOT,
+                        help = 'Build trees root directory',
+    )
+    parser.add_argument('-p', '--pick-build-tree',
+                        action = 'store_true',
+                        help = 'Pick adequate build tree',
+    )
+    parser.add_argument('-d', '--cache-download-build-tree',
+                        action = 'store_true',
+                        help = 'Download build tree cache',
+    )
+    parser.add_argument('-u', '--cache-upload-build-tree',
+                        action = 'store_true',
+                        help = 'Upload build tree cache',
+    )
+    parser.add_argument('-c', '--cleanup-build-trees',
+                        action = 'store_true',
+                        help = 'Garbage collect unused build trees',
+    )
+    parser.add_argument('-n', '--cache-namespace',
+                        type = str,
+                        help = 'Subdirectory where to locate cache',
+    )
+    parser.add_argument('-i', '--cache-id',
+                        type = str,
+                        help = 'Concurrent cache unique id',
+    )
+    parser.add_argument('-l', '--link-build-tree',
+                        type = str,
+                        help = 'Create symlink to picked build tree',
+    )
+    parser.add_argument('-s', '--show-build-tree',
+                        action = 'store_true',
+                        help = 'Pick adequate build tree',
+    )
+    parser.add_argument('-S', '--source-tree',
+                        type = str,
+                        default = ROOT,
+                        help = 'Source tree location',
+    )
+    parser.add_argument('-D', '--dry-run',
+                        action = 'store_true',
+                        help = 'Do not modify anything',
+    )
+    parser.add_argument('-v', '--verbose',
+                        action = 'store_true',
+                        help = 'Increase verbosity',
+    )
+    parser.add_argument('-e', '--exclude',
+                        type = str,
+                        help = 'Exclude given pattern from rsync',
+    )
+    return parser
+
+  @property
+  def parser(self):
+    return self.__parser
+
+  @property
+  def source_tree(self):
+    return self.__opts.source_tree
+
+  @property
+  def git(self):
+    if self.__git is None:
+      self.__git = sh.git.bake(_cwd = self.source_tree,
+                               _tty_in = False,
+                               _tty_out = False)
+    return self.__git
+
+  @property
+  def branch(self):
+    if self.__branch is None:
+      self.__branch = self.git(
+        'rev-parse', '--abbrev-ref', 'HEAD').strip()
+    return self.__branch
+
+  def run(self):
+    if self.__opts.pick_build_tree:
+      tree = self.pick_build_tree()
+      symlink = self.__opts.link_build_tree
+      if symlink is not None:
+        rm(symlink)
+        os.symlink(tree['path'], symlink)
+      return tree
+    elif self.__opts.show_build_tree:
+      return self.show_build_tree()
+    elif self.__opts.cache_download_build_tree:
+      return self.download_build_tree()
+    elif self.__opts.cache_upload_build_tree:
+      return self.upload_build_tree()
+    elif self.__opts.cleanup_build_trees:
+      return self.garbage_collect_build_trees()
+    else:
+      raise CLError('specify an action')
+
+  @property
+  def build_tree(self):
+    return '%s/%s' % (self.__opts.build_trees_root, self.branch)
+
+  def pick_build_tree(self):
+    state = self.__state
+    build_trees = state.setdefault('build-trees', {})
+    branch = self.branch
+    current_rev = self.git('rev-parse', 'HEAD').strip()
+    previous = build_trees.get(branch)
+    if previous is not None:
+      if os.path.exists(previous['path']):
+        previous_rev = previous['rev']
+        previous['rev'] = current_rev
+        previous['last_use'] = datetime.datetime.utcnow()
+        return {
+           'status': 'existing build tree',
+           'path': previous['path'],
+           'rev': previous_rev,
+         }
+      else:
+        del build_trees[branch]
+        previous = None
+    clone_d = None
+    clone = None
+    clone_branch = None
+    for b, tree in build_trees.items():
+      if not os.path.exists(tree['path']):
+        continue
+      rev = tree['rev']
+      base = self.git('merge-base', rev, current_rev).strip()
+      def distance(r):
+        return int(sh.wc(self.git('log', '%s..%s' % (base, r),
+                                  '--pretty=oneline'), '-l'))
+      d = distance(current_rev) + distance(rev)
+      if clone is None or d < clone_d:
+        clone = tree
+        clone_branch = b
+        clone_d = d
+    build_trees[branch] = {
+      'creation': datetime.datetime.utcnow(),
+      'last_use': datetime.datetime.utcnow(),
+      'path': self.build_tree,
+      'rev': current_rev,
+    }
+    if clone is not None:
+      if not self.__opts.dry_run:
+        tmp = '%s.tmp' % self.build_tree
+        try:
+          copy(tree['path'], tmp)
+          fr = os.path.realpath(tree['path'])
+          fr = '%s/.drake/%s' % (tmp, fr)
+          to = os.path.realpath(self.build_tree)
+          to = '%s/.drake/%s' % (tmp, to)
+          mkpath(os.path.dirname(to))
+          rm(to)
+          mv(fr, to)
+        except:
+          rm(tmp)
+          raise
+        else:
+          mv(tmp, self.build_tree)
+      return {
+        'status': 'cloned from %s' % clone_branch,
+        'path': self.build_tree,
+        'rev': tree['rev'],
+      }
+    else:
+      if not self.__opts.dry_run:
+        mkpath(self.build_tree)
+      return {
+        'status': 'new build tree',
+        'path': self.build_tree,
+        'rev': None,
+      }
+
+  def show_build_tree(self):
+    build_trees = self.__state.setdefault('build-trees', {})
+    previous = build_trees.get(self.branch)
+    if previous is not None:
+      return previous
+    else:
+      return None
+
+  def garbage_collect_build_trees(self):
+    delay = datetime.timedelta(weeks = 1)
+    cleaned = []
+    state = self.__state
+    trees = state.setdefault('build-trees', {})
+    for b in list(trees):
+      tree = trees[b]
+      if datetime.datetime.utcnow() - tree['last_use'] > delay:
+        cleaned.append(b)
+        del trees[b]
+        try:
+          shutil.rmtree(tree['path'])
+        except FileNotFoundError:
+          pass
+    return {
+      'cleaned': cleaned,
+    }
+
+  cache_url = 'buildslave@cache.buildslave.infinit.sh'
+
+  def cache(self):
+    if self.__cache is None:
+      self.__cache = sh.ssh.bake(self.cache_url,
+                                 _tty_in = False,
+                                 _tty_out = False)
+    return self.__cache
+
+  class Lock:
+
+    def __init__(self, path):
+      self.__path = '%s/rsync' % path
+
+    def __enter__(self):
+      sh.ssh(State.cache_url, 'lockfile-create', self.__path)
+
+    def __exit__(self, t, v, tb):
+        sh.ssh(State.cache_url, 'lockfile-remove', self.__path)
+
+  @property
+  def cache_dir(self):
+    import getpass
+    ns = self.__opts.cache_namespace or getpass.getuser()
+    return 'cache/%s/fs/%s' % (ns, self.branch)
+
+  def rsync(self, s, d, exclude=None):
+    v = self.__opts.verbose
+    args = [
+      '--recursive', '--archive', '--checksum', '--update',
+    ]
+    if exclude is not None:
+      if isinstance(exclude, str):
+        args += ['--exclude', exclude]
+      else:
+        for e in exclude:
+          args += ['--exclude', e]
+    args += [
+      s, d,
+    ]
+    if v:
+      args.append('--stats')
+    res = sh.rsync(*args)
+    if v:
+      print(res)
+
+  def download_build_tree(self):
+    try:
+      sh.ssh(self.cache_url, 'test', '-e', self.cache_dir)
+    except sh.ErrorReturnCode:
+      return {
+        'status': 'no cached build tree',
+      }
+    else:
+      if not self.__opts.dry_run:
+        with State.Lock(self.cache_dir):
+          self.rsync(
+            '%s:%s/' % (self.cache_url, self.cache_dir),
+            self.build_tree,
+            exclude = self.__opts.exclude and self.__opts.exclude.split(',') or None)
+
+    return {
+      'status': 'downloaded build tree',
+      'source': self.cache_dir,
+      'destination': self.build_tree,
+    }
+
+  def upload_build_tree(self):
+    d = self.cache_dir
+    concurrent = self.__opts.cache_id is not None
+    if concurrent:
+      d = '%s-%s' % (d, self.__opts.cache_id)
+    if not self.__opts.dry_run:
+      sh.ssh(self.cache_url, 'mkdir', '-p', d)
+      with State.Lock(d):
+        self.rsync(
+          '%s/' % self.build_tree,
+          '%s:%s' % (self.cache_url, d),
+           exclude = self.__opts.exclude and self.__opts.exclude.split(',') or None)
+      if concurrent:
+        sh.ssh(self.cache_url,
+               'ln', '-sfn', os.path.basename(d), self.cache_dir)
+    return {
+      'status': 'uploaded build tree',
+      'source': self.build_tree,
+      'destination': d,
+    }
+
+try:
+  with State() as state:
+    res = state.run()
+    if isinstance(res, dict):
+      res = collections.OrderedDict(res)
+    json.dump(res, sys.stdout, default = json_converter)
+    print()
+except CLError as e:
+  state.parser.print_usage(file = sys.stderr)
+  print('%s: command line error: %s' % (sys.argv[0], e),
+        file = sys.stderr)
+  exit(1)
+except Exception as e:
+  print('%s: fatar error: %s' % (sys.argv[0], e), file = sys.stderr)
+  raise
+  exit(1)
