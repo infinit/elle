@@ -7,6 +7,7 @@
 #include <vector>
 
 #include <elle/attribute.hh>
+#include <elle/filesystem/path.hh>
 #include <elle/serialization/binary.hh>
 #include <elle/serialization/json.hh>
 #include <elle/serialization/json/MissingKey.hh>
@@ -627,6 +628,35 @@ chrono()
   chrono_check<Format>(std::chrono::minutes(607));
   chrono_check<Format>(std::chrono::hours(608));
   chrono_check<Format>(std::chrono::hours(609 * 24));
+}
+
+template <typename Format>
+static
+void
+path_check(boost::filesystem::path const& path)
+{
+  std::stringstream stream;
+  {
+    typename Format::SerializerOut output(stream);
+    output.serialize("path", path);
+  }
+  {
+    boost::filesystem::path res;
+    typename Format::SerializerIn input(stream);
+    input.serialize("path", res);
+    BOOST_CHECK(path == res);
+  }
+}
+
+template <typename Format>
+static
+void
+path()
+{
+  path_check<Format>("/tmp/elle");
+  path_check<Format>("../..");
+  path_check<Format>("./elle");
+  path_check<Format>(".");
 }
 
 template <bool Versioned>
@@ -1681,6 +1711,7 @@ ELLE_TEST_SUITE()
   FOR_ALL_SERIALIZATION_TYPES(date);
   FOR_ALL_SERIALIZATION_TYPES(version);
   FOR_ALL_SERIALIZATION_TYPES(chrono);
+  FOR_ALL_SERIALIZATION_TYPES(path);
   {
     boost::unit_test::test_suite* subsuite = BOOST_TEST_SUITE("hierarchy");
     {
