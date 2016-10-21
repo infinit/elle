@@ -318,7 +318,7 @@ class State:
   def cache_dir(self):
     import getpass
     ns = self.__opts.cache_namespace or getpass.getuser()
-    return 'cache/%s/fs/%s' % (ns, self.branch)
+    return 'cache/%s/%s' % (ns, self.branch)
 
   def rsync(self, s, d, exclude=None):
     v = self.__opts.verbose
