@@ -120,13 +120,26 @@ i386-jessie-gcc4:
 x86_64-windows-mingw4:
   stage: build
   script:
+    - time ./buildenv --cleanup-build-trees --build-trees-root "/cache/$CI_PROJECT_NAME"  --verbose
     - git submodule update --init --recursive
     - git fetch origin --tags
-    - mkdir -p ../elle-build ../elle-install
-    - farm/configure --arch x86_64 --os windows --compiler mingw4 --project Elle --source-dir . --build-dir ../elle-build --install-dir ../elle-install
-    - cd ../elle-build && python3 drake -j 4 //build
-    - cd ../elle-build && python3 drake -j 4 //check
-    - cd ../elle-build && python3 drake -j 4 //install
+    - SOURCE_DIR="${CI_PROJECT_DIR}"
+    - BUILD_DIR="$(dirname ${CI_PROJECT_DIR})/${CI_PROJECT_NAME}-build"
+    - INSTALL_DIR="${SOURCE_DIR}/_install"
+    - DESC=$(git describe)
+    - time ./buildenv --pick-build-tree --branch "$CI_BUILD_REF_NAME" --link-build-tree "$BUILD_DIR" --build-trees-root "/cache/$CI_PROJECT_NAME"
+    - time ./buildenv --cache-download-build-tree --exclude='*.deb,*.rpm' --branch "$CI_BUILD_REF_NAME" --build-trees-root "/cache/$CI_PROJECT_NAME" --cache-namespace "$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME" --cache-id "$CI_RUNNER_ID" --verbose
+    - mkdir -p "$INSTALL_DIR"
+    - farm/configure --arch x86_64 --os windows --compiler mingw4 --project Elle --source-dir "$SOURCE_DIR" --build-dir "$BUILD_DIR" --install-dir "$INSTALL_DIR"
+    - cd "$BUILD_DIR"
+    - python3 drake -j 4 //build
+    - python3 drake -j 4 //check
+    - python3 drake -j 4 //install
+    - TARBALL="$BUILD_DIR/elle-x86_64-windows-mingw4-$DESC.tbz"
+    - tar -cvjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
+    - scp "$TARBALL" debian@debian.infinit.io:/tmp
+    - cd "$SOURCE_DIR"
+    - time ./buildenv --cache-upload-build-tree --exclude='*.deb,*.rpm' --branch "$CI_BUILD_REF_NAME" --build-trees-root "/cache/$CI_PROJECT_NAME" --cache-namespace "$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME" --cache-id "$CI_RUNNER_ID" --verbose
   tags:
     - x86_64
     - windows
