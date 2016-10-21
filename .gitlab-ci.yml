@@ -90,6 +90,24 @@ x86_64-jessie-gcc4:
     - jessie
     - gcc4
 
+x86_64-alpine-gcc:
+  stage: build
+  script:
+    - git submodule update --init --recursive
+    - git fetch origin --tags
+    - mkdir -p ../elle-build ../elle-install
+    - farm/configure --arch x86_64 --os alpine --compiler gcc4 --project Elle --source-dir . --build-dir ../elle-build --install-dir ../elle-install
+    - cd ../elle-build && python3 drake -j 4 //build
+    - cd ../elle-build && python3 drake -j 4 //check
+    - cd ../elle-build && python3 drake -j 4 //install
+    - TARBALL=elle-x86_64-alpine-gcc-$(GIT_DIR=../elle/.git git describe).tbz
+    - tar -cvjf ../$TARBALL -C ../elle-install . --show-transformed-names --transform "s,^\\./,elle-$(GIT_DIR=../elle/.git git describe)/,"
+    - scp ../$TARBALL debian@debian.infinit.io:/tmp
+  tags:
+    - x86_64
+    - alpine
+    - gcc
+
 i386-jessie-gcc4:
   stage: build
   script:
