@@ -18,13 +18,13 @@ x86_64-centos6-gcc4:
     - time scl enable devtoolset-4 rh-python34 "./buildenv --pick-build-tree --branch \"$CI_BUILD_REF_NAME\" --link-build-tree \"$BUILD_DIR\" --build-trees-root \"/cache/$CI_PROJECT_NAME\""
     - time scl enable devtoolset-4 rh-python34 "./buildenv --cache-download-build-tree --exclude='*.deb,*.rpm' --branch \"$CI_BUILD_REF_NAME\" --build-trees-root \"/cache/$CI_PROJECT_NAME\" --cache-namespace \"$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME\" --cache-id \"$CI_RUNNER_ID\" --verbose"
     - mkdir -p "$INSTALL_DIR"
-    - scl enable devtoolset-4 rh-python34 "farm/configure --arch x86_64 --os centos6 --compiler gcc4 --project Elle --source-dir . --build-dir ../elle-build --install-dir ../elle-install"
+    - scl enable devtoolset-4 rh-python34 "farm/configure --arch x86_64 --os centos6 --compiler gcc4 --project Elle --source-dir \"$SOURCE_DIR\" --build-dir \"$BUILD_DIR\" --install-dir \"$INSTALL_DIR\""
     - cd "$BUILD_DIR"
     - scl enable devtoolset-4 rh-python34 "python3 drake -j 4 //build"
     - scl enable devtoolset-4 rh-python34 "python3 drake -j 4 //check"
     - scl enable devtoolset-4 rh-python34 "python3 drake -j 4 //install"
     - TARBALL="elle-x86_64-centos6-gcc4-$DESC.tbz"
-    - tar -cvjf ../$TARBALL -C ../elle-install . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
+    - tar -cvjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
     - scp ../$TARBALL debian@debian.infinit.io:/tmp
     - cd "$SOURCE_DIR"
     - time scl enable devtoolset-4 rh-python34 "./buildenv --cache-upload-build-tree --exclude='*.deb,*.rpm' --branch \"$CI_BUILD_REF_NAME\" --build-trees-root \"/cache/$CI_PROJECT_NAME\" --cache-namespace \"$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME\" --cache-id \"$CI_RUNNER_ID\" --verbose"
@@ -46,7 +46,7 @@ x86_64-ubuntu-gcc4:
     - time ./buildenv --pick-build-tree --branch "$CI_BUILD_REF_NAME" --link-build-tree "$BUILD_DIR" --build-trees-root "/cache/$CI_PROJECT_NAME"
     - time ./buildenv --cache-download-build-tree --exclude='*.deb,*.rpm' --branch "$CI_BUILD_REF_NAME" --build-trees-root "/cache/$CI_PROJECT_NAME" --cache-namespace "$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME" --cache-id "$CI_RUNNER_ID" --verbose
     - mkdir -p "$INSTALL_DIR"
-    - farm/configure --arch x86_64 --os trusty --compiler gcc4 --project Elle --source-dir . --build-dir ../elle-build --install-dir ../elle-install
+    - farm/configure --arch x86_64 --os trusty --compiler gcc4 --project Elle --source-dir "$SOURCE_DIR" --build-dir "$BUILD_DIR" --install-dir "$INSTALL_DIR"
     - cd "$BUILD_DIR"
     - export ELLE_LOG_CHECK_FORMATS=1
     - python3 drake -j $(nproc) //build
@@ -75,7 +75,7 @@ x86_64-jessie-gcc4:
     - time ./buildenv --pick-build-tree --branch "$CI_BUILD_REF_NAME" --link-build-tree "$BUILD_DIR" --build-trees-root "/cache/$CI_PROJECT_NAME"
     - time ./buildenv --cache-download-build-tree --exclude='*.deb,*.rpm' --branch "$CI_BUILD_REF_NAME" --build-trees-root "/cache/$CI_PROJECT_NAME" --cache-namespace "$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME" --cache-id "$CI_RUNNER_ID" --verbose
     - mkdir -p "$INSTALL_DIR"
-    - farm/configure --arch x86_64 --os jessie --compiler gcc4 --project Elle --source-dir . --build-dir "$BUILD_DIR" --install-dir "$INSTALL_DIR"
+    - farm/configure --arch x86_64 --os jessie --compiler gcc4 --project Elle --source-dir "$SOURCE_DIR" --build-dir "$BUILD_DIR" --install-dir "$INSTALL_DIR"
     - cd "$BUILD_DIR"
     - python3 drake -j 4 //build
     - python3 drake -j 4 //check
@@ -103,7 +103,7 @@ i386-jessie-gcc4:
     - time ./buildenv --pick-build-tree --branch "$CI_BUILD_REF_NAME" --link-build-tree "$BUILD_DIR" --build-trees-root "/cache/$CI_PROJECT_NAME"
     - time ./buildenv --cache-download-build-tree --exclude='*.deb,*.rpm' --branch "$CI_BUILD_REF_NAME" --build-trees-root "/cache/$CI_PROJECT_NAME" --cache-namespace "$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME" --cache-id "$CI_RUNNER_ID" --verbose
     - mkdir -p "$INSTALL_DIR"
-    - farm/configure --arch i386 --os jessie --compiler gcc4 --project Elle --source-dir . --build-dir ../elle-build --install-dir ../elle-install
+    - farm/configure --arch i386 --os jessie --compiler gcc4 --project Elle --source-dir "$SOURCE_DIR" --build-dir "$BUILD_DIR" --install-dir "$INSTALL_DIR"
     - cd ../elle-build && python3 drake -j 4 //build
     - cd ../elle-build && python3 drake -j 4 //check
     - cd ../elle-build && python3 drake -j 4 //install
