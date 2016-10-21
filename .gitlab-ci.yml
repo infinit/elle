@@ -60,6 +60,8 @@ x86_64-jessie-gcc4:
     - TARBALL="$BUILD_DIR/elle-x86_64-jessie-gcc4-$DESC.tbz"
     - tar -cvjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
     - scp "$TARBALL" debian@debian.infinit.io:/tmp
+    - cd "$SOURCE_DIR"
+    - time ./buildenv --cache-upload-build-tree --exclude='*.deb,*.rpm' --branch "$CI_BUILD_REF_NAME" --build-trees-root "/cache/$CI_PROJECT_NAME" --cache-namespace "$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME" --cache-id "$CI_RUNNER_ID" --verbose
   tags:
     - x86_64
     - jessie
