@@ -323,7 +323,12 @@ class State:
   def rsync(self, s, d, exclude=None):
     v = self.__opts.verbose
     args = [
-      '--recursive', '--archive', '--checksum', '--update',
+      '--archive',
+      '--checksum',
+      '--human-readable',
+      # '--progress',
+      '--recursive',
+      '--update',
     ]
     if exclude is not None:
       if isinstance(exclude, str):
