@@ -21,6 +21,10 @@ struct S
   std::string bar;
 };
 
+struct Sub
+  : public S
+{};
+
 template <typename S, typename T>
 auto
 no_such_attribute(T const& o, int i)
@@ -47,6 +51,8 @@ attributes()
   BOOST_CHECK_EQUAL(symbols::bar.attr_get(static_cast<const S&>(s)), "");
   BOOST_CHECK(!no_such_attribute<decltype(symbols::foo)>(s, 0));
   BOOST_CHECK(no_such_attribute<decltype(symbols::baz)>(s, 0));
+  Sub sub;
+  BOOST_CHECK_EQUAL(symbols::foo.attr_get(sub), 0);
 }
 
 ELLE_TEST_SUITE()
