@@ -593,6 +593,9 @@ def configure(cxx_toolkit = None,
     # configure is making a runtime library availability check
     curl_environment['LD_LIBRARY_PATH'] = \
       str(drake.path_build(curl_prefix / 'lib', absolute = True))
+  elif cxx_toolkit.os is drake.os.linux:
+    path = drake.path_build(zlib_prefix, absolute = True) / 'lib' / 'pkgconfig'
+    curl_environment['PKG_CONFIG_PATH'] = str(path)
   curl_dependency_libs = curl_openssl_libs + curl_zlib_libs
   curl_headers = [
     'include/curl/typecheck-gcc.h',
