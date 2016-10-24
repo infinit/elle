@@ -1,7 +1,7 @@
-#ifndef  ELLE_PRINTF_HXX
+#ifndef ELLE_PRINTF_HXX
 # define ELLE_PRINTF_HXX
 
-# include <iostream>
+# include <ostream>
 # include <typeinfo>
 
 # include <boost/format.hpp>
@@ -22,8 +22,8 @@ namespace _elle_printf_details
 {
   template <typename T>
   constexpr
-  typename std::enable_if<
-    sizeof(std::cerr << ELLE_SFINAE_INSTANCE(T)) >= 0, bool>::type
+  typename std::enable_if_exists<
+    decltype(std::declval<std::ostream&>() << std::declval<T>()), bool>::type
   _is_streamable(int)
   {
     return true;
