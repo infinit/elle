@@ -157,7 +157,8 @@ namespace elle
         value(Args&& ... args)
         {
           return std::tuple_cat(
-            std::make_tuple(F<Head>::value(std::forward<Args>(args)...)),
+            std::tuple<typename F<Head>::type>(
+              F<Head>::value(std::forward<Args>(args)...)),
             map_value_apply<std::tuple<RTail...>, true, F, Tail...>::value(
               std::forward<Args>(args)...));
         }

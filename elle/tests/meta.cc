@@ -90,18 +90,60 @@ struct print_type
   }
 };
 
+template <typename T>
+struct get_foo
+{
+  using type = decltype(T::foo)&;
+  static
+  type
+  value()
+  {
+    return T::foo;
+  }
+};
+
+struct Bar
+{
+  static int foo;
+};
+int Bar::foo = 1;
+
+struct Baz
+{
+  static char foo;
+};
+char Baz::foo = 'a';
+
 static
 void
 map()
 {
-  using l = List<int, float, char>;
-  using map = l::map<print_type>;
-  static_assert(
-    std::is_same<map::type, List<std::string, std::string, std::string>>::value,
-    "list::map yielded the wrong type");
-  static_assert(elle::meta::map_runtime<print_type, int>(0), "blerg");
-  BOOST_CHECK_EQUAL(l::map<print_type>::value("<", ">"),
-                    std::make_tuple("<int>", "<float>", "<char>"));
+  {
+    using l = List<int, float, char>;
+    using map = l::map<print_type>;
+    static_assert(
+      std::is_same<map::type,
+                   List<std::string, std::string, std::string>>::value,
+      "list::map yielded the wrong type");
+    static_assert(
+      elle::meta::_details::map_runtime<print_type, int>(0), "blerg");
+    BOOST_CHECK_EQUAL(l::map<print_type>::value("<", ">"),
+                      std::make_tuple("<int>", "<float>", "<char>"));
+  }
+  {
+    using l = List<Bar, Baz>;
+    using map = l::map<get_foo>;
+    static_assert(
+      std::is_same<map::type, List<int&, char&>>::value,
+      "list::map yielded the wrong type");
+    auto res = map::value();
+    BOOST_CHECK_EQUAL(std::get<0>(res), 1);
+    BOOST_CHECK_EQUAL(std::get<1>(res), 'a');
+    Bar::foo++;
+    Baz::foo = 'b';
+    BOOST_CHECK_EQUAL(std::get<0>(res), 2);
+    BOOST_CHECK_EQUAL(std::get<1>(res), 'b');
+  }
 }
 
 ELLE_TEST_SUITE()
