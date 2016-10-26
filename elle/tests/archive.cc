@@ -1,5 +1,7 @@
 #include <unordered_set>
 
+#include <boost/filesystem.hpp>
+
 #include <elle/archive/zip.hh>
 #include <elle/attribute.hh>
 #include <elle/filesystem.hh>
@@ -452,6 +454,9 @@ FORMAT(tar_gzip)
 ELLE_TEST_SUITE()
 {
   auto& master = boost::unit_test::framework::master_test_suite();
+  // Under libc.musl, lchmod() call fails with a ENOTSUPP which causes
+  // a libarchive error when decompressing a symlink.
+  bool musl = boost::filesystem::exists("/lib/libc.musl-x86_64.so.1");
 #define FORMAT(Fmt)                             \
   {                                             \
     using namespace Fmt;                        \
@@ -460,7 +465,8 @@ ELLE_TEST_SUITE()
     suite->add(BOOST_TEST_CASE(simple));        \
     suite->add(BOOST_TEST_CASE(less_simple));   \
     suite->add(BOOST_TEST_CASE(duplicate));     \
-    suite->add(BOOST_TEST_CASE(symboliclink));  \
+    if (!musl)                                  \
+      suite->add(BOOST_TEST_CASE(symboliclink));\
     suite->add(BOOST_TEST_CASE(error));         \
   }                                             \
 
