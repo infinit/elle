@@ -21,88 +21,84 @@ namespace reactor
     class Socket:
       public elle::IOStream
     {
-      /*---------.
-      | Typedefs |
-      `---------*/
-      public:
-        /// Self type.
-        typedef Socket Self;
+    /*------.
+    | Types |
+    `------*/
+    public:
+      /// Self type.
+      using Self = Socket;
 
-      /*----------.
-      | Constants |
-      `----------*/
-      public:
-        static size_t const buffer_size;
+    /*----------.
+    | Constants |
+    `----------*/
+    public:
+      static size_t const buffer_size;
 
-      /*-------------.
-      | Construction |
-      `-------------*/
-      public:
-        /// Create an unbound socket.
-        Socket();
-        /// Destroy a socket.
-        virtual
-        ~Socket();
-        /** Create a socket for the given protocol.
-         *  @param protocol The transport protocl to use.
-         */
-        static
-        std::unique_ptr<Socket>
-        create(Protocol protocol,
-               const std::string& hostname,
-               int port,
-               DurationOpt connection_timeout);
-        void
-        _pacify_streambuffer();
+    /*-------------.
+    | Construction |
+    `-------------*/
+    public:
+      /// Create an unbound socket.
+      Socket();
+      /// Destroy a socket.
+      virtual
+      ~Socket();
+      /** Create a socket for the given protocol.
+       *  @param protocol The transport protocl to use.
+       */
+      static
+      std::unique_ptr<Socket>
+      create(Protocol protocol,
+             const std::string& hostname,
+             int port,
+             DurationOpt connection_timeout);
+      void
+      _pacify_streambuffer();
 
-      /*------.
-      | Close |
-      `------*/
-      public:
-        virtual
-        void
-        close() = 0;
+    /*------.
+    | Close |
+    `------*/
+    public:
+      virtual
+      void
+      close() = 0;
 
-      /*------.
-      | Write |
-      `------*/
-      public:
-        virtual
-        void
-        write(elle::ConstWeakBuffer buffer) = 0;
+    /*------.
+    | Write |
+    `------*/
+    public:
+      virtual
+      void
+      write(elle::ConstWeakBuffer buffer) = 0;
 
-      /*-----.
-      | Read |
-      `-----*/
-      public:
-        virtual
-        void
-        read(Buffer buffer, DurationOpt timeout = DurationOpt(),
-             int* bytes_read = nullptr);
+    /*-----.
+    | Read |
+    `-----*/
+    public:
+      virtual
+      void
+      read(Buffer buffer, DurationOpt timeout = DurationOpt(),
+           int* bytes_read = nullptr);
+      virtual
+      Size
+      read_some(Buffer buffer, DurationOpt timeout = DurationOpt(),
+                int* bytes_read = nullptr) = 0;
+      elle::Buffer
+      read(Size size, DurationOpt timeout = DurationOpt());
+      elle::Buffer
+      read_some(Size size, DurationOpt timeout = DurationOpt());
+      virtual
+      elle::Buffer
+      read_until(std::string const& delimiter,
+                 DurationOpt opt = DurationOpt()) = 0;
 
-        virtual
-        Size
-        read_some(Buffer buffer, DurationOpt timeout = DurationOpt(),
-                  int* bytes_read = nullptr) = 0;
-
-        elle::Buffer
-        read(Size size, DurationOpt timeout = DurationOpt());
-
-        elle::Buffer
-        read_some(Size size, DurationOpt timeout = DurationOpt());
-
-        virtual
-        elle::Buffer
-        read_until(std::string const& delimiter,
-                   DurationOpt opt = DurationOpt()) = 0;
-
-       /*----------------.
-       | Pretty printing |
-       `----------------*/
-        public:
-          virtual
-          void
-          print(std::ostream& s) const = 0;
+   /*----------------.
+   | Pretty printing |
+   `----------------*/
+    public:
+      virtual
+      void
+      print(std::ostream& s) const = 0;
     };
 
     template <typename AsioSocket_,
