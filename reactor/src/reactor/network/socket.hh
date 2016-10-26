@@ -133,6 +133,8 @@ namespace reactor
       /// Create wrapping socket.
       PlainSocket(std::unique_ptr<AsioSocket> socket,
                   EndPoint const& peer);
+      /// Move socket
+      PlainSocket(Self&& src);
       /// Destroy a socket.
       virtual
       ~PlainSocket();
@@ -214,6 +216,10 @@ namespace reactor
       StreamSocket(std::unique_ptr<AsioSocket> socket,
                    EndPoint const& peer):
         Super(std::move(socket), peer)
+      {}
+
+      StreamSocket(Self&& socket)
+        : Super(std::move(socket))
       {}
 
       virtual

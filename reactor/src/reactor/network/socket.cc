@@ -216,6 +216,13 @@ namespace reactor
     {}
 
     template <typename AsioSocket, typename EndPoint>
+    PlainSocket<AsioSocket, EndPoint>::PlainSocket(Self&& src)
+      : Super() // FIXME: this drops the IOStream buffers !
+      , _socket(std::move(src._socket))
+      , _peer(std::move(src._peer))
+    {}
+
+    template <typename AsioSocket, typename EndPoint>
     PlainSocket<AsioSocket, EndPoint>::~PlainSocket()
     {
       try
