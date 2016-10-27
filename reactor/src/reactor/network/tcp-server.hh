@@ -32,6 +32,8 @@ namespace reactor
       using Super::listen;
       void
       listen(int port, bool enable_ipv6=false);
+      void
+      listen(boost::asio::ip::address host, int port = 0, bool enable_ipv6 = false);
       int
       port() const;
     protected:

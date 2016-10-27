@@ -229,13 +229,7 @@ def configure(cxx_toolkit = None,
   zlib_prefix = drake.Path('zlib')
   zlib_build = zlib_prefix / zlib_basename
   zlib_configure = drake.node(zlib_build / 'configure')
-  # This url does not work due to Apache messing up with content-type
-  # headers:
-  # zlib_url = 'http://zlib.net/%s.tar.gz' % zlib_basename
-  zlib_url = 'http://downloads.sourceforge.net/project/libpng/zlib/%s/%s.tar.gz' % (
-    zlib_version,
-    zlib_basename,
-  )
+  zlib_url = 'http://zlib.net/%s.tar.gz' % zlib_basename
   drake.HTTPDownload(
     zlib_url,
     zlib_tarball,
@@ -310,7 +304,7 @@ def configure(cxx_toolkit = None,
   ## ------- ##
   openssl_rule = drake.Rule('openssl')
   openssl_version = '1.0.2'
-  openssl_release_tag = 'g'
+  openssl_release_tag = 'j'
   openssl_basename = 'openssl-%s' % (openssl_version + openssl_release_tag)
   openssl_tarball = drake.node('openssl/%s.tar.gz' % openssl_basename)
   openssl_prefix = drake.Path('openssl')
@@ -320,11 +314,13 @@ def configure(cxx_toolkit = None,
   drake.HTTPDownload(
     [
       'http://www.openssl.org/source/%s.tar.gz' % openssl_basename,
-      'http://www.openssl.org/source/old/%s%s/%s' % (
-        openssl_version, openssl_release_tag, openssl_basename)
+      'http://www.openssl.org/source/old/%s/%s.tar.gz' % (
+        openssl_version, openssl_basename),
+      'http://www.openssl.org/source/old/%s%s/%s.tar.gz' % (
+        openssl_version, openssl_release_tag, openssl_basename),
     ],
     openssl_tarball,
-    fingerprint = 'f3c710c045cdee5fd114feb69feba7aa')
+    fingerprint = '96322138f0b69e61b7212bc53d5e912b')
   openssl_headers = [
     'include/openssl/aes.h',
     'include/openssl/asn1.h',
@@ -463,7 +459,6 @@ def configure(cxx_toolkit = None,
         configure_args = [
           '--prefix=%s' % drake.path_build(openssl_arch_prefix, absolute = True),
           openssl_shared and 'shared' or 'no-shared',
-          'no-asm',
           '-DPURIFY',
           os_string,
         ],
@@ -489,7 +484,6 @@ def configure(cxx_toolkit = None,
         configure_args = [
           '--prefix=%s' % openssl_prefix_absolute,
           sharing_model,
-          'no-asm',
           '-DPURIFY',
           os_string,
         ],
@@ -519,13 +513,13 @@ def configure(cxx_toolkit = None,
   ## Curl ##
   ## ---- ##
 
-  curl_basename = 'curl-7.48.0'
+  curl_basename = 'curl-7.50.3'
   curl_tarball = drake.node('curl/%s.tar.gz' % curl_basename)
   curl_prefix = drake.Path('curl')
   curl_build = curl_prefix / curl_basename
   curl_url = 'http://curl.haxx.se/download/%s.tar.gz' % curl_basename
   drake.HTTPDownload(curl_url, curl_tarball,
-                     fingerprint = 'b2cac71029d28cb989150bac72aafab5')
+                     fingerprint = '870e16fd88a88b52e26a4f04dfc161db')
   drake.TarballExtractor(
     curl_tarball,
     targets = ['%s/%s' % (curl_basename, f) for f in (
@@ -592,12 +586,16 @@ def configure(cxx_toolkit = None,
     curl_configure_args.append('DYLD_FALLBACK_LIBRARY_PATH=%s' % path)
   elif windows:
     curl_environment['LIBS'] = '-lcrypt32 -lgdi32'
+    curl_configure_args.append('--build=%s' % cxx_toolkit.prefix[:-1])
   elif cxx_toolkit.os is drake.os.ios:
     curl_configure_args.append('--with-sysroot=%s' % os.environ['SDKROOT'])
   elif cxx_toolkit.os is drake.os.android:
     # configure is making a runtime library availability check
     curl_environment['LD_LIBRARY_PATH'] = \
       str(drake.path_build(curl_prefix / 'lib', absolute = True))
+  elif cxx_toolkit.os is drake.os.linux:
+    path = drake.path_build(zlib_prefix, absolute = True) / 'lib' / 'pkgconfig'
+    curl_environment['PKG_CONFIG_PATH'] = str(path)
   curl_dependency_libs = curl_openssl_libs + curl_zlib_libs
   curl_headers = [
     'include/curl/typecheck-gcc.h',
@@ -817,9 +815,9 @@ def configure(cxx_toolkit = None,
     boost_tarball = drake.node('boost/%s.tar.gz' % boost_basename)
     boost_prefix = drake.Path('boost')
     boost_prefix_abs = drake.Path(os.getcwd()) / drake.path_build() / boost_prefix
-    boost_url = \
-      'http://downloads.sourceforge.net/project/boost/boost/%s/%s.tar.gz' % \
-      (boost_version, boost_basename)
+    boost_host = \
+      'https://storage.googleapis.com/sh_infinit_releases/boost'
+    boost_url = '%s/%s.tar.gz' % (boost_host, boost_basename)
     drake.HTTPDownload(
       boost_url,
       boost_tarball,
@@ -1365,39 +1363,32 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
 
   asio_udt = reactor.asio_udt_lib
 
+  submodules = [
+    athena,
+    aws,
+    cryptography,
+    das,
+    elle,
+    protocol,
+    reactor,
+  ]
+
+  def recurse(rule, attr):
+    for m in submodules:
+      r = getattr(m, attr)
+      if r is not None:
+        rule << r
+
   build = drake.Rule('build')
-  build << athena.rule_build
-  build << aws.rule_build
-  build << cryptography.rule_build
-  build << das.rule_build
-  build << elle.rule_build
-  build << protocol.rule_build
-  build << reactor.rule_build
+  recurse(build, 'rule_build')
 
   global rule_tests
   rule_tests = drake.Rule('tests')
-  rule_tests << athena.rule_tests
-  rule_tests << aws.rule_tests
-  rule_tests << cryptography.rule_tests
-  rule_tests << das.rule_tests
-  rule_tests << elle.rule_tests
-  rule_tests << protocol.rule_tests
-  rule_tests << reactor.rule_tests
+  recurse(rule_tests, 'rule_tests')
 
   global rule_check
   rule_check = drake.Rule('check')
-  rule_check << athena.rule_check
-  rule_check << aws.rule_check
-  rule_check << cryptography.rule_check
-  rule_check << das.rule_check
-  rule_check << elle.rule_check
-  rule_check << protocol.rule_check
-  rule_check << reactor.rule_check
+  recurse(rule_check, 'rule_check')
 
   install = drake.Rule('install')
-  install << athena.rule_install
-  install << aws.rule_install
-  install << cryptography.rule_install
-  install << elle.rule_install
-  install << protocol.rule_install
-  install << reactor.rule_install
+  recurse(install, 'rule_install')

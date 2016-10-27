@@ -21,6 +21,8 @@ namespace reactor
       boost::asio::buffer(buffer, size),
       [&] (boost::system::error_code const& e, std::size_t s)
       {
+        if (e && e == boost::asio::error::operation_aborted)
+          return;
         error = e;
         read = s;
         done.open();

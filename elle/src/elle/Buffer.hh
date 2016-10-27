@@ -378,16 +378,14 @@ namespace elle
 namespace std
 {
   template<>
-  ELLE_API
-  struct hash<elle::ConstWeakBuffer>
+  struct ELLE_API hash<elle::ConstWeakBuffer>
   {
   public:
     elle::Buffer::Size operator()(elle::ConstWeakBuffer const& buffer) const;
   };
 
   template<>
-  ELLE_API
-  struct hash<elle::Buffer>
+  struct ELLE_API hash<elle::Buffer>
   {
   public:
     elle::Buffer::Size operator()(elle::Buffer const& buffer) const;

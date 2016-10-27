@@ -46,6 +46,13 @@ namespace reactor
     Scheduler*
     scheduler();
 
+  /*------.
+  | Debug |
+  `------*/
+  public:
+    void
+    dump_state();
+
   /*----.
   | Run |
   `----*/
@@ -222,6 +229,10 @@ namespace reactor
   /// Wait for \a waitables.
   bool
   wait(Waitables const& waitables, DurationOpt timeout = DurationOpt());
+  /// Wait for \a waitables.
+  bool
+  wait(std::vector<std::reference_wrapper<Waitable>> const& waitables,
+       DurationOpt timeout = DurationOpt());
   /// Wait until \a signal is emitted.
   template <typename R, typename ... Prototype, typename ... Args>
   void

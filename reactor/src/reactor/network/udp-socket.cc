@@ -22,53 +22,40 @@ namespace reactor
     | Construction |
     `-------------*/
 
-    UDPSocket::UDPSocket(Scheduler& sched,
-                         const std::string& hostname,
-                         const std::string& port):
-      Super(elle::make_unique<boost::asio::ip::udp::socket>(sched.io_service()),
-            resolve_udp(hostname, port),
-            DurationOpt())
+    UDPSocket::UDPSocket(Scheduler& sched)
+      : Super(
+        elle::make_unique<boost::asio::ip::udp::socket>(
+          sched.io_service()))
+    {}
+
+    UDPSocket::UDPSocket()
+      : UDPSocket(reactor::scheduler())
     {}
 
     UDPSocket::UDPSocket(Scheduler& sched,
                          const std::string& hostname,
-                         int port):
-      UDPSocket(sched, hostname, std::to_string(port))
+                         const std::string& port)
+      : Super(
+        elle::make_unique<boost::asio::ip::udp::socket>(sched.io_service()),
+        resolve_udp(hostname, port),
+        DurationOpt())
     {}
 
-    UDPSocket::UDPSocket():
-      UDPSocket(reactor::scheduler(), "127.0.0.1", 60000)
+    UDPSocket::UDPSocket(const std::string& hostname,
+                         const std::string& port)
+      : UDPSocket(reactor::scheduler(), hostname, port)
     {}
 
-    // UDPSocket::UDPSocket(Scheduler& sched,
-    //                      int local_port,
-    //                      const std::string& hostname,
-    //                      int port)
-    //   : Super(sched, new AsioSocket(sched.io_service()),
-    //           resolve_udp(sched, hostname,
-    //                       std::to_string(port)))
-    // {
-    //   this->_socket->open(boost::asio::ip::udp::v4());
-    //   boost::asio::ip::udp::endpoint local(boost::asio::ip::udp::v4(),
-    //                                        local_port);
-    //   this->_socket->bind(local);
-    //   this->_connect(this->peer());
-    // }
+    UDPSocket::UDPSocket(Scheduler& sched,
+                         const std::string& hostname,
+                         int port)
+      : UDPSocket(sched, hostname, std::to_string(port))
+    {}
 
-    // UDPSocket::UDPSocket(Scheduler& sched,
-    //                      int native_handle):
-    //   Super(sched,
-    //         new boost::asio::ip::udp::socket{
-    //           sched.io_service(),
-    //             boost::asio::ip::udp::v4(),
-    //             native_handle
-    //         })
-    // {
-    // }
-
-    // UDPSocket::UDPSocket(Scheduler& sched)
-    //   : Super(sched, new boost::asio::ip::udp::socket(sched.io_service()))
-    // {}
+    UDPSocket::UDPSocket(const std::string& hostname,
+                         int port)
+      : UDPSocket(reactor::scheduler(), hostname, port)
+    {}
 
     UDPSocket::~UDPSocket()
     {
@@ -353,6 +340,10 @@ namespace reactor
     {
       ELLE_TRACE("%s: send_to %s bytes to %s",
                      *this, buffer.size(), endpoint);
+      // At least on windows and macos, passing a v4 address to send_to() on a  v6 socket is an error
+      if (endpoint.address().is_v4() && this->local_endpoint().address().is_v6())
+        endpoint = EndPoint(boost::asio::ip::address_v6::v4_mapped(endpoint.address().to_v4()), endpoint.port());
+
       UDPSendTo sendto(scheduler(), this, buffer, endpoint);
       sendto.run();
     }
@@ -364,17 +355,14 @@ namespace reactor
     void
     UDPSocket::print(std::ostream& s) const
     {
-      // XXX: Accessing local_endpoint on an unbound socket will result on a
-      // boost::system::system_error: Bad File Descriptor.
-      // Until 'socket()->bound()', just try catch that error.
-      try
-      {
-        s << "UDP Socket " << socket()->local_endpoint();
-      }
-      catch (boost::system::system_error const&)
-      {
-        s << "UDP Socket (" << (void*) this << ")";
-      }
+      // Accessing local_endpoint on an unbound socket will result in a bad file
+      // descriptor error.
+      boost::system::error_code e;
+      auto ep = this->socket()->local_endpoint(e);
+      if (e)
+        elle::fprintf(s, "UDPSocket(%s)", (void*)(this));
+      else
+        elle::fprintf(s, "UDPSocket(%s)", ep);
     }
 
     elle::Buffer

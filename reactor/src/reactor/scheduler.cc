@@ -69,28 +69,7 @@ namespace reactor
         SIGUSR2,
         [&]
         {
-          auto print_thread = [&] (reactor::Thread const& thread)
-          {
-            std::cerr << "  " << thread << ": " << thread.state();
-            if (thread.terminating())
-              std::cerr << " (terminating)";
-            std::cerr << std::endl;
-            std::cerr << "    waiting:" << std::endl;
-            for (auto t: thread.waited())
-              std::cerr << "      " << *t << std::endl;
-            std::cerr << "    waiters:" << std::endl;
-            for (auto t: thread.waiters())
-              std::cerr << "      " << *(t.first) << std::endl;
-          };
-          std::cerr << "== FROZEN THREADS ==" << std::endl;
-          for (auto thread: this->_frozen)
-            print_thread(*thread);
-          std::cerr << "== RUNNING THREADS ==" << std::endl;
-          for (auto thread: this->_running)
-            print_thread(*thread);
-          std::cerr << "== STARTING THREADS ==" << std::endl;
-          for (auto thread: this->_starting)
-            print_thread(*thread);
+          this->dump_state();
         });
     }
 #endif
@@ -105,6 +84,8 @@ namespace reactor
   /*------------------.
   | Current Scheduler |
   `------------------*/
+
+#ifdef __clang__
 
   static
   std::unordered_map<std::thread::id, Scheduler*>&
@@ -135,6 +116,74 @@ namespace reactor
   {
     std::unique_lock<std::mutex> ulock(_schedulers_mutex());
     _schedulers()[std::this_thread::get_id()] = v;
+  }
+
+#else
+
+  static
+  Scheduler*&
+  _scheduler()
+  {
+    static thread_local Scheduler* sched = nullptr;
+    return sched;
+  }
+
+  Scheduler*
+  Scheduler::scheduler()
+  {
+    return _scheduler();
+  }
+
+  static
+  void
+  scheduler(Scheduler* v)
+  {
+    _scheduler() = v;
+  }
+
+#endif
+
+  /*------.
+  | Debug |
+  `------*/
+
+  void
+  Scheduler::dump_state()
+  {
+    auto print_thread = [&] (reactor::Thread const& thread)
+      {
+        std::cerr << "  " << thread << ": " << thread.state();
+        if (thread.terminating())
+          std::cerr << " (terminating)";
+        std::cerr << std::endl;
+        std::cerr << "    waiting:" << std::endl;
+        for (auto t: thread.waited())
+          std::cerr << "      " << *t << std::endl;
+        std::cerr << "    waiters:" << std::endl;
+        for (auto t: thread.waiters())
+          std::cerr << "      " << *(t.first) << std::endl;
+        std::cerr << "    backtrace:" << std::endl;
+        // FIXME: Indent the backtrace
+        std::cerr << thread.backtrace() << std::endl;
+      };
+    if (!this->_frozen.empty())
+    {
+      std::cerr << "== FROZEN THREADS ==" << std::endl;
+      for (auto thread: this->_frozen)
+        print_thread(*thread);
+    }
+    if (!this->_running.empty())
+    {
+      std::cerr << "== RUNNING THREADS ==" << std::endl;
+      for (auto thread: this->_running)
+        print_thread(*thread);
+    }
+    if (!this->_starting.empty())
+    {
+      std::cerr << "== STARTING THREADS ==" << std::endl;
+      for (auto thread: this->_starting)
+        print_thread(*thread);
+    }
   }
 
   /*----.
@@ -314,7 +363,7 @@ namespace reactor
     catch (...)
     {
       ELLE_TRACE_SCOPE("%s: exception escaped, terminating: %s",
-                       *this, elle::exception_string());
+                       thread, elle::exception_string());
       this->_current = previous;
       this->_eptr = std::current_exception();
       this->terminate();
@@ -459,11 +508,9 @@ namespace reactor
   {
     if (!suicide && this->current() == thread)
       return;
-
     bool ready = this->_terminate(thread);
     if (ready)
       return;
-
     // Wait on the thread object and ignore exceptions until the wait is done.
     std::exception_ptr saved_exception(nullptr);
     while (true)
@@ -475,18 +522,17 @@ namespace reactor
       catch (...)
       {
         saved_exception = std::current_exception();
-        ELLE_TRACE("%s: terminate_now interrupted, delaying exception: %s",
-                   *this, elle::exception_string());
+        ELLE_TRACE(
+          "%s: terminatation of %s interrupted, delaying exception: %s",
+          this, thread, elle::exception_string());
         continue;
       }
-
       break;
     }
-
     if (saved_exception != nullptr)
     {
-      ELLE_TRACE("%s: terminate_now finished, re-throwing: %s",
-                 *this, elle::exception_string(saved_exception));
+      ELLE_TRACE("%s: termination of %s finished, re-throwing: %s",
+                 this, thread, elle::exception_string(saved_exception));
       std::rethrow_exception(saved_exception);
     }
   }
@@ -710,6 +756,7 @@ namespace reactor
     ELLE_ASSERT(sched);
     auto* current = sched->current();
     ELLE_ASSERT(current);
+    ELLE_TRACE("%s: sleep forever", current);
     reactor::wait(*current);
   }
 
@@ -731,6 +778,17 @@ namespace reactor
     auto* current = sched->current();
     ELLE_ASSERT(current);
     return current->wait(waitables, timeout);
+  }
+
+  bool
+  wait(std::vector<std::reference_wrapper<Waitable>> const& waitables,
+       DurationOpt timeout)
+  {
+    Waitables conv;
+    conv.reserve(waitables.size());
+    for (auto& w: waitables)
+      conv.emplace_back(&w.get());
+    return wait(conv);
   }
 
   /** Run the given operation in the next cycle.

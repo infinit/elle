@@ -202,24 +202,31 @@ namespace infinit
     ChanneledStream::accept()
     {
       ELLE_TRACE_SCOPE("%s: wait for incoming channel", *this);
-      while (this->_channels_new.empty())
+      while (true)
+      {
+        ELLE_DEBUG("%s: no channel available, waiting", *this);
+        if (!this->_reading)
+          this->_read(true, 0);
+        else
         {
-          ELLE_DEBUG("%s: no channel available, waiting", *this);
-          if (!this->_reading)
-            this->_read(true, 0);
-          else
-            {
-              ELLE_DEBUG("%s: reader already present, waiting.", *this);
-              reactor::Thread* current = scheduler().current();
-              current->wait(this->_channel_available);
-            }
+          ELLE_DEBUG("%s: reader already present, waiting.", *this);
+          reactor::Thread* current = scheduler().current();
+          current->wait(this->_channel_available);
         }
-      assert(!this->_channels_new.empty());
-      // FIXME: use helper to pop
-      Channel res = std::move(this->_channels_new.front());
-      this->_channels_new.pop_front();
-      ELLE_TRACE("%s: got %s", *this, res);
-      return res;
+        if (this->_channels_new.empty())
+          continue;
+        // FIXME: use helper to pop
+        Channel res = std::move(this->_channels_new.front());
+        this->_channels_new.pop_front();
+        if (this->_master && res.id() > 0 || !this->_master && res.id() < 0)
+        {
+          ELLE_TRACE("%s: discard orphaned packet on channel %s",
+                     this, res.id());
+          continue;
+        }
+        ELLE_TRACE("%s: got %s", this, res);
+        return res;
+      }
     }
 
     /*--------.

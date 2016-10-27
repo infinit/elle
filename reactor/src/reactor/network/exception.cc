@@ -14,6 +14,10 @@ namespace reactor
       : Super("socket was closed")
     {}
 
+    ConnectionRefused::ConnectionRefused()
+      : Super("connection refused")
+    {}
+
     ConnectionClosed::ConnectionClosed()
       : Super("connection closed")
     {}
@@ -28,7 +32,7 @@ namespace reactor
 
     ResolutionError::ResolutionError(std::string const& host,
                                      std::string const& message):
-      Super(elle::sprintf("error resolving %s: %s", host, message)),
+      Super(elle::sprintf("error resolving '%s': %s", host, message)),
       _host(host)
     {}
 

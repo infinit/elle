@@ -143,7 +143,8 @@ namespace reactor
     while (true)
     {
 #ifndef INFINIT_WINDOWS
-      ELLE_DEBUG_SCOPE("%s: wait for all threads to finish", *this);
+      ELLE_DEBUG_SCOPE(
+        "%s: wait for %s thread(s) to finish", this, join.size());
 #endif
       try
       {
@@ -165,7 +166,10 @@ namespace reactor
     if (inside)
       this->_threads.push_back(current);
     if (e)
+    {
+      ELLE_TRACE("rethrow exception: %s", elle::exception_string(e));
       std::rethrow_exception(e);
+    }
   }
 
   /*---------.

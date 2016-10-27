@@ -1,8 +1,12 @@
+#include <reactor/Barrier.hh>
 #include <reactor/network/rdv.hh>
 #include <reactor/network/utp-socket.hh>
+#include <reactor/network/utp-server.hh>
 
 #include <reactor/network/buffer.hh>
 #include <reactor/scheduler.hh>
+
+#include <elle/os/environ.hh>
 
 ELLE_LOG_COMPONENT("rdvcat");
 
@@ -10,6 +14,8 @@ using namespace reactor::network;
 
 
 reactor::network::UTPSocket* utpsocket = nullptr;
+std::unique_ptr<reactor::network::UTPSocket> hsocket;
+std::unique_ptr<reactor::Barrier> exit_request;
 
 static void send(std::string const& data)
 {
@@ -17,6 +23,14 @@ static void send(std::string const& data)
     reactor::sleep(100_ms);
   ELLE_TRACE("pushing data");
   utpsocket->write(elle::ConstWeakBuffer(data));
+}
+
+static void close()
+{
+  ELLE_TRACE("reset socket...");
+  hsocket.reset();
+  exit_request->open();
+  ELLE_TRACE("...done");
 }
 
 static void run(int argc, char**argv)
@@ -28,33 +42,48 @@ static void run(int argc, char**argv)
   reactor::network::UTPServer server;
   server.listen(0);
   server.rdv_connect(id, rdvhost + ":" + std::to_string(rdvport));
-  std::unique_ptr<reactor::network::UTPSocket> socket;
   if (id < remoteid)
   {
     ELLE_TRACE("accepting...");
-    socket = server.accept();
+    hsocket = server.accept();
     ELLE_TRACE("...accepted");
   }
   else
   {
-    socket.reset(new reactor::network::UTPSocket(server));
+    hsocket.reset(new reactor::network::UTPSocket(server));
     ELLE_TRACE("connecting...");
-    socket->connect(remoteid);
+    hsocket->connect(remoteid);
     ELLE_TRACE("...connected");
   }
-  utpsocket = socket.get();
-  while (true)
+  utpsocket = hsocket.get();
+  static bool noread = !elle::os::getenv("NO_READ", "").empty();
+  try
   {
-    std::string line;
-    ELLE_TRACE("reading data");
-    std::getline(*utpsocket, line);
-    std::cout << line << std::endl;
+    while (hsocket)
+    {
+      if (noread)
+        reactor::wait(*exit_request);
+      else
+      {
+        std::string line;
+        ELLE_TRACE("reading data");
+        std::getline(*utpsocket, line);
+        std::cout << line << std::endl;
+      }
+    }
   }
+  catch (elle::Error const& e)
+  {
+    ELLE_TRACE("Read loop exited with %s", e);
+  }
+  utpsocket = nullptr;
+  hsocket.reset();
 }
 
 int main(int argc, char** argv)
 {
   reactor::Scheduler sched;
+  exit_request = elle::make_unique<reactor::Barrier>();
   reactor::Thread t(sched, "main", [&]
     {
       run(argc, argv);
@@ -66,9 +95,14 @@ int main(int argc, char** argv)
         std::getline(std::cin, buf);
         buf += '\n';
         sched.mt_run("data",
-          boost::function<void()>([&] { send(buf);}));
+          std::function<void()>([&] { send(buf);}));
       }
+      ELLE_TRACE("cin EOF, closing");
+      sched.mt_run("close",
+          std::function<void()>([&] { close();}));
   });
   sched.run();
-  rs.join();
+  ELLE_TRACE("scheduler exited");
+  rs.detach();
+  ELLE_TRACE("program exit");
 }

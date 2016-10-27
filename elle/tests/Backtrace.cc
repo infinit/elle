@@ -3,14 +3,14 @@
 
 using elle::Backtrace;
 
-#if !defined INFINIT_WINDOWS && !defined INFINIT_ANDROID
+#if !defined INFINIT_WINDOWS && !defined INFINIT_ANDROID && !defined NO_EXECINFO
 
 static
 void
 test_backtrace_empty()
 {
   Backtrace empty;
-  BOOST_CHECK(empty.empty());
+  BOOST_CHECK(empty.frames().empty());
 }
 
 // Pacify -Wmissing-declarations.
@@ -52,8 +52,8 @@ void
 test_backtrace()
 {
   Backtrace bt(foo());
-  BOOST_CHECK_GE(bt.size(), 4);
-  auto sf = bt.begin();
+  BOOST_CHECK_GE(bt.frames().size(), 4);
+  auto sf = bt.frames().begin();
   BOOST_CHECK_EQUAL(sf->symbol, "quux()");
   ++sf;
   BOOST_CHECK_EQUAL(sf->symbol, "baz()");
@@ -70,8 +70,8 @@ test_strip_base()
 {
   Backtrace bt(foo());
   bt.strip_base(Backtrace::current());
-  BOOST_CHECK_LE(bt.size(), 5);
-  BOOST_CHECK_EQUAL(bt.front().symbol, "quux()");
+  BOOST_CHECK_LE(bt.frames().size(), 5);
+  BOOST_CHECK_EQUAL(bt.frames().front().symbol, "quux()");
 }
 
 #else
@@ -88,7 +88,7 @@ dummy()
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
-#if !defined INFINIT_WINDOWS && !defined INFINIT_ANDROID
+#if !defined INFINIT_WINDOWS && !defined INFINIT_ANDROID && !defined NO_EXECINFO
   suite.add(BOOST_TEST_CASE(test_backtrace_empty));
   suite.add(BOOST_TEST_CASE(test_backtrace));
   suite.add(BOOST_TEST_CASE(test_strip_base));

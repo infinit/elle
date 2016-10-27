@@ -3,9 +3,11 @@
 #include <reactor/network/rdv.hh>
 
 #include <reactor/network/buffer.hh>
-#include <reactor/network/udp-socket.hh>
-#include <reactor/network/tcp-socket.hh>
+#include <reactor/network/rdv-socket.hh>
 #include <reactor/network/tcp-server.hh>
+#include <reactor/network/tcp-socket.hh>
+#include <reactor/network/udp-socket.hh>
+#include <reactor/network/utp-server.hh>
 #include <reactor/network/utp-socket.hh>
 #include <reactor/scheduler.hh>
 
@@ -90,7 +92,7 @@ static void serve_rdv(int port)
 static void serve_utp(int port, int xorit)
 {
   reactor::network::UTPServer server;
-  server.xorify() = xorit;
+  server.xorify(xorit);
   server.listen(port);
   server.rdv_connect("connectivity-server" + std::to_string(port), "rdv.infinit.sh:7890");
   while (true)

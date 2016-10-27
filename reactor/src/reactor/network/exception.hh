@@ -10,12 +10,12 @@ namespace reactor
 {
   namespace network
   {
-    class Exception:
-      public elle::Error
+    class Exception
+      : public elle::Error
     {
     public:
       typedef elle::Error Super;
-      Exception(const std::string& message);
+      Exception(std::string const& message);
     };
 
     class SocketClosed
@@ -26,12 +26,21 @@ namespace reactor
       SocketClosed();
     };
 
-    class ConnectionClosed: public Exception
+    class ConnectionRefused
+      : public Exception
+    {
+    public:
+      typedef Exception Super;
+      ConnectionRefused();
+    };
+
+    class ConnectionClosed
+      : public Exception
     {
     public:
       typedef Exception Super;
       ConnectionClosed();
-      ConnectionClosed(const std::string& message);
+      ConnectionClosed(std::string const& message);
     };
 
     class SSLShortRead
@@ -42,8 +51,8 @@ namespace reactor
       SSLShortRead();
     };
 
-    class ResolutionError:
-      public Exception
+    class ResolutionError
+      : public Exception
     {
     public:
       typedef Exception Super;
@@ -54,23 +63,24 @@ namespace reactor
       ELLE_ATTRIBUTE_R(std::string, host);
     };
 
-    class SSLCertificateError:
-      public Exception
+    class SSLCertificateError
+      : public Exception
     {
     public:
       typedef Exception Super;
       SSLCertificateError(std::string const& message);
     };
 
-    class SSLHandshakeError:
-      public Exception
+    class SSLHandshakeError
+      : public Exception
     {
     public:
       typedef Exception Super;
       SSLHandshakeError(std::string const& message);
     };
 
-    class TimeOut: public Exception
+    class TimeOut
+      : public Exception
     {
     public:
       typedef Exception Super;

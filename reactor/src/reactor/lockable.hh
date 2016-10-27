@@ -8,6 +8,8 @@ namespace reactor
   class Lockable: public Waitable
   {
     public:
+      /// Try to acquire the lock, without blocking
+      virtual bool acquire() = 0;
       virtual bool release() = 0;
   };
 

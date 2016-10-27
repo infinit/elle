@@ -14,6 +14,7 @@
 #include <boost/foreach.hpp>
 
 #include <elle/Backtrace.hh>
+#include <elle/utils.hh>
 
 namespace elle
 {
@@ -85,15 +86,25 @@ namespace elle
   }
 
   Backtrace::Backtrace()
-    : SuperType()
+    : _resolved(false)
+    , _skip(0)
+    , _frame_count(0)
   {}
 
-#if defined(INFINIT_WINDOWS)
-  Backtrace
-  Backtrace::_current()
+  Backtrace::Backtrace(std::vector<StackFrame> const& sf)
+  : _frames(sf)
+  , _resolved(true)
+  , _skip(0)
+  , _frame_count(0)
+  {}
+
+  void
+  Backtrace::_resolve()
   {
-    Backtrace res;
-    /*
+    if (this->_resolved)
+      return;
+#if defined(INFINIT_WINDOWS)
+       /*
       auto initialize = []
         {
           HANDLE process = GetCurrentProcess();
@@ -118,16 +129,9 @@ namespace elle
       }
       ::free(symbol);
     */
-    return res;
-  }
-#elif !defined(INFINIT_ANDROID)
-  Backtrace
-  Backtrace::_current(void** callstack, size_t frames, unsigned skip)
-  {
-    Backtrace bt;
-
-    char** strs = backtrace_symbols(callstack, frames);
-    for (unsigned i = skip; i < frames; ++i)
+#elif !defined(INFINIT_ANDROID) && !defined(NO_EXECINFO)
+    char** strs = backtrace_symbols(this->_callstack, this->_frame_count);
+    for (unsigned i = this->_skip; i < this->_frame_count; ++i)
     {
       StackFrame frame;
       std::string symbol_mangled;
@@ -167,25 +171,34 @@ namespace elle
         stream >> std::hex >> frame.address;
 # endif
       }
-      bt.push_back(frame);
+      this->_frames.push_back(frame);
     }
     free(strs);
-
-    return bt;
-  }
 #endif
+    this->_resolved = true;
+  }
+
+  const std::vector<StackFrame>&
+  Backtrace::frames() const
+  {
+    elle::unconst(this)->_resolve();
+    return this->_frames;
+  }
 
   void
   Backtrace::strip_base(const Backtrace& base)
   {
-    auto other = base.rbegin();
+    this->_resolve();
+    elle::unconst(base)._resolve();
+    auto other = base.frames().rbegin();
+    auto& f = this->_frames;
 
     // The function address could change as observed in CentOS.
-    while (!this->empty() && other != base.rend()
-           && (this->back().address == other->address
-               || this->back().symbol == other->symbol))
+    while (!f.empty() && other != base.frames().rend()
+           && (f.back().address == other->address
+               || f.back().symbol == other->symbol))
       {
-        this->pop_back();
+        f.pop_back();
         ++other;
       }
   }
@@ -207,8 +220,8 @@ namespace elle
   {
     unsigned i = 0;
     // Visual expects a float ... don't ask.
-    const size_t width = std::log10(float(bt.size())) + 1;
-    BOOST_FOREACH (const Backtrace::Frame& f, bt)
+    const size_t width = std::log10(float(bt.frames().size())) + 1;
+    for (const Backtrace::Frame& f: bt.frames())
       {
         boost::format fmt("#%-" + boost::lexical_cast<std::string>(width) + "d %s\n");
         out << (fmt % i++ % f);

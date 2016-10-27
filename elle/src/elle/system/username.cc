@@ -24,7 +24,7 @@ namespace elle
       return buffer;
 #else
       {
-        struct passwd* pw = ::getpwuid(::getuid());
+        struct passwd* pw = ::getpwuid(::geteuid());
         if (pw != nullptr && pw->pw_name != nullptr)
           return pw->pw_name;
       }

@@ -20,6 +20,7 @@ namespace reactor
       : _server_reached(elle::sprintf("%s: server reached", *this))
       , _breacher("breacher", [this] { this->loop_breach();})
       , _keep_alive("keep-alive", [this]  {this->loop_keep_alive();})
+      , _tasks(elle::sprintf("%s tasks barrier", this))
     {}
 
     RDVSocket::~RDVSocket()
@@ -91,7 +92,7 @@ namespace reactor
         auto it = _readers.find(magic);
         if (it != _readers.end())
         {
-          it->second(buffer, endpoint);
+          it->second(Buffer(buffer.data(), sz), endpoint);
         }
         else if (magic == rdv::rdv_magic)
         {
@@ -218,9 +219,9 @@ namespace reactor
       {
         if (!endpoints.empty())
         { // try known endpoints
-          ELLE_TRACE("pinging id=%s, tmpid=%s", id, tempid);
+          ELLE_TRACE("pinging id=%s", contactid);
           for (auto const& ep: endpoints)
-            send_ping(ep, tempid);
+            send_ping(ep, contactid);
         }
         // try establishing link through rdv
         auto const& c = _contacts.at(contactid);

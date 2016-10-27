@@ -16,7 +16,7 @@
 #include <sstream>
 #include <thread>
 
-static
+template<bool b>
 void
 _message_test(bool env)
 {
@@ -64,6 +64,20 @@ _message_test(bool env)
       ss.str("");
       ELLE_DUMP("Test4");
       BOOST_CHECK_EQUAL(ss.str(), "[Another]   Test4\n");
+
+      ss.str("");
+      ELLE_DUMP("Test5")
+      {
+        BOOST_CHECK_EQUAL(ss.str(), "[Another]   Test5\n");
+        ss.str("");
+        ELLE_DUMP("Test5.1")
+        {
+          BOOST_CHECK_EQUAL(ss.str(), "[Another]     Test5.1\n");
+          ss.str("");
+          ELLE_DUMP("Test5.1.1");
+          BOOST_CHECK_EQUAL(ss.str(), "[Another]       Test5.1.1\n");
+        }
+      }
     }
 
     ss.str("");
@@ -80,8 +94,8 @@ static
 void
 message_test()
 {
-  _message_test(false);
-  _message_test(true);
+  _message_test<false>(false);
+  _message_test<true>(true);
 }
 
 static
@@ -394,16 +408,6 @@ multiline()
   BOOST_CHECK_EQUAL(output.str(),expected);
 }
 
-#ifndef BOOST_CHECK_NOT_EQUAL
-template<typename T>
-static
-void
-BOOST_CHECK_NOT_EQUAL(T a, T b)
-{
-  BOOST_CHECK_PREDICATE(std::not_equal_to<T>(), (a)(b));
-}
-#endif
-
 static
 void
 trim()
@@ -417,22 +421,61 @@ trim()
   BOOST_CHECK_EQUAL(output.str(), "[trim] This message is trimmed !\n");
 }
 
+static
+void
+error()
+{
+  ELLE_LOG_COMPONENT("error");
+  {
+    std::stringstream output;
+    elle::log::logger(
+      std::unique_ptr<elle::log::Logger>{new elle::log::TextLogger{output}});
+    {
+      // We are passing through already executed code with a different logger
+      ELLE_LOG_COMPONENT("elle.printf");
+      ELLE_LOG("force component creation");
+    }
+    ELLE_LOG("invalid log", 42);
+    ELLE_LOG("invalid log %s");
+    BOOST_CHECK_GT(output.str().size(), 0);
+  }
+  {
+    std::stringstream output;
+    elle::log::detail::debug_formats(true);
+    elle::log::logger(
+      std::unique_ptr<elle::log::Logger>{new elle::log::TextLogger{output}});
+    {
+      // We are passing through already executed code with a different logger
+      ELLE_LOG_COMPONENT("elle.printf");
+      ELLE_LOG("force component creation");
+    }
+    BOOST_CHECK_THROW(ELLE_LOG("invalid log", 42), elle::Error);
+    BOOST_CHECK_THROW(ELLE_LOG("invalid log %s"), elle::Error);
+    BOOST_CHECK_GT(output.str().size(), 0);
+    elle::log::detail::debug_formats(false);
+  }
+}
+
 ELLE_TEST_SUITE()
 {
+  elle::log::detail::debug_formats(false);
+  auto& suite = boost::unit_test::framework::master_test_suite();
+
   elle::os::setenv("ELLE_LOG_COLOR", "1", 0);
-  boost::unit_test::test_suite* logger = BOOST_TEST_SUITE("Logger");
-  boost::unit_test::framework::master_test_suite().add(logger);
+  boost::unit_test::test_suite* logger = BOOST_TEST_SUITE("logger");
+  suite.add(logger);
   logger->add(BOOST_TEST_CASE(message_test));
   logger->add(BOOST_TEST_CASE(environment_format_test));
 
 #ifndef INFINIT_ANDROID
-  boost::unit_test::test_suite* concurrency = BOOST_TEST_SUITE("Concurrency");
-  boost::unit_test::framework::master_test_suite().add(concurrency);
+  boost::unit_test::test_suite* concurrency = BOOST_TEST_SUITE("concurrency");
+  suite.add(concurrency);
   concurrency->add(BOOST_TEST_CASE(std::bind(parallel_write)));
 
-  boost::unit_test::test_suite* format = BOOST_TEST_SUITE("Format");
-  boost::unit_test::framework::master_test_suite().add(format);
-  concurrency->add(BOOST_TEST_CASE(std::bind(multiline)));
-  concurrency->add(BOOST_TEST_CASE(std::bind(trim)));
+  boost::unit_test::test_suite* format = BOOST_TEST_SUITE("format");
+  suite.add(format);
+  format->add(BOOST_TEST_CASE(error));
+  format->add(BOOST_TEST_CASE(multiline));
+  format->add(BOOST_TEST_CASE(trim));
 #endif
 }

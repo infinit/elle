@@ -1,7 +1,7 @@
-#ifndef  ELLE_PRINTF_HXX
+#ifndef ELLE_PRINTF_HXX
 # define ELLE_PRINTF_HXX
 
-# include <iostream>
+# include <ostream>
 # include <typeinfo>
 
 # include <boost/format.hpp>
@@ -21,8 +21,8 @@ namespace _elle_printf_details
 {
   template <typename T>
   constexpr
-  typename std::enable_if<
-    sizeof(std::cerr << ELLE_SFINAE_INSTANCE(T)) >= 0, bool>::type
+  typename std::enable_if_exists<
+    decltype(std::declval<std::ostream&>() << std::declval<T>()), bool>::type
   _is_streamable(int)
   {
     return true;
@@ -203,22 +203,22 @@ namespace elle
     {
       ELLE_LOG_COMPONENT("elle.printf");
       // Don't use printf to handle printf fatal errors.
-      std::stringstream ss;
-      ss << "format error with \"" << fmt << "\": " << e.what();
-      ELLE_ERR("%s", ss.str());
-      throw elle::Exception(ss.str());
+      static boost::format const f("format error with \"%s\": %s");
+      auto msg = (boost::format(f) % fmt % e.what()).str();
+      ELLE_ERR("%s", msg);
+      elle::err(msg);
     }
   }
 
   template<typename F, typename ... T>
-  void
+  std::ostream&
   fprintf(std::ostream& stream, F&& fmt, T&& ... values)
   {
     try
     {
       boost::format format(fmt);
       _details::Feed<T ...>::args(format, std::forward<T>(values) ...);
-      stream << format;
+      return stream << format;
     }
     catch (boost::io::format_error const& e)
     {

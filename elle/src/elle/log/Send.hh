@@ -35,6 +35,7 @@ namespace elle
              char const* function,
              char const* fmt,
              Args&&... args);
+        Send(); // no-op sender
         ~Send();
         operator bool() const;
 
@@ -64,10 +65,6 @@ namespace elle
                    const std::string& msg);
         unsigned int* _indentation;
       };
-
-      template <typename... Args>
-      std::string
-      print_function_params(Args&&... args);
     }
   }
 }

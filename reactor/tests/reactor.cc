@@ -517,43 +517,94 @@ test_signals_timeout()
 | Barrier |
 `--------*/
 
-static
-void
-barrier_closed()
+namespace barrier
 {
-  reactor::Scheduler sched;
-  reactor::Barrier barrier;
-  bool beacon = false;
-  reactor::Thread waiter(sched, "waiter", [&] {
-      BOOST_CHECK(!barrier.opened());
-      reactor::wait(barrier);
-      BOOST_CHECK(barrier.opened());
-      BOOST_CHECK(!beacon);
-      beacon = true;
-    });
-  reactor::Thread opener(sched, "opener", [&] {
-      reactor::yield();
-      reactor::yield();
-      reactor::yield();
-      BOOST_CHECK(!beacon);
-      barrier.open();
-    });
-  sched.run();
-  BOOST_CHECK(beacon);
-}
+  ELLE_TEST_SCHEDULED(closed)
+  {
+    reactor::Barrier barrier;
+    bool beacon = false;
+    reactor::Thread waiter("waiter", [&] {
+        BOOST_CHECK(!barrier.opened());
+        reactor::wait(barrier);
+        BOOST_CHECK(barrier.opened());
+        BOOST_CHECK(!beacon);
+        beacon = true;
+      });
+    reactor::Thread opener("opener", [&] {
+        reactor::yield();
+        reactor::yield();
+        reactor::yield();
+        BOOST_CHECK(!beacon);
+        barrier.open();
+      });
+    reactor::wait({waiter, opener});
+    BOOST_CHECK(beacon);
+  }
 
-static
-void
-barrier_opened()
-{
-  reactor::Scheduler sched;
-  reactor::Barrier barrier;
-  barrier.open();
-  BOOST_CHECK(barrier.opened());
-  reactor::Thread waiter(sched, "waiter", [&] {
-      reactor::wait(barrier);
-    });
-  sched.run();
+  ELLE_TEST_SCHEDULED(opened)
+  {
+    reactor::Barrier barrier;
+    barrier.open();
+    BOOST_CHECK(barrier.opened());
+    reactor::Thread waiter("waiter", [&] {
+        reactor::wait(barrier);
+      });
+    reactor::wait(waiter);
+  }
+
+  ELLE_TEST_SCHEDULED(inverted)
+  {
+    reactor::Barrier b;
+    reactor::wait(!b);
+    b.open();
+    elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+    {
+      reactor::Barrier timedout;
+      scope.run_background(
+        "closer",
+        [&]
+        {
+          reactor::wait(timedout);
+          b.close();
+        });
+      BOOST_CHECK(!reactor::wait(!b, 10_ms));
+      timedout.open();
+      reactor::wait(!b);
+    };
+  }
+
+  ELLE_TEST_SCHEDULED(exception)
+  {
+    reactor::Barrier b;
+    reactor::Thread waiter(
+      "waiter",
+      [&] {
+        BOOST_CHECK(!b);
+        BOOST_CHECK_THROW(reactor::wait(b), BeaconException);
+        BOOST_CHECK(b);
+        BOOST_CHECK_THROW(reactor::wait(b), BeaconException);
+        BOOST_CHECK(b);
+      });
+    reactor::yield();
+    reactor::yield();
+    b.raise<BeaconException>();
+    reactor::yield();
+    reactor::yield();
+    BOOST_CHECK_THROW(reactor::wait(b), BeaconException);
+    b.open();
+    reactor::wait(b);
+    b.close();
+    reactor::Thread rewaiter(
+      "rewaiter",
+      [&] {
+        BOOST_CHECK(!b);
+        reactor::wait(b);
+      });
+    reactor::yield();
+    reactor::yield();
+    b.open();
+    reactor::wait(rewaiter);
+  }
 }
 
 /*------------------.
@@ -587,7 +638,6 @@ multilock_barrier_basic()
       BOOST_CHECK(third_lock);
       beacon_waiter = true;
     });
-
   reactor::Thread closer(sched, "closer", [&] {
       reactor::yield();
       BOOST_CHECK(no_lock);
@@ -599,43 +649,17 @@ multilock_barrier_basic()
           second_lock = true;
           auto lock = barrier.lock();
           reactor::yield();
-
           {
             third_lock = true;
             auto copied_lock = lock;
             reactor::yield();
           }
         }
-
       }
       beacon_closer = true;
     });
   sched.run();
   BOOST_CHECK(beacon_waiter & beacon_closer);
-}
-
-namespace barrier
-{
-  ELLE_TEST_SCHEDULED(inverted)
-  {
-    reactor::Barrier b;
-    reactor::wait(!b);
-    b.open();
-    elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
-    {
-      reactor::Barrier timedout;
-      scope.run_background(
-        "closer",
-        [&]
-        {
-          reactor::wait(timedout);
-          b.close();
-        });
-      BOOST_CHECK(!reactor::wait(!b, 10_ms));
-      timedout.open();
-      reactor::wait(!b);
-    };
-  }
 }
 
 /*------.
@@ -1182,7 +1206,8 @@ test_timeout_threw()
   reactor::Semaphore sem(0);
 
   reactor::Thread thrower(sched, "thrower", [&] {
-      reactor::wait(sem);
+      while (!sem.acquire())
+        reactor::wait(sem);
       throw BeaconException();
     });
   reactor::Thread waiter(sched, "waiter", [&] {
@@ -1349,8 +1374,10 @@ semaphore_noblock_wait(reactor::Semaphore& s)
 {
   BOOST_CHECK_EQUAL(s.count(), 2);
   reactor::wait(s);
+  BOOST_CHECK(s.acquire());
   BOOST_CHECK_EQUAL(s.count(), 1);
   reactor::wait(s);
+  BOOST_CHECK(s.acquire());
   BOOST_CHECK_EQUAL(s.count(), 0);
 }
 
@@ -1370,7 +1397,12 @@ void
 semaphore_block_wait(reactor::Semaphore& s)
 {
   BOOST_CHECK_EQUAL(s.count(), 0);
-  reactor::wait(s);
+  while (!s.acquire())
+  {
+    ELLE_LOG("nope");
+    reactor::wait(s);
+  }
+  ELLE_LOG("yes");
   BOOST_CHECK_EQUAL(s.count(), 0);
 }
 
@@ -1381,9 +1413,10 @@ semaphore_block_post(reactor::Semaphore& s)
   reactor::yield();
   reactor::yield();
   reactor::yield();
-  BOOST_CHECK_EQUAL(s.count(), -1);
-  s.release();
   BOOST_CHECK_EQUAL(s.count(), 0);
+  ELLE_LOG("release");
+  s.release();
+  BOOST_CHECK_EQUAL(s.count(), 1);
 }
 
 static
@@ -1407,7 +1440,7 @@ test_semaphore_multi()
   reactor::Semaphore s;
   int step = 0;
 
-  auto multi_wait = [&] { reactor::wait(s); ++step; };
+  auto multi_wait = [&] { while (!s.acquire()) reactor::wait(s); ++step; };
 
   reactor::Thread wait1(sched, "wait1", multi_wait);
   reactor::Thread wait2(sched, "wait2", multi_wait);
@@ -1415,12 +1448,13 @@ test_semaphore_multi()
       reactor::yield();
       reactor::yield();
       reactor::yield();
-      BOOST_CHECK_EQUAL(s.count(), -2);
+      BOOST_CHECK_EQUAL(s.count(), 0);
       BOOST_CHECK_EQUAL(step, 0);
       s.release();
+      BOOST_CHECK_EQUAL(s.count(), 1);
       reactor::yield();
       reactor::yield();
-      BOOST_CHECK_EQUAL(s.count(), -1);
+      BOOST_CHECK_EQUAL(s.count(), 0);
       BOOST_CHECK_EQUAL(step, 1);
       s.release();
       reactor::yield();
@@ -1434,55 +1468,94 @@ test_semaphore_multi()
 /*------.
 | Mutex |
 `------*/
-
-static const int mutex_yields = 32;
-
-static
-void
-mutex_count(int& i,
-            reactor::Mutex& mutex,
-            int yields)
+namespace mutex
 {
-  int count = 0;
-  int prev = -1;
-  while (count < mutex_yields)
+
+  static const int mutex_yields = 32;
+
+  static
+  void
+  mutex_count(int& i,
+              reactor::Mutex& mutex,
+              int yields)
   {
+    int count = 0;
+    int prev = -1;
+    while (count < mutex_yields)
     {
-      reactor::Lock lock(mutex);
-      // For now, mutex do guarantee fairness between lockers.
-      //BOOST_CHECK_NE(i, prev);
-      (void)prev;
-      BOOST_CHECK_EQUAL(i % 2, 0);
-      ++i;
-      for (int c = 0; c < yields; ++c)
       {
-        ++count;
-        reactor::yield();
+        reactor::Lock lock(mutex);
+        // For now, mutex do guarantee fairness between lockers.
+        //BOOST_CHECK_NE(i, prev);
+        (void)prev;
+        BOOST_CHECK_EQUAL(i % 2, 0);
+        ++i;
+        for (int c = 0; c < yields; ++c)
+        {
+          ++count;
+          reactor::yield();
+        }
+        ++i;
+        prev = i;
       }
-      ++i;
-      prev = i;
+      reactor::yield();
     }
-    reactor::yield();
   }
-}
 
-static
-void
-test_mutex()
-{
-  reactor::Scheduler sched;
-  reactor::Mutex mutex;
-  int step = 0;
-  reactor::Thread c1(sched, "counter1",
-                     boost::bind(&mutex_count,
-                                 boost::ref(step), boost::ref(mutex), 1));
-  reactor::Thread c2(sched, "counter2",
-                     boost::bind(&mutex_count,
-                                 boost::ref(step), boost::ref(mutex), 1));
-  reactor::Thread c3(sched, "counter3",
-                     boost::bind(&mutex_count,
-                                 boost::ref(step), boost::ref(mutex), 1));
-  sched.run();
+  ELLE_TEST_SCHEDULED(basics)
+  {
+    reactor::Mutex mutex;
+    int step = 0;
+    reactor::Thread c1("counter1",
+                       boost::bind(&mutex_count,
+                                   boost::ref(step), boost::ref(mutex), 1));
+    reactor::Thread c2("counter2",
+                       boost::bind(&mutex_count,
+                                   boost::ref(step), boost::ref(mutex), 1));
+    reactor::Thread c3("counter3",
+                       boost::bind(&mutex_count,
+                                   boost::ref(step), boost::ref(mutex), 1));
+    reactor::wait({c1, c2, c3});
+  }
+
+  ELLE_TEST_SCHEDULED(deadlock)
+  {
+    reactor::Mutex mutex;
+    reactor::Barrier locked;
+    reactor::Barrier relocked;
+    bool beacon = false;
+    reactor::Thread bailer(
+      "bailer",
+      [&]
+      {
+        reactor::wait(locked);
+        try
+        {
+          relocked.open();
+          reactor::Lock l(mutex);
+          BOOST_FAIL("bailer should have been terminated");
+        }
+        catch (...)
+        {
+          reactor::Lock l(mutex);
+          beacon = true;
+          throw;
+        }
+      });
+    reactor::Thread locker(
+      "locker",
+      [&]
+      {
+        {
+          locked.open();
+          reactor::Lock l(mutex);
+          reactor::wait(relocked);
+        }
+        bailer.terminate();
+      });
+    reactor::wait({bailer, locker});
+    BOOST_CHECK(beacon);
+  }
 }
 
 /*--------.
@@ -2337,30 +2410,14 @@ test_io_service_throw()
 
 namespace background
 {
-  static
-  void
-  operation()
+  ELLE_TEST_SCHEDULED(operation)
   {
     std::mutex mutex;
     std::condition_variable cv;
     bool backgrounded = false;
-    reactor::Scheduler sched;
     int i = 0;
-    reactor::Thread thread(
-      sched, "main",
-      [&]
-      {
-        reactor::background([&]
-                            {
-                              std::unique_lock<std::mutex> lock(mutex);
-                              backgrounded = true;
-                              cv.wait(lock);
-                              backgrounded = false;
-                            });
-        BOOST_CHECK_EQUAL(i, 3);
-      });
     reactor::Thread counter(
-      sched, "counter",
+      "counter",
       [&]
       {
         do
@@ -2380,83 +2437,70 @@ namespace background
         std::unique_lock<std::mutex> lock(mutex);
         cv.notify_one();
       });
-    sched.run();
+    reactor::background([&]
+                        {
+                          std::unique_lock<std::mutex> lock(mutex);
+                          backgrounded = true;
+                          cv.wait(lock);
+                          backgrounded = false;
+                        });
+    BOOST_CHECK_EQUAL(i, 3);
   }
 
-  static
-  void
-  operations()
+  ELLE_TEST_SCHEDULED(operations)
   {
-    reactor::Scheduler sched;
     static int const iterations = 16;
     reactor::Duration sleep_time = valgrind(500_ms, 5);
-    reactor::Thread main(
-      sched, "main",
-      [&]
-      {
-        // The first sleep is erratic on valgrind, don't include it in the
-        // tests.
-        if (RUNNING_ON_VALGRIND)
-          reactor::sleep(sleep_time);
-        // Run it three times to check the thread pool doesn't exceed 16.
-        for (int run = 0; run < 3; ++run)
-        {
-          int count = 0;
-          std::vector<reactor::Thread*> threads;
-          for (int i = 0; i < iterations; ++i)
-            threads.push_back(
-              new reactor::Thread(
-                elle::sprintf("thread %s", i),
-                [&count, &sleep_time]
+    // The first sleep is erratic on valgrind, don't include it in the
+    // tests.
+    if (RUNNING_ON_VALGRIND)
+      reactor::sleep(sleep_time);
+    // Run it three times to check the thread pool doesn't exceed 16.
+    for (int run = 0; run < 3; ++run)
+    {
+      int count = 0;
+      std::vector<reactor::Thread*> threads;
+      for (int i = 0; i < iterations; ++i)
+        threads.push_back(
+          new reactor::Thread(
+            elle::sprintf("thread %s", i),
+            [&count, &sleep_time]
+            {
+              reactor::background(
+                [&]
                 {
-                  reactor::background(
-                    [&]
-                    {
-                      ::usleep(sleep_time.total_microseconds());
-                    });
-                  ++count;
-                }));
-          auto start = boost::posix_time::microsec_clock::local_time();
-          reactor::wait(reactor::Waitables(begin(threads), end(threads)));
-          auto duration =
-            boost::posix_time::microsec_clock::local_time() - start;
-          BOOST_CHECK_EQUAL(count, iterations);
-          BOOST_CHECK_EQUAL(sched.background_pool_size(), iterations);
-          BOOST_CHECK_LT(duration, sleep_time * 3);
-          for (auto thread: threads)
-            delete thread;
-        }
-      });
-    sched.run();
+                  ::usleep(sleep_time.total_microseconds());
+                });
+              ++count;
+            }));
+      auto start = boost::posix_time::microsec_clock::local_time();
+      reactor::wait(reactor::Waitables(begin(threads), end(threads)));
+      auto duration =
+        boost::posix_time::microsec_clock::local_time() - start;
+      BOOST_CHECK_EQUAL(count, iterations);
+      BOOST_CHECK_EQUAL(
+        reactor::scheduler().background_pool_size(), iterations);
+      BOOST_CHECK_LT(duration, sleep_time * 3);
+      for (auto thread: threads)
+        delete thread;
+    }
   }
 
-  static
-  void
-  exception()
+  ELLE_TEST_SCHEDULED(exception)
   {
-    reactor::Scheduler sched;
-    reactor::Thread thread(
-      sched, "main",
-      [&]
-      {
-        BOOST_CHECK_THROW(reactor::background([] { throw BeaconException(); }),
-                          std::exception);
-        BOOST_CHECK_THROW(reactor::background([] { throw BeaconException(); }),
-                          std::exception);
-        BOOST_CHECK_THROW(reactor::background([] { throw BeaconException(); }),
-                          std::exception);
-        BOOST_CHECK_EQUAL(sched.background_pool_size(), 1);
-      });
-    sched.run();
+    BOOST_CHECK_THROW(reactor::background([] { throw BeaconException(); }),
+                      std::exception);
+    BOOST_CHECK_THROW(reactor::background([] { throw BeaconException(); }),
+                      std::exception);
+    BOOST_CHECK_THROW(reactor::background([] { throw BeaconException(); }),
+                      std::exception);
+    BOOST_CHECK_EQUAL(reactor::scheduler().background_pool_size(), 1);
   }
 
-  static
-  void
-  aborted()
+  ELLE_TEST_SCHEDULED(aborted)
   {
-    reactor::Scheduler sched;
     reactor::Thread main(
-      sched, "main",
+      "main",
       [&]
       {
         auto done = std::make_shared<bool>(false);
@@ -2477,12 +2521,12 @@ namespace background
         BOOST_ERROR("background task was not terminated");
       });
     reactor::Thread kill(
-      sched, "kill",
+      "kill",
       [&]
       {
         main.terminate();
       });
-    sched.run();
+    reactor::wait(main);
   }
 
   ELLE_TEST_SCHEDULED(aborted_throw)
@@ -3228,13 +3272,14 @@ ELLE_TEST_SUITE()
   signals->add(BOOST_TEST_CASE(test_signals_timeout), 0, valgrind(1, 5));
   signals->add(BOOST_TEST_CASE(test_signals_order), 0, valgrind(1, 5));
 
-  boost::unit_test::test_suite* barrier = BOOST_TEST_SUITE("Barrier");
-  boost::unit_test::framework::master_test_suite().add(barrier);
-  barrier->add(BOOST_TEST_CASE(barrier_closed), 0, valgrind(1, 5));
-  barrier->add(BOOST_TEST_CASE(barrier_opened), 0, valgrind(1, 5));
   {
-    auto inverted = &barrier::inverted;
+    auto barrier = BOOST_TEST_SUITE("barrier");
+    boost::unit_test::framework::master_test_suite().add(barrier);
+    using namespace barrier;
+    barrier->add(BOOST_TEST_CASE(closed), 0, valgrind(1, 5));
+    barrier->add(BOOST_TEST_CASE(opened), 0, valgrind(1, 5));
     barrier->add(BOOST_TEST_CASE(inverted), 0, valgrind(1, 5));
+    barrier->add(BOOST_TEST_CASE(exception), 0, valgrind(1, 5));
   }
 
   boost::unit_test::test_suite* multilock_barrier =
@@ -3360,9 +3405,14 @@ ELLE_TEST_SUITE()
   sem->add(BOOST_TEST_CASE(test_semaphore_block), 0, valgrind(1, 5));
   sem->add(BOOST_TEST_CASE(test_semaphore_multi), 0, valgrind(1, 5));
 
-  boost::unit_test::test_suite* mtx = BOOST_TEST_SUITE("Mutex");
-  boost::unit_test::framework::master_test_suite().add(mtx);
-  mtx->add(BOOST_TEST_CASE(test_mutex), 0, valgrind(1, 5));
+  {
+    boost::unit_test::test_suite* mtx = BOOST_TEST_SUITE("mutex");
+    boost::unit_test::framework::master_test_suite().add(mtx);
+    auto basics = &mutex::basics;
+    mtx->add(BOOST_TEST_CASE(basics), 0, valgrind(1, 5));
+    auto deadlock = &mutex::deadlock;
+    mtx->add(BOOST_TEST_CASE(deadlock), 0, valgrind(1, 5));
+  }
 
   boost::unit_test::test_suite* rwmtx = BOOST_TEST_SUITE("RWMutex");
   boost::unit_test::framework::master_test_suite().add(rwmtx);
@@ -3390,8 +3440,8 @@ ELLE_TEST_SUITE()
   boost::unit_test::framework::master_test_suite().add(background);
   {
     using namespace background;
-    background->add(BOOST_TEST_CASE(operation), 0, valgrind(1, 5));
-    background->add(BOOST_TEST_CASE(operations), 0, valgrind(3, 5));
+    background->add(BOOST_TEST_CASE(operation), 0, valgrind(3, 10));
+    background->add(BOOST_TEST_CASE(operations), 0, valgrind(3, 10));
     background->add(BOOST_TEST_CASE(exception), 0, valgrind(1, 5));
     background->add(BOOST_TEST_CASE(thread_exception_yield), 0, valgrind(1, 5));
     background->add(BOOST_TEST_CASE(aborted), 0, valgrind(1, 5));

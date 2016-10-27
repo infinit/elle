@@ -97,15 +97,6 @@ namespace reactor
   `------*/
   public:
     ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (uint32_t)>, changed);
-
-  /*----------.
-  | Printable |
-  `----------*/
-  public:
-    /// Pretty print this.
-    virtual
-    void
-    print(std::ostream& stream) const override;
   };
 }
 

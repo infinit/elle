@@ -1,6 +1,7 @@
 #ifndef ELLE_LOG_SEND_HXX
 # define ELLE_LOG_SEND_HXX
 
+# include <elle/fwd.hh>
 # include <elle/printf.hh>
 
 namespace elle
@@ -9,6 +10,21 @@ namespace elle
   {
     namespace detail
     {
+      ELLE_API
+      bool
+      debug_formats();
+
+      ELLE_API
+      void
+      debug_formats(bool v);
+
+      inline
+      Send::Send()
+        : _proceed(false)
+        , _indentation(nullptr)
+      {
+      }
+
       template <typename... Args>
       inline
       Send::Send(elle::log::Logger::Level level,
@@ -19,20 +35,49 @@ namespace elle
                  unsigned int line,
                  char const* function,
                  char const* fmt,
-                 Args&&... args):
-        _proceed(this->_enabled(type, level, component)),
-        _indentation(nullptr)
+                 Args&&... args)
+        : _proceed(true)
+        , _indentation(nullptr)
       {
-        if (!_proceed)
-          return;
-        this->_send(level, type, indent, component, file, line, function,
-                    elle::sprintf(fmt, std::forward<Args>(args)...));
+        bool debug = debug_formats();
+        try
+        {
+          if (this->_proceed)
+            this->_send(level, type, indent, component, file, line, function,
+                        elle::sprintf(fmt, std::forward<Args>(args)...));
+          else if (debug)
+            elle::sprintf(fmt, std::forward<Args>(args)...);
+        }
+        // Catching ellipsis to avoid header dependencies. AFAICT only
+        // elle::print can throw, and it only throw elle::Error.
+        catch (...)
+        {
+          this->_send(Logger::Level::log,
+                      Logger::Type::error,
+                      false,
+                      "elle.log",
+                      __FILE__,
+                      __LINE__,
+                      ELLE_COMPILER_PRETTY_FUNCTION,
+                      elle::sprintf("%s:%s: invalid log: %s", file, line, fmt)
+            );
+          if (debug)
+            throw;
+        }
       }
 
       inline
       Send::operator bool() const
       {
         return false;
+      }
+
+      inline
+      Send::~Send()
+      {
+        if (!_proceed)
+          return;
+        this->_unindent();
       }
     }
   }

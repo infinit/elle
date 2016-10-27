@@ -29,7 +29,8 @@ namespace elle
       : value(v)
     {}
 
-    Attr operator / (Attr const& a, Attr const& b)
+    Attr
+    operator / (Attr const& a, Attr const& b)
     {
       auto res = Attr(a.value + "," + b.value);
       if (res.value[0] == ',')
@@ -73,10 +74,10 @@ namespace elle
     `-----------*/
 
     LDAPClient::LDAPClient(std::string const& url_,
-                         Attr const& domain,
-                         std::string const& user,
-                         std::string const& password)
-      : _domain(domain)
+                           std::string const& domain,
+                           std::string const& user,
+                           std::string const& password)
+      : _domain(Attr(domain))
     {
       std::string url(url_);
       auto p = url.find("://");
@@ -91,17 +92,20 @@ namespace elle
       ELLE_TRACE("Using ldap url %s", url);
       int rc;
       rc = ldap_initialize(&this->_ld, url.c_str());
-      if(rc != LDAP_SUCCESS)
+      if (rc != LDAP_SUCCESS)
         elle::err("ldap_initialize: %s", ldap_err2string(rc));
       int desired_version = 3;
-      rc = ldap_set_option(_ld, LDAP_OPT_PROTOCOL_VERSION, &desired_version);
+      rc = ldap_set_option(this->_ld, LDAP_OPT_PROTOCOL_VERSION, &desired_version);
       if (rc != LDAP_OPT_SUCCESS)
         elle::err("ldap_set_option: %s", ldap_err2string(rc));
-      Attr authuser;
-      if (user.find('=') == user.npos)
-        authuser = CN(user) / domain;
-      else
-        authuser = Attr(user) / domain;
+      Attr authuser = Attr(user);
+      if (!domain.empty())
+      {
+        if (user.find("cn=") == user.npos)
+          authuser = CN(user);
+        if (user.find(domain) == user.npos)
+          authuser = authuser / this->_domain;
+      }
       ELLE_TRACE("binding with %s", authuser.value);
       /*
       std::string qbind = "cn=" + user + ",dc=" + domain;

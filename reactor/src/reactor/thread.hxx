@@ -61,11 +61,19 @@ namespace reactor
   void
   Thread::Terminator::operator ()(reactor::Thread* t)
   {
-    bool disposed = t->_dispose;
-    if (t)
-      t->terminate_now();
-    if (!disposed)
-      this->std::default_delete<reactor::Thread>::operator ()(t);
+    try
+    {
+      bool disposed = t->_dispose;
+      if (t)
+        t->terminate_now();
+      if (!disposed)
+        this->std::default_delete<reactor::Thread>::operator ()(t);
+    }
+    catch (...)
+    {
+      ELLE_ABORT("Thread::unique_ptr release of %s threw: %s",
+                 t, elle::exception_string());
+    }
   }
 
   template <typename ... Args>

@@ -3,6 +3,16 @@
 
 # include <das/fwd.hh>
 
+namespace das
+{
+  namespace details
+  {
+    template <typename T, class C>
+    C
+    _attribute_pointer_owner(T (C::*));
+  }
+}
+
 #define DAS_MODEL_DEFINE(Class, Fields, Type)                           \
   typedef das::Object<                                                  \
     Class                                                               \
@@ -24,8 +34,10 @@
 #define DAS_MODEL_DEFINE_SEQ__(Class, Fields)                           \
   BOOST_PP_SEQ_ENUM(Fields)                                             \
 
-#define DAS_MODEL_DEFINE_HELPER(R, Class, Name)                 \
-  , das::Field<Class, decltype(Class::Name), &Class::Name>      \
+#define DAS_MODEL_DEFINE_HELPER(R, Class, Name)                         \
+  , das::Field<decltype(                                                \
+      das::details::_attribute_pointer_owner(&Class::Name)),            \
+      decltype(Class::Name), &Class::Name>                              \
 
 # define DAS_MODEL_DEFAULT(T, M)                \
   namespace das                                 \

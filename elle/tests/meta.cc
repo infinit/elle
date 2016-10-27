@@ -36,6 +36,28 @@ namespace list
                   "list::index_of yielded the wrong index");
   }
 
+  namespace map
+  {
+    typedef List<int, float, std::string> l;
+    template <typename T>
+    struct voidify
+    {
+      using type = void;
+    };
+    static_assert(
+      std::is_same<l::map<voidify>::type, List<void, void, void>>::value,
+      "list::map yielded the wrong type");
+    template <typename T>
+    struct pointerize
+    {
+      using type = T*;
+    };
+    static_assert(
+      std::is_same<l::map<pointerize>::type,
+                   List<int*, float*, std::string*>>::value,
+      "list::map yielded the wrong type");
+  }
+
   namespace prepend
   {
     typedef List<int, void> l;
@@ -43,15 +65,44 @@ namespace list
                                List<float, int, void>>::value,
                   "list::prepend yielded the wrong type");
   }
+
+  namespace tail
+  {
+    typedef List<int, float, void> l;
+    static_assert(
+      std::is_same<l::tail<>::type, List<float, void>>::value,
+      "list::tail yielded the wrong type");
+  }
 }
+
+template <typename T>
+struct print_type
+{
+  using type = std::string;
+  static
+  type
+  value(std::string const& prefix, std::string const& suffix)
+  {
+    return prefix + elle::type_info<T>().name() + suffix;
+  }
+};
 
 static
 void
-dummy()
-{}
+map()
+{
+  using l = List<int, float, char>;
+  using map = l::map<print_type>;
+  static_assert(
+    std::is_same<map::type, List<std::string, std::string, std::string>>::value,
+    "list::map yielded the wrong type");
+  static_assert(elle::meta::map_runtime<print_type, int>(0), "blerg");
+  BOOST_CHECK_EQUAL(l::map<print_type>::value("<", ">"),
+                    std::make_tuple("<int>", "<float>", "<char>"));
+}
 
 ELLE_TEST_SUITE()
 {
   auto& master = boost::unit_test::framework::master_test_suite();
-  master.add(BOOST_TEST_CASE(dummy));
+  master.add(BOOST_TEST_CASE(map));
 }

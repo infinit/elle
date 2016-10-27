@@ -198,6 +198,16 @@ ambivalent_ptr()
     BOOST_CHECK_EQUAL(count, 2);
     BOOST_CHECK(b.lock());
   }
+  // reset
+  {
+    int count = 0;
+    auto a = std::ambivalent_ptr<Super>::own(std::make_shared<Super>(count));
+    BOOST_CHECK_EQUAL(count, 1);
+    BOOST_CHECK(a.lock());
+    a.reset();
+    BOOST_CHECK_EQUAL(count, 0);
+    BOOST_CHECK(!a.lock());
+  }
 }
 
 ELLE_TEST_SUITE()

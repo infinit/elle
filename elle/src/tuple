@@ -1,0 +1,40 @@
+// -*- c++ -*-
+#ifndef ELLE_TUPLE
+# define ELLE_TUPLE
+
+# include_next <tuple>
+# include <elle/printf-fwd.hh>
+
+namespace std
+{
+  namespace
+  {
+    template <int idx, typename T>
+    typename std::enable_if<idx == tuple_size<T>::value, void>::type
+    print_tuple(std::ostream&, T const&, bool)
+    {};
+
+    template <int idx, typename T>
+    typename std::enable_if<idx < tuple_size<T>::value, void>::type
+    print_tuple(std::ostream& s, T const& v, bool first)
+    {
+      if (!first)
+        elle::fprintf(s, ", %s", get<idx>(v));
+      else
+        elle::fprintf(s, "%s", get<idx>(v));
+      print_tuple<idx + 1, T>(s, v, false);
+    };
+  }
+
+  template <typename ... Elts>
+  ostream&
+  operator <<(ostream& out, tuple<Elts...> const& v)
+  {
+    elle::fprintf(out, "(");
+    print_tuple<0, tuple<Elts...>>(out, v, true);
+    elle::fprintf(out, ")");
+    return out;
+  }
+}
+
+#endif

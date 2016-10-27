@@ -212,13 +212,19 @@ namespace reactor
         int access = 0644;
         bool exists = false;
         struct stat st;
+        memset(&st, 0, sizeof(struct stat));
         try
         {
           p->stat(&st);
           exists = true;
         }
-        catch (Error const&)
-        {}
+        catch (Error const& e)
+        {
+          ELLE_DEBUG("stat failed: %s", e);
+        }
+        ELLE_DEBUG("stat, mode=%s", st.st_mode);
+        if (exists && !(st.st_mode & 0777))
+          return STATUS_ACCESS_DENIED;
         if (!exists && !(mode & O_CREAT))
         {
           ELLE_DEBUG("entry does not exists");
@@ -534,6 +540,8 @@ namespace reactor
           ELLE_DEBUG("got %s hits on %s", hits.size(), parent_path);
           for (auto const& path: hits)
           {
+            if (path == "." || path == "..")
+              continue; // we handle those ourselve
             ELLE_DEBUG("scanning entry %s/%s (%s)", parent_path, path, sizeof(struct stat));
             int g1 = 0xfefefefe;
             struct stat lst;
@@ -748,7 +756,28 @@ namespace reactor
                                       LONGLONG length,
                                       PDOKAN_FILE_INFO context)
     {
-      return STATUS_ACCESS_DENIED;
+      auto work = [&]()->NTSTATUS {
+      try
+      {
+        FileSystem* fs = (FileSystem*)context->DokanOptions->GlobalContext;
+        std::string path = to_utf8(fileName);
+        auto p = fs->path(path);
+        struct stat st;
+        p->stat(&st);
+        if (st.st_size > length)
+          p->truncate(length);
+      }
+      catch (Error const& e)
+      {
+        ELLE_TRACE("Filesystem error setting alloc size: %s", e);
+        return to_ntstatus(e.error_code());
+      }
+      return 0;
+      };
+      if (dokan_sync)
+        return work();
+      else
+        return le_scheduler->mt_run<NTSTATUS>("allocsize", work);
     }
     static
     __attribute__((__stdcall__))
@@ -864,6 +893,7 @@ namespace reactor
     {
       this->_operations->filesystem(this);
     }
+
     void FileSystem::unmount()
     {
       // Without this flush, we get a strange trailing ",'" on stdout when
@@ -874,6 +904,14 @@ namespace reactor
       std::wstring w = from_utf8(this->_where);
       DokanUnmount(w[0]);
     }
+
+    void
+    FileSystem::kill()
+    {
+      // FIXME
+      ELLE_ERR("terminate not yet implemented for Dokan");
+    }
+
     static void dokan_run(void* arg);
     void FileSystem::mount(boost::filesystem::path const& where,
                            std::vector<std::string> const& options)
@@ -884,6 +922,7 @@ namespace reactor
       memset(dokanOptions, 0, sizeof(DOKAN_OPTIONS));
       dokanOptions->Version = DOKAN_VERSION;
       dokanOptions->ThreadCount = 1; // use default
+      dokanOptions->Timeout = 300000; // irp timeout in ms
       auto& logger = elle::log::logger();
       if (logger.component_enabled("reactor.filesystem.dokanx")
         >= elle::log::Logger::Level::debug)

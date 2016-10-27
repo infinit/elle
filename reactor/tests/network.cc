@@ -311,6 +311,17 @@ ELLE_TEST_SCHEDULED(socket_destruction)
   /*BOOST_CHECK_THROW(*/delete socket.release()/*, elle::Exception)*/;
 }
 
+/*-------------------.
+| Connection refused |
+`-------------------*/
+
+ELLE_TEST_SCHEDULED(connection_refused)
+{
+  BOOST_CHECK_THROW(
+    elle::make_unique<reactor::network::TCPSocket>("localhost", 0),
+    reactor::network::ConnectionRefused);
+}
+
 
 /*-------------.
 | Socket close |
@@ -763,6 +774,7 @@ ELLE_TEST_SUITE()
 #endif
 #undef INFINIT_REACTOR_NETWORK_TEST
   suite.add(BOOST_TEST_CASE(socket_destruction), 0, 10);
+  suite.add(BOOST_TEST_CASE(connection_refused), 0, 1);
   suite.add(BOOST_TEST_CASE(socket_close), 0, 10);
   suite.add(BOOST_TEST_CASE(resolution_failure), 0, 10);
   suite.add(BOOST_TEST_CASE(read_until), 0, 10);
@@ -772,5 +784,4 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(read_terminate_recover), 0, 1);
   suite.add(BOOST_TEST_CASE(read_terminate_recover_iostream), 0, 1);
   suite.add(BOOST_TEST_CASE(read_terminate_deadlock), 0, 1);
-  // suite.add(BOOST_TEST_CASE(unix_socket), 0, 100);
 }

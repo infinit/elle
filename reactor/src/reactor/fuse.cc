@@ -29,6 +29,10 @@ ELLE_LOG_COMPONENT("reactor.filesystem.fuse");
 
 namespace reactor
 {
+  FuseContext::FuseContext()
+    : _mt_barrier(elle::sprintf("%s barrier", this))
+  {}
+
   void
   FuseContext::loop()
   {
@@ -89,7 +93,8 @@ namespace reactor
         ELLE_WARN("Exception escaped fuse_process: %s", e.what());
       }
     }
-    sched.run_later("exit notifier", this->on_loop_exited());
+    if (this->on_loop_exited())
+      sched.run_later("exit notifier", this->on_loop_exited());
   }
 
   void
@@ -272,7 +277,6 @@ namespace reactor
   void
   FuseContext::_loop_mt(Scheduler& sched)
   {
-    reactor::MultiLockBarrier barrier;
     fuse_session* s = fuse_get_session(this->_fuse);
     fuse_chan* ch = fuse_session_next_chan(s, NULL);
     size_t buffer_size = fuse_chan_bufsize(ch);
@@ -335,6 +339,7 @@ namespace reactor
           this->_workers.pop_back();
         }, true));
     }
+    if (this->on_loop_exited())
 #ifdef INFINIT_MACOSX
       sched.mt_run<void>("exit notifier", this->on_loop_exited());
 #else
@@ -398,11 +403,7 @@ namespace reactor
     }
     catch (Timeout const&)
     {
-      ELLE_TRACE("killing...");
-      if (this->_loop)
-        this->_loop->terminate_now();
-      for (auto const& t: this->_workers)
-        t->terminate_now();
+      this->kill();
       reactor::wait(this->_mt_barrier);
     }
 #endif
@@ -449,6 +450,15 @@ namespace reactor
     this->_mac_unmount(grace_time);
 #endif
     ELLE_TRACE("finished");
+  }
+
+  void
+  FuseContext::kill()
+  {
+#ifndef INFINIT_MACOSX
+    if (this->_loop)
+      this->_loop->terminate_now();
+#endif
   }
 
 #ifdef INFINIT_MACOSX

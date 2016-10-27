@@ -195,7 +195,7 @@ namespace infinit
                            this->_owner, error);
           uint16_t bt_size;
           input >> bt_size;
-          elle::Backtrace bt;
+          std::vector<elle::StackFrame> frames;
           for (int i = 0; i < bt_size; ++i)
           {
             elle::StackFrame frame;
@@ -204,8 +204,9 @@ namespace infinit
             input >> frame.symbol_demangled;
             input >> frame.address;
             input >> frame.offset;
-            bt.push_back(frame);
+            frames.push_back(frame);
           }
+          elle::Backtrace bt(frames);
           // FIXME: only protocol error should throw this, not remote
           // exceptions.
           RPCError e
@@ -376,8 +377,8 @@ namespace infinit
           e.what(), res);
         output << false;
         output << std::string(e.what());
-        output << uint16_t(e.backtrace().size());
-        for (auto const& frame: e.backtrace())
+        output << uint16_t(e.backtrace().frames().size());
+        for (auto const& frame: e.backtrace().frames())
         {
           output << frame.symbol;
           output << frame.symbol_mangled;
@@ -527,8 +528,8 @@ namespace infinit
                 ELLE_TRACE("%s: procedure failed: %s", *this, e.what());
                 output << false;
                 output << std::string(e.what());
-                output << uint16_t(e.backtrace().size());
-                for (auto const& frame: e.backtrace())
+                output << uint16_t(e.backtrace().frames().size());
+                for (auto const& frame: e.backtrace().frames())
                 {
                   output << frame.symbol;
                   output << frame.symbol_mangled;

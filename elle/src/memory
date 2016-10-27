@@ -127,6 +127,18 @@ namespace std
       return this->_payload;
     }
 
+    void
+    reset()
+    {
+      weak_ptr<T>::reset();
+      this->_payload.reset();
+    }
+
+    operator bool()
+    {
+      return this->lock() != nullptr;
+    }
+
   private:
     template <typename U>
     friend class ambivalent_ptr;

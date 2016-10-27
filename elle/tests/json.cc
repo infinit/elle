@@ -131,6 +131,20 @@ write_utf_8()
   BOOST_CHECK_EQUAL(output.str(), "{\"utf-8\":\"Средня Азиdoc\"}\n");
 }
 
+static
+void
+pretty_printer_utf_8()
+{
+  elle::json::Object object;
+  std::string name = "Bôb";
+  object["utf-8"] = name;
+  auto pretty_str = elle::json::pretty_print(object);
+  std::stringstream stream(pretty_str);
+  auto read_object =
+    boost::any_cast<elle::json::Object>(elle::json::read(stream));
+  BOOST_CHECK_EQUAL(boost::any_cast<std::string>(read_object["utf-8"]), name);
+}
+
 ELLE_TEST_SUITE()
 {
   auto timeout = 3;
@@ -144,4 +158,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(read_utf_8), 0, timeout);
   suite.add(BOOST_TEST_CASE(read_escaped_utf_8), 0, timeout);
   suite.add(BOOST_TEST_CASE(write_utf_8), 0, timeout);
+  suite.add(BOOST_TEST_CASE(pretty_printer_utf_8), 0, timeout);
 }

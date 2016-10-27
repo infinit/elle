@@ -16,38 +16,38 @@ namespace reactor
 {
   class FuseContext
   {
+  /*-------------.
+  | Construction |
+  `-------------*/
   public:
-    void create(std::string const& mountpoint,
-                std::vector<std::string> const& arguments,
-                const struct fuse_operations* op,
-                size_t op_size,
-                void* user_data);
+    FuseContext();
+    void
+    create(std::string const& mountpoint,
+           std::vector<std::string> const& arguments,
+           const struct fuse_operations* op,
+           size_t op_size,
+           void* user_data);
 
+  public:
     void
     loop();
-
     void
     loop_mt();
-
     void
     loop_pool(int threads);
-
     /// unmount and free ressources. Force-kill after "grace_time".
     void
     destroy(DurationOpt grace_time = DurationOpt());
-
+    void
+    kill();
     ELLE_ATTRIBUTE_RW(std::function<void()>, on_loop_exited);
-
   private:
     void
     _loop_single();
-
     void
     _loop_one_thread(Scheduler&);
-
     void
     _loop_mt(Scheduler&);
-
     void
     _loop_pool(int threads, Scheduler&);
 

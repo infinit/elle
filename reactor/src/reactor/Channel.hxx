@@ -43,15 +43,24 @@ namespace reactor
   Channel<T, Container>::put(T data)
   {
     ELLE_LOG_COMPONENT("reactor.Channel");
-    ELLE_TRACE_SCOPE("%s: put", *this);
-    while (signed(this->_queue.size()) >= this->_max_size)
+    ELLE_TRACE_SCOPE("%s: put", this);
+    if (signed(this->_queue.size()) >= this->_max_size)
     {
-      this->_write_barrier.close();
-      reactor::wait(this->_write_barrier);
+      ELLE_DEBUG("at capacity, wait");
+      do
+      {
+        this->_write_barrier.close();
+        reactor::wait(this->_write_barrier);
+      }
+      while (signed(this->_queue.size()) >= this->_max_size);
+      ELLE_DEBUG("gained capacity, resume put");
     }
     this->_queue.push(std::move(data));
-    if (this->_opened)
+    if (this->_opened && !this->_read_barrier.opened())
+    {
+      ELLE_DEBUG("open");
       this->_read_barrier.open();
+    }
   }
 
   namespace details
@@ -79,22 +88,27 @@ namespace reactor
   Channel<T, Container>::get()
   {
     ELLE_LOG_COMPONENT("reactor.Channel");
+    ELLE_TRACE_SCOPE("%s: get", this);
     /// In case of the barrier was opened
     /// with a last element, and closed immediatly
     /// Be sure the barrier is clearly opened before
     /// get element.
     if (!this->_read_barrier.opened())
     {
-      ELLE_TRACE_SCOPE("%s: wait for data", *this);
+      ELLE_TRACE_SCOPE("wait for data");
       while(!this->_read_barrier.opened())
         reactor::wait(this->_read_barrier);
     }
-    ELLE_TRACE("%s: get data", *this);
     ELLE_ASSERT(!this->_queue.empty());
     T res(std::move(details::queue_front(this->_queue)));
     this->_queue.pop();
+    ELLE_DEBUG("got data")
+      ELLE_DUMP("value: %s", res);
     if (this->_queue.empty())
+    {
+      ELLE_DEBUG("exhausted all data, close");
       this->_read_barrier.close();
+    }
     if (signed(this->_queue.size()) < this->_max_size)
       this->_write_barrier.open();
     return res;
@@ -121,8 +135,13 @@ namespace reactor
   const T&
   Channel<T, Container>::peek()
   {
-    while(!this->_read_barrier.opened())
-    reactor::wait(this->_read_barrier);
+    ELLE_LOG_COMPONENT("reactor.Channel");
+    ELLE_TRACE_SCOPE("%s: peek", this);
+    while (!this->_read_barrier.opened())
+    {
+      ELLE_TRACE_SCOPE("wait for data");
+      reactor::wait(this->_read_barrier);
+    }
     ELLE_ASSERT(!this->_queue.empty());
     return details::queue_front(this->_queue);
   }
@@ -136,7 +155,11 @@ namespace reactor
     this->_queue = Container(); // priority_queue has no clear
     if (this->_max_size < signed(this->_queue.size()))
       this->_write_barrier.open();
-    this->_read_barrier.close();
+    if (this->_read_barrier.opened())
+    {
+      ELLE_DEBUG("close");
+      this->_read_barrier.close();
+    }
   }
 
   /*--------.

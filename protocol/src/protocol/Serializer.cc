@@ -229,8 +229,8 @@ namespace infinit
          uint32_t size,
          uint32_t offset = 0)
     {
-      ELLE_DEBUG_SCOPE("read %s bytes from %s at offset %s (to %f)",
-                       size, stream, offset, content);
+      ELLE_DEBUG_SCOPE("read %s bytes from %s at offset %s",
+                       size, stream, offset);
       // read the full packet even if terminated to keep the stream
       // in a consistent state
       int nread = 0;
@@ -245,6 +245,10 @@ namespace infinit
           nread += std::readsome(stream, where, size - nread);
           if (stream.eof())
             throw Serializer::EOF();
+        }
+        catch (Serializer::EOF const&)
+        {
+          throw;
         }
         catch (...)
         {
@@ -262,7 +266,6 @@ namespace infinit
           }
           throw;
         }
-        ELLE_DUMP("content: %x (size: %s)", content, content.size());
       }
     }
 
@@ -357,8 +360,10 @@ namespace infinit
     {
       int c = -1;
       {
-        reactor::Thread::Interruptible interruptible;
-        c = this->_stream.get();
+        elle::With<reactor::Thread::Interruptible>() << [&]
+        {
+          c = this->_stream.get();
+        };
       }
       if (c == -1)
         throw Serializer::EOF();
@@ -448,10 +453,13 @@ namespace infinit
     elle::Buffer
     Version020Impl::_read()
     {
+      ELLE_TRACE_SCOPE("%s: read packet", this);
       int c = -1;
       {
-        reactor::Thread::Interruptible interruptible;
-        c = this->_stream.get();
+        elle::With<reactor::Thread::Interruptible>() << [&]
+        {
+          c = this->_stream.get();
+        };
       }
       if (c == -1)
         throw Serializer::EOF();
@@ -472,7 +480,6 @@ namespace infinit
         uint32_t size = std::min(total_size - offset, this->_chunk_size);
         ELLE_DEBUG("read chunk of size %s", size);
         infinit::protocol::read(this->_stream, packet, size, offset);
-        ELLE_DUMP("current packet state: '%x'", packet);
         offset += size;
         ELLE_ASSERT_LTE(offset, total_size);
         if (offset >= total_size)
@@ -484,6 +491,7 @@ namespace infinit
       // Check hash.
       if (this->_checksum)
         enforce_checksums_equal(packet, hash);
+      ELLE_TRACE("%s: got packet of size %s", this, total_size);
       return packet;
     }
 
@@ -536,10 +544,10 @@ namespace infinit
       }
       catch (reactor::Terminate const&)
       {
-        ELLE_DEBUG("interrupted after sending %s (over %s)",
-                   offset, packet.size());
         if (offset < packet.size())
         {
+          ELLE_DEBUG("interrupted after sending %s bytes over %s",
+                     offset, packet.size());
           write_control(this->_stream, Control::interrupt);
           this->_stream.flush();
         }

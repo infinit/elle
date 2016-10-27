@@ -86,6 +86,14 @@ namespace reactor
     ELLE_ATTRIBUTE(bool, dispose);
     ELLE_ATTRIBUTE(bool, managed);
 
+  /*----------.
+  | Backtrace |
+  `----------*/
+  public:
+    elle::Backtrace
+    backtrace() const;
+    ELLE_ATTRIBUTE(elle::Backtrace, yield_backtrace);
+
     /*---------.
     | Tracking |
     `---------*/
@@ -219,29 +227,44 @@ namespace reactor
     ELLE_ATTRIBUTE_RX(
       boost::signals2::signal<void (std::string const&)>, unfrozen);
 
-    /// Marks current thread noniterruptible while this object lives
-    class NonInterruptible
+  /*---------.
+  | Contexts |
+  `---------*/
+  public:
+
+    /// Change properties on current thread and restore upon destruction.
+    class Context
     {
-    private:
-      NonInterruptible();
-      ~NonInterruptible() noexcept(false);
-      /// Let With manage us.
-      friend class elle::With<NonInterruptible>;
-    private:
-      ELLE_ATTRIBUTE(Thread*, current);
-      ELLE_ATTRIBUTE(bool, initial_value);
+    protected:
+      Context();
+      ~Context() noexcept(false);
+      friend class elle::With<Context>;
+      ELLE_ATTRIBUTE(Thread&, current);
+      ELLE_ATTRIBUTE(bool, interruptible);
+
+    public:
+      bool
+      interruptible(bool interruptible);
     };
 
-    /// Mark thread interrutible for the lifetime of this object
-    class Interruptible
+    /// Marks current thread noniterruptible while this object lives.
+    class NonInterruptible
+      : public Context
     {
-    public:
-      Interruptible();
-      ~Interruptible();
-    private:
-      ELLE_ATTRIBUTE(Thread*, current);
-      ELLE_ATTRIBUTE(bool, initial_value);
+    protected:
+      NonInterruptible();
+      friend class elle::With<NonInterruptible>;
     };
+
+    /// Mark thread interrutible for the lifetime of this object.
+    class Interruptible
+      : public Context
+    {
+    protected:
+      Interruptible();
+      friend class elle::With<Interruptible>;
+    };
+
   /*--------.
   | Backend |
   `--------*/

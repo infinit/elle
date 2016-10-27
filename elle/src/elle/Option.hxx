@@ -15,7 +15,10 @@ namespace elle
 {
   namespace _details
   {
-    template <std::size_t Size, int Index, typename ... Types>
+    template <std::size_t Size,
+              std::size_t Align,
+              int Index,
+              typename ... Types>
     class OptionHelper
     {
     public:
@@ -23,11 +26,11 @@ namespace elle
         : _index(-1)
       {}
 
-      OptionHelper(OptionHelper<Size, Index, Types...>&&)
+      OptionHelper(OptionHelper<Size, Align, Index, Types...>&&)
         : _index(-1)
       {}
 
-      OptionHelper(OptionHelper<Size, Index, Types...> const&)
+      OptionHelper(OptionHelper<Size, Align, Index, Types...> const&)
         : _index(-1)
       {}
 
@@ -63,31 +66,27 @@ namespace elle
 
       static constexpr std::size_t size = Size;
     protected:
+      static_assert(Align > 0, "alignment should not be null");
+      ELLE_COMPILER_ALIGN(Align)
       char _buffer[size];
       int _index;
     };
 
-    template <std::size_t Size, int Index, typename Head, typename ... Tail>
-    class OptionHelper<Size, Index, Head, Tail ...>
+    template <std::size_t Size,
+              std::size_t Align,
+              int Index,
+              typename Head, typename ... Tail>
+    class OptionHelper<Size, Align, Index, Head, Tail ...>
       : public OptionHelper<(sizeof(Head) > Size ? sizeof(Head) : Size),
-                             Index + 1, Tail ...>
+                            (alignof(Head) > Align ? alignof(Head) : Align),
+                            Index + 1, Tail ...>
     {
     public:
-      typedef
+      using Super =
         OptionHelper<(sizeof(Head) > Size ? sizeof(Head) : Size),
-                     Index + 1, Tail ...>
-        Super;
-
+                     (alignof(Head) > Align ? alignof(Head) : Align),
+                     Index + 1, Tail ...>;
       OptionHelper() = default;
-
-      // template <typename ... Args>
-      // typename std::enable_if_exists<
-      //   decltype(Head(std::declval<Args>()...)), void>::type
-      // reset(Args&& ... args)
-      // {
-      //   new (this->_buffer) Head(std::forward<Args>(args)...);
-      //   this->_index = Index;
-      // }
 
       template <typename T, typename A>
       typename std::enable_if<
@@ -115,7 +114,9 @@ namespace elle
         if (source._index == Index)
         {
           char* buffer = source._buffer;
+          // FIXME: if this throws, the Option is UB
           new (this->_buffer) Head(reinterpret_cast<Head&&>(*buffer));
+          this->_index = Index;
         }
         else
           this->Super::_assign(std::move(source));
@@ -128,7 +129,9 @@ namespace elle
         if (source._index == Index)
         {
           char const* buffer = source._buffer;
+          // FIXME: if this throws, the Option is UB
           new (this->_buffer) Head(reinterpret_cast<Head const&>(*buffer));
+          this->_index = Index;
         }
         else
           this->Super::_assign(source);
@@ -171,7 +174,8 @@ namespace elle
         }
       }
 
-      OptionHelper(OptionHelper<Size, Index, Head, Tail...>&& source)
+      OptionHelper(
+        OptionHelper<Size, Align, Index, Head, Tail...>&& source)
         : Super(static_cast<Super&&>(source))
       {
         if (source._index == Index)
@@ -182,7 +186,8 @@ namespace elle
         }
       }
 
-      OptionHelper(OptionHelper<Size, Index, Head, Tail...> const& source)
+      OptionHelper(
+        OptionHelper<Size, Align, Index, Head, Tail...> const& source)
         : Super(static_cast<Super const&>(source))
       {
         if (source._index == Index)
@@ -197,24 +202,24 @@ namespace elle
 
   template <typename ... Types>
   Option<Types ...>::Option(Option<Types...>&& source)
-    : _details::OptionHelper<0u, 0, Types ...>(
-      static_cast<_details::OptionHelper<0u, 0, Types ...>&&>(source))
+    : _details::OptionHelper<0u, 0u, 0, Types ...>(
+      static_cast<_details::OptionHelper<0u, 0u, 0, Types ...>&&>(source))
   {
     ELLE_ASSERT_NEQ(this->_index, -1);
   };
 
   template <typename ... Types>
   Option<Types ...>::Option(Option<Types ...> const& source)
-    : _details::OptionHelper<0u, 0, Types ...>(
-      static_cast<_details::OptionHelper<0u, 0, Types ...> const&>(source))
+    : _details::OptionHelper<0u, 0u, 0, Types ...>(
+      static_cast<_details::OptionHelper<0u, 0u, 0, Types ...> const&>(source))
   {
     ELLE_ASSERT_NEQ(this->_index, -1);
   };
 
   template <typename ... Types>
   Option<Types ...>::Option(Option<Types ...>& source)
-    : _details::OptionHelper<0u, 0, Types ...>(
-      static_cast<_details::OptionHelper<0u, 0, Types ...>&>(source))
+    : _details::OptionHelper<0u, 0u, 0, Types ...>(
+      static_cast<_details::OptionHelper<0u, 0u, 0, Types ...>&>(source))
   {
     ELLE_ASSERT_NEQ(this->_index, -1);
   };
@@ -233,9 +238,10 @@ namespace elle
     {
       template <typename V>
       static void
-      apply(V& v, int)
+      apply(V& v, int& idx)
       {
         v.~V();
+        idx = -1;
       }
     };
   }
@@ -316,8 +322,16 @@ namespace elle
   template <typename ... Types>
   Option<Types ...>::Option(serialization::SerializerIn& s)
   {
-    s.serialize("type", this->_index);
-    this->template _apply<_details::OptionDeserialize>(s);
+    try
+    {
+      s.serialize("type", this->_index);
+      this->template _apply<_details::OptionDeserialize>(s);
+    }
+    catch (...)
+    {
+      this->_index = -1;
+      throw;
+    }
   }
 
   namespace _details
@@ -342,8 +356,16 @@ namespace elle
       this->template _apply<_details::OptionReset>();
     s.serialize("type", this->_index);
     if (s.in())
-      this->template _apply<_details::OptionDeserialize>(
-        static_cast<serialization::SerializerIn&>(s));
+      try
+      {
+        this->template _apply<_details::OptionDeserialize>(
+          static_cast<serialization::SerializerIn&>(s));
+      }
+      catch (...)
+      {
+        this->_index = -1;
+        throw;
+      }
     else
       this->template _apply<_details::OptionSerialize>(s);
   }

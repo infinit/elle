@@ -1,9 +1,12 @@
-#include <reactor/scheduler.hh>
-#include <reactor/network/utp-socket.hh>
+#include <elle/assert.hh>
+#include <elle/test.hh>
+
 #include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
-#include <elle/test.hh>
-#include <elle/assert.hh>
+#include <reactor/network/udp-socket.hh>
+#include <reactor/network/utp-server.hh>
+#include <reactor/network/utp-socket.hh>
+#include <reactor/scheduler.hh>
 
 ELLE_LOG_COMPONENT("utpcat");
 
@@ -34,6 +37,13 @@ public:
   std::unique_ptr<reactor::network::UTPSocket> s1, s2;
 };
 
+ELLE_TEST_SCHEDULED(not_connected)
+{
+  UTPServer s;
+  UTPSocket sock(s);
+  BOOST_CHECK_THROW(sock.read(1), reactor::network::Exception);
+}
+
 ELLE_TEST_SCHEDULED(basic)
 {
   {
@@ -57,10 +67,10 @@ ELLE_TEST_SCHEDULED(utp_close)
   sp.s1->write("foo");
   sp.s1->close();
   reactor::sleep(100_ms);
-  BOOST_CHECK_THROW(sp.s1->write("bar"), reactor::network::SocketClosed);
-  BOOST_CHECK_THROW(sp.s1->read_some(10), reactor::network::SocketClosed);
-  BOOST_CHECK_THROW(sp.s2->read_some(10), reactor::network::SocketClosed);
-  BOOST_CHECK_THROW(sp.s2->write("bar"), reactor::network::SocketClosed);
+  BOOST_CHECK_THROW(sp.s1->write("bar"),  reactor::network::ConnectionClosed);
+  BOOST_CHECK_THROW(sp.s1->read_some(10), reactor::network::ConnectionClosed);
+  BOOST_CHECK_THROW(sp.s2->read_some(10), reactor::network::ConnectionClosed);
+  BOOST_CHECK_THROW(sp.s2->write("bar"),  reactor::network::ConnectionClosed);
   {
     UTPServer srv;
     reactor::network::UTPSocket sock(srv);
@@ -92,15 +102,18 @@ ELLE_TEST_SCHEDULED(utp_close)
 
 ELLE_TEST_SCHEDULED(utp_timeout)
 {
+  char* megabuf;
+  {
   SocketPair sp;
   BOOST_CHECK_THROW(sp.s1->read(10, 100_ms), reactor::network::TimeOut);
   sp.s2->write("foooo");
   BOOST_CHECK_THROW(sp.s1->read(10, 100_ms), reactor::network::TimeOut);
-  char* megabuf = (char*)malloc(10000000);
+  megabuf = (char*)malloc(10000000);
   memset(megabuf, 0, 10000000);
   BOOST_CHECK_THROW(sp.s1->write(elle::ConstWeakBuffer(megabuf, 10000000),
                                  100_ms),
                     reactor::network::TimeOut);
+  }
   free(megabuf);
 }
 
@@ -109,7 +122,7 @@ ELLE_TEST_SCHEDULED(utp_failures)
   SocketPair sp;
   reactor::network::UTPSocket socket(sp.srv1);
   ELLE_LOG("connect");
-  BOOST_CHECK_THROW(socket.connect("127.0.0.1", 65530), SocketClosed);
+  BOOST_CHECK_THROW(socket.connect("127.0.0.1", 65530), ConnectionRefused);
   // check other sockets are unaffected
   sp.s1->write("foo");
   ELLE_LOG("read");
@@ -169,6 +182,27 @@ ELLE_TEST_SCHEDULED(many)
   sp.s2->stats();
 }
 
+ELLE_TEST_SCHEDULED(destruction)
+{
+  for (int y=0; y<20; ++y)
+  {
+    SocketPair sp;
+    sp.s1->write("foo");
+    ELLE_ASSERT_EQ(sp.s2->read_some(3).string(), "foo");
+    sp.s2->write("bar");
+    ELLE_ASSERT(sp.s1->read_some(3).string() == "bar");
+    sp.s1->write("baz");
+    sp.s2->write("bam");
+    ELLE_ASSERT(sp.s1->read_some(3).string() == "bam");
+    ELLE_ASSERT(sp.s2->read_some(3).string() == "baz");
+    ELLE_LOG("done");
+    sp.s1.reset();
+    sp.s2.reset();
+    for (int i=0; i<y; ++i)
+      reactor::yield();
+  }
+}
+
 SocketPair::SocketPair()
 {
   srv1.listen(0);
@@ -197,6 +231,7 @@ loop_socket(reactor::network::UTPSocket* ts)
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
+  suite.add(BOOST_TEST_CASE(not_connected), 0, valgrind(2));
   suite.add(BOOST_TEST_CASE(udp), 0, valgrind(2));
   suite.add(BOOST_TEST_CASE(utp_close), 0, valgrind(2));
   suite.add(BOOST_TEST_CASE(basic), 0, valgrind(2));
@@ -207,4 +242,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(streams), 0, valgrind(2));
   suite.add(BOOST_TEST_CASE(big), 0, valgrind(2));
   suite.add(BOOST_TEST_CASE(many), 0, valgrind(8));
+  suite.add(BOOST_TEST_CASE(destruction), 0, valgrind(2));
 }

@@ -13,7 +13,10 @@ namespace reactor
     ELLE_ASSERT(sched);
     auto current = sched->current();
     ELLE_ASSERT(current);
-    current->wait(_lockable);
+    while (!_lockable.acquire())
+    {
+      current->wait(_lockable);
+    }
   }
 
   Lock::~Lock()

@@ -32,6 +32,14 @@ namespace reactor
         this->listen(EndPoint(boost::asio::ip::tcp::v4(), port));
     }
 
+    void
+    TCPServer::listen(boost::asio::ip::address host, int port, bool enable_ipv6)
+    {
+      if (enable_ipv6 && host.is_v4())
+        host = boost::asio::ip::address_v6::v4_mapped(host.to_v4());
+      this->listen(EndPoint(host, port));
+    }
+
     TCPServer::EndPoint
     TCPServer::_default_endpoint() const
     {

@@ -27,7 +27,10 @@ namespace elle
 
     ELLE_API
     void
-    write(std::ostream& stream, boost::any const& any, bool with_endl = true);
+    write(std::ostream& stream,
+          boost::any const& any,
+          bool with_endl = true,
+          bool pretty_print = false);
 
     ELLE_API
     std::string

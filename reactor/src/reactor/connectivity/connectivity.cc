@@ -1,11 +1,13 @@
 #include <reactor/connectivity/connectivity.hh>
 
 #include <reactor/network/buffer.hh>
+#include <reactor/network/rdv-socket.hh>
 #include <reactor/network/rdv.hh>
 #include <reactor/network/resolve.hh>
 #include <reactor/network/tcp-server.hh>
 #include <reactor/network/tcp-socket.hh>
 #include <reactor/network/udp-socket.hh>
+#include <reactor/network/utp-server.hh>
 #include <reactor/network/utp-socket.hh>
 #include <reactor/scheduler.hh>
 
@@ -116,7 +118,7 @@ namespace reactor
     {
       reactor::network::UTPServer server;
       server.listen(0);
-      server.xorify() = xorit;
+      server.xorify(xorit);
       server.rdv_connect("connectivity", "rdv.infinit.sh:7890", 5_sec);
       reactor::network::UTPSocket s(server);
       s.connect("connectivity-server" + std::to_string(port), {}, 5_sec);
@@ -135,7 +137,7 @@ namespace reactor
       reactor::network::UTPServer server;
       server.listen(0);
       reactor::network::UTPSocket s(server);
-      server.xorify() = xorit;
+      server.xorify(xorit);
       s.connect(host, port);
       s << "foo" << std::endl;
       elle::Buffer reply = s.read_until("\n", 5_sec);

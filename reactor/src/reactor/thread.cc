@@ -3,6 +3,7 @@
 #include <elle/finally.hh>
 #include <elle/log.hh>
 #include <elle/optional.hh>
+#include <elle/os/environ.hh>
 
 #include <reactor/backend/backend.hh>
 #include <reactor/exception.hh>
@@ -89,6 +90,19 @@ namespace reactor
       delete this;
     else /* the else is not an option*/
       this->_self.reset();
+  }
+
+  /*----------.
+  | Backtrace |
+  `----------*/
+
+  elle::Backtrace
+  Thread::backtrace() const
+  {
+    if (this == reactor::scheduler().current())
+      return elle::Backtrace::current();
+    else
+      return this->_yield_backtrace;
   }
 
   /*---------.
@@ -191,9 +205,16 @@ namespace reactor
              && !this->_thread->unwinding()
              && !this->_thread->exception())
     {
-      ELLE_ERR("%s: terminate exception was swallowed", *this);
-      this->raise<Terminate>(elle::sprintf("re-terminate %s", *this));
-      this->_wait_abort("terminate exception was swallowed");
+      static bool const debug = elle::os::inenv("REACTOR_SCHEDULER_DEBUG");
+      if (debug)
+        ELLE_ERR("%s: terminate exception was swallowed: %s",
+                 *this, this->_yield_backtrace);
+      static bool reraise = elle::os::inenv("REACTOR_RE_RAISE_SWALLOWED_TERMINATE");
+      if (reraise)
+      {
+        this->raise<Terminate>(elle::sprintf("re-terminate %s", *this));
+        this->_wait_abort("terminate exception was swallowed");
+      }
     }
     if (this->_exception_thrown && !this->_managed)
     {
@@ -208,8 +229,11 @@ namespace reactor
   void
   Thread::yield()
   {
+    static bool const debug = elle::os::inenv("REACTOR_SCHEDULER_DEBUG");
     ELLE_TRACE("%s: yield", *this)
     {
+      if (debug)
+        this->_yield_backtrace = elle::Backtrace::current();
       this->_thread->yield();
       ELLE_TRACE_SCOPE("%s: back from yield", *this);
       if (_injection)
@@ -475,28 +499,37 @@ namespace reactor
     this->_exception = e;
   }
 
-  Thread::NonInterruptible::NonInterruptible()
-    : _current(reactor::scheduler().current())
-    , _initial_value(_current->interruptible())
+  /*--------.
+  | Context |
+  `--------*/
+
+  Thread::Context::Context()
+    : _current(*reactor::scheduler().current())
+    , _interruptible(_current.interruptible())
+  {}
+
+  Thread::Context::~Context() noexcept(false)
   {
-    this->_current->interruptible(false);
+    this->_current.interruptible(this->_interruptible);
   }
 
-  Thread::NonInterruptible::~NonInterruptible() noexcept(false)
+  bool
+  Thread::Context::interruptible(bool interruptible)
   {
-    this->_current->interruptible(this->_initial_value);
+    bool prev = this->_current.interruptible();
+    if (prev != interruptible)
+      this->_current.interruptible(interruptible);
+    return prev;
+  }
+
+  Thread::NonInterruptible::NonInterruptible()
+  {
+    this->interruptible(false);
   }
 
   Thread::Interruptible::Interruptible()
-  : _current(reactor::scheduler().current())
-  , _initial_value(_current->interruptible())
   {
-    this->_current->interruptible(true);
-  }
-
-  Thread::Interruptible::~Interruptible()
-  {
-    this->_current->interruptible(this->_initial_value);
+    this->interruptible(true);
   }
 
   /*----------------.

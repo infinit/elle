@@ -5,6 +5,7 @@
 #include <elle/Lazy.hh>
 #include <elle/format/hexadecimal.hh>
 
+#include <reactor/lockable.hh>
 #include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/socket.hh>
@@ -187,12 +188,20 @@ namespace reactor
 
     template <typename AsioSocket, typename EndPoint>
     PlainSocket<AsioSocket, EndPoint>::PlainSocket(
+      std::unique_ptr<AsioSocket> socket)
+      : Super()
+      , _socket(std::move(socket))
+      , _peer()
+    {}
+
+    template <typename AsioSocket, typename EndPoint>
+    PlainSocket<AsioSocket, EndPoint>::PlainSocket(
       std::unique_ptr<AsioSocket> socket,
       const EndPoint& peer,
-      DurationOpt timeout):
-        Super(),
-        _socket(std::move(socket)),
-        _peer(peer)
+      DurationOpt timeout)
+      : Super()
+      , _socket(std::move(socket))
+      , _peer(peer)
     {
       this->_connect(peer, timeout);
     }
@@ -200,10 +209,17 @@ namespace reactor
     template <typename AsioSocket, typename EndPoint>
     PlainSocket<AsioSocket, EndPoint>::PlainSocket(
       std::unique_ptr<AsioSocket> socket,
-      EndPoint const& peer):
-        Super(),
-        _socket(std::move(socket)),
-        _peer(peer)
+      EndPoint const& peer)
+      : Super()
+      , _socket(std::move(socket))
+      , _peer(peer)
+    {}
+
+    template <typename AsioSocket, typename EndPoint>
+    PlainSocket<AsioSocket, EndPoint>::PlainSocket(Self&& src)
+      : Super() // FIXME: this drops the IOStream buffers !
+      , _socket(std::move(src._socket))
+      , _peer(std::move(src._peer))
     {}
 
     template <typename AsioSocket, typename EndPoint>
@@ -288,16 +304,10 @@ namespace reactor
       ELLE_TRACE_SCOPE("%s: close", *this);
       typedef SocketSpecialization<AsioSocket> Spe;
       auto& socket = Spe::socket(*this->socket());
-      try
-      {
-        socket.cancel();
-      }
-      catch (boost::system::system_error const& e)
-      {
-        // If the socket was already closed, ignore.
-        if (e.code() != boost::asio::error::bad_descriptor)
-          throw;
-      }
+      boost::system::error_code e;
+      socket.cancel(e);
+      if (e && e != boost::asio::error::bad_descriptor)
+        throw boost::system::system_error(e);
       socket.close();
     }
 
@@ -711,20 +721,10 @@ namespace reactor
     void
     StreamSocket<AsioSocket, EndPoint>::write(elle::ConstWeakBuffer buffer)
     {
-      reactor::wait(this->_write_mutex);
+      Lock lock(this->_write_mutex);
       ELLE_TRACE_SCOPE("%s: write %s bytes", *this, buffer.size());
-      try
-      {
-        Write<Self, AsioSocket> write(*this, *this->socket(), buffer);
-        write.run();
-      }
-      catch (...)
-      {
-        auto e = std::current_exception();
-        this->_write_mutex.release();
-        std::rethrow_exception(e);
-      }
-      this->_write_mutex.release();
+      Write<Self, AsioSocket> write(*this, *this->socket(), buffer);
+      write.run();
     }
 
     /*------------------------.

@@ -48,7 +48,7 @@ namespace reactor
         ELLE_TRACE_SCOPE("%s: ended: cancelled", *this);
       else if (error)
       {
-        ELLE_TRACE_SCOPE("%s: ended with error: %s", *this, error.message());
+        ELLE_TRACE_SCOPE("%s: ended with error: %s (%s)", *this, error.message(), error);
         this->_handle_error(error);
       }
       else
@@ -61,7 +61,11 @@ namespace reactor
     SocketOperation<AsioSocket>::_handle_error(
       const boost::system::error_code& error)
     {
-      this->_raise<Exception>(error.message());
+      if (error == boost::asio::error::connection_refused
+          || error.value() == EADDRNOTAVAIL)
+        this->_raise<ConnectionRefused>();
+      else
+        this->_raise<Exception>(error.message());
     }
 
     template class SocketOperation<boost::asio::ip::tcp::socket>;

@@ -15,20 +15,26 @@
 
 #  define ELLE_LOG_LEVEL_SCOPE(Lvl, T, ...)                             \
     auto BOOST_PP_CAT(__trace_ctx_, __LINE__) =                         \
+     [&] {                                                              \
+       static bool enabled =                                            \
+         elle::log::detail::Send::_enabled(elle::log::Logger::Type::T,  \
+                                        elle::log::Logger::Level::Lvl,  \
+                                        _trace_component_);             \
+        return enabled;}()  ?                                           \
       ::elle::log::detail::Send                                         \
       (elle::log::Logger::Level::Lvl,                                   \
        elle::log::Logger::Type::T,                                      \
        true,                                                            \
        _trace_component_,                                               \
        __FILE__, __LINE__, ELLE_COMPILER_PRETTY_FUNCTION,               \
-       __VA_ARGS__)                                                     \
+       __VA_ARGS__) :  ::elle::log::detail::Send()
 
 #  define ELLE_LOG_LEVEL(Lvl, Type, ...)                                      \
-    if (ELLE_LOG_LEVEL_SCOPE(Lvl, Type, __VA_ARGS__))                         \
-      {                                                                       \
-        elle::unreachable();                                                  \
-      }                                                                       \
-    else                                                                      \
+  if (ELLE_LOG_LEVEL_SCOPE(Lvl, Type, __VA_ARGS__))                           \
+  {                                                                           \
+    elle::unreachable();                                                      \
+  }                                                                           \
+  else                                                                        \
 /**/
 # endif
 

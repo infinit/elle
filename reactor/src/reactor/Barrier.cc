@@ -41,6 +41,7 @@ namespace reactor
   void
   Barrier::close()
   {
+    this->_raise(std::exception_ptr());
     this->_opened = false;
     this->_changed(this->_opened);
     this->_inverted._signal();

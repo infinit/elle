@@ -7,6 +7,7 @@
 #include <vector>
 
 #include <elle/attribute.hh>
+#include <elle/filesystem/path.hh>
 #include <elle/serialization/binary.hh>
 #include <elle/serialization/json.hh>
 #include <elle/serialization/json/MissingKey.hh>
@@ -43,7 +44,9 @@ public:
 class OutPlace
 {
 public:
+  OutPlace() = default;
   OutPlace(OutPlace const&) = delete;
+  OutPlace(OutPlace&&) = default;
 
   void serialize(elle::serialization::Serializer&)
   {}
@@ -627,6 +630,35 @@ chrono()
   chrono_check<Format>(std::chrono::hours(609 * 24));
 }
 
+template <typename Format>
+static
+void
+path_check(boost::filesystem::path const& path)
+{
+  std::stringstream stream;
+  {
+    typename Format::SerializerOut output(stream);
+    output.serialize("path", path);
+  }
+  {
+    boost::filesystem::path res;
+    typename Format::SerializerIn input(stream);
+    input.serialize("path", res);
+    BOOST_CHECK(path == res);
+  }
+}
+
+template <typename Format>
+static
+void
+path()
+{
+  path_check<Format>("/tmp/elle");
+  path_check<Format>("../..");
+  path_check<Format>("./elle");
+  path_check<Format>(".");
+}
+
 template <bool Versioned>
 class Super
   : public elle::serialization::VirtuallySerializable<Versioned>
@@ -1192,7 +1224,7 @@ in_place()
   elle::serialization::json::SerializerIn input(stream);
 
   std::shared_ptr<InPlace> in;
-  std::shared_ptr<InPlace> out;
+  std::shared_ptr<OutPlace> out;
   input.serialize("in", in);
   input.serialize("out", out);
 }
@@ -1560,9 +1592,13 @@ exceptions()
   }
 }
 
-struct Convertable
+class Convertable
 {
-  int64_t i;
+public:
+  Convertable(int64_t i)
+    : _i(i)
+  {}
+  ELLE_ATTRIBUTE_R(int64_t, i);
 };
 
 struct PConvertable
@@ -1583,14 +1619,14 @@ namespace elle
       int64_t
       convert(Convertable const& c)
       {
-        return c.i;
+        return c.i();
       }
 
       static
       Convertable
       convert(int64_t const& i)
       {
-        return Convertable{i};
+        return Convertable(i);
       }
     };
 
@@ -1628,12 +1664,16 @@ convert()
   {
     typename Format::SerializerOut serializer(stream, false);
     serializer.serialize("convertable", c);
+    serializer.serialize("convertable_value", c);
     serializer.serialize("pconvertable", pc.get());
   }
   {
     typename Format::SerializerIn serializer(stream, false);
     auto r = serializer.template deserialize<Convertable>("convertable");
-    BOOST_CHECK_EQUAL(r.i, c.i);
+    BOOST_CHECK_EQUAL(r.i(), c.i());
+    Convertable rv{1641};
+    serializer.serialize("convertable_value", rv);
+    BOOST_CHECK_EQUAL(rv.i(), c.i());
     std::unique_ptr<PConvertable> pr(
       serializer.template deserialize<PConvertable*>("pconvertable"));
     BOOST_CHECK_EQUAL(pr->i, pc->i);
@@ -1671,6 +1711,7 @@ ELLE_TEST_SUITE()
   FOR_ALL_SERIALIZATION_TYPES(date);
   FOR_ALL_SERIALIZATION_TYPES(version);
   FOR_ALL_SERIALIZATION_TYPES(chrono);
+  FOR_ALL_SERIALIZATION_TYPES(path);
   {
     boost::unit_test::test_suite* subsuite = BOOST_TEST_SUITE("hierarchy");
     {

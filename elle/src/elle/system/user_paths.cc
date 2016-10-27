@@ -36,7 +36,7 @@ namespace elle
         boost::filesystem::path{os::getenv("HOMEPATH", "")}
         );
 #else
-      struct passwd* pw = ::getpwuid(getuid());
+      struct passwd* pw = ::getpwuid(geteuid());
       if (pw != nullptr && pw->pw_dir != nullptr)
         return {pw->pw_dir};
       else

@@ -1,6 +1,7 @@
 import drake
 import drake.cxx
 import drake.cxx.boost
+import drake.templating
 import drake.valgrind
 import sys
 import os
@@ -113,6 +114,7 @@ def configure(zlib_lib,
   openssl_libs = None
   # Libraries
   if ldap_libs:
+    ldap = True
     ldap_libs = drake.copy(ldap_libs, 'lib', strip_prefix = True)
     openssl_libs = drake.copy([openssl_lib_crypto, openssl_lib_ssl],
                              'lib', strip_prefix = True)
@@ -127,6 +129,15 @@ def configure(zlib_lib,
                               strip_prefix = True)
   if cxx_toolkit.os in [drake.os.macos, drake.os.ios]:
     cxx_config.framework_add('Foundation')
+
+  git = drake.git.Git()
+  major, minor, subminor = git.version().split('-')[0].split('.')
+  with drake.templating.Context(content = {
+      'major': major,
+      'minor': minor,
+      'subminor': subminor,
+  }):
+    drake.node('src/elle/serialization.cc.tmpl')
 
   cxx_config_libs = drake.cxx.Config(cxx_config)
   cxx_config_libs.visibility_hidden = True
@@ -146,6 +157,8 @@ def configure(zlib_lib,
     'src/elle/filesystem/TemporaryDirectory.hh',
     'src/elle/filesystem/TemporaryFile.cc',
     'src/elle/filesystem/TemporaryFile.hh',
+    'src/elle/filesystem/path.cc',
+    'src/elle/filesystem/path.hh',
     'src/elle/AtomicFile.cc',
     'src/elle/AtomicFile.hh',
     'src/elle/Backtrace.cc',
@@ -258,6 +271,8 @@ def configure(zlib_lib,
     'src/elle/system/self-path.hh',
     'src/elle/system/signal.cc',
     'src/elle/system/signal.hh',
+    'src/elle/system/unistd.hh',
+    'src/elle/system/unistd.cc',
     'src/elle/system/user_paths.hh',
     'src/elle/time.hh',
     'src/elle/types.hh',
@@ -284,7 +299,7 @@ def configure(zlib_lib,
       'src/elle/ldap.cc',
     )
   version = drake.node('src/elle/elle.hh')
-  CxxVersionGenerator(output = version, git = drake.git.Git(),
+  CxxVersionGenerator(output = version, git = git,
                       prefix = 'ELLE')
   sources.append(version)
 

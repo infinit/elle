@@ -33,7 +33,7 @@ namespace elle
     {
     public:
       LDAPClient(std::string const& url,
-                 Attr const& domain,
+                 std::string const& domain,
                  std::string const& user,
                  std::string const& password);
       LDAPClient(LDAPClient const& other) = delete;
