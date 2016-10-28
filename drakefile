@@ -525,7 +525,7 @@ def configure(cxx_toolkit = None,
     targets = ['%s/%s' % (curl_basename, f) for f in (
       'configure',
     )],
-    patches = ((drake.node('curl.patch'),1),),
+    patches = ((drake.node('.patches/curl.patch'),1),),
     patch_dir = curl_basename,
   )
   curl_configure = drake.node(curl_build / 'configure')
@@ -678,7 +678,7 @@ def configure(cxx_toolkit = None,
   )
   libarchive_patches = ()
   if cxx_toolkit.os is drake.os.android:
-      libarchive_patches = ((drake.node('libarchive_android.patch'), 0),)
+      libarchive_patches = ((drake.node('.patches/libarchive_android.patch'), 0),)
   drake.TarballExtractor(
     libarchive_tarball,
     targets = ['libarchive-%s/configure' % libarchive_version],
@@ -824,10 +824,10 @@ def configure(cxx_toolkit = None,
       fingerprint = '28f58b9a33469388302110562bdf6188',
     )
     boost_patches = [
-      (drake.Node('boost_asio_ssl.patch'), 1),
-      (drake.Node('boost_crypt.patch'), 1),
-      (drake.Node('boost_optional.patch'), 1),
-      (drake.Node('boost_datetime_facet.patch'), 1),
+      (drake.Node('.patches/boost_asio_ssl.patch'), 1),
+      (drake.Node('.patches/boost_crypt.patch'), 1),
+      (drake.Node('.patches/boost_optional.patch'), 1),
+      (drake.Node('.patches/boost_datetime_facet.patch'), 1),
     ]
     boost_locale_enabled = cxx_toolkit.os in [drake.os.windows]
     boost_attributes = {}
@@ -839,7 +839,7 @@ def configure(cxx_toolkit = None,
         'boostcpp.jam', # boost_build_osx.patch
       ]
       boost_patches += [
-        (drake.Node('boost_build_osx.patch'), 1),
+        (drake.Node('.patches/boost_build_osx.patch'), 1),
       ]
     drake.TarballExtractor(
       boost_tarball,
