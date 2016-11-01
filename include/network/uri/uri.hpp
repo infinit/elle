@@ -332,7 +332,6 @@ class uri {
    */
   string_view authority() const noexcept;
 
-#if !defined(NETWORK_URI_MSVC)
   /**
    * \brief Returns the URI as a std::basic_string object.
    * \return A URI string.
@@ -343,15 +342,6 @@ class uri {
       const Allocator &alloc = Allocator()) const {
     return std::basic_string<charT, traits, Allocator>(begin(), end());
   }
-#else
-#if !defined(DOXYGEN_SHOULD_SKIP_THIS)
-  template <class charT, class traits, class Allocator>
-  std::basic_string<charT, traits, Allocator> to_string(
-      const Allocator &alloc = Allocator()) const {
-    return std::basic_string<charT, traits, Allocator>(begin(), end());
-  }
-#endif  // !defined(DOXYGEN_SHOULD_SKIP_THIS)
-#endif  // !/defined(NETWORK_URI_MSVC)
 
   /**
    * \brief Returns the URI as a std::string object.
