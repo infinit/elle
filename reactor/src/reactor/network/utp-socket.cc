@@ -448,25 +448,25 @@ namespace reactor
     UTPSocket::Impl::peer() const
     {
       using namespace boost::asio::ip;
-      struct sockaddr_in addr;
+      struct sockaddr_in6 addr;
       socklen_t addrlen = sizeof(addr);
       if (!this->_socket ||
           utp_getpeername(this->_socket, (sockaddr*)&addr, &addrlen) == -1)
         return EndPoint(boost::asio::ip::address::from_string("0.0.0.0"), 0);
-      if (addr.sin_family == AF_INET)
+      if (addr.sin6_family == AF_INET)
       {
-        return EndPoint(address_v4(ntohl(addr.sin_addr.s_addr)),
-                        ntohs(addr.sin_port));
+        struct sockaddr_in* addr4 = (struct sockaddr_in*)&addr;
+        return EndPoint(address_v4(ntohl(addr4->sin_addr.s_addr)),
+                        ntohs(addr4->sin_port));
       }
-      else if (addr.sin_family == AF_INET6)
+      else if (addr.sin6_family == AF_INET6)
       {
-        struct sockaddr_in6* addr6 = (struct sockaddr_in6*)&addr;
         std::array<unsigned char, 16> addr_bytes {{0}};
-        memcpy(addr_bytes.data(), addr6->sin6_addr.s6_addr, 16);
-        return EndPoint(address_v6(addr_bytes), ntohs(addr6->sin6_port));
+        memcpy(addr_bytes.data(), addr.sin6_addr.s6_addr, 16);
+        return EndPoint(address_v6(addr_bytes), ntohs(addr.sin6_port));
       }
       else
-        elle::err("unknown protocol %s", addr.sin_family);
+        elle::err("unknown protocol %s", addr.sin6_family);
     }
 
     /*----------.
