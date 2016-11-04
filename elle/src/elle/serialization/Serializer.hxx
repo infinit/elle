@@ -433,6 +433,41 @@ namespace elle
       }
     };
 
+    template <typename T>
+    struct Serialize<std::shared_ptr<T>>
+    {
+      static
+      void
+      serialize(std::shared_ptr<T> const& ptr,
+                elle::serialization::SerializerOut& s)
+      {
+        s._serialize_option(
+          "",
+          bool(ptr),
+          [&]
+          {
+            Serializer::Details::_smart_virtual_switch<std::shared_ptr<T>, T>
+              (s, "SERIALIZE ANONYMOUS", elle::unconst(ptr));
+          });
+      }
+
+      static
+      std::shared_ptr<T>
+      deserialize(elle::serialization::SerializerIn& s)
+      {
+        std::shared_ptr<T> ptr;
+        s._serialize_option(
+          "",
+          true,
+          [&]
+          {
+            Serializer::Details::_smart_virtual_switch<std::shared_ptr<T>, T>
+              (s, "SERIALIZE ANONYMOUS", ptr);
+          });
+        return ptr;
+      }
+    };
+
     namespace
     {
       template <typename S, typename T>
@@ -638,20 +673,6 @@ namespace elle
       ELLE_TRACE_SCOPE("%s: serialize shared pointer to %s \"%s\"",
                        *this, elle::type_info<T>(), name);
       Details::serialize_named_option(*this, name, opt);
-    }
-
-    template <typename S, typename T>
-    void
-    Serializer::_serialize_anonymous(std::string const& name,
-                                     std::shared_ptr<T>& ptr)
-    {
-      Details::serialize_option(
-        *this, name, ptr,
-        [&]
-        {
-          Details::_smart_virtual_switch<std::shared_ptr<T>, T>
-            (*this, "SERIALIZE ANONYMOUS", ptr);
-        });
     }
 
     // Raw pointers
