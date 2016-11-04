@@ -567,7 +567,6 @@ def configure(zlib_lib,
     tests.extend([
       'attributes.cc',
       'log.cc',
-      'threading/monitor.cc',
       'threading/rw-mutex.cc',
     ])
   process_helpers = [
