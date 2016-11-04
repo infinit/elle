@@ -357,11 +357,6 @@ namespace elle
       static
       void
       serialize_named_option(Serializer& self, std::string const& name, T& opt);
-      template <typename T>
-      static
-      void
-      serialize_option(Serializer& self, std::string const& name,
-                       T& opt, std::function<void ()> const& f);
     };
 
     template <typename T>
@@ -662,30 +657,6 @@ namespace elle
           elle::SafeFinally leave([&] { self._leave(name); });
           self._serialize_anonymous(name, opt);
           filled = true;
-        });
-      if (!filled)
-      {
-        ELLE_DEBUG("reset option");
-        _details::option_reset(opt);
-      }
-    }
-
-    template <typename T>
-    void
-    Serializer::Details::serialize_option(Serializer& self,
-                                          std::string const& name,
-                                          T& opt,
-                                          std::function<void ()> const& f)
-    {
-      ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-      bool filled = false;
-      self._serialize_option(
-        name,
-        bool(opt),
-        [&]
-        {
-          filled = true;
-          f();
         });
       if (!filled)
       {
