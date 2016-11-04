@@ -187,11 +187,24 @@ namespace elle
       set_context(Context const& context);
       ELLE_ATTRIBUTE_R(Context, context);
 
+    /*------------.
+    | Enter/leave |
+    `------------*/
     public:
-      bool
+      class Entry
+      {
+      public:
+        ~Entry();
+        operator bool() const;
+      private:
+        Entry(Serializer& s, std::string const& name);
+        friend class Serializer;
+        ELLE_ATTRIBUTE(Serializer&, serializer);
+        ELLE_ATTRIBUTE(std::string const&, name);
+        ELLE_ATTRIBUTE(bool, entered);
+      };
+      Entry
       enter(std::string const& name);
-      void
-      leave(std::string const& name);
     protected:
       virtual
       bool

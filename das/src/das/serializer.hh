@@ -83,11 +83,8 @@ namespace das
               O const& o,
               elle::serialization::SerializerOut& s)
     {
-      if (s.enter(name))
-      {
+      if (auto entry = s.enter(name))
         serialize(o, s);
-        s.leave(name);
-      }
     }
   };
 

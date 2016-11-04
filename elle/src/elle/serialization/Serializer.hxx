@@ -466,16 +466,11 @@ namespace elle
     void
     Serializer::serialize(std::string const& name, T& v)
     {
-      ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-      ELLE_TRACE_SCOPE("%s: serialize \"%s\"", *this, name);
       static_assert(
         !std::is_base_of<VirtuallySerializableBase, T>::value,
         "serialize VirtuallySerializable objects through a pointer type");
-      if (this->_enter(name))
-      {
-        elle::SafeFinally leave([&] { this->_leave(name); });
+      if (auto entry = this->enter(name))
         this->_serialize_anonymous<S>(name, v);
-      }
     }
 
     template <typename S, typename T>

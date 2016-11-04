@@ -2,6 +2,8 @@
 #include <elle/serialization/SerializerIn.hh>
 #include <elle/serialization/SerializerOut.hh>
 
+ELLE_LOG_COMPONENT("elle.serialization.Serializer");
+
 namespace elle
 {
   namespace serialization
@@ -16,16 +18,33 @@ namespace elle
       , _versions(std::move(versions))
     {}
 
-    bool
-    Serializer::enter(std::string const& name)
+    /*--------------.
+    | Enter / leave |
+    `--------------*/
+
+    Serializer::Entry::Entry(Serializer& s, std::string const& name)
+      : _serializer(s)
+      , _name(name)
+      , _entered(this->_serializer._enter(name))
     {
-      return this->_enter(name);
+      ELLE_TRACE_SCOPE("%s: serialize \"%s\"", this, name);
     }
 
-    void
-    Serializer::leave(std::string const& name)
+    Serializer::Entry::~Entry()
     {
-      return this->_leave(name);
+      if (this->_entered)
+        this->_serializer._leave(this->_name);
+    }
+
+    Serializer::Entry::operator bool() const
+    {
+      return this->_entered;
+    }
+
+    Serializer::Entry
+    Serializer::enter(std::string const& name)
+    {
+      return Entry(*this, name);
     }
 
     bool
