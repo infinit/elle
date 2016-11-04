@@ -501,6 +501,27 @@ namespace elle
       }
     };
 
+    template <>
+    struct Serialize<std::exception_ptr>
+    {
+      static
+      void
+      serialize(std::exception_ptr e,
+                elle::serialization::SerializerOut& s)
+      {
+        s._serialize_anonymous_exception("", e);
+      }
+
+      static
+      std::exception_ptr
+      deserialize(elle::serialization::SerializerIn& s)
+      {
+        std::exception_ptr e;
+        s._serialize_anonymous_exception("", e);
+        return e;
+      }
+    };
+
     namespace
     {
       template <typename S, typename T>
@@ -720,13 +741,6 @@ namespace elle
       ELLE_LOG_COMPONENT("elle.serialization.Serializer");
       ELLE_TRACE_SCOPE("%s: serialize raw pointer \"%s\"", *this, name);
       Details::serialize_named_option(*this, name, opt);
-    }
-    template <typename S>
-    typename std::enable_if<std::is_same<S, void>::value, void>::type
-    Serializer::_serialize_anonymous(std::string const& name,
-                                     std::exception_ptr& e)
-    {
-      this->_serialize_anonymous_exception(name, e);
     }
 
     /*------.
