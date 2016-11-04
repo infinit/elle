@@ -398,6 +398,7 @@ namespace std
   public:
     elle::Buffer::Size operator()(elle::ConstWeakBuffer const& buffer) const;
   };
+
   template<>
   struct hash<elle::Buffer>
   {
