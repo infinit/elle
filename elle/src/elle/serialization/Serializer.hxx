@@ -398,6 +398,41 @@ namespace elle
       }
     };
 
+    template <typename T, typename D>
+    struct Serialize<std::unique_ptr<T, D>>
+    {
+      static
+      void
+      serialize(std::unique_ptr<T, D> const& ptr,
+                elle::serialization::SerializerOut& s)
+      {
+        s._serialize_option(
+          "",
+          bool(ptr),
+          [&]
+          {
+            Serializer::Details::_smart_virtual_switch<std::unique_ptr<T, D>, T>
+              (s, "SERIALIZE ANONYMOUS", elle::unconst(ptr));
+          });
+      }
+
+      static
+      std::unique_ptr<T, D>
+      deserialize(elle::serialization::SerializerIn& s)
+      {
+        std::unique_ptr<T, D> ptr;
+        s._serialize_option(
+          "",
+          true,
+          [&]
+          {
+            Serializer::Details::_smart_virtual_switch<std::unique_ptr<T, D>, T>
+              (s, "SERIALIZE ANONYMOUS", ptr);
+          });
+        return ptr;
+      }
+    };
+
     namespace
     {
       template <typename S, typename T>
@@ -591,20 +626,6 @@ namespace elle
       ELLE_LOG_COMPONENT("elle.serialization.Serializer");
       ELLE_TRACE_SCOPE("%s: serialize unique pointer \"%s\"", *this, name);
       Details::serialize_named_option(*this, name, opt);
-    }
-
-    template <typename S, typename T, typename D>
-    void
-    Serializer::_serialize_anonymous(std::string const& name,
-                                     std::unique_ptr<T, D>& ptr)
-    {
-      Details::serialize_option(
-        *this, name, ptr,
-        [&]
-        {
-          Details::_smart_virtual_switch<std::unique_ptr<T, D>, T>
-            (*this, "SERIALIZE ANONYMOUS", ptr);
-        });
     }
 
     // std::shared_ptr
