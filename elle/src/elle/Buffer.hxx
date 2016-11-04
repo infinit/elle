@@ -110,6 +110,10 @@ namespace elle
   {
   private:
     std::istream* _istream;
+    using Self = InputBufferArchive;
+
+    explicit
+    InputBufferArchive(std::istream* istream);
 
   public:
     explicit
@@ -130,6 +134,10 @@ namespace elle
   {
   private:
     std::ostream* _ostream;
+    using Self = OutputBufferArchive;
+
+    explicit
+    OutputBufferArchive(std::ostream* ostream);
 
   public:
     explicit

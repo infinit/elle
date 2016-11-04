@@ -750,21 +750,23 @@ namespace elle
 
   ///////////////////////////////////////////////////////////////////////////
 
-  InputBufferArchive::InputBufferArchive(ConstWeakBuffer const& buffer):
-    serialize::InputBinaryArchive(
-      *(_istream = new IOStream(new InputStreamBuffer<ConstWeakBuffer>(buffer)))
-    )
+  InputBufferArchive::InputBufferArchive(std::istream* istream)
+    // A convoluted initialization of both the super class and
+    // _istream because we want to pass _stream to the super class,
+    // but it's initialized after.
+    : serialize::InputBinaryArchive(*(_istream = istream))
   {}
 
-  InputBufferArchive::InputBufferArchive(Buffer const& buffer):
-    serialize::InputBinaryArchive(
-      *(_istream = new IOStream(new InputStreamBuffer<Buffer>(buffer)))
-    )
+  InputBufferArchive::InputBufferArchive(ConstWeakBuffer const& buffer)
+    : Self(new IOStream(new InputStreamBuffer<ConstWeakBuffer>(buffer)))
   {}
 
-  InputBufferArchive::InputBufferArchive(InputBufferArchive&& other):
-    serialize::InputBinaryArchive(*_istream),
-    _istream(other._istream)
+  InputBufferArchive::InputBufferArchive(Buffer const& buffer)
+    : Self(new IOStream(new InputStreamBuffer<Buffer>(buffer)))
+  {}
+
+  InputBufferArchive::InputBufferArchive(InputBufferArchive&& other)
+    : Self(other._istream)
   {
     other._istream = nullptr;
   }
@@ -841,19 +843,21 @@ namespace elle
   }
   ///////////////////////////////////////////////////////////////////////////
 
-  OutputBufferArchive::OutputBufferArchive(Buffer& buffer):
-    serialize::OutputBinaryArchive(
-      *(_ostream = new IOStream(new OutputStreamBuffer<Buffer>(buffer)))
-    )
+  OutputBufferArchive::OutputBufferArchive(std::ostream* ostream)
+    // Read the comment of InputBufferArchive::InputBufferArchive.
+    : serialize::OutputBinaryArchive(*(_ostream = ostream))
   {
     ELLE_DEBUG("create OutputBufferArchive %s stream %s", this, _ostream);
   }
 
-  OutputBufferArchive::OutputBufferArchive(OutputBufferArchive&& other):
-    serialize::OutputBinaryArchive(*_ostream),
-    _ostream(other._ostream)
+  OutputBufferArchive::OutputBufferArchive(Buffer& buffer)
+    : Self(new IOStream(new OutputStreamBuffer<Buffer>(buffer)))
+  {}
+
+  OutputBufferArchive::OutputBufferArchive(OutputBufferArchive&& other)
+    : Self(other._ostream)
   {
-    ELLE_DEBUG("move OutputBufferArchive %s stream %s", this, _ostream);
+    ELLE_DEBUG("moved OutputBufferArchive %s stream %s", this, _ostream);
     other._ostream = nullptr;
   }
 

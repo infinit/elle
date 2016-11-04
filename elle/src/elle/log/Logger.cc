@@ -112,7 +112,7 @@ namespace elle
     }
 
     Logger::Logger(std::string const& log_level)
-      : _indentation(new PlainIndentation)
+      : _indentation(std::make_unique<PlainIndentation>())
       , _time_universal(false)
       , _time_microsec(false)
       , _component_patterns()
