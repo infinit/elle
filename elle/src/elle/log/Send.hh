@@ -16,7 +16,7 @@ namespace elle
 
     /// Here the simplest type possible is used (.rodata-located) so
     /// as to make sure that its initialization will always take place
-    /// before the other global variables which construction may require
+    /// before the other global variables whose construction may require
     /// logging.
     namespace detail
     {
@@ -61,7 +61,7 @@ namespace elle
                    unsigned int line,
                    char const* function,
                    const std::string& msg);
-        unsigned int* _indentation;
+        unsigned int* _indentation = nullptr;
       };
 
       template <typename... Args>
