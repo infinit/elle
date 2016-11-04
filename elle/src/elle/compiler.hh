@@ -18,6 +18,11 @@
 #  define ELLE_COMPILER_ALIGN(Alignment) __attribute__ ((aligned(Alignment)))
 # endif
 
+# if defined(ELLE_DISABLE_VISIBILITY)
+#  undef ELLE_API
+#  define ELLE_API
+# endif
+
 # if defined(__GNUC__) && !defined(__clang__)
 #  define GCC_VERSION_LTE(Major, Minor)                                 \
   (__GNUC__) < Major || (__GNUC__) == Major && (__GNUC_MINOR__) <= Minor

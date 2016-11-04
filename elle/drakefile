@@ -40,6 +40,7 @@ def configure(zlib_lib,
               ldap_config = None,
               openssl_lib_crypto = None,
               openssl_lib_ssl = None,
+              symbol_visibility = True
             ):
 
   global config, lib_static, lib_dynamic, library, library_zlib
@@ -140,7 +141,9 @@ def configure(zlib_lib,
     drake.node('src/elle/serialization.cc.tmpl')
 
   cxx_config_libs = drake.cxx.Config(cxx_config)
-  cxx_config_libs.visibility_hidden = True
+  cxx_config_libs.visibility_hidden = not symbol_visibility
+  if not cxx_config_libs.visibility_hidden:
+    cxx_config.define('ELLE_DISABLE_VISIBILITY')
 
   sources = drake.nodes(
     'src/elle/bytes.hh',
