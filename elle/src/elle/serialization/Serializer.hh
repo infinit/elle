@@ -355,9 +355,6 @@ namespace elle
       template <typename S = void, typename T>
       void
       _serialize_anonymous(std::string const& name, std::shared_ptr<T>& v);
-      template <typename S = void, typename T>
-      void
-      _serialize_anonymous(std::string const& name, boost::optional<T>& opt);
       template <typename S = void>
       typename std::enable_if<std::is_same<S, void>::value, void>::type
       _serialize_anonymous(std::string const& name, std::exception_ptr& e);

@@ -364,6 +364,40 @@ namespace elle
                        T& opt, std::function<void ()> const& f);
     };
 
+    template <typename T>
+    struct Serialize<boost::optional<T>>
+    {
+      static
+      void
+      serialize(boost::optional<T> const& o,
+                elle::serialization::SerializerOut& s)
+      {
+        s._serialize_option(
+          "",
+          bool(o),
+          [&]
+          {
+            s._serialize_anonymous("", elle::unconst(*o));
+          });
+      }
+
+      static
+        boost::optional<T>
+        deserialize(elle::serialization::SerializerIn& s)
+      {
+        boost::optional<T> res;
+        s._serialize_option(
+          "",
+          false,
+          [&]
+          {
+            res.emplace(Serializer::Details::deserialize<T>(
+                          static_cast<SerializerIn&>(s), 42));
+          });
+        return res;
+      }
+    };
+
     namespace
     {
       template <typename S, typename T>
@@ -545,24 +579,6 @@ namespace elle
       ELLE_LOG_COMPONENT("elle.serialization.Serializer");
       ELLE_TRACE_SCOPE("%s: serialize option \"%s\"", *this, name);
       Details::serialize_named_option(*this, name, opt);
-    }
-
-    template <typename S, typename T>
-    void
-    Serializer::_serialize_anonymous(std::string const& name,
-                                     boost::optional<T>& opt)
-    {
-      Details::serialize_option(
-        *this, name, opt,
-        [&]
-        {
-          if (this->_out())
-
-            this->_serialize_anonymous(name, *opt);
-          else
-            opt.emplace(
-              Details::deserialize<T>(static_cast<SerializerIn&>(*this), 42));
-        });
     }
 
     // std::unique_ptr
