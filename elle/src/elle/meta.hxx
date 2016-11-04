@@ -13,10 +13,10 @@ namespace elle
     `------*/
 
     template <typename ... Elts>
-    template <template <typename ...> class T>
+    template <template <typename ...> class T, typename ... Args>
     struct List<Elts...>::apply
     {
-      typedef T<Elts...> type;
+      typedef T<Args..., Elts...> type;
     };
 
     /*-------.

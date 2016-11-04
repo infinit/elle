@@ -15,6 +15,9 @@ namespace list
     static_assert(std::is_same<typename l::apply<res>::type,
                                res<int, float, double>>::value,
                   "list::apply yielded the wrong type");
+    static_assert(std::is_same<typename l::apply<res, void>::type,
+                               res<void, int, float, double>>::value,
+                  "list::apply yielded the wrong type");
   }
 
   namespace filter

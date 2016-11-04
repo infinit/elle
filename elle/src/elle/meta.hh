@@ -8,8 +8,8 @@ namespace elle
     template <typename ... Elts>
     struct List
     {
-      /// T<Elts...>
-      template <template <typename ...> class T>
+      /// T<Args ..., Elts...>
+      template <template <typename ...> class T, typename ... Args>
       struct
       apply;
 
