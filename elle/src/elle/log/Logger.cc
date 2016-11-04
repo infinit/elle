@@ -38,7 +38,6 @@ namespace elle
         : _indentation()
       {}
 
-      virtual
       unsigned int&
       indentation() override
       {
@@ -47,14 +46,12 @@ namespace elle
         return *this->_indentation;
       }
 
-      virtual
       void
       indent() override
       {
         this->indentation() += 1;
       }
 
-      virtual
       void
       unindent() override
       {
@@ -62,7 +59,6 @@ namespace elle
         this->indentation() -= 1;
       }
 
-      virtual
       std::unique_ptr<Indentation>
       clone() override
       {
@@ -113,7 +109,7 @@ namespace elle
       else
         throw elle::Exception(
           elle::sprintf("invalid log level: %s", level));
-  }
+    }
 
     Logger::Logger(std::string const& log_level)
       : _indentation(new PlainIndentation)
@@ -127,9 +123,7 @@ namespace elle
       // FIXME: resets indentation
       elle::Plugin<Indenter>::hook_added().connect(
         [this] (Indenter&) { this->_setup_indentation(); });
-      std::string levels_str(log_level);
-      if (elle::os::inenv("ELLE_LOG_LEVEL"))
-        levels_str = elle::os::getenv("ELLE_LOG_LEVEL", "");
+      auto levels_str = elle::os::getenv("ELLE_LOG_LEVEL", log_level);
       if (!levels_str.empty())
       {
         std::vector<std::string> levels;
