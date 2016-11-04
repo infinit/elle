@@ -22,16 +22,14 @@ namespace elle
     class OptionHelper
     {
     public:
+      using Self = OptionHelper;
       OptionHelper()
-        : _index(-1)
       {}
 
-      OptionHelper(OptionHelper<Size, Align, Index, Types...>&&)
-        : _index(-1)
+      OptionHelper(Self&&)
       {}
 
-      OptionHelper(OptionHelper<Size, Align, Index, Types...> const&)
-        : _index(-1)
+      OptionHelper(Self const&)
       {}
 
       void
@@ -69,7 +67,8 @@ namespace elle
       static_assert(Align > 0, "alignment should not be null");
       ELLE_COMPILER_ALIGN(Align)
       char _buffer[size];
-      int _index;
+      /// Initialized to empty state.
+      int _index = -1;
     };
 
     template <std::size_t Size,
@@ -114,7 +113,6 @@ namespace elle
         if (source._index == Index)
         {
           char* buffer = source._buffer;
-          // FIXME: if this throws, the Option is UB
           new (this->_buffer) Head(reinterpret_cast<Head&&>(*buffer));
           this->_index = Index;
         }
@@ -129,7 +127,6 @@ namespace elle
         if (source._index == Index)
         {
           char const* buffer = source._buffer;
-          // FIXME: if this throws, the Option is UB
           new (this->_buffer) Head(reinterpret_cast<Head const&>(*buffer));
           this->_index = Index;
         }

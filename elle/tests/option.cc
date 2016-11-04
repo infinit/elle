@@ -9,24 +9,18 @@ class Count
 public:
   Count(int& count)
     : count(count)
-    , dec(true)
-    , destroyed(false)
   {
     ++count;
   }
 
   Count(Count&& source)
     : count(source.count)
-    , dec(true)
-    , destroyed(false)
   {
     source.dec = false;
   }
 
   Count(Count const& source)
     : count(source.count)
-    , dec(true)
-    , destroyed(false)
   {
     ++count;
   }
@@ -40,9 +34,8 @@ public:
   }
 
   int& count;
-  bool dec;
-  bool destroyed;
-
+  bool dec = true;
+  bool destroyed = false;
 };
 
 static
@@ -363,10 +356,17 @@ exceptions()
   int count = 0;
   {
     O o{Count(count)};
+    BOOST_CHECK_EQUAL(o.is<Count>(), true);
     BOOST_CHECK_EQUAL(count, 1);
+
     O thrower{Thrower()};
     thrower.get<Thrower>().t = true;
     BOOST_CHECK_THROW(o = std::move(thrower), elle::Error);
+
+    // o in unknown state.
+    BOOST_CHECK_EQUAL(o.is<Count>(), false);
+    BOOST_CHECK_EQUAL(o.is<Thrower>(), false);
+
     BOOST_CHECK_EQUAL(count, 0);
   }
   BOOST_CHECK_EQUAL(count, 0);
