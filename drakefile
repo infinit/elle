@@ -662,7 +662,7 @@ def configure(cxx_toolkit = None,
   ## LibArchive ##
   ## ---------- ##
 
-  libarchive_version = '3.1.2'
+  libarchive_version = '3.2.2'
   libarchive_basename = 'libarchive-%s' % libarchive_version
   libarchive_tarball = \
     drake.node('libarchive/%s.tar.gz' % libarchive_basename)
@@ -674,7 +674,7 @@ def configure(cxx_toolkit = None,
   drake.HTTPDownload(
     libarchive_url,
     libarchive_tarball,
-    fingerprint = 'efad5a503f66329bb9d2f4308b5de98a',
+    fingerprint = '1ec00b7dcaf969dd2a5712f85f23c764',
   )
   libarchive_patches = ()
   if cxx_toolkit.os is drake.os.android:
