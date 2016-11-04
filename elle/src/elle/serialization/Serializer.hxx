@@ -468,6 +468,39 @@ namespace elle
       }
     };
 
+    template <typename T>
+    struct Serialize<T*>
+    {
+      static
+      void
+      serialize(T* ptr,
+                elle::serialization::SerializerOut& s)
+      {
+        s._serialize_option(
+          "",
+          bool(ptr),
+          [&]
+          {
+            Serializer::Details::_smart_virtual_switch<T*, T>(s, "", ptr);
+          });
+      }
+
+      static
+      T*
+      deserialize(elle::serialization::SerializerIn& s)
+      {
+        T* ptr = nullptr;
+        s._serialize_option(
+          "",
+          true,
+          [&]
+          {
+            Serializer::Details::_smart_virtual_switch<T*, T>(s, "", ptr);
+          });
+        return ptr;
+      }
+    };
+
     namespace
     {
       template <typename S, typename T>
@@ -688,20 +721,6 @@ namespace elle
       ELLE_TRACE_SCOPE("%s: serialize raw pointer \"%s\"", *this, name);
       Details::serialize_named_option(*this, name, opt);
     }
-
-    template <typename S, typename T>
-    typename std::enable_if<
-      !_details::has_serialize_convert_api<T*, S>(), void>::type
-    Serializer::_serialize_anonymous(std::string const& name, T*& ptr)
-    {
-      Details::serialize_option(
-        *this, name, ptr,
-        [&]
-        {
-          Details::_smart_virtual_switch<T*, T>(*this, name, ptr);
-        });
-    }
-
     template <typename S>
     typename std::enable_if<std::is_same<S, void>::value, void>::type
     Serializer::_serialize_anonymous(std::string const& name,
