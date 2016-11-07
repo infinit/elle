@@ -20,29 +20,26 @@ namespace elle
 
       inline
       Send::Send()
-        : _proceed(false)
+        : _active(false)
       {}
 
       template <typename... Args>
       Send::Send(elle::log::Logger::Level level,
                  elle::log::Logger::Type type,
                  bool indent,
-                 elle::String const& component,
+                 std::string const& component,
                  char const* file,
                  unsigned int line,
                  char const* function,
                  char const* fmt,
                  Args&&... args)
-        : _proceed(true)
+        : _active(true)
       {
         bool debug = debug_formats();
         try
         {
-          if (this->_proceed)
-            this->_send(level, type, indent, component, file, line, function,
-                        elle::sprintf(fmt, std::forward<Args>(args)...));
-          else if (debug)
-            elle::sprintf(fmt, std::forward<Args>(args)...);
+          this->_send(level, type, indent, component, file, line, function,
+                      elle::sprintf(fmt, std::forward<Args>(args)...));
         }
         // Catching ellipsis to avoid header dependencies. AFAICT only
         // elle::print can throw, and it only throws elle::Error.
@@ -71,7 +68,7 @@ namespace elle
       inline
       Send::~Send()
       {
-        if (_proceed)
+        if (_active)
           this->_unindent();
       }
     }

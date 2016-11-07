@@ -1,15 +1,14 @@
-#include <elle/Exception.hh>
-#include <elle/log/Send.hh>
-#include <elle/log/TextLogger.hh>
-#include <elle/log/SysLogger.hh>
-#include <elle/system/getpid.hh>
-#include <elle/printf.hh>
-#include <elle/types.hh>
-
 #include <fstream>
 #include <mutex>
 
+#include <elle/Exception.hh>
+#include <elle/log/Send.hh>
+#include <elle/log/SysLogger.hh>
+#include <elle/log/TextLogger.hh>
 #include <elle/os/environ.hh>
+#include <elle/printf.hh>
+#include <elle/system/getpid.hh>
+#include <elle/types.hh>
 
 namespace elle
 {
@@ -79,11 +78,11 @@ namespace elle
     {
 
       bool
-      Send::_enabled(elle::log::Logger::Type,
-                     elle::log::Logger::Level level,
-                     elle::String const& component)
+      Send::active(elle::log::Logger::Level level,
+                   elle::log::Logger::Type,
+                   std::string const& component)
       {
-        return level <= logger().component_enabled(component);
+        return logger().component_is_active(component, level);
       }
 
       void
@@ -98,7 +97,7 @@ namespace elle
       {
         logger().message(level, type, component, msg, file, line, function);
         if (indent)
-          this->_indent();
+          this->_indent(component);
       }
 
       /*------------.
@@ -106,9 +105,11 @@ namespace elle
       `------------*/
 
       void
-      Send::_indent()
+      Send::_indent(std::string const& component)
       {
-        this->_indentation = &logger().indentation();
+        auto& l = logger();
+        l.component_push(component);
+        this->_indentation = &l.indentation();
         ++*this->_indentation;
       }
 
@@ -117,6 +118,7 @@ namespace elle
       {
         if (this->_indentation)
         {
+          logger().component_pop();
           --*this->_indentation;
           this->_indentation = nullptr;
         }
