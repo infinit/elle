@@ -177,6 +177,10 @@ namespace elle
 
     private:
       /// Nested components.
+      ///
+      /// Yes, a stack of (copies) of strings.  Cannot use
+      /// reference_wrapper, as there is no guarantee that the
+      /// component names outlive us.
       using component_stack_t = std::vector<std::string>;
 
       /// Rule about components.
@@ -212,8 +216,9 @@ namespace elle
 
       /// Translation of $ELLE_LOG_LEVEL into ordered filters.
       std::vector<Filter> _component_patterns;
-      /// A cache of the decoding of $ELLE_LOG_LEVEL:
-      /// component-name => Level.
+      /// A cache of the decoding of $ELLE_LOG_LEVEL: component-name
+      /// => Level.  Filled only for unconditional levels (i.e., when
+      /// $ELLE_LOG_LEVEL uses no context specification).
       std::unordered_map<std::string, Level> _component_levels;
       ELLE_ATTRIBUTE_R(unsigned int, component_max_size);
       /// Nested components.

@@ -284,14 +284,27 @@ namespace elle
     {
       std::lock_guard<std::recursive_mutex> lock(_mutex);
       auto res = Level::log;
-      for (auto const& filter: _component_patterns)
-        if (filter.match(name, _component_stack))
-          res = filter.level;
 
-      if (Level::none < res)
-        this->_component_max_size =
-          std::max(this->_component_max_size,
-                   static_cast<unsigned int>(name.size()));
+      auto i = _component_levels.find(name);
+      if (i == _component_levels.cend())
+      {
+        for (auto const& filter: _component_patterns)
+          if (filter.match(name))
+          {
+            if (filter.match(_component_stack))
+              res = filter.level;
+            // If enabled unconditionally, cache it.
+            if (filter.context.empty())
+              _component_levels[name] = res;
+          }
+
+        if (Level::none < res)
+          this->_component_max_size =
+            std::max(this->_component_max_size,
+                     static_cast<unsigned int>(name.size()));
+      }
+      else
+        res = i->second;
       return res;
     }
 
