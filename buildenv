@@ -277,7 +277,7 @@ class State:
       return None
 
   def garbage_collect_build_trees(self):
-    delay = datetime.timedelta(weeks = 1)
+    delay = datetime.timedelta(days = 3)
     cleaned = []
     state = self.__state
     trees = state.setdefault('build-trees', {})
