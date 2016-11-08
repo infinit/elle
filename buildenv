@@ -400,6 +400,6 @@ except CLError as e:
         file = sys.stderr)
   exit(1)
 except Exception as e:
-  print('%s: fatar error: %s' % (sys.argv[0], e), file = sys.stderr)
+  print('%s: fatal error: %s' % (sys.argv[0], e), file = sys.stderr)
   raise
   exit(1)
