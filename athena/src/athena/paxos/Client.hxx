@@ -244,6 +244,11 @@ namespace athena
       return this->get_quorum().first;
     }
 
+    class QuorumReached
+      : public std::exception
+    {
+    };
+
     template <typename T, typename Version, typename CId>
     std::pair<boost::optional<T>, typename Client<T, Version, CId>::Quorum>
     Client<T, Version, CId>::get_quorum()
@@ -256,26 +261,34 @@ namespace athena
       ELLE_DUMP("quorum: %s", q);
       auto reached = 0;
       boost::optional<typename Client<T, Version, CId>::Accepted> res;
-      reactor::for_each_parallel(
-        this->_peers,
-        [&] (std::unique_ptr<Peer> const& peer) -> void
-        {
-          try
+      try
+      {
+        reactor::for_each_parallel(
+          this->_peers,
+          [&] (std::unique_ptr<Peer> const& peer) -> void
           {
-            ELLE_DEBUG_SCOPE("%s: get from %s", *this, *peer);
-            auto accepted = peer->get(q);
-            if (accepted)
-              if (!res || res->proposal < accepted->proposal)
-                res.emplace(std::move(accepted.get()));
-            ++reached;
-          }
-          catch (typename Peer::Unavailable const& e)
-          {
-            ELLE_TRACE("%s: peer %s unavailable: %s",
-                       *this, peer, e.what());
-          }
-        },
-        std::string("get quorum"));
+            try
+            {
+              ELLE_DEBUG_SCOPE("%s: get from %s", *this, *peer);
+              auto accepted = peer->get(q);
+              if (accepted)
+                if (!res || res->proposal < accepted->proposal)
+                  res.emplace(std::move(accepted.get()));
+              ++reached;
+              if (reached > (signed(q.size()) - 1) / 2)
+                throw QuorumReached();
+            }
+            catch (typename Peer::Unavailable const& e)
+            {
+              ELLE_TRACE("%s: peer %s unavailable: %s",
+                         *this, peer, e.what());
+            }
+          },
+          std::string("get quorum"));
+      }
+      catch (QuorumReached const&)
+      {
+      }
       this->_check_headcount(q, reached, true);
       typedef std::pair<boost::optional<T>, Quorum> Res;
       if (res)
