@@ -52,7 +52,6 @@ namespace elle
           return value.getReal();
         case json_spirit::Value::NULL_TYPE:
           return NullType();
-
         default:
           ELLE_ABORT("unknown JSON value type");
       }
@@ -147,6 +146,19 @@ namespace elle
       if (!json_spirit::read(stream, value))
         throw ParseError(elle::sprintf("JSON error"));
       auto res = from_spirit(value);
+      return res;
+    }
+
+    boost::any
+    read(std::string const& json)
+    {
+      std::stringstream s(json);
+      auto res = read(s);
+      {
+        std::string word;
+        if (s >> word)
+          elle::err("garbage at end of JSON value: %s", word);
+      }
       return res;
     }
 

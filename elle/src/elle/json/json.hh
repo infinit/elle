@@ -22,6 +22,9 @@ namespace elle
     boost::any
     read(std::istream& stream);
 
+    boost::any
+    read(std::string const& stream);
+
     void
     write(std::ostream& stream,
           boost::any const& any,
