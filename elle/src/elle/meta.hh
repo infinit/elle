@@ -42,6 +42,22 @@ namespace elle
     template<typename ... Args>
     List<Args...>
     list(Args ...);
+
+    /// { value = T[0] && ... && T[N]; }
+    template <typename ... T>
+    struct All;
+
+    template <>
+    struct All<>
+    {
+      static bool constexpr value = true;
+    };
+
+    template <typename Head, typename ... Tail>
+    struct All<Head, Tail...>
+    {
+      static bool constexpr value = Head::value && All<Tail...>::value;
+    };
   }
 }
 
