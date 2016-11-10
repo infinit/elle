@@ -285,13 +285,20 @@ namespace infinit
                         Padding const padding,
                         Oneway const oneway) const
       {
-        ELLE_DUMP("signature: %x", signature);
-        ELLE_DUMP("plain: %x", plain);
+        ELLE_TRACE_SCOPE("%s: verify buffer", this);
+        ELLE_DUMP("data: %s", plain);
+        ELLE_DUMP("signature: %s", signature);
+        return this->_verify(signature, plain, padding, oneway);
+      }
 
+      bool
+      PublicKey::_verify(elle::ConstWeakBuffer const& signature,
+                        elle::ConstWeakBuffer const& plain,
+                        Padding const padding,
+                        Oneway const oneway) const
+      {
         elle::IOStream _plain(plain.istreambuf());
-
-        return (this->verify(signature, _plain,
-                             padding, oneway));
+        return this->_verify(signature, _plain, padding, oneway);
       }
 #endif
 
@@ -301,8 +308,17 @@ namespace infinit
                         Padding const padding,
                         Oneway const oneway) const
       {
-        ELLE_DUMP("signature: %x", signature);
+        ELLE_TRACE_SCOPE("%s: verify stream", this);
+        ELLE_DUMP("signature: %s", signature);
+        return this->_verify(signature, plain, padding, oneway);
+      }
 
+      bool
+      PublicKey::_verify(elle::ConstWeakBuffer const& signature,
+                        std::istream& plain,
+                        Padding const padding,
+                        Oneway const oneway) const
+      {
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         types::EVP_PKEY_CTX context(
           context::create(this->_key.get(), ::EVP_PKEY_verify_init));

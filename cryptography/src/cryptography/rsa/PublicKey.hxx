@@ -247,7 +247,9 @@ ELLE_SERIALIZE_SPLIT_LOAD(infinit::cryptography::rsa::PublicKey,
 
 # else
 
+#  include <elle/Lazy.hh>
 #  include <elle/serialization/binary.hh>
+#  include <elle/serialization/json.hh>
 #  include <elle/utility/Move.hh>
 
 namespace infinit
@@ -271,7 +273,7 @@ namespace infinit
                         T const& o) const
       {
         auto data = this->_verify_data(signature, o);
-        return this->verify(data.first, data.second);
+        return this->_verify(data.first, data.second);
       }
 
       template <typename T>
@@ -282,7 +284,7 @@ namespace infinit
         return [self = this->shared_from_this(),
                 data = this->_verify_data(signature, o)]
         {
-          return self->verify(data.first, data.second);
+          return self->_verify(data.first, data.second);
         };
       }
 
@@ -292,7 +294,7 @@ namespace infinit
                               T const& o) const
       {
         ELLE_LOG_COMPONENT("infinit.cryptography.rsa.PublicKey");
-        ELLE_TRACE_SCOPE("%s: verify %s", *this, o);
+        ELLE_TRACE_SCOPE("%s: verify %s", this, o);
         elle::IOStream input(signature.istreambuf());
         auto version =
           elle::serialization::binary::deserialize<elle::Version>(input, false);
@@ -300,8 +302,15 @@ namespace infinit
                                           std::istreambuf_iterator<char>()});
         auto serialized =
           elle::serialization::binary::serialize(o, version, false);
-        ELLE_DUMP("version: %s", version);
-        ELLE_DUMP("serialization: %s", serialized);
+        ELLE_DUMP(
+          "data: %s",
+          elle::lazy([&] {
+              std::stringstream out;
+              elle::serialization::json::serialize(o, out, version, false, true);
+              return out.str();
+            }));
+        ELLE_DUMP("serialization version: %s", version);
+        ELLE_DUMP("serialized data: %s", serialized);
         ELLE_DUMP("signature: %s", s);
         return std::make_pair(std::move(s), std::move(serialized));
       }

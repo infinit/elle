@@ -122,7 +122,6 @@ namespace infinit
         encrypt(elle::ConstWeakBuffer const& plain,
                 Padding const padding = defaults::encryption_padding) const;
         /// Verify the given signature against the original plain text.
-        virtual
         bool
         verify(elle::ConstWeakBuffer const& signature,
                elle::ConstWeakBuffer const& plain,
@@ -136,6 +135,12 @@ namespace infinit
         std::function<bool ()>
         verify_async(elle::ConstWeakBuffer const& signature, T const& o) const;
       private:
+        virtual
+        bool
+        _verify(elle::ConstWeakBuffer const& signature,
+                elle::ConstWeakBuffer const& plain,
+                Padding const padding = defaults::signature_padding,
+                Oneway const oneway = defaults::oneway) const;
         template <typename T>
         std::pair<elle::Buffer, elle::Buffer>
         _verify_data(elle::ConstWeakBuffer const& signature,
@@ -143,7 +148,7 @@ namespace infinit
 
 # endif
       public:
-        /// Return true if the given signature matches the stream-based plain.
+        /// Whether the given signature matches the stream-based plain.
         bool
         verify(elle::ConstWeakBuffer const& signature,
                std::istream& plain,
@@ -155,6 +160,12 @@ namespace infinit
         /// Return the public key's length in bits.
         uint32_t
         length() const;
+      private:
+        bool
+        _verify(elle::ConstWeakBuffer const& signature,
+                std::istream& plain,
+                Padding const padding = defaults::signature_padding,
+                Oneway const oneway = defaults::oneway) const;
 
 # if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
         /*---------.
