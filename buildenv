@@ -5,6 +5,7 @@ import datetime
 import json
 import os.path
 import pickle
+import re
 import sh
 import shutil
 import sys
@@ -114,6 +115,12 @@ class State:
     parser.add_argument('-c', '--cleanup-build-trees',
                         action = 'store_true',
                         help = 'Garbage collect unused build trees',
+    )
+    parser.add_argument('-C', '--cleanup-threshold',
+                        type = int,
+                        default = 10,
+                        help = 'Minimum headroom (in GB) below which build'
+                        ' trees are cleaned',
     )
     parser.add_argument('-n', '--cache-namespace',
                         type = str,
@@ -276,20 +283,61 @@ class State:
     else:
       return None
 
+  def disk_space(self):
+    '''Available disk space in GB.'''
+    # GNU/Linux:
+    # $ df -h .
+    # Filesystem      Size  Used Avail Use% Mounted on
+    # none             60G  8.4G   48G  15% /
+    #
+    # Filesystem      Size  Used Avail Use% Mounted on
+    # /dev/vda1       158G  156G     0 100% /builds/infinit
+    #
+    # macOS:
+    # $ df -h .
+    # Filesystem   Size   Used  Avail Capacity   iused   ifree %iused  Mounted on
+    # /dev/disk1  465Gi  427Gi   37Gi    92% 112023900 9772194   92%   /
+    d = sh.df('-h', '.').rstrip()
+    avail = d.splitlines()[1].split()[3]
+    m = re.match(r'([\d.]+)(Gi?[BO]?)?', avail)
+    if m:
+      res = float(m.group(1))
+      print('disk_space: available space:', res)
+    else:
+      print('disk_space: cannot read available space:', d)
+      # Proceed anyway.
+      res = 100
+    return res
+
+
   def garbage_collect_build_trees(self):
-    delay = datetime.timedelta(days = 3)
+    '''Remove old build trees if we lack space.  Remove per day, starting
+    from 10d olds, down to 2d, stopping as soon as we have the desired
+    headroom.
+
+    Stopping at two days, not zero, means that we may have builds that
+    will fail because we lack space.  But we prefer this, as it sends
+    a signal for someone to pay attention to what is going on.  Had we
+    proceeded to 0d, we may not notice that the caching of build is
+    completely disabled.'''
+
     cleaned = []
     state = self.__state
     trees = state.setdefault('build-trees', {})
-    for b in list(trees):
-      tree = trees[b]
-      if datetime.datetime.utcnow() - tree['last_use'] > delay:
-        cleaned.append(b)
-        del trees[b]
-        try:
-          shutil.rmtree(tree['path'])
-        except FileNotFoundError:
-          pass
+    for days in range(10, 1, -1):
+      if self.__opts.cleanup_threshold <= self.disk_space():
+        break
+      print('cleaning builds older than', days, 'days')
+      delay = datetime.timedelta(days=days)
+      for b in list(trees):
+        tree = trees[b]
+        if datetime.datetime.utcnow() - tree['last_use'] > delay:
+          cleaned.append(b)
+          del trees[b]
+          try:
+            shutil.rmtree(tree['path'])
+          except FileNotFoundError:
+            pass
     return {
       'cleaned': cleaned,
     }
@@ -312,7 +360,7 @@ class State:
       sh.ssh(State.cache_url, 'lockfile-create', self.__path)
 
     def __exit__(self, t, v, tb):
-        sh.ssh(State.cache_url, 'lockfile-remove', self.__path)
+      sh.ssh(State.cache_url, 'lockfile-remove', self.__path)
 
   @property
   def cache_dir(self):
