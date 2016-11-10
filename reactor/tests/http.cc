@@ -524,6 +524,7 @@ protected:
   ELLE_ATTRIBUTE_RX(reactor::Barrier, serving);
 };
 
+#if !(BOOST_OS_WINDOWS)
 ELLE_TEST_SCHEDULED(interrupted)
 {
   ScheduledSilentHttpServer server;
@@ -548,6 +549,7 @@ ELLE_TEST_SCHEDULED(interrupted)
     reactor::sleep(500_ms); // FIXME: wait for Curl to read
   }
 }
+#endif
 
 ELLE_TEST_SCHEDULED(escaped_string)
 {
@@ -670,6 +672,7 @@ ELLE_TEST_SCHEDULED(download_progress)
   reactor::wait(t);
 }
 
+#if !(BOOST_OS_WINDOWS)
 ELLE_TEST_SCHEDULED(download_stall)
 {
   const int payload_length = 2000;
@@ -694,6 +697,7 @@ ELLE_TEST_SCHEDULED(download_stall)
   server.sem.release();
   server.sem.release();
 }
+#endif
 
 ELLE_TEST_SCHEDULED(query_string)
 {
@@ -812,14 +816,14 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(put_11_chunked), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(cookies), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(request_move), 0, valgrind(1));
-#if !(BOOST_OS_WINDOWS && BOOST_ARCH_X86_32)
+#if !(BOOST_OS_WINDOWS)
   // Fails inexplicably. Could be SJ/LJ exceptions on mingw32.
   suite.add(BOOST_TEST_CASE(interrupted), 0, valgrind(1));
 #endif
   suite.add(BOOST_TEST_CASE(escaped_string), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(no_header_answer), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(download_progress), 0, valgrind(10));
-#if !(BOOST_OS_WINDOWS && BOOST_ARCH_X86_32)
+#if !(BOOST_OS_WINDOWS)
   // Fails inexplicably. Could be SJ/LJ exceptions on mingw32.
   suite.add(BOOST_TEST_CASE(download_stall), 0, valgrind(40));
 #endif
