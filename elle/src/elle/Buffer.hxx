@@ -21,7 +21,7 @@ namespace elle
   `-------------*/
 
   template <typename T,
-            typename std::enable_if<std::is_integral<T>::value, int>::type>
+            std::enable_if_t<std::is_integral<T>::value, int>>
   Buffer::Buffer(T size)
     : _size(static_cast<Size>(size))
     , _capacity(size)

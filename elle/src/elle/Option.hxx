@@ -88,9 +88,9 @@ namespace elle
       OptionHelper() = default;
 
       template <typename T, typename A>
-      typename std::enable_if<
+      std::enable_if_t<
         std::is_same<typename std::remove_cv_reference<T>::type, Head>::value,
-        void>::type
+        void>
       _emplace(A&& value)
       {
         new (this->_buffer) Head(std::forward<A>(value));
@@ -98,9 +98,9 @@ namespace elle
       }
 
       template <typename T, typename A>
-      typename std::enable_if<
+      std::enable_if_t<
         !std::is_same<typename std::remove_cv_reference<T>::type, Head>::value,
-        void>::type
+        void>
       _emplace(A&& value)
       {
         this->Super::template _emplace<T>(std::forward<A>(value));

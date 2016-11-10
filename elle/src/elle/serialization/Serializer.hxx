@@ -95,7 +95,7 @@ namespace elle
       {};
 
       template <typename T>
-      typename std::enable_if<has_version_tag<T>(), elle::Version>::type
+      std::enable_if_t<has_version_tag<T>(), elle::Version>
       version_tag(boost::optional<Serializer::Versions> const& versions)
       {
         ELLE_LOG_COMPONENT("elle.serialization.Serializer");
@@ -115,7 +115,7 @@ namespace elle
       }
 
       template <typename T>
-      typename std::enable_if<!has_version_tag<T>(), elle::Version>::type
+      std::enable_if_t<!has_version_tag<T>(), elle::Version>
       version_tag(boost::optional<Serializer::Versions> const& versions)
       {
         ELLE_LOG_COMPONENT("elle.serialization.Serializer");
@@ -199,10 +199,10 @@ namespace elle
     public:
       template <typename P, typename T>
       static
-      typename std::enable_if<
+      std::enable_if_t<
         std::is_base_of<VirtuallySerializableBase, T>::value,
         void
-      >::type
+      >
       _smart_virtual_switch(
         Serializer& s,
         P& ptr)
@@ -245,10 +245,10 @@ namespace elle
 
       template <typename P, typename T>
       static
-      typename std::enable_if<
+      std::enable_if_t<
         !std::is_base_of<VirtuallySerializableBase, T>::value,
         void
-      >::type
+      >
       _smart_virtual_switch(
         Serializer& s,
         P& ptr)
@@ -263,10 +263,10 @@ namespace elle
 
       template <typename T, typename Serializer = void>
       static
-      typename std::enable_if<
+      std::enable_if_t<
         !std::is_base_of<boost::optional_detail::optional_tag, T>::value &&
         std::is_constructible<T, SerializerIn&, elle::Version const&>::value,
-        T>::type
+        T>
       deserialize(SerializerIn& self, int)
       {
         ELLE_LOG_COMPONENT("elle.serialization.Serializer");
@@ -283,10 +283,10 @@ namespace elle
 
       template <typename T, typename Serializer = void>
       static
-      typename std::enable_if<
+      std::enable_if_t<
         !std::is_base_of<boost::optional_detail::optional_tag, T>::value &&
         std::is_constructible<T, SerializerIn&>::value,
-        T>::type
+        T>
       deserialize(SerializerIn& self, int)
       {
         ELLE_LOG_COMPONENT("elle.serialization.Serializer");
@@ -315,7 +315,7 @@ namespace elle
 
       template <typename T, typename Serializer = void>
       static
-      typename std::enable_if<is_pair<T>::value, T>::type
+      std::enable_if_t<is_pair<T>::value, T>
       deserialize(SerializerIn& self, int)
       {
         typedef typename T::first_type T1;
@@ -353,8 +353,7 @@ namespace elle
 
       template <typename T, typename S = void>
       static
-      typename
-      std::enable_if<_details::has_serialize_functions_api<T, void>(), T>::type
+      std::enable_if_t<_details::has_serialize_functions_api<T, void>(), T>
       deserialize(SerializerIn& self, unsigned)
       {
         ELLE_LOG_COMPONENT("elle.serialization.Serializer");
@@ -378,11 +377,11 @@ namespace elle
       // This overload initializes PODs with "= {}" to avoid warnings.
       template <typename T, typename S = void>
       static
-      typename std::enable_if<
+      std::enable_if_t<
         std::is_pod<T>::value &&
         !_details::has_serialize_convert_api<T, void>() &&
         !_details::has_serialize_functions_api<T, void>(),
-        T>::type
+        T>
       deserialize(SerializerIn& self, unsigned)
       {
         T res = {};
@@ -392,11 +391,11 @@ namespace elle
 
       template <typename T, typename S = void>
       static
-      typename std::enable_if<
+      std::enable_if_t<
         !std::is_pod<T>::value &&
         !_details::has_serialize_convert_api<T, void>() &&
         !_details::has_serialize_functions_api<T, void>(),
-        T>::type
+        T>
       deserialize(SerializerIn& self, unsigned)
       {
         static_assert(
@@ -1124,7 +1123,7 @@ namespace elle
               template <typename, typename> class C,
               typename T,
               typename A>
-    typename std::enable_if<std::is_default_constructible<T>::value, void>::type
+    std::enable_if_t<std::is_default_constructible<T>::value, void>
     Serializer::_serialize(C<T, A>& collection,
                            as<As> as)
     {
@@ -1402,10 +1401,10 @@ namespace elle
     template <typename T> struct is_nullable<std::shared_ptr<T>> {static const bool value = true;};
 
     template <typename T, typename S>
-    typename std::enable_if<
+    std::enable_if_t<
       !std::is_base_of<boost::optional_detail::optional_tag, T>::value
       && !is_nullable<T>::value,
-      T>::type
+      T>
     SerializerIn::deserialize(std::string const& name)
     {
       auto entry = this->enter(name);
@@ -1416,10 +1415,10 @@ namespace elle
     }
 
     template <typename T, typename S>
-    typename std::enable_if<
+    std::enable_if_t<
       std::is_base_of<boost::optional_detail::optional_tag, T>::value
       || is_nullable<T>::value,
-      T>::type
+      T>
     SerializerIn::deserialize(std::string const& name)
     { // We cannot call _enter at this stage for optional types
       T res;

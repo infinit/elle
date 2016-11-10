@@ -85,7 +85,7 @@ namespace reactor
         {
           template <typename T>
           inline
-          typename std::enable_if<std::is_enum<T>::value, std::size_t>::type
+          std::enable_if_t<std::is_enum<T>::value, std::size_t>
           operator ()(T const value) const
           {
             return static_cast<std::size_t>(value);

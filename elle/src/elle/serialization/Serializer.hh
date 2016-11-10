@@ -142,8 +142,8 @@ namespace elle
       void
       serialize(std::string const& name, std::shared_ptr<T>& opt);
       template <typename Serializer = void, typename T>
-      typename std::enable_if<
-        !_details::has_serialize_convert_api<T*, void>(), void>::type
+      std::enable_if_t<
+        !_details::has_serialize_convert_api<T*, void>(), void>
       serialize(std::string const& name, T*& opt);
       template <typename Serializer = void, typename T, typename As>
       void
