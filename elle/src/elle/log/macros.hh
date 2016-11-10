@@ -13,8 +13,7 @@
   static char const* __attribute__((unused))                            \
     _trace_component_ = _component_;                                    \
 
-#  define ELLE_LOG_LEVEL_SCOPE(Lvl, T, ...)                             \
-    auto BOOST_PP_CAT(__trace_ctx_, __LINE__) =                         \
+#  define ELLE_LOG_VALUE(Lvl, T, ...)                                   \
      [&] {                                                              \
        static bool enabled =                                            \
          elle::log::detail::Send::_enabled(elle::log::Logger::Type::T,  \
@@ -28,6 +27,10 @@
        _trace_component_,                                               \
        __FILE__, __LINE__, ELLE_COMPILER_PRETTY_FUNCTION,               \
        __VA_ARGS__) :  ::elle::log::detail::Send()
+
+#  define ELLE_LOG_LEVEL_SCOPE(Lvl, T, ...)                             \
+    auto BOOST_PP_CAT(__trace_ctx_, __LINE__) =                         \
+      ELLE_LOG_VALUE(Lvl, T, __VA_ARGS__)                               \
 
 #  define ELLE_LOG_LEVEL(Lvl, Type, ...)                                      \
   if (ELLE_LOG_LEVEL_SCOPE(Lvl, Type, __VA_ARGS__))                           \
