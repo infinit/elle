@@ -37,6 +37,11 @@ namespace elle
       struct
       tail;
     };
+
+    /// Helper to declare `List` from values through `decltype`.
+    template<typename ... Args>
+    List<Args...>
+    list(Args ...);
   }
 }
 
