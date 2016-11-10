@@ -19,6 +19,14 @@
     }                                           \
                                                 \
     template <typename T>                       \
+    struct                                      \
+    attr_type                                   \
+    {                                           \
+      using type =                              \
+        decltype(std::declval<T>().Name);       \
+    };                                          \
+                                                \
+    template <typename T>                       \
     static                                      \
     auto                                        \
     attr_get(T& o)                              \
