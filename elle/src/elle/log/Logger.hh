@@ -162,6 +162,11 @@ namespace elle
       Level
       component_level(std::string const& name);
 
+      /// Obsolete alias for component_level.
+      [[deprecated("Replaced by component_level, which has the same interface")]]
+      Level
+      component_enabled(std::string const& name);
+
       /// Push this component in the component stack.
       void
       component_push(std::string const& name);

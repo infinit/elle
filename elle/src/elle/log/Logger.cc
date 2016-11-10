@@ -295,6 +295,11 @@ namespace elle
       return res;
     }
 
+    Logger::Level
+    Logger::component_enabled(std::string const& name)
+    {
+      return component_level(name);
+    }
 
     /*-------------.
     | Components.  |
