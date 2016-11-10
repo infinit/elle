@@ -25,8 +25,8 @@ x86_64-centos6-gcc4:
     - scl enable devtoolset-4 rh-python34 "python3 drake -j 4 //install"
     - TARBALL="elle-x86_64-centos6-gcc4-$DESC.tbz"
     - tar -cvjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
-    - scp "$TARBALL" debian@debian.infinit.io:/tmp
-    - rm  "$TARBALL"
+    - scp "$TARBALL" buildslave@packages.infinit.sh:tmp
+    - rm "$TARBALL"
     - cd "$SOURCE_DIR"
     - time scl enable devtoolset-4 rh-python34 "./buildenv --cache-upload-build-tree --exclude='*.deb,*.rpm' --branch \"$CI_BUILD_REF_NAME\" --build-trees-root \"/cache/$CI_PROJECT_NAME\" --cache-namespace \"$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME\" --cache-id \"$CI_RUNNER_ID\" --verbose"
   tags:
@@ -55,8 +55,8 @@ x86_64-ubuntu-gcc4:
     - python3 drake -j $(nproc) //install
     - TARBALL="$BUILD_DIR/elle-x86_64-ubuntu-gcc4-$DESC.tbz"
     - tar -cvjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
-    - scp "$TARBALL" debian@debian.infinit.io:/tmp
-    - rm  "$TARBALL"
+    - scp "$TARBALL" buildslave@packages.infinit.sh:tmp
+    - rm "$TARBALL"
     - cd "$SOURCE_DIR"
     - time ./buildenv --cache-upload-build-tree --exclude='*.deb,*.rpm' --branch "$CI_BUILD_REF_NAME" --build-trees-root "/cache/$CI_PROJECT_NAME" --cache-namespace "$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME" --cache-id "$CI_RUNNER_ID" --verbose
   tags:
@@ -84,8 +84,8 @@ x86_64-jessie-gcc4:
     - python3 drake -j 4 //install
     - TARBALL="$BUILD_DIR/elle-x86_64-jessie-gcc4-$DESC.tbz"
     - tar -cvjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
-    - scp "$TARBALL" debian@debian.infinit.io:/tmp
-    - rm  "$TARBALL"
+    - scp "$TARBALL" buildslave@packages.infinit.sh:tmp
+    - rm "$TARBALL"
     - cd "$SOURCE_DIR"
     - time ./buildenv --cache-upload-build-tree --exclude='*.deb,*.rpm' --branch "$CI_BUILD_REF_NAME" --build-trees-root "/cache/$CI_PROJECT_NAME" --cache-namespace "$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME" --cache-id "$CI_RUNNER_ID" --verbose
   tags:
@@ -113,8 +113,8 @@ x86_64-alpine-gcc:
     - python3 drake -j 4 //install
     - TARBALL="$BUILD_DIR/elle-x86_64-alpine-gcc-$DESC.tbz"
     - tar -cvjf $TARBALL -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
-    - scp $TARBALL debian@debian.infinit.io:/tmp
-    - rm  "$TARBALL"
+    - scp "$TARBALL" buildslave@packages.infinit.sh:tmp
+    - rm "$TARBALL"
     - cd "$SOURCE_DIR"
     - time ./buildenv --cache-upload-build-tree --exclude='*.deb,*.rpm,*.tbz' --branch "$CI_BUILD_REF_NAME" --build-trees-root "/cache/$CI_PROJECT_NAME" --cache-namespace "$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME" --cache-id "$CI_RUNNER_ID" --verbose
 
@@ -143,8 +143,8 @@ i386-jessie-gcc4:
     - python3 drake -j 4 //install
     - TARBALL="$BUILD_DIR/elle-i386-jessie-gcc4-$DESC.tbz"
     - tar -cvjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
-    - scp "$TARBALL" debian@debian.infinit.io:/tmp
-    - rm  "$TARBALL"
+    - scp "$TARBALL" buildslave@packages.infinit.sh:tmp
+    - rm "$TARBALL"
     - cd "$SOURCE_DIR"
     - time ./buildenv --cache-upload-build-tree --exclude='*.deb,*.rpm' --branch "$CI_BUILD_REF_NAME" --build-trees-root "/cache/$CI_PROJECT_NAME" --cache-namespace "$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME" --cache-id "$CI_RUNNER_ID" --verbose
   tags:
@@ -172,8 +172,8 @@ x86_64-windows-mingw4:
     - python3 drake -j 4 //install
     - TARBALL="$BUILD_DIR/elle-x86_64-windows-mingw4-$DESC.tbz"
     - tar -cvjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
-    - scp "$TARBALL" debian@debian.infinit.io:/tmp
-    - rm  "$TARBALL"
+    - scp "$TARBALL" buildslave@packages.infinit.sh:tmp
+    - rm "$TARBALL"
     - cd "$SOURCE_DIR"
     - time ./buildenv --cache-upload-build-tree --exclude='*.deb,*.rpm' --branch "$CI_BUILD_REF_NAME" --build-trees-root "/cache/$CI_PROJECT_NAME" --cache-namespace "$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME" --cache-id "$CI_RUNNER_ID" --verbose
   tags:
@@ -209,9 +209,9 @@ x86_64-osx-clang:
     - cd ../elle-build && python3 drake -j 4 //check
     - cd ../elle-build && python3 drake -j 4 //install
     - TARBALL=elle-x86_64-osx-clang3-$(GIT_DIR=../elle/.git git describe).tbz
-    - gtar -cvjf ../$TARBALL -C ../elle-install . --show-transformed-names --transform "s,^\\./,elle-$(GIT_DIR=../elle/.git git describe)/,"
-    - scp ../$TARBALL debian@debian.infinit.io:/tmp
-    - rm  "../$TARBALL"
+    - gtar -cvjf "../$TARBALL" -C ../elle-install . --show-transformed-names --transform "s,^\\./,elle-$(GIT_DIR=../elle/.git git describe)/,"
+    - scp "../$TARBALL" buildslave@packages.infinit.sh:tmp
+    - rm "../$TARBALL"
   tags:
     - x86_64
     - osx
