@@ -43,12 +43,12 @@ namespace list
   {
     typedef List<int, float, std::string> l;
     template <typename T>
-    struct voidify
+    struct intify
     {
-      using type = void;
+      using type = int;
     };
     static_assert(
-      std::is_same<l::map<voidify>::type, List<void, void, void>>::value,
+      std::is_same<l::map<intify>::type, List<int, int, int>>::value,
       "list::map yielded the wrong type");
     template <typename T>
     struct pointerize
