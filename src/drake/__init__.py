@@ -3832,8 +3832,8 @@ class Runner(Builder):
     return status == 0
 
   def _report(self, status):
-    if self.status:
-      print('{}: exit status: {}'.format(self, self.status))
+    if status:
+      print('{}: exit status: {}'.format(self, status))
     if self._must_report(self.stdout_reporting, status):
       self._report_node(self.__out)
     if self._must_report(self.stderr_reporting, status):
