@@ -379,7 +379,7 @@ namespace elle
       static void
       apply(V const& v, int, std::ostream& output)
       {
-        output << v;
+        elle::fprintf(output, "%s", v);
       }
     };
   }
