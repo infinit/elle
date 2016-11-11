@@ -75,6 +75,8 @@ namespace elle
   }
 }
 
-# include <elle/serialization/SerializerOut.hxx>
+# if not defined(ELLE_SERIALIZATION_SERIALIZER_HXX)
+#  include <elle/serialization/SerializerOut.hxx>
+# endif
 
 #endif

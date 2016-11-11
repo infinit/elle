@@ -1,5 +1,6 @@
 #include <elle/serialization/json/SerializerOut.hh>
 
+#include <elle/Lazy.hh>
 #include <elle/assert.hh>
 #include <elle/format/base64.hh>
 #include <elle/json/json.hh>
@@ -42,11 +43,12 @@ namespace elle
 
       SerializerOut::~SerializerOut() noexcept(false)
       {
-        if (_pretty)
-        {
-          std::string res = elle::json::pretty_print(this->_json);
-          this->output() << res;
-        }
+        ELLE_TRACE_SCOPE("%s: write JSON %s", this, this->output());
+        ELLE_DUMP(
+          "%s",
+          elle::lazy([&] { return elle::json::pretty_print(this->_json); }));
+        if (this->_pretty)
+          this->output() << elle::json::pretty_print(this->_json);
         else
           elle::json::write(this->output(), this->_json);
       }
@@ -58,17 +60,16 @@ namespace elle
       bool
       SerializerOut::_enter(std::string const& name)
       {
-        ELLE_TRACE_SCOPE("%s: enter %s", *this, name);
         ELLE_ASSERT(!this->_current.empty());
         auto& current = *this->_current.back();
         if (current.empty())
         {
-          ELLE_DEBUG("create object");
+          ELLE_DEBUG("create current object");
           current = elle::json::Object();
         }
         if (current.type() == typeid(elle::json::Object))
         {
-          ELLE_DEBUG_SCOPE("insert key");
+          ELLE_DEBUG_SCOPE("insert key \"%s\"", name);
           auto& object = boost::any_cast<elle::json::Object&>(current);
           // FIXME: hackish way to not serialize version twice when
           // serialize_forward is used.
@@ -95,7 +96,6 @@ namespace elle
       void
       SerializerOut::_leave(std::string const& name)
       {
-        ELLE_TRACE_SCOPE("%s: leave %s", *this, name);
         ELLE_ASSERT(!this->_current.empty());
         this->_current.pop_back();
       }
@@ -307,7 +307,17 @@ namespace elle
         if (filled)
           f();
         else
+        {
           *this->_current.back() = elle::json::NullType();
+          if (!this->_names.empty())
+          {
+            ELLE_ASSERT_GT(signed(this->_current.size()), 1);
+            auto& last = *this->_current[this->_current.size() - 2];
+            if (last.type() == typeid(elle::json::Object))
+              ELLE_ENFORCE(boost::any_cast<elle::json::Object&>(last).erase(
+                             this->_names.back()));
+          }
+        }
       }
 
       boost::any&

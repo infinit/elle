@@ -24,16 +24,23 @@ namespace elle
 
     Serializer::Entry::Entry(Serializer& s, std::string const& name)
       : _serializer(s)
+      , _log(ELLE_LOG_VALUE(
+               trace, info,
+               "%s: %sserialize \"%s\"", s, s.in() ? "de" : "", name))
       , _name(name)
       , _entered(this->_serializer._enter(name))
     {
-      ELLE_TRACE_SCOPE("%s: serialize \"%s\"", this, name);
+      if (this->_entered)
+        s._names.emplace_back(name);
     }
 
     Serializer::Entry::~Entry()
     {
       if (this->_entered)
+      {
+        this->_serializer._names.pop_back();
         this->_serializer._leave(this->_name);
+      }
     }
 
     Serializer::Entry::operator bool() const

@@ -287,7 +287,6 @@ namespace elle
       bool
       SerializerIn::_enter(std::string const& name)
       {
-        ELLE_TRACE_SCOPE("%s: enter \"%s\"", *this, name);
         auto& object = this->_check_type<elle::json::Object>(name);
         auto it = object.find(name);
         if (it == object.end())
@@ -305,7 +304,6 @@ namespace elle
       void
       SerializerIn::_leave(std::string const& name)
       {
-        ELLE_TRACE_SCOPE("%s: leave \"%s\"", *this, name);
         this->_current.pop_back();
       }
 

@@ -21,6 +21,7 @@
 # include <elle/optional.hh>
 # include <elle/serialization/fwd.hh>
 # include <elle/sfinae.hh>
+# include <elle/attribute.hh>
 
 namespace elle
 {
@@ -131,20 +132,20 @@ namespace elle
       template <typename Serializer = void, typename T>
       void
       serialize(std::string const& name, T& v);
-      template <typename T>
+      template <typename Serializer = void, typename T>
       void
       serialize(std::string const& name, boost::optional<T>& opt);
-      template <typename T, typename D>
+      template <typename Serializer = void, typename T, typename D>
       void
       serialize(std::string const& name, std::unique_ptr<T, D>& opt);
-      template <typename T>
+      template <typename Serializer = void, typename T>
       void
       serialize(std::string const& name, std::shared_ptr<T>& opt);
-      template <typename T>
+      template <typename Serializer = void, typename T>
       typename std::enable_if<
         !_details::has_serialize_convert_api<T*, void>(), void>::type
       serialize(std::string const& name, T*& opt);
-      template <typename T, typename As>
+      template <typename Serializer = void, typename T, typename As>
       void
       serialize(std::string const& name, T& v, as<As>);
       template <typename As,
@@ -161,9 +162,6 @@ namespace elle
       serialize_object(std::string const& name, elle::Version& v);
       template <typename T>
       void
-      serialize_pod(std::string const& name, T& v);
-      template <typename T>
-      void
       serialize_ptr(std::string const& name, T* &v, bool anonymous = false);
       template<typename T>
       void
@@ -171,10 +169,7 @@ namespace elle
                                       std::string const& name,
                                       T& v,
                                       bool anonymous);
-      template <typename T>
-      void
-      serialize_forward(T& v);
-      template <typename Serializer, typename T>
+      template <typename Serializer = void, typename T>
       void
       serialize_forward(T& v);
       template <typename T>
@@ -186,6 +181,12 @@ namespace elle
       void
       set_context(Context const& context);
       ELLE_ATTRIBUTE_R(Context, context);
+      template <typename S = void, typename Serializer, typename T>
+      static
+      void
+      serialize_switch(Serializer& s,
+                       std::string const& name,
+                       T& v);
 
     /*------------.
     | Enter/leave |
@@ -200,6 +201,7 @@ namespace elle
         Entry(Serializer& s, std::string const& name);
         friend class Serializer;
         ELLE_ATTRIBUTE(Serializer&, serializer);
+        ELLE_ATTRIBUTE(elle::log::detail::Send, log);
         ELLE_ATTRIBUTE(std::string const&, name);
         ELLE_ATTRIBUTE(bool, entered);
       };
@@ -212,6 +214,9 @@ namespace elle
       virtual
       void
       _leave(std::string const& name);
+      ELLE_ATTRIBUTE(std::vector<std::string>, names, protected);
+
+    protected:
       virtual
       void
       _size(int size);
@@ -291,13 +296,15 @@ namespace elle
       _serialize_option(std::string const& name,
                         bool present,
                         std::function<void ()> const& f) = 0;
-      template <template <typename, typename> class C, typename T, typename A>
+      template <typename S = void,
+                template <typename, typename> class C,
+                typename T, typename A>
       void
       _serialize(std::string const& name, C<T, A>& collection);
-      template <typename C>
+      template <typename S = void, typename C>
       void
       _serialize_collection(std::string const& name, C& collection);
-      template <typename T, typename A>
+      template <typename S = void, typename T, typename A>
       void
       _serialize(std::string const& name, std::vector<T, A>& collection);
       template <typename T, typename C, typename A>
@@ -342,20 +349,17 @@ namespace elle
       template <typename C>
       void
       _serialize_assoc(std::string const& name, C& map);
-      template <typename S = void, typename T>
-      void
-      _serialize_anonymous(std::string const& name, T& v);
       void
       _serialize_anonymous_exception(
         std::string const& name, std::exception_ptr& e);
-      template <typename C>
+      template <typename S = void, typename C>
       typename std::enable_if_exists<
         decltype(
           std::declval<C>().emplace(
             std::declval<elle::serialization::SerializerIn>())),
         void>::type
       _deserialize_in_array(std::string const& name, C& collection);
-      template <typename C>
+      template <typename S = void, typename C>
       typename std::enable_if_exists<
         decltype(
           std::declval<C>().emplace_back(

@@ -31,14 +31,41 @@ struct DevicePOD
   using Model = das::Model<DevicePOD, elle::meta::List<Symbol_id, Symbol_name>>;
 };
 
-struct Device
-  : public DevicePOD
+struct NopeString
+  : public std::string
 {
-  Device(int id, std::string name)
+  NopeString()
+  {}
+
+  NopeString(std::string const& s)
+    : std::string(s)
+  {}
+
+  NopeString(char const* s)
+    : std::string(s)
+  {}
+
+  NopeString
+  operator =(NopeString const&) = delete;
+};
+
+struct Device
+{
+  Device(int id, NopeString name)
+    : id(id)
+    , name(name)
+  {}
+
+  bool
+  operator ==(Device const& rhs) const
   {
-    this->id = id;
-    this->name = name;
+    return this->id == rhs.id && this->name == rhs.name;
   }
+
+  int id;
+  NopeString name;
+
+  using Model = das::Model<DevicePOD, elle::meta::List<Symbol_id, Symbol_name>>;
 };
 
 struct User
@@ -85,19 +112,23 @@ static
 void
 simple()
 {
+  ELLE_LOG("POD serialization");
   {
     DevicePOD d;
     d.id = 42;
     d.name = "towel";
     std::stringstream ss;
     elle::serialization::json::serialize(d, ss);
+    ELLE_LOG("serialized: \"%s\"", ss.str());
     BOOST_CHECK_EQUAL(
       elle::serialization::json::deserialize<DevicePOD>(ss), d);
   }
+  ELLE_LOG("Object serialization");
   {
     Device d(42, "towel");
     std::stringstream ss;
     elle::serialization::json::serialize(d, ss);
+    ELLE_LOG("serialized: \"%s\"", ss.str());
     BOOST_CHECK_EQUAL(
       elle::serialization::json::deserialize<Device>(ss), d);
   }

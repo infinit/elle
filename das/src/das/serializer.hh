@@ -109,6 +109,15 @@ namespace das
     struct SetAttr
     {
       template <typename A>
+      struct available
+      {
+        static bool constexpr value =
+          std::is_assignable<decltype(A::attr_get(std::declval<O&>())),
+                             typename A::template attr_type<O>::type>::value;
+        using type = std::integral_constant<bool, value>;
+      };
+
+      template <typename A>
       struct set
       {
         using type = decltype(
@@ -121,7 +130,7 @@ namespace das
     template <typename O, typename M>
     typename std::enable_if<
       !M::Types::template apply<std::is_constructible, O>::type::value &&
-      sizeof(typename M::Fields::template map<SetAttr<O>::template set>::type) >= 0,
+      M::Fields::template map<SetAttr<O>::template available>::type::template apply<elle::meta::All>::type::value,
       O>::type
     deserialize_switch(elle::serialization::SerializerIn& s)
     {
@@ -165,7 +174,7 @@ namespace das
   }
 }
 
-# define DAS_SERIALIZE(Class, ...)                               \
+# define DAS_SERIALIZE(Class, ...)                              \
   namespace elle                                                \
   {                                                             \
     namespace serialization                                     \

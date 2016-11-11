@@ -17,15 +17,15 @@ namespace elle
 
     namespace json
     {
-      template <typename T, typename ... Args>
-      auto
-      serialize(T const& o, Args&& ... args)
-        -> decltype(elle::serialization::serialize<Json, T>
-                    (o, std::forward<Args>(args)...))
-      {
-        return elle::serialization::serialize<Json, T>
-          (o, std::forward<Args>(args)...);
-      }
+      // template <typename T, typename ... Args>
+      // auto
+      // serialize(T const& o, Args&& ... args)
+      //   -> decltype(elle::serialization::serialize<Json, T>
+      //               (o, std::forward<Args>(args)...))
+      // {
+      //   return elle::serialization::serialize<Json, T>
+      //     (o, std::forward<Args>(args)...);
+      // }
 
       template <typename T, typename Serializer = void, typename ... Args>
       auto
@@ -37,10 +37,10 @@ namespace elle
           (std::forward<Args>(args)...);
       }
 
-      template <typename Serializer, typename T, typename ... Args>
+      template <typename Serializer = void, typename T, typename ... Args>
       auto
       serialize(T const& o, Args&& ... args)
-        -> decltype(elle::serialization::serialize<Json, T>
+        -> decltype(elle::serialization::serialize<Serializer, Json, T>
                     (o, std::forward<Args>(args)...))
       {
         return elle::serialization::serialize<Serializer, Json, T>
