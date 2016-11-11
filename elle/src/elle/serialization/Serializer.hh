@@ -157,16 +157,15 @@ namespace elle
       serialize(std::string const& name, C<T, A>& collection, as<As>);
       template <typename T>
       void
-      serialize_object(std::string const& name, T& v);
+      serialize_object(T& v);
       void
-      serialize_object(std::string const& name, elle::Version& v);
+      serialize_object(elle::Version& v);
       template <typename T>
       void
       serialize_ptr(std::string const& name, T* &v, bool anonymous = false);
       template<typename T>
       void
-      serialize_with_struct_serialize(
-                                      std::string const& name,
+      serialize_with_struct_serialize(std::string const& name,
                                       T& v,
                                       bool anonymous);
       template <typename Serializer = void, typename T>
@@ -184,9 +183,7 @@ namespace elle
       template <typename S = void, typename Serializer, typename T>
       static
       void
-      serialize_switch(Serializer& s,
-                       std::string const& name,
-                       T& v);
+      serialize_switch(Serializer& s, T& v);
 
     /*------------.
     | Enter/leave |
@@ -207,6 +204,8 @@ namespace elle
       };
       Entry
       enter(std::string const& name);
+      std::string
+      current_name() const;
     protected:
       virtual
       bool
@@ -225,62 +224,60 @@ namespace elle
       _text() const;
       virtual
       void
-      _serialize_array(std::string const& name,
-                       int size, // -1 for in(), array size for out()
+      _serialize_array(int size, // -1 for in(), array size for out()
                        std::function<void ()> const& f) = 0;
       virtual
       void
       _serialize_dict_key(std::string const& name,
-                      std::function<void ()> const& f);
+                          std::function<void ()> const& f);
       virtual
       void
       _deserialize_dict_key(
         std::function<void (std::string const&)> const& f);
       virtual
       void
-      _serialize(std::string const& name, int64_t& v) = 0;
+      _serialize(int64_t& v) = 0;
       virtual
       void
-      _serialize(std::string const& name, uint64_t& v) = 0;
+      _serialize(uint64_t& v) = 0;
       virtual
       void
-      _serialize(std::string const& name, int32_t& v) = 0;
+      _serialize(int32_t& v) = 0;
       virtual
       void
-      _serialize(std::string const& name, uint32_t& v) = 0;
+      _serialize(uint32_t& v) = 0;
       virtual
       void
-      _serialize(std::string const& name, int16_t& v) = 0;
+      _serialize(int16_t& v) = 0;
       virtual
       void
-      _serialize(std::string const& name, uint16_t& v) = 0;
+      _serialize(uint16_t& v) = 0;
       virtual
       void
-      _serialize(std::string const& name, int8_t& v) = 0;
+      _serialize(int8_t& v) = 0;
       virtual
       void
-      _serialize(std::string const& name, uint8_t& v) = 0;
+      _serialize(uint8_t& v) = 0;
       virtual
       void
-      _serialize(std::string const& name, double& v) = 0;
+      _serialize(double& v) = 0;
       virtual
       void
-      _serialize(std::string const& name, bool& v) = 0;
+      _serialize(bool& v) = 0;
       virtual
       void
-      _serialize(std::string const& name, std::string& v) = 0;
+      _serialize(std::string& v) = 0;
       virtual
       void
-      _serialize(std::string const& name, elle::Buffer& v) = 0;
+      _serialize(elle::Buffer& v) = 0;
       void
-      _serialize(std::string const& name, elle::WeakBuffer& v);
+      _serialize(elle::WeakBuffer& v);
       virtual
       void
-      _serialize(std::string const& name, boost::posix_time::ptime& v) = 0;
+      _serialize(boost::posix_time::ptime& v) = 0;
       template <typename Repr, typename Ratio>
       void
-      _serialize(std::string const& name,
-                 std::chrono::duration<Repr, Ratio>& duration);
+      _serialize(std::chrono::duration<Repr, Ratio>& duration);
       virtual
       void
       _serialize_time_duration(std::int64_t& ticks,
@@ -293,79 +290,70 @@ namespace elle
                               std::function<void ()> const& f) = 0;
       virtual
       void
-      _serialize_option(std::string const& name,
-                        bool present,
+      _serialize_option(bool present,
                         std::function<void ()> const& f) = 0;
       template <typename S = void,
                 template <typename, typename> class C,
                 typename T, typename A>
       void
-      _serialize(std::string const& name, C<T, A>& collection);
+      _serialize(C<T, A>& collection);
       template <typename S = void, typename C>
       void
-      _serialize_collection(std::string const& name, C& collection);
+      _serialize_collection(C& collection);
       template <typename S = void, typename T, typename A>
       void
-      _serialize(std::string const& name, std::vector<T, A>& collection);
+      _serialize(std::vector<T, A>& collection);
       template <typename T, typename C, typename A>
       void
-      _serialize(std::string const& name, std::set<T, C, A>& collection);
+      _serialize(std::set<T, C, A>& collection);
       template <typename T, typename I>
       void
-      _serialize(std::string const& name,
-                 boost::multi_index::multi_index_container<T, I>& collection);
+      _serialize(boost::multi_index::multi_index_container<T, I>& collection);
       template <typename As,
                 template <typename, typename> class C, typename T, typename A>
       typename
       std::enable_if<std::is_default_constructible<T>::value, void>::type
-      _serialize(std::string const& name, C<T, A>& collection, as<As>);
+      _serialize(C<T, A>& collection, as<As>);
       template <typename T1, typename T2>
       void
-      _serialize(std::string const& name, std::pair<T1, T2>& collection);
+      _serialize(std::pair<T1, T2>& collection);
       template <typename K, typename V, typename ... Rest>
       void
-      _serialize(std::string const& name,
-                std::unordered_map<K, V, Rest...>& map);
+      _serialize(std::unordered_map<K, V, Rest...>& map);
       template <typename V, typename ... Rest>
       void
-      _serialize(std::string const& name,
-                 std::unordered_map<std::string, V, Rest...>& map);
+      _serialize(std::unordered_map<std::string, V, Rest...>& map);
       template <typename K, typename V, typename ... Rest>
       void
-      _serialize(std::string const& name,
-                 std::map<K, V, Rest...>& map);
+      _serialize(std::map<K, V, Rest...>& map);
       template <typename V, typename ... Rest>
       void
-      _serialize(std::string const& name,
-                 std::map<std::string, V, Rest...>& map);
+      _serialize(std::map<std::string, V, Rest...>& map);
       template <typename V, typename ... Rest>
       void
-      _serialize(std::string const& name,
-                std::unordered_set<V, Rest...>& set);
+      _serialize(std::unordered_set<V, Rest...>& set);
       template <typename K, typename V, typename ... Rest>
       void
-      _serialize(std::string const& name,
-                std::unordered_multimap<K, V, Rest...>& map);
+      _serialize(std::unordered_multimap<K, V, Rest...>& map);
       template <typename C>
       void
-      _serialize_assoc(std::string const& name, C& map);
+      _serialize_assoc(C& map);
       void
-      _serialize_anonymous_exception(
-        std::string const& name, std::exception_ptr& e);
+      _serialize_anonymous_exception(std::exception_ptr& e);
       template <typename S = void, typename C>
       typename std::enable_if_exists<
         decltype(
           std::declval<C>().emplace(
             std::declval<elle::serialization::SerializerIn>())),
         void>::type
-      _deserialize_in_array(std::string const& name, C& collection);
+      _deserialize_in_array(C& collection);
       template <typename S = void, typename C>
       typename std::enable_if_exists<
         decltype(
           std::declval<C>().emplace_back(
             std::declval<elle::serialization::SerializerIn>())),
         void>::type
-      _deserialize_in_array(std::string const& name, C& collection);
+      _deserialize_in_array(C& collection);
       template <typename T>
       friend struct Serialize;
       class Details;

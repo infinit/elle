@@ -169,6 +169,29 @@ namespace elle
       {
         target = ptr;
       }
+
+      struct current_name
+      {
+        inline
+        current_name(Serializer& s)
+          : _serializer(s)
+        {}
+
+        friend
+        std::ostream&
+        operator <<(std::ostream& s, current_name& c);
+        ELLE_ATTRIBUTE(Serializer&, serializer);
+      };
+
+      inline
+      std::ostream&
+      operator <<(std::ostream& s, current_name& c)
+      {
+        auto name = c._serializer.current_name();
+        if (!name.empty())
+          s << " \"" << name << "\"";
+        return s;
+      }
     }
 
     class Serializer::Details
@@ -182,7 +205,6 @@ namespace elle
       >::type
       _smart_virtual_switch(
         Serializer& s,
-        std::string const& name,
         P& ptr)
       {
         if (s.out())
@@ -201,13 +223,13 @@ namespace elle
           }
           auto type_name = it->second;
           s.serialize(T::virtually_serializable_key, type_name);
-          s.serialize_object(name, *ptr);
+          s.serialize_object(*ptr);
         }
         else
         {
           ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-          ELLE_DEBUG_SCOPE("%s: deserialize virtual key %s of type %s",
-                           s, name, type_info<T>());
+          ELLE_DEBUG_SCOPE("%s: deserialize virtual key%s of type %s",
+                           s, _details::current_name(s), type_info<T>());
           auto const& map = Hierarchy<T>::_map();
           std::string type_name;
           s.serialize(T::virtually_serializable_key, type_name);
@@ -229,7 +251,6 @@ namespace elle
       >::type
       _smart_virtual_switch(
         Serializer& s,
-        std::string const& name,
         P& ptr)
       {
         if (s.in())
@@ -237,7 +258,7 @@ namespace elle
             ptr,
             new T(Details::deserialize<T>(static_cast<SerializerIn&>(s), 42)));
         else
-          Serializer::serialize_switch(s, name, *ptr);
+          Serializer::serialize_switch(s, *ptr);
       }
 
       template <typename T, typename Serializer = void>
@@ -303,7 +324,6 @@ namespace elle
         boost::optional<T1> first;
         boost::optional<T2> second;
         self._serialize_array(
-          "",
           -1,
           [&] ()
           {
@@ -349,7 +369,7 @@ namespace elle
         // FIXME: convert_api could be factored with the next version if
         // serialize_switch returned the deserialized object
         typename _details::serialization_api<T, S>::Type value;
-        Serializer::serialize_switch(self, "", value);
+        Serializer::serialize_switch(self, value);
         return Serialize<T>::convert(value);
       }
 
@@ -364,7 +384,7 @@ namespace elle
       deserialize(SerializerIn& self, unsigned)
       {
         T res = {};
-        Serializer::serialize_switch<S>(self, "", res);
+        Serializer::serialize_switch<S>(self, res);
         return res;
       }
 
@@ -382,7 +402,7 @@ namespace elle
           !std::is_constructible<T, elle::serialization::SerializerIn&>::value,
           "");
         T res;
-        Serializer::serialize_switch<S>(self, "", res);
+        Serializer::serialize_switch<S>(self, res);
         return res;
       }
 
@@ -429,13 +449,11 @@ namespace elle
       {
         static
         void
-        value(Serializer& s,
-              std::string const& name,
-              T& obj)
+        value(Serializer& s, T& obj)
         {
           ELLE_LOG_COMPONENT("elle.serialization.Serializer");
           ELLE_DUMP("API: method");
-          s.serialize_object(name, obj);
+          s.serialize_object(obj);
         }
       };
 
@@ -444,13 +462,11 @@ namespace elle
       {
         static
         void
-        value(Serializer& s,
-              std::string const& name,
-              T& obj)
+        value(Serializer& s, T& obj)
         {
           ELLE_LOG_COMPONENT("elle.serialization.Serializer");
           ELLE_DUMP("API: versionned method");
-          s.serialize_object(name, obj);
+          s.serialize_object(obj);
         }
       };
 
@@ -459,13 +475,11 @@ namespace elle
       {
         static
         void
-        value(Serializer& s,
-              std::string const& name,
-              T& v)
+        value(Serializer& s, T& v)
         {
           ELLE_LOG_COMPONENT("elle.serialization.Serializer");
           ELLE_DUMP("API: POD");
-          s._serialize(name, v);
+          s._serialize(v);
         }
       };
 
@@ -474,13 +488,11 @@ namespace elle
       {
         static
         void
-        value(Serializer& s,
-              std::string const& name,
-              T& v)
+        value(Serializer& s, T& v)
         {
           ELLE_LOG_COMPONENT("elle.serialization.Serializer");
           ELLE_DUMP("API: recurse POD");
-          s._serialize<S>(name, v);
+          s._serialize<S>(v);
         }
       };
 
@@ -489,9 +501,7 @@ namespace elle
       {
         static
         void
-        value(Serializer& s,
-              std::string const& name,
-              T& v)
+        value(Serializer& s, T& v)
         {
           ELLE_LOG_COMPONENT("elle.serialization.Serializer");
           ELLE_DUMP("API: convert");
@@ -500,12 +510,12 @@ namespace elle
           if (s.out())
           {
             type value(Serialize<T>::convert(v));
-            Serializer::serialize_switch<S>(s, name, value);
+            Serializer::serialize_switch<S>(s, value);
           }
           else
           {
             type value;
-            Serializer::serialize_switch<S>(s, name, value);
+            Serializer::serialize_switch<S>(s, value);
             v = Serialize<T>::convert(value);
           }
         }
@@ -516,15 +526,13 @@ namespace elle
       {
         static
         void
-        value(Serializer& s,
-              std::string const& name,
-              T& v)
+        value(Serializer& s, T& v)
         {
           ELLE_LOG_COMPONENT("elle.serialization.Serializer");
           ELLE_DUMP("API: wrapper");
           typedef typename Serialize<T>::Wrapper Wrapper;
           Wrapper wrapper(v);
-          Serializer::serialize_switch<Wrapper>(s, name, wrapper);
+          Serializer::serialize_switch<Wrapper>(s, wrapper);
         }
       };
 
@@ -533,9 +541,7 @@ namespace elle
       {
         static
         void
-        value(Serializer& s,
-              std::string const& name,
-              T& v)
+        value(Serializer& s, T& v)
         {
           ELLE_LOG_COMPONENT("elle.serialization.Serializer");
           ELLE_DUMP("API: functions");
@@ -550,9 +556,7 @@ namespace elle
 
         static
         void
-        value(SerializerOut& s,
-              std::string const& name,
-              T& v)
+        value(SerializerOut& s, T& v)
         {
           ELLE_LOG_COMPONENT("elle.serialization.Serializer");
           ELLE_DUMP("API: functions");
@@ -566,21 +570,19 @@ namespace elle
         template <typename P, typename D>
         static
         void
-        value(Serializer& s,
-              std::string const& name,
-              std::unique_ptr<P, D>& v)
+        value(Serializer& s, std::unique_ptr<P, D>& v)
         {
           ELLE_LOG_COMPONENT("elle.serialization.Serializer");
           ELLE_DUMP("API: recurse std::unique_ptr");
           if (s.out())
           {
             P* p = v.get();
-            Serializer::serialize_switch<S>(s, name, p);
+            Serializer::serialize_switch<S>(s, p);
           }
           else
           {
             P* p = nullptr;
-            Serializer::serialize_switch<S>(s, name, p);
+            Serializer::serialize_switch<S>(s, p);
             v.reset(p);
           }
         }
@@ -596,11 +598,10 @@ namespace elle
                 elle::serialization::SerializerOut& s)
       {
         s._serialize_option(
-          "",
           bool(o),
           [&]
           {
-            Serializer::serialize_switch(s, "", elle::unconst(*o));
+            Serializer::serialize_switch(s, elle::unconst(*o));
           });
       }
 
@@ -610,7 +611,6 @@ namespace elle
       {
         boost::optional<T> res;
         s._serialize_option(
-          "",
           false,
           [&]
           {
@@ -630,12 +630,11 @@ namespace elle
                 elle::serialization::SerializerOut& s)
       {
         s._serialize_option(
-          "",
           bool(ptr),
           [&]
           {
             Serializer::Details::_smart_virtual_switch<std::shared_ptr<T>, T>
-              (s, "SERIALIZE ANONYMOUS", elle::unconst(ptr));
+              (s, elle::unconst(ptr));
           });
       }
 
@@ -645,12 +644,11 @@ namespace elle
       {
         std::shared_ptr<T> ptr;
         s._serialize_option(
-          "",
           true,
           [&]
           {
             Serializer::Details::_smart_virtual_switch<std::shared_ptr<T>, T>
-              (s, "SERIALIZE ANONYMOUS", ptr);
+              (s, ptr);
           });
         return ptr;
       }
@@ -665,11 +663,10 @@ namespace elle
                 elle::serialization::SerializerOut& s)
       {
         s._serialize_option(
-          "",
           bool(ptr),
           [&]
           {
-            Serializer::Details::_smart_virtual_switch<T*, T>(s, "", ptr);
+            Serializer::Details::_smart_virtual_switch<T*, T>(s, ptr);
           });
       }
 
@@ -679,11 +676,10 @@ namespace elle
       {
         T* ptr = nullptr;
         s._serialize_option(
-          "",
           true,
           [&]
           {
-            Serializer::Details::_smart_virtual_switch<T*, T>(s, "", ptr);
+            Serializer::Details::_smart_virtual_switch<T*, T>(s, ptr);
           });
         return ptr;
       }
@@ -697,7 +693,7 @@ namespace elle
       serialize(std::exception_ptr e,
                 elle::serialization::SerializerOut& s)
       {
-        s._serialize_anonymous_exception("", e);
+        s._serialize_anonymous_exception(e);
       }
 
       static
@@ -705,16 +701,14 @@ namespace elle
       deserialize(elle::serialization::SerializerIn& s)
       {
         std::exception_ptr e;
-        s._serialize_anonymous_exception("", e);
+        s._serialize_anonymous_exception(e);
         return e;
       }
     };
 
     template <typename S, typename Ser, typename T>
     void
-    Serializer::serialize_switch(Ser& s,
-                                 std::string const& name,
-                                 T& v)
+    Serializer::serialize_switch(Ser& s, T& v)
     {
       ELLE_LOG_COMPONENT("elle.serialization.Serializer");
       if (s.out())
@@ -724,7 +718,7 @@ namespace elle
       static_assert(
         !std::is_base_of<VirtuallySerializableBase, T>::value,
         "serialize VirtuallySerializable objects through a pointer type");
-      Details::template Switch<Details::api<T, S>(), T, S>::value(s, name, v);
+      Details::template Switch<Details::api<T, S>(), T, S>::value(s, v);
       if (s.in())
       {
         ELLE_DUMP("value: %s", v);
@@ -746,7 +740,7 @@ namespace elle
       {
         ELLE_LOG_COMPONENT("elle.serialization.Serializer");
         ELLE_DUMP("type: %s", elle::type_info<T>());
-        Serializer::serialize_switch<S>(*this, name, v);
+        Serializer::serialize_switch<S>(*this, v);
       }
     }
 
@@ -769,7 +763,7 @@ namespace elle
         {
           ELLE_ENFORCE(self._enter(name));
           elle::SafeFinally leave([&] { self._leave(name); });
-          Serializer::serialize_switch<S>(self, name, opt);
+          Serializer::serialize_switch<S>(self, opt);
           filled = true;
         });
       if (!filled)
@@ -857,12 +851,12 @@ namespace elle
 
     template <typename T>
     void
-    Serializer::serialize_object(std::string const& name,
-                                 T& object)
+    Serializer::serialize_object(T& object)
     {
       ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-      ELLE_TRACE_SCOPE("%s: serialize %s \"%s\"",
-                       *this, elle::type_info<T>(), name);
+      ELLE_TRACE_SCOPE("%s: serialize %s%s",
+                       *this, elle::type_info<T>(),
+                       _details::current_name(*this));
       if (this->_versioned)
       {
         auto version = _details::version_tag<T>(this->versions());
@@ -884,8 +878,7 @@ namespace elle
     // Special case: don't version versions.
     inline
     void
-    Serializer::serialize_object(std::string const& name,
-                                 elle::Version& version)
+    Serializer::serialize_object(elle::Version& version)
     {
       version.serialize(*this);
     }
@@ -896,40 +889,39 @@ namespace elle
 
     template <typename K, typename V, typename ... Rest>
     void
-    Serializer::_serialize(std::string const& name,
-                           std::unordered_map<K, V, Rest...>& map)
+    Serializer::_serialize(std::unordered_map<K, V, Rest...>& map)
     {
-      _serialize_assoc(name, map);
+      _serialize_assoc(map);
     }
 
     template <typename K, typename V, typename ... Rest>
     void
-    Serializer::_serialize(std::string const& name,
-                           std::map<K, V, Rest...>& map)
+    Serializer::_serialize(std::map<K, V, Rest...>& map)
     {
-      _serialize_assoc(name, map);
+      _serialize_assoc(map);
     }
 
     template <typename V, typename ... Rest>
     void
-    Serializer::_serialize(std::string const& name,
-                           std::unordered_map<std::string, V, Rest...>& map)
+    Serializer::_serialize(std::unordered_map<std::string, V, Rest...>& map)
     {
       ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-      ELLE_TRACE_SCOPE("%s: serialize umap<str,V> container \"%s\"",
-                       *this, name);
+      ELLE_TRACE_SCOPE("%s: serialize dictionary%s",
+                       this, _details::current_name(*this));
       if (this->_out())
       {
         this->_size(map.size());
         for (std::pair<std::string, V> pair: map)
         {
           this->_serialize_dict_key(
-          pair.first,
-          [&] ()
-          {
-            Serializer::serialize_switch(*this, pair.first, pair.second);
-            elle::SafeFinally leave([&] { this->_leave(name); });
-          });
+            pair.first,
+            [&] ()
+            {
+              Serializer::serialize_switch(*this, pair.second);
+              // FIXME: wtf is this leave ?
+              elle::SafeFinally leave(
+                [&] { this->_leave(this->current_name()); });
+            });
         }
       }
       else
@@ -938,7 +930,7 @@ namespace elle
           [&] (std::string const& key)
           {
             V value;
-            Serializer::serialize_switch(*this, key, value);
+            Serializer::serialize_switch(*this, value);
             map.insert({key, value});
           });
       }
@@ -946,51 +938,43 @@ namespace elle
 
     template <typename V, typename ... Rest>
     void
-    Serializer::_serialize(std::string const& name,
-                           std::unordered_set<V, Rest...>& set)
+    Serializer::_serialize(std::unordered_set<V, Rest...>& set)
     {
-      this->_serialize_collection(name, set);
+      this->_serialize_collection(set);
     }
 
     template <typename K, typename V, typename ... Rest>
     void
-    Serializer::_serialize(std::string const& name,
-                           std::unordered_multimap<K, V, Rest...>& map)
+    Serializer::_serialize(std::unordered_multimap<K, V, Rest...>& map)
     {
-      _serialize_assoc(name, map);
+      _serialize_assoc(map);
     }
 
     template <typename C>
     void
-    Serializer::_serialize_assoc(std::string const& name,
-                                 C& map)
+    Serializer::_serialize_assoc(C& map)
     {
       ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-      ELLE_TRACE_SCOPE("%s: serialize associative container \"%s\"",
-                       *this, name);
+      ELLE_TRACE_SCOPE("%s: serialize associative container%s",
+                       this, _details::current_name(*this));
       typedef typename C::key_type K;
       typedef typename C::mapped_type V;
       if (this->_out())
       {
         this->_serialize_array(
-          name,
           map.size(),
           [&] ()
           {
             for (auto const& pair: map)
             {
-              if (this->_enter(name))
-              {
-                elle::SafeFinally leave([&] { this->_leave(name); });
+              if (auto entry = this->enter(this->current_name()))
                 static_cast<SerializerOut*>(this)->serialize(pair);
-              }
             }
           });
       }
       else
       {
         this->_serialize_array(
-          name,
           -1,
           [&] ()
           {
@@ -1021,8 +1005,7 @@ namespace elle
         std::declval<C>().emplace(
           std::declval<elle::serialization::SerializerIn>())),
       void>::type
-    Serializer::_deserialize_in_array(std::string const& name,
-                                      C& collection)
+    Serializer::_deserialize_in_array(C& collection)
     {
       collection.emplace(
         Details::deserialize<typename C::value_type, S>(
@@ -1035,8 +1018,7 @@ namespace elle
         std::declval<C>().emplace_back(
           std::declval<elle::serialization::SerializerIn>())),
       void>::type
-    Serializer::_deserialize_in_array(std::string const& name,
-                                      C& collection)
+    Serializer::_deserialize_in_array(C& collection)
     {
       collection.emplace_back(
         Details::deserialize<typename C::value_type, S>(
@@ -1046,34 +1028,30 @@ namespace elle
     // Specific overload to catch std::vector subclasses (for das, namely).
     template <typename S, typename T, typename A>
     void
-    Serializer::_serialize(std::string const& name,
-                           std::vector<T, A>& collection)
+    Serializer::_serialize(std::vector<T, A>& collection)
     {
-      this->_serialize<S, std::vector, T, A>(name, collection);
+      this->_serialize<S, std::vector, T, A>(collection);
     }
 
     // Specific overload to catch std::vector subclasses (for das, namely).
     template <typename T, typename C, typename A>
     void
-    Serializer::_serialize(std::string const& name,
-                           std::set<T, C, A>& collection)
+    Serializer::_serialize(std::set<T, C, A>& collection)
     {
-      this->_serialize_collection(name, collection);
+      this->_serialize_collection(collection);
     }
 
     template <typename T, typename I>
     void
     Serializer::_serialize(
-      std::string const& name,
       boost::multi_index::multi_index_container<T, I>& collection)
     {
-      this->_serialize_collection(name, collection);
+      this->_serialize_collection(collection);
     }
 
     template <typename Repr, typename Ratio>
     void
-    Serializer::_serialize(std::string const& name,
-                           std::chrono::duration<Repr, Ratio>& duration)
+    Serializer::_serialize(std::chrono::duration<Repr, Ratio>& duration)
     {
       if (out())
       {
@@ -1099,49 +1077,43 @@ namespace elle
               typename T,
               typename A>
     void
-    Serializer::_serialize(std::string const& name,
-                           C<T, A>& collection)
+    Serializer::_serialize(C<T, A>& collection)
     {
-      this->_serialize_collection<S>(name, collection);
+      this->_serialize_collection<S>(collection);
     }
 
     template <typename S, typename C>
     void
-    Serializer::_serialize_collection(std::string const& name,
-                                      C& collection)
+    Serializer::_serialize_collection(C& collection)
     {
       if (this->out())
       {
         this->_serialize_array(
-          name,
           collection.size(),
           [&] ()
           {
             for (auto& elt: collection)
             {
               ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-              ELLE_DEBUG_SCOPE("serialize element of \"%s\"", name);
-              if (this->_enter(name))
-              {
-                elle::SafeFinally leave([&] { this->_leave(name); });
+              ELLE_DEBUG_SCOPE("serialize element of \"%s\"",
+                               this->current_name());
+              if (auto entry = this->enter(this->current_name()))
                 Serializer::serialize_switch<S>
                   (static_cast<SerializerOut&>(*this),
-                   name,
                    const_cast<typename C::value_type&>(elt));
-              }
             }
           });
       }
       else
       {
         this->_serialize_array(
-          name,
           -1,
           [&] ()
           {
             ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-            ELLE_DEBUG_SCOPE("deserialize element of \"%s\"", name);
-            this->_deserialize_in_array<S>(name, collection);
+            ELLE_DEBUG_SCOPE("deserialize element of \"%s\"",
+                             this->current_name());
+            this->_deserialize_in_array<S>(collection);
           });
       }
     }
@@ -1151,16 +1123,14 @@ namespace elle
               typename T,
               typename A>
     typename std::enable_if<std::is_default_constructible<T>::value, void>::type
-    Serializer::_serialize(std::string const& name,
-                           C<T, A>& collection,
+    Serializer::_serialize(C<T, A>& collection,
                            as<As> as)
     {
       if (this->out())
-        static_cast<SerializerOut*>(this)->_serialize(name, collection, as);
+        static_cast<SerializerOut*>(this)->_serialize(collection, as);
       else
       {
         this->_serialize_array(
-          name,
           -1,
           [&] ()
           {
@@ -1179,11 +1149,8 @@ namespace elle
                              C<T, A>& collection,
                              as<As>)
     {
-      if (this->_enter(name))
-      {
-        elle::SafeFinally leave([&] { this->_leave(name); });
+      if (auto entry = this->enter(name))
         this->_serialize(name, collection, as<As>());
-      }
     }
 
     template <typename As,
@@ -1196,7 +1163,6 @@ namespace elle
                               as<As>)
     {
       this->_serialize_array(
-        name,
         collection.size(),
         [&] ()
         {
@@ -1206,7 +1172,7 @@ namespace elle
             {
               elle::SafeFinally leave([&] { this->_leave(name); });
               As a(elt);
-              Serializer::serialize_switch(*this, name, a);
+              Serializer::serialize_switch(*this, a);
             }
           }
         });
@@ -1217,7 +1183,6 @@ namespace elle
     SerializerOut::serialize(std::pair<T1, T2> const& pair)
     {
       this->_serialize_array(
-        "",
         2,
         [&] ()
         {
@@ -1226,24 +1191,25 @@ namespace elle
             ELLE_LOG_COMPONENT("elle.serialization.Serializer");
             ELLE_DEBUG_SCOPE("%s: serialize first member", *this);
             elle::SafeFinally leave([&] { this->_leave(""); });
-            Serializer::serialize_switch(*this, "", elle::unconst(pair.first));
+            Serializer::serialize_switch(*this, elle::unconst(pair.first));
           }
           if (this->_enter(""))
           {
             ELLE_LOG_COMPONENT("elle.serialization.Serializer");
             ELLE_DEBUG_SCOPE("%s: serialize second member", *this);
             elle::SafeFinally leave([&] { this->_leave(""); });
-            Serializer::serialize_switch(*this, "", elle::unconst(pair.second));
+            Serializer::serialize_switch(*this, elle::unconst(pair.second));
           }
         });
     }
 
     template <typename T1, typename T2>
     void
-    Serializer::_serialize(std::string const& name, std::pair<T1, T2>& pair)
+    Serializer::_serialize(std::pair<T1, T2>& pair)
     {
       ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-      ELLE_TRACE_SCOPE("%s: serialize pair \"%s\"", *this, name);
+      ELLE_TRACE_SCOPE("%s: serialize pair%s",
+                       this, _details::current_name(*this));
       if (this->_out())
         static_cast<SerializerOut*>(this)->serialize(pair);
       else
@@ -1257,7 +1223,7 @@ namespace elle
     {
       ELLE_LOG_COMPONENT("elle.serialization.Serializer");
       ELLE_TRACE_SCOPE("%s: serialize %s", this, elle::type_info<T>());
-      Serializer::serialize_switch<S>(*this, "SERIALIZE ANONYMOUS", v);
+      Serializer::serialize_switch<S>(*this, v);
     }
 
     template <typename T>

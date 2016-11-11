@@ -104,113 +104,99 @@ namespace elle
       }
 
       void
-      SerializerOut::_serialize_array(std::string const& name,
-                                      int size,
+      SerializerOut::_serialize_array(int size,
                                       std::function<void ()> const& f)
       {
-        ELLE_TRACE_SCOPE("%s: serialize array \"%s\"", *this, name);
-        _serialize_number(size);
+        this->_serialize_number(size);
         f();
       }
 
       void
-      SerializerOut::_serialize_dict_key(
-        std::string const& name,
-        std::function<void ()> const& f)
+      SerializerOut::_serialize_dict_key(std::string const& name,
+                                         std::function<void ()> const& f)
       {
-        this->_serialize("string", const_cast<std::string&>(name));
+        this->_serialize(const_cast<std::string&>(name));
         f();
       }
 
       void
-      SerializerOut::_serialize(std::string const& name, int64_t& v)
+      SerializerOut::_serialize(int64_t& v)
       {
-        ELLE_TRACE_SCOPE("%s: serialize integer \"%s\"", *this, name);
         _serialize_number(v);
       }
 
       void
-      SerializerOut::_serialize(std::string const& name, uint64_t& v)
+      SerializerOut::_serialize(uint64_t& v)
       {
-        ELLE_TRACE_SCOPE("%s: serialize integer \"%s\"", *this, name);
         _serialize_number(v);
       }
 
       void
-      SerializerOut::_serialize(std::string const& name, int32_t& v)
+      SerializerOut::_serialize(int32_t& v)
       {
-        ELLE_TRACE_SCOPE("%s: serialize integer \"%s\"", *this, name);
         _serialize_number(v);
       }
 
       void
-      SerializerOut::_serialize(std::string const& name, uint32_t& v)
+      SerializerOut::_serialize(uint32_t& v)
       {
-        ELLE_TRACE_SCOPE("%s: serialize integer \"%s\"", *this, name);
         _serialize_number(v);
       }
 
       void
-      SerializerOut::_serialize(std::string const& name, int16_t& v)
+      SerializerOut::_serialize(int16_t& v)
       {
-        ELLE_TRACE_SCOPE("%s: serialize integer \"%s\"", *this, name);
         _serialize_number(v);
       }
 
       void
-      SerializerOut::_serialize(std::string const& name, uint16_t& v)
+      SerializerOut::_serialize(uint16_t& v)
       {
-        ELLE_TRACE_SCOPE("%s: serialize integer \"%s\"", *this, name);
         _serialize_number(v);
       }
 
       void
-      SerializerOut::_serialize(std::string const& name, int8_t& v)
+      SerializerOut::_serialize(int8_t& v)
       {
-        ELLE_TRACE_SCOPE("%s: serialize integer \"%s\"", *this, name);
         _serialize_number(v);
       }
 
       void
-      SerializerOut::_serialize(std::string const& name, uint8_t& v)
+      SerializerOut::_serialize(uint8_t& v)
       {
-        ELLE_TRACE_SCOPE("%s: serialize integer \"%s\"", *this, name);
         _serialize_number(v);
       }
 
       void
-      SerializerOut::_serialize(std::string const& name, double& v)
+      SerializerOut::_serialize(double& v)
       {
         output().write((const char*)&v, sizeof(double));
       }
 
       void
-      SerializerOut::_serialize(std::string const& name, bool& v)
+      SerializerOut::_serialize(bool& v)
       {
         _serialize_number(v?1:0);
       }
 
       void
-      SerializerOut::_serialize(std::string const& name, std::string& v)
+      SerializerOut::_serialize(std::string& v)
       {
-        ELLE_TRACE_SCOPE("%s: serialize string \"%s\"", *this, name);
         elle::Buffer buffer(v.c_str(), v.size());
-        this->_serialize(name, buffer);
+        this->_serialize(buffer);
       }
 
       void
-      SerializerOut::_serialize(std::string const& name, elle::Buffer& buffer)
+      SerializerOut::_serialize(elle::Buffer& buffer)
       {
-        ELLE_TRACE_SCOPE("%s: serialize buffer \"%s\"", *this, name);
-        ELLE_DEBUG("%s: serialize size: %s", *this, buffer.size())
+        ELLE_DEBUG("serialize size: %s", buffer.size())
           this->_serialize_number(buffer.size());
-        ELLE_DEBUG("%s: serialize content: %f", *this, buffer)
+        ELLE_DEBUG("serialize content: %f", buffer)
           output().write((const char*)buffer.contents(), buffer.size());
       }
 
       void
-      SerializerOut::_serialize(std::string const& name,
-                                boost::posix_time::ptime& time)
+      SerializerOut::_serialize(boost::posix_time::ptime& time)
       {
         std::stringstream ss;
         auto output_facet =
@@ -220,7 +206,7 @@ namespace elle
         ss.imbue(std::locale(ss.getloc(), output_facet.release()));
         ss << time;
         std::string s(ss.str());
-        _serialize(name, s);
+        this->_serialize(s);
       }
 
       void
@@ -235,19 +221,17 @@ namespace elle
 
       void
       SerializerOut::_serialize_named_option(std::string const&,
-                                       bool,
-                                       std::function<void ()> const& f)
+                                             bool,
+                                             std::function<void ()> const& f)
       {
         f();
       }
 
       void
-      SerializerOut::_serialize_option(std::string const& name,
-                                       bool filled,
+      SerializerOut::_serialize_option(bool filled,
                                        std::function<void ()> const& f)
       {
-        ELLE_TRACE_SCOPE("%s: serialize option \"%s\"", *this, name);
-        _serialize(name, filled);
+        this->_serialize(filled);
         if (filled)
           f();
       }

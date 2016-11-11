@@ -73,84 +73,82 @@ namespace elle
       }
 
       void
-      SerializerIn::_serialize(std::string const& name, int64_t& v)
+      SerializerIn::_serialize(int64_t& v)
       {
-        ELLE_TRACE_SCOPE("%s: deserialize integer \"%s\"", *this, name);
-        v = this->_check_type<int64_t>(name);
+        v = this->_check_type<int64_t>();
       }
 
       void
-      SerializerIn::_serialize(std::string const& name, uint64_t& v)
+      SerializerIn::_serialize(uint64_t& v)
       {
         int64_t value;
-        this->_serialize(name, value);
+        this->_serialize(value);
         if (value < 0)
           throw Error(elle::sprintf(
-                        "64-bits unsigned underflow on key \"%s\"", name));
+                        "64-bits unsigned underflow on key \"%s\"",
+                        this->current_name()));
         v = value;
       }
 
       void
-      SerializerIn::_serialize(std::string const& name, int32_t& v)
+      SerializerIn::_serialize(int32_t& v)
       {
-        this->_serialize_int<int32_t>(name, v);
+        this->_serialize_int<int32_t>(v);
       }
 
       void
-      SerializerIn::_serialize(std::string const& name, uint32_t& v)
+      SerializerIn::_serialize(uint32_t& v)
       {
-        this->_serialize_int<uint32_t>(name, v);
+        this->_serialize_int<uint32_t>(v);
       }
 
       void
-      SerializerIn::_serialize(std::string const& name, int16_t& v)
+      SerializerIn::_serialize(int16_t& v)
       {
-        this->_serialize_int<int16_t>(name, v);
+        this->_serialize_int<int16_t>(v);
       }
 
       void
-      SerializerIn::_serialize(std::string const& name, uint16_t& v)
+      SerializerIn::_serialize(uint16_t& v)
       {
-        this->_serialize_int<uint16_t>(name, v);
+        this->_serialize_int<uint16_t>(v);
       }
 
       void
-      SerializerIn::_serialize(std::string const& name, int8_t& v)
+      SerializerIn::_serialize(int8_t& v)
       {
-        this->_serialize_int<int8_t>(name, v);
+        this->_serialize_int<int8_t>(v);
       }
 
       void
-      SerializerIn::_serialize(std::string const& name, uint8_t& v)
+      SerializerIn::_serialize(uint8_t& v)
       {
-        this->_serialize_int<uint8_t>(name, v);
+        this->_serialize_int<uint8_t>(v);
       }
 
       template <typename T>
       void
-      SerializerIn::_serialize_int(std::string const& name, T& v)
+      SerializerIn::_serialize_int(T& v)
       {
         int64_t value;
-        this->_serialize(name, value);
+        this->_serialize(value);
         if (value > std::numeric_limits<T>::max())
-          throw Overflow(name, sizeof(T) * 8, true);
+          throw Overflow(this->current_name(), sizeof(T) * 8, true);
         if (value < std::numeric_limits<T>::min())
-          throw Overflow(name, sizeof(T) * 8, false);
+          throw Overflow(this->current_name(), sizeof(T) * 8, false);
         v = value;
       }
 
       void
-      SerializerIn::_serialize(std::string const& name, double& v)
+      SerializerIn::_serialize(double& v)
       {
-        ELLE_TRACE_SCOPE("%s: deserialize double \"%s\"", *this, name);
-        v = this->_check_type<double, int64_t>(name);
+        v = this->_check_type<double, int64_t>();
       }
 
       void
-      SerializerIn::_serialize(std::string const& name, bool& v)
+      SerializerIn::_serialize(bool& v)
       {
-        ELLE_TRACE_SCOPE("%s: deserialize boolean \"%s\"", *this, name);
-        v = this->_check_type<bool>(name);
+        v = this->_check_type<bool>();
       }
 
       void
@@ -158,7 +156,7 @@ namespace elle
                                             bool,
                                             std::function<void ()> const& f)
       {
-        auto& object = this->_check_type<elle::json::Object>(name);
+        auto& object = this->_check_type<elle::json::Object>();
         auto it = object.find(name);
         if (it != object.end())
           f();
@@ -167,8 +165,7 @@ namespace elle
       }
 
       void
-      SerializerIn::_serialize_option(std::string const& name,
-                                      bool,
+      SerializerIn::_serialize_option(bool,
                                       std::function<void ()> const& f)
       {
         if (this->_current.back()->type() != typeid(elle::json::NullType))
@@ -178,17 +175,15 @@ namespace elle
       }
 
       void
-      SerializerIn::_serialize(std::string const& name, std::string& v)
+      SerializerIn::_serialize(std::string& v)
       {
-        ELLE_TRACE_SCOPE("%s: deserialize string \"%s\"", *this, name);
-        v = this->_check_type<std::string>(name);
+        v = this->_check_type<std::string>();
       }
 
       void
-      SerializerIn::_serialize(std::string const& name, elle::Buffer& buffer)
+      SerializerIn::_serialize(elle::Buffer& buffer)
       {
-        ELLE_TRACE_SCOPE("%s: deserialize buffer \"%s\"", *this, name);
-        auto& str = this->_check_type<std::string>(name);
+        auto& str = this->_check_type<std::string>();
         std::stringstream encoded(str);
         elle::format::base64::Stream base64(encoded);
         {
@@ -200,11 +195,9 @@ namespace elle
       }
 
       void
-      SerializerIn::_serialize(std::string const& name,
-                               boost::posix_time::ptime& time)
+      SerializerIn::_serialize(boost::posix_time::ptime& time)
       {
-        ELLE_TRACE_SCOPE("%s: deserialize date \"%s\"", *this, name);
-        auto& str = this->_check_type<std::string>(name);
+        auto& str = this->_check_type<std::string>();
         // Use the ISO extended input facet to interpret the string.
         std::stringstream ss(str);
         auto input_facet =
@@ -213,8 +206,8 @@ namespace elle
         input_facet->format("%Y-%m-%dT%H:%M:%S%F");
         ss.imbue(std::locale(ss.getloc(), input_facet.release()));
         if (!(ss >> time))
-          throw FieldError
-            (name, elle::sprintf("invalid ISO8601 date: %s", str));
+          throw FieldError(this->current_name(),
+                           elle::sprintf("invalid ISO8601 date: %s", str));
         // Check there isn't any leftover.
         std::string leftover;
         std::getline(ss, leftover);
@@ -231,19 +224,22 @@ namespace elle
           int amount;
           tz >> amount;
           if (tz.get() != -1)
-            throw FieldError
-              (name, elle::sprintf("garbage at end of date: %s", leftover));
+            throw FieldError(
+              this->current_name(),
+              elle::sprintf("garbage at end of date: %s", leftover));
           time += boost::posix_time::hours(direction * amount / 100);
         }
         else
-          throw FieldError
-            (name, elle::sprintf("garbage at end of date: %s", leftover));
+          throw FieldError(
+            this->current_name(),
+            elle::sprintf("garbage at end of date: %s", leftover));
         if (!ss.eof())
         {
           std::string leftover;
           std::getline(ss, leftover);
-          throw FieldError
-            (name, elle::sprintf("garbage at end of date: %s", leftover));
+          throw FieldError(
+            this->current_name(),
+            elle::sprintf("garbage at end of date: %s", leftover));
         }
       }
 
@@ -252,7 +248,7 @@ namespace elle
                                              std::int64_t& num,
                                              std::int64_t& denom)
       {
-        auto const repr = this->_check_type<std::string>("<TIME_FIXME>");
+        auto const repr = this->_check_type<std::string>();
         auto const pos = repr.find_first_not_of("0123456789");
         if (pos == std::string::npos)
           throw elle::Error("missing duration unit");
@@ -287,7 +283,7 @@ namespace elle
       bool
       SerializerIn::_enter(std::string const& name)
       {
-        auto& object = this->_check_type<elle::json::Object>(name);
+        auto& object = this->_check_type<elle::json::Object>();
         auto it = object.find(name);
         if (it == object.end())
           if (this->_partial)
@@ -309,12 +305,10 @@ namespace elle
 
       void
       SerializerIn::_serialize_array(
-        std::string const& name,
         int size,
         std::function<void ()> const& serialize_element)
       {
-        ELLE_TRACE_SCOPE("%s: serialize array \"%s\"", *this, name);
-        auto& array = this->_check_type<elle::json::Array>(name);
+        auto& array = this->_check_type<elle::json::Array>();
         for (auto& elt: array)
         {
           this->_current.push_back(&elt);
@@ -391,9 +385,10 @@ namespace elle
 
       template <typename T, typename ... Alternatives>
       T&
-      SerializerIn::_check_type(std::string const& name)
+      SerializerIn::_check_type()
       {
         auto& current = *this->_current.back();
+        auto name = this->_names.empty() ? "" : this->_names.back();
         if (current.type() == typeid(T))
           return boost::any_cast<T&>(current);
         return any_casts<T, Alternatives ...>::cast(name, current);
