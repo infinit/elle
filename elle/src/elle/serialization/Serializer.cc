@@ -17,6 +17,18 @@ namespace elle
     {}
 
     bool
+    Serializer::enter(std::string const& name)
+    {
+      return this->_enter(name);
+    }
+
+    void
+    Serializer::leave(std::string const& name)
+    {
+      return this->_leave(name);
+    }
+
+    bool
     Serializer::_enter(std::string const&)
     {
       return true;
@@ -84,8 +96,8 @@ namespace elle
     }
 
     void
-    Serializer::_serialize_anonymous(std::string const& name,
-                                     std::exception_ptr& e)
+    Serializer::_serialize_anonymous_exception(std::string const& name,
+                                               std::exception_ptr& e)
     {
       if (this->out())
         try

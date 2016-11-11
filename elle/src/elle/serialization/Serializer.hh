@@ -128,7 +128,7 @@ namespace elle
     | Serialization |
     `--------------*/
     public:
-      template <typename T>
+      template <typename Serializer = void, typename T>
       void
       serialize(std::string const& name, T& v);
       template <typename T>
@@ -142,7 +142,7 @@ namespace elle
       serialize(std::string const& name, std::shared_ptr<T>& opt);
       template <typename T>
       typename std::enable_if<
-        !_details::has_serialize_convert_api<T*>(), void>::type
+        !_details::has_serialize_convert_api<T*, void>(), void>::type
       serialize(std::string const& name, T*& opt);
       template <typename T, typename As>
       void
@@ -174,6 +174,9 @@ namespace elle
       template <typename T>
       void
       serialize_forward(T& v);
+      template <typename Serializer, typename T>
+      void
+      serialize_forward(T& v);
       template <typename T>
       void
       serialize_context(T& value);
@@ -184,6 +187,11 @@ namespace elle
       set_context(Context const& context);
       ELLE_ATTRIBUTE_R(Context, context);
 
+    public:
+      bool
+      enter(std::string const& name);
+      void
+      leave(std::string const& name);
     protected:
       virtual
       bool
@@ -321,24 +329,28 @@ namespace elle
       template <typename C>
       void
       _serialize_assoc(std::string const& name, C& map);
-      template <typename T>
+      template <typename S = void, typename T>
       void
       _serialize_anonymous(std::string const& name, T& v);
-      template <typename T>
+      template <typename S = void, typename T>
       typename std::enable_if<
-        !_details::has_serialize_convert_api<T*>(), void>::type
+        !_details::has_serialize_convert_api<T*, S>(), void>::type
       _serialize_anonymous(std::string const& name, T*& v);
-      template <typename T, typename D>
+      template <typename S = void, typename T, typename D>
       void
       _serialize_anonymous(std::string const& name, std::unique_ptr<T, D>& v);
-      template <typename T>
+      template <typename S = void, typename T>
       void
       _serialize_anonymous(std::string const& name, std::shared_ptr<T>& v);
-      template <typename T>
+      template <typename S = void, typename T>
       void
       _serialize_anonymous(std::string const& name, boost::optional<T>& opt);
-      void
+      template <typename S = void>
+      typename std::enable_if<std::is_same<S, void>::value, void>::type
       _serialize_anonymous(std::string const& name, std::exception_ptr& e);
+      void
+      _serialize_anonymous_exception(
+        std::string const& name, std::exception_ptr& e);
       template <typename C>
       typename std::enable_if_exists<
         decltype(

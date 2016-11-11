@@ -27,14 +27,24 @@ namespace elle
           (o, std::forward<Args>(args)...);
       }
 
-      template <typename T, typename ... Args>
+      template <typename T, typename Serializer = void, typename ... Args>
       auto
       deserialize(Args&& ... args)
         -> decltype(elle::serialization::deserialize<Json, T>
                     (std::forward<Args>(args)...))
       {
-        return elle::serialization::deserialize<Json, T>
+        return elle::serialization::deserialize<Json, T, Serializer>
           (std::forward<Args>(args)...);
+      }
+
+      template <typename Serializer, typename T, typename ... Args>
+      auto
+      serialize(T const& o, Args&& ... args)
+        -> decltype(elle::serialization::serialize<Json, T>
+                    (o, std::forward<Args>(args)...))
+      {
+        return elle::serialization::serialize<Serializer, Json, T>
+          (o, std::forward<Args>(args)...);
       }
     }
   }

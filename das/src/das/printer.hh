@@ -6,31 +6,33 @@
 
 namespace das
 {
-  template <typename Field>
-  struct PrintMember
+  namespace
   {
-    template <typename T>
-    static
-    void
-    apply(T const& o, std::ostream& s, bool& first)
+    template <typename O>
+    struct stringify_object
     {
-      if (first)
-        first = false;
-      else
-        s << ", ";
-      elle::fprintf(s, "%s = %s", Field::getname(), Field::get(o));
-    }
-  };
+      template <typename S>
+      struct stringify
+      {
+        using type = std::string;
+        static
+        type
+        value(O const& o)
+        {
+          return elle::sprintf("%s = %s", S::name(), S::attr_get(o));
+         }
+      };
+    };
+  }
 
   template <typename T>
-  typename
-  std::enable_if_exists<typename das::Das<T>::Model, std::ostream>::type&
-  operator << (std::ostream& s, T const& e)
+  typename std::enable_if_exists<
+    typename das::DefaultModel<T>::type, std::ostream&>::type
+  operator <<(std::ostream& s, T const& o)
   {
-    bool first = true;
-    s << elle::demangle(typeid(T).name()) << "(";
-    das::Das<T>::Model::template each_field<das::PrintMember>(e, s, first);
-    s << ")";
+    using Fields = typename DefaultModel<T>::type::Fields;
+    s << elle::type_info(o) <<
+      Fields::template map<stringify_object<T>::template stringify>::value(o);
     return s;
   }
 }

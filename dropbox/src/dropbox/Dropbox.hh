@@ -8,13 +8,35 @@
 # include <elle/attribute.hh>
 # include <elle/optional.hh>
 
+# include <das/Symbol.hh>
 # include <das/model.hh>
+# include <das/printer.hh>
 # include <das/serializer.hh>
 
 # include <reactor/http/Request.hh>
 
 namespace dropbox
 {
+  namespace symbols
+  {
+    DAS_SYMBOL(backoff);
+    DAS_SYMBOL(bytes);
+    DAS_SYMBOL(changes);
+    DAS_SYMBOL(client_mtime);
+    DAS_SYMBOL(contents);
+    DAS_SYMBOL(cursor);
+    DAS_SYMBOL(display_name);
+    DAS_SYMBOL(entries);
+    DAS_SYMBOL(has_more);
+    DAS_SYMBOL(is_deleted);
+    DAS_SYMBOL(is_dir);
+    DAS_SYMBOL(modified);
+    DAS_SYMBOL(path);
+    DAS_SYMBOL(read_only);
+    DAS_SYMBOL(reset);
+    DAS_SYMBOL(uid);
+  }
+
   struct Error
     : public elle::Error
   {
@@ -37,6 +59,11 @@ namespace dropbox
   {
     int uid;
     std::string display_name;
+    using Model = das::Model<AccountInfo,
+                             elle::meta::List<
+                               symbols::Symbol_uid,
+                               symbols::Symbol_display_name>>;
+
   };
 
   struct Metadata
@@ -56,14 +83,35 @@ namespace dropbox
       int64_t bytes;
       boost::optional<std::string> client_mtime;
       boost::optional<std::string> modified;
+      using Model = das::Model<
+        Content,
+        decltype(elle::meta::list(symbols::path,
+                                  symbols::is_dir,
+                                  symbols::bytes,
+                                  symbols::client_mtime,
+                                  symbols::modified))>;
     };
     boost::optional<std::vector<Content>> contents;
+
+    using Model = das::Model<
+      Metadata,
+      decltype(elle::meta::list(symbols::is_dir,
+                                symbols::path,
+                                symbols::client_mtime,
+                                symbols::modified,
+                                symbols::is_deleted,
+                                symbols::read_only,
+                                symbols::contents))>;
   };
 
   struct Longpoll
   {
     bool changes;
     boost::optional<int> backoff;
+    using Model = das::Model<
+      Longpoll,
+      decltype(elle::meta::list(symbols::changes,
+                                symbols::backoff))>;
   };
 
   struct Delta
@@ -72,6 +120,12 @@ namespace dropbox
     std::string cursor;
     bool has_more;
     std::unordered_map<std::string, boost::optional<Metadata>> entries;
+    using Model = das::Model<
+      Delta,
+      decltype(elle::meta::list(symbols::reset,
+                                symbols::cursor,
+                                symbols::has_more,
+                                symbols::entries))>;
   };
 
   class Dropbox
@@ -170,39 +224,26 @@ namespace dropbox
   using das::operator <<;
 }
 
-DAS_MODEL_FIELDS(
-  dropbox::AccountInfo,
-  (uid, display_name));
-DAS_MODEL_FIELDS(
-  dropbox::Metadata::Content,
-  (path, is_dir, bytes, client_mtime, modified));
-DAS_MODEL_FIELDS(
-  dropbox::Metadata,
-  (is_dir, path, bytes, client_mtime, modified, is_deleted, read_only,
-   contents));
 
-namespace dropbox
+namespace elle
 {
-  DAS_MODEL_DEFINE(
-    AccountInfo,
-    (uid, display_name),
-    DasAccountInfo);
-  DAS_MODEL_DEFINE(
-    Metadata::Content,
-    (path, is_dir, bytes, client_mtime, modified),
-    DasMetadataContent);
-  DAS_MODEL_DEFINE(
-    Metadata,
-    (is_dir, path, bytes, client_mtime, modified, is_deleted, read_only,
-     contents),
-    DasMetadata);
-}
+  namespace serialization
+  {
+    template <>
+    struct Serialize<dropbox::AccountInfo>
+      : public das::Serializer<dropbox::AccountInfo>
+    {};
 
-DAS_MODEL_DEFAULT(dropbox::AccountInfo, dropbox::DasAccountInfo);
-DAS_MODEL_SERIALIZE(dropbox::AccountInfo);
-DAS_MODEL_DEFAULT(dropbox::Metadata::Content, dropbox::DasMetadataContent);
-DAS_MODEL_SERIALIZE(dropbox::Metadata::Content);
-DAS_MODEL_DEFAULT(dropbox::Metadata, dropbox::DasMetadata);
-DAS_MODEL_SERIALIZE(dropbox::Metadata);
+    template <>
+    struct Serialize<dropbox::Metadata::Content>
+      : public das::Serializer<dropbox::Metadata::Content>
+    {};
+
+    template <>
+    struct Serialize<dropbox::Metadata>
+      : public das::Serializer<dropbox::Metadata>
+    {};
+  }
+}
 
 #endif

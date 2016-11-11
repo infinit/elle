@@ -1,80 +1,185 @@
 #ifndef DAS_SERIALIZER_HH
 # define DAS_SERIALIZER_HH
 
+# include <type_traits>
+
+# include <elle/serialization/SerializerIn.hh>
+# include <elle/serialization/SerializerOut.hh>
+
 # include <das/model.hh>
 
 namespace das
 {
-  template <typename Field>
-  struct SerializeMember
+  template <typename T>
+  void
+  serialize(T const& o, elle::serialization::SerializerOut& s);
+
+  namespace _details
+  {
+    template <typename T, typename ... Args>
+    T
+    construct(Args&& ... args)
+    {
+      return T(std::move(args)...);
+    }
+  }
+
+  template <typename O, typename M = typename DefaultModel<O>::type>
+  struct Serializer
   {
     template <typename T>
+    struct Serialize
+    {
+      using type = int;
+      static
+      int
+      value(O const& o, elle::serialization::SerializerOut& s)
+      {
+        s.serialize(T::name(), T::attr_get(o));
+        return 0;
+      }
+    };
+
+    template <typename T>
+    struct Deserialize
+    {
+      using type = typename T::template attr_type<O>::type;
+      static
+      type
+      value(elle::serialization::SerializerIn& s)
+      {
+        return s.deserialize<type>(T::name());
+      }
+    };
+
+    template <typename T>
+    struct DeserializeAssign
+    {
+      using type = bool;
+      static
+      bool
+      value(elle::serialization::SerializerIn& s, O& o)
+      {
+        T::attr_get(o) =
+          s.deserialize<typename T::template attr_type<O>::type>(T::name());
+        return false;
+      }
+    };
+
     static
     void
-    apply(T& o, elle::serialization::Serializer& s)
+    serialize(O const& o, elle::serialization::SerializerOut& s)
     {
-      s.serialize(Field::name, Field::get(o));
+      M::Fields::template map<Serialize>::value(o, s);
+    }
+
+    static
+    O
+    deserialize(elle::serialization::SerializerIn& s);
+
+    static
+    void
+    serialize(std::string const& name,
+              O const& o,
+              elle::serialization::SerializerOut& s)
+    {
+      if (s.enter(name))
+      {
+        serialize(o, s);
+        s.leave(name);
+      }
     }
   };
+
+  namespace _details
+  {
+    /// Deserialize by constructor.
+    template <typename O, typename M>
+    typename std::enable_if<
+      M::Types::template apply<std::is_constructible, O>::type::value,
+      O>::type
+    deserialize_switch(elle::serialization::SerializerIn& s)
+    {
+      return std::forward_tuple(
+        [] (auto&& ... args) -> O
+        {
+          return O(std::move(args)...);
+        },
+        M::Fields::template map<Serializer<O, M>::template Deserialize>::value(s));
+    }
+
+    template <typename O>
+    struct SetAttr
+    {
+      template <typename A>
+      struct set
+      {
+        using type = decltype(
+          A::attr_get(std::declval<O&>()) =
+          std::declval<typename A::template attr_type<O>::type>());
+      };
+    };
+
+    /// Deserialize via default construct and fields assignment.
+    template <typename O, typename M>
+    typename std::enable_if<
+      !M::Types::template apply<std::is_constructible, O>::type::value &&
+      sizeof(typename M::Fields::template map<SetAttr<O>::template set>::type) >= 0,
+      O>::type
+    deserialize_switch(elle::serialization::SerializerIn& s)
+    {
+      O res;
+      M::Fields::template map<Serializer<O, M>::
+        template DeserializeAssign>::value(s, res);
+      return res;
+    }
+  }
 
   template <typename T>
-  class Serializer
-    : public elle::serialization::forward_serialization_tag<T>
+  void
+  serialize(T const& o, elle::serialization::SerializerOut& s)
   {
-  public:
-    Serializer(T& o)
-      : _object(o)
-    {}
+    Serializer<T>::serialize(o, s);
+  }
 
-    void
-    serialize(elle::serialization::Serializer& s)
-    {
-      das::Das<T>::Model::template each_field<das::SerializeMember>(
-        this->_object, s);
-    }
-    ELLE_ATTRIBUTE_R(T&, object);
-  };
-
-  template <typename T, typename ... Fields>
-  class Serializer<das::Object<T, Fields ...>>
-    : public elle::serialization::forward_serialization_tag
-        <das::Object<T, Fields ...>>
+  template <typename Model, typename T>
+  void
+  serialize(T const& o, elle::serialization::SerializerOut& s)
   {
-  public:
-    typedef typename das::Object<T, Fields ...>::Model Model;
-    Serializer(Model& o)
-      : _object(o)
-    {}
+    Serializer<T, Model>::serialize(o, s);
+  }
 
-    Serializer()
-      : _object(*(Model*)(nullptr))
-    {
-      ELLE_ABORT("not handled yet");
-    }
+  template <typename T>
+  void
+  serialize(std::string const& name,
+            T const& o,
+            elle::serialization::SerializerOut& s)
+  {
+    Serializer<T>::serialize(name, o, s);
+  }
 
-    void
-    serialize(elle::serialization::Serializer& s)
-    {
-      das::Object<T, Fields...>::template each_field<das::SerializeMember>(
-        this->_object, s);
-    }
-
-    ELLE_ATTRIBUTE_R(Model&, object);
-  };
+  template <typename Model, typename T>
+  void
+  serialize(std::string const& name,
+            T const& o,
+            elle::serialization::SerializerOut& s)
+  {
+    Serializer<T, Model>::serialize(name, o, s);
+  }
 }
 
-#define DAS_MODEL_SERIALIZE(Class)              \
-  namespace elle                                \
-  {                                             \
-    namespace serialization                     \
-    {                                           \
-      template <>                               \
-        struct Serialize<Class>                 \
-      {                                         \
-        typedef das::Serializer<Class> Wrapper; \
-      };                                        \
-    }                                           \
-  }                                             \
+# define DAS_SERIALIZE(Class, ...)                               \
+  namespace elle                                                \
+  {                                                             \
+    namespace serialization                                     \
+    {                                                           \
+      template <>                                               \
+        struct Serialize<Class>                                 \
+          : public das::Serializer<Class, ## __VA_ARGS__>       \
+      {};                                                       \
+    }                                                           \
+  }                                                             \
 
+# include <das/serializer.hxx>
 
 #endif
