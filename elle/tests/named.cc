@@ -243,29 +243,29 @@ default_positional()
   default_positional_f(false);
 }
 
-/*------.
-| Macro |
-`------*/
+// /*------.
+// | Macro |
+// `------*/
 
-#define TEST(R, Name, ...)                                \
-  template <typename ... Args>                            \
-  R                                                       \
-  Name(Args&& ... args)                                   \
-  {                                                       \
-    return elle::named::prototype(__VA_ARGS__).call(      \
-      _named_##Name, std::forward<Args>(args)...);        \
-  }                                                       \
-                                                          \
-  R                                                       \
-  _named_##Name                                           \
+// #define TEST(R, Name, ...)                                \
+//   template <typename ... Args>                            \
+//   R                                                       \
+//   Name(Args&& ... args)                                   \
+//   {                                                       \
+//     return elle::named::prototype(__VA_ARGS__).call(      \
+//       _named_##Name, std::forward<Args>(args)...);        \
+//   }                                                       \
+//                                                           \
+//   R                                                       \
+//   _named_##Name                                           \
 
-class Foo
-{
-  TEST(bool, foo, versioned = true)(bool versioned)
-  {
-    return true;
-  }
-};
+// class Foo
+// {
+//   TEST(bool, foo, versioned = true)(bool versioned)
+//   {
+//     return true;
+//   }
+// };
 
 /*-------.
 | Driver |
