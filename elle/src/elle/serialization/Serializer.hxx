@@ -1473,11 +1473,11 @@ namespace elle
     | Helpers |
     `--------*/
 
-    template <typename T, typename Serializer>
+    template <typename T, typename S>
     T
     SerializerIn::deserialize()
     {
-      return Details::deserialize<T, Serializer>(*this, 42);
+      return Details::deserialize<T, S>(*this, 42);
     }
 
     template <typename ST>
