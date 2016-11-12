@@ -209,7 +209,7 @@ x86_64-osx-clang:
     - TARBALL=elle-x86_64-osx-clang3-$(GIT_DIR=../elle/.git git describe).tbz
     - gtar -cvjf ../$TARBALL -C ../elle-install . --show-transformed-names --transform "s,^\\./,elle-$(GIT_DIR=../elle/.git git describe)/,"
     - scp ../$TARBALL debian@debian.infinit.io:/tmp
-    - rm  "$TARBALL"
+    - rm  "../$TARBALL"
   tags:
     - x86_64
     - osx
