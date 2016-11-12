@@ -1399,7 +1399,7 @@ namespace elle
     template <typename T> struct is_nullable<std::unique_ptr<T>> {static const bool value = true;};
     template <typename T> struct is_nullable<std::shared_ptr<T>> {static const bool value = true;};
 
-    template <typename T, typename Serializer>
+    template <typename T, typename S>
     typename std::enable_if<
       !std::is_base_of<boost::optional_detail::optional_tag, T>::value
       && !is_nullable<T>::value,
@@ -1410,7 +1410,7 @@ namespace elle
       ELLE_LOG_COMPONENT("elle.serialization.Serializer");
       ELLE_DUMP("type: %s", elle::type_info<T>());
       ELLE_ENFORCE(entry);
-      return this->deserialize<T, Serializer>();
+      return this->deserialize<T, S>();
     }
 
     template <typename T, typename Serializer>
