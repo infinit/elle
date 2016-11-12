@@ -1413,7 +1413,7 @@ namespace elle
       return this->deserialize<T, S>();
     }
 
-    template <typename T, typename Serializer>
+    template <typename T, typename S>
     typename std::enable_if<
       std::is_base_of<boost::optional_detail::optional_tag, T>::value
       || is_nullable<T>::value,
@@ -1421,7 +1421,7 @@ namespace elle
     SerializerIn::deserialize(std::string const& name)
     { // We cannot call _enter at this stage for optional types
       T res;
-      this->serialize<Serializer>(name, res);
+      this->serialize<S>(name, res);
       return res;
     }
 
