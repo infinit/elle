@@ -9,6 +9,12 @@
     : public ::das::Symbol                      \
   {                                             \
   public:                                       \
+    /* Clang requires a user-defined   */       \
+    /* default constructor for default */       \
+    /* initialization. */                       \
+    Symbol_##Name()                             \
+    {}                                          \
+                                                \
     template <typename T>                       \
     static                                      \
     auto                                        \
