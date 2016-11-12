@@ -12,6 +12,7 @@
     /* Clang requires a user-defined   */       \
     /* default constructor for default */       \
     /* initialization. */                       \
+    constexpr                                   \
     Symbol_##Name()                             \
     {}                                          \
                                                 \
