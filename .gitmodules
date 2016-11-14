@@ -8,7 +8,7 @@
         fetchRecurseSubmodules = false
 [submodule "reactor/miniupnp"]
 	path = reactor/miniupnp
-	url = https://github.com/infinit/miniuppn
+	url = https://github.com/infinit/miniupnp
         fetchRecurseSubmodules = false
 [submodule "cryptography"]
 	path = cryptography
