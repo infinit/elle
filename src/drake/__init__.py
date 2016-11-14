@@ -2867,13 +2867,13 @@ OPTIONS:
   print('''\
 
 ACTIONS:
-	--build [NODES]: build NODES, or all nodes in NODES is empty.
-	--clean [NODES]: recursively delete all generated ancestors of
-	  NODES, or all generated nodes in NODES is empty.
-	--dot NODES: generate a dot dependency graph on stdout for
-	  NODES (requires dot).
-	--dot-show NODES: show a dependency graph for NODES (requires
-	  dot and xv).''')
+        --build [NODES]: build NODES, or all nodes in NODES is empty.
+        --clean [NODES]: recursively delete all generated ancestors of
+          NODES, or all generated nodes in NODES is empty.
+        --dot NODES: generate a dot dependency graph on stdout for
+          NODES (requires dot).
+        --dot-show NODES: show a dependency graph for NODES (requires
+          dot and xv).''')
   exit(0)
 
 def complete_modes():
@@ -3149,18 +3149,18 @@ def copy(sources,
 
   When copying large file trees, iterating and creating Copy
   builders manually by computing the destination path can be a
-  hassle. This convenience function provides a condensed mean to
+  hassle. This convenience function provides a condensed means to
   express common file trees copies, and returns the list of copied
   nodes.
 
-  The sources nodes are copied in the to directory. The sources path
+  The sources nodes are copied in the `to` directory. The sources path
   is kept and concatenated to the destination directory. That is,
-  copying 'foo/bar' into 'baz/quux' whill create the
+  copying 'foo/bar' into 'baz/quux' will create the
   'baz/quux/foo/bar' node.
 
-  If strip_prefix is specified, it is stripped from the source
-  pathes before copying. That is, copying 'foo/bar/baz' into 'quux'
-  with a strip prefix of 'foo' wil create the 'bar/baz/quux' node.
+  If `strip_prefix` is specified, it is stripped from the source
+  paths before copying. That is, copying 'foo/bar/baz' into 'quux'
+  with a strip prefix of 'foo' will create the 'quux/bar/baz' node.
 
   sources      -- List of nodes to copy, or a single node to copy.
   to           -- Path where to copy.
@@ -4014,6 +4014,7 @@ class ArchiveExtractor(Builder):
   def __str__(self):
     return 'Extraction of %s' % self.__tarball
 
+
 class TarballExtractor(ArchiveExtractor):
 
   def extract(self):
@@ -4058,6 +4059,7 @@ def Extractor(tarball, *args, **kwargs):
 class Zipper(Builder):
 
   def __init__(self, target, sources, prefix = None, whole_folder = None):
+
     """ Constructor
     """
     self.__target = target
