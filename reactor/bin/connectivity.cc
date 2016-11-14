@@ -121,7 +121,7 @@ run(int argc, char** argv)
     auto pm = upnp->setup_redirect(reactor::network::Protocol::tcp, 5678);
     std::cerr << "  mapping: " << pm.internal_host << ':' << pm.internal_port
       << " -> " << pm.external_host << ':' << pm.external_port << std::endl;
-    auto pm2 = upnp->setup_redirect(reactor::network::Protocol::udt, 5679);
+    auto pm2 = upnp->setup_redirect(reactor::network::Protocol::utp, 5679);
     std::cerr << "  mapping: " << pm2.internal_host << ':' << pm2.internal_port
       << " -> " << pm2.external_host << ':' << pm2.external_port << std::endl;
   }

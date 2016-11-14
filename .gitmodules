@@ -1,7 +1,3 @@
-[submodule "reactor/asio-udt"]
-	path = reactor/asio-udt
-	url = git@git.infinit.io:asio-udt
-        fetchRecurseSubmodules = false
 [submodule "drake"]
 	path = drake
 	url = git@git.infinit.io:drake

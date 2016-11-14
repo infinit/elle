@@ -8,7 +8,6 @@ import sys
 from itertools import chain
 
 archs = None
-asio_udt = None
 athena = None
 aws = None
 boost = None
@@ -77,7 +76,6 @@ def configure(cxx_toolkit = None,
               codesign = False,
   ):
 
-  global asio_udt
   global athena
   global aws
   global config
@@ -1360,8 +1358,6 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
   config += protocol.config
   config += reactor.config
   config += aws.config
-
-  asio_udt = reactor.asio_udt_lib
 
   submodules = [
     athena,

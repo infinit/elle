@@ -13,8 +13,8 @@ namespace reactor
         case Protocol::tcp:
           out << "reactor::network::Protocol::tcp";
           break;
-        case Protocol::udt:
-          out << "reactor::network::Protocol::udt";
+        case Protocol::utp:
+          out << "reactor::network::Protocol::utp";
           break;
         default:
           out << "unknow Protocol";
