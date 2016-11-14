@@ -8,7 +8,7 @@
         fetchRecurseSubmodules = false
 [submodule "reactor/miniupnp"]
 	path = reactor/miniupnp
-	url = git@git.infinit.io:miniupnp
+	url = https://github.com/infinit/miniuppn
         fetchRecurseSubmodules = false
 [submodule "cryptography"]
 	path = cryptography
@@ -16,7 +16,7 @@
         fetchRecurseSubmodules = false
 [submodule "reactor/libutp"]
 	path = reactor/libutp
-	url = git@git.infinit.io:libutp
+	url = https://github.com/infinit/libutp
         fetchRecurseSubmodules = false
 [submodule "reactor/osxfuse"]
 	path = reactor/osxfuse
@@ -24,5 +24,5 @@
         fetchRecurseSubmodules = false
 [submodule "reactor/dokany"]
 	path = reactor/dokany
-	url = git@git.infinit.io:dokan
+	url = https://github.com/infinit/dokan
         fetchRecurseSubmodules = false
