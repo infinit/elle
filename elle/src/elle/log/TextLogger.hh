@@ -9,7 +9,8 @@ namespace elle
 {
   namespace log
   {
-    class TextLogger: public Logger
+    class ELLE_API TextLogger
+      : public Logger
     {
     public:
       TextLogger(std::ostream& out,

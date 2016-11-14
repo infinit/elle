@@ -6,12 +6,13 @@
 # include <vector>
 
 # include <elle/attribute.hh>
+# include <elle/compiler.hh>
 
 namespace elle
 {
   namespace system
   {
-    class Process
+    class ELLE_API Process
     {
     /*------.
     | Types |

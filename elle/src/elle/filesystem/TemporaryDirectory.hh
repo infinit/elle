@@ -4,13 +4,14 @@
 # include <string>
 
 # include <elle/attribute.hh>
+# include <elle/compiler.hh>
 # include <elle/filesystem.hh>
 
 namespace elle
 {
   namespace filesystem
   {
-    class TemporaryDirectory
+    class ELLE_API TemporaryDirectory
     {
     public:
       TemporaryDirectory();

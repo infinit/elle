@@ -3,6 +3,7 @@
 
 # include <elle/Buffer.hh>
 # include <elle/IOStream.hh>
+# include <elle/compiler.hh>
 
 namespace elle
 {
@@ -27,8 +28,8 @@ namespace elle
       /// waiting to be compressed with the next ones.
       ///
       /// Decompression is not supported for now.
-      class Stream:
-        public elle::IOStream
+      class ELLE_API Stream
+        : public elle::IOStream
       {
       public:
         /// Construct a Stream.

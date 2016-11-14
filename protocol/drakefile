@@ -105,7 +105,6 @@ def configure(cryptography,
   rule_tests = drake.Rule('tests')
 
   tests = [
-    'rpc',
     'serializer',
     'split',
   ]

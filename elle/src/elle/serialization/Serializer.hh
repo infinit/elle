@@ -34,7 +34,7 @@ namespace elle
     struct Serialize
     {};
 
-    class Context
+    class ELLE_API Context
     {
     public:
       template <typename T>
@@ -93,7 +93,7 @@ namespace elle
       ELLE_ATTRIBUTE((std::map<TypeInfo, boost::any>), value);
     };
 
-    class Serializer
+    class ELLE_API Serializer
     {
     /*------.
     | Types |
@@ -365,7 +365,7 @@ namespace elle
     {};
 
     template <typename T>
-    class Hierarchy;
+    class ELLE_API Hierarchy;
   }
 }
 

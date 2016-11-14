@@ -12,8 +12,8 @@ namespace elle
   {
     namespace binary
     {
-       class SerializerIn:
-        public serialization::SerializerIn
+       class ELLE_API SerializerIn
+         : public serialization::SerializerIn
       {
       /*------.
       | Types |

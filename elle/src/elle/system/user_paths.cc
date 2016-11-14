@@ -1,7 +1,8 @@
 #include <iostream>
 
+#include <boost/filesystem/operations.hpp>
+
 #include <elle/os/environ.hh>
-#include <elle/os/path.hh>
 #include <elle/system/user_paths.hh>
 #ifdef INFINIT_WINDOWS
 # include <elle/windows/string_conversion.hh>
@@ -46,13 +47,9 @@ namespace elle
     boost::filesystem::path
     download_directory()
     {
-      auto candiate_dir =
-        elle::os::path::join(home_directory().string(), "Downloads");
-      if (elle::os::path::exists(candiate_dir) &&
-          elle::os::path::is_directory(candiate_dir))
-      {
-        return candiate_dir;
-      }
+      auto candidate_dir = home_directory() / "Downloads";
+      if (exists(candidate_dir) && is_directory(candidate_dir))
+        return candidate_dir;
       return home_directory();
     }
   }

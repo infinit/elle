@@ -2,7 +2,6 @@
 # define ELLE_LOG_SEND_HXX
 
 # include <elle/fwd.hh>
-# include <elle/print.hh>
 # include <elle/printf.hh>
 
 namespace elle
@@ -11,8 +10,11 @@ namespace elle
   {
     namespace detail
     {
+      ELLE_API
       bool
       debug_formats();
+
+      ELLE_API
       void
       debug_formats(bool v);
 
@@ -71,14 +73,6 @@ namespace elle
       {
         if (_proceed)
           this->_unindent();
-      }
-
-      template <typename... Args>
-      std::string
-      print_function_params(Args&&... args)
-      {
-        return elle::sprint(elle::iomanip::Separator(", "),
-                            std::forward<Args>(args)...);
       }
     }
   }

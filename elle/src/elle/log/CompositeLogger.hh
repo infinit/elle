@@ -7,7 +7,7 @@ namespace elle
 {
   namespace log
   {
-    class CompositeLogger
+    class ELLE_API CompositeLogger
       : public Logger
     {
     public:

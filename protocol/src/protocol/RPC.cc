@@ -1,5 +1,3 @@
-#include <elle/print.hh>
-
 #include <reactor/exception.hh>
 
 #include <protocol/RPC.hh>

@@ -2,7 +2,6 @@
 #include <elle/assert.hh>
 #include <elle/operator.hh>
 #include <elle/Exception.hh>
-#include <elle/print.hh>
 
 #include <utility>
 ELLE_OPERATOR_RELATIONALS();
@@ -47,6 +46,5 @@ int main()
   ELLE_ASSERT(op2 > op3);
   ELLE_ASSERT(op1 >= op2);
 
-  elle::print("tests", "done.");
   return 0;
 }

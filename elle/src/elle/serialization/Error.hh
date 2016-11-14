@@ -7,7 +7,7 @@ namespace elle
 {
   namespace serialization
   {
-    class Error:
+    class ELLE_API Error:
       public elle::Error
     {
     public:

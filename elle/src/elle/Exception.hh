@@ -14,7 +14,7 @@
 namespace elle
 {
   /// Base class for exception, with backtrace.
-  class Exception
+  class ELLE_API Exception
     : public std::runtime_error
     , public elle::serialization::VirtuallySerializable<true>
   {
@@ -48,15 +48,18 @@ namespace elle
     ELLE_ATTRIBUTE_R(std::exception_ptr, inner_exception);
   };
 
+  ELLE_API
   std::ostream& operator << (std::ostream& s, Exception const& e);
 
   template <class T>
+  ELLE_API
   ELLE_COMPILER_ATTRIBUTE_NORETURN
   void
   throw_with_nested(T&& t);
 
   // Try to return the most exhaustive string representing the given
   // exception (or the current one if none is given).
+  ELLE_API
   std::string
   exception_string(std::exception_ptr err = std::exception_ptr{});
 }

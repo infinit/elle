@@ -1,7 +1,9 @@
 #ifndef ELLE_PRINTABLE_HH
 # define ELLE_PRINTABLE_HH
 
-# include <ostream>
+# include <iosfwd>
+
+# include <elle/compiler.hh>
 
 namespace elle
 {
@@ -9,7 +11,7 @@ namespace elle
   ///
   /// Subclasses shall override print to define the pretty
   /// representation and will be printable through the << operator.
-  class Printable
+  class ELLE_API Printable
   {
   public:
     /// Print pretty representation to \a stream.
@@ -30,6 +32,7 @@ namespace elle
   };
 
   /// Print pretty representation of \a o to \a stream.
+  ELLE_API
   std::ostream&
   operator << (std::ostream& stream,
                Printable const& o);

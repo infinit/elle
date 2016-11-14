@@ -10,7 +10,7 @@ namespace elle
   namespace serialization
   {
     template<>
-    struct Serialize<boost::filesystem::path>
+    struct ELLE_API Serialize<boost::filesystem::path>
     {
       typedef std::string Type;
       static

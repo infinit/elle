@@ -19,11 +19,6 @@ ELLE_LOG_COMPONENT("elle.Buffer");
 
 namespace elle
 {
-  void detail::MallocDeleter::operator ()(void* data)
-  {
-    ::free(data);
-  }
-
   /*-------------------.
   | OutputStreamBuffer |
   `-------------------*/
@@ -177,13 +172,6 @@ namespace elle
     return *this;
   }
 
-  ELLE_SERIALIZE_CONSTRUCT_DEFINE(Buffer)
-  {
-    this->_contents = nullptr;
-    this->_size = 0;
-    this->_capacity = 0;
-  }
-
   Buffer::~Buffer()
   {
     ::free(this->_contents);
@@ -252,18 +240,6 @@ namespace elle
     this->_size = 0;
     this->_capacity = ELLE_BUFFER_INITIAL_SIZE;
     return res;
-  }
-
-  OutputBufferArchive
-  Buffer::writer()
-  {
-    return OutputBufferArchive(*this);
-  }
-
-  InputBufferArchive
-  Buffer::reader() const
-  {
-    return InputBufferArchive(*this);
   }
 
   const Byte*
@@ -455,15 +431,9 @@ namespace elle
     return stream << WeakBuffer(buffer);
   }
 
-//
-// ---------- WeakBuffer ------------------------------------------------------
-//
-
-  InputBufferArchive
-  ConstWeakBuffer::reader() const
-  {
-    return InputBufferArchive(*this);
-  }
+  /*-----------.
+  | WeakBuffer |
+  `-----------*/
 
   std::streambuf*
   ConstWeakBuffer::istreambuf() const
@@ -741,41 +711,12 @@ namespace elle
     throw Exception("the buffer is in input mode");
   }
 
- template
- class InputStreamBuffer<Buffer>;
- template
- class InputStreamBuffer<ConstWeakBuffer>;
- template
- class InputStreamBuffer<WeakBuffer>;
-
-  ///////////////////////////////////////////////////////////////////////////
-
-  InputBufferArchive::InputBufferArchive(std::istream* istream)
-    // A convoluted initialization of both the super class and
-    // _istream because we want to pass _stream to the super class,
-    // but it's initialized after.
-    : serialize::InputBinaryArchive(*(_istream = istream))
-  {}
-
-  InputBufferArchive::InputBufferArchive(ConstWeakBuffer const& buffer)
-    : Self(new IOStream(new InputStreamBuffer<ConstWeakBuffer>(buffer)))
-  {}
-
-  InputBufferArchive::InputBufferArchive(Buffer const& buffer)
-    : Self(new IOStream(new InputStreamBuffer<Buffer>(buffer)))
-  {}
-
-  InputBufferArchive::InputBufferArchive(InputBufferArchive&& other)
-    : Self(other._istream)
-  {
-    other._istream = nullptr;
-  }
-
-  InputBufferArchive::~InputBufferArchive()
-  {
-    delete _istream;
-    _istream = nullptr;
-  }
+  template
+  class InputStreamBuffer<Buffer>;
+  template
+  class InputStreamBuffer<ConstWeakBuffer>;
+  template
+  class InputStreamBuffer<WeakBuffer>;
 
   /*-------------------.
   | OutputStreamBuffer |
@@ -841,32 +782,6 @@ namespace elle
   {
     ELLE_DEBUG("Flush buffer stream size: %s", size);
   }
-  ///////////////////////////////////////////////////////////////////////////
-
-  OutputBufferArchive::OutputBufferArchive(std::ostream* ostream)
-    // Read the comment of InputBufferArchive::InputBufferArchive.
-    : serialize::OutputBinaryArchive(*(_ostream = ostream))
-  {
-    ELLE_DEBUG("create OutputBufferArchive %s stream %s", this, _ostream);
-  }
-
-  OutputBufferArchive::OutputBufferArchive(Buffer& buffer)
-    : Self(new IOStream(new OutputStreamBuffer<Buffer>(buffer)))
-  {}
-
-  OutputBufferArchive::OutputBufferArchive(OutputBufferArchive&& other)
-    : Self(other._ostream)
-  {
-    ELLE_DEBUG("moved OutputBufferArchive %s stream %s", this, _ostream);
-    other._ostream = nullptr;
-  }
-
-  OutputBufferArchive::~OutputBufferArchive()
-  {
-    ELLE_DEBUG("Delete OutputBufferArchive %s stream %s", this, _ostream);
-    delete _ostream;
-    _ostream = nullptr;
-  }
 
   template
   class OutputStreamBuffer<Buffer>;
@@ -890,5 +805,11 @@ namespace std
   hash<elle::ConstWeakBuffer>::operator()(elle::ConstWeakBuffer const& buffer) const
   {
     return std::hash<std::string>()(buffer.string());
+  }
+
+  elle::Buffer::Size
+  hash<elle::Buffer>::operator()(elle::Buffer const& buffer) const
+  {
+    return hash<elle::ConstWeakBuffer>()(buffer);
   }
 }

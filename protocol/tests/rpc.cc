@@ -12,7 +12,6 @@
 #include <reactor/thread.hh>
 
 #include <elle/test.hh>
-#include <elle/serialize/BinaryArchive.hh>
 
 ELLE_LOG_COMPONENT("infinit.protocol.test");
 

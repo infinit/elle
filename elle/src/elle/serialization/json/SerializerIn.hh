@@ -10,8 +10,8 @@ namespace elle
   {
     namespace json
     {
-      class SerializerIn:
-        public serialization::SerializerIn
+      class ELLE_API SerializerIn
+        : public serialization::SerializerIn
       {
       /*------.
       | Types |

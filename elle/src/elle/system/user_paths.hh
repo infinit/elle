@@ -3,6 +3,8 @@
 
 # include <boost/filesystem/path.hpp>
 
+# include <elle/compiler.hh>
+
 namespace elle
 {
   namespace system
@@ -11,6 +13,7 @@ namespace elle
     /// A fallback if the system cannot give that information is to use
     /// environment variables. If that fails too, the last fallback is "/tmp"
     /// on Unix-like OSes, and "C:\" on Windows.
+    ELLE_API
     boost::filesystem::path
     home_directory();
 
@@ -18,6 +21,7 @@ namespace elle
     /// iOS: Documents / Downloads.
     /// OS X: System call for download path.
     /// Other: home_directory() / Downloads
+    ELLE_API
     boost::filesystem::path
     download_directory();
   }

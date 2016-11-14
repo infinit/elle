@@ -8,7 +8,7 @@
 
 namespace elle
 {
-  struct StackFrame
+  struct ELLE_API StackFrame
   {
     std::string symbol;
     std::string symbol_mangled;
@@ -22,9 +22,11 @@ namespace elle
     operator std::string() const;
   };
 
-  std::string	demangle(const std::string& sym);
+  ELLE_API
+  std::string
+  demangle(const std::string& sym);
 
-  class Backtrace
+  class ELLE_API Backtrace
   {
   public:
     Backtrace();
@@ -47,8 +49,12 @@ namespace elle
     unsigned _frame_count;
   };
 
-  std::ostream& operator<< (std::ostream& output, const StackFrame& frame);
-  std::ostream& operator<< (std::ostream& output, const Backtrace& bt);
+  ELLE_API
+  std::ostream&
+  operator<< (std::ostream& output, const StackFrame& frame);
+  ELLE_API
+  std::ostream&
+  operator<< (std::ostream& output, const Backtrace& bt);
 }
 
 # include <elle/Backtrace.hxx>

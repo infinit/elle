@@ -10,7 +10,7 @@ namespace elle
   class StreamBuffer;
 
   /// RAII helper to call clear on std streams.
-  class IOStreamClear
+  class ELLE_API IOStreamClear
   {
   public:
     IOStreamClear (std::ios& s);
@@ -20,7 +20,8 @@ namespace elle
     std::ios& _stream;
   };
 
-  class IOStream: public std::iostream
+  class ELLE_API IOStream
+    : public std::iostream
   {
   public:
     IOStream(std::streambuf* buffer);
@@ -31,7 +32,8 @@ namespace elle
     std::streambuf* _buffer;
   };
 
-  class StreamBuffer: public std::streambuf
+  class ELLE_API StreamBuffer
+    : public std::streambuf
   {
   public:
     typedef uint64_t Size;
@@ -74,7 +76,8 @@ namespace elle
   };
 
   /// Simple implementation of a streambuf with local buffers.
-  class PlainStreamBuffer: public StreamBuffer
+  class ELLE_API PlainStreamBuffer
+    : public StreamBuffer
   {
   public:
     typedef StreamBuffer::Size Size;
@@ -104,7 +107,8 @@ namespace elle
     char _obuf[_bufsize];
   };
 
-  class DynamicStreamBuffer : public StreamBuffer
+  class ELLE_API DynamicStreamBuffer
+    : public StreamBuffer
   {
   public:
     typedef StreamBuffer::Size Size;
@@ -131,16 +135,16 @@ namespace elle
     flush(Size size);
 
   private:
-    Size const  _bufsize;
-    Byte        *_ibuf;
-    Byte        *_obuf;
+    Size const _bufsize;
+    Byte *_ibuf;
+    Byte *_obuf;
   };
-
 }
 
 namespace std
 {
   // Read up to \a n bytes, but at least one, unlike std::istream::readsome.
+  ELLE_API
   streamsize
   readsome(std::istream& i, char* s, streamsize n);
 }

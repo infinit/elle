@@ -6,11 +6,12 @@ namespace elle
   namespace log
   {
     CompositeLogger::CompositeLogger()
-    : Logger("LOG")
+      : Logger("LOG")
     {}
+
     CompositeLogger::~CompositeLogger()
-    {
-    }
+    {}
+
     void
     CompositeLogger::_message(Level level,
                elle::log::Logger::Type type,
