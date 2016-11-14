@@ -26,6 +26,10 @@ namespace elle
     read(std::istream& stream);
 
     ELLE_API
+    boost::any
+    read(std::string const& json);
+
+    ELLE_API
     void
     write(std::ostream& stream,
           boost::any const& any,
