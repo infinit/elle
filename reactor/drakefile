@@ -424,11 +424,6 @@ def configure(curl_config,
   # Build
   rule_build = drake.Rule('build')
 
-  # Asio-FS
-  # asio_fs = drake.include('asio-fs', cxx_toolkit, cxx_config, boost = boost)
-  # asio_fs_lib = drake.copy(asio_fs.library_dynamic, '', 'asio-fs')
-  # config += asio_fs.config
-
   sources = drake.nodes(
     'src/reactor/BackgroundOperation.hh',
     'src/reactor/BackgroundOperation.hxx',
@@ -538,8 +533,6 @@ def configure(curl_config,
     'src/reactor/waitable.hh',
     # 'src/reactor/backend/pthread/pthread.cc',
     # 'src/reactor/backend/pthread/pthread.hh',
-    # 'src/reactor/fs/File.cc',
-    # 'src/reactor/fs/File.hh',
     # 'src/reactor/network/nat.cc',
     # 'src/reactor/network/nat.hh',
     )
@@ -789,8 +782,7 @@ def configure(curl_config,
     ('rdv-cat', [], None),
     ('rdv-utp-cat', [], None),
     ('utp-chat', [], None),
-    # 'reactor/file',
-    ]
+  ]
   if cxx_toolkit.os in [drake.os.linux, drake.os.macos]:
     tests.append(('fdstream', [], None))
     tests.append(('filesystem', [], None))

@@ -2,10 +2,6 @@
 	path = drake
 	url = git@git.infinit.io:drake
         fetchRecurseSubmodules = false
-[submodule "reactor/asio-fs"]
-	path = reactor/asio-fs
-	url = git@git.infinit.io:asio-fs
-        fetchRecurseSubmodules = false
 [submodule "elle/src/elle/json/json-spirit"]
 	path = elle/src/elle/json/json-spirit
 	url = https://github.com/infinitdotio/json-spirit
