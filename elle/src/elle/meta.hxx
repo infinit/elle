@@ -156,9 +156,10 @@ namespace elle
         std::tuple<RHead, RTail...>
         value(Args&& ... args)
         {
+          auto head = std::tuple<typename F<Head>::type>(
+            F<Head>::value(std::forward<Args>(args)...));
           return std::tuple_cat(
-            std::tuple<typename F<Head>::type>(
-              F<Head>::value(std::forward<Args>(args)...)),
+            std::move(head),
             map_value_apply<std::tuple<RTail...>, true, F, Tail...>::value(
               std::forward<Args>(args)...));
         }

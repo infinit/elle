@@ -1,6 +1,8 @@
 # include <elle/meta.hh>
 # include <elle/test.hh>
 
+ELLE_LOG_COMPONENT("elle.meta.test");
+
 using namespace elle::meta;
 
 namespace list
@@ -114,6 +116,43 @@ struct Baz
 };
 char Baz::foo = 'a';
 
+
+static bool bar = false;
+static bool baz = false;
+
+template <typename T>
+struct order;
+
+template <>
+struct order<Bar>
+{
+  using type = int;
+  static
+  type
+  value()
+  {
+    BOOST_CHECK(!bar);
+    BOOST_CHECK(!baz);
+    bar = true;
+    return 0;
+  }
+};
+
+template <>
+struct order<Baz>
+{
+  using type = int;
+  static
+  type
+  value()
+  {
+    BOOST_CHECK(bar);
+    BOOST_CHECK(!baz);
+    baz = true;
+    return 0;
+  }
+};
+
 static
 void
 map()
@@ -143,6 +182,12 @@ map()
     Baz::foo = 'b';
     BOOST_CHECK_EQUAL(std::get<0>(res), 2);
     BOOST_CHECK_EQUAL(std::get<1>(res), 'b');
+  }
+  ELLE_LOG("check evaluation order")
+  {
+    using l = List<Bar, Baz>;
+    using map = l::map<order>;
+    map::value();
   }
 }
 
