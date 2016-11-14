@@ -21,12 +21,9 @@ namespace elle
       inline
       Send::Send()
         : _proceed(false)
-        , _indentation(nullptr)
-      {
-      }
+      {}
 
       template <typename... Args>
-      inline
       Send::Send(elle::log::Logger::Level level,
                  elle::log::Logger::Type type,
                  bool indent,
@@ -37,7 +34,6 @@ namespace elle
                  char const* fmt,
                  Args&&... args)
         : _proceed(true)
-        , _indentation(nullptr)
       {
         bool debug = debug_formats();
         try
@@ -49,7 +45,7 @@ namespace elle
             elle::sprintf(fmt, std::forward<Args>(args)...);
         }
         // Catching ellipsis to avoid header dependencies. AFAICT only
-        // elle::print can throw, and it only throw elle::Error.
+        // elle::print can throw, and it only throws elle::Error.
         catch (...)
         {
           this->_send(Logger::Level::log,
@@ -75,9 +71,8 @@ namespace elle
       inline
       Send::~Send()
       {
-        if (!_proceed)
-          return;
-        this->_unindent();
+        if (_proceed)
+          this->_unindent();
       }
     }
   }

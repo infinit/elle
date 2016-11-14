@@ -9,6 +9,13 @@
     : public ::das::Symbol                      \
   {                                             \
   public:                                       \
+    /* Clang requires a user-defined   */       \
+    /* default constructor for default */       \
+    /* initialization. */                       \
+    constexpr                                   \
+    Symbol_##Name()                             \
+    {}                                          \
+                                                \
     template <typename T>                       \
     static                                      \
     auto                                        \
@@ -17,6 +24,14 @@
     {                                           \
       return o.Name;                            \
     }                                           \
+                                                \
+    template <typename T>                       \
+    struct                                      \
+    attr_type                                   \
+    {                                           \
+      using type =                              \
+        decltype(std::declval<T>().Name);       \
+    };                                          \
                                                 \
     template <typename T>                       \
     static                                      \

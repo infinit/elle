@@ -513,13 +513,13 @@ def configure(cxx_toolkit = None,
   ## Curl ##
   ## ---- ##
 
-  curl_basename = 'curl-7.50.3'
+  curl_basename = 'curl-7.51.0'
   curl_tarball = drake.node('curl/%s.tar.gz' % curl_basename)
   curl_prefix = drake.Path('curl')
   curl_build = curl_prefix / curl_basename
   curl_url = 'http://curl.haxx.se/download/%s.tar.gz' % curl_basename
   drake.HTTPDownload(curl_url, curl_tarball,
-                     fingerprint = '870e16fd88a88b52e26a4f04dfc161db')
+                     fingerprint = '490e19a8ccd1f4a244b50338a0eb9456')
   drake.TarballExtractor(
     curl_tarball,
     targets = ['%s/%s' % (curl_basename, f) for f in (
@@ -662,7 +662,7 @@ def configure(cxx_toolkit = None,
   ## LibArchive ##
   ## ---------- ##
 
-  libarchive_version = '3.1.2'
+  libarchive_version = '3.2.2'
   libarchive_basename = 'libarchive-%s' % libarchive_version
   libarchive_tarball = \
     drake.node('libarchive/%s.tar.gz' % libarchive_basename)
@@ -674,7 +674,7 @@ def configure(cxx_toolkit = None,
   drake.HTTPDownload(
     libarchive_url,
     libarchive_tarball,
-    fingerprint = 'efad5a503f66329bb9d2f4308b5de98a',
+    fingerprint = '1ec00b7dcaf969dd2a5712f85f23c764',
   )
   libarchive_patches = ()
   if cxx_toolkit.os is drake.os.android:

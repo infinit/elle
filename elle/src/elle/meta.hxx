@@ -13,10 +13,10 @@ namespace elle
     `------*/
 
     template <typename ... Elts>
-    template <template <typename ...> class T>
+    template <template <typename ...> class T, typename ... Args>
     struct List<Elts...>::apply
     {
-      typedef T<Elts...> type;
+      typedef T<Args..., Elts...> type;
     };
 
     /*-------.
@@ -87,7 +87,7 @@ namespace elle
     | Map |
     `----*/
 
-    namespace
+    namespace _details
     {
       template <template <typename> class F, typename ... Elts>
       struct map_helper
@@ -115,9 +115,13 @@ namespace elle
       template <template <typename> class F, typename Head, typename ... Tail>
       struct map_helper<F, Head, Tail...>
       {
-        using type = typename List<Tail...>
+        using type = typename std::conditional<
+          std::is_same<typename F<Head>::type, void>::value,
+          typename List<Tail...>
+          ::template map<F>::type,
+          typename List<Tail...>
           ::template map<F>::type
-          ::template prepend<typename F<Head>::type>::type;
+          ::template prepend<typename F<Head>::type>::type>::type;
       };
 
       template <typename Res,
@@ -153,7 +157,8 @@ namespace elle
         value(Args&& ... args)
         {
           return std::tuple_cat(
-            std::make_tuple(F<Head>::value(std::forward<Args>(args)...)),
+            std::tuple<typename F<Head>::type>(
+              F<Head>::value(std::forward<Args>(args)...)),
             map_value_apply<std::tuple<RTail...>, true, F, Tail...>::value(
               std::forward<Args>(args)...));
         }
@@ -184,10 +189,10 @@ namespace elle
     template <typename ... Elts>
     template <template <typename> class F>
     struct List<Elts...>::map
-      : public map_value_helper<
-          typename map_helper<F, Elts...>::type, F, Elts...>
+      : public _details::map_value_helper<
+          typename _details::map_helper<F, Elts...>::type, F, Elts...>
     {
-      using type = typename map_helper<F, Elts...>::type;
+      using type = typename _details::map_helper<F, Elts...>::type;
     };
 
     /*--------.

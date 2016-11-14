@@ -16,15 +16,15 @@
 #define NAMED_ARGUMENT_DEFINE(Name, container)                          \
   container::Name##_type container::Name;
 
-#define NAMED_FUNCTION(F, ...)                                          \
+#define NAMED_FUNCTION(Name, F, ...)                                    \
   template <typename ... Args>                                          \
   auto                                                                  \
-  F(Args&& ... args) ->                                                 \
+  Name(Args&& ... args) ->                                              \
     decltype(elle::named::prototype(__VA_ARGS__).call(                  \
-               _##F, std::forward<Args>(args)...))                      \
+               F, std::forward<Args>(args)...))                         \
   {                                                                     \
     return elle::named::prototype(__VA_ARGS__).call(                    \
-      _##F, std::forward<Args>(args)...);                               \
+      F, std::forward<Args>(args)...);                                  \
   }                                                                     \
 
 namespace elle

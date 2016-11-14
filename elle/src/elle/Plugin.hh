@@ -23,6 +23,9 @@ namespace elle
     public BasePlugin
   {
   public:
+    using plugins_t
+      = std::unordered_map<std::type_info const*, std::unique_ptr<T>>;
+
     template <typename I>
     class Register
     {
@@ -37,7 +40,7 @@ namespace elle
     void
     register_plugin(std::unique_ptr<T> plugin);
     static
-    std::unordered_map<std::type_info const*, std::unique_ptr<T>>&
+    plugins_t&
     plugins();
     static
     boost::signals2::signal<void (T&)>&

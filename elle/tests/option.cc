@@ -9,24 +9,18 @@ class Count
 public:
   Count(int& count)
     : count(count)
-    , dec(true)
-    , destroyed(false)
   {
     ++count;
   }
 
   Count(Count&& source)
     : count(source.count)
-    , dec(true)
-    , destroyed(false)
   {
     source.dec = false;
   }
 
   Count(Count const& source)
     : count(source.count)
-    , dec(true)
-    , destroyed(false)
   {
     ++count;
   }
@@ -40,9 +34,8 @@ public:
   }
 
   int& count;
-  bool dec;
-  bool destroyed;
-
+  bool dec = true;
+  bool destroyed = false;
 };
 
 static
@@ -178,6 +171,9 @@ reset()
   }
 }
 
+struct NotPrintable
+{};
+
 static
 void
 print()
@@ -186,6 +182,10 @@ print()
   BOOST_CHECK_EQUAL(elle::sprintf("%s", i), "42");
   elle::Option<int, std::string> s(std::string("quarante deux"));
   BOOST_CHECK_EQUAL(elle::sprintf("%s", s), "quarante deux");
+  elle::Option<NotPrintable> np{NotPrintable()};
+  BOOST_CHECK_EQUAL(
+    elle::sprintf("%s", np),
+    elle::sprintf("NotPrintable(%x)", reinterpret_cast<void*>(&np)));
 }
 
 template <int I>
@@ -229,7 +229,8 @@ _serialization_inplace()
     Checker<1>::count = 0;
     Opt o{Checker<1>()};
     BOOST_CHECK_EQUAL(Checker<1>::count, 1);
-    auto data = elle::serialization::serialize<Format>(Opt{Checker<0>()}, false);
+    auto data =
+      elle::serialization::serialize<void, Format>(Opt{Checker<0>()}, false);
     BOOST_CHECK_EQUAL(Checker<0>::count, 0);
     elle::IOStream s(data.istreambuf());
     typename Format::SerializerIn input(s, false);
@@ -253,14 +254,15 @@ _serialization()
       Opt i(42);
       BOOST_CHECK_EQUAL(
         (elle::serialization::deserialize<Format, Opt>(
-          elle::serialization::serialize<Format>(i))).template get<int>(),
+          elle::serialization::serialize<void, Format>(i))).template get<int>(),
         42);
     }
     {
       Opt s(std::string("quarante deux"));
       BOOST_CHECK_EQUAL(
         (elle::serialization::deserialize<Format, Opt>(
-          elle::serialization::serialize<Format>(s))).template get<std::string>(),
+          elle::serialization::serialize<void, Format>(s))).
+        template get<std::string>(),
         "quarante deux");
     }
   }
@@ -363,10 +365,17 @@ exceptions()
   int count = 0;
   {
     O o{Count(count)};
+    BOOST_CHECK_EQUAL(o.is<Count>(), true);
     BOOST_CHECK_EQUAL(count, 1);
+
     O thrower{Thrower()};
     thrower.get<Thrower>().t = true;
     BOOST_CHECK_THROW(o = std::move(thrower), elle::Error);
+
+    // o in unknown state.
+    BOOST_CHECK_EQUAL(o.is<Count>(), false);
+    BOOST_CHECK_EQUAL(o.is<Thrower>(), false);
+
     BOOST_CHECK_EQUAL(count, 0);
   }
   BOOST_CHECK_EQUAL(count, 0);

@@ -54,16 +54,16 @@ namespace elle
   Plugin<T>::register_plugin(std::unique_ptr<T> plugin)
   {
     auto& p = *plugin;
-    Plugin<T>::plugins().insert(std::make_pair(&typeid(*plugin),
-                                                std::move(plugin)));
+    Plugin<T>::plugins().emplace(&typeid(*plugin), std::move(plugin));
     Plugin<T>::hook_added()(p);
   }
 
   template <typename T>
-  std::unordered_map<std::type_info const*, std::unique_ptr<T>>&
+  auto
     Plugin<T>::plugins()
+    -> plugins_t&
   {
-    static std::unordered_map<std::type_info const*, std::unique_ptr<T>> res;
+    static auto res = plugins_t{};
     return res;
   }
 

@@ -44,7 +44,7 @@ _nullary()
 {
   return true;
 }
-NAMED_FUNCTION(nullary);
+NAMED_FUNCTION(nullary, _nullary);
 
 static
 bool
@@ -52,7 +52,29 @@ _opposite(bool versioned)
 {
   return !versioned;
 }
-NAMED_FUNCTION(opposite, versioned);
+NAMED_FUNCTION(opposite, _opposite, versioned);
+
+// #define TEST(R, Name, ...)
+//   static
+//   R
+//   _##Name(__VA_ARGS__);
+//
+//   template <typename ... Args>
+//   R
+//   Name(Args&& ... args)
+//   {
+//     return elle::named::prototype(versioned).call(
+//       _##Name, std::forward<Args>(args)...);
+//   }
+//
+//   static
+//   R
+//   _##Name(__VA_ARGS__)
+//
+// TEST(bool, opposite, bool versioned)
+// {
+//   return !versioned;
+// }
 
 static
 void
@@ -115,13 +137,13 @@ _forwarding_ref(Neither& arg1, Neither const& arg2)
   arg1.mutate();
   arg2.observe();
 }
-NAMED_FUNCTION(forwarding_ref, arg1, arg2);
+NAMED_FUNCTION(forwarding_ref, _forwarding_ref, arg1, arg2);
 
 static
 void
 _forwarding_value(Movable)
 {}
-NAMED_FUNCTION(forwarding_value, arg1);
+NAMED_FUNCTION(forwarding_value, _forwarding_value, arg1);
 
 static
 void
@@ -157,7 +179,7 @@ _positional_f(std::string& os, bool& ob, std::string is, bool ib)
   os = is + is;
   ob = !ib;
 }
-NAMED_FUNCTION(positional_f, arg1, arg2);
+NAMED_FUNCTION(positional_f, _positional_f, arg1, arg2);
 
 static
 void
@@ -185,7 +207,7 @@ _default_f(bool& o1, bool& o2, bool i1, bool i2, Neither const&)
   o1 = i1;
   o2 = i2;
 }
-NAMED_FUNCTION(default_f, out1, out2,
+NAMED_FUNCTION(default_f, _default_f, out1, out2,
                arg1 = true, arg2 = false, versioned = Neither());
 
 static
@@ -211,7 +233,8 @@ _default_positional_f(bool arg1, bool arg2)
 {
   BOOST_CHECK_EQUAL(arg1, arg2);
 }
-NAMED_FUNCTION(default_positional_f, arg1 = true, arg2 = false);
+NAMED_FUNCTION(default_positional_f, _default_positional_f,
+               arg1 = true, arg2 = false);
 
 static
 void
@@ -219,6 +242,30 @@ default_positional()
 {
   default_positional_f(false);
 }
+
+// /*------.
+// | Macro |
+// `------*/
+
+// #define TEST(R, Name, ...)                                \
+//   template <typename ... Args>                            \
+//   R                                                       \
+//   Name(Args&& ... args)                                   \
+//   {                                                       \
+//     return elle::named::prototype(__VA_ARGS__).call(      \
+//       _named_##Name, std::forward<Args>(args)...);        \
+//   }                                                       \
+//                                                           \
+//   R                                                       \
+//   _named_##Name                                           \
+
+// class Foo
+// {
+//   TEST(bool, foo, versioned = true)(bool versioned)
+//   {
+//     return true;
+//   }
+// };
 
 /*-------.
 | Driver |

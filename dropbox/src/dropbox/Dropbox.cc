@@ -40,19 +40,8 @@ struct ComparePath
   }
 };
 
-DAS_MODEL_FIELDS(dropbox::Longpoll, (changes, backoff));
-DAS_MODEL_FIELDS(dropbox::Delta, (reset, cursor, has_more, entries));
-
-namespace dropbox
-{
-  DAS_MODEL_DEFINE(Longpoll, (changes, backoff), DasLongpoll);
-  DAS_MODEL_DEFINE(Delta, (reset, cursor, has_more, entries), DasDelta);
-}
-
-DAS_MODEL_DEFAULT(dropbox::Longpoll, dropbox::DasLongpoll);
-DAS_MODEL_SERIALIZE(dropbox::Longpoll);
-DAS_MODEL_DEFAULT(dropbox::Delta, dropbox::DasDelta);
-DAS_MODEL_SERIALIZE(dropbox::Delta);
+DAS_SERIALIZE(dropbox::Longpoll);
+DAS_SERIALIZE(dropbox::Delta);
 
 namespace dropbox
 {

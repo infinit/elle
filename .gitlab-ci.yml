@@ -26,6 +26,7 @@ x86_64-centos6-gcc4:
     - TARBALL="elle-x86_64-centos6-gcc4-$DESC.tbz"
     - tar -cvjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
     - scp "$TARBALL" debian@debian.infinit.io:/tmp
+    - rm  "$TARBALL"
     - cd "$SOURCE_DIR"
     - time scl enable devtoolset-4 rh-python34 "./buildenv --cache-upload-build-tree --exclude='*.deb,*.rpm' --branch \"$CI_BUILD_REF_NAME\" --build-trees-root \"/cache/$CI_PROJECT_NAME\" --cache-namespace \"$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME\" --cache-id \"$CI_RUNNER_ID\" --verbose"
   tags:
@@ -55,6 +56,7 @@ x86_64-ubuntu-gcc4:
     - TARBALL="$BUILD_DIR/elle-x86_64-ubuntu-gcc4-$DESC.tbz"
     - tar -cvjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
     - scp "$TARBALL" debian@debian.infinit.io:/tmp
+    - rm  "$TARBALL"
     - cd "$SOURCE_DIR"
     - time ./buildenv --cache-upload-build-tree --exclude='*.deb,*.rpm' --branch "$CI_BUILD_REF_NAME" --build-trees-root "/cache/$CI_PROJECT_NAME" --cache-namespace "$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME" --cache-id "$CI_RUNNER_ID" --verbose
   tags:
@@ -83,6 +85,7 @@ x86_64-jessie-gcc4:
     - TARBALL="$BUILD_DIR/elle-x86_64-jessie-gcc4-$DESC.tbz"
     - tar -cvjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
     - scp "$TARBALL" debian@debian.infinit.io:/tmp
+    - rm  "$TARBALL"
     - cd "$SOURCE_DIR"
     - time ./buildenv --cache-upload-build-tree --exclude='*.deb,*.rpm' --branch "$CI_BUILD_REF_NAME" --build-trees-root "/cache/$CI_PROJECT_NAME" --cache-namespace "$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME" --cache-id "$CI_RUNNER_ID" --verbose
   tags:
@@ -111,7 +114,7 @@ x86_64-alpine-gcc:
     - TARBALL="$BUILD_DIR/elle-x86_64-alpine-gcc-$DESC.tbz"
     - tar -cvjf $TARBALL -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
     - scp $TARBALL debian@debian.infinit.io:/tmp
-    - rm  $TARBALL
+    - rm  "$TARBALL"
     - cd "$SOURCE_DIR"
     - time ./buildenv --cache-upload-build-tree --exclude='*.deb,*.rpm,*.tbz' --branch "$CI_BUILD_REF_NAME" --build-trees-root "/cache/$CI_PROJECT_NAME" --cache-namespace "$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME" --cache-id "$CI_RUNNER_ID" --verbose
 
@@ -141,6 +144,7 @@ i386-jessie-gcc4:
     - TARBALL="$BUILD_DIR/elle-i386-jessie-gcc4-$DESC.tbz"
     - tar -cvjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
     - scp "$TARBALL" debian@debian.infinit.io:/tmp
+    - rm  "$TARBALL"
     - cd "$SOURCE_DIR"
     - time ./buildenv --cache-upload-build-tree --exclude='*.deb,*.rpm' --branch "$CI_BUILD_REF_NAME" --build-trees-root "/cache/$CI_PROJECT_NAME" --cache-namespace "$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME" --cache-id "$CI_RUNNER_ID" --verbose
   tags:
@@ -169,6 +173,7 @@ x86_64-windows-mingw4:
     - TARBALL="$BUILD_DIR/elle-x86_64-windows-mingw4-$DESC.tbz"
     - tar -cvjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
     - scp "$TARBALL" debian@debian.infinit.io:/tmp
+    - rm  "$TARBALL"
     - cd "$SOURCE_DIR"
     - time ./buildenv --cache-upload-build-tree --exclude='*.deb,*.rpm' --branch "$CI_BUILD_REF_NAME" --build-trees-root "/cache/$CI_PROJECT_NAME" --cache-namespace "$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME" --cache-id "$CI_RUNNER_ID" --verbose
   tags:
@@ -204,6 +209,7 @@ x86_64-osx-clang:
     - TARBALL=elle-x86_64-osx-clang3-$(GIT_DIR=../elle/.git git describe).tbz
     - gtar -cvjf ../$TARBALL -C ../elle-install . --show-transformed-names --transform "s,^\\./,elle-$(GIT_DIR=../elle/.git git describe)/,"
     - scp ../$TARBALL debian@debian.infinit.io:/tmp
+    - rm  "../$TARBALL"
   tags:
     - x86_64
     - osx

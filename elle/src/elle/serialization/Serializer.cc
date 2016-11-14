@@ -2,6 +2,8 @@
 #include <elle/serialization/SerializerIn.hh>
 #include <elle/serialization/SerializerOut.hh>
 
+ELLE_LOG_COMPONENT("elle.serialization.Serializer");
+
 namespace elle
 {
   namespace serialization
@@ -16,6 +18,42 @@ namespace elle
       , _versions(std::move(versions))
     {}
 
+    /*--------------.
+    | Enter / leave |
+    `--------------*/
+
+    Serializer::Entry::Entry(Serializer& s, std::string const& name)
+      : _serializer(s)
+      , _log(ELLE_LOG_VALUE(
+               trace, info,
+               "%s: %sserialize \"%s\"", s, s.in() ? "de" : "", name))
+      , _name(name)
+      , _entered(this->_serializer._enter(name))
+    {
+      if (this->_entered)
+        s._names.emplace_back(name);
+    }
+
+    Serializer::Entry::~Entry()
+    {
+      if (this->_entered)
+      {
+        this->_serializer._names.pop_back();
+        this->_serializer._leave(this->_name);
+      }
+    }
+
+    Serializer::Entry::operator bool() const
+    {
+      return this->_entered;
+    }
+
+    Serializer::Entry
+    Serializer::enter(std::string const& name)
+    {
+      return Entry(*this, name);
+    }
+
     bool
     Serializer::_enter(std::string const&)
     {
@@ -25,6 +63,12 @@ namespace elle
     void
     Serializer::_leave(std::string const&)
     {}
+
+    std::string
+    Serializer::current_name() const
+    {
+      return this->_names.empty() ? "" : this->_names.back();
+    }
 
     void
     Serializer::_size(int)
@@ -61,19 +105,19 @@ namespace elle
     }
 
     void
-    Serializer::_serialize(std::string const& name, elle::WeakBuffer& v)
+    Serializer::_serialize(elle::WeakBuffer& v)
     {
       if (this->in())
       {
         elle::Buffer buf;
-        this->_serialize(name, buf);
+        this->_serialize(buf);
         ELLE_ASSERT_EQ(buf.size(), v.size());
         memcpy(v.mutable_contents(), buf.mutable_contents(), v.size());
       }
       else
       {
         elle::Buffer buf(v.mutable_contents(), v.size());
-        this->_serialize(name, buf);
+        this->_serialize(buf);
       }
     }
 
@@ -84,8 +128,7 @@ namespace elle
     }
 
     void
-    Serializer::_serialize_anonymous(std::string const& name,
-                                     std::exception_ptr& e)
+    Serializer::_serialize_anonymous_exception(std::exception_ptr& e)
     {
       if (this->out())
         try

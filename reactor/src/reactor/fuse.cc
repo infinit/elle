@@ -76,7 +76,8 @@ namespace reactor
         continue;
       if (res <= 0)
       {
-        ELLE_LOG("%s: %s", res, strerror(-res));
+        if (res < 0)
+          ELLE_LOG("%s: %s", res, strerror(-res));
         break;
       }
       try
@@ -248,7 +249,8 @@ namespace reactor
         continue;
       if (res <= 0)
       {
-        ELLE_LOG("%s: %s", res, strerror(-res));
+        if (res < 0)
+          ELLE_LOG("%s: %s", res, strerror(-res));
         break;
       }
       buf.size(res);
@@ -312,7 +314,8 @@ namespace reactor
         continue;
       if (res <= 0)
       {
-        ELLE_LOG("%s: %s", res, strerror(-res));
+        if (res < 0)
+          ELLE_LOG("%s: %s", res, strerror(-res));
         break;
       }
       void* b2 = malloc(res);

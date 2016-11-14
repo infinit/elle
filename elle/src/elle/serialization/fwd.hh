@@ -48,7 +48,7 @@ namespace elle
 
     namespace _details
     {
-      template <typename T>
+      template <typename T, typename S>
       inline constexpr
       bool
       has_serialize_convert_api();

@@ -152,7 +152,19 @@ namespace elle
       Level
       component_enabled(std::string const& name);
     private:
-      std::vector<std::pair<std::string, Level>> _component_patterns;
+      /// Rule about components.
+      struct Filter
+      {
+        /// A pattern, e.g., `'infinit.cryptography.*.SecretKey`.
+        std::string pattern;
+        /// The corrresponding level.
+        Level level;
+
+        /// Whether this filter accepts a component name.
+        bool
+        match(const std::string& component) const;
+      };
+      std::vector<Filter> _component_patterns;
       std::unordered_map<std::string, Level> _component_levels;
       ELLE_ATTRIBUTE_R(unsigned int, component_max_size);
     };

@@ -277,7 +277,7 @@ class State:
       return None
 
   def garbage_collect_build_trees(self):
-    delay = datetime.timedelta(weeks = 1)
+    delay = datetime.timedelta(days = 3)
     cleaned = []
     state = self.__state
     trees = state.setdefault('build-trees', {})
@@ -400,6 +400,6 @@ except CLError as e:
         file = sys.stderr)
   exit(1)
 except Exception as e:
-  print('%s: fatar error: %s' % (sys.argv[0], e), file = sys.stderr)
+  print('%s: fatal error: %s' % (sys.argv[0], e), file = sys.stderr)
   raise
   exit(1)

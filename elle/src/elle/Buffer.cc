@@ -407,26 +407,21 @@ namespace elle
   std::streambuf*
   Buffer::ostreambuf()
   {
-        OutputStreamBuffer<elle::Buffer>* out_buffer =
-            new OutputStreamBuffer<elle::Buffer>(*this);
-        return out_buffer;
+    return new OutputStreamBuffer<elle::Buffer>(*this);
   }
 
   std::streambuf*
   Buffer::istreambuf() const
   {
-      InputStreamBuffer<elle::Buffer>* in_buffer =
-          new InputStreamBuffer<elle::Buffer>(*this);
-      return in_buffer;
+    return new InputStreamBuffer<elle::Buffer>(*this);
   }
 
   std::streambuf*
   Buffer::istreambuf_combine(const Buffer& b) const
   {
-      InputStreamBuffer<elle::Buffer>* in_buffer =
-          new InputStreamBuffer<elle::Buffer>(*this);
-      in_buffer->add(b);
-      return in_buffer;
+    auto res = new InputStreamBuffer<elle::Buffer>(*this);
+    res->add(b);
+    return res;
   }
 
   std::ostream&
@@ -443,25 +438,19 @@ namespace elle
   std::streambuf*
   ConstWeakBuffer::istreambuf() const
   {
-      InputStreamBuffer<elle::ConstWeakBuffer>* in_buffer =
-          new InputStreamBuffer<elle::ConstWeakBuffer>(*this);
-      return in_buffer;
+    return new InputStreamBuffer<elle::ConstWeakBuffer>(*this);
   }
 
   std::streambuf*
   WeakBuffer::ostreambuf()
   {
-        OutputStreamBuffer<elle::WeakBuffer>* out_buffer =
-            new OutputStreamBuffer<elle::WeakBuffer>(*this);
-        return out_buffer;
+    return new OutputStreamBuffer<elle::WeakBuffer>(*this);
   }
 
   std::streambuf*
   WeakBuffer::istreambuf() const
   {
-      InputStreamBuffer<elle::WeakBuffer>* in_buffer =
-          new InputStreamBuffer<elle::WeakBuffer>(*this);
-      return in_buffer;
+    return new InputStreamBuffer<elle::WeakBuffer>(*this);
   }
 
 

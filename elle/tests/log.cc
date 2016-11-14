@@ -100,11 +100,11 @@ static
 void
 f()
 {
-  ELLE_WARN("f This is usefull, yellow first!");
-  ELLE_TRACE("f This is usefull!");
+  ELLE_WARN("f This is useful, yellow first!");
+  ELLE_TRACE("f This is useful!");
   {
-    ELLE_ERR("f This is usefull inner, red first");
-    ELLE_TRACE("f This is usefull inner");
+    ELLE_ERR("f This is useful inner, red first");
+    ELLE_TRACE("f This is useful inner");
     g();
   }
 }
@@ -113,11 +113,11 @@ static
 void
 s()
 {
-  ELLE_TRACE("s This is usefull!");
-  ELLE_WARN("s This is usefull, yellow second!");
+  ELLE_TRACE("s This is useful!");
+  ELLE_WARN("s This is useful, yellow second!");
   {
-    ELLE_TRACE("s This is usefull inner");
-    ELLE_ERR("s This is usefull inner, red second");
+    ELLE_TRACE("s This is useful inner");
+    ELLE_ERR("s This is useful inner, red second");
     g();
   }
 }

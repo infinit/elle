@@ -17,7 +17,7 @@ namespace elle
         return "Windows";
 #elif defined INFINIT_LINUX
         return "Linux";
-#elif defined(INFINIT_ANDROID)
+#elif defined INFINIT_ANDROID
         return "Android";
 #elif defined INFINIT_MACOSX
         return "MacOSX";
@@ -36,7 +36,7 @@ namespace elle
         return version;
 #elif defined INFINIT_LINUX
         return "unknown";
-#elif defined(INFINIT_MACOSX) || defined(INFINIT_IOS)
+#elif defined INFINIT_MACOSX || defined(INFINIT_IOS)
         return "unknown";
 #elif defined INFINIT_ANDROID
         return "unknown"; // FIXME

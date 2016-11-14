@@ -46,9 +46,17 @@ attributes()
 {
   S s;
   BOOST_CHECK_EQUAL(symbols::foo.attr_get(s), 0);
+  static_assert(
+    std::is_same<
+      typename symbols::Symbol_foo::attr_type<S>::type, int>::value,
+    "wrong attribute type");
   BOOST_CHECK_EQUAL(symbols::foo.attr_get(s)++, 0);
   BOOST_CHECK_EQUAL(symbols::foo.attr_get(s), 1);
   BOOST_CHECK_EQUAL(symbols::bar.attr_get(static_cast<const S&>(s)), "");
+  static_assert(
+    std::is_same<
+      typename symbols::Symbol_bar::attr_type<S>::type, std::string>::value,
+    "wrong attribute type");
   BOOST_CHECK(!no_such_attribute<decltype(symbols::foo)>(s, 0));
   BOOST_CHECK(no_such_attribute<decltype(symbols::baz)>(s, 0));
   Sub sub;

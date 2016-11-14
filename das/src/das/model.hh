@@ -1,68 +1,81 @@
 #ifndef DAS_MODEL_CONVENIENCE_HH
 # define DAS_MODEL_CONVENIENCE_HH
 
+# include <elle/attribute.hh>
+# include <elle/meta.hh>
+
 # include <das/fwd.hh>
 
 namespace das
 {
-  namespace details
+  template <typename T, typename Fields_>
+  class Model
   {
-    template <typename T, class C>
-    C
-    _attribute_pointer_owner(T (C::*));
+  private:
+    template <typename A>
+    struct AttrType
+    {
+      using type = typename A::template attr_type<T>::type;
+    };
+
+  public:
+    using Fields = Fields_;
+    using Types = typename Fields::template map<AttrType>::type;
+  };
+
+  namespace _details
+  {
+    template <typename T>
+    static constexpr
+    int
+    _default_model(...)
+    {
+      return 0;
+    }
+
+    template <typename T>
+    static constexpr
+    typename std::enable_if_exists<typename T::Model::Fields, int>::type
+    _default_model(int)
+    {
+      return 1;
+    }
+
+    template <int kind, typename T>
+    struct DefaultModelHelper
+    {};
+
+    template <typename T>
+    struct DefaultModelHelper<1, T>
+    {
+      using type = typename T::Model;
+    };
   }
+
+  template <typename T>
+  constexpr inline
+  bool
+  model_has()
+  {
+    return _details::_default_model<T>(0);
+  }
+
+  template <typename T>
+  struct DefaultModel
+    : public _details::DefaultModelHelper<_details::_default_model<T>(0), T>
+  {};
 }
 
-#define DAS_MODEL_DEFINE(Class, Fields, Type)                           \
-  typedef das::Object<                                                  \
-    Class                                                               \
-    DAS_MODEL_DEFINE_(                                                  \
-      Class,                                                            \
-      BOOST_PP_VARIADIC_TO_SEQ Fields)                                  \
-  >                                                                     \
-  Type;                                                                 \
-
-#define DAS_MODEL_DEFINE_(Class, Fields)                                \
-  DAS_MODEL_DEFINE_SEQ(Class, Fields)                                   \
-
-#define DAS_MODEL_DEFINE_SEQ(Class, Fields)                             \
-  BOOST_PP_SEQ_FOR_EACH(DAS_MODEL_DEFINE_HELPER, Class, Fields)         \
-
-#define DAS_MODEL_DEFINE_SEQ_(Class, Fields)                            \
-  DAS_MODEL_DEFINE_SEQ__(Class, Fields)                                 \
-
-#define DAS_MODEL_DEFINE_SEQ__(Class, Fields)                           \
-  BOOST_PP_SEQ_ENUM(Fields)                                             \
-
-#define DAS_MODEL_DEFINE_HELPER(R, Class, Name)                         \
-  , das::Field<decltype(                                                \
-      das::details::_attribute_pointer_owner(&Class::Name)),            \
-      decltype(Class::Name), &Class::Name>                              \
-
-# define DAS_MODEL_DEFAULT(T, M)                \
-  namespace das                                 \
+#define DAS_MODEL_DEFAULT(Class, Model)         \
+namespace das                                   \
+{                                               \
+  template <>                                   \
+  struct DefaultModel<Class>                    \
   {                                             \
-    template <>                                 \
-      struct Das<T>                             \
-    {                                           \
-      typedef M Model;                          \
-    };                                          \
-  }
-
-#define DAS_MODEL_FIELDS(Class, Fields)                                 \
-  BOOST_PP_SEQ_FOR_EACH(DAS_MODEL_HELPER,                               \
-                        Class, BOOST_PP_VARIADIC_TO_SEQ Fields)         \
-
-#define DAS_MODEL(Class, Fields, Name)                                  \
-  DAS_MODEL_FIELDS(Class, Fields);                                      \
-  DAS_MODEL_DEFINE(Class, Fields, Name);                                \
-
-#define DAS_MODEL_HELPER(R, Class, Name)        \
-  DAS_MODEL_FIELD(Class, Name)                  \
-
-# include <das/Object.hh>
-# include <das/Collection.hh>
-# include <das/Variable.hh>
-# include <das/printer.hh>
+  public:                                       \
+    using type =                                \
+      ELLE_ATTRIBUTE_STRIP_PARENS(Model);       \
+  };                                            \
+}                                               \
 
 #endif

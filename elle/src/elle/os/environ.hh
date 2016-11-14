@@ -36,7 +36,7 @@ namespace elle
     std::string
     getenv(std::string const& key, std::string const& default_);
 
-    /// Return if a key is defined in environment var.
+    /// Whether a key is defined in environment.
     ELLE_API
     bool
     inenv(std::string const& key);
