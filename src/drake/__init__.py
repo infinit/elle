@@ -4018,24 +4018,58 @@ class ArchiveExtractor(Builder):
 class TarballExtractor(ArchiveExtractor):
 
   def extract(self):
-    import tarfile
+    return self.extract_with_tar()
+
+  def tmpdir(self):
     import tempfile
+    return tempfile.TemporaryDirectory(
+           prefix = str(self.tarball.name().basename()) + '.',
+           dir = str(self.destination))
+
+  def install(self, tmp):
+    '''Move the extracted files to the destination.'''
+    for f in _OS.listdir(str(tmp)):
+      destination = str(drake.path_build(self.destination / f))
+      if (_OS.path.exists(destination)):
+        shutil.rmtree(destination)
+      shutil.move(str(tmp / f), destination)
+
+  def extract_with_tar(self):
+    '''Use the tar(1) binary to extract the tarball.'''
+
+    import subprocess
+    with self.tmpdir() as tmp:
+      subprocess.check_call(['tar', 'xf', str(self.tarball.path()), '-C', tmp])
+      tmp = drake.Path(tmp)
+      self.install(tmp)
+
+  def extract_with_tarfile(self):
+    '''Use the tarfile Python module to extract the tarball.
+
+    Unfortunately, for some reason we were not able to fully
+    characterize, it can take for ages on some runs (30min) and be OK
+    fast on other occasions (20s).  So we used the version using the
+    `tar` binary.
+
+    This was observed with tarfile version 0.9.0.
+
+    '''
+    import tarfile
+    import time
+    import cProfile
+    print(time.ctime(), "Using tarfile:", tarfile.version, file=sys.stderr)
     # Make TarFile withable on python <= 3.1
     if not hasattr(tarfile.TarFile, '__enter__'):
       tarfile.TarFile.__enter__ = lambda self: self
     if not hasattr(tarfile.TarFile, '__exit__'):
       tarfile.TarFile.__exit__ = lambda self, v, tb, t: self.close()
     with tarfile.open(str(self.tarball.path()), 'r') as f, \
-         tempfile.TemporaryDirectory(
-           prefix = str(self.tarball.name().basename()) + '.',
-           dir = str(self.destination)) as tmp:
+         self.tmpdir() as tmp:
       tmp = drake.Path(tmp)
-      f.extractall(str(tmp))
-      for f in _OS.listdir(str(tmp)):
-        destination = str(drake.path_build(self.destination / f))
-        if (_OS.path.exists(destination)):
-          shutil.rmtree(destination)
-        shutil.move(str(tmp / f), destination)
+      print(time.ctime(), "Extraction Begin:", str(tmp), file=sys.stderr)
+      cProfile.runctx('f.extractall(str(tmp))', globals(), locals())
+      print(time.ctime(), "Extraction done.", file=sys.stderr)
+      self.install(tmp)
 
 class ZipExtractor(ArchiveExtractor):
 
