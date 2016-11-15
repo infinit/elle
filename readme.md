@@ -23,17 +23,7 @@ As mention earlier, elle is a set of libraries, designed to ease C++ development
 ## Example
 
 ```cpp
-static const auto keys = elle::cryptography::rsa::keypair::generate(2048);
-
-void
-encrypted_hello_world_tcp_server(elle::Buffer const& message = "hello world!")
-{
-  auto encrypted_message = keys.k().encrypt(message);
-  reactor::network::TCPServer server;
-  server.listen();
-  auto socket = server.accept();
-  elle::serialization::json::serialize(*socket, encrypted_message);
-}
+// XXX.
 ```
 
 ## Getting elle.
