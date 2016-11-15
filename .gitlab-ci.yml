@@ -8,6 +8,7 @@ variables:
 x86_64-centos6-gcc4:
   stage: build
   script:
+    - git submodule sync --recursive
     - git submodule update --init --recursive
     - git fetch origin --tags
     - SOURCE_DIR="${CI_PROJECT_DIR}"
@@ -36,6 +37,7 @@ x86_64-centos6-gcc4:
 x86_64-ubuntu-gcc4:
   stage: build
   script:
+    - git submodule sync --recursive
     - git submodule update --init --recursive
     - git fetch origin --tags
     - SOURCE_DIR="${CI_PROJECT_DIR}"
@@ -65,6 +67,7 @@ x86_64-ubuntu-gcc4:
 x86_64-jessie-gcc4:
   stage: build
   script:
+    - git submodule sync --recursive
     - git submodule update --init --recursive
     - git fetch origin --tags
     - SOURCE_DIR="${CI_PROJECT_DIR}"
@@ -93,6 +96,7 @@ x86_64-jessie-gcc4:
 x86_64-alpine-gcc:
   stage: build
   script:
+    - git submodule sync --recursive
     - git submodule update --init --recursive
     - git fetch origin --tags
     - SOURCE_DIR="${CI_PROJECT_DIR}"
@@ -122,6 +126,7 @@ x86_64-alpine-gcc:
 i386-jessie-gcc4:
   stage: build
   script:
+    - git submodule sync --recursive
     - git submodule update --init --recursive
     - git fetch origin --tags
     - SOURCE_DIR="${CI_PROJECT_DIR}"
@@ -150,6 +155,7 @@ i386-jessie-gcc4:
 x86_64-windows-mingw4:
   stage: build
   script:
+    - git submodule sync --recursive
     - git submodule update --init --recursive
     - git fetch origin --tags
     - SOURCE_DIR="${CI_PROJECT_DIR}"
@@ -178,6 +184,7 @@ x86_64-windows-mingw4:
 #i686-windows-mingw4:
 #  stage: build
 #  script:
+#    - git submodule sync --recursive
 #    - git submodule update --init --recursive
 #    - git fetch origin --tags
 #    - mkdir -p ../elle-build ../elle-install
@@ -193,6 +200,7 @@ x86_64-windows-mingw4:
 x86_64-osx-clang:
   stage: build
   script:
+    - git submodule sync --recursive
     - git submodule update --init --recursive
     - git fetch origin --tags
     - mkdir -p ../elle-build ../elle-install
