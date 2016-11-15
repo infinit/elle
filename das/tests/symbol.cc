@@ -57,7 +57,9 @@ attributes()
     std::is_same<
       typename symbols::Symbol_bar::attr_type<S>::type, std::string>::value,
     "wrong attribute type");
+  BOOST_CHECK(decltype(symbols::foo)::attr_has<S>());
   BOOST_CHECK(!no_such_attribute<decltype(symbols::foo)>(s, 0));
+  BOOST_CHECK(!decltype(symbols::baz)::attr_has<S>());
   BOOST_CHECK(no_such_attribute<decltype(symbols::baz)>(s, 0));
   Sub sub;
   BOOST_CHECK_EQUAL(symbols::foo.attr_get(sub), 0);
