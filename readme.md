@@ -58,8 +58,8 @@ You can find a generic drake configuration script at `_build/<archicture>/drake`
 ### How to compile
 ```bash
 sudo pip3 install elle/drake/requirements.txt # Install drake dependencies.
-cd elle/_build/<archiecture> (e.g: elle/_build/linux64)
-./drake //build -j 2
+cd elle/_build/<archiecture> # (e.g: elle/_build/linux64)
+./drake //build -j 2 # Build all libraries using 2 jobs.
 ```
 > *Note:* If you don't want the drake dependencies to be installed on your system, you should consider using [virtualenv](https://virtualenv.pypa.io/en/stable/installation).
 

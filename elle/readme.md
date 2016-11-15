@@ -9,10 +9,10 @@ elle is a part of the [elle](https://github.com/infinit/elle) set of libraries.
 c++ standard library lacks some of fundamental concepts, that's why the [Boost](http://www.boost.org) library exists and tends to fill this lack of functionality. Based on both, elle introduces new concepts and functionnalities to makes developers life easier.
 elle includes many helpers such as:
 
-* [attributes](#Attributes): Macros that automatically declares and implements setters and getters
-* [buffers](#Buffers): Abstract memory management
-* [serialization](#Serialization]: json & binary serializations supporting versionning
-* [logs](#Logs): adjustable logs
+* [attributes](#attributes): Macros that automatically declares and implements setters and getters
+* [buffers](#buffers): Abstract memory management
+* [serialization](#serialization): json & binary serializations supporting versionning
+* [logs](#logs): adjustable logs
 * ...
 
 ## How to compile
@@ -25,7 +25,10 @@ _See [elle: How to compile](https://github.com/infinit/elle#how-to-compile)._
 
 ## Example
 
-## Concepts:
+```cpp
+include <elle.hh>
+```
+## Concepts
 
 ### Attributes
 
@@ -154,11 +157,11 @@ struct HitCounter
 };
 
 HitCounter counter;
-ELLE_ASSERT_EQ(counter, "This counter that has never been hit");
+ELLE_ASSERT_EQ(elle::sprintf("%s", counter), "This counter that has never been hit");
 counter.hit(42);
-ELLE_ASSERT_EQ(counter, "This counter that has hit 42 times");
+ELLE_ASSERT_EQ(elle::sprintf("%s", counter), "This counter that has hit 42 times");
 counter.hit(1002);
-ELLE_ASSERT_EQ(counter, "This counter that has hit tones of times");
+ELLE_ASSERT_EQ(elle::sprintf("%s", counter), "This counter that has hit tones of times");
 ```
 Full example [here](https://github.com/infinit/elle/elle/examples/printable.cc).
 
