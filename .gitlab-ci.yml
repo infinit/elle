@@ -8,7 +8,7 @@ variables:
 x86_64-centos6-gcc4:
   stage: build
   script:
-    - git submodule sync --recursive
+    - git submodule sync
     - git submodule update --init --recursive
     - git fetch origin --tags
     - SOURCE_DIR="${CI_PROJECT_DIR}"
