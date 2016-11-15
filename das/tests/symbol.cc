@@ -65,8 +65,23 @@ attributes()
   BOOST_CHECK_EQUAL(symbols::foo.attr_get(sub), 0);
 }
 
+struct M
+{
+  void foo(int i = 42);
+};
+
+static
+void
+methods()
+{
+  static_assert(symbols::foo.method_has<M>(), "method_has error");
+  static_assert(symbols::foo.method_has<M, int>(), "method_has error");
+  static_assert(!symbols::foo.method_has<M, int, int>(), "method_has error");
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
   suite.add(BOOST_TEST_CASE(attributes), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(methods), 0, valgrind(1));
 }

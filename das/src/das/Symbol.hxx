@@ -75,6 +75,36 @@
     {                                                           \
       return false;                                             \
     }                                                           \
+                                                                \
+  /* Method */                                                  \
+                                                                \
+  public:                                                       \
+    template <typename T, typename ... Args>                    \
+    static constexpr                                            \
+    bool                                                        \
+    method_has()                                                \
+    {                                                           \
+      return Symbol_##Name::_method_has<T, Args...>(0);         \
+    }                                                           \
+                                                                \
+  private:                                                      \
+    template <typename T, typename ... Args>                    \
+    static constexpr                                            \
+      std::enable_if_exists_t<                                  \
+        decltype(std::declval<T&>().Name(                       \
+                 std::declval<Args>()...)), bool>               \
+    _method_has(int)                                            \
+    {                                                           \
+      return true;                                              \
+    }                                                           \
+                                                                \
+    template <typename T, typename ... Args>                    \
+    static constexpr                                            \
+    bool                                                        \
+    _method_has(...)                                            \
+    {                                                           \
+      return false;                                             \
+    }                                                           \
   } Name;                                                       \
 
 #endif
