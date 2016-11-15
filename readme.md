@@ -33,7 +33,8 @@ encrypted_hello_world_tcp_server(elle::Buffer const& message = "hello world!")
   server.listen();
   auto socket = server.accept();
   elle::serialization::json::serialize(*socket, encrypted_message);
-}```
+}
+```
 
 ## Getting elle.
 
