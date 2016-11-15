@@ -8,7 +8,6 @@ variables:
 x86_64-centos6-gcc4:
   stage: build
   script:
-    - time scl enable devtoolset-4 rh-python34 "./buildenv --cleanup-build-trees --build-trees-root \"/cache/$CI_PROJECT_NAME\"  --verbose"
     - git submodule update --init --recursive
     - git fetch origin --tags
     - SOURCE_DIR="${CI_PROJECT_DIR}"
@@ -37,7 +36,6 @@ x86_64-centos6-gcc4:
 x86_64-ubuntu-gcc4:
   stage: build
   script:
-    - time ./buildenv --cleanup-build-trees --build-trees-root "/cache/$CI_PROJECT_NAME"  --verbose
     - git submodule update --init --recursive
     - git fetch origin --tags
     - SOURCE_DIR="${CI_PROJECT_DIR}"
@@ -67,7 +65,6 @@ x86_64-ubuntu-gcc4:
 x86_64-jessie-gcc4:
   stage: build
   script:
-    - time ./buildenv --cleanup-build-trees --build-trees-root "/cache/$CI_PROJECT_NAME"  --verbose
     - git submodule update --init --recursive
     - git fetch origin --tags
     - SOURCE_DIR="${CI_PROJECT_DIR}"
@@ -96,7 +93,6 @@ x86_64-jessie-gcc4:
 x86_64-alpine-gcc:
   stage: build
   script:
-    - time ./buildenv --cleanup-build-trees --build-trees-root "/cache/$CI_PROJECT_NAME"  --verbose
     - git submodule update --init --recursive
     - git fetch origin --tags
     - SOURCE_DIR="${CI_PROJECT_DIR}"
@@ -126,7 +122,6 @@ x86_64-alpine-gcc:
 i386-jessie-gcc4:
   stage: build
   script:
-    - time ./buildenv --cleanup-build-trees --build-trees-root "/cache/$CI_PROJECT_NAME"  --verbose
     - git submodule update --init --recursive
     - git fetch origin --tags
     - SOURCE_DIR="${CI_PROJECT_DIR}"
@@ -155,7 +150,6 @@ i386-jessie-gcc4:
 x86_64-windows-mingw4:
   stage: build
   script:
-    - time ./buildenv --cleanup-build-trees --build-trees-root "/cache/$CI_PROJECT_NAME"  --verbose
     - git submodule update --init --recursive
     - git fetch origin --tags
     - SOURCE_DIR="${CI_PROJECT_DIR}"
