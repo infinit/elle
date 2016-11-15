@@ -96,6 +96,14 @@
                               std::declval<Args>()...));        \
     };                                                          \
                                                                 \
+    template <typename T, typename ... Args>                    \
+    static                                                      \
+    typename method_type<T, Args...>::type                      \
+    method_call(T&& o, Args&& ... args)                         \
+    {                                                           \
+      return o.Name(std::forward<Args>(args)...);               \
+    }                                                           \
+                                                                \
   private:                                                      \
     template <typename T, typename ... Args>                    \
     static constexpr                                            \

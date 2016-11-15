@@ -67,7 +67,11 @@ attributes()
 
 struct M
 {
-  void foo(int i = 42);
+  int
+  foo(int i = 41)
+  {
+    return i + 1;
+  }
 };
 
 static
@@ -79,12 +83,15 @@ methods()
   static_assert(!symbols::foo.method_has<M, int, int>(), "method_has error");
   static_assert(
     std::is_same<
-      decltype(symbols::foo)::method_type<M>::type, void>::value,
+      decltype(symbols::foo)::method_type<M>::type, int>::value,
     "method_type error");
   static_assert(
     std::is_same<
-      decltype(symbols::foo)::method_type<M, int>::type, void>::value,
+      decltype(symbols::foo)::method_type<M, int>::type, int>::value,
     "method_type error");
+  M m;
+  BOOST_CHECK_EQUAL(symbols::foo.method_call(m), 42);
+  BOOST_CHECK_EQUAL(symbols::foo.method_call(m, 5), 6);
 }
 
 ELLE_TEST_SUITE()
