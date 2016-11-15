@@ -87,6 +87,15 @@
       return Symbol_##Name::_method_has<T, Args...>(0);         \
     }                                                           \
                                                                 \
+    template <typename T, typename ... Args>                    \
+    struct method_type                                          \
+    {                                                           \
+      static_assert(method_has<T, Args...>(),                   \
+                    "no such method");                          \
+      using type = decltype(std::declval<T&>().Name(            \
+                              std::declval<Args>()...));        \
+    };                                                          \
+                                                                \
   private:                                                      \
     template <typename T, typename ... Args>                    \
     static constexpr                                            \

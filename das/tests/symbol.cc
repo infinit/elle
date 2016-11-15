@@ -77,6 +77,14 @@ methods()
   static_assert(symbols::foo.method_has<M>(), "method_has error");
   static_assert(symbols::foo.method_has<M, int>(), "method_has error");
   static_assert(!symbols::foo.method_has<M, int, int>(), "method_has error");
+  static_assert(
+    std::is_same<
+      decltype(symbols::foo)::method_type<M>::type, void>::value,
+    "method_type error");
+  static_assert(
+    std::is_same<
+      decltype(symbols::foo)::method_type<M, int>::type, void>::value,
+    "method_type error");
 }
 
 ELLE_TEST_SUITE()
