@@ -72,6 +72,18 @@ struct M
   {
     return i + 1;
   }
+
+  bool
+  bar(char)
+  {
+    return true;
+  }
+
+  bool
+  bar(double)
+  {
+    return false;
+  }
 };
 
 static
@@ -92,6 +104,8 @@ methods()
   M m;
   BOOST_CHECK_EQUAL(symbols::foo.method_call(m), 42);
   BOOST_CHECK_EQUAL(symbols::foo.method_call(m, 5), 6);
+  BOOST_CHECK(symbols::bar.method_call(m, 'c'));
+  BOOST_CHECK(!symbols::bar.method_call(m, 0.));
 }
 
 ELLE_TEST_SUITE()
