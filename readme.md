@@ -7,14 +7,14 @@ elle is split into different smaller specialized libraries to provide elegant wa
 ## Strucure
 
 As mention earlier, elle is a set of libraries, designed to ease C++ development through robusts and flexible implementations, including:
-- [elle](https://github.com/infinit/elle/tree/master/elle): Utilities including serialization, logs, buffer, formatting, ...
-- [reactor](https://github.com/infinit/elle/tree/master/reactor): An asynchronous framework using a coroutines scheduler
-- [cryptography](https://github.com/infinit/elle/tree/master/cryptography): Object-oriented cryptography wrapper around OpenSSL
-- [protocol](https://github.com/infinit/elle/tree/master/protocol): Network communication library (RCPs))
-- [das](https://github.com/infinit/elle/tree/master/das): Model manipulator and generator
-- [athena](https://github.com/infinit/elle/tree/master/athena): Bizantine environment library
-- [aws](https://github.com/infinit/elle/tree/master/aws): reactorified AWS API wrapper
-- [dropbox](https://github.com/infinit/elle/tree/master/dropbox): reactorified Dropbox API wrapper
+- [elle](elle): Utilities including serialization, logs, buffer, formatting, ...
+- [reactor](reactor): An asynchronous framework using a coroutines scheduler
+- [cryptography](cryptography): Object-oriented cryptography wrapper around OpenSSL
+- [protocol](protocol): Network communication library (RCPs))
+- [das](das): Model manipulator and generator
+- [athena](athena): Bizantine environment library
+- [aws](aws): reactorified AWS API wrapper
+- [dropbox](dropbox): reactorified Dropbox API wrapper
 
 > *Notes:*
 >   - elle is under development, used and maintained by [infinit](https://infinit.sh) as a set of core libraries. APIs, structures and concepts may change over time. You can use it as is but we don't guaranty any API retrocompatibilty.
