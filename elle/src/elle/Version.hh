@@ -77,7 +77,7 @@ namespace elle
 namespace std
 {
   template <>
-  class ELLE_API hash<elle::Version>
+  struct ELLE_API hash<elle::Version>
   {
   public:
     std::size_t

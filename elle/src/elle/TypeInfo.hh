@@ -33,14 +33,7 @@ namespace elle
     template <typename T>
     friend TypeInfo type_info(T const&);
     ELLE_ATTRIBUTE(std::type_index, info);
-# ifdef __clang__
-#  pragma clang diagnostic push
-#  pragma clang diagnostic ignored "-Wmismatched-tags"
-# endif
-    friend class std::hash<TypeInfo>;
-# ifdef __clang__
-#  pragma clang diagnostic pop
-# endif
+    friend struct std::hash<TypeInfo>;
   };
 
   ELLE_API
@@ -59,7 +52,7 @@ namespace elle
 namespace std
 {
   template<>
-  class ELLE_API hash<elle::TypeInfo>
+  struct ELLE_API hash<elle::TypeInfo>
   {
   public:
     size_t operator()(elle::TypeInfo const& info) const;
