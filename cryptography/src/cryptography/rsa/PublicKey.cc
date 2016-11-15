@@ -293,9 +293,9 @@ namespace infinit
 
       bool
       PublicKey::_verify(elle::ConstWeakBuffer const& signature,
-                        elle::ConstWeakBuffer const& plain,
-                        Padding const padding,
-                        Oneway const oneway) const
+                         elle::ConstWeakBuffer const& plain,
+                         Padding const padding,
+                         Oneway const oneway) const
       {
         elle::IOStream _plain(plain.istreambuf());
         return this->_verify(signature, _plain, padding, oneway);

@@ -306,7 +306,8 @@ namespace infinit
           "data: %s",
           elle::lazy([&] {
               std::stringstream out;
-              elle::serialization::json::serialize(o, out, version, false, true);
+              elle::serialization::json::serialize(o, out, version,
+                                                   false, true);
               return out.str();
             }));
         ELLE_DUMP("serialization version: %s", version);

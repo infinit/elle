@@ -2,7 +2,7 @@
 // way.
 //
 // $ ./sample
-// 1) i = chang'daile
+// 1) chang'daile
 // 2) signature valid
 // 3) Answer to The Ultimate Question of Life, the Universe, and Everything
 // 4) 76b4075f7b0aab59942335e4497b42ecfa9e3e0f
@@ -38,7 +38,7 @@ main()
       elle::Buffer code = keypair.K().seal(data);
       elle::Buffer clear = keypair.k().open(code);
 
-      elle::printf("1) i = %s\n", clear.string());
+      elle::printf("1) %s\n", clear.string());
     }
 
     // Sign/verify with DSA.
