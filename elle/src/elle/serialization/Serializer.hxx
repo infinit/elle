@@ -351,14 +351,16 @@ namespace elle
                                  std::move(second.get()));
       }
 
-      template <typename T, typename Serializer = void>
+      template <typename T, typename S = void>
       static
       typename
       std::enable_if<_details::has_serialize_functions_api<T, void>(), T>::type
       deserialize(SerializerIn& self, unsigned)
       {
+        ELLE_LOG_COMPONENT("elle.serialization.Serializer");
+        ELLE_DUMP("API: functions (%s)", elle::type_info<S>());
         return
-          _details::serialization_api<T, Serializer>::deserialize(self);
+          _details::serialization_api<T, S>::deserialize(self);
       }
 
       template <typename T, typename S = void>
