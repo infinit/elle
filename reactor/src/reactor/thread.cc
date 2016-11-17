@@ -335,7 +335,17 @@ namespace reactor
         for (Waitable* waitable: this->_waited)
           waitable->_unwait(this);
         ELLE_ASSERT(this->_waited.empty());
-        std::rethrow_exception(s->_exception);
+        try
+        {
+          std::rethrow_exception(s->_exception);
+        }
+        catch (elle::Exception& e)
+        {
+          // FIXME: Only the latest backtrace will be stored, but this is still
+          // better than the creation time backtrace, I suppose.
+          e.backtrace(elle::Backtrace::current());
+          throw;
+        }
       }
 
     if (freeze)
