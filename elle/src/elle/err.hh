@@ -9,12 +9,14 @@
 
 namespace elle
 {
+  ELLE_API
   ELLE_COMPILER_ATTRIBUTE_NORETURN
   void
   err(std::string const& msg);
 
   template <typename ... Args>
   ELLE_COMPILER_ATTRIBUTE_NORETURN
+  inline
   void
   err(std::string const& fmt, Args&& ... args)
   {

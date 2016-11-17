@@ -1,5 +1,3 @@
-(set-font-size 80)
-
 (require 'cc-mode)
 
 (defun c-lineup-C-comments-boxes (arg)

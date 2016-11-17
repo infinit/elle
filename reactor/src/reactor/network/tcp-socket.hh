@@ -29,6 +29,7 @@ namespace reactor
                 DurationOpt timeout = DurationOpt());
       TCPSocket(boost::asio::ip::tcp::endpoint const& endpoint,
                 DurationOpt timeout = DurationOpt());
+      TCPSocket(TCPSocket&& src);
       virtual
       ~TCPSocket();
     private:

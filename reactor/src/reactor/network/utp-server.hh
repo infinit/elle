@@ -32,6 +32,8 @@ namespace reactor
       void
       listen(int port, bool ipv6 = false);
       void
+      listen(boost::asio::ip::address host, int port = 0, bool enable_ipv6 = false);
+      void
       listen(EndPoint const& end_point);
       EndPoint
       local_endpoint();

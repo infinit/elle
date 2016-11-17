@@ -81,7 +81,7 @@ namespace elle
     inenv(std::string const& key)
     {
       char const* val = ::getenv(key.c_str());
-        return (val != nullptr);
+      return val != nullptr;
     }
 
 

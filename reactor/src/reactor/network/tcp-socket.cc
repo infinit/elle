@@ -39,6 +39,10 @@ namespace reactor
             endpoint, timeout)
     {}
 
+    TCPSocket::TCPSocket(TCPSocket&& socket)
+      : Super(std::move(socket))
+    {}
+
     TCPSocket::~TCPSocket()
     {}
 

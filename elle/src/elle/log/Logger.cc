@@ -38,7 +38,6 @@ namespace elle
         : _indentation()
       {}
 
-      virtual
       unsigned int&
       indentation() override
       {
@@ -47,14 +46,12 @@ namespace elle
         return *this->_indentation;
       }
 
-      virtual
       void
       indent() override
       {
         this->indentation() += 1;
       }
 
-      virtual
       void
       unindent() override
       {
@@ -62,7 +59,6 @@ namespace elle
         this->indentation() -= 1;
       }
 
-      virtual
       std::unique_ptr<Indentation>
       clone() override
       {
@@ -113,10 +109,10 @@ namespace elle
       else
         throw elle::Exception(
           elle::sprintf("invalid log level: %s", level));
-  }
+    }
 
     Logger::Logger(std::string const& log_level)
-      : _indentation(new PlainIndentation)
+      : _indentation(std::make_unique<PlainIndentation>())
       , _time_universal(false)
       , _time_microsec(false)
       , _component_patterns()
@@ -127,9 +123,7 @@ namespace elle
       // FIXME: resets indentation
       elle::Plugin<Indenter>::hook_added().connect(
         [this] (Indenter&) { this->_setup_indentation(); });
-      std::string levels_str(log_level);
-      if (elle::os::inenv("ELLE_LOG_LEVEL"))
-        levels_str = elle::os::getenv("ELLE_LOG_LEVEL", "");
+      auto levels_str = elle::os::getenv("ELLE_LOG_LEVEL", log_level);
       if (!levels_str.empty())
       {
         std::vector<std::string> levels;
@@ -139,22 +133,23 @@ namespace elle
         for (auto& pattern: levels)
         {
           auto colon = pattern.find(":");
-          Level level = Level::log;
+          auto filter = Filter{};
           if (colon != std::string::npos)
           {
             std::string level_str = pattern.substr(colon + 1);
             boost::algorithm::trim(level_str);
-            level = parse_level(level_str);
+            filter.level = parse_level(level_str);
             pattern = pattern.substr(0, colon);
             boost::algorithm::trim(pattern);
+            filter.pattern = pattern;
           }
           else
           {
             boost::algorithm::trim(pattern);
-            level = parse_level(pattern);
-            pattern = "*";
+            filter.level = parse_level(pattern);
+            filter.pattern = "*";
           }
-          _component_patterns.push_back(std::make_pair(pattern, level));
+          _component_patterns.push_back(std::move(filter));
         }
       }
     }
@@ -226,21 +221,29 @@ namespace elle
     | Enabled |
     `--------*/
 
+    bool
+    Logger::Filter::match(const std::string& s) const
+    {
+#ifdef INFINIT_WINDOWS
+      return ::PathMatchSpec(s.c_str(), pattern.c_str()) == TRUE;
+#else
+      return fnmatch(pattern.c_str(), s.c_str(), 0) == 0;
+#endif
+    }
+
+
     Logger::Level
     Logger::component_enabled(std::string const& name)
     {
       std::lock_guard<std::recursive_mutex> lock(_mutex);
       auto elt = this->_component_levels.find(name);
-      Level res = Level::log;
+      Level res;
       if (elt == this->_component_levels.end())
       {
-        for (auto const& pattern: this->_component_patterns)
-#ifdef INFINIT_WINDOWS
-          if (::PathMatchSpec(name.c_str(), pattern.first.c_str()) == TRUE)
-#else
-          if (fnmatch(pattern.first.c_str(), name.c_str(), 0) == 0)
-#endif
-            res = pattern.second;
+        res = Level::log;
+        for (auto const& filter: this->_component_patterns)
+          if (filter.match(name))
+            res = filter.level;
 
         if (res > Level::none)
           this->_component_max_size =

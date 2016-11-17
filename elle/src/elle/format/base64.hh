@@ -10,7 +10,7 @@ namespace elle
   {
     namespace base64
     {
-      class StreamBuffer:
+      class ELLE_API StreamBuffer:
         public elle::StreamBuffer,
         public elle::Printable
       {
@@ -52,7 +52,7 @@ namespace elle
         print(std::ostream& output) const;
       };
 
-      class Stream:
+      class ELLE_API Stream:
         public elle::IOStream
       {
       public:
@@ -66,18 +66,22 @@ namespace elle
       };
 
       /// Encode to base64.
+      ELLE_API
       Buffer
       encode(ConstWeakBuffer clear);
 
       /// The size of the encoded input.
+      ELLE_API
       size_t
       encoded_size(ConstWeakBuffer input);
 
       /// Decode from base64.
+      ELLE_API
       Buffer
       decode(ConstWeakBuffer input);
 
       /// The size of the decoded input.
+      ELLE_API
       size_t
       decoded_size(ConstWeakBuffer input);
     }

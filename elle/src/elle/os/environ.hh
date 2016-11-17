@@ -4,6 +4,8 @@
 # include <string>
 # include <unordered_map>
 
+# include <elle/compiler.hh>
+
 namespace elle
 {
   namespace os
@@ -14,31 +16,35 @@ namespace elle
 # endif
 
     /// Retrieve a fresh copy of environ.
+    ELLE_API
     std::unordered_map<std::string, std::string>
     environ();
 
+    ELLE_API
     std::string
     setenv(std::string const& key, std::string const& val, bool mode);
 
     /// Get a specific value from environment. If value is not found,
     /// KeyError Exception is thrown
+    ELLE_API
     std::string
     getenv(std::string const& key);
-    
+
     /// Get a specific value from environment. If value is not found,
     /// default_ is returned
+    ELLE_API
     std::string
     getenv(std::string const& key, std::string const& default_);
 
-    /// Return if a key is defined in environment var. 
+    /// Whether a key is defined in environment.
+    ELLE_API
     bool
-    inenv(std::string const& key);    
+    inenv(std::string const& key);
 
+    ELLE_API
     void
     unsetenv(std::string const& key);
-
   }
 }
 
 #endif
-

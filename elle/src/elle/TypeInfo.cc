@@ -1,3 +1,7 @@
+#ifdef __clang__
+# include <cstring>
+#endif
+
 #include <elle/TypeInfo.hh>
 
 #include <algorithm>

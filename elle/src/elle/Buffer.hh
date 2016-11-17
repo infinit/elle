@@ -4,8 +4,6 @@
 # include <elle/IOStream.hh>
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
-# include <elle/serialize/construct.hh>
-# include <elle/serialize/fwd.hh>
 # include <elle/types.hh>
 
 # include <iosfwd>
@@ -23,8 +21,6 @@ namespace elle
     };
   }
 
-  class InputBufferArchive;
-  class OutputBufferArchive;
   class WeakBuffer;
 
   /*-------.
@@ -36,7 +32,7 @@ namespace elle
   /// The Buffer owns the pointed memory at every moment.
   ///
   /// @see WeakBuffer for a buffer that doesn't own the memory.
-  class Buffer:
+  class ELLE_API Buffer:
     private boost::totally_ordered<Buffer>
   {
   /*------.
@@ -153,16 +149,6 @@ namespace elle
   | Serialization |
   `--------------*/
   public:
-    friend struct serialize::Serializer<Buffer>;
-    /// Load constructor.
-    ELLE_SERIALIZE_CONSTRUCT_DECLARE(Buffer);
-    /// Binary serialization write shorcut.
-    OutputBufferArchive
-    writer();
-    /// Binary serialization read shorcut.
-    InputBufferArchive
-    reader() const;
-
     /// Construct an output streambuf from the buffer.
     std::streambuf* ostreambuf();
 
@@ -195,6 +181,7 @@ namespace elle
     dump(const Natural32 shift = 0) const;
   };
 
+  ELLE_API
   std::ostream&
   operator <<(std::ostream& stream,
               Buffer const& buffer);
@@ -210,7 +197,7 @@ namespace elle
   /// represent C-style buffers as one entity, with some useful shortcuts and
   /// facilities.  It has no intelligence or memory managment whatsoever, and
   /// shouldn't have any.
-  class ConstWeakBuffer:
+  class ELLE_API ConstWeakBuffer:
     private boost::totally_ordered<ConstWeakBuffer>
   {
   /*------.
@@ -291,9 +278,6 @@ namespace elle
   | Serialization |
   `--------------*/
   public:
-    InputBufferArchive
-    reader() const;
-
     /// Construct an input streambuf from the buffer.
     std::streambuf* istreambuf() const;
 
@@ -319,7 +303,7 @@ namespace elle
   };
 
   /// A ConstWeakBuffer with mutable data.
-  class WeakBuffer:
+  class ELLE_API WeakBuffer:
     public ConstWeakBuffer, private boost::totally_ordered<WeakBuffer>
   {
   /*-------------.
@@ -380,6 +364,7 @@ namespace elle
   | Operators |
   `----------*/
 
+  ELLE_API
   std::ostream&
   operator <<(std::ostream& stream,
               ConstWeakBuffer const& buffer);
@@ -393,19 +378,17 @@ namespace elle
 namespace std
 {
   template<>
-  struct hash<elle::ConstWeakBuffer>
+  struct ELLE_API hash<elle::ConstWeakBuffer>
   {
   public:
     elle::Buffer::Size operator()(elle::ConstWeakBuffer const& buffer) const;
   };
+
   template<>
-  struct hash<elle::Buffer>
+  struct ELLE_API hash<elle::Buffer>
   {
   public:
-    elle::Buffer::Size operator()(elle::Buffer const& buffer) const
-    {
-      return hash<elle::ConstWeakBuffer>()(buffer);
-    }
+    elle::Buffer::Size operator()(elle::Buffer const& buffer) const;
   };
 }
 

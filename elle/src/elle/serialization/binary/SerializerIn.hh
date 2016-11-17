@@ -12,8 +12,8 @@ namespace elle
   {
     namespace binary
     {
-       class SerializerIn:
-        public serialization::SerializerIn
+       class ELLE_API SerializerIn
+         : public serialization::SerializerIn
       {
       /*------.
       | Types |
@@ -42,44 +42,43 @@ namespace elle
         _text() const override;
         virtual
         void
-        _serialize(std::string const& name, int64_t& v) override;
+        _serialize(int64_t& v) override;
         virtual
         void
-        _serialize(std::string const& name, uint64_t& v) override;
+        _serialize(uint64_t& v) override;
         virtual
         void
-        _serialize(std::string const& name, int32_t& v) override;
+        _serialize(int32_t& v) override;
         virtual
         void
-        _serialize(std::string const& name, uint32_t& v) override;
+        _serialize(uint32_t& v) override;
         virtual
         void
-        _serialize(std::string const& name, int16_t& v) override;
+        _serialize(int16_t& v) override;
         virtual
         void
-        _serialize(std::string const& name, uint16_t& v) override;
+        _serialize(uint16_t& v) override;
         virtual
         void
-        _serialize(std::string const& name, int8_t& v) override;
+        _serialize(int8_t& v) override;
         virtual
         void
-        _serialize(std::string const& name, uint8_t& v) override;
+        _serialize(uint8_t& v) override;
         virtual
         void
-        _serialize(std::string const& name, double& v) override;
+        _serialize(double& v) override;
         virtual
         void
-        _serialize(std::string const& name, bool& v) override;
+        _serialize(bool& v) override;
         virtual
         void
-        _serialize(std::string const& name, std::string& v) override;
+        _serialize(std::string& v) override;
         virtual
         void
-        _serialize(std::string const& name, elle::Buffer& v) override;
+        _serialize(elle::Buffer& v) override;
         virtual
         void
-        _serialize(std::string const& name,
-                   boost::posix_time::ptime& v) override;
+        _serialize(boost::posix_time::ptime& v) override;
         virtual
         void
         _serialize_time_duration(std::int64_t& ticks,
@@ -88,17 +87,15 @@ namespace elle
         virtual
         void
         _serialize_named_option(std::string const& name,
-                          bool,
+                                bool,
+                                std::function<void ()> const& f) override;
+        virtual
+        void
+        _serialize_option(bool,
                           std::function<void ()> const& f) override;
         virtual
         void
-        _serialize_option(std::string const& name,
-                          bool,
-                          std::function<void ()> const& f) override;
-        virtual
-        void
-        _serialize_array(std::string const& name,
-                         int size,
+        _serialize_array(int size,
                          std::function<void ()> const& f) override;
         virtual
         void
@@ -120,7 +117,7 @@ namespace elle
         int64_t _serialize_number();
         template <typename T>
         void
-        _serialize_int(std::string const& name, T& v);
+        _serialize_int(T& v);
     };
   }
 }

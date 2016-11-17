@@ -1,0 +1,1610 @@
+diff -ru a/boost/date_time/constrained_value.hpp b/boost/date_time/constrained_value.hpp
+--- a/boost/date_time/constrained_value.hpp	2015-11-04 22:59:11.000000000 -0500
++++ b/boost/date_time/constrained_value.hpp	2016-06-23 13:19:05.121681911 -0400
+@@ -2,10 +2,10 @@
+ #define CONSTRAINED_VALUE_HPP___
+ 
+ /* Copyright (c) 2002,2003 CrystalClear Software, Inc.
+- * Use, modification and distribution is subject to the 
++ * Use, modification and distribution is subject to the
+  * Boost Software License, Version 1.0. (See accompanying
+  * file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+- * Author: Jeff Garland 
++ * Author: Jeff Garland
+  * $Date$
+  */
+ 
+@@ -22,16 +22,16 @@
+ namespace CV {
+   //! Represent a min or max violation type
+   enum violation_enum {min_violation, max_violation};
+-  
++
+   //! A template to specify a constrained basic value type
+   /*! This template provides a quick way to generate
+    *  an integer type with a constrained range.  The type
+    *  provides for the ability to specify the min, max, and
+    *  and error handling policy.
+-   *  
++   *
+    *  <b>value policies</b>
+    *  A class that provides the range limits via the min and
+-   *  max functions as well as a function on_error that 
++   *  max functions as well as a function on_error that
+    *  determines how errors are handled.  A common strategy
+    *  would be to assert or throw and exception.  The on_error
+    *  is passed both the current value and the new value that
+@@ -39,7 +39,7 @@
+    *
+    */
+   template<class value_policies>
+-  class constrained_value {
++  class BOOST_SYMBOL_VISIBLE constrained_value {
+   public:
+     typedef typename value_policies::value_type value_type;
+     //    typedef except_type exception_type;
+@@ -49,7 +49,7 @@
+     }
+     constrained_value& operator=(value_type v)
+     {
+-      assign(v); 
++      assign(v);
+       return *this;
+     }
+     //! Return the max allowed value (traits method)
+@@ -63,7 +63,7 @@
+   private:
+     void assign(value_type value)
+     {
+-      //adding 1 below gets rid of a compiler warning which occurs when the 
++      //adding 1 below gets rid of a compiler warning which occurs when the
+       //min_value is 0 and the type is unsigned....
+       if (value+1 < (min)()+1) {
+         value_policies::on_error(value_, value, min_violation);
+@@ -78,11 +78,11 @@
+ };
+ 
+   //! Template to shortcut the constrained_value policy creation process
+-  template<typename rep_type, rep_type min_value, 
++  template<typename rep_type, rep_type min_value,
+            rep_type max_value, class exception_type>
+-  class simple_exception_policy
++  class BOOST_SYMBOL_VISIBLE simple_exception_policy
+   {
+-    struct exception_wrapper : public exception_type
++    struct BOOST_SYMBOL_VISIBLE exception_wrapper : public exception_type
+     {
+       // In order to support throw_exception mechanism in the BOOST_NO_EXCEPTIONS mode,
+       // we'll have to provide a way to acquire std::exception from the exception being thrown.
+diff -ru a/boost/date_time/date_duration.hpp b/boost/date_time/date_duration.hpp
+--- a/boost/date_time/date_duration.hpp	2015-11-04 22:59:11.000000000 -0500
++++ b/boost/date_time/date_duration.hpp	2016-06-23 13:21:07.264404079 -0400
+@@ -10,6 +10,7 @@
+  */
+ 
+ 
++#include <boost/date_time/compiler_config.hpp>
+ #include <boost/operators.hpp>
+ #include <boost/date_time/special_defs.hpp>
+ 
+@@ -19,7 +20,7 @@
+ 
+   //! Duration type with date level resolution
+   template<class duration_rep_traits>
+-  class date_duration : private
++  class BOOST_SYMBOL_VISIBLE date_duration : private
+               boost::less_than_comparable1< date_duration< duration_rep_traits >
+             , boost::equality_comparable1< date_duration< duration_rep_traits >
+             , boost::addable1< date_duration< duration_rep_traits >
+@@ -121,7 +122,7 @@
+   /*! Struct for instantiating date_duration with <b>NO</b> special values
+    * functionality. Allows for transparent implementation of either
+    * date_duration<long> or date_duration<int_adapter<long> > */
+-  struct duration_traits_long
++  struct BOOST_SYMBOL_VISIBLE duration_traits_long
+   {
+     typedef long int_type;
+     typedef long impl_type;
+@@ -131,7 +132,7 @@
+   /*! Struct for instantiating date_duration <b>WITH</b> special values
+    * functionality. Allows for transparent implementation of either
+    * date_duration<long> or date_duration<int_adapter<long> > */
+-  struct duration_traits_adapted
++  struct BOOST_SYMBOL_VISIBLE duration_traits_adapted
+   {
+     typedef long int_type;
+     typedef boost::date_time::int_adapter<long> impl_type;
+@@ -143,4 +144,3 @@
+ 
+ 
+ #endif
+-
+diff -ru a/boost/date_time/date_duration_types.hpp b/boost/date_time/date_duration_types.hpp
+--- a/boost/date_time/date_duration_types.hpp	2015-11-04 22:59:11.000000000 -0500
++++ b/boost/date_time/date_duration_types.hpp	2016-06-23 13:22:02.592026647 -0400
+@@ -2,13 +2,14 @@
+ #define DATE_DURATION_TYPES_HPP___
+ 
+ /* Copyright (c) 2004 CrystalClear Software, Inc.
+- * Subject to the Boost Software License, Version 1.0. 
+- * (See accompanying file LICENSE_1_0.txt or 
++ * Subject to the Boost Software License, Version 1.0.
++ * (See accompanying file LICENSE_1_0.txt or
+  * http://www.boost.org/LICENSE_1_0.txt)
+  * Author: Jeff Garland, Bart Garst
+  * $Date$
+  */
+-                                                                                
++
++#include <boost/date_time/compiler_config.hpp>
+ #include <boost/date_time/int_adapter.hpp>
+ #include <boost/date_time/special_defs.hpp>
+ #include <boost/date_time/date_duration.hpp>
+@@ -19,25 +20,25 @@
+ 
+   //! Additional duration type that represents a number of n*7 days
+   template <class duration_config>
+-  class weeks_duration : public date_duration<duration_config> {
++  class BOOST_SYMBOL_VISIBLE weeks_duration : public date_duration<duration_config> {
+   public:
+-    weeks_duration(typename duration_config::impl_type w) 
++    weeks_duration(typename duration_config::impl_type w)
+       : date_duration<duration_config>(w * 7) {}
+-    weeks_duration(special_values sv) 
++    weeks_duration(special_values sv)
+       : date_duration<duration_config>(sv) {}
+   };
+ 
+   // predeclare
+   template<class t>
+-  class years_duration;
++  class BOOST_SYMBOL_VISIBLE years_duration;
+ 
+   //! additional duration type that represents a logical month
+-  /*! A logical month enables things like: "date(2002,Mar,2) + months(2) -> 
+-   * 2002-May2". If the date is a last day-of-the-month, the result will 
++  /*! A logical month enables things like: "date(2002,Mar,2) + months(2) ->
++   * 2002-May2". If the date is a last day-of-the-month, the result will
+    * also be a last-day-of-the-month.
+    */
+   template<class base_config>
+-  class months_duration 
++  class BOOST_SYMBOL_VISIBLE months_duration
+   {
+     private:
+       typedef typename base_config::int_rep int_rep;
+@@ -49,7 +50,7 @@
+       typedef years_duration<base_config> years_type;
+     public:
+       months_duration(int_rep num) : _m(num) {}
+-      months_duration(special_values sv) : _m(sv) 
++      months_duration(special_values sv) : _m(sv)
+       {
+         _m = int_rep::from_special(sv);
+       }
+@@ -147,19 +148,19 @@
+         // get_neg_offset returns a negative duration, so we add
+         return d += m.get_neg_offset(d);
+       }
+-        
++
+     private:
+       int_rep _m;
+   };
+ 
+   //! additional duration type that represents a logical year
+-  /*! A logical year enables things like: "date(2002,Mar,2) + years(2) -> 
+-   * 2004-Mar-2". If the date is a last day-of-the-month, the result will 
++  /*! A logical year enables things like: "date(2002,Mar,2) + years(2) ->
++   * 2004-Mar-2". If the date is a last day-of-the-month, the result will
+    * also be a last-day-of-the-month (ie date(2001-Feb-28) + years(3) ->
+    * 2004-Feb-29).
+    */
+   template<class base_config>
+-  class years_duration 
++  class BOOST_SYMBOL_VISIBLE years_duration
+   {
+     private:
+       typedef typename base_config::int_rep int_rep;
+@@ -171,7 +172,7 @@
+       typedef months_duration<base_config> months_type;
+     public:
+       years_duration(int_rep num) : _y(num) {}
+-      years_duration(special_values sv) : _y(sv) 
++      years_duration(special_values sv) : _y(sv)
+       {
+         _y = int_rep::from_special(sv);
+       }
+diff -ru a/boost/date_time/date_facet.hpp b/boost/date_time/date_facet.hpp
+--- a/boost/date_time/date_facet.hpp	2015-11-04 22:59:11.000000000 -0500
++++ b/boost/date_time/date_facet.hpp	2016-06-23 13:22:54.403771095 -0400
+@@ -13,6 +13,7 @@
+ #include <string>
+ #include <vector>
+ #include <iterator> // ostreambuf_iterator
++#include <boost/date_time/compiler_config.hpp>
+ #include <boost/throw_exception.hpp>
+ #include <boost/algorithm/string/replace.hpp>
+ #include <boost/date_time/compiler_config.hpp>
+@@ -46,7 +47,7 @@
+   template <class date_type,
+             class CharT,
+             class OutItrT = std::ostreambuf_iterator<CharT, std::char_traits<CharT> > >
+-  class date_facet : public std::locale::facet {
++  class BOOST_SYMBOL_VISIBLE date_facet : public std::locale::facet {
+   public:
+     typedef typename date_type::duration_type duration_type;
+     // greg_weekday is gregorian_calendar::day_of_week_type
+@@ -408,7 +409,7 @@
+   template <class date_type,
+             class CharT,
+             class InItrT = std::istreambuf_iterator<CharT, std::char_traits<CharT> > >
+-  class date_input_facet : public std::locale::facet {
++  class BOOST_SYMBOL_VISIBLE date_input_facet : public std::locale::facet {
+   public:
+     typedef typename date_type::duration_type duration_type;
+     // greg_weekday is gregorian_calendar::day_of_week_type
+diff -ru a/boost/date_time/date.hpp b/boost/date_time/date.hpp
+--- a/boost/date_time/date.hpp	2015-11-04 22:59:11.000000000 -0500
++++ b/boost/date_time/date.hpp	2016-06-23 13:21:13.820353319 -0400
+@@ -9,6 +9,7 @@
+  * $Date$
+  */
+ 
++#include <boost/date_time/compiler_config.hpp>
+ #include <boost/operators.hpp>
+ #include <boost/date_time/year_month_day.hpp>
+ #include <boost/date_time/special_defs.hpp>
+@@ -50,7 +51,7 @@
+ 
+ 
+   template<class T, class calendar, class duration_type_>
+-  class date : private
++  class BOOST_SYMBOL_VISIBLE date : private
+        boost::less_than_comparable<T
+      , boost::equality_comparable<T
+     > >
+diff -ru a/boost/date_time/date_names_put.hpp b/boost/date_time/date_names_put.hpp
+--- a/boost/date_time/date_names_put.hpp	2015-11-04 22:59:11.000000000 -0500
++++ b/boost/date_time/date_names_put.hpp	2016-06-23 13:34:50.746224468 -0400
+@@ -14,6 +14,7 @@
+ 
+ #ifndef BOOST_DATE_TIME_NO_LOCALE
+ 
++#include <boost/date_time/compiler_config.hpp>
+ #include "boost/date_time/special_defs.hpp"
+ #include "boost/date_time/date_defs.hpp"
+ #include "boost/date_time/parse_format_base.hpp"
+@@ -39,7 +40,7 @@
+     template<class Config,
+              class charT = char,
+              class OutputIterator = std::ostreambuf_iterator<charT> >
+-    class date_names_put : public std::locale::facet
++    class BOOST_SYMBOL_VISIBLE date_names_put : public std::locale::facet
+     {
+     public:
+       date_names_put() {}
+@@ -208,7 +209,7 @@
+     template<class Config,
+              class charT = char,
+              class OutputIterator = std::ostreambuf_iterator<charT> >
+-    class all_date_names_put : public date_names_put<Config, charT, OutputIterator>
++    class BOOST_SYMBOL_VISIBLE all_date_names_put : public date_names_put<Config, charT, OutputIterator>
+     {
+     public:
+       all_date_names_put(const charT* const month_short_names[],
+diff -ru a/boost/date_time/gregorian/greg_date.hpp b/boost/date_time/gregorian/greg_date.hpp
+--- a/boost/date_time/gregorian/greg_date.hpp	2015-11-04 22:59:11.000000000 -0500
++++ b/boost/date_time/gregorian/greg_date.hpp	2016-06-23 13:24:33.619512942 -0400
+@@ -9,6 +9,7 @@
+  * $Date$
+  */
+ 
++#include <boost/date_time/compiler_config.hpp>
+ #include <boost/throw_exception.hpp>
+ #include <boost/date_time/date.hpp>
+ #include <boost/date_time/special_defs.hpp>
+@@ -34,7 +35,7 @@
+       supported.
+       \ingroup date_basics
+   */
+-  class date : public date_time::date<date, gregorian_calendar, date_duration>
++  class BOOST_SYMBOL_VISIBLE date : public date_time::date<date, gregorian_calendar, date_duration>
+   {
+    public:
+     typedef gregorian_calendar::year_type year_type;
+diff -ru a/boost/date_time/gregorian/greg_day.hpp b/boost/date_time/gregorian/greg_day.hpp
+--- a/boost/date_time/gregorian/greg_day.hpp	2015-11-04 22:59:11.000000000 -0500
++++ b/boost/date_time/gregorian/greg_day.hpp	2016-06-23 13:25:04.955487551 -0400
+@@ -2,13 +2,14 @@
+ #define GREG_DAY_HPP___
+ 
+ /* Copyright (c) 2002,2003 CrystalClear Software, Inc.
+- * Use, modification and distribution is subject to the 
++ * Use, modification and distribution is subject to the
+  * Boost Software License, Version 1.0. (See accompanying
+  * file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+- * Author: Jeff Garland 
++ * Author: Jeff Garland
+  * $Date$
+  */
+ 
++#include <boost/date_time/compiler_config.hpp>
+ #include "boost/date_time/constrained_value.hpp"
+ #include <stdexcept>
+ #include <string>
+@@ -17,14 +18,14 @@
+ namespace gregorian {
+ 
+   //! Exception type for gregorian day of month (1..31)
+-  struct bad_day_of_month : public std::out_of_range
++  struct BOOST_SYMBOL_VISIBLE bad_day_of_month : public std::out_of_range
+   {
+-    bad_day_of_month() : 
+-      std::out_of_range(std::string("Day of month value is out of range 1..31")) 
++    bad_day_of_month() :
++      std::out_of_range(std::string("Day of month value is out of range 1..31"))
+     {}
+     //! Allow other classes to throw with unique string for bad day like Feb 29
+-    bad_day_of_month(const std::string& s) : 
+-      std::out_of_range(s) 
++    bad_day_of_month(const std::string& s) :
++      std::out_of_range(s)
+     {}
+   };
+   //! Policy class that declares error handling and day of month ranges
+@@ -33,19 +34,19 @@
+   //! Generated represetation for gregorian day of month
+   typedef CV::constrained_value<greg_day_policies> greg_day_rep;
+ 
+-  //! Represent a day of the month (range 1 - 31) 
++  //! Represent a day of the month (range 1 - 31)
+   /*! This small class allows for simple conversion an integer value into
+-      a day of the month for a standard gregorian calendar.  The type 
++      a day of the month for a standard gregorian calendar.  The type
+       is automatically range checked so values outside of the range 1-31
+       will cause a bad_day_of_month exception
+   */
+-  class greg_day : public greg_day_rep {
++  class BOOST_SYMBOL_VISIBLE greg_day : public greg_day_rep {
+   public:
+     greg_day(unsigned short day_of_month) : greg_day_rep(day_of_month) {}
+     unsigned short as_number() const {return value_;}
+     operator unsigned short()  const {return value_;}
+   private:
+-    
++
+   };
+ 
+ 
+diff -ru a/boost/date_time/gregorian/greg_day_of_year.hpp b/boost/date_time/gregorian/greg_day_of_year.hpp
+--- a/boost/date_time/gregorian/greg_day_of_year.hpp	2015-11-04 22:59:11.000000000 -0500
++++ b/boost/date_time/gregorian/greg_day_of_year.hpp	2016-06-23 13:26:16.435517902 -0400
+@@ -2,13 +2,14 @@
+ #define GREG_DAY_OF_YEAR_HPP___
+ 
+ /* Copyright (c) 2002,2003 CrystalClear Software, Inc.
+- * Use, modification and distribution is subject to the 
++ * Use, modification and distribution is subject to the
+  * Boost Software License, Version 1.0. (See accompanying
+  * file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+- * Author: Jeff Garland 
++ * Author: Jeff Garland
+  * $Date$
+  */
+ 
++#include <boost/date_time/compiler_config.hpp>
+ #include "boost/date_time/constrained_value.hpp"
+ #include <stdexcept>
+ #include <string>
+@@ -17,10 +18,10 @@
+ namespace gregorian {
+ 
+   //! Exception type for day of year (1..366)
+-  struct bad_day_of_year : public std::out_of_range
++  struct BOOST_SYMBOL_VISIBLE bad_day_of_year : public std::out_of_range
+   {
+-    bad_day_of_year() : 
+-      std::out_of_range(std::string("Day of year value is out of range 1..366")) 
++    bad_day_of_year() :
++      std::out_of_range(std::string("Day of year value is out of range 1..366"))
+     {}
+   };
+ 
+diff -ru a/boost/date_time/gregorian/greg_duration.hpp b/boost/date_time/gregorian/greg_duration.hpp
+--- a/boost/date_time/gregorian/greg_duration.hpp	2015-11-04 22:59:11.000000000 -0500
++++ b/boost/date_time/gregorian/greg_duration.hpp	2016-06-23 13:26:47.267565360 -0400
+@@ -2,13 +2,14 @@
+ #define GREG_DURATION_HPP___
+ 
+ /* Copyright (c) 2002,2003 CrystalClear Software, Inc.
+- * Use, modification and distribution is subject to the 
++ * Use, modification and distribution is subject to the
+  * Boost Software License, Version 1.0. (See accompanying
+  * file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+- * Author: Jeff Garland, Bart Garst 
++ * Author: Jeff Garland, Bart Garst
+  * $Date$
+  */
+ 
++#include <boost/date_time/compiler_config.hpp>
+ #include <boost/date_time/date_duration.hpp>
+ #include <boost/date_time/int_adapter.hpp>
+ #include <boost/date_time/special_defs.hpp>
+@@ -22,7 +23,7 @@
+   //! Durations in days for gregorian system
+   /*! \ingroup date_basics
+    */
+-  class date_duration :
++  class BOOST_SYMBOL_VISIBLE date_duration :
+     public boost::date_time::date_duration< date_duration_rep >
+   {
+     typedef boost::date_time::date_duration< date_duration_rep > base_type;
+@@ -120,7 +121,7 @@
+     {
+       return date_duration(base_type::unit().get_rep());
+     }
+-  };      
++  };
+ 
+   //! Shorthand for date_duration
+   typedef date_duration days;
+diff -ru a/boost/date_time/gregorian/greg_duration_types.hpp b/boost/date_time/gregorian/greg_duration_types.hpp
+--- a/boost/date_time/gregorian/greg_duration_types.hpp	2015-11-04 22:59:11.000000000 -0500
++++ b/boost/date_time/gregorian/greg_duration_types.hpp	2016-06-23 13:27:02.355595194 -0400
+@@ -1,6 +1,6 @@
+ #ifndef GREG_DURATION_TYPES_HPP___
+ #define GREG_DURATION_TYPES_HPP___
+-                                                                                
++
+ /* Copyright (c) 2004 CrystalClear Software, Inc.
+  * Subject to Boost Software License, Version 1.0. (See accompanying
+  * file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+@@ -8,7 +8,7 @@
+  * $Date$
+  */
+ 
+-
++#include <boost/date_time/compiler_config.hpp>
+ #include <boost/date_time/gregorian/greg_date.hpp>
+ #include <boost/date_time/int_adapter.hpp>
+ #include <boost/date_time/adjust_functors.hpp>
+@@ -19,20 +19,20 @@
+ namespace gregorian {
+ 
+   //! config struct for additional duration types (ie months_duration<> & years_duration<>)
+-  struct greg_durations_config {
++  struct BOOST_SYMBOL_VISIBLE greg_durations_config {
+     typedef date date_type;
+     typedef date_time::int_adapter<int> int_rep;
+-    typedef date_time::month_functor<date_type> month_adjustor_type; 
++    typedef date_time::month_functor<date_type> month_adjustor_type;
+   };
+ 
+   typedef date_time::months_duration<greg_durations_config> months;
+   typedef date_time::years_duration<greg_durations_config> years;
+ 
+-  class weeks_duration : public date_duration {
++  class BOOST_SYMBOL_VISIBLE weeks_duration : public date_duration {
+   public:
+-    weeks_duration(duration_rep w) 
++    weeks_duration(duration_rep w)
+       : date_duration(w * 7) {}
+-    weeks_duration(date_time::special_values sv) 
++    weeks_duration(date_time::special_values sv)
+       : date_duration(sv) {}
+   };
+ 
+diff -ru a/boost/date_time/gregorian/greg_facet.hpp b/boost/date_time/gregorian/greg_facet.hpp
+--- a/boost/date_time/gregorian/greg_facet.hpp	2015-11-04 22:59:11.000000000 -0500
++++ b/boost/date_time/gregorian/greg_facet.hpp	2016-06-23 13:27:31.411666068 -0400
+@@ -2,13 +2,14 @@
+ #define GREGORIAN_FACET_HPP___
+ 
+ /* Copyright (c) 2002,2003 CrystalClear Software, Inc.
+- * Use, modification and distribution is subject to the 
++ * Use, modification and distribution is subject to the
+  * Boost Software License, Version 1.0. (See accompanying
+  * file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+  * Author: Jeff Garland, Bart Garst
+  * $Date$
+  */
+ 
++#include <boost/date_time/compiler_config.hpp>
+ #include "boost/date_time/gregorian/gregorian_types.hpp"
+ #include "boost/date_time/date_formatting_locales.hpp" // sets BOOST_DATE_TIME_NO_LOCALE
+ #include "boost/date_time/gregorian/parsers.hpp"
+@@ -24,9 +25,9 @@
+ 
+ namespace boost {
+ namespace gregorian {
+-  
++
+   //! Configuration of the output facet template
+-  struct greg_facet_config
++  struct BOOST_SYMBOL_VISIBLE greg_facet_config
+   {
+     typedef boost::gregorian::greg_month month_type;
+     typedef boost::date_time::special_values special_value_enum;
+@@ -107,7 +108,7 @@
+   }
+ 
+   //! operator<< for gregorian::date_period typical output: [2002-Jan-01/2002-Jan-31]
+-  /*! Uses the date facet to determine output string as well as selection of long 
++  /*! Uses the date facet to determine output string as well as selection of long
+    *  or short string fr dates.
+    *  Default if no facet is installed is to output a 3 char english string for the
+    *  day of the week.
+@@ -121,7 +122,7 @@
+     os << dp.begin();
+     os << '/'; //TODO: facet or manipulator for periods?
+     os << dp.last();
+-    os << ']'; 
++    os << ']';
+     return os;
+   }
+ 
+@@ -141,8 +142,8 @@
+   std::basic_ostream<charT, traits>&
+   operator<<(std::basic_ostream<charT, traits>& os, const partial_date& pd)
+   {
+-    os << std::setw(2) << std::setfill('0') << pd.day() << ' ' 
+-       << pd.month().as_short_string() ; 
++    os << std::setw(2) << std::setfill('0') << pd.day() << ' '
++       << pd.month().as_short_string() ;
+     return os;
+   }
+ 
+@@ -150,12 +151,12 @@
+   template <class charT, class traits>
+   inline
+   std::basic_ostream<charT, traits>&
+-  operator<<(std::basic_ostream<charT, traits>& os, 
++  operator<<(std::basic_ostream<charT, traits>& os,
+              const nth_kday_of_month& nkd)
+   {
+-    os << nkd.nth_week_as_str() << ' ' 
++    os << nkd.nth_week_as_str() << ' '
+        << nkd.day_of_week() << " of "
+-       << nkd.month().as_short_string() ; 
++       << nkd.month().as_short_string() ;
+     return os;
+   }
+ 
+@@ -163,11 +164,11 @@
+   template <class charT, class traits>
+   inline
+   std::basic_ostream<charT, traits>&
+-  operator<<(std::basic_ostream<charT, traits>& os, 
++  operator<<(std::basic_ostream<charT, traits>& os,
+              const first_kday_of_month& fkd)
+   {
+-    os << "first " << fkd.day_of_week() << " of " 
+-       << fkd.month().as_short_string() ; 
++    os << "first " << fkd.day_of_week() << " of "
++       << fkd.month().as_short_string() ;
+     return os;
+   }
+ 
+@@ -175,11 +176,11 @@
+   template <class charT, class traits>
+   inline
+   std::basic_ostream<charT, traits>&
+-  operator<<(std::basic_ostream<charT, traits>& os, 
++  operator<<(std::basic_ostream<charT, traits>& os,
+              const last_kday_of_month& lkd)
+   {
+-    os << "last " << lkd.day_of_week() << " of " 
+-       << lkd.month().as_short_string() ; 
++    os << "last " << lkd.day_of_week() << " of "
++       << lkd.month().as_short_string() ;
+     return os;
+   }
+ 
+@@ -187,10 +188,10 @@
+   template <class charT, class traits>
+   inline
+   std::basic_ostream<charT, traits>&
+-  operator<<(std::basic_ostream<charT, traits>& os, 
++  operator<<(std::basic_ostream<charT, traits>& os,
+              const first_kday_after& fka)
+   {
+-    os << fka.day_of_week() << " after"; 
++    os << fka.day_of_week() << " after";
+     return os;
+   }
+ 
+@@ -198,19 +199,19 @@
+   template <class charT, class traits>
+   inline
+   std::basic_ostream<charT, traits>&
+-  operator<<(std::basic_ostream<charT, traits>& os, 
++  operator<<(std::basic_ostream<charT, traits>& os,
+              const first_kday_before& fkb)
+   {
+-    os << fkb.day_of_week() << " before"; 
++    os << fkb.day_of_week() << " before";
+     return os;
+   }
+ #endif // USE_DATE_TIME_PRE_1_33_FACET_IO
+   /**************** Input Streaming ******************/
+-  
++
+ #if !defined(BOOST_NO_STD_ITERATOR_TRAITS)
+   //! operator>> for gregorian::date
+   template<class charT>
+-  inline 
++  inline
+   std::basic_istream<charT>& operator>>(std::basic_istream<charT>& is, date& d)
+   {
+     std::istream_iterator<std::basic_string<charT>, charT> beg(is), eos;
+@@ -222,7 +223,7 @@
+   //! operator>> for gregorian::date_duration
+   template<class charT>
+   inline
+-  std::basic_istream<charT>& operator>>(std::basic_istream<charT>& is, 
++  std::basic_istream<charT>& operator>>(std::basic_istream<charT>& is,
+                                         date_duration& dd)
+   {
+     long v;
+@@ -247,7 +248,7 @@
+   BOOST_DATE_TIME_DECL std::locale generate_locale(std::locale& loc, char type);
+ 
+   //! Returns a pointer to a facet with a default set of names (English)
+-  /* Necessary in the event an exception is thrown from op>> for 
++  /* Necessary in the event an exception is thrown from op>> for
+    * weekday or month. See comments in those functions for more info */
+   BOOST_DATE_TIME_DECL boost::date_time::all_date_names_put<greg_facet_config, char>* create_facet_def(char type);
+ 
+@@ -255,7 +256,7 @@
+   //! generates a locale with the set of gregorian name-strings of type wchar_t*
+   BOOST_DATE_TIME_DECL std::locale generate_locale(std::locale& loc, wchar_t type);
+   //! Returns a pointer to a facet with a default set of names (English)
+-  /* Necessary in the event an exception is thrown from op>> for 
++  /* Necessary in the event an exception is thrown from op>> for
+    * weekday or month. See comments in those functions for more info */
+   BOOST_DATE_TIME_DECL boost::date_time::all_date_names_put<greg_facet_config, wchar_t>* create_facet_def(wchar_t type);
+ #endif // BOOST_NO_STD_WSTRING
+@@ -263,13 +264,13 @@
+   //! operator>> for gregorian::greg_month - throws exception if invalid month given
+   template<class charT>
+   inline
+-  std::basic_istream<charT>& operator>>(std::basic_istream<charT>& is,greg_month& m) 
++  std::basic_istream<charT>& operator>>(std::basic_istream<charT>& is,greg_month& m)
+   {
+     typedef boost::date_time::all_date_names_put<greg_facet_config, charT> facet_def;
+ 
+     std::basic_string<charT> s;
+     is >> s;
+-    
++
+     if(!std::has_facet<facet_def>(is.getloc())) {
+       std::locale loc = is.getloc();
+       charT a = '\0';
+@@ -280,8 +281,8 @@
+ 
+     try{
+       const facet_def& f = std::use_facet<facet_def>(is.getloc());
+-      num = date_time::find_match(f.get_short_month_names(), 
+-                                  f.get_long_month_names(), 
++      num = date_time::find_match(f.get_short_month_names(),
++                                  f.get_long_month_names(),
+                                   (greg_month::max)(), s); // greg_month spans 1..12, so max returns the array size,
+                                                            // which is needed by find_match
+     }
+@@ -291,14 +292,14 @@
+     catch(std::bad_cast&){
+       charT a = '\0';
+       std::auto_ptr< const facet_def > f(create_facet_def(a));
+-      num = date_time::find_match(f->get_short_month_names(), 
+-                                  f->get_long_month_names(), 
++      num = date_time::find_match(f->get_short_month_names(),
++                                  f->get_long_month_names(),
+                                   (greg_month::max)(), s); // greg_month spans 1..12, so max returns the array size,
+                                                            // which is needed by find_match
+     }
+-    
++
+     ++num; // months numbered 1-12
+-    m = greg_month(num); 
++    m = greg_month(num);
+ 
+     return is;
+   }
+@@ -306,7 +307,7 @@
+   //! operator>> for gregorian::greg_weekday  - throws exception if invalid weekday given
+   template<class charT>
+   inline
+-  std::basic_istream<charT>& operator>>(std::basic_istream<charT>& is,greg_weekday& wd) 
++  std::basic_istream<charT>& operator>>(std::basic_istream<charT>& is,greg_weekday& wd)
+   {
+     typedef boost::date_time::all_date_names_put<greg_facet_config, charT> facet_def;
+ 
+@@ -322,8 +323,8 @@
+     short num = 0;
+     try{
+       const facet_def& f = std::use_facet<facet_def>(is.getloc());
+-      num = date_time::find_match(f.get_short_weekday_names(), 
+-                                  f.get_long_weekday_names(), 
++      num = date_time::find_match(f.get_short_weekday_names(),
++                                  f.get_long_weekday_names(),
+                                   (greg_weekday::max)() + 1, s); // greg_weekday spans 0..6, so increment is needed
+                                                                  // to form the array size which is needed by find_match
+     }
+@@ -333,20 +334,19 @@
+     catch(std::bad_cast&){
+       charT a = '\0';
+       std::auto_ptr< const facet_def > f(create_facet_def(a));
+-      num = date_time::find_match(f->get_short_weekday_names(), 
+-                                  f->get_long_weekday_names(), 
++      num = date_time::find_match(f->get_short_weekday_names(),
++                                  f->get_long_weekday_names(),
+                                   (greg_weekday::max)() + 1, s); // greg_weekday spans 0..6, so increment is needed
+                                                                  // to form the array size which is needed by find_match
+     }
+-   
++
+     wd = greg_weekday(num); // weekdays numbered 0-6
+     return is;
+   }
+ 
+ } } //namespace gregorian
+ 
+-#endif  
+-    
+-    
+ #endif
+ 
++
++#endif
+diff -ru a/boost/date_time/gregorian/greg_month.hpp b/boost/date_time/gregorian/greg_month.hpp
+--- a/boost/date_time/gregorian/greg_month.hpp	2015-11-04 22:59:11.000000000 -0500
++++ b/boost/date_time/gregorian/greg_month.hpp	2016-06-23 13:27:56.239739400 -0400
+@@ -2,13 +2,14 @@
+ #define GREG_MONTH_HPP___
+ 
+ /* Copyright (c) 2002,2003 CrystalClear Software, Inc.
+- * Use, modification and distribution is subject to the 
++ * Use, modification and distribution is subject to the
+  * Boost Software License, Version 1.0. (See accompanying
+  * file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+  * Author: Jeff Garland, Bart Garst
+  * $Date$
+  */
+ 
++#include <boost/date_time/compiler_config.hpp>
+ #include "boost/date_time/constrained_value.hpp"
+ #include "boost/date_time/date_defs.hpp"
+ #include "boost/shared_ptr.hpp"
+@@ -39,9 +40,9 @@
+   using date_time::Dec;
+   using date_time::NotAMonth;
+   using date_time::NumMonths;
+-  
++
+   //! Exception thrown if a greg_month is constructed with a value out of range
+-  struct bad_month : public std::out_of_range
++  struct BOOST_SYMBOL_VISIBLE bad_month : public std::out_of_range
+   {
+     bad_month() : std::out_of_range(std::string("Month number is out of range 1..12")) {}
+   };
+@@ -50,7 +51,7 @@
+   //! A constrained range that implements the gregorian_month rules
+   typedef CV::constrained_value<greg_month_policies> greg_month_rep;
+ 
+-  
++
+   //! Wrapper class to represent months in gregorian based calendar
+   class BOOST_DATE_TIME_DECL greg_month : public greg_month_rep {
+   public:
+@@ -58,7 +59,7 @@
+     typedef std::map<std::string, unsigned short> month_map_type;
+     typedef boost::shared_ptr<month_map_type> month_map_ptr_type;
+     //! Construct a month from the months_of_year enumeration
+-    greg_month(month_enum theMonth) : 
++    greg_month(month_enum theMonth) :
+       greg_month_rep(static_cast<greg_month_rep::value_type>(theMonth)) {}
+     //! Construct from a short value
+     greg_month(unsigned short theMonth) : greg_month_rep(theMonth) {}
+diff -ru a/boost/date_time/gregorian/greg_weekday.hpp b/boost/date_time/gregorian/greg_weekday.hpp
+--- a/boost/date_time/gregorian/greg_weekday.hpp	2015-11-04 22:59:11.000000000 -0500
++++ b/boost/date_time/gregorian/greg_weekday.hpp	2016-06-23 13:28:15.947805161 -0400
+@@ -2,13 +2,14 @@
+ #define GREG_WEEKDAY_HPP___
+ 
+ /* Copyright (c) 2002,2003 CrystalClear Software, Inc.
+- * Use, modification and distribution is subject to the 
++ * Use, modification and distribution is subject to the
+  * Boost Software License, Version 1.0. (See accompanying
+  * file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+  * Author: Jeff Garland, Bart Garst
+  * $Date$
+  */
+ 
++#include <boost/date_time/compiler_config.hpp>
+ #include "boost/date_time/constrained_value.hpp"
+ #include "boost/date_time/date_defs.hpp"
+ #include "boost/date_time/compiler_config.hpp"
+@@ -29,7 +30,7 @@
+ 
+ 
+   //! Exception that flags that a weekday number is incorrect
+-  struct bad_weekday : public std::out_of_range
++  struct BOOST_SYMBOL_VISIBLE bad_weekday : public std::out_of_range
+   {
+     bad_weekday() : std::out_of_range(std::string("Weekday is out of range 0..6")) {}
+   };
+diff -ru a/boost/date_time/gregorian/greg_year.hpp b/boost/date_time/gregorian/greg_year.hpp
+--- a/boost/date_time/gregorian/greg_year.hpp	2015-11-04 22:59:11.000000000 -0500
++++ b/boost/date_time/gregorian/greg_year.hpp	2016-06-23 13:28:46.191918208 -0400
+@@ -2,13 +2,14 @@
+ #define GREG_YEAR_HPP___
+ 
+ /* Copyright (c) 2002,2003 CrystalClear Software, Inc.
+- * Use, modification and distribution is subject to the 
++ * Use, modification and distribution is subject to the
+  * Boost Software License, Version 1.0. (See accompanying
+  * file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+- * Author: Jeff Garland 
++ * Author: Jeff Garland
+  * $Date$
+  */
+ 
++#include <boost/date_time/compiler_config.hpp>
+ #include "boost/date_time/constrained_value.hpp"
+ #include <stdexcept>
+ #include <string>
+@@ -17,10 +18,10 @@
+ namespace gregorian {
+ 
+   //! Exception type for gregorian year
+-  struct bad_year : public std::out_of_range
++  struct BOOST_SYMBOL_VISIBLE bad_year : public std::out_of_range
+   {
+-    bad_year() : 
+-      std::out_of_range(std::string("Year is out of valid range: 1400..10000")) 
++    bad_year() :
++      std::out_of_range(std::string("Year is out of valid range: 1400..10000"))
+     {}
+   };
+   //! Policy class that declares error handling gregorian year type
+@@ -29,19 +30,19 @@
+   //! Generated representation for gregorian year
+   typedef CV::constrained_value<greg_year_policies> greg_year_rep;
+ 
+-  //! Represent a day of the month (range 1900 - 10000) 
++  //! Represent a day of the month (range 1900 - 10000)
+   /*! This small class allows for simple conversion an integer value into
+       a year for the gregorian calendar.  This currently only allows a
+       range of 1900 to 10000.  Both ends of the range are a bit arbitrary
+-      at the moment, but they are the limits of current testing of the 
++      at the moment, but they are the limits of current testing of the
+       library.  As such they may be increased in the future.
+   */
+-  class greg_year : public greg_year_rep {
++  class BOOST_SYMBOL_VISIBLE greg_year : public greg_year_rep {
+   public:
+     greg_year(unsigned short year) : greg_year_rep(year) {}
+     operator unsigned short()  const {return value_;}
+   private:
+-    
++
+   };
+ 
+ 
+diff -ru a/boost/date_time/gregorian_calendar.hpp b/boost/date_time/gregorian_calendar.hpp
+--- a/boost/date_time/gregorian_calendar.hpp	2015-11-04 22:59:11.000000000 -0500
++++ b/boost/date_time/gregorian_calendar.hpp	2016-06-23 13:29:04.463993825 -0400
+@@ -9,6 +9,8 @@
+  * $Date$
+  */
+ 
++#include <boost/date_time/compiler_config.hpp>
++#include <boost/date_time/compiler_config.hpp>
+ 
+ namespace boost {
+ namespace date_time {
+@@ -25,7 +27,7 @@
+     @param date_int_type_ Underlying type for the date count.  Must be an arithmetic type.
+   */
+   template<typename ymd_type_, typename date_int_type_>
+-  class gregorian_calendar_base {
++  class BOOST_SYMBOL_VISIBLE gregorian_calendar_base {
+   public:
+     //! define a type a date split into components
+     typedef ymd_type_  ymd_type;
+@@ -66,5 +68,3 @@
+ 
+ 
+ #endif
+-
+-
+diff -ru a/boost/date_time/gregorian_calendar.ipp b/boost/date_time/gregorian_calendar.ipp
+--- a/boost/date_time/gregorian_calendar.ipp	2015-11-04 22:59:11.000000000 -0500
++++ b/boost/date_time/gregorian_calendar.ipp	2016-06-23 13:29:33.428124496 -0400
+@@ -215,5 +215,3 @@
+ 
+ 
+ } } //namespace gregorian
+-
+-
+diff -ru a/boost/date_time/local_time/local_date_time.hpp b/boost/date_time/local_time/local_date_time.hpp
+--- a/boost/date_time/local_time/local_date_time.hpp	2015-11-04 22:59:11.000000000 -0500
++++ b/boost/date_time/local_time/local_date_time.hpp	2016-06-23 13:30:39.644467300 -0400
+@@ -20,23 +20,24 @@
+ #include <boost/date_time/time_zone_base.hpp>
+ #include <boost/date_time/special_defs.hpp>
+ #include <boost/date_time/time_resolution_traits.hpp> // absolute_value
++#include <boost/date_time/compiler_config.hpp>
+ 
+ namespace boost {
+ namespace local_time {
+ 
+   //! simple exception for reporting when STD or DST cannot be determined
+-  struct ambiguous_result : public std::logic_error
++  struct BOOST_SYMBOL_VISIBLE ambiguous_result : public std::logic_error
+   {
+     ambiguous_result (std::string const& msg = std::string()) :
+       std::logic_error(std::string("Daylight Savings Results are ambiguous: " + msg)) {}
+   };
+   //! simple exception for when time label given cannot exist
+-  struct time_label_invalid : public std::logic_error
++  struct BOOST_SYMBOL_VISIBLE time_label_invalid : public std::logic_error
+   {
+     time_label_invalid (std::string const& msg = std::string()) :
+       std::logic_error(std::string("Time label given is invalid: " + msg)) {}
+   };
+-  struct dst_not_valid: public std::logic_error
++  struct BOOST_SYMBOL_VISIBLE dst_not_valid: public std::logic_error
+   {
+     dst_not_valid(std::string const& msg = std::string()) :
+       std::logic_error(std::string("is_dst flag does not match resulting dst for time label given: " + msg)) {}
+@@ -61,7 +62,7 @@
+    */
+   template<class utc_time_=posix_time::ptime,
+            class tz_type=date_time::time_zone_base<utc_time_,char> >
+-  class local_date_time_base :  public date_time::base_time<utc_time_,
++  class BOOST_SYMBOL_VISIBLE local_date_time_base :  public date_time::base_time<utc_time_,
+                                                             boost::posix_time::posix_time_system> {
+   public:
+     typedef utc_time_ utc_time_type;
+diff -ru a/boost/date_time/local_time/posix_time_zone.hpp b/boost/date_time/local_time/posix_time_zone.hpp
+--- a/boost/date_time/local_time/posix_time_zone.hpp	2015-11-04 22:59:11.000000000 -0500
++++ b/boost/date_time/local_time/posix_time_zone.hpp	2016-06-23 13:31:20.456707340 -0400
+@@ -20,18 +20,19 @@
+ #include <boost/date_time/posix_time/posix_time.hpp>
+ #include <boost/date_time/string_convert.hpp>
+ #include <boost/date_time/time_parsing.hpp>
++#include <boost/date_time/compiler_config.hpp>
+ 
+ namespace boost{
+ namespace local_time{
+ 
+   //! simple exception for UTC and Daylight savings start/end offsets
+-  struct bad_offset : public std::out_of_range
++  struct BOOST_SYMBOL_VISIBLE bad_offset : public std::out_of_range
+   {
+     bad_offset(std::string const& msg = std::string()) :
+       std::out_of_range(std::string("Offset out of range: " + msg)) {}
+   };
+   //! simple exception for UTC daylight savings adjustment
+-  struct bad_adjustment : public std::out_of_range
++  struct BOOST_SYMBOL_VISIBLE bad_adjustment : public std::out_of_range
+   {
+     bad_adjustment(std::string const& msg = std::string()) :
+       std::out_of_range(std::string("Adjustment out of range: " + msg)) {}
+@@ -67,7 +68,7 @@
+    * http://www.worldtimezone.com/utc/utc+1200.html
+    */
+   template<class CharT>
+-  class posix_time_zone_base : public date_time::time_zone_base<posix_time::ptime,CharT> {
++  class BOOST_SYMBOL_VISIBLE posix_time_zone_base : public date_time::time_zone_base<posix_time::ptime,CharT> {
+   public:
+     typedef boost::posix_time::time_duration time_duration_type;
+     typedef date_time::time_zone_names_base<CharT> time_zone_names;
+diff -ru a/boost/date_time/period.hpp b/boost/date_time/period.hpp
+--- a/boost/date_time/period.hpp	2015-11-04 22:59:11.000000000 -0500
++++ b/boost/date_time/period.hpp	2016-06-23 13:31:44.376857224 -0400
+@@ -2,10 +2,10 @@
+ #define DATE_TIME_PERIOD_HPP___
+ 
+ /* Copyright (c) 2002,2003 CrystalClear Software, Inc.
+- * Use, modification and distribution is subject to the 
++ * Use, modification and distribution is subject to the
+  * Boost Software License, Version 1.0. (See accompanying
+  * file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+- * Author: Jeff Garland, Bart Garst 
++ * Author: Jeff Garland, Bart Garst
+  * $Date$
+  */
+ 
+@@ -17,6 +17,7 @@
+ 
+ */
+ 
++#include <boost/date_time/compiler_config.hpp>
+ #include "boost/operators.hpp"
+ 
+ 
+@@ -25,32 +26,32 @@
+   //!Provides generalized period type useful in date-time systems
+   /*!This template uses a class to represent a time point within the period
+     and another class to represent a duration.  As a result, this class is
+-    not appropriate for use when the number and duration representation 
++    not appropriate for use when the number and duration representation
+     are the same (eg: in the regular number domain).
+-    
+-    A period can be specified by providing either the begining point and 
+-    a duration or the begining point and the end point( end is NOT part 
++
++    A period can be specified by providing either the begining point and
++    a duration or the begining point and the end point( end is NOT part
+     of the period but 1 unit past it. A period will be "invalid" if either
+-    end_point <= begin_point or the given duration is <= 0. Any valid period 
++    end_point <= begin_point or the given duration is <= 0. Any valid period
+     will return false for is_null().
+-    
++
+     Zero length periods are also considered invalid. Zero length periods are
+-    periods where the begining and end points are the same, or, the given 
+-    duration is zero. For a zero length period, the last point will be one 
++    periods where the begining and end points are the same, or, the given
++    duration is zero. For a zero length period, the last point will be one
+     unit less than the begining point.
+ 
+-    In the case that the begin and last are the same, the period has a 
++    In the case that the begin and last are the same, the period has a
+     length of one unit.
+-    
++
+     The best way to handle periods is usually to provide a begining point and
+     a duration.  So, day1 + 7 days is a week period which includes all of the
+     first day and 6 more days (eg: Sun to Sat).
+ 
+    */
+   template<class point_rep, class duration_rep>
+-  class period : private
+-      boost::less_than_comparable<period<point_rep, duration_rep> 
+-    , boost::equality_comparable< period<point_rep, duration_rep> 
++  class BOOST_SYMBOL_VISIBLE period : private
++      boost::less_than_comparable<period<point_rep, duration_rep>
++    , boost::equality_comparable< period<point_rep, duration_rep>
+     > >
+   {
+   public:
+@@ -87,9 +88,9 @@
+    */
+   template<class point_rep, class duration_rep>
+   inline
+-  period<point_rep,duration_rep>::period(point_rep first_point, 
+-                                         point_rep end_point) : 
+-    begin_(first_point), 
++  period<point_rep,duration_rep>::period(point_rep first_point,
++                                         point_rep end_point) :
++    begin_(first_point),
+     last_(end_point - duration_rep::unit())
+   {}
+ 
+@@ -99,7 +100,7 @@
+   template<class point_rep, class duration_rep>
+   inline
+   period<point_rep,duration_rep>::period(point_rep first_point, duration_rep len) :
+-    begin_(first_point), 
++    begin_(first_point),
+     last_(first_point + len-duration_rep::unit())
+   { }
+ 
+@@ -107,15 +108,15 @@
+   //! Return the first element in the period
+   template<class point_rep, class duration_rep>
+   inline
+-  point_rep period<point_rep,duration_rep>::begin() const 
++  point_rep period<point_rep,duration_rep>::begin() const
+   {
+     return begin_;
+   }
+ 
+-  //! Return one past the last element 
++  //! Return one past the last element
+   template<class point_rep, class duration_rep>
+   inline
+-  point_rep period<point_rep,duration_rep>::end() const 
++  point_rep period<point_rep,duration_rep>::end() const
+   {
+     return last_ + duration_rep::unit();
+   }
+@@ -123,7 +124,7 @@
+   //! Return the last item in the period
+   template<class point_rep, class duration_rep>
+   inline
+-  point_rep period<point_rep,duration_rep>::last() const 
++  point_rep period<point_rep,duration_rep>::last() const
+   {
+     return last_;
+   }
+@@ -131,7 +132,7 @@
+   //! True if period is ill formed (length is zero or less)
+   template<class point_rep, class duration_rep>
+   inline
+-  bool period<point_rep,duration_rep>::is_null() const 
++  bool period<point_rep,duration_rep>::is_null() const
+   {
+     return end() <= begin_;
+   }
+@@ -152,19 +153,19 @@
+   //! Equality operator
+   template<class point_rep, class duration_rep>
+   inline
+-  bool period<point_rep,duration_rep>::operator==(const period& rhs) const 
++  bool period<point_rep,duration_rep>::operator==(const period& rhs) const
+   {
+-    return  ((begin_ == rhs.begin_) && 
++    return  ((begin_ == rhs.begin_) &&
+              (last_ == rhs.last_));
+   }
+ 
+   //! Strict as defined by rhs.last <= lhs.last
+   template<class point_rep, class duration_rep>
+   inline
+-  bool period<point_rep,duration_rep>::operator<(const period& rhs) const 
++  bool period<point_rep,duration_rep>::operator<(const period& rhs) const
+   {
+     return (last_ < rhs.begin_);
+-  } 
++  }
+ 
+ 
+   //! Shift the start and end by the specified amount
+@@ -178,13 +179,13 @@
+ 
+   /** Expands the size of the period by the duration on both ends.
+    *
+-   *So before expand 
++   *So before expand
+    *@code
+    *
+    *         [-------]
+    * ^   ^   ^   ^   ^   ^  ^
+    * 1   2   3   4   5   6  7
+-   * 
++   *
+    *@endcode
+    * After expand(2)
+    *@code
+@@ -192,7 +193,7 @@
+    * [----------------------]
+    * ^   ^   ^   ^   ^   ^  ^
+    * 1   2   3   4   5   6  7
+-   * 
++   *
+    *@endcode
+    */
+   template<class point_rep, class duration_rep>
+@@ -206,7 +207,7 @@
+   //! True if the point is inside the period, zero length periods contain no points
+   template<class point_rep, class duration_rep>
+   inline
+-  bool period<point_rep,duration_rep>::contains(const point_rep& point) const 
++  bool period<point_rep,duration_rep>::contains(const point_rep& point) const
+   {
+     return ((point >= begin_) &&
+             (point <= last_));
+@@ -228,13 +229,13 @@
+    *@code
+    *   [-p1-)
+    *        [-p2-)
+-   *          [-p3-) 
++   *          [-p3-)
+    *@endcode
+    */
+   template<class point_rep, class duration_rep>
+   inline
+-  bool 
+-  period<point_rep,duration_rep>::is_adjacent(const period<point_rep,duration_rep>& other) const 
++  bool
++  period<point_rep,duration_rep>::is_adjacent(const period<point_rep,duration_rep>& other) const
+   {
+     return (other.begin() == end() ||
+             begin_ == other.end());
+@@ -247,19 +248,19 @@
+    *     [---------])
+    * ^   ^    ^     ^   ^
+    * 1   2    3     4   5
+-   * 
++   *
+    *@endcode
+    */
+   template<class point_rep, class duration_rep>
+   inline
+-  bool 
+-  period<point_rep,duration_rep>::is_after(const point_rep& t) const 
+-  { 
+-    if (is_null()) 
++  bool
++  period<point_rep,duration_rep>::is_after(const point_rep& t) const
++  {
++    if (is_null())
+     {
+       return false; //null period isn't after
+     }
+-    
++
+     return t < begin_;
+   }
+ 
+@@ -269,19 +270,19 @@
+    *     [---------])
+    * ^   ^    ^     ^   ^
+    * 1   2    3     4   5
+-   * 
++   *
+    *@endcode
+    */
+   template<class point_rep, class duration_rep>
+   inline
+-  bool 
+-  period<point_rep,duration_rep>::is_before(const point_rep& t) const 
+-  { 
+-    if (is_null()) 
++  bool
++  period<point_rep,duration_rep>::is_before(const point_rep& t) const
++  {
++    if (is_null())
+     {
+       return false;  //null period isn't before anything
+     }
+-    
++
+     return last_ < t;
+   }
+ 
+@@ -291,16 +292,16 @@
+    *@code
+    *       [---p1---)
+    *             [---p2---)
+-   *                [---p3---) 
+-   *  [---p4---) 
+-   * [-p5-) 
+-   *         [-p6-) 
++   *                [---p3---)
++   *  [---p4---)
++   * [-p5-)
++   *         [-p6-)
+    *@endcode
+    */
+   template<class point_rep, class duration_rep>
+   inline
+-  bool period<point_rep,duration_rep>::intersects(const period<point_rep,duration_rep>& other) const 
+-  { 
++  bool period<point_rep,duration_rep>::intersects(const period<point_rep,duration_rep>& other) const
++  {
+     return ( contains(other.begin_) ||
+              other.contains(begin_) ||
+              ((other.begin_ < begin_) && (other.last_ >= begin_)));
+@@ -310,11 +311,11 @@
+   template<class point_rep, class duration_rep>
+   inline
+   period<point_rep,duration_rep>
+-  period<point_rep,duration_rep>::intersection(const period<point_rep,duration_rep>& other) const 
++  period<point_rep,duration_rep>::intersection(const period<point_rep,duration_rep>& other) const
+   {
+     if (begin_ > other.begin_) {
+       if (last_ <= other.last_) { //case2
+-        return *this;  
++        return *this;
+       }
+       //case 1
+       return period<point_rep,duration_rep>(begin_, other.end());
+@@ -330,39 +331,39 @@
+   }
+ 
+   //! Returns the union of intersecting periods -- or null period
+-  /*! 
++  /*!
+    */
+   template<class point_rep, class duration_rep>
+   inline
+   period<point_rep,duration_rep>
+-  period<point_rep,duration_rep>::merge(const period<point_rep,duration_rep>& other) const 
++  period<point_rep,duration_rep>::merge(const period<point_rep,duration_rep>& other) const
+   {
+-    if (this->intersects(other)) {      
++    if (this->intersects(other)) {
+       if (begin_ < other.begin_) {
+         return period<point_rep,duration_rep>(begin_, last_ > other.last_ ? this->end() : other.end());
+       }
+-      
++
+       return period<point_rep,duration_rep>(other.begin_, last_ > other.last_ ? this->end() : other.end());
+-      
++
+     }
+     return period<point_rep,duration_rep>(begin_,begin_); // no intersect return null
+   }
+ 
+   //! Combine two periods with earliest start and latest end.
+-  /*! Combines two periods and any gap between them such that 
++  /*! Combines two periods and any gap between them such that
+    *  start = min(p1.start, p2.start)
+    *  end   = max(p1.end  , p2.end)
+    *@code
+    *        [---p1---)
+    *                       [---p2---)
+    * result:
+-   *        [-----------p3----------) 
++   *        [-----------p3----------)
+    *@endcode
+    */
+   template<class point_rep, class duration_rep>
+   inline
+   period<point_rep,duration_rep>
+-  period<point_rep,duration_rep>::span(const period<point_rep,duration_rep>& other) const 
++  period<point_rep,duration_rep>::span(const period<point_rep,duration_rep>& other) const
+   {
+     point_rep start((begin_ < other.begin_) ? begin() : other.begin());
+     point_rep newend((last_  < other.last_)  ? other.end() : this->end());
+diff -ru a/boost/date_time/posix_time/posix_time_config.hpp b/boost/date_time/posix_time/posix_time_config.hpp
+--- a/boost/date_time/posix_time/posix_time_config.hpp	2015-11-04 22:59:11.000000000 -0500
++++ b/boost/date_time/posix_time/posix_time_config.hpp	2016-06-23 13:32:23.317114863 -0400
+@@ -54,7 +54,7 @@
+   //! Base time duration type
+   /*! \ingroup time_basics
+    */
+-  class time_duration :
++  class BOOST_SYMBOL_VISIBLE time_duration :
+     public date_time::time_duration<time_duration, time_res_traits>
+   {
+   public:
+@@ -134,7 +134,7 @@
+     }
+   };
+ 
+-  class posix_time_system_config
++  class BOOST_SYMBOL_VISIBLE posix_time_system_config
+   {
+    public:
+     typedef simple_time_rep time_rep_type;
+@@ -174,5 +174,3 @@
+ 
+ 
+ #endif
+-
+-
+diff -ru a/boost/date_time/posix_time/posix_time_duration.hpp b/boost/date_time/posix_time/posix_time_duration.hpp
+--- a/boost/date_time/posix_time/posix_time_duration.hpp	2015-11-04 22:59:11.000000000 -0500
++++ b/boost/date_time/posix_time/posix_time_duration.hpp	2016-06-23 13:32:44.625261871 -0400
+@@ -2,7 +2,7 @@
+ #define POSIX_TIME_DURATION_HPP___
+ 
+ /* Copyright (c) 2002,2003 CrystalClear Software, Inc.
+- * Use, modification and distribution is subject to the 
++ * Use, modification and distribution is subject to the
+  * Boost Software License, Version 1.0. (See accompanying
+  * file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+  * Author: Jeff Garland
+@@ -10,6 +10,7 @@
+  */
+ 
+ #include "boost/date_time/posix_time/posix_time_config.hpp"
++#include <boost/date_time/compiler_config.hpp>
+ 
+ namespace boost {
+ namespace posix_time {
+@@ -17,7 +18,7 @@
+   //! Allows expression of durations as an hour count
+   /*! \ingroup time_basics
+    */
+-  class hours : public time_duration
++  class BOOST_SYMBOL_VISIBLE hours : public time_duration
+   {
+   public:
+     explicit hours(long h) :
+@@ -28,7 +29,7 @@
+   //! Allows expression of durations as a minute count
+   /*! \ingroup time_basics
+    */
+-  class minutes : public time_duration
++  class BOOST_SYMBOL_VISIBLE minutes : public time_duration
+   {
+   public:
+     explicit minutes(long m) :
+@@ -39,7 +40,7 @@
+   //! Allows expression of durations as a seconds count
+   /*! \ingroup time_basics
+    */
+-  class seconds : public time_duration
++  class BOOST_SYMBOL_VISIBLE seconds : public time_duration
+   {
+   public:
+     explicit seconds(long s) :
+@@ -79,4 +80,3 @@
+ 
+ 
+ #endif
+-
+diff -ru a/boost/date_time/posix_time/ptime.hpp b/boost/date_time/posix_time/ptime.hpp
+--- a/boost/date_time/posix_time/ptime.hpp	2015-11-04 22:59:11.000000000 -0500
++++ b/boost/date_time/posix_time/ptime.hpp	2016-06-23 13:33:05.765413673 -0400
+@@ -2,20 +2,21 @@
+ #define POSIX_PTIME_HPP___
+ 
+ /* Copyright (c) 2002,2003 CrystalClear Software, Inc.
+- * Use, modification and distribution is subject to the 
++ * Use, modification and distribution is subject to the
+  * Boost Software License, Version 1.0. (See accompanying
+  * file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+- * Author: Jeff Garland 
++ * Author: Jeff Garland
+  * $Date$
+  */
+ 
+ #include "boost/date_time/posix_time/posix_time_system.hpp"
+ #include "boost/date_time/time.hpp"
++#include <boost/date_time/compiler_config.hpp>
+ 
+ namespace boost {
+ 
+ namespace posix_time {
+- 
++
+   //bring special enum values into the namespace
+   using date_time::special_values;
+   using date_time::not_special;
+@@ -23,12 +24,12 @@
+   using date_time::pos_infin;
+   using date_time::not_a_date_time;
+   using date_time::max_date_time;
+-  using date_time::min_date_time; 
+-  
++  using date_time::min_date_time;
++
+   //! Time type with no timezone or other adjustments
+   /*! \ingroup time_basics
+    */
+-  class ptime : public date_time::base_time<ptime, posix_time_system>
++  class BOOST_SYMBOL_VISIBLE ptime : public date_time::base_time<ptime, posix_time_system>
+   {
+   public:
+     typedef posix_time_system time_system_type;
+@@ -53,7 +54,7 @@
+     ptime() : date_time::base_time<time_type,time_system_type>(gregorian::date(not_a_date_time), time_duration_type(not_a_date_time))
+     {}
+ #endif // DATE_TIME_NO_DEFAULT_CONSTRUCTOR
+-      
++
+   };
+ 
+ 
+@@ -62,4 +63,3 @@
+ 
+ 
+ #endif
+-
+diff -ru a/boost/date_time/time_duration.hpp b/boost/date_time/time_duration.hpp
+--- a/boost/date_time/time_duration.hpp	2015-11-04 22:59:11.000000000 -0500
++++ b/boost/date_time/time_duration.hpp	2016-06-23 13:33:47.529724586 -0400
+@@ -9,6 +9,7 @@
+  * $Date$
+  */
+ 
++#include <boost/date_time/compiler_config.hpp>
+ #include <boost/cstdint.hpp>
+ #include <boost/operators.hpp>
+ #include <boost/static_assert.hpp>
+@@ -31,7 +32,7 @@
+       @param rep_type The time resolution traits for this duration type.
+   */
+   template<class T, typename rep_type>
+-  class time_duration : private
++  class BOOST_SYMBOL_VISIBLE time_duration : private
+       boost::less_than_comparable<T
+     , boost::equality_comparable<T
+     > >
+@@ -265,7 +266,7 @@
+    * 10 for frac_of_second and resoultion adjustment
+    */
+   template<class base_duration, boost::int64_t frac_of_second>
+-  class subsecond_duration : public base_duration
++  class BOOST_SYMBOL_VISIBLE subsecond_duration : public base_duration
+   {
+   public:
+     typedef typename base_duration::impl_type impl_type;
+@@ -292,4 +293,3 @@
+ 
+ 
+ #endif
+-
+diff -ru a/boost/date_time/time_facet.hpp b/boost/date_time/time_facet.hpp
+--- a/boost/date_time/time_facet.hpp	2015-11-04 22:59:11.000000000 -0500
++++ b/boost/date_time/time_facet.hpp	2016-06-23 21:40:13.211647734 -0400
+@@ -200,7 +200,7 @@
+   template <class time_type,
+             class CharT,
+             class OutItrT = std::ostreambuf_iterator<CharT, std::char_traits<CharT> > >
+-  class time_facet :
++  class BOOST_SYMBOL_VISIBLE time_facet :
+     public boost::date_time::date_facet<typename time_type::date_type , CharT, OutItrT> {
+     typedef time_formats< CharT > formats_type;
+    public:
+@@ -1364,4 +1364,3 @@
+ 
+ 
+ #endif
+-
+diff -ru a/boost/date_time/time_zone_base.hpp b/boost/date_time/time_zone_base.hpp
+--- a/boost/date_time/time_zone_base.hpp	2015-11-04 22:59:11.000000000 -0500
++++ b/boost/date_time/time_zone_base.hpp	2016-06-23 13:34:16.501949433 -0400
+@@ -12,6 +12,8 @@
+ #include <string>
+ #include <sstream>
+ 
++#include <boost/date_time/compiler_config.hpp>
++
+ namespace boost {
+ namespace date_time {
+ 
+@@ -31,7 +33,7 @@
+    * resource (hence the derivation from boost::counted_base.
+    */
+   template<typename time_type, typename CharT>
+-  class time_zone_base  {
++  class BOOST_SYMBOL_VISIBLE time_zone_base  {
+   public:
+     typedef CharT char_type;
+     typedef std::basic_string<CharT> string_type;
+diff -ru a/boost/date_time/year_month_day.hpp b/boost/date_time/year_month_day.hpp
+--- a/boost/date_time/year_month_day.hpp	2015-11-04 22:59:11.000000000 -0500
++++ b/boost/date_time/year_month_day.hpp	2016-06-23 13:34:31.626069246 -0400
+@@ -2,20 +2,22 @@
+ #define YearMonthDayBase_HPP__
+ 
+ /* Copyright (c) 2002,2003 CrystalClear Software, Inc.
+- * Use, modification and distribution is subject to the 
++ * Use, modification and distribution is subject to the
+  * Boost Software License, Version 1.0. (See accompanying
+  * file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
+- * Author: Jeff Garland 
++ * Author: Jeff Garland
+  * $Date$
+  */
+ 
++#include <boost/date_time/compiler_config.hpp>
++
+ namespace boost {
+ namespace date_time {
+ 
+   //! Allow rapid creation of ymd triples of different types
+   template<typename YearType, typename MonthType, typename DayType>
+-  struct year_month_day_base {
+-    year_month_day_base(YearType  year, 
++  struct BOOST_SYMBOL_VISIBLE year_month_day_base {
++    year_month_day_base(YearType  year,
+                         MonthType month,
+                         DayType   day);
+     YearType year;
+@@ -25,21 +27,20 @@
+     typedef MonthType month_type;
+     typedef DayType   day_type;
+   };
+-  
+-  
++
++
+   //! A basic constructor
+   template<typename YearType, typename MonthType, typename DayType>
+   inline
+-  year_month_day_base<YearType,MonthType,DayType>::year_month_day_base(YearType y, 
++  year_month_day_base<YearType,MonthType,DayType>::year_month_day_base(YearType y,
+                                                                        MonthType m,
+                                                                        DayType d) :
+     year(y),
+     month(m),
+     day(d)
+   {}
+-  
++
+ } }//namespace date_time
+ 
+ 
+ #endif
+-

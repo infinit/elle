@@ -19,11 +19,6 @@ ELLE_LOG_COMPONENT("elle.Buffer");
 
 namespace elle
 {
-  void detail::MallocDeleter::operator ()(void* data)
-  {
-    ::free(data);
-  }
-
   /*-------------------.
   | OutputStreamBuffer |
   `-------------------*/
@@ -177,13 +172,6 @@ namespace elle
     return *this;
   }
 
-  ELLE_SERIALIZE_CONSTRUCT_DEFINE(Buffer)
-  {
-    this->_contents = nullptr;
-    this->_size = 0;
-    this->_capacity = 0;
-  }
-
   Buffer::~Buffer()
   {
     ::free(this->_contents);
@@ -252,18 +240,6 @@ namespace elle
     this->_size = 0;
     this->_capacity = ELLE_BUFFER_INITIAL_SIZE;
     return res;
-  }
-
-  OutputBufferArchive
-  Buffer::writer()
-  {
-    return OutputBufferArchive(*this);
-  }
-
-  InputBufferArchive
-  Buffer::reader() const
-  {
-    return InputBufferArchive(*this);
   }
 
   const Byte*
@@ -431,26 +407,21 @@ namespace elle
   std::streambuf*
   Buffer::ostreambuf()
   {
-        OutputStreamBuffer<elle::Buffer>* out_buffer =
-            new OutputStreamBuffer<elle::Buffer>(*this);
-        return out_buffer;
+    return new OutputStreamBuffer<elle::Buffer>(*this);
   }
 
   std::streambuf*
   Buffer::istreambuf() const
   {
-      InputStreamBuffer<elle::Buffer>* in_buffer =
-          new InputStreamBuffer<elle::Buffer>(*this);
-      return in_buffer;
+    return new InputStreamBuffer<elle::Buffer>(*this);
   }
 
   std::streambuf*
   Buffer::istreambuf_combine(const Buffer& b) const
   {
-      InputStreamBuffer<elle::Buffer>* in_buffer =
-          new InputStreamBuffer<elle::Buffer>(*this);
-      in_buffer->add(b);
-      return in_buffer;
+    auto res = new InputStreamBuffer<elle::Buffer>(*this);
+    res->add(b);
+    return res;
   }
 
   std::ostream&
@@ -460,38 +431,26 @@ namespace elle
     return stream << WeakBuffer(buffer);
   }
 
-//
-// ---------- WeakBuffer ------------------------------------------------------
-//
-
-  InputBufferArchive
-  ConstWeakBuffer::reader() const
-  {
-    return InputBufferArchive(*this);
-  }
+  /*-----------.
+  | WeakBuffer |
+  `-----------*/
 
   std::streambuf*
   ConstWeakBuffer::istreambuf() const
   {
-      InputStreamBuffer<elle::ConstWeakBuffer>* in_buffer =
-          new InputStreamBuffer<elle::ConstWeakBuffer>(*this);
-      return in_buffer;
+    return new InputStreamBuffer<elle::ConstWeakBuffer>(*this);
   }
 
   std::streambuf*
   WeakBuffer::ostreambuf()
   {
-        OutputStreamBuffer<elle::WeakBuffer>* out_buffer =
-            new OutputStreamBuffer<elle::WeakBuffer>(*this);
-        return out_buffer;
+    return new OutputStreamBuffer<elle::WeakBuffer>(*this);
   }
 
   std::streambuf*
   WeakBuffer::istreambuf() const
   {
-      InputStreamBuffer<elle::WeakBuffer>* in_buffer =
-          new InputStreamBuffer<elle::WeakBuffer>(*this);
-      return in_buffer;
+    return new InputStreamBuffer<elle::WeakBuffer>(*this);
   }
 
 
@@ -752,39 +711,12 @@ namespace elle
     throw Exception("the buffer is in input mode");
   }
 
- template
- class InputStreamBuffer<Buffer>;
- template
- class InputStreamBuffer<ConstWeakBuffer>;
- template
- class InputStreamBuffer<WeakBuffer>;
-
-  ///////////////////////////////////////////////////////////////////////////
-
-  InputBufferArchive::InputBufferArchive(ConstWeakBuffer const& buffer):
-    serialize::InputBinaryArchive(
-      *(_istream = new IOStream(new InputStreamBuffer<ConstWeakBuffer>(buffer)))
-    )
-  {}
-
-  InputBufferArchive::InputBufferArchive(Buffer const& buffer):
-    serialize::InputBinaryArchive(
-      *(_istream = new IOStream(new InputStreamBuffer<Buffer>(buffer)))
-    )
-  {}
-
-  InputBufferArchive::InputBufferArchive(InputBufferArchive&& other):
-    serialize::InputBinaryArchive(*_istream),
-    _istream(other._istream)
-  {
-    other._istream = nullptr;
-  }
-
-  InputBufferArchive::~InputBufferArchive()
-  {
-    delete _istream;
-    _istream = nullptr;
-  }
+  template
+  class InputStreamBuffer<Buffer>;
+  template
+  class InputStreamBuffer<ConstWeakBuffer>;
+  template
+  class InputStreamBuffer<WeakBuffer>;
 
   /*-------------------.
   | OutputStreamBuffer |
@@ -850,30 +782,6 @@ namespace elle
   {
     ELLE_DEBUG("Flush buffer stream size: %s", size);
   }
-  ///////////////////////////////////////////////////////////////////////////
-
-  OutputBufferArchive::OutputBufferArchive(Buffer& buffer):
-    serialize::OutputBinaryArchive(
-      *(_ostream = new IOStream(new OutputStreamBuffer<Buffer>(buffer)))
-    )
-  {
-    ELLE_DEBUG("create OutputBufferArchive %s stream %s", this, _ostream);
-  }
-
-  OutputBufferArchive::OutputBufferArchive(OutputBufferArchive&& other):
-    serialize::OutputBinaryArchive(*_ostream),
-    _ostream(other._ostream)
-  {
-    ELLE_DEBUG("move OutputBufferArchive %s stream %s", this, _ostream);
-    other._ostream = nullptr;
-  }
-
-  OutputBufferArchive::~OutputBufferArchive()
-  {
-    ELLE_DEBUG("Delete OutputBufferArchive %s stream %s", this, _ostream);
-    delete _ostream;
-    _ostream = nullptr;
-  }
 
   template
   class OutputStreamBuffer<Buffer>;
@@ -897,5 +805,11 @@ namespace std
   hash<elle::ConstWeakBuffer>::operator()(elle::ConstWeakBuffer const& buffer) const
   {
     return std::hash<std::string>()(buffer.string());
+  }
+
+  elle::Buffer::Size
+  hash<elle::Buffer>::operator()(elle::Buffer const& buffer) const
+  {
+    return hash<elle::ConstWeakBuffer>()(buffer);
   }
 }

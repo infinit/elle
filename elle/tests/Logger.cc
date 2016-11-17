@@ -64,6 +64,20 @@ _message_test(bool env)
       ss.str("");
       ELLE_DUMP("Test4");
       BOOST_CHECK_EQUAL(ss.str(), "[Another]   Test4\n");
+
+      ss.str("");
+      ELLE_DUMP("Test5")
+      {
+        BOOST_CHECK_EQUAL(ss.str(), "[Another]   Test5\n");
+        ss.str("");
+        ELLE_DUMP("Test5.1")
+        {
+          BOOST_CHECK_EQUAL(ss.str(), "[Another]     Test5.1\n");
+          ss.str("");
+          ELLE_DUMP("Test5.1.1");
+          BOOST_CHECK_EQUAL(ss.str(), "[Another]       Test5.1.1\n");
+        }
+      }
     }
 
     ss.str("");

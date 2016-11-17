@@ -426,7 +426,6 @@ namespace reactor
   void
   Scheduler::terminate_later()
   {
-    ELLE_TRACE_METHOD("");
     this->_shallstop = true;
     this->io_service().post([&] {});
   }

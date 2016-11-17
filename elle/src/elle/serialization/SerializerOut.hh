@@ -10,8 +10,8 @@ namespace elle
 {
   namespace serialization
   {
-    class SerializerOut:
-      public Serializer
+    class ELLE_API SerializerOut
+      : public Serializer
     {
     /*------.
     | Types |
@@ -33,13 +33,13 @@ namespace elle
     `----------*/
     public:
       // Const overloads
-      template <typename T>
+      template <typename S = void, typename T>
       void
       serialize_forward(T const& v);
-      template <typename T>
+      template <typename S = void, typename T>
       void
       serialize_forward(T const* &v);
-      template <typename T>
+      template <typename S = void, typename T>
       void
       serialize(std::string const& name, T const& v);
       template <typename T1, typename T2>
@@ -52,7 +52,7 @@ namespace elle
                 template <typename, typename> class C, typename T, typename A>
       void
       serialize(std::string const& name, C<T, A>& collection, as<As>);
-      template <typename T>
+      template <typename S, typename T>
       void
       serialize_ptr(std::string const& name, T* ptr);
     protected:
@@ -75,6 +75,8 @@ namespace elle
   }
 }
 
-# include <elle/serialization/SerializerOut.hxx>
+# if not defined(ELLE_SERIALIZATION_SERIALIZER_HXX)
+#  include <elle/serialization/SerializerOut.hxx>
+# endif
 
 #endif

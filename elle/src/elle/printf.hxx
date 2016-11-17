@@ -1,7 +1,7 @@
-#ifndef  ELLE_PRINTF_HXX
+#ifndef ELLE_PRINTF_HXX
 # define ELLE_PRINTF_HXX
 
-# include <iostream>
+# include <ostream>
 # include <typeinfo>
 
 # include <boost/format.hpp>
@@ -11,7 +11,6 @@
 # include <elle/TypeInfo.hh>
 # include <elle/assert.hh>
 # include <elle/log.hh>
-# include <elle/print.hh>
 # include <elle/sfinae.hh>
 
 // Work around Clang 3.5.0 bug where having this helper in the elle namespace
@@ -22,8 +21,8 @@ namespace _elle_printf_details
 {
   template <typename T>
   constexpr
-  typename std::enable_if<
-    sizeof(std::cerr << ELLE_SFINAE_INSTANCE(T)) >= 0, bool>::type
+  typename std::enable_if_exists<
+    decltype(std::declval<std::ostream&>() << std::declval<T>()), bool>::type
   _is_streamable(int)
   {
     return true;
@@ -53,8 +52,7 @@ namespace elle
 
     template <typename T>
     static
-    typename std::enable_if<
-      _elle_printf_details::is_streamable<T>(), void>::type
+    std::enable_if_t<_elle_printf_details::is_streamable<T>(), void>
     feed(boost::format& fmt, T&& value)
     {
       fmt % std::forward<T>(value);
@@ -62,8 +60,7 @@ namespace elle
 
     template <typename T>
     static
-    typename std::enable_if<
-      !_elle_printf_details::is_streamable<T>(), void>::type
+    std::enable_if_t<!_elle_printf_details::is_streamable<T>(), void>
     feed(boost::format& fmt, T&& value)
     {
       static boost::format parsed("%f(%x)");
@@ -95,7 +92,6 @@ namespace elle
     }
 
     template <typename T>
-    inline
     void
     feed(boost::format& fmt, std::unique_ptr<T> const& value)
     {
@@ -106,7 +102,6 @@ namespace elle
     }
 
     template <typename T>
-    inline
     void
     feed(boost::format& fmt, std::unique_ptr<T>& value)
     {
@@ -117,7 +112,6 @@ namespace elle
     }
 
     template <typename T>
-    inline
     void
     feed(boost::format& fmt, std::shared_ptr<T> const& value)
     {
@@ -128,7 +122,6 @@ namespace elle
     }
 
     template <typename T>
-    inline
     void
     feed(boost::format& fmt, std::shared_ptr<T>& value)
     {
@@ -149,7 +142,6 @@ namespace elle
     }
 
     template <typename T>
-    inline
     void
     feed(boost::format& fmt, T* value)
     {
@@ -159,33 +151,26 @@ namespace elle
         fmt % "nullptr";
     }
 
-    template <typename ... T>
-    struct Feed
-    {
-      static
-      void
-      args(boost::format& fmt, T&& ... values)
-      {}
-    };
+    inline
+    void
+    feed(boost::format& fmt)
+    {}
 
     template <typename T, typename ... Rest>
-    struct Feed<T, Rest ...>
+    auto
+    feed(boost::format& fmt, T&& value, Rest&& ... values)
+      -> std::enable_if_t<sizeof...(Rest) != 0>
     {
-      static
-      void
-      args(boost::format& fmt, T&& value, Rest&& ... values)
-      {
-        feed(fmt, std::forward<T>(value));
-        Feed<Rest ...>::args(fmt, std::forward<Rest>(values) ...);
-      }
-    };
+      feed(fmt, std::forward<T>(value));
+      feed(fmt, std::forward<Rest>(values)...);
+    }
 
     template<typename F, typename ... T>
     boost::format
     format(F&& fmt, T&& ... values)
     {
       boost::format format(fmt);
-      Feed<T ...>::args(format, std::forward<T>(values) ...);
+      feed(format, std::forward<T>(values) ...);
       return format;
     }
   }
@@ -212,14 +197,14 @@ namespace elle
   }
 
   template<typename F, typename ... T>
-  void
+  std::ostream&
   fprintf(std::ostream& stream, F&& fmt, T&& ... values)
   {
     try
     {
-      boost::format format(fmt);
-      _details::Feed<T ...>::args(format, std::forward<T>(values) ...);
-      stream << format;
+      auto format = _details::format(std::forward<F>(fmt),
+                                     std::forward<T>(values) ...);
+      return stream << format;
     }
     catch (boost::io::format_error const& e)
     {

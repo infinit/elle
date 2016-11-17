@@ -70,7 +70,12 @@ def configure(cxx_toolkit,
   rule_tests = drake.Rule('tests')
   rule_check = drake.TestSuite('check')
   elle_library = drake.copy(elle.library, 'lib', strip_prefix = True)
-  for name in ('das',):
+  for name in [
+      'flatten',
+      'printer',
+      'serialize',
+      'symbol',
+  ]:
     test = drake.cxx.Executable(
       'tests/%s' % name,
       [drake.node('tests/%s.cc' % name), das, elle_library],

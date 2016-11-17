@@ -78,6 +78,13 @@ for f in %(flags)r:
 
 extra_args = {}
 
+if %(os)r == 'alpine':
+  # inhibit major and minor macros
+  cxx_config.define('_SYS_SYSMACROS_H')
+
+if %(os)r == 'alpine' and %(project)r == 'Filesystem':
+  extra_args['enable_crash_reporting'] = False
+
 if %(arch)r == 'arm':
   cxx_toolkit_host =  drake.cxx.GccToolkit()
   extra_args['cxx_toolkit_host'] = cxx_toolkit_host
@@ -122,6 +129,7 @@ parameters = {
   'valgrind': False,
   'production_build': True,
   'arch': options.arch,
+  'os': options.os,
   'drake_utils': '%s/../drake-utils.py' % os.path.dirname(os.path.realpath(__file__)),
   'project': options.project,
 }
@@ -137,6 +145,8 @@ elif options.os == 'trusty':
   parameters['valgrind'] = True
 elif options.os == 'jessie':
   pass
+elif options.os == 'alpine':
+  parameters['environ'] = {'LC_ALL': 'C'}
 elif options.os == 'osx':
   parameters['compiler'] = 'clang++'
   parameters['environ'] = {'MACOSX_DEPLOYMENT_TARGET': '10.7'}

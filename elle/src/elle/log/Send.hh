@@ -9,18 +9,20 @@ namespace elle
 {
   namespace log
   {
+    ELLE_API
     Logger&
     logger();
+    ELLE_API
     std::unique_ptr<Logger>
-    logger(std::unique_ptr<Logger> l); ///< returns previous value
+    logger(std::unique_ptr<Logger> l);
 
     /// Here the simplest type possible is used (.rodata-located) so
     /// as to make sure that its initialization will always take place
-    /// before the other global variables which construction may require
+    /// before the other global variables whose construction may require
     /// logging.
     namespace detail
     {
-      struct Send
+      struct ELLE_API Send
       {
       public:
         template <typename... Args>
@@ -61,12 +63,8 @@ namespace elle
                    unsigned int line,
                    char const* function,
                    const std::string& msg);
-        unsigned int* _indentation;
+        unsigned int* _indentation = nullptr;
       };
-
-      template <typename... Args>
-      std::string
-      print_function_params(Args&&... args);
     }
   }
 }

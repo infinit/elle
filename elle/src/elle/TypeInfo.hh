@@ -6,10 +6,11 @@
 # include <typeinfo>
 
 # include <elle/attribute.hh>
+# include <elle/compiler.hh>
 
 namespace elle
 {
-  class TypeInfo
+  class ELLE_API TypeInfo
   {
   public:
     std::string
@@ -42,6 +43,7 @@ namespace elle
 # endif
   };
 
+  ELLE_API
   std::ostream&
   operator << (std::ostream& s, TypeInfo const& ti);
 
@@ -57,7 +59,7 @@ namespace elle
 namespace std
 {
   template<>
-  class hash<elle::TypeInfo>
+  class ELLE_API hash<elle::TypeInfo>
   {
   public:
     size_t operator()(elle::TypeInfo const& info) const;

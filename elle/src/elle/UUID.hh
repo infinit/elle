@@ -13,7 +13,7 @@ namespace elle
   ///
   /// Universal unique identifier as per RFC 4122. This class is mostly a
   /// convenience wrapper above boost::uuids.
-  class UUID:
+  class ELLE_API UUID:
     public boost::uuids::uuid
   {
   /*-------------.
@@ -43,7 +43,7 @@ namespace elle
   /// String cannot be interpreted as a UUID error.
   ///
   ///
-  class InvalidUUID
+  class ELLE_API InvalidUUID
     : public Error
   {
   /*------.
@@ -74,7 +74,7 @@ namespace elle
   namespace serialization
   {
     template <>
-    struct Serialize<UUID>
+    struct ELLE_API Serialize<UUID>
     {
       typedef std::string Type;
       static
@@ -94,7 +94,7 @@ namespace elle
 namespace std
 {
   template<>
-  class hash<elle::UUID>
+  class ELLE_API hash<elle::UUID>
   {
   public:
     size_t operator()(elle::UUID const& uuid) const

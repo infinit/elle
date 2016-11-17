@@ -14,6 +14,12 @@ namespace reactor
       : Super()
     {}
 
+    UnixDomainServer::~UnixDomainServer()
+    {
+      if (boost::filesystem::exists(this->_endpoint_path))
+        boost::filesystem::remove(this->_endpoint_path);
+    }
+
     std::unique_ptr<UnixDomainSocket>
     UnixDomainServer::accept()
     {
@@ -34,6 +40,7 @@ namespace reactor
     {
       this->listen(
         boost::asio::local::stream_protocol::endpoint(path.string()));
+      this->_endpoint_path = path;
     }
 
     UnixDomainServer::EndPoint

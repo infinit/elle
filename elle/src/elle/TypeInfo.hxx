@@ -4,6 +4,7 @@
 namespace elle
 {
   template <typename T>
+  inline
   TypeInfo
   type_info()
   {
@@ -11,6 +12,7 @@ namespace elle
   }
 
   template <typename T>
+  inline
   TypeInfo
   type_info(T const& v)
   {

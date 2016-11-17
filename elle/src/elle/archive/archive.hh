@@ -6,6 +6,7 @@
 
 # include <boost/optional.hpp>
 
+# include <elle/compiler.hh>
 # include <elle/filesystem.hh>
 
 namespace elle
@@ -28,6 +29,7 @@ namespace elle
       std::function<bool(boost::filesystem::path const&)>
       Excluder; /// Returns true to exclude the file
 
+    ELLE_API
     void
     archive(Format format,
             std::vector<boost::filesystem::path> const& files,
@@ -37,6 +39,7 @@ namespace elle
             bool ignore_failure = false);
 
     /// The extract function supports all formats, no need to specify it
+    ELLE_API
     void
     extract(boost::filesystem::path const& archive,
             boost::optional<boost::filesystem::path> const& output = boost::none);

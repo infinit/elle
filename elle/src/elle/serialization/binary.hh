@@ -19,16 +19,6 @@ namespace elle
     {
       template <typename T, typename ... Args>
       auto
-      serialize(T const& o, Args&& ... args)
-        -> decltype(elle::serialization::serialize<Binary, T>
-                    (o, std::forward<Args>(args)...))
-      {
-        return elle::serialization::serialize<Binary, T>
-          (o, std::forward<Args>(args)...);
-      }
-
-      template <typename T, typename ... Args>
-      auto
       deserialize(Args&& ... args)
         -> decltype(elle::serialization::deserialize<Binary, T>
                     (std::forward<Args>(args)...))
@@ -36,7 +26,28 @@ namespace elle
         return elle::serialization::deserialize<Binary, T>
           (std::forward<Args>(args)...);
       }
-    }
+
+      template <typename Serializer = void, typename T, typename ... Args>
+      auto
+      serialize(T const& o, Args&& ... args)
+        -> decltype(
+          elle::serialization::serialize<Serializer, Binary, T>
+          (o, std::forward<Args>(args)...))
+      {
+        return elle::serialization::serialize<Serializer, Binary, T>
+          (o, std::forward<Args>(args)...);
+      }
+
+      template <typename Serializer, typename T, typename ... Args>
+      auto
+      deserialize(Args&& ... args)
+        -> decltype(elle::serialization::deserialize<Binary, T>
+                    (std::forward<Args>(args)...))
+      {
+        return elle::serialization::deserialize<Serializer, Binary, T>
+          (std::forward<Args>(args)...);
+      }
+}
   }
 }
 

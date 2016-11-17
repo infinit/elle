@@ -7,9 +7,11 @@
 
 # include <boost/signals2.hpp>
 
+# include <elle/compiler.hh>
+
 namespace elle
 {
-  class BasePlugin
+  class ELLE_API BasePlugin
   {
   public:
     void
@@ -17,10 +19,13 @@ namespace elle
   };
 
   template <typename T>
-  class Plugin:
+  class ELLE_API Plugin:
     public BasePlugin
   {
   public:
+    using plugins_t
+      = std::unordered_map<std::type_info const*, std::unique_ptr<T>>;
+
     template <typename I>
     class Register
     {
@@ -35,14 +40,14 @@ namespace elle
     void
     register_plugin(std::unique_ptr<T> plugin);
     static
-    std::unordered_map<std::type_info const*, std::unique_ptr<T>>&
+    plugins_t&
     plugins();
     static
     boost::signals2::signal<void (T&)>&
     hook_added();
   };
 
-  class PluginLoad
+  class ELLE_API PluginLoad
   {
   public:
     template <typename ... Args>

@@ -1,7 +1,6 @@
 # include <elle/Exception.hh>
 
 # include <elle/assert.hh>
-# include <elle/print.hh>
 # include <elle/serialization/Serializer.hh>
 
 namespace elle

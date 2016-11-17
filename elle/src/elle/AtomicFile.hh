@@ -45,7 +45,7 @@ namespace elle
   ///   // will contain "data" upon the next run.
   /// }
   /// \endcode
-  class AtomicFile:
+  class ELLE_API AtomicFile:
     public elle::Printable
   {
   /*------.

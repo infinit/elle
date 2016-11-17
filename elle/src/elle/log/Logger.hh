@@ -22,7 +22,7 @@ namespace elle
       struct Send;
     }
 
-    class Indentation
+    class ELLE_API Indentation
     {
     public:
       virtual
@@ -41,7 +41,7 @@ namespace elle
       clone() = 0;
     };
 
-    class Indenter
+    class ELLE_API Indenter
     {
     public:
       typedef std::function<std::unique_ptr<Indentation> ()> Factory;
@@ -50,7 +50,7 @@ namespace elle
       indentation(Factory const& factory) = 0;
     };
 
-    class Tag
+    class ELLE_API Tag
     {
     public:
       virtual
@@ -61,7 +61,7 @@ namespace elle
       content() = 0;
     };
 
-    class Logger
+    class ELLE_API Logger
       : private boost::noncopyable
     {
     /*------.
@@ -152,11 +152,24 @@ namespace elle
       Level
       component_enabled(std::string const& name);
     private:
-      std::vector<std::pair<std::string, Level>> _component_patterns;
+      /// Rule about components.
+      struct Filter
+      {
+        /// A pattern, e.g., `'infinit.cryptography.*.SecretKey`.
+        std::string pattern;
+        /// The corrresponding level.
+        Level level;
+
+        /// Whether this filter accepts a component name.
+        bool
+        match(const std::string& component) const;
+      };
+      std::vector<Filter> _component_patterns;
       std::unordered_map<std::string, Level> _component_levels;
       ELLE_ATTRIBUTE_R(unsigned int, component_max_size);
     };
 
+    ELLE_API
     std::ostream&
     operator << (std::ostream& stream, Logger::Level l);
   }

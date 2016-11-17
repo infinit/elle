@@ -7,6 +7,7 @@
 namespace std
 {
   template <typename charT, typename traits>
+  inline
   bool
   is_fixed(std::basic_ostream<charT, traits> const& o)
   {

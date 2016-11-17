@@ -9,7 +9,7 @@ namespace elle
 {
   namespace filesystem
   {
-    class TemporaryFile
+    class ELLE_API TemporaryFile
     {
     public:
       TemporaryFile(std::string const& name);

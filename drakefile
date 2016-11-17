@@ -304,7 +304,7 @@ def configure(cxx_toolkit = None,
   ## ------- ##
   openssl_rule = drake.Rule('openssl')
   openssl_version = '1.0.2'
-  openssl_release_tag = 'g'
+  openssl_release_tag = 'j'
   openssl_basename = 'openssl-%s' % (openssl_version + openssl_release_tag)
   openssl_tarball = drake.node('openssl/%s.tar.gz' % openssl_basename)
   openssl_prefix = drake.Path('openssl')
@@ -320,7 +320,7 @@ def configure(cxx_toolkit = None,
         openssl_version, openssl_release_tag, openssl_basename),
     ],
     openssl_tarball,
-    fingerprint = 'f3c710c045cdee5fd114feb69feba7aa')
+    fingerprint = '96322138f0b69e61b7212bc53d5e912b')
   openssl_headers = [
     'include/openssl/aes.h',
     'include/openssl/asn1.h',
@@ -459,7 +459,6 @@ def configure(cxx_toolkit = None,
         configure_args = [
           '--prefix=%s' % drake.path_build(openssl_arch_prefix, absolute = True),
           openssl_shared and 'shared' or 'no-shared',
-          'no-asm',
           '-DPURIFY',
           os_string,
         ],
@@ -485,7 +484,6 @@ def configure(cxx_toolkit = None,
         configure_args = [
           '--prefix=%s' % openssl_prefix_absolute,
           sharing_model,
-          'no-asm',
           '-DPURIFY',
           os_string,
         ],
@@ -515,19 +513,19 @@ def configure(cxx_toolkit = None,
   ## Curl ##
   ## ---- ##
 
-  curl_basename = 'curl-7.48.0'
+  curl_basename = 'curl-7.51.0'
   curl_tarball = drake.node('curl/%s.tar.gz' % curl_basename)
   curl_prefix = drake.Path('curl')
   curl_build = curl_prefix / curl_basename
   curl_url = 'http://curl.haxx.se/download/%s.tar.gz' % curl_basename
   drake.HTTPDownload(curl_url, curl_tarball,
-                     fingerprint = 'b2cac71029d28cb989150bac72aafab5')
+                     fingerprint = '490e19a8ccd1f4a244b50338a0eb9456')
   drake.TarballExtractor(
     curl_tarball,
     targets = ['%s/%s' % (curl_basename, f) for f in (
       'configure',
     )],
-    patches = ((drake.node('curl.patch'),1),),
+    patches = ((drake.node('.patches/curl.patch'),1),),
     patch_dir = curl_basename,
   )
   curl_configure = drake.node(curl_build / 'configure')
@@ -595,6 +593,9 @@ def configure(cxx_toolkit = None,
     # configure is making a runtime library availability check
     curl_environment['LD_LIBRARY_PATH'] = \
       str(drake.path_build(curl_prefix / 'lib', absolute = True))
+  elif cxx_toolkit.os is drake.os.linux:
+    path = drake.path_build(zlib_prefix, absolute = True) / 'lib' / 'pkgconfig'
+    curl_environment['PKG_CONFIG_PATH'] = str(path)
   curl_dependency_libs = curl_openssl_libs + curl_zlib_libs
   curl_headers = [
     'include/curl/typecheck-gcc.h',
@@ -661,7 +662,7 @@ def configure(cxx_toolkit = None,
   ## LibArchive ##
   ## ---------- ##
 
-  libarchive_version = '3.1.2'
+  libarchive_version = '3.2.2'
   libarchive_basename = 'libarchive-%s' % libarchive_version
   libarchive_tarball = \
     drake.node('libarchive/%s.tar.gz' % libarchive_basename)
@@ -673,11 +674,11 @@ def configure(cxx_toolkit = None,
   drake.HTTPDownload(
     libarchive_url,
     libarchive_tarball,
-    fingerprint = 'efad5a503f66329bb9d2f4308b5de98a',
+    fingerprint = '1ec00b7dcaf969dd2a5712f85f23c764',
   )
   libarchive_patches = ()
   if cxx_toolkit.os is drake.os.android:
-      libarchive_patches = ((drake.node('libarchive_android.patch'), 0),)
+      libarchive_patches = ((drake.node('.patches/libarchive_android.patch'), 0),)
   drake.TarballExtractor(
     libarchive_tarball,
     targets = ['libarchive-%s/configure' % libarchive_version],
@@ -823,9 +824,10 @@ def configure(cxx_toolkit = None,
       fingerprint = '28f58b9a33469388302110562bdf6188',
     )
     boost_patches = [
-      (drake.Node('boost_asio_ssl.patch'), 1),
-      (drake.Node('boost_crypt.patch'), 1),
-      (drake.Node('boost_optional.patch'), 1),
+      (drake.Node('.patches/boost_asio_ssl.patch'), 1),
+      (drake.Node('.patches/boost_crypt.patch'), 1),
+      (drake.Node('.patches/boost_optional.patch'), 1),
+      (drake.Node('.patches/boost_datetime_facet.patch'), 1),
     ]
     boost_locale_enabled = cxx_toolkit.os in [drake.os.windows]
     boost_attributes = {}
@@ -837,7 +839,7 @@ def configure(cxx_toolkit = None,
         'boostcpp.jam', # boost_build_osx.patch
       ]
       boost_patches += [
-        (drake.Node('boost_build_osx.patch'), 1),
+        (drake.Node('.patches/boost_build_osx.patch'), 1),
       ]
     drake.TarballExtractor(
       boost_tarball,

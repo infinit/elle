@@ -3,7 +3,7 @@
 namespace elle
 {
   template <typename F, typename... T>
-  void
+  std::ostream&
   fprintf(std::ostream& out,
           F&& fmt,
           T&&... values);

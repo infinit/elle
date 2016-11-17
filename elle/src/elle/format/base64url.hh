@@ -13,7 +13,7 @@ namespace elle
     {
       class StreamBuffer;
 
-      class Stream:
+      class ELLE_API Stream:
         public elle::IOStream
       {
       public:

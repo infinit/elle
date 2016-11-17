@@ -40,6 +40,7 @@ def configure(zlib_lib,
               ldap_config = None,
               openssl_lib_crypto = None,
               openssl_lib_ssl = None,
+              symbol_visibility = True
             ):
 
   global config, lib_static, lib_dynamic, library, library_zlib
@@ -87,6 +88,9 @@ def configure(zlib_lib,
   # JSON spirit
   cxx_config.add_local_include_path('src/elle/json/json-spirit/include')
   cxx_config.define('JSON_SPIRIT_WVALUE_DISABLED')
+
+  if cxx_toolkit.os in [drake.os.windows, drake.os.ios]:
+    cxx_config.define('JSON_SPIRIT_STATIC_LINKED')
 
   config = drake.cxx.Config()
   config.standard = drake.cxx.Config.cxx_14
@@ -136,6 +140,11 @@ def configure(zlib_lib,
   }):
     drake.node('src/elle/serialization.cc.tmpl')
 
+  cxx_config_libs = drake.cxx.Config(cxx_config)
+  cxx_config_libs.visibility_hidden = not symbol_visibility
+  if not cxx_config_libs.visibility_hidden:
+    cxx_config.define('ELLE_DISABLE_VISIBILITY')
+
   sources = drake.nodes(
     'src/elle/bytes.hh',
     'src/elle/err.cc',
@@ -151,6 +160,8 @@ def configure(zlib_lib,
     'src/elle/filesystem/TemporaryDirectory.hh',
     'src/elle/filesystem/TemporaryFile.cc',
     'src/elle/filesystem/TemporaryFile.hh',
+    'src/elle/filesystem/path.cc',
+    'src/elle/filesystem/path.hh',
     'src/elle/AtomicFile.cc',
     'src/elle/AtomicFile.hh',
     'src/elle/Backtrace.cc',
@@ -167,8 +178,6 @@ def configure(zlib_lib,
     'src/elle/Exception.hh',
     'src/elle/Exit.cc',
     'src/elle/Exit.hh',
-    'src/elle/HttpClient.cc',
-    'src/elle/HttpClient.hh',
     'src/elle/IOStream.cc',
     'src/elle/IOStream.hh',
     'src/elle/Lazy.hh',
@@ -210,51 +219,13 @@ def configure(zlib_lib,
     'src/elle/format/base64url.hxx',
     'src/elle/format/gzip.cc',
     'src/elle/format/gzip.hh',
-    'src/elle/format/ini/File.cc',
-    'src/elle/format/ini/File.hh',
-    'src/elle/format/ini/Section.cc',
-    'src/elle/format/ini/Section.hh',
-    'src/elle/format/ini/Section.hxx',
-    'src/elle/format/ini/fwd.hh',
-    'src/elle/format/json.hh',
-    'src/elle/format/json/Array.cc',
-    'src/elle/format/json/Array.hh',
-    'src/elle/format/json/Array.hxx',
-    'src/elle/format/json/Bool.cc',
-    'src/elle/format/json/Bool.hh',
-    'src/elle/format/json/Dictionary.cc',
-    'src/elle/format/json/Dictionary.hh',
-    'src/elle/format/json/Dictionary.hxx',
-    'src/elle/format/json/Factory.cc',
-    'src/elle/format/json/Factory.hh',
-    'src/elle/format/json/Factory.hxx',
-    'src/elle/format/json/Float.cc',
-    'src/elle/format/json/Float.hh',
-    'src/elle/format/json/Integer.cc',
-    'src/elle/format/json/Integer.hh',
-    'src/elle/format/json/Null.cc',
-    'src/elle/format/json/Null.hh',
-    'src/elle/format/json/Object.cc',
-    'src/elle/format/json/Object.hh',
-    'src/elle/format/json/Object.hxx',
-    'src/elle/format/json/Parser.cc',
-    'src/elle/format/json/Parser.hh',
-    'src/elle/format/json/String.cc',
-    'src/elle/format/json/String.hh',
-    'src/elle/format/json/_detail.hh',
-    'src/elle/format/json/fwd.hh',
     'src/elle/fwd.hh',
     'src/elle/io/Console.cc',
     'src/elle/io/Console.hh',
     'src/elle/io/Dumpable.cc',
     'src/elle/io/Dumpable.hh',
-    'src/elle/io/Path.cc',
-    'src/elle/io/Path.hh',
-    'src/elle/io/Path.hxx',
     'src/elle/io/Pattern.cc',
     'src/elle/io/Pattern.hh',
-    'src/elle/io/Piece.cc',
-    'src/elle/io/Piece.hh',
     'src/elle/io/Unique.hh',
     'src/elle/io/fwd.hh',
     'src/elle/log.hh',
@@ -286,12 +257,6 @@ def configure(zlib_lib,
     'src/elle/os/file.cc',
     'src/elle/os/locale.hh',
     'src/elle/os/locale.cc',
-    'src/elle/os/path.cc',
-    'src/elle/os/path.hh',
-    'src/elle/os/path.hxx',
-    'src/elle/print.cc',
-    'src/elle/print.hh',
-    'src/elle/print.hxx',
     'src/elle/printf.hh',
     'src/elle/printf.hxx',
     'src/elle/ProducerPool.hh',
@@ -329,6 +294,8 @@ def configure(zlib_lib,
     'src/utility',
     'src/vector',
   ]]
+  if cxx_toolkit.os not in [drake.os.windows, drake.os.ios]:
+    sources.append(drake.node('src/elle/utility/Unicode-unix.cc'))
   if ldap_libs:
     sources += drake.nodes(
       'src/elle/ldap.hh',
@@ -387,51 +354,6 @@ def configure(zlib_lib,
   )
 
   sources += drake.nodes(
-    'src/elle/serialize/ArchiveMode.cc',
-    'src/elle/serialize/ArchiveMode.hh',
-    'src/elle/serialize/ArraySerializer.hxx',
-    'src/elle/serialize/Base64Archive.cc',
-    'src/elle/serialize/Base64Archive.hh',
-    'src/elle/serialize/BaseArchive.hh',
-    'src/elle/serialize/BaseArchive.hxx',
-    'src/elle/serialize/BinaryArchive.hh',
-    'src/elle/serialize/BinaryArchive.hxx',
-    'src/elle/serialize/Format.hh',
-    'src/elle/serialize/HexadecimalArchive.hh',
-    'src/elle/serialize/IniArchive.cc',
-    'src/elle/serialize/IniArchive.hh',
-    'src/elle/serialize/JSONArchive.cc',
-    'src/elle/serialize/JSONArchive.hh',
-    'src/elle/serialize/JSONArchive.hxx',
-    'src/elle/serialize/ListSerializer.hxx',
-    'src/elle/serialize/MapSerializer.hxx',
-    'src/elle/serialize/PairSerializer.hxx',
-    'src/elle/serialize/Pointer.hh',
-    'src/elle/serialize/Pointer.hxx',
-    'src/elle/serialize/Serializable.hh',
-    'src/elle/serialize/Serializable.hxx',
-    'src/elle/serialize/Serializer.hh',
-    'src/elle/serialize/SetSerializer.hxx',
-    'src/elle/serialize/StaticFormat.hh',
-    'src/elle/serialize/TupleSerializer.hxx',
-    'src/elle/serialize/VectorSerializer.hxx',
-    'src/elle/serialize/detail/AssociativeSerializer.hh',
-    'src/elle/serialize/detail/MergeArchive.hh',
-    'src/elle/serialize/detail/SequenceSerializer.hh',
-    'src/elle/serialize/detail/stream.hh',
-    'src/elle/serialize/detail/stream.cc',
-    'src/elle/serialize/extract.cc',
-    'src/elle/serialize/extract.hh',
-    'src/elle/serialize/extract.hxx',
-    'src/elle/serialize/footprint.hh',
-    'src/elle/serialize/footprint.hxx',
-    'src/elle/serialize/fwd.hh',
-    'src/elle/serialize/insert.cc',
-    'src/elle/serialize/insert.hh',
-    'src/elle/serialize/insert.hxx',
-    )
-
-  sources += drake.nodes(
     'src/elle/system/platform.hh',
     'src/elle/system/Process.cc',
     'src/elle/system/Process.hh',
@@ -454,11 +376,6 @@ def configure(zlib_lib,
     'src/elle/utility/Parser.hh',
     'src/elle/utility/Parser.hxx',
     'src/elle/utility/Product.hh',
-    'src/elle/utility/Settings.cc',
-    'src/elle/utility/Settings.hh',
-    'src/elle/utility/Time.cc',
-    'src/elle/utility/Time.hh',
-    'src/elle/utility/Time.hxx',
     'src/elle/utility/URI.hh',
     'src/elle/utility/Unicode.hh',
     'src/elle/utility/Utility.hh',
@@ -521,14 +438,8 @@ def configure(zlib_lib,
       'src/elle/windows/string_conversion.cc',
     )
 
-  if cxx_toolkit.os in [drake.os.windows, drake.os.ios]:
-    cxx_config.define('JSON_SPIRIT_STATIC_LINKED')
-    #sources.append(drake.node('src/elle/utility/Unicode-win32.cc'))
-  else:
-    sources.append(drake.node('src/elle/utility/Unicode-unix.cc'))
-
   # Archive
-  cxx_archive_config = cxx_config + libarchive_config
+  cxx_archive_config = cxx_config_libs + libarchive_config
   for f in (
       'archive',
       'tar',
@@ -543,13 +454,13 @@ def configure(zlib_lib,
     'lib/elle',
     sources + [zlib_lib, libarchive_lib],
     cxx_toolkit,
-    cxx_config,
+    cxx_config_libs,
   )
   lib_dynamic = drake.cxx.DynLib(
     'lib/elle',
     sources + [zlib_lib, libarchive_lib] + (ldap_libs and (ldap_libs + openssl_libs) or []),
     cxx_toolkit,
-    cxx_config,
+    cxx_config_libs,
   )
 
   rule_build = drake.Rule('build')
@@ -575,7 +486,7 @@ def configure(zlib_lib,
                      'include/python3.2',
                      'include/python3.2m',
                      'include/python3.3m'])
-    python_cxx_config = drake.cxx.Config(cxx_config)
+    python_cxx_config = drake.cxx.Config(cxx_config_libs)
     # Required by python or else the symbol _Gestalt is not found.
     if cxx_toolkit.os is drake.os.macos:
       python_cxx_config.framework_add('CoreServices')
@@ -637,16 +548,6 @@ def configure(zlib_lib,
     'finally.cc',
     'format/base64.cc',
     'format/gzip.cc',
-    'format/ini/Section.cc',
-    'format/json/Array.cc',
-    'format/json/Bool.cc',
-    'format/json/Dictionary.cc',
-    'format/json/Float.cc',
-    'format/json/Integer.cc',
-    'format/json/Null.cc',
-    'format/json/String.cc',
-    'io/Path.cc',
-    'io/Piece.cc',
     'json.cc',
     'memory.cc',
     'meta.cc',
@@ -657,11 +558,11 @@ def configure(zlib_lib,
     'operator.cc',
     'option.cc',
     'os/environ.cc',
-    'print.cc',
     'printf.cc',
     'serialization.cc',
     'set.cc',
     'system/user_paths.cc',
+    'tuple.cc',
     'unordered_map.cc',
     'utility/Suffixes.cc',
     'AtomicFile.cc',
@@ -670,7 +571,6 @@ def configure(zlib_lib,
     tests.extend([
       'attributes.cc',
       'log.cc',
-      'threading/monitor.cc',
       'threading/rw-mutex.cc',
     ])
   process_helpers = [

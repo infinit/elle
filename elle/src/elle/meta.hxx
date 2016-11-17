@@ -1,6 +1,7 @@
 #ifndef ELLE_META_HXX
 # define ELLE_META_HXX
 
+# include <tuple>
 # include <type_traits>
 
 namespace elle
@@ -12,10 +13,10 @@ namespace elle
     `------*/
 
     template <typename ... Elts>
-    template <template <typename ...> class T>
+    template <template <typename ...> class T, typename ... Args>
     struct List<Elts...>::apply
     {
-      typedef T<Elts...> type;
+      typedef T<Args..., Elts...> type;
     };
 
     /*-------.
@@ -82,6 +83,119 @@ namespace elle
       static constexpr auto value = index_of_helper<0, T, Elts...>::value;
     };
 
+    /*----.
+    | Map |
+    `----*/
+
+    namespace _details
+    {
+      template <template <typename> class F, typename ... Elts>
+      struct map_helper
+      {
+        using type = List<>;
+      };
+
+      template <template <typename> class F, typename Head>
+      static constexpr
+      typename std::enable_if_exists<
+        decltype(F<Head>::value), bool>::type
+      map_runtime(int)
+      {
+        return true;
+      }
+
+      template <template <typename> class F, typename Head>
+      static constexpr
+      typename std::enable_if_exists<typename F<Head>::type, bool>::type
+      map_runtime(...)
+      {
+        return false;
+      }
+
+      template <template <typename> class F, typename Head, typename ... Tail>
+      struct map_helper<F, Head, Tail...>
+      {
+        using type = typename std::conditional<
+          std::is_same<typename F<Head>::type, void>::value,
+          typename List<Tail...>
+          ::template map<F>::type,
+          typename List<Tail...>
+          ::template map<F>::type
+          ::template prepend<typename F<Head>::type>::type>::type;
+      };
+
+      template <typename Res,
+                bool runtime,
+                template <typename> class F,
+                typename ... Elts>
+      struct map_value_apply
+      {};
+
+      template <template <typename> class F,
+                typename ... Elts>
+      struct map_value_apply<std::tuple<>, true, F, Elts...>
+      {
+        template <typename ... Args>
+        static
+        std::tuple<>
+        value(Args&& ...)
+        {
+          return {};
+        }
+      };
+
+      template <typename RHead,
+                typename ... RTail,
+                template <typename> class F,
+                typename Head,
+                typename ... Tail>
+      struct map_value_apply<std::tuple<RHead, RTail...>, true, F, Head, Tail...>
+      {
+        template <typename ... Args>
+        static
+        std::tuple<RHead, RTail...>
+        value(Args&& ... args)
+        {
+          auto head = std::tuple<typename F<Head>::type>(
+            F<Head>::value(std::forward<Args>(args)...));
+          return std::tuple_cat(
+            std::move(head),
+            map_value_apply<std::tuple<RTail...>, true, F, Tail...>::value(
+              std::forward<Args>(args)...));
+        }
+      };
+
+      template <typename Res, template <typename> class F, typename ... Elts>
+      struct map_value_helper
+      {
+        template <typename ... Args>
+        static
+        std::tuple<>
+        value(Args&& ...)
+        {
+          return {};
+        }
+      };
+
+      template <typename Res,
+                template <typename> class F,
+                typename Head,
+                typename ... Tail>
+      struct map_value_helper<Res, F, Head, Tail...>
+        : public map_value_apply<typename Res::template apply<std::tuple>::type,
+                                 map_runtime<F, Head>(0), F, Head, Tail...>
+      {};
+    }
+
+    template <typename ... Elts>
+    template <template <typename> class F>
+    struct List<Elts...>::map
+      : public _details::map_value_helper<
+          typename _details::map_helper<F, Elts...>::type, F, Elts...>
+    {
+      using type = typename _details::map_helper<F, Elts...>::type;
+    };
+
     /*--------.
     | Prepend |
     `--------*/
@@ -93,6 +207,30 @@ namespace elle
       typedef List<T, Elts...> type;
     };
 
+    /*-----.
+    | Tail |
+    `-----*/
+
+
+    namespace
+    {
+      template <typename ... List>
+      struct tail_helper
+      {};
+
+      template <typename Head, typename ... Tail>
+      struct tail_helper<Head, Tail...>
+      {
+        using type = List<Tail...>;
+      };
+    }
+
+    template <typename ... Elts>
+    template <int>
+    struct List<Elts...>::tail
+    {
+      using type = typename tail_helper<Elts...>::type;
+    };
   }
 }
 

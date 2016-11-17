@@ -92,7 +92,7 @@ namespace reactor
         auto it = _readers.find(magic);
         if (it != _readers.end())
         {
-          it->second(buffer, endpoint);
+          it->second(Buffer(buffer.data(), sz), endpoint);
         }
         else if (magic == rdv::rdv_magic)
         {

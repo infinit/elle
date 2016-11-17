@@ -8,8 +8,8 @@ namespace elle
     template <typename ... Elts>
     struct List
     {
-      /// T<Elts...>
-      template <template <typename ...> class T>
+      /// T<Args ..., Elts...>
+      template <template <typename ...> class T, typename ... Args>
       struct
       apply;
 
@@ -22,10 +22,41 @@ namespace elle
       struct
       index_of;
 
+      /// List<F<Elts>...>
+      template <template <typename> class F>
+      struct
+      map;
+
       /// List<T, Elts...>
       template <typename T>
       struct
       prepend;
+
+      /// List<F<Elts>...>
+      template <int = 0>
+      struct
+      tail;
+    };
+
+    /// Helper to declare `List` from values through `decltype`.
+    template<typename ... Args>
+    List<Args...>
+    list(Args ...);
+
+    /// { value = T[0] && ... && T[N]; }
+    template <typename ... T>
+    struct All;
+
+    template <>
+    struct All<>
+    {
+      static bool constexpr value = true;
+    };
+
+    template <typename Head, typename ... Tail>
+    struct All<Head, Tail...>
+    {
+      static bool constexpr value = Head::value && All<Tail...>::value;
     };
   }
 }

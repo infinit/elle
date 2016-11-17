@@ -12,6 +12,9 @@ namespace std
     typedef T type;
   };
 
+  template <typename C, typename T>
+  using enable_if_exists_t = typename enable_if_exists<C, T>::type;
+
   template <typename T>
   struct remove_cv_reference
   {

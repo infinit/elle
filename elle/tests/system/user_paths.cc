@@ -1,4 +1,5 @@
-#include <elle/os/path.hh>
+#include <boost/filesystem/operations.hpp>
+
 #include <elle/system/user_paths.hh>
 #include <elle/test.hh>
 
@@ -6,25 +7,25 @@ static
 void
 home_directory()
 {
-  std::string home_dir(elle::system::home_directory().string());
-  BOOST_CHECK(elle::os::path::exists(home_dir));
-  BOOST_CHECK(elle::os::path::is_directory(home_dir));
+  auto home_dir = elle::system::home_directory();
+  BOOST_CHECK(exists(home_dir));
+  BOOST_CHECK(is_directory(home_dir));
 }
 
 static
 void
 download_directory()
 {
-  std::string download_dir(elle::system::download_directory().string());
-  BOOST_CHECK(elle::os::path::exists(download_dir));
-  BOOST_CHECK(elle::os::path::is_directory(download_dir));
+  auto download_dir = elle::system::download_directory();
+  BOOST_CHECK(exists(download_dir));
+  BOOST_CHECK(is_directory(download_dir));
 #ifdef INFINIT_MACOSX
   // Download folder on OS X is language dependent.
 #else
   // Some machines may not have a download directory in which case
   // elle::system::download_directory falls back to the home directory.
   if (download_dir != elle::system::home_directory())
-    BOOST_CHECK(download_dir.find("Downloads") != std::string::npos);
+    BOOST_CHECK(download_dir.string().find("Downloads") != std::string::npos);
 #endif
 }
 
