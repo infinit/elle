@@ -44,7 +44,7 @@ namespace elle
     friend
     void
     throw_with_nested(T&& t);
-    ELLE_ATTRIBUTE_R(Backtrace, backtrace);
+    ELLE_ATTRIBUTE_RW(Backtrace, backtrace);
     ELLE_ATTRIBUTE_R(std::exception_ptr, inner_exception);
   };
 
