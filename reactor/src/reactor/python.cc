@@ -1,10 +1,17 @@
-#include <boost/function.hpp>
 #include <boost/python.hpp>
-
-// Retarded CPython defines a tolower macro.
+// Retarded CPython defines these macros...
+// http://bugs.python.org/issue10910
 #ifdef tolower
+# undef isalnum
+# undef isalpha
+# undef islower
+# undef isspace
+# undef isupper
 # undef tolower
+# undef toupper
 #endif
+
+#include <boost/function.hpp>
 
 #include <reactor/exception.hh>
 #include <reactor/python.hh>
