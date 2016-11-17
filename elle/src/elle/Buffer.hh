@@ -234,9 +234,6 @@ namespace elle
   `--------*/
   public:
     /// Get byte at position \a i.
-    Byte&
-    operator[] (unsigned i);
-    /// Get byte at position \a i.
     Byte
     operator[] (unsigned i) const;
     /// A subset of this buffer.
@@ -328,6 +325,9 @@ namespace elle
   | Content |
   `--------*/
   public:
+    /// Get byte at position \a i.
+    Byte&
+    operator[] (unsigned i);
     Byte*
     mutable_contents() const;
     /// A subset of this buffer.

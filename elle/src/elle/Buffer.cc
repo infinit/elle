@@ -434,6 +434,12 @@ namespace elle
   /*-----------.
   | WeakBuffer |
   `-----------*/
+  Byte&
+  WeakBuffer::operator[] (unsigned i)
+  {
+    ELLE_ASSERT_LT(i, this->size());
+    return const_cast<Byte&>(this->contents()[i]);
+  }
 
   std::streambuf*
   ConstWeakBuffer::istreambuf() const
@@ -500,13 +506,6 @@ namespace elle
 
         std::cout << std::endl;
       }
-  }
-
-  Byte&
-  ConstWeakBuffer::operator[] (unsigned i)
-  {
-    ELLE_ASSERT_LT(i, this->_size);
-    return const_cast<Byte&>(this->_contents[i]);
   }
 
   Byte
