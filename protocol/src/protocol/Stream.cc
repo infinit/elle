@@ -2,6 +2,7 @@
 
 #include <protocol/Stream.hh>
 #include <protocol/Serializer.hh>
+#include <protocol/exceptions.hh>
 
 #include <reactor/scheduler.hh>
 
@@ -111,11 +112,9 @@ namespace infinit
       if (v >= elle::Version(0, 3, 0))
       {
         int64_t res = 0;
-        if (s.eof())
-          throw Serializer::EOF();
         SerializerIn::serialize_number(s, res);
-        if (s.eof())
-          throw Serializer::EOF();
+        if (res < 0 || std::numeric_limits<uint32_t>::max() < res)
+          throw Error(elle::sprintf("unexpected uint32_t: %s", res));
         return (uint32_t) res;
       }
       else
