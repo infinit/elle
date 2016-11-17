@@ -1,7 +1,6 @@
-#ifndef INFINIT_PROTOCOL_CHECKSUMERROR_HH
-# define INFINIT_PROTOCOL_CHECKSUMERROR_HH
+#pragma once
 
-# include <elle/Exception.hh>
+#include <elle/Exception.hh>
 
 namespace infinit
 {
@@ -45,4 +44,3 @@ namespace infinit
   }
 }
 
-#endif

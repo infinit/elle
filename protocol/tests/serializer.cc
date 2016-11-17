@@ -349,7 +349,8 @@ dialog(elle::Version const& version,
        std::function<void (SocketProvider&)> const& conf,
        std::function<void (infinit::protocol::Serializer&)> const& a,
        std::function<void (infinit::protocol::Serializer&)> const& b,
-       std::function<void (reactor::Thread&, reactor::Thread&, SocketProvider&)> const& f = std::function<void (reactor::Thread&, reactor::Thread&, SocketProvider&)>())
+       std::function<void (reactor::Thread&, reactor::Thread&,
+                           SocketProvider&)> const& f = {})
 {
   SocketProvider sockets;
   std::unique_ptr<infinit::protocol::Serializer> alice;
@@ -886,24 +887,27 @@ ELLE_TEST_SCHEDULED(interruption2)
           ELLE_TRACE("accept");
           ip::Channel c = stream.accept();
           auto buf = c.read();
+          // Forge a packet in `message`.
           elle::Buffer message;
+          // 1. the channel id.
           infinit::protocol::Stream::uint32_put(message, c.id(), version);
+          // 2. the content.
           {
             elle::IOStream m(message.ostreambuf());
             m.write((const char*)buf.contents(), buf.size());
           }
+          // First send the size of `message`.
           infinit::protocol::Stream::uint32_put(s.stream(), message.size(), version);
           {
+            // Send `message`, but lacking the end.
             s.stream().write((const char*)message.contents(), message.size() - 1);
           }
           ELLE_TRACE("partial write, wait for signal");
           reactor::wait(pinger_block);
           ELLE_TRACE("finish write");
           pinger_block.close();
-          if (version >= elle::Version{0, 3, 0})
-            s.stream().write((const char*)message.contents() + message.size()-1, 1);
-          else
-            s.stream().write((const char*)buf.contents() + buf.size()-1, 1);
+          // Finish sending `message`.
+          s.stream().write((const char*)message.contents() + message.size()-1, 1);
           s.stream().flush();
           ELLE_TRACE("packet transmited");
         }
@@ -934,6 +938,7 @@ ELLE_TEST_SCHEDULED(interruption2)
         ELLE_TRACE("read on %s", c.id());
         auto buf = c.read();
         BOOST_CHECK_EQUAL(buf.string(), "foo");
+
         // just read some more to check we're still on
         ip::Channel c3(stream);
         c3.write(elle::Buffer("baz"));
