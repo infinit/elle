@@ -21,10 +21,8 @@ namespace infinit
     `-------------*/
 
     ChanneledStream::ChanneledStream(reactor::Scheduler& scheduler,
-                                     Stream& backend,
-                                     elle::Version const& version)
+                                     Stream& backend)
       : Super(scheduler)
-      , _version(version)
       , _master(this->_handshake(backend))
       , _id_current(0)
       , _reading(false)
@@ -35,9 +33,8 @@ namespace infinit
       , _default(*this)
     {}
 
-    ChanneledStream::ChanneledStream(Stream& backend,
-                                     elle::Version const& version)
-      : ChanneledStream(*reactor::Scheduler::scheduler(), backend, version)
+    ChanneledStream::ChanneledStream(Stream& backend)
+      : ChanneledStream(*reactor::Scheduler::scheduler(), backend)
     {}
 
     bool
@@ -250,6 +247,16 @@ namespace infinit
       backend_packet.append(packet.contents(), packet.size());
       this->_backend.write(backend_packet);
     }
+
+    /*--------.
+    | Version |
+    `--------*/
+    const elle::Version&
+    ChanneledStream::version() const
+    {
+      return this->_backend.version();
+    }
+
 
     /*----------.
     | Printable |

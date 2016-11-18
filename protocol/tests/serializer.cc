@@ -881,7 +881,7 @@ ELLE_TEST_SCHEDULED(interruption2)
       },
       [&] (infinit::protocol::Serializer& s)
       { // echo server, sending partial result until pinger_block is opened.
-        ip::ChanneledStream stream(s, version);
+        ip::ChanneledStream stream(s);
         while (true)
         {
           ELLE_TRACE("accept");
@@ -914,7 +914,7 @@ ELLE_TEST_SCHEDULED(interruption2)
       },
       [&] (infinit::protocol::Serializer& s)
       {
-        ip::ChanneledStream stream(s, version);
+        ip::ChanneledStream stream(s);
         ip::Channel c(stream);
         c.write(elle::Buffer("foo"));
         reactor::Barrier b;

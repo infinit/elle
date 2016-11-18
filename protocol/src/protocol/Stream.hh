@@ -5,10 +5,9 @@
 
 # include <elle/Buffer.hh>
 # include <elle/Printable.hh>
+# include <elle/Version.hh>
 
 # include <reactor/fwd.hh>
-
-
 
 namespace infinit
 {
@@ -29,6 +28,10 @@ namespace infinit
     | Properties |
     `-----------*/
       ELLE_ATTRIBUTE_R(reactor::Scheduler&, scheduler);
+      /// The protocol is versioned.
+      ///
+      /// Expose the version of the backend.
+      ELLE_attribute_r(elle::Version, version, virtual) = 0;
 
     /*----------.
     | Receiving |
