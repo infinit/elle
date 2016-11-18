@@ -285,30 +285,10 @@ class State:
 
   def disk_space(self):
     '''Available disk space in GB.'''
-    # GNU/Linux:
-    # $ df -h .
-    # Filesystem      Size  Used Avail Use% Mounted on
-    # none             60G  8.4G   48G  15% /
-    #
-    # Filesystem      Size  Used Avail Use% Mounted on
-    # /dev/vda1       158G  156G     0 100% /builds/infinit
-    #
-    # macOS:
-    # $ df -h .
-    # Filesystem   Size   Used  Avail Capacity   iused   ifree %iused  Mounted on
-    # /dev/disk1  465Gi  427Gi   37Gi    92% 112023900 9772194   92%   /
-    d = sh.df('-h', '.').rstrip()
-    avail = d.splitlines()[1].split()[3]
-    m = re.match(r'([\d.]+)(Gi?[BO]?)?', avail)
-    if m:
-      res = float(m.group(1))
-      print('disk_space: available space:', res)
-    else:
-      print('disk_space: cannot read available space:', d)
-      # Proceed anyway.
-      res = 100
+    statvfs = os.statvfs('.')
+    res = int(statvfs.f_frsize * statvfs.f_bavail / 1024 ** 3)
+    print('disk_space: available space:', res)
     return res
-
 
   def garbage_collect_build_trees(self):
     '''Remove old build trees if we lack space.  Remove per day, starting
