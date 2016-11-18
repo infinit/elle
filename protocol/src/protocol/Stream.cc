@@ -71,10 +71,7 @@ namespace infinit
       {
         elle::IOStream input(b.istreambuf());
         int64_t res;
-        auto size = SerializerIn::serialize_number(input, res);
-        ELLE_ASSERT_GTE(b.size(), (size_t) size);
-        memmove(b.mutable_contents(), b.contents() + size, b.size() - size);
-        b.size(b.size() - size);
+        b.pop_front(SerializerIn::serialize_number(input, res));
         return (uint32_t) res;
       }
       else
@@ -82,8 +79,7 @@ namespace infinit
         uint32_t i;
         ELLE_ASSERT_GTE((signed)b.size(), 4);
         i = *(uint32_t*)b.contents();
-        memmove(b.mutable_contents(), b.contents() + 4, b.size() - 4);
-        b.size(b.size() - 4);
+        b.pop_front(4);
         return ntohl(i);
       }
     }

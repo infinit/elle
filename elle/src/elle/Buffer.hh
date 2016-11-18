@@ -103,7 +103,7 @@ namespace elle
     static Size _next_size(Size);
 
   public:
-    static const Size max_size = std::numeric_limits<Size>::max();
+    static constexpr Size max_size = std::numeric_limits<Size>::max();
 
   /*-----------.
   | Operations |
@@ -112,6 +112,10 @@ namespace elle
     /// Append a copy of the data to the end of the buffer.
     void
     append(void const* data, Size size);
+    /// Drop a number of bytes.
+    /// Costly, as it memmoves the remaing bytes.
+    void
+    pop_front(Size size = 1);
 
   /*---------------------.
   | Relational Operators |
