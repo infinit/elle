@@ -39,6 +39,7 @@ def configure(curl_config,
               openssl_lib_ssl,
               python3 = None,
               elle = None,
+              das = None,
               prefix = '/usr',
               valgrind = None,
               valgrind_tests = False,
@@ -62,6 +63,10 @@ def configure(curl_config,
   config.add_local_include_path('bin')
   config.standard = drake.cxx.Config.cxx_14
   config.lib_path('lib')
+
+  # Das
+  das = das or drake.include('../das')
+  config += das.config
 
   # Local C++ configuration
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
