@@ -72,6 +72,7 @@ def configure(cxx_toolkit,
   elle_library = drake.copy(elle.library, 'lib', strip_prefix = True)
   for name in [
       'flatten',
+      'named',
       'printer',
       'serialize',
       'symbol',
