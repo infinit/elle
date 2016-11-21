@@ -2,7 +2,7 @@
 
 elle is a library containing fundamental functionalities from buffers to memory management and serialization, e.g.:
 
-elle is a part of the [elle](https://github.com/infinit/elle) set of libraries.
+elle is part of the [elle](https://github.com/infinit/elle) set of libraries.
 
 ## Motivation
 

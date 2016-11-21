@@ -6,19 +6,19 @@ elle is split into different smaller specialized libraries to provide elegant wa
 
 ## Strucure
 
-As mention earlier, elle is a set of libraries, designed to ease C++ development through robusts and flexible implementations, including:
+As mentioned earlier, elle is a set of libraries, designed to ease C++ development through robusts and flexible implementations, including:
 - [elle](elle): Utilities including serialization, logs, buffer, formatting, ...
 - [reactor](reactor): An asynchronous framework using a coroutines scheduler
 - [cryptography](cryptography): Object-oriented cryptography wrapper around OpenSSL
 - [protocol](protocol): Network communication library (RCPs))
 - [das](das): Model manipulator and generator
 - [athena](athena): Bizantine environment library
-- [aws](aws): reactorified AWS API wrapper
-- [dropbox](dropbox): reactorified Dropbox API wrapper
+- [aws](aws): *reactorified* AWS API wrapper
+- [dropbox](dropbox): *reactorified* Dropbox API wrapper
 
 > *Notes:*
->   - elle is under development, used and maintained by [infinit](https://infinit.sh) as a set of core libraries. APIs, structures and concepts may change over time. You can use it as is but we don't guaranty any API retrocompatibilty.
->   - elle has a sub-library also called elle, which might change name in a near future.
+> - elle is under development, used and maintained by [infinit](https://infinit.sh) as a set of core libraries. APIs, structures and concepts may change over time. You can use it as is but we don't guaranty any API backwards compatibility.
+> - elle has a sub-library also called elle, which might change name in a near future.
 
 ## Example
 
@@ -41,9 +41,9 @@ git clone https://github.com/infinit/elle --recursive # Clone elle and its submo
 - [clang](http://clang.llvm.org) (>= 3.5.0) or [gcc](https://gcc.gnu.org) (>= 4.8.0) or [mingw](http://mingw.org) (>= 5.3.0).
 - [python3.4+](https://www.python.org/download/releases/3.0)
 
-### Buildsystem
-elle uses the [drake](https://github.com/infinit/drake) buildsystem and carries it as a submodule.
-You can find a generic drake configuration script at `_build/<archicture>/drake`.
+### Build system
+elle uses the [drake](https://github.com/infinit/drake) build system and carries it as a submodule.
+You can find a generic drake configuration script at `_build/<architecture>/drake`.
 
 ### How to compile
 ```bash
@@ -61,7 +61,7 @@ Because elle has been designed to be modular, you can build specific parts of el
 ./drake //protocol/build -j 2 # To build the libprotocol and its dependencies.
 ./drake //...
 ```
-It will result on `<module>/lib/lib<module>.so` and its dependencies on linux, `<module>/lib/lib<module>.dylib` on OSX, ...
+It will result on `<module>/lib/lib<module>.so` and its dependencies on Linux, `<module>/lib/lib<module>.dylib` on MacOS, ...
 
 ### Dependencies:
 

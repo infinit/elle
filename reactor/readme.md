@@ -1,22 +1,22 @@
 # Reactor
 
-The reactor is an asynchronous framework, built around a [coroutine](https://en.wikipedia.org/wiki/Coroutine) scheduler (based on [boost::context](http://www.boost.org/doc/libs/1_62_0/libs/context/doc/html/context/overview.html) or [libcoroutine](https://github.com/stevedekorte/coroutine/tree/master) and benefiting from [boost::asio](http://www.boost.org/doc/libs/1_61_0/doc/html/boost_asio/overview.html)) providing cooperative multitasking on a single thread, enabling simple and safe imperative style concurrency.
+The reactor is an asynchronous framework, built around a [coroutine](https://en.wikipedia.org/wiki/Coroutine) scheduler (using [boost::context](http://www.boost.org/doc/libs/1_62_0/libs/context/doc/html/context/overview.html) or [libcoroutine](https://github.com/stevedekorte/coroutine/tree/master) and benefiting from [boost::asio](http://www.boost.org/doc/libs/1_61_0/doc/html/boost_asio/overview.html)) providing cooperative multitasking on a single thread, enabling simple and safe imperative style concurrency.
 
-The reactor is a part of the [elle](https://github.com/elle) set of libraries.
+The reactor is part of the [elle](https://github.com/infinit/elle) set of libraries.
 
 ## Motivation
 
-The reactor has been designed to fit the needs of I/O heavy projects. In this situation, you can benefit of near maximum CPU potential, while your program is waiting on I/O. Furthermore, program behavior is highly predictible compare to parallel programming, the context switches trigger when a coroutine yield, synchronization tools give strong guaranties on coroutines execution order and no code is executed in parallel (unless you explictly ask for it, the reactor provides tools to make both worlds (single-threading and multi-threading) coexist).
+The reactor has been designed to fit the needs of I/O heavy projects. In this situation, you can benefit of near maximum CPU potential, while other coroutines are waiting on I/O. Furthermore, program behavior is highly predictable compare to parallel programming: context switches trigger when a coroutine yield, synchronization tools give strong guaranties on coroutines execution order and no code is executed in parallel (unless you explicitly ask for it, and the reactor provides tools to make both worlds (single-threading and multi-threading) coexist).
 
 ## How to compile
 
-_See [elle: How to compile](https://github.com/elle)._
+_See [elle: How to compile](https://github.com/infinit/elle#how-to-compile)._
 
 ```bash
 ./drake //reactor/build -j 2
 ```
 
-## Examples
+## Example
 
 A simple echo server implementation would look like:
 
@@ -82,3 +82,6 @@ main(int argc, char* argv[])
 ```
 
 ## Further reading
+
+[Highly concurrent yet natural programming](http://www.slideshare.net/infinit-one/highly-concurrent-yet-natural-programming)
+[Infinit filesystem, Reactor reloaded](http://www.slideshare.net/infinit-one/infinit-filesystem-reactor-reloaded)
