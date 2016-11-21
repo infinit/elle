@@ -1298,6 +1298,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     openssl_lib_ssl = openssl_lib_ssl,
     python3 = python3,
     elle = elle,
+    das = das,
     prefix = prefix,
     valgrind = valgrind,
     valgrind_tests = valgrind_tests,

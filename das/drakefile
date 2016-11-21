@@ -32,12 +32,15 @@ def configure(cxx_toolkit,
   ## ------ ##
 
   sources = drake.nodes(
-    'src/das/Collection.hh',
-    'src/das/Object.cc',
-    'src/das/Object.hh',
-    'src/das/Variable.hh',
-    'src/das/Variable.hxx',
+    'src/das/Symbol.hh',
+    'src/das/Symbol.hxx',
+    'src/das/flatten.hh',
+    'src/das/fwd.hh',
     'src/das/model.hh',
+    'src/das/named.hh',
+    'src/das/printer.hh',
+    'src/das/serializer.hh',
+    'src/das/serializer.hxx',
   )
   das_dynamic = \
     drake.cxx.DynLib('lib/das', sources, cxx_toolkit, local_config)
@@ -72,6 +75,7 @@ def configure(cxx_toolkit,
   elle_library = drake.copy(elle.library, 'lib', strip_prefix = True)
   for name in [
       'flatten',
+      'named',
       'printer',
       'serialize',
       'symbol',

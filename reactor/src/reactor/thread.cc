@@ -18,9 +18,6 @@ ELLE_LOG_COMPONENT("reactor.Thread");
 
 namespace reactor
 {
-  NAMED_ARGUMENT_DEFINE(dispose, Thread);
-  NAMED_ARGUMENT_DEFINE(managed, Thread);
-
   /*-------------.
   | Construction |
   `-------------*/

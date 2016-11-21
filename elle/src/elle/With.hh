@@ -43,6 +43,10 @@ namespace elle
     operator <<(F const& action) -> decltype(action());
 
   private:
+    static
+    ELLE_COMPILER_ATTRIBUTE_NO_INLINE
+    void
+    destroy_it(T* ptr);
     template <typename F>
     auto
     _run(F const& action) -> decltype(action(std::declval<T&>()));

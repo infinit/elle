@@ -110,6 +110,17 @@ namespace elle
   }
 
   template <typename T>
+  ELLE_COMPILER_ATTRIBUTE_NO_INLINE
+  void
+  With<T>::destroy_it(T* ptr)
+  {
+    ELLE_LOG_COMPONENT("elle.With");
+    ELLE_TRACE("destroying value");
+    ptr->~T();
+    ELLE_TRACE("value destroyed");
+  }
+
+  template <typename T>
   template <typename F>
   auto
   With<T>::_run(F const& action) -> decltype(action(std::declval<T&>()))
@@ -131,7 +142,7 @@ namespace elle
 #ifndef INFINIT_WINDOWS
       ELLE_TRACE("%s: destruct", *this)
 #endif
-        this->_value->~T();
+      this->destroy_it(this->_value);
       return res.value();
     }
     catch (...)
@@ -148,7 +159,7 @@ namespace elle
 #ifndef INFINIT_WINDOWS
         ELLE_TRACE("%s: destruct", *this)
 #endif
-          this->_value->~T();
+        this->destroy_it(this->_value);
       }
       catch (...)
       {

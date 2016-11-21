@@ -19,9 +19,12 @@ namespace std
   struct remove_cv_reference
   {
     typedef
-      typename std::remove_reference<typename std::remove_cv<T>::type>::type
+      typename std::remove_cv<typename std::remove_reference<T>::type>::type
       type;
   };
+
+  template <typename T>
+  using remove_cv_reference_t = typename remove_cv_reference<T>::type;
 }
 
 #endif

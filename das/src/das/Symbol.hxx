@@ -4,17 +4,13 @@
 # include <type_traits>
 
 # define DAS_SYMBOL(Name)                                       \
-  constexpr                                                     \
+  __attribute__((unused))                                       \
+  constexpr static                                              \
   class Symbol_##Name                                           \
-    : public ::das::Symbol                                      \
+    : public ::das::SpecificSymbol<Symbol_##Name>               \
   {                                                             \
   public:                                                       \
-    /* Clang requires a user-defined   */                       \
-    /* default constructor for default */                       \
-    /* initialization. */                                       \
-    constexpr                                                   \
-    Symbol_##Name()                                             \
-    {}                                                          \
+    using ::das::SpecificSymbol<Symbol_##Name>::operator=;      \
                                                                 \
     /* Name */                                                  \
                                                                 \
@@ -122,6 +118,6 @@
     {                                                           \
       return false;                                             \
     }                                                           \
-  } Name;                                                       \
+  } Name = {};                                                  \
 
 #endif
