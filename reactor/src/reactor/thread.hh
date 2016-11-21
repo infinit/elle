@@ -6,7 +6,9 @@
 
 # include <elle/Backtrace.hh>
 # include <elle/With.hh>
-# include <elle/named.hh>
+
+# include <das/Symbol.hh>
+# include <das/named.hh>
 
 # include <reactor/asio.hh>
 # include <reactor/backend/fwd.hh>
@@ -61,8 +63,8 @@ namespace reactor
     Thread(const std::string& name,
            Action action,
            Args&& ... args);
-    NAMED_ARGUMENT(dispose);
-    NAMED_ARGUMENT(managed);
+    DAS_SYMBOL(dispose);
+    DAS_SYMBOL(managed);
     // Returned shared ptr will be kept live until action finished
     static
     ThreadPtr
