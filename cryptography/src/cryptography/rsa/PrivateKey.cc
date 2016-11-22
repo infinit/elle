@@ -433,7 +433,7 @@ namespace infinit
       }
 
       PrivateKey&
-      PrivateKey::operator= (PrivateKey&& other)
+      PrivateKey::operator =(PrivateKey&& other)
       {
         this->_key = std::move(other._key);
         cryptography::require();
