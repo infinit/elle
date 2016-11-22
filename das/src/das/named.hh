@@ -346,7 +346,7 @@ namespace das
     struct
     Empty
     {
-      Empty(T&)
+      Empty(T const&)
       {}
     };
 

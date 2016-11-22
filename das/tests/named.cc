@@ -197,8 +197,10 @@ _default_f(bool& o1, bool& o2, bool i1, bool i2, Neither const&)
   o1 = i1;
   o2 = i2;
 }
+
+static Neither const neither;
 NAMED_FUNCTION(default_f, _default_f, out1, out2,
-               arg1 = true, arg2 = false, versioned = Neither());
+               arg1 = true, arg2 = false, versioned = neither);
 
 static
 void

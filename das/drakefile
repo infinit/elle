@@ -74,6 +74,7 @@ def configure(cxx_toolkit,
   rule_check = drake.TestSuite('check')
   elle_library = drake.copy(elle.library, 'lib', strip_prefix = True)
   for name in [
+      'cli',
       'flatten',
       'named',
       'printer',
