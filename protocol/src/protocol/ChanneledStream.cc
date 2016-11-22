@@ -182,16 +182,14 @@ namespace infinit
         // Wake another thread so it fails too.
         ELLE_DEBUG_SCOPE("%s: read failed, wake next thread: %s.", *this,
                          ex.what());
+        /* If we wake only one thread and it gets terminated rigth at this
+         * moment, we won't have any reader on this ChanneledStream.
+         * So play it safe and wake them all.
+         */
         this->_reading = false;
-        bool woken = false;
         for (auto channel: this->_channels)
-          if (channel.second->_available.signal_one())
-          {
-            woken = true;
-            break;
-          }
-        if (!woken)
-          this->_channel_available.signal_one();
+          channel.second->_available.signal();
+        this->_channel_available.signal();
         std::rethrow_exception(e);
       }
     }
