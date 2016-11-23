@@ -30,7 +30,7 @@ The Cryptography library relies upon the following libraries:
 
  * [**OpenSSL**](http://www.openssl.org) provides the fundamental cryptographic operations.
  * [**dOpenSSL**](http://open.infinit.io/dopenssl) allows for deterministic cryptographic operations.
- * [**Elle**]*(http://open.infinit.io/elle) offers a set of fundamental functionalities from buffer to memory management and serialization.
+ * [**Elle**](http://open.infinit.io/elle) offers a set of fundamental functionalities from buffer to memory management and serialization.
 
 Maintainers
 -----------
