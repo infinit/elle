@@ -180,6 +180,23 @@ defaults()
     das::cli::call(proto, f, {"--baz", "23", "--foo", "01"}), "0123");
 }
 
+DAS_SYMBOL(composite_option);
+
+static
+void
+dash()
+{
+  auto const f = [] (int foo) { return foo; };
+  auto const proto = das::named::prototype(composite_option);
+  {
+    BOOST_CHECK_EQUAL(
+      das::cli::call(proto, f, {"--composite-option", "193"}), 193);
+    BOOST_CHECK_THROW(
+      das::cli::call(proto, f, {"--composite_option", "193"}),
+      das::cli::UnknownOption);
+  }
+}
+
 static
 void
 short_options()
@@ -216,4 +233,5 @@ ELLE_TEST_SUITE()
   }
   master.add(BOOST_TEST_CASE(defaults));
   master.add(BOOST_TEST_CASE(short_options));
+  master.add(BOOST_TEST_CASE(dash));
 }

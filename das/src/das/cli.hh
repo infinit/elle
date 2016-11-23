@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include <limits>
 #include <type_traits>
 #include <unordered_map>
@@ -317,7 +318,14 @@ namespace das
         bool
         operator ==(std::string const& o)
         {
-          return this->operator bool() && this->_name == o;
+          if (this->_option)
+          {
+            auto r = o;
+            std::replace(r.begin(), r.end(), '_', '-');
+            return this->_name == r;
+          }
+          else
+            return false;
         }
 
         operator bool()
@@ -358,7 +366,6 @@ namespace das
         {
           if (!args.empty())
           {
-
             if (is_option(args[0], opts))
               throw UnknownOption(args[0]);
             else
