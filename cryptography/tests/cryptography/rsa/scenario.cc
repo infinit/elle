@@ -19,14 +19,14 @@
 // revocation.
 //
 // Even more, the scenario emphasizes the ability for a new member of a group
-// to be able to access past versions of objects even though he was not a member
-// at the time the access to the object in question was granted.
+// to be able to access past versions of objects even though he was not a
+// member at the time the access to the object in question was granted.
 //
 // IMPORTANT!
 // One must take into consideration that rotating/deriving takes quite a lot
-// of time depending on the size of the key and seed. As such, it is recommended
-// to update the version of the groups referenced in the ACL in order to reduce
-// the derivations one needs to retrieve the correct pass.
+// of time depending on the size of the key and seed. As such, it is
+// recommended to update the version of the groups referenced in the ACL in
+// order to reduce the derivations one needs to retrieve the correct pass.
 //
 // Another solution is to use a specific rotation/derivation key rather than
 // using the group manager's. By keeping the key small (while large enough to
@@ -41,8 +41,8 @@ test_scenario()
 
   // Create the object and store some information in it.
   std::string content0("When I'm sad, I stop being sad "
-                        "and be awesome instead");
-  Object object0(owner, content0);
+                       "and be awesome instead");
+  test::Object object0(owner, content0);
   infinit::cryptography::SecretKey key0 = object0.key(owner.k());
 
   // A user tries to access the content without the right key.
@@ -63,7 +63,7 @@ test_scenario()
   // Create group A with user X as a member.
   infinit::cryptography::rsa::KeyPair managerA =
     infinit::cryptography::rsa::keypair::generate(2048);
-  Group groupA0(managerA.K());
+  test::Group groupA0(managerA.K());
   infinit::cryptography::rsa::PrivateKey passA0_k =
     groupA0.pass_k(managerA.k());
   infinit::cryptography::rsa::Seed seedA0 = groupA0.seed(managerA.k());
@@ -73,7 +73,7 @@ test_scenario()
   // Create group B with user Y as a member
   infinit::cryptography::rsa::KeyPair managerB =
     infinit::cryptography::rsa::keypair::generate(2048);
-  Group groupB0(managerB.K());
+  test::Group groupB0(managerB.K());
   infinit::cryptography::rsa::PrivateKey passB0_k =
     groupB0.pass_k(managerB.k());
   infinit::cryptography::rsa::Seed seedB0 = groupB0.seed(managerB.k());
@@ -105,8 +105,8 @@ test_scenario()
   }
 
   // Rotate the group A twice.
-  Group groupA1 = groupA0.rotate(managerA.k());
-  Group groupA2 = groupA1.rotate(managerA.k());
+  test::Group groupA1 = groupA0.rotate(managerA.k());
+  test::Group groupA2 = groupA1.rotate(managerA.k());
 
   BOOST_CHECK_EQUAL(groupA2.version(), 2);
   BOOST_CHECK_EQUAL(groupA2.members().size(), 1);
@@ -117,8 +117,8 @@ test_scenario()
 
   // Update the object to version 1.
   std::string content1("If you don't have ability, "
-                        "you wind up playing in a rock band");
-  Object object1 = object0.write(owner.k(), content1);
+                       "you wind up playing in a rock band");
+  test::Object object1 = object0.write(owner.k(), content1);
   infinit::cryptography::SecretKey key1 = object1.key(owner.k());
 
   // Update the object's ACL to reference the latest version of the
@@ -163,8 +163,8 @@ test_scenario()
 
   // Update the object to version 2.
   std::string content2("Have no fear of perfection, you'll "
-                        "never reach it");
-  Object object2 = object1.write(owner.k(), content2);
+                       "never reach it");
+  test::Object object2 = object1.write(owner.k(), content2);
   infinit::cryptography::SecretKey key2 = object2.key(owner.k());
 
   // Update the object's ACL to reference the latest version of the
@@ -175,9 +175,9 @@ test_scenario()
                        groupA2.pass_K());
 
   // Rotate the group a little bit more.
-  Group groupA3 = groupA2.rotate(managerA.k());
-  Group groupA4 = groupA3.rotate(managerA.k());
-  Group groupA5 = groupA4.rotate(managerA.k());
+  test::Group groupA3 = groupA2.rotate(managerA.k());
+  test::Group groupA4 = groupA3.rotate(managerA.k());
+  test::Group groupA5 = groupA4.rotate(managerA.k());
 
   infinit::cryptography::rsa::PrivateKey passA5_k =
     groupA5.pass_k(managerA.k());
@@ -218,7 +218,7 @@ test_scenario()
   // In the following, user Z tries to access to the content
   // of object 1.
   {
-    Entry* entry = object1.acl().retrieve(groupA5.address());
+    test::Entry* entry = object1.acl().retrieve(groupA5.address());
 
     // The group A is referenced in its version 2 in the object 1's ACL.
     BOOST_CHECK_EQUAL(entry->version(), 2);
