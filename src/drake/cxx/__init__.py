@@ -400,6 +400,7 @@ class Config:
                               'for attribute %s' % attr)
 
         res = Config(self)
+        res.__debug = self.__debug or rhs.__debug
         res.__export_dynamic = merge_bool('export_dynamic')
         res.__use_local_libcxx = merge_bool('_Config__use_local_libcxx')
 
