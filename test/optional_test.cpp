@@ -138,26 +138,31 @@ TEST(optional_test, value_move_assignment_string) {
   ASSERT_EQ(*opt, "banana");
 }
 
-TEST(uri_test, value_or_reference) {
+TEST(optional_test, value_or_reference) {
   network::optional<std::string> opt;
   auto result = opt.value_or("other");
   ASSERT_EQ("other", result);
 }
 
-TEST(uri_test, value_or_reference_with_value) {
+TEST(optional_test, value_or_reference_with_value) {
   network::optional<std::string> opt("this");
   auto result = opt.value_or("other");
   ASSERT_EQ("this", result);
 }
 
-TEST(uri_test, value_or_rvalue_reference) {
+TEST(optional_test, value_or_rvalue_reference) {
   std::string other("other");
   auto result = network::optional<std::string>().value_or(other);
   ASSERT_EQ("other", result);
 }
 
-TEST(uri_test, value_or_rvalue_reference_with_value) {
+TEST(optional_test, value_or_rvalue_reference_with_value) {
   std::string other("other");
   auto result = network::optional<std::string>("this").value_or(other);
   ASSERT_EQ("this", result);
+}
+
+TEST(optional_test, assign_nullopt_to_nullopt) {
+	network::optional<std::string> opt;
+	opt = network::nullopt;
 }

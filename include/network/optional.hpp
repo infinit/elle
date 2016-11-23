@@ -238,7 +238,9 @@ class optional {
    * \returns \c *this.
    */
   optional& operator=(nullopt_t) noexcept {
-    ptr()->T::~T();
+    if (base_type::init_) {
+      ptr()->T::~T();
+    }
     base_type::init_ = false;
     return *this;
   }

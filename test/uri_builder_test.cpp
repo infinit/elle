@@ -683,6 +683,12 @@ TEST(builder_test, clear_query_test) {
   ASSERT_EQ("http://user@www.example.com:80/path#fragment", builder.uri().string());
 }
 
+TEST(uri_test, clear_query_params_with_no_query) {
+	network::uri original("http://example.com/path");
+	network::uri_builder builder(original);
+	builder.clear_query();
+}
+
 TEST(builder_test, clear_fragment_test) {
   network::uri instance("http://user@www.example.com:80/path?query#fragment");
   network::uri_builder builder(instance);
