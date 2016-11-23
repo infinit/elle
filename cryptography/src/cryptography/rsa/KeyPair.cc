@@ -48,17 +48,11 @@ namespace infinit
       {}
 
       KeyPair::KeyPair(KeyPair const& other):
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        elle::serialize::DynamicFormat<KeyPair>(other),
-#endif
         _public_key(new PublicKey(*other._public_key)),
         _private_key(new PrivateKey(*other._private_key))
       {}
 
       KeyPair::KeyPair(KeyPair&& other):
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        elle::serialize::DynamicFormat<KeyPair>(other),
-#endif
         _public_key(std::move(other._public_key)),
         _private_key(std::move(other._private_key))
       {}
@@ -101,7 +95,8 @@ namespace infinit
       {
         ELLE_ASSERT_NEQ(this->_public_key, nullptr);
         ELLE_ASSERT_NEQ(this->_private_key, nullptr);
-        ELLE_ASSERT_EQ(this->_public_key->length(), this->_private_key->length());
+        ELLE_ASSERT_EQ(this->_public_key->length(),
+                       this->_private_key->length());
 
         return (this->_public_key->length());
       }
@@ -190,7 +185,8 @@ namespace infinit
         ELLE_ASSERT_NEQ(this->_public_key, nullptr);
         ELLE_ASSERT_NEQ(this->_private_key, nullptr);
 
-        stream << "(" << *this->_public_key << ", " << *this->_private_key << ")";
+        stream << "(" << *this->_public_key << ", "
+               << *this->_private_key << ")";
       }
     }
   }
@@ -213,15 +209,7 @@ namespace infinit
         `----------*/
 
         KeyPair
-        generate(uint32_t const length
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-                 , Padding const encryption_padding
-                 , Padding const signature_padding
-                 , Oneway const oneway
-                 , Cipher const envelope_cipher
-                 , Mode const envelope_mode
-#endif
-                )
+        generate(uint32_t const length)
         {
           if ((length % 8) != 0)
             throw Error(
@@ -268,13 +256,7 @@ namespace infinit
 
           // Instanciate both a RSA public and private key based on the
           // EVP_PKEY.
-          PrivateKey k(key
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-                       , encryption_padding, signature_padding
-                       , oneway
-                       , envelope_cipher, envelope_mode
-#endif
-                      );
+          PrivateKey k(key);
           PublicKey K(k);
 
           INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(key);

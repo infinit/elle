@@ -9,10 +9,6 @@
 # include <elle/operator.hh>
 # include <elle/serialization.hh>
 # include <elle/types.hh>
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-#  include <elle/concept/Uniquable.hh>
-#  include <elle/serialize/construct.hh>
-# endif
 
 ELLE_OPERATOR_RELATIONALS();
 
@@ -31,10 +27,6 @@ namespace infinit
     /// Represent a secret key for symmetric cryptosystem operations.
     class SecretKey:
       public elle::Printable
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-      , public elle::serialize::DynamicFormat<SecretKey>
-      , public elle::concept::MakeUniquable<SecretKey>
-# endif
     {
       /*---------------.
       | Default Values |
@@ -53,21 +45,9 @@ namespace infinit
     public:
       /// Construct a secret key by providing the cipher algorithm and key
       /// length, in bits, along with the oneway algorithm used internally.
-      SecretKey(std::string const& password
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-                , Cipher const cipher = defaults::cipher
-                , Mode const mode = defaults::mode
-                , Oneway const oneway = defaults::oneway
-# endif
-               );
+      SecretKey(std::string const& password);
       /// Construct a secret key based on a given buffer.
-      SecretKey(elle::Buffer&& password
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-                , Cipher const cipher = defaults::cipher
-                , Mode const mode = defaults::mode
-                , Oneway const oneway = defaults::oneway
-# endif
-               );
+      SecretKey(elle::Buffer&& password);
       SecretKey(SecretKey const& other);
       SecretKey(SecretKey&& other);
       virtual
@@ -77,7 +57,6 @@ namespace infinit
       | Methods |
       `--------*/
     public:
-# if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
       /// Encipher a given plain text and return the cipher text.
       elle::Buffer
       encipher(elle::ConstWeakBuffer const& plain,
@@ -90,7 +69,6 @@ namespace infinit
                Cipher const cipher = defaults::cipher,
                Mode const mode = defaults::mode,
                Oneway const oneway = defaults::oneway) const;
-# endif
       /// Encipher an input stream and put the cipher text in the
       /// output stream.
       virtual
@@ -147,39 +125,6 @@ namespace infinit
       `-----------*/
     private:
       ELLE_ATTRIBUTE_R(elle::Buffer, password);
-
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-      /*-------.
-      | Legacy |
-      `-------*/
-    public:
-      // construction
-      SecretKey() {}
-      ELLE_SERIALIZE_CONSTRUCT(SecretKey,
-                               _password)
-      {}
-      // methods
-      template <typename T = Plain>
-      Code
-      encrypt(T const& value) const;
-      template <typename T = Clear>
-      T
-      decrypt(Code const& code) const;
-      Code
-      legacy_encrypt_buffer(elle::Buffer const& buffer) const;
-      elle::Buffer
-      legacy_decrypt_buffer(Code const& code) const;
-      // serializable
-      ELLE_SERIALIZE_FRIEND_FOR(SecretKey);
-      using elle::serialize::SerializableMixin<
-        infinit::cryptography::SecretKey,
-        elle::serialize::Base64Archive>::serialize;
-      // attributes
-      ELLE_ATTRIBUTE_R(Cipher, cipher);
-      // XXX FIXME: ELLE_ATTRIBUTE_R of Mode doesn't compile on GCC 4.7.
-      Mode _mode;
-      ELLE_ATTRIBUTE_R(Oneway, oneway);
-# endif
     };
   }
 }
@@ -202,17 +147,9 @@ namespace infinit
       ///
       /// Note that the length is expressed in bits.
       SecretKey
-      generate(uint32_t const length
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-               , Cipher const cipher = SecretKey::defaults::cipher
-               , Mode const mode = SecretKey::defaults::mode
-               , Oneway const oneway = SecretKey::defaults::oneway
-# endif
-              );
+      generate(uint32_t const length);
     }
   }
 }
-
-# include <cryptography/SecretKey.hxx>
 
 #endif

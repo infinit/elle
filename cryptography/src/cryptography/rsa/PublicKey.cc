@@ -33,10 +33,6 @@
 # include <dopenssl/rsa.hh>
 #endif
 
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-# include <cryptography/_legacy/raw.hh>
-#endif
-
 ELLE_LOG_COMPONENT("infinit.cryptography.rsa.PublicKey");
 
 //
@@ -104,42 +100,13 @@ namespace infinit
       `-------------*/
 
       PublicKey::PublicKey(PrivateKey const& k)
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        : PublicKey(
-          _details::build_evp(
-            low::RSA_priv2pub(k.key().get()->pkey.rsa)).release(),
-          k.encryption_padding(),
-          k.signature_padding(),
-          k.oneway(),
-          k.envelope_cipher(),
-          k.envelope_mode())
-#else
         : PublicKey(
           _details::build_evp(
             low::RSA_priv2pub(k.key().get()->pkey.rsa)).release())
-#endif
       {}
 
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-      PublicKey::PublicKey(::EVP_PKEY* key,
-                           Padding const encryption_padding,
-                           Padding const signature_padding,
-                           Oneway const oneway,
-                           Cipher const envelope_cipher,
-                           Mode const envelope_mode,
-                           uint16_t legacy_format,
-                           uint16_t dynamic_format)
-        : _key(key)
-        , _encryption_padding(encryption_padding)
-        , _signature_padding(signature_padding)
-        , _oneway(oneway)
-        , _envelope_cipher(envelope_cipher)
-        , _envelope_mode(envelope_mode)
-        , _legacy_format(legacy_format)
-#else
       PublicKey::PublicKey(::EVP_PKEY* key)
         : _key(key)
-#endif
       {
         // Make sure the cryptographic system is set up.
         cryptography::require();
@@ -147,69 +114,19 @@ namespace infinit
           throw Error(
             elle::sprintf("the EVP_PKEY key is not of type RSA: %s",
                           ::EVP_PKEY_type(this->_key->type)));
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        auto _this_dynamic_format =
-          static_cast<
-            elle::serialize::DynamicFormat<
-              infinit::cryptography::rsa::PublicKey>*>(this);
-        _this_dynamic_format->version(dynamic_format);
-#endif
         this->_check();
       }
 
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-      PublicKey::PublicKey(::RSA* rsa,
-                           Padding const encryption_padding,
-                           Padding const signature_padding,
-                           Oneway const oneway,
-                           Cipher const envelope_cipher,
-                           Mode const envelope_mode)
-        : PublicKey(_details::build_evp(rsa).release(),
-                    encryption_padding,
-                    signature_padding,
-                    oneway,
-                    envelope_cipher,
-                    envelope_mode)
-#else
       PublicKey::PublicKey(::RSA* rsa)
         : PublicKey(_details::build_evp(rsa).release())
-#endif
       {}
 
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-      PublicKey::PublicKey(PublicKey const& other)
-        : PublicKey(_details::build_evp(
-                      low::RSA_dup(other._key->pkey.rsa)).release(),
-                    other._encryption_padding,
-                    other._signature_padding,
-                    other._oneway,
-                    other._envelope_cipher,
-                    other._envelope_mode,
-                    other._legacy_format,
-                    static_cast< elle::serialize::DynamicFormat<
-                      infinit::cryptography::rsa::PublicKey> const&>
-                      (other).version())
-#else
       PublicKey::PublicKey(PublicKey const& other)
         : PublicKey(low::RSA_dup(other._key->pkey.rsa))
-#endif
       {}
 
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-      PublicKey::PublicKey(PublicKey&& other)
-        : PublicKey(other._key.release(),
-                    other._encryption_padding,
-                    other._signature_padding,
-                    other._oneway,
-                    other._envelope_cipher,
-                    other._envelope_mode,
-                    other._legacy_format,
-                    static_cast< elle::serialize::DynamicFormat<
-                      infinit::cryptography::rsa::PublicKey>&>(other).version())
-#else
       PublicKey::PublicKey(PublicKey&& other)
         : PublicKey(other._key.release())
-#endif
       {}
 
       /*--------.
@@ -231,7 +148,6 @@ namespace infinit
         ELLE_ASSERT_EQ(this->_key->pkey.rsa->iqmp, nullptr);
       }
 
-#if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
       elle::Buffer
       PublicKey::seal(elle::ConstWeakBuffer const& plain,
                       Cipher const cipher,
@@ -300,7 +216,6 @@ namespace infinit
         elle::IOStream _plain(plain.istreambuf());
         return this->_verify(signature, _plain, padding, oneway);
       }
-#endif
 
       bool
       PublicKey::verify(elle::ConstWeakBuffer const& signature,
@@ -319,17 +234,6 @@ namespace infinit
                         Padding const padding,
                         Oneway const oneway) const
       {
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        types::EVP_PKEY_CTX context(
-          context::create(this->_key.get(), ::EVP_PKEY_verify_init));
-        padding::pad(context.get(), padding);
-
-        elle::Buffer digest = hash(plain, oneway);
-        return (raw::asymmetric::verify(signature,
-                                        digest,
-                                        context.get(),
-                                        ::EVP_PKEY_verify));
-#else
         auto prolog =
           [this, padding](::EVP_MD_CTX* context,
                           ::EVP_PKEY_CTX* ctx)
@@ -343,7 +247,6 @@ namespace infinit
                   signature,
                   plain,
                   prolog));
-#endif
       }
 
       uint32_t
@@ -480,20 +383,6 @@ namespace infinit
           stream, "PublicKey(%f)",
           elle::lazy([this] { return publickey::der::encode(*this); }));
       }
-
-      /*-------.
-      | Legacy |
-      `-------*/
-
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-      bool
-      PublicKey::operator <(PublicKey const& other) const
-      {
-        if (this == &other)
-          return (false);
-        return std::hash<PublicKey>()(*this) < std::hash<PublicKey>()(other);
-      }
-#endif
     }
   }
 }

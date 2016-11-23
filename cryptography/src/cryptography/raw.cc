@@ -47,6 +47,62 @@ namespace infinit
         return (blank);
       }
 
+      static
+      elle::Buffer
+      _apply(::EVP_PKEY_CTX* context,
+             int (*function)(EVP_PKEY_CTX*,
+                             unsigned char*,
+                             size_t*,
+                             const unsigned char*,
+                             size_t),
+             elle::ConstWeakBuffer const& input)
+      {
+        // Make sure the cryptographic system is set up.
+        cryptography::require();
+
+        ELLE_ASSERT(context != nullptr);
+        ELLE_ASSERT_GTE(static_cast<uint32_t>(
+                          ::EVP_PKEY_bits(::EVP_PKEY_CTX_get0_pkey(context))),
+                        input.size() * 8);
+
+        // Normalize the input.
+        elle::ConstWeakBuffer const _input = _normalize(input);
+
+        // Compute the size of the encrypted buffer.
+        ::size_t size;
+
+        if (function(context,
+                     nullptr,
+                     &size,
+                     _input.contents(),
+                     _input.size()) <= 0)
+          throw Error(elle::sprintf("unable to pre-compute the size of "
+                                    "the encrypted output: %s",
+                                    ::ERR_error_string(ERR_get_error(),
+                                                       nullptr)));
+
+        // Prepare the output buffer for receiving the encrypted content.
+        elle::Buffer output(size);
+
+        // Encrypt the input buffer.
+        if (function(context,
+                     reinterpret_cast<unsigned char*>(
+                       output.mutable_contents()),
+                     &size,
+                     _input.contents(),
+                     _input.size()) <= 0)
+          throw Error(elle::sprintf("unable to apply the cryptographic "
+                                    "function: %s",
+                                    ::ERR_error_string(ERR_get_error(),
+                                                       nullptr)));
+
+        // Set the final output buffer size.
+        output.size(size);
+        output.shrink_to_fit();
+
+        return (output);
+      }
+
       namespace asymmetric
       {
         /*----------.
@@ -69,9 +125,9 @@ namespace infinit
           if (prolog)
             prolog(context.get());
 
-          elle::Buffer code = apply(context.get(),
-                                    ::EVP_PKEY_encrypt,
-                                    plain);
+          elle::Buffer code = _apply(context.get(),
+                                     ::EVP_PKEY_encrypt,
+                                     plain);
 
           if (epilog)
             epilog(context.get());
@@ -95,7 +151,7 @@ namespace infinit
           if (prolog)
             prolog(context.get());
 
-          elle::Buffer plain = apply(context.get(), ::EVP_PKEY_decrypt, code);
+          elle::Buffer plain = _apply(context.get(), ::EVP_PKEY_decrypt, code);
 
           if (epilog)
             epilog(context.get());
@@ -103,7 +159,6 @@ namespace infinit
           return (plain);
         }
 
-#if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         elle::Buffer
         sign(::EVP_PKEY* key,
              ::EVP_MD const* oneway,
@@ -276,7 +331,6 @@ namespace infinit
 
           elle::unreachable();
         }
-#endif
 
         elle::Buffer
         agree(::EVP_PKEY* own,
@@ -361,7 +415,7 @@ namespace infinit
             prolog(context.get());
 
           elle::Buffer buffer =
-            apply(context.get(), ::EVP_PKEY_sign, seed);
+            _apply(context.get(), ::EVP_PKEY_sign, seed);
 
           if (epilog)
             epilog(context.get());
@@ -399,7 +453,7 @@ namespace infinit
             prolog(context.get());
 
           elle::Buffer buffer =
-            apply(context.get(), ::EVP_PKEY_verify_recover, seed);
+            _apply(context.get(), ::EVP_PKEY_verify_recover, seed);
 
           if (epilog)
             epilog(context.get());
@@ -410,61 +464,6 @@ namespace infinit
           return (buffer);
         }
 #endif
-
-        elle::Buffer
-        apply(::EVP_PKEY_CTX* context,
-               int (*function)(EVP_PKEY_CTX*,
-                               unsigned char*,
-                               size_t*,
-                               const unsigned char*,
-                               size_t),
-               elle::ConstWeakBuffer const& input)
-        {
-          // Make sure the cryptographic system is set up.
-          cryptography::require();
-
-          ELLE_ASSERT(context != nullptr);
-          ELLE_ASSERT_GTE(static_cast<uint32_t>(
-                            ::EVP_PKEY_bits(::EVP_PKEY_CTX_get0_pkey(context))),
-                          input.size() * 8);
-
-          // Normalize the input.
-          elle::ConstWeakBuffer const _input = _normalize(input);
-
-          // Compute the size of the encrypted buffer.
-          ::size_t size;
-
-          if (function(context,
-                       nullptr,
-                       &size,
-                       _input.contents(),
-                       _input.size()) <= 0)
-            throw Error(elle::sprintf("unable to pre-compute the size of "
-                                      "the encrypted output: %s",
-                                      ::ERR_error_string(ERR_get_error(),
-                                                         nullptr)));
-
-          // Prepare the output buffer for receiving the encrypted content.
-          elle::Buffer output(size);
-
-          // Encrypt the input buffer.
-          if (function(context,
-                       reinterpret_cast<unsigned char*>(
-                         output.mutable_contents()),
-                       &size,
-                       _input.contents(),
-                       _input.size()) <= 0)
-            throw Error(elle::sprintf("unable to apply the cryptographic "
-                                      "function: %s",
-                                      ::ERR_error_string(ERR_get_error(),
-                                                         nullptr)));
-
-          // Set the final output buffer size.
-          output.size(size);
-          output.shrink_to_fit();
-
-          return (output);
-        }
       }
     }
   }

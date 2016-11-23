@@ -18,8 +18,4 @@ namespace infinit
 # include <cryptography/dsa/fwd.hh>
 # include <cryptography/dh/fwd.hh>
 
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-#  include <cryptography/_legacy/fwd.hh>
-# endif
-
 #endif

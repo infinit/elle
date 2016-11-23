@@ -22,7 +22,6 @@ def configure(openssl_config,
               cxx_toolkit = None,
               cxx_config = drake.cxx.Config(),
               enable_rotation = False,
-              legacy_mode = False,
               boost = None,
               elle = None,
               prefix = '/usr',
@@ -35,9 +34,6 @@ def configure(openssl_config,
   global config
   global lib_static, lib_dynamic, library, python_module
   global rule_build, rule_install
-
-  if legacy_mode:
-    enable_rotation = False
 
   # Toolkit
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
@@ -106,9 +102,6 @@ def configure(openssl_config,
   if enable_rotation:
     config.define("INFINIT_CRYPTOGRAPHY_ROTATION")
     config += dopenssl.config
-
-  if legacy_mode:
-    config.define("INFINIT_CRYPTOGRAPHY_LEGACY")
 
   # Local Configuration
   cxx_config = drake.cxx.Config(cxx_config)
@@ -193,68 +186,42 @@ def configure(openssl_config,
     'src/cryptography/rsa/serialization.hh',
     'src/cryptography/rsa/serialization.hxx',
     'src/cryptography/rsa/KeyPool.hh',
+    'src/cryptography/envelope.cc',
+    'src/cryptography/envelope.hh',
+    'src/cryptography/hotp.hh',
+    'src/cryptography/hotp.cc',
+    'src/cryptography/dsa/PrivateKey.cc',
+    'src/cryptography/dsa/PrivateKey.hh',
+    'src/cryptography/dsa/PrivateKey.hxx',
+    'src/cryptography/dsa/PublicKey.cc',
+    'src/cryptography/dsa/PublicKey.hh',
+    'src/cryptography/dsa/PublicKey.hxx',
+    'src/cryptography/dsa/all.hh',
+    'src/cryptography/dsa/fwd.hh',
+    'src/cryptography/dsa/KeyPair.cc',
+    'src/cryptography/dsa/KeyPair.hh',
+    'src/cryptography/dsa/KeyPair.hxx',
+    'src/cryptography/dsa/pem.cc',
+    'src/cryptography/dsa/pem.hh',
+    'src/cryptography/dsa/der.cc',
+    'src/cryptography/dsa/der.hh',
+    'src/cryptography/dsa/serialization.hh',
+    'src/cryptography/dsa/low.cc',
+    'src/cryptography/dsa/low.hh',
+    'src/cryptography/dh/PrivateKey.cc',
+    'src/cryptography/dh/PrivateKey.hh',
+    'src/cryptography/dh/PrivateKey.hxx',
+    'src/cryptography/dh/PublicKey.cc',
+    'src/cryptography/dh/PublicKey.hh',
+    'src/cryptography/dh/PublicKey.hxx',
+    'src/cryptography/dh/all.hh',
+    'src/cryptography/dh/fwd.hh',
+    'src/cryptography/dh/KeyPair.cc',
+    'src/cryptography/dh/KeyPair.hh',
+    'src/cryptography/dh/KeyPair.hxx',
+    'src/cryptography/dh/low.cc',
+    'src/cryptography/dh/low.hh',
     )
-
-  if legacy_mode:
-    sources += drake.nodes(
-      'src/cryptography/_legacy/Clear.hh',
-      'src/cryptography/_legacy/Code.hh',
-      'src/cryptography/_legacy/Digest.hh',
-      'src/cryptography/_legacy/Input.cc',
-      'src/cryptography/_legacy/Input.hh',
-      'src/cryptography/_legacy/Output.cc',
-      'src/cryptography/_legacy/Output.hh',
-      'src/cryptography/_legacy/Output.hxx',
-      'src/cryptography/_legacy/Plain.hh',
-      'src/cryptography/_legacy/Signature.hh',
-      'src/cryptography/_legacy/all.hh',
-      'src/cryptography/_legacy/rsa.hh',
-      'src/cryptography/_legacy/serialization.cc',
-      'src/cryptography/_legacy/serialization.hh',
-      'src/cryptography/_legacy/serialization.hxx',
-      'src/cryptography/_legacy/envelope.cc',
-      'src/cryptography/_legacy/envelope.hh',
-      'src/cryptography/_legacy/raw.cc',
-      'src/cryptography/_legacy/raw.hh',
-      )
-  else:
-    sources += drake.nodes(
-      'src/cryptography/envelope.cc',
-      'src/cryptography/envelope.hh',
-      'src/cryptography/hotp.hh',
-      'src/cryptography/hotp.cc',
-      'src/cryptography/dsa/PrivateKey.cc',
-      'src/cryptography/dsa/PrivateKey.hh',
-      'src/cryptography/dsa/PrivateKey.hxx',
-      'src/cryptography/dsa/PublicKey.cc',
-      'src/cryptography/dsa/PublicKey.hh',
-      'src/cryptography/dsa/PublicKey.hxx',
-      'src/cryptography/dsa/all.hh',
-      'src/cryptography/dsa/fwd.hh',
-      'src/cryptography/dsa/KeyPair.cc',
-      'src/cryptography/dsa/KeyPair.hh',
-      'src/cryptography/dsa/KeyPair.hxx',
-      'src/cryptography/dsa/pem.cc',
-      'src/cryptography/dsa/pem.hh',
-      'src/cryptography/dsa/der.cc',
-      'src/cryptography/dsa/der.hh',
-      'src/cryptography/dsa/serialization.hh',
-      'src/cryptography/dsa/low.cc',
-      'src/cryptography/dsa/low.hh',
-      'src/cryptography/dh/PrivateKey.cc',
-      'src/cryptography/dh/PrivateKey.hh',
-      'src/cryptography/dh/PrivateKey.hxx',
-      'src/cryptography/dh/PublicKey.cc',
-      'src/cryptography/dh/PublicKey.hh',
-      'src/cryptography/dh/PublicKey.hxx',
-      'src/cryptography/dh/all.hh',
-      'src/cryptography/dh/fwd.hh',
-      'src/cryptography/dh/KeyPair.cc',
-      'src/cryptography/dh/KeyPair.hh',
-      'src/cryptography/dh/KeyPair.hxx',
-      'src/cryptography/dh/low.cc',
-      'src/cryptography/dh/low.hh',
-      )
 
   if enable_rotation:
     sources += drake.nodes(
@@ -305,42 +272,30 @@ def configure(openssl_config,
   ## Tests ##
   ## ----- ##
 
-  if legacy_mode:
-    tests = [
-      "_legacy/bn.cc",
-      "_legacy/oneway.cc",
-      "_legacy/KeyPair.cc",
-      "_legacy/PublicKey.cc",
-      "_legacy/PrivateKey.cc",
-      "_legacy/Output.cc",
-      "_legacy/SecretKey.cc",
-      "_legacy/Input.cc",
-      ]
-  else:
-    tests = [
-      "SecretKey.cc",
-      "bn.cc",
-      "hash.cc",
-      "hmac.cc",
-      "hotp.cc",
-      "random.cc",
-      "rsa/KeyPair.cc",
-      "rsa/PrivateKey.cc",
-      "rsa/PublicKey.cc",
-      "rsa/hmac.cc",
-      "rsa/pem.cc",
-      "dsa/KeyPair.cc",
-      "dsa/PrivateKey.cc",
-      "dsa/PublicKey.cc",
-      "dsa/pem.cc",
-      "dh/KeyPair.cc",
-      "dh/PrivateKey.cc",
-      "dh/PublicKey.cc",
-      ]
-    if enable_rotation:
-      tests += [ "rsa/Seed.cc",
-                 "rsa/scenario.cc",
-                 ]
+  tests = [
+    "SecretKey.cc",
+    "bn.cc",
+    "hash.cc",
+    "hmac.cc",
+    "hotp.cc",
+    "random.cc",
+    "rsa/KeyPair.cc",
+    "rsa/PrivateKey.cc",
+    "rsa/PublicKey.cc",
+    "rsa/hmac.cc",
+    "rsa/pem.cc",
+    "dsa/KeyPair.cc",
+    "dsa/PrivateKey.cc",
+    "dsa/PublicKey.cc",
+    "dsa/pem.cc",
+    "dh/KeyPair.cc",
+    "dh/PrivateKey.cc",
+    "dh/PublicKey.cc",
+    ]
+  if enable_rotation:
+    tests += [ "rsa/Seed.cc",
+               "rsa/scenario.cc",
+               ]
 
   tests_cxx_config = drake.cxx.Config(cxx_config)
   if cxx_toolkit.os == drake.os.android:

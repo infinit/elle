@@ -24,8 +24,4 @@
 # include <cryptography/dsa/all.hh>
 # include <cryptography/dh/all.hh>
 
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-#  include <cryptography/_legacy/all.hh>
-# endif
-
 #endif

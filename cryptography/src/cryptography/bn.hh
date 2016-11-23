@@ -49,6 +49,4 @@ namespace elle
   }
 }
 
-# include <cryptography/bn.hxx>
-
 #endif

@@ -7,10 +7,6 @@
 # include <openssl/evp.h>
 
 # include <elle/serialization.hh>
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-#  include <elle/serialize/construct.hh>
-#  include <elle/concept/Uniquable.hh>
-# endif
 
 ELLE_OPERATOR_RELATIONALS();
 
@@ -36,10 +32,6 @@ namespace infinit
       class PrivateKey
         : public elle::Printable
         , public std::enable_shared_from_this<PrivateKey>
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        , public elle::serialize::DynamicFormat<PrivateKey>
-        , public elle::concept::MakeUniquable<PrivateKey>
-# endif
       {
         /*-------------.
         | Construction |
@@ -48,37 +40,11 @@ namespace infinit
         /// Construct a private key based on the given EVP_PKEY key whose
         /// ownership is transferred.
         explicit
-        PrivateKey(::EVP_PKEY* key
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-                   , Padding const encryption_padding =
-                     defaults::encryption_padding
-                   , Padding const signature_padding =
-                     defaults::signature_padding
-                   , Oneway const oneway =
-                     defaults::oneway
-                   , Cipher const envelope_cipher =
-                     defaults::envelope_cipher
-                   , Mode const envelope_mode =
-                     defaults::envelope_mode
-# endif
-                  );
+        PrivateKey(::EVP_PKEY* key);
         /// Construct a private key based on the given RSA key whose
         /// ownership is transferred to the private key.
         explicit
-        PrivateKey(::RSA* rsa
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-                   , Padding const encryption_padding =
-                     defaults::encryption_padding
-                   , Padding const signature_padding =
-                     defaults::signature_padding
-                   , Oneway const oneway =
-                     defaults::oneway
-                   , Cipher const envelope_cipher =
-                     defaults::envelope_cipher
-                   , Mode const envelope_mode =
-                     defaults::envelope_mode
-# endif
-                  );
+        PrivateKey(::RSA* rsa);
         PrivateKey(PrivateKey const& other);
         PrivateKey(PrivateKey&& other);
         virtual
@@ -96,7 +62,6 @@ namespace infinit
         void
         _check() const;
       public:
-# if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         /// Open the envelope and return the original plain text.
         elle::Buffer
         open(elle::ConstWeakBuffer const& code,
@@ -139,7 +104,6 @@ namespace infinit
         template <typename T>
         std::function<elle::Buffer (PrivateKey const* self)>
         _sign_async(T const& o, elle::Version const& version) const;
-# endif
       public:
         /// Write the signature in the output stream given the stream-based
         /// plain text.
@@ -200,36 +164,6 @@ namespace infinit
         `-----------*/
       private:
         ELLE_ATTRIBUTE_R(types::EVP_PKEY, key);
-
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        /*-------.
-        | Legacy |
-        `-------*/
-      public:
-        // construction
-        PrivateKey() {}
-        ELLE_SERIALIZE_CONSTRUCT_DECLARE(PrivateKey)
-        {}
-        // methods
-        template <typename T = Clear>
-        T
-        decrypt(Code const& code) const;
-        template <typename T = Plain>
-        Signature
-        sign(T const& value) const;
-        // serializable
-        ELLE_SERIALIZE_FRIEND_FOR(PrivateKey);
-        using elle::serialize::SerializableMixin<
-          infinit::cryptography::rsa::PrivateKey,
-          elle::serialize::Base64Archive>::serialize;
-        // attributes
-        ELLE_ATTRIBUTE_R(Padding, encryption_padding);
-        ELLE_ATTRIBUTE_R(Padding, signature_padding);
-        ELLE_ATTRIBUTE_R(Oneway, oneway);
-        ELLE_ATTRIBUTE_R(Cipher, envelope_cipher);
-        ELLE_ATTRIBUTE_R(Mode, envelope_mode);
-        ELLE_ATTRIBUTE_R(uint16_t, legacy_format);
-# endif
       };
     }
   }

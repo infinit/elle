@@ -8,10 +8,6 @@
 # include <elle/types.hh>
 # include <elle/serialization.hh>
 # include <elle/serialization/Serializer.hh>
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-#  include <elle/concept/Uniquable.hh>
-#  include <elle/serialize/construct.hh>
-# endif
 
 # include <cryptography/fwd.hh>
 # include <cryptography/Oneway.hh>
@@ -40,10 +36,6 @@ namespace infinit
       /// while a private key is noted with a lower-case 'k'.
       class KeyPair:
         public elle::Printable
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        , public elle::serialize::DynamicFormat<KeyPair>
-        , public elle::concept::MakeUniquable<KeyPair>
-# endif
       {
       public:
         /*-------------.
@@ -119,22 +111,6 @@ namespace infinit
         ELLE_ATTRIBUTE_R(std::shared_ptr<PublicKey>, public_key);
         /// The private key.
         ELLE_ATTRIBUTE_R(std::shared_ptr<PrivateKey>, private_key);
-
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        /*-------.
-        | Legacy |
-        `-------*/
-      public:
-        // construction
-        KeyPair() {}
-        ELLE_SERIALIZE_CONSTRUCT(KeyPair)
-        {}
-        // serializable
-        ELLE_SERIALIZE_FRIEND_FOR(KeyPair);
-        using elle::serialize::SerializableMixin<
-          infinit::cryptography::rsa::KeyPair,
-          elle::serialize::Base64Archive>::serialize;
-# endif
       };
     }
   }
@@ -161,20 +137,7 @@ namespace infinit
         ///
         /// Note that the length is in bits.
         KeyPair
-        generate(uint32_t const length
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-                 , Padding const encryption_padding =
-                   defaults::encryption_padding
-                 , Padding const signature_padding =
-                   defaults::signature_padding
-                 , Oneway const oneway =
-                   defaults::oneway
-                 , Cipher const envelope_cipher =
-                   defaults::envelope_cipher
-                 , Mode const envelope_mode =
-                   defaults::envelope_mode
-# endif
-                );
+        generate(uint32_t const length);
 
         namespace der
         {

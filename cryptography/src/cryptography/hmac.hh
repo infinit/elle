@@ -20,7 +20,6 @@ namespace infinit
       | Functions |
       `----------*/
 
-# if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
       /// Sign a buffer with a string-based key.
       elle::Buffer
       sign(elle::ConstWeakBuffer const& plain,
@@ -45,7 +44,6 @@ namespace infinit
              elle::ConstWeakBuffer const& plain,
              K const& key,
              Oneway const oneway);
-# endif
       /// Sign a stream with a string-based key.
       elle::Buffer
       sign(std::istream& plain,
@@ -70,18 +68,6 @@ namespace infinit
              std::istream& plain,
              K const& key,
              Oneway const oneway);
-
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-    /*-------.
-    | Legacy |
-    `-------*/
-
-      template <typename T = Plain>
-      Digest
-      sign(T const& value,
-           elle::ConstWeakBuffer const& key,
-           Oneway const oneway);
-# endif
     }
   }
 }

@@ -27,10 +27,6 @@
 # include <dopenssl/rsa.hh>
 #endif
 
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-# include <cryptography/_legacy/raw.hh>
-#endif
-
 namespace infinit
 {
   namespace cryptography
@@ -66,23 +62,8 @@ namespace infinit
       | Construction |
       `-------------*/
 
-      PrivateKey::PrivateKey(::EVP_PKEY* key
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-                             , Padding const encryption_padding
-                             , Padding const signature_padding
-                             , Oneway const oneway
-                             , Cipher const envelope_cipher
-                             , Mode const envelope_mode
-#endif
-                            ):
+      PrivateKey::PrivateKey(::EVP_PKEY* key):
         _key(key)
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        , _encryption_padding(encryption_padding)
-        , _signature_padding(signature_padding)
-        , _oneway(oneway)
-        , _envelope_cipher(envelope_cipher)
-        , _envelope_mode(envelope_mode)
-#endif
       {
         ELLE_ASSERT_NEQ(key, nullptr);
         ELLE_ASSERT_NEQ(key->pkey.rsa->n, nullptr);
@@ -103,38 +84,9 @@ namespace infinit
                           ::EVP_PKEY_type(this->_key->type)));
 
         this->_check();
-
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        // Set the current object's version to 0 as it was in the legacy
-        // version with the parent class PrivateKey. In addition, keep the
-        // subclass (rsa::PrivateKey) format as the latest possible value
-        // i.e StaticFormat<PrivateKey>.
-        auto _this_dynamic_format =
-          static_cast<
-            elle::serialize::DynamicFormat<
-              infinit::cryptography::rsa::PrivateKey>*>(this);
-        _this_dynamic_format->version(0);
-
-        this->_legacy_format =
-          elle::serialize::StaticFormat<PrivateKey>::version;
-#endif
       }
 
-      PrivateKey::PrivateKey(::RSA* rsa
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-                             , Padding const encryption_padding
-                             , Padding const signature_padding
-                             , Oneway const oneway
-                             , Cipher const envelope_cipher
-                             , Mode const envelope_mode):
-        _encryption_padding(encryption_padding),
-        _signature_padding(signature_padding),
-        _oneway(oneway),
-        _envelope_cipher(envelope_cipher),
-        _envelope_mode(envelope_mode)
-#else
-                            )
-#endif
+      PrivateKey::PrivateKey(::RSA* rsa)
       {
         ELLE_ASSERT_NEQ(rsa, nullptr);
         ELLE_ASSERT_NEQ(rsa->n, nullptr);
@@ -153,29 +105,9 @@ namespace infinit
         this->_construct(rsa);
 
         this->_check();
-
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        auto _this_dynamic_format =
-          static_cast<
-            elle::serialize::DynamicFormat<
-              infinit::cryptography::rsa::PrivateKey>*>(this);
-        _this_dynamic_format->version(0);
-
-        this->_legacy_format =
-          elle::serialize::StaticFormat<PrivateKey>::version;
-#endif
       }
 
       PrivateKey::PrivateKey(PrivateKey const& other)
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        : elle::serialize::DynamicFormat<PrivateKey>(other)
-        , _encryption_padding(other._encryption_padding)
-        , _signature_padding(other._signature_padding)
-        , _oneway(other._oneway)
-        , _envelope_cipher(other._envelope_cipher)
-        , _envelope_mode(other._envelope_mode)
-        , _legacy_format(other._legacy_format)
-#endif
       {
         ELLE_ASSERT_NEQ(other._key->pkey.rsa->n, nullptr);
         ELLE_ASSERT_NEQ(other._key->pkey.rsa->e, nullptr);
@@ -202,18 +134,7 @@ namespace infinit
       }
 
       PrivateKey::PrivateKey(PrivateKey&& other):
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        elle::serialize::DynamicFormat<PrivateKey>(other),
-#endif
         _key(std::move(other._key))
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        , _encryption_padding(std::move(other._encryption_padding))
-        , _signature_padding(std::move(other._signature_padding))
-        , _oneway(std::move(other._oneway))
-        , _envelope_cipher(std::move(other._envelope_cipher))
-        , _envelope_mode(std::move(other._envelope_mode))
-        , _legacy_format(other._legacy_format)
-#endif
       {
         // Make sure the cryptographic system is set up.
         cryptography::require();
@@ -262,7 +183,6 @@ namespace infinit
         ELLE_ASSERT_NEQ(this->_key->pkey.rsa->iqmp, nullptr);
       }
 
-# if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
       elle::Buffer
       PrivateKey::open(elle::ConstWeakBuffer const& code,
                        Cipher const cipher,
@@ -316,23 +236,12 @@ namespace infinit
         return (this->sign(_plain,
                            padding, oneway));
       }
-# endif
 
       elle::Buffer
       PrivateKey::sign(std::istream& plain,
                        Padding const padding,
                        Oneway const oneway) const
       {
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        types::EVP_PKEY_CTX context(
-          context::create(this->_key.get(), ::EVP_PKEY_sign_init));
-        padding::pad(context.get(), padding);
-
-        elle::Buffer digest = hash(plain, oneway);
-        return (raw::asymmetric::sign(digest,
-                                      context.get(),
-                                      ::EVP_PKEY_sign));
-#else
         auto prolog =
           [this, padding](::EVP_MD_CTX* context,
                           ::EVP_PKEY_CTX* ctx)
@@ -345,7 +254,6 @@ namespace infinit
                   oneway::resolve(oneway),
                   plain,
                   prolog));
-#endif
       }
 
       uint32_t

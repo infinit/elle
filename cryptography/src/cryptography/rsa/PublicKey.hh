@@ -13,12 +13,6 @@
 
 ELLE_OPERATOR_RELATIONALS();
 
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-#  include <elle/serialize/fwd.hh>
-#  include <elle/serialize/construct.hh>
-#  include <elle/concept/Uniquable.hh>
-# endif
-
 # include <cryptography/fwd.hh>
 # include <cryptography/types.hh>
 # include <cryptography/Oneway.hh>
@@ -37,10 +31,6 @@ namespace infinit
       class PublicKey
         : public elle::Printable
         , public std::enable_shared_from_this<PublicKey>
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        , public elle::serialize::DynamicFormat<PublicKey>
-        , public elle::concept::MakeUniquable<PublicKey>
-# endif
       {
       /*-------------.
       | Construction |
@@ -52,40 +42,11 @@ namespace infinit
         /// Construct a public key based on the given EVP_PKEY key whose
         /// ownership is transferred.
         explicit
-        PublicKey(::EVP_PKEY* key
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-                  , Padding const encryption_padding =
-                    defaults::encryption_padding
-                  , Padding const signature_padding =
-                    defaults::signature_padding
-                  , Oneway const oneway =
-                    defaults::oneway
-                  , Cipher const envelope_cipher =
-                    defaults::envelope_cipher
-                  , Mode const envelope_mode =
-                    defaults::envelope_mode
-                  , uint16_t legacy_format =
-                    elle::serialize::StaticFormat<PublicKey>::version
-                  , uint16_t dynamic_format = 0
-# endif
-                 );
+        PublicKey(::EVP_PKEY* key);
         /// Construct a public key based on the given RSA key whose
         /// ownership is transferred to the public key.
         explicit
-        PublicKey(::RSA* rsa
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-                  , Padding const encryption_padding =
-                    defaults::encryption_padding
-                  , Padding const signature_padding =
-                    defaults::signature_padding
-                  , Oneway const oneway =
-                    defaults::oneway
-                  , Cipher const envelope_cipher =
-                    defaults::envelope_cipher
-                  , Mode const envelope_mode =
-                    defaults::envelope_mode
-#endif
-                 );
+        PublicKey(::RSA* rsa);
         PublicKey(PublicKey const& other);
         PublicKey(PublicKey&& other);
         virtual
@@ -99,7 +60,6 @@ namespace infinit
         void
         _check() const;
       public:
-# if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         /// Encrypt the plain text and return the ciphered text in an envelope.
         virtual
         elle::Buffer
@@ -145,8 +105,6 @@ namespace infinit
         std::pair<elle::Buffer, elle::Buffer>
         _verify_data(elle::ConstWeakBuffer const& signature,
                      T const& o) const;
-
-# endif
       public:
         /// Whether the given signature matches the stream-based plain.
         bool
@@ -213,39 +171,6 @@ namespace infinit
         `-----------*/
       public:
         ELLE_ATTRIBUTE_R(types::EVP_PKEY, key);
-
-# if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-        /*-------.
-        | Legacy |
-        `-------*/
-      public:
-        // construction
-        PublicKey() {}
-        ELLE_SERIALIZE_CONSTRUCT(PublicKey)
-        {}
-        // methods
-        template <typename T = Plain>
-        Code
-        encrypt(T const& value) const;
-        template <typename T = Plain>
-        bool
-        verify(Signature const& signature, T const& value) const;
-        // operators
-        bool
-        operator <(PublicKey const& other) const;
-        // serializable
-        ELLE_SERIALIZE_FRIEND_FOR(PublicKey);
-        using elle::serialize::SerializableMixin<
-          infinit::cryptography::rsa::PublicKey,
-          elle::serialize::Base64Archive>::serialize;
-        // attributes
-        ELLE_ATTRIBUTE_R(Padding, encryption_padding);
-        ELLE_ATTRIBUTE_R(Padding, signature_padding);
-        ELLE_ATTRIBUTE_R(Oneway, oneway);
-        ELLE_ATTRIBUTE_R(Cipher, envelope_cipher);
-        ELLE_ATTRIBUTE_R(Mode, envelope_mode);
-        ELLE_ATTRIBUTE_R(uint16_t, legacy_format);
-# endif
       };
 
       namespace _details

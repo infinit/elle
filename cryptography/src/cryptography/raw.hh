@@ -45,7 +45,6 @@ namespace infinit
                 elle::ConstWeakBuffer const& code,
                 std::function<void (::EVP_PKEY_CTX*)> prolog = nullptr,
                 std::function<void (::EVP_PKEY_CTX*)> epilog = nullptr);
-#if !defined(INFINIT_CRYPTOGRAPHY_LEGACY)
         /// Sign the given plain text.
         elle::Buffer
         sign(::EVP_PKEY* key,
@@ -65,7 +64,6 @@ namespace infinit
                                    ::EVP_PKEY_CTX*)> prolog = nullptr,
                std::function<void (::EVP_MD_CTX*,
                                    ::EVP_PKEY_CTX*)> epilog = nullptr);
-#endif
         /// Agree on a shared key between two key pairs: between a one's private
         /// key and a peer's public key.
         elle::Buffer
@@ -87,16 +85,6 @@ namespace infinit
                  std::function<void (::EVP_PKEY_CTX*)> prolog = nullptr,
                  std::function<void (::EVP_PKEY_CTX*)> epilog = nullptr);
 # endif
-        /// A low-level function that should be used only if you know what
-        /// you are doing.
-        elle::Buffer
-        apply(::EVP_PKEY_CTX* context,
-              int (*function)(EVP_PKEY_CTX*,
-                              unsigned char*,
-                              size_t*,
-                              const unsigned char*,
-                              size_t),
-              elle::ConstWeakBuffer const& input);
       }
     }
   }

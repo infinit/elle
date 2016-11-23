@@ -22,7 +22,6 @@ The Cryptography library can be configured through the following environment var
 
   o INFINIT_CRYPTOGRAPHY_RANDOM_SOURCE defines the path to the source file from which data will be read in order to initialize the pseudo-random generator. The default value for this variable is: _/dev/random_.
   o INFINIT_CRYPTOGRAPHY_ROTATION activates the key rotation mechanism allowing one to derive RSA keys from a seed in a deterministic way.
-  o INFINIT_CRYPTOGRAPHY_LEGACY activates the legacy mode which includes older encryption functionalities and an ancient serialization mechanism.
 
 Dependencies
 ------------
