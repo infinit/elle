@@ -2,7 +2,7 @@
 
 Das is a compile time model generation system.
 
-Das is part of the [elle](https://github.com/infinit/elle) set of libraries.
+Das is part of the [Elle](https://github.com/infinit/elle) set of libraries.
 
 ## Motivation
 
@@ -10,11 +10,12 @@ The less code you write, the happier you should be is the philosophy behind Das.
 
 ## How to compile
 
-_See [elle: How to compile](https://github.com/infinit/elle#how-to-compile)._
+_See [Elle: How to compile](https://github.com/infinit/elle#how-to-compile)._
 
 ```bash
 ./drake //das/build -j 2
 ```
+
 ## Example
 
 ```cpp

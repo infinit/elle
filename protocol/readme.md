@@ -2,7 +2,7 @@
 
 Protocol is a library dedicated to construct communication channels on top of streams. It unifies protocol structure and provides a support for [Remote Procedure Call]().
 
-The reactor is part of the [elle](https://github.com/infinit/elle) set of libraries.
+The reactor is part of the [Elle](https://github.com/infinit/elle) set of libraries.
 
 ## Motivation
 
@@ -15,7 +15,7 @@ The ChanneledStream acts as a [multiplexer/demultiplexer](https://en.wikipedia.o
 
 ## How to compile
 
-_See [elle: How to compile](https://github.com/infinit/elle#how-to-compile)._
+_See [Elle: How to compile](https://github.com/infinit/elle#how-to-compile)._
 
 ```bash
 ./drake //protocol/build -j 2

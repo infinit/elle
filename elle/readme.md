@@ -2,7 +2,7 @@
 
 elle is a library containing fundamental functionalities from buffers to memory management and serialization, e.g.:
 
-elle is part of the [elle](https://github.com/infinit/elle) set of libraries.
+elle is part of the [Elle](https://github.com/infinit/elle) set of libraries.
 
 ## Motivation
 
@@ -11,13 +11,13 @@ elle includes many helpers such as:
 
 * [attributes](#attributes): Macros that automatically declares and implements setters and getters
 * [buffers](#buffers): Abstract memory management
-* [serialization](#serialization): json & binary serializations supporting versionning
+* [serialization](#serialization): json & binary serializations supporting versioning
 * [logs](#logs): adjustable logs
 * ...
 
 ## How to compile
 
-_See [elle: How to compile](https://github.com/infinit/elle#how-to-compile)._
+_See [Elle: How to compile](https://github.com/infinit/elle#how-to-compile)._
 
 ```bash
 ./drake //elle/build -j 2
