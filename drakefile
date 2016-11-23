@@ -73,7 +73,7 @@ def configure(cxx_toolkit = None,
   # Tests
   global rule_check, rule_tests
 
-  tests_rule = drake.Rule('tests')
+  rule_tests = drake.Rule('tests')
   rule_check = drake.Rule('check')
 
   tests_cxx_config = drake.cxx.Config(cxx_config)
@@ -87,7 +87,7 @@ def configure(cxx_toolkit = None,
                                drake.nodes(path) +
                                [lib_dynamic] + openssl_libs,
                                cxx_toolkit, config_test)
-    tests_rule << bin
+    rule_tests << bin
     runner = drake.Runner(bin)
     rule_check << runner.status
 
