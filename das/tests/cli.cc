@@ -180,6 +180,27 @@ defaults()
     das::cli::call(proto, f, {"--baz", "23", "--foo", "01"}), "0123");
 }
 
+static
+void
+short_options()
+{
+  auto const f =
+    [] (int foo, int bar) { return foo + bar; };
+  auto const proto = das::named::prototype(foo, bar);
+  {
+    das::cli::Options opts = {
+      {"foo", {'f', ""}},
+      {"bar", {'b', ""}},
+    };
+    BOOST_CHECK_EQUAL(
+      das::cli::call(proto, f, {"--foo", "1", "-b", "2"}, opts), 3);
+    BOOST_CHECK_EQUAL(
+      das::cli::call(proto, f, {"-f", "3", "--bar", "4"}, opts), 7);
+    BOOST_CHECK_EQUAL(
+      das::cli::call(proto, f, {"-f", "5", "-b", "6"}, opts), 11);
+  }
+}
+
 ELLE_TEST_SUITE()
 {
   auto& master = boost::unit_test::framework::master_test_suite();
@@ -191,6 +212,8 @@ ELLE_TEST_SUITE()
     conversions->add(BOOST_TEST_CASE(integers));
     conversions->add(BOOST_TEST_CASE(boolean));
     conversions->add(BOOST_TEST_CASE(multiple_strings));
+    conversions->add(BOOST_TEST_CASE(multiple_integers));
   }
   master.add(BOOST_TEST_CASE(defaults));
+  master.add(BOOST_TEST_CASE(short_options));
 }

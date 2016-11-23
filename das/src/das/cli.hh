@@ -2,6 +2,7 @@
 
 #include <limits>
 #include <type_traits>
+#include <unordered_map>
 #include <vector>
 
 #include <elle/Error.hh>
@@ -103,6 +104,19 @@ namespace das
 
 #undef DAS_CLI_OPTION_ERROR
 #undef DAS_CLI_VALUE_ERROR
+
+    struct Option
+    {
+      Option(char short_name = 0, std::string help = "")
+        : short_name(short_name)
+        , help(std::move(help))
+      {}
+
+      char short_name;
+      std::string help;
+    };
+
+    using Options = std::unordered_map<std::string, Option>;
 
     namespace _details
     {
@@ -278,29 +292,49 @@ namespace das
       class IsOption
       {
       public:
-        IsOption(std::string a)
+        IsOption(std::string a, Options const& opts)
           : _arg(std::move(a))
-        {}
+          , _name()
+          , _option(false)
+        {
+          if (this->_arg.size() > 2 &&
+              this->_arg[0] == '-' && this->_arg[1] == '-')
+          {
+            this->_option = true;
+            this->_name = this->_arg.substr(2);
+          }
+          else if (this->_arg.size() == 2 &&
+                   this->_arg[0] == '-' && std::isalpha(this->_arg[1]))
+            for (auto const& opt: opts)
+              if (opt.second.short_name == this->_arg[1])
+              {
+                this->_option = true;
+                this->_name = opt.first;
+                break;
+              }
+        }
 
         bool
         operator ==(std::string const& o)
         {
-          return this->operator bool() && this->_arg.substr(2) == o;
+          return this->operator bool() && this->_name == o;
         }
 
         operator bool()
         {
-          return this->_arg[0] == '-' && this->_arg[1] == '-';
+          return this->_option;
         }
 
         ELLE_ATTRIBUTE(std::string, arg);
+        ELLE_ATTRIBUTE(std::string, name);
+        ELLE_ATTRIBUTE(bool, option);
       };
 
       static
       IsOption
-      is_option(std::string const& a)
+      is_option(std::string const& a, Options const& opts)
       {
-        return IsOption(a);
+        return IsOption(a, opts);
       }
 
       template <typename ... Formals>
@@ -318,13 +352,14 @@ namespace das
         value(das::named::Prototype<D, Formals...> const& p,
               F const& f,
               std::tuple<Parsed...> parsed,
-              std::vector<std::string>& args)
+              std::vector<std::string>& args,
+              Options const& opts)
           -> decltype(std::forward_tuple(f, std::move(parsed)))
         {
           if (!args.empty())
           {
 
-            if (is_option(args[0]))
+            if (is_option(args[0], opts))
               throw UnknownOption(args[0]);
             else
               throw UnrecognizedValue(args[0]);
@@ -345,24 +380,26 @@ namespace das
         value(das::named::Prototype<D, Formals...> const& p,
               F const& f,
               std::tuple<Parsed...> parsed,
-              std::vector<std::string>& args)
+              std::vector<std::string>& args,
+              Options const& opts)
           -> decltype(CLI<Tail...>::value(
             p, f,
             std::tuple_cat(
               std::move(parsed),
               std::declval<std::tuple<_details::Value<Head, D, Formals...>>>()),
-            args))
+            args,
+            opts))
         {
           std::vector<std::string> value;
           bool flag = false;
           auto it = args.begin();
           while (it != args.end())
           {
-            if (auto o = is_option(*it))
+            if (auto o = is_option(*it, opts))
               if (o == Head::name())
               {
                 it = args.erase(it);
-                if (it != args.end() && !is_option(*it))
+                if (it != args.end() && !is_option(*it, opts))
                 {
                   if (flag)
                     throw MixedOption(Head::name());
@@ -382,7 +419,7 @@ namespace das
               {
                 // Skip option and potential argument
                 ++it;
-                if (it != args.end() && !is_option(*it))
+                if (it != args.end() && !is_option(*it, opts))
                   ++it;
               }
             else
@@ -394,30 +431,47 @@ namespace das
           return CLI<Tail...>::value(
             p, f,
             std::tuple_cat(std::move(parsed), std::make_tuple(std::move(v))),
-            args);
+            args,
+            opts);
         }
       };
     }
 
     template <typename F, typename D, typename ... Formals>
     auto
-    call(das::named::Prototype<D, Formals...> const& p,
-         F const& f,
-         std::vector<std::string>& args)
-      -> decltype(_details::CLI<Formals...>::value(p, f, std::tuple<>(), args))
+    _call(das::named::Prototype<D, Formals...> const& p,
+          F const& f,
+          std::vector<std::string>& args,
+          Options const& opts = Options())
+      -> decltype(
+        _details::CLI<Formals...>::value(p, f, std::tuple<>(), args, opts))
     {
-      return _details::CLI<Formals...>::value(p, f, std::tuple<>(), args);
+      return _details::CLI<Formals...>::value(
+        p, f, std::tuple<>(), args, opts);
     }
 
     template <typename F, typename D, typename ... Formals>
     auto
     call(das::named::Prototype<D, Formals...> const& p,
          F const& f,
-         std::vector<std::string> const& args)
-      -> decltype(call(p, f, std::declval<std::vector<std::string>&>()))
+         std::vector<std::string>& args,
+         Options const& opts = Options())
+      -> decltype(_call(p, f, args, opts))
+    {
+      return _call(p, f, args, opts);
+    }
+
+    template <typename F, typename D, typename ... Formals, typename ... Args>
+    auto
+    call(das::named::Prototype<D, Formals...> const& p,
+         F const& f,
+         std::vector<std::string> const& args,
+         Options const& opts = Options())
+      -> decltype(
+        _call(p, f, std::declval<std::vector<std::string>&>(), opts))
     {
       std::vector<std::string> copy = args;
-      return call(p, f, copy);
+      return _call(p, f, copy, opts);
     }
   }
 }
