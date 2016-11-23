@@ -117,8 +117,6 @@ namespace infinit
         Seed
         generate(uint32_t const length)
         {
-          ELLE_TRACE_FUNCTION(length);
-
           if ((length % 8) != 0)
             throw Error(
               elle::sprintf("the seed length %s is not a multiple of 8",
@@ -154,8 +152,6 @@ namespace infinit
         Seed
         generate(KeyPair const& keypair)
         {
-          ELLE_TRACE_FUNCTION(keypair);
-
           return (generate(keypair.length()));
         }
       }

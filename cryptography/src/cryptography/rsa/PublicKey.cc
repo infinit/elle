@@ -293,7 +293,6 @@ namespace infinit
       Seed
       PublicKey::unrotate(Seed const& seed) const
       {
-        ELLE_TRACE_METHOD("");
         ELLE_DUMP("seed: %x", seed);
 
         auto prolog =

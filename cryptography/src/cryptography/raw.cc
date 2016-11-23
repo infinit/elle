@@ -19,6 +19,10 @@
 #include <openssl/hmac.h>
 #include <openssl/rand.h>
 
+#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
+ELLE_LOG_COMPONENT("infinit.cryptography.raw");
+#endif
+
 //
 // ---------- Asymmetric ------------------------------------------------------
 //
@@ -388,7 +392,6 @@ namespace infinit
                std::function<void (::EVP_PKEY_CTX*)> prolog,
                std::function<void (::EVP_PKEY_CTX*)> epilog)
         {
-          ELLE_DEBUG_FUNCTION(key, prolog, epilog);
           ELLE_DUMP("seed: %s", seed);
 
           // Prepare the context.
@@ -432,7 +435,6 @@ namespace infinit
                  std::function<void (::EVP_PKEY_CTX*)> prolog,
                  std::function<void (::EVP_PKEY_CTX*)> epilog)
         {
-          ELLE_DEBUG_FUNCTION(key, prolog, epilog);
           ELLE_DUMP("seed: %s", seed);
 
           // Prepare the context.
