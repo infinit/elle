@@ -106,6 +106,7 @@ with drake.Drake(%(dir_source)r) as d:
           valgrind_tests = valgrind_tests,
           production_build = %(production_build)r,
           prefix = %(dir_install)r,
+          enable_cryptographic_rotation = True,
           codesign = codesign,
           **extra_args)
 
