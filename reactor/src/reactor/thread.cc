@@ -256,6 +256,12 @@ namespace reactor
           if (!this->_interruptible)
             rethrow = false;
         }
+        catch (elle::Exception& e)
+        {
+          // FIXME: Only the latest backtrace will be stored, but this is still
+          // better than the creation time backtrace, I suppose.
+          e.backtrace(elle::Backtrace::current());
+        }
         catch (...)
         {}
         if (rethrow)
