@@ -239,7 +239,8 @@ namespace das
           T>
         missing() const
         {
-          return this->_prototype.defaults.Formal::value;
+          using clang_workaround = Formal;
+          return this->_prototype.defaults.clang_workaround::value;
         }
 
         operator bool() const
