@@ -92,6 +92,9 @@ if %(arch)r == 'arm':
 if %(beyond_public)r and %(project)r == 'Filesystem':
   extra_args['beyond_public'] = True
 
+if %(project)r == 'Elle':
+  extra_args['enable_cryptographic_rotation'] = True
+
 with drake.Drake(%(dir_source)r) as d:
   python = %(python)r
   import drake.valgrind
@@ -106,7 +109,6 @@ with drake.Drake(%(dir_source)r) as d:
           valgrind_tests = valgrind_tests,
           production_build = %(production_build)r,
           prefix = %(dir_install)r,
-          enable_cryptographic_rotation = True,
           codesign = codesign,
           **extra_args)
 
