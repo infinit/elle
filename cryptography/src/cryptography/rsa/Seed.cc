@@ -8,8 +8,6 @@
 
 # include <elle/log.hh>
 
-ELLE_LOG_COMPONENT("infinit.cryptography.rsa.Seed");
-
 //
 // ---------- Class -----------------------------------------------------------
 //
