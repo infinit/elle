@@ -4,8 +4,6 @@
 
 #include <elle/test.hh>
 
-ELLE_LOG_COMPONENT("das.cli.tests");
-
 DAS_SYMBOL(foo);
 DAS_SYMBOL(bar);
 DAS_SYMBOL(baz);
