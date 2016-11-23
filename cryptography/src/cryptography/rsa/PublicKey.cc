@@ -268,6 +268,7 @@ namespace infinit
       | Rotation |
       `---------*/
 
+      static
       RSA*
       rsa_from_seed(Seed const& seed)
       {
