@@ -64,8 +64,7 @@ namespace elle
       std::unique_ptr<Indentation>
       clone() override
       {
-        std::unique_ptr<Indentation> res = elle::make_unique<PlainIndentation>();
-        return res;
+        return elle::make_unique<PlainIndentation>();
       }
 
     private:
@@ -197,12 +196,12 @@ namespace elle
         return;
 
       int indent = this->indentation();
-      std::vector<std::pair<std::string, std::string>> tags;
+      auto tags = std::vector<std::pair<std::string, std::string>>{};
       for (auto const& tag: elle::Plugin<Tag>::plugins())
       {
         std::string content = tag.second->content();
         if (!content.empty())
-          tags.push_back(std::make_pair(tag.second->name(), content));
+          tags.emplace_back(tag.second->name(), content);
       }
       auto time = this->_time_microsec ?
          ( this->_time_universal ?
@@ -295,9 +294,8 @@ namespace elle
               res = filter.level;
             // If enabled unconditionally, cache it.
             if (filter.context.empty())
-              this->_component_levels[name] = res;
+              this->_component_levels.emplace(name, res);
           }
-
         if (Level::none < res)
           this->_component_max_size =
             std::max(this->_component_max_size,
