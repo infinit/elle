@@ -66,9 +66,9 @@ namespace elle
     Buffer(char const* data);
     /// A buffer with the content of the moved buffer.
     Buffer(Buffer&& other);
-    /// A copy of the source buffer
+    /// A copy of the source buffer.
     Buffer(Buffer const& source);
-    /// A copy of the source buffer
+    /// A copy of the source buffer.
     explicit
     Buffer(ConstWeakBuffer const& source);
     /// Steal the content of the moved buffer.

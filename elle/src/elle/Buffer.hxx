@@ -33,68 +33,68 @@ namespace elle
   }
 
   inline
-  ConstWeakBuffer::ConstWeakBuffer():
-    _size(0),
-    _contents(nullptr)
+  ConstWeakBuffer::ConstWeakBuffer()
+    : _size(0)
+    , _contents(nullptr)
   {}
 
   inline
-  ConstWeakBuffer::ConstWeakBuffer(const void* data, Size size):
-    _size(size),
-    _contents(static_cast<Byte*>(const_cast<void*>(data)))
+  ConstWeakBuffer::ConstWeakBuffer(const void* data, Size size)
+    : _size(size)
+    , _contents(static_cast<Byte*>(const_cast<void*>(data)))
   {}
 
   inline
-  ConstWeakBuffer::ConstWeakBuffer(std::string const& data):
-    ConstWeakBuffer(data.c_str(), data.size())
+  ConstWeakBuffer::ConstWeakBuffer(std::string const& data)
+    : ConstWeakBuffer(data.c_str(), data.size())
   {}
 
   inline
-  ConstWeakBuffer::ConstWeakBuffer(char const* data):
-    ConstWeakBuffer(data, strlen(data))
+  ConstWeakBuffer::ConstWeakBuffer(char const* data)
+    : ConstWeakBuffer(data, strlen(data))
   {}
 
   inline
-  ConstWeakBuffer::ConstWeakBuffer(Buffer const& buffer):
-    ConstWeakBuffer(buffer.mutable_contents(), buffer.size())
+  ConstWeakBuffer::ConstWeakBuffer(Buffer const& buffer)
+    : ConstWeakBuffer(buffer.mutable_contents(), buffer.size())
   {}
 
   inline
-  ConstWeakBuffer::ConstWeakBuffer(ConstWeakBuffer const& other):
-    ConstWeakBuffer(other._contents, other._size)
+  ConstWeakBuffer::ConstWeakBuffer(ConstWeakBuffer const& other)
+    : ConstWeakBuffer(other._contents, other._size)
   {}
 
   inline
-  ConstWeakBuffer::ConstWeakBuffer(ConstWeakBuffer&& other):
-    ConstWeakBuffer(other)
+  ConstWeakBuffer::ConstWeakBuffer(ConstWeakBuffer&& other)
+    : ConstWeakBuffer(other)
   {
     other._contents = nullptr;
     other._size = 0;
   }
 
   inline
-  WeakBuffer::WeakBuffer():
-    ConstWeakBuffer()
+  WeakBuffer::WeakBuffer()
+    : ConstWeakBuffer()
   {}
 
   inline
-  WeakBuffer::WeakBuffer(void* data, Size size):
-    ConstWeakBuffer(data, size)
+  WeakBuffer::WeakBuffer(void* data, Size size)
+    : ConstWeakBuffer(data, size)
   {}
 
   inline
-  WeakBuffer::WeakBuffer(Buffer const& buffer):
-    ConstWeakBuffer(buffer)
+  WeakBuffer::WeakBuffer(Buffer const& buffer)
+    : ConstWeakBuffer(buffer)
   {}
 
   inline
-  WeakBuffer::WeakBuffer(WeakBuffer const& other):
-    ConstWeakBuffer(other)
+  WeakBuffer::WeakBuffer(WeakBuffer const& other)
+    : ConstWeakBuffer(other)
   {}
 
   inline
-  WeakBuffer::WeakBuffer(WeakBuffer&& other):
-    ConstWeakBuffer(std::move(other))
+  WeakBuffer::WeakBuffer(WeakBuffer&& other)
+    : ConstWeakBuffer(std::move(other))
   {}
 
   inline
