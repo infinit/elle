@@ -18,10 +18,6 @@
 	path = reactor/miniupnp
 	url = git@git.infinit.io:miniupnp
         fetchRecurseSubmodules = false
-[submodule "cryptography"]
-	path = cryptography
-	url = git@git.infinit.io:cryptography
-        fetchRecurseSubmodules = false
 [submodule "reactor/libutp"]
 	path = reactor/libutp
 	url = git@git.infinit.io:libutp
@@ -34,3 +30,6 @@
 	path = reactor/dokany
 	url = git@git.infinit.io:dokan
         fetchRecurseSubmodules = false
+[submodule "cryptography/modules/dopenssl"]
+	path = cryptography/modules/dopenssl
+	url = https://github.com/infinit/dopenssl
