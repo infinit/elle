@@ -370,7 +370,7 @@ namespace reactor
     Socket::read_some(Size size,
                       DurationOpt timeout)
     {
-      elle::Buffer res(size);
+      auto res = elle::Buffer(size);
       auto r = this->read_some(network::Buffer(res.mutable_contents(), size),
                                timeout);
       res.size(r);
