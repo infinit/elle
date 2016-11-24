@@ -62,7 +62,7 @@ public:
       char buffer[512];
       try
       {
-        socket->read_some(reactor::network::Buffer(buffer, sizeof(buffer)));
+        socket->read_some(reactor::network::Buffer(buffer, sizeof buffer));
       }
       catch (reactor::network::ConnectionClosed const&)
       {
@@ -182,7 +182,7 @@ serve(std::unique_ptr<Socket> socket)
     reactor::network::Size read = 0;
     try
     {
-      read = socket->read_some(Buffer(buffer, sizeof(buffer) - 1),
+      read = socket->read_some(Buffer(buffer, sizeof buffer - 1),
                                boost::posix_time::milliseconds(100));
     }
     catch (reactor::network::ConnectionClosed&)
@@ -212,9 +212,10 @@ client(typename Socket::EndPoint const& ep,
   Socket s(ep);
   for (const std::string& message: messages)
   {
-    s.write(elle::ConstWeakBuffer(message));
     Byte buf[256];
-    reactor::network::Size read = s.read_some(Buffer(buf, 256));
+    assert(message.size() + 1 < sizeof buf);
+    s.write(elle::ConstWeakBuffer(message));
+    reactor::network::Size read = s.read_some(Buffer(buf, sizeof buf));
     buf[read] = 0;
     BOOST_CHECK_EQUAL(message, reinterpret_cast<char*>(buf));
     ++check;

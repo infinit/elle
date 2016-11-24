@@ -83,7 +83,7 @@ namespace reactor
           try
           {
             this->_socket->read_some(
-              network::Buffer(this->read_buffer, sizeof(this->read_buffer)),
+              network::Buffer(this->read_buffer, sizeof this->read_buffer),
               {},
               &size);
           }
