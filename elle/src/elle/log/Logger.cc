@@ -125,7 +125,7 @@ namespace elle
         [this] (Indenter&) { this->_setup_indentation(); });
       auto levels = elle::os::getenv("ELLE_LOG_LEVEL", log_level);
       if (!levels.empty())
-        _setup_levels(levels);
+        this->_setup_levels(levels);
     }
 
     Logger::~Logger()
@@ -168,7 +168,7 @@ namespace elle
 
         auto m = std::smatch{};
         if (std::regex_match(level, m, re))
-          _component_patterns
+          this->_component_patterns
             .emplace_back(m[1],
                           m[2].length() ? m[2].str() : "*",
                           parse_level(m[3]));
@@ -193,7 +193,7 @@ namespace elle
     {
       std::lock_guard<std::recursive_mutex> lock(_mutex);
 
-      if (component_level(component) < level)
+      if (this->component_level(component) < level)
         return;
 
       int indent = this->indentation();
@@ -263,7 +263,7 @@ namespace elle
     Logger::Filter::match(const std::string& s,
                           const component_stack_t& stack) const
     {
-      return match(s) && match(stack);
+      return this->match(s) && this->match(stack);
     }
 
     bool
@@ -271,7 +271,7 @@ namespace elle
                                 Level level) const
     {
       std::lock_guard<std::recursive_mutex> lock(_mutex);
-      for (auto const& filter: _component_patterns)
+      for (auto const& filter: this->_component_patterns)
         if (_fnmatch(filter.pattern, name) && level <= filter.level
             || _fnmatch(filter.context, name))
           return true;
@@ -285,17 +285,17 @@ namespace elle
       std::lock_guard<std::recursive_mutex> lock(_mutex);
       auto res = Level::log;
 
-      auto i = _component_levels.find(name);
-      if (i == _component_levels.cend())
+      auto i = this->_component_levels.find(name);
+      if (i == this->_component_levels.cend())
       {
-        for (auto const& filter: _component_patterns)
+        for (auto const& filter: this->_component_patterns)
           if (filter.match(name))
           {
-            if (filter.match(_component_stack))
+            if (filter.match(this->_component_stack))
               res = filter.level;
             // If enabled unconditionally, cache it.
             if (filter.context.empty())
-              _component_levels[name] = res;
+              this->_component_levels[name] = res;
           }
 
         if (Level::none < res)
@@ -311,7 +311,7 @@ namespace elle
     Logger::Level
     Logger::component_enabled(std::string const& name)
     {
-      return component_level(name);
+      return this->component_level(name);
     }
 
     /*-------------.
@@ -321,13 +321,13 @@ namespace elle
     void
     Logger::component_push(std::string const& name)
     {
-      _component_stack.emplace_back(name);
+      this->_component_stack.emplace_back(name);
     }
 
     void
     Logger::component_pop()
     {
-      _component_stack.pop_back();
+      this->_component_stack.pop_back();
     }
 
 
