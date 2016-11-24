@@ -1,4 +1,6 @@
-#include "reactor.hh"
+#include <memory>
+
+#include <boost/bind.hpp>
 
 #include <elle/log.hh>
 #include <elle/memory.hh>
@@ -21,10 +23,7 @@
 #include <reactor/signal.hh>
 #include <reactor/thread.hh>
 
-#include <boost/bind.hpp>
-#include <boost/foreach.hpp>
-
-#include <memory>
+#include "reactor.hh"
 
 ELLE_LOG_COMPONENT("reactor.network.test");
 
@@ -211,7 +210,7 @@ client(typename Socket::EndPoint const& ep,
        std::vector<std::string> messages, unsigned& check)
 {
   Socket s(ep);
-  BOOST_FOREACH (const std::string& message, messages)
+  for (const std::string& message: messages)
   {
     s.write(elle::ConstWeakBuffer(message));
     Byte buf[256];
@@ -254,7 +253,7 @@ test_echo_server()
                             elle::utility::move_on_copy(socket))));
           }
           reactor::wait(reactor::Waitables(begin(clients), end(clients)));
-          BOOST_FOREACH(auto* thread, clients)
+          for (auto* thread: clients)
             delete thread;
         });
       messages_1.push_back("Hello server!\n");
