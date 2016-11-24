@@ -66,7 +66,7 @@ namespace infinit
 
       static
       void
-      uint32_put(elle::Buffer& s, uint32_t  i, elle::Version const& v);
+      uint32_put(elle::Buffer& s, uint32_t i, elle::Version const& v);
 
       static
       uint32_t

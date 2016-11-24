@@ -85,7 +85,7 @@ namespace infinit
     }
 
     void
-    Stream::uint32_put(std::ostream& s, uint32_t  i, elle::Version const& v)
+    Stream::uint32_put(std::ostream& s, uint32_t i, elle::Version const& v)
     {
       if (v >= elle::Version(0, 3, 0))
       {
