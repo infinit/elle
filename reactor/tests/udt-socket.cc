@@ -8,7 +8,6 @@
 #include <reactor/network/udt-rdv-server.hh>
 #include <reactor/network/udp-socket.hh>
 #include <reactor/scheduler.hh>
-#include <reactor/network/buffer.hh>
 #include <elle/memory.hh>
 
 using namespace reactor::network;
@@ -25,7 +24,7 @@ BOOST_AUTO_TEST_CASE(udtsocket)
     std::vector<char> buff(512);
 
     std::string msg{"unit_testing"}; // Will do an error, but it's normal
-    sock->write(Buffer(msg.data(), msg.size()));
+    sock->write(elle::ConstWeakBuffer(msg));
     std::cout << sock->local_endpoint() << std::endl;
     UDTRendezVousServer udtsocket(sched, std::move(sock));
   };

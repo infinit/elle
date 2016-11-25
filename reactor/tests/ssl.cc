@@ -12,7 +12,6 @@
 
 #include <reactor/Barrier.hh>
 #include <reactor/Scope.hh>
-#include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/fingerprinted-socket.hh>
 #include <reactor/network/ssl-server.hh>

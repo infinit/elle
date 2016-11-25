@@ -1,7 +1,6 @@
 #include <elle/assert.hh>
 #include <elle/test.hh>
 
-#include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/udp-socket.hh>
 #include <reactor/network/utp-server.hh>

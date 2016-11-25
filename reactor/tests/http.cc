@@ -2,6 +2,7 @@
 #include <boost/asio.hpp>
 #include <boost/test/unit_test.hpp>
 
+#include <elle/Buffer.hh>
 #include <elle/With.hh>
 #include <elle/test.hh>
 #include <elle/utility/Move.hh>
@@ -12,7 +13,6 @@
 #include <reactor/http/EscapedString.hh>
 #include <reactor/http/Request.hh>
 #include <reactor/http/exceptions.hh>
-#include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/tcp-server.hh>
 #include <reactor/scheduler.hh>

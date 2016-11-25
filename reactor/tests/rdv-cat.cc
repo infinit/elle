@@ -1,7 +1,5 @@
-#include <reactor/network/rdv.hh>
 #include <reactor/network/rdv-socket.hh>
-
-#include <reactor/network/buffer.hh>
+#include <reactor/network/rdv.hh>
 #include <reactor/scheduler.hh>
 
 ELLE_LOG_COMPONENT("rdvcat");
@@ -16,7 +14,7 @@ static void send(std::string const& data)
 {
   while (rdvsocket == nullptr)
     reactor::sleep(100_ms);
-  rdvsocket->send_to(Buffer(data), remote);
+  rdvsocket->send_to(elle::WeakBuffer(data), remote);
 }
 
 static void run(int argc, char**argv)
