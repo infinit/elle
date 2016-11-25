@@ -73,6 +73,37 @@ namespace std
       _forward_tuple<F, T, std::tuple_size<typename std::decay<T>::type>::value>
       ::call(f, std::forward<T>(tuple));
   }
+
+  /*----.
+  | Any |
+  `----*/
+
+  namespace _details
+  {
+    template <int i, typename ... T>
+    std::enable_if_t<i == 0, bool>
+    any(std::tuple<T...> const& v)
+    {
+      return false;
+    }
+
+    template <int i, typename ... T>
+    std::enable_if_t<0 < i, bool>
+    any(std::tuple<T...> const& v)
+    {
+      if (std::get<i - 1>(v))
+        return true;
+      else
+        return any<i - 1>(v);
+    }
+  }
+
+  template <typename ... T>
+  bool
+  any(std::tuple<T...> const& v)
+  {
+    return _details::any<sizeof ... (T)>(v);
+  }
 }
 
 #endif
