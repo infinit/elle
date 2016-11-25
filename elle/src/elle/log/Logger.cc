@@ -11,6 +11,7 @@
 #include <thread>
 
 #include <boost/lexical_cast.hpp>
+#include <boost/range/algorithm/find_if.hpp>
 #include <boost/thread/tss.hpp>
 #include <boost/tokenizer.hpp>
 
@@ -18,8 +19,8 @@
 #include <elle/Plugin.hh>
 #include <elle/log/Logger.hh>
 #include <elle/os/environ.hh>
-#include <elle/system/getpid.hh>
 #include <elle/printf.hh>
+#include <elle/system/getpid.hh>
 
 namespace elle
 {
@@ -192,7 +193,7 @@ namespace elle
     {
       std::lock_guard<std::recursive_mutex> lock(_mutex);
 
-      if (this->component_level(component) < level)
+      if (!this->component_is_active(component, level))
         return;
 
       int indent = this->indentation();
@@ -250,12 +251,12 @@ namespace elle
       // matches it.
       return
         (context.empty()
-         || std::find_if(stack.cbegin(), stack.cend(),
-                         [this](const auto& comp)
-                         {
-                           return _fnmatch(context, comp);
-                         })
-         != stack.cend());
+         || (boost::find_if(stack,
+                           [this](const auto& comp)
+                           {
+                             return _fnmatch(context, comp);
+                           })
+             != stack.cend()));
     }
 
     bool
@@ -267,15 +268,16 @@ namespace elle
 
     bool
     Logger::component_is_active(const std::string& name,
-                                Level level) const
+                                Level level)
     {
       std::lock_guard<std::recursive_mutex> lock(_mutex);
-      for (auto const& filter: this->_component_patterns)
-        if (_fnmatch(filter.pattern, name) && level <= filter.level
-            || _fnmatch(filter.context, name))
-          return true;
-      // Default level is log.
-      return level <= Level::log;
+      auto res = level <= this->component_level(name);
+      // Update the max width of displayed component names.
+      if (res)
+        this->_component_max_size =
+          std::max(this->_component_max_size,
+                   static_cast<unsigned int>(name.size()));
+      return res;
     }
 
     Logger::Level
@@ -298,10 +300,6 @@ namespace elle
               // $ELLE_LOG_LEVEL="LOG,DUMP"), keep the last one.
               this->_component_levels[name] = res;
           }
-        if (Level::none < res)
-          this->_component_max_size =
-            std::max(this->_component_max_size,
-                     static_cast<unsigned int>(name.size()));
       }
       else
         res = i->second;
