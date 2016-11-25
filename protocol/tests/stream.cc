@@ -1,6 +1,6 @@
 #include <elle/IOStream.hh>
 #include <elle/With.hh>
-#include <elle/buffer.hh>
+#include <elle/Buffer.hh>
 #include <elle/cast.hh>
 #include <elle/test.hh>
 

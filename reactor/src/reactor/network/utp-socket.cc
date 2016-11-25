@@ -8,7 +8,6 @@
 
 #include <reactor/exception.hh>
 #include <reactor/mutex.hh>
-#include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/fwd.hh>
 #include <reactor/network/utp-server-impl.hh>

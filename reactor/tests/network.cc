@@ -2,7 +2,7 @@
 
 #include <boost/bind.hpp>
 
-#include <elle/buffer.hh>
+#include <elle/Buffer.hh>
 #include <elle/log.hh>
 #include <elle/memory.hh>
 #include <elle/test.hh>

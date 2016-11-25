@@ -1,5 +1,3 @@
-#include <reactor/network/utp-server.hh>
-
 #ifdef INFINIT_LINUX
 # include <sys/time.h> // timespec
 # include <linux/errqueue.h>
@@ -13,15 +11,16 @@
 # include <sys/socket.h>
 #endif
 
-#include <utp.h>
-
 #include <elle/Buffer.hh>
 #include <elle/log.hh>
 
-#include <reactor/network/buffer.hh> // FIXME: replace with elle::WeakBuffer
-#include <reactor/scheduler.hh>
 #include <reactor/network/utp-server-impl.hh>
+#include <reactor/network/utp-server.hh>
 #include <reactor/network/utp-socket-impl.hh>
+#include <reactor/scheduler.hh>
+
+// Include late, as it typedef's str and cstr.
+#include <utp.h>
 
 ELLE_LOG_COMPONENT("reactor.network.UTPServer");
 
@@ -66,7 +65,7 @@ namespace reactor
       else if (sin->sin_family == AF_INET6)
       {
         sockaddr_in6 *sin = (sockaddr_in6*)args->address;
-        std::array<unsigned char, 16> addr {{0}};
+        auto addr = std::array<unsigned char, 16>{{0}};
         memcpy(addr.data(), sin->sin6_addr.s6_addr, 16);
         ep = UTPServer::EndPoint(boost::asio::ip::address_v6(addr),
                                  ntohs(sin->sin6_port));
@@ -77,14 +76,14 @@ namespace reactor
       }
       auto server = get_server(args);
       ELLE_ASSERT(server);
-      Buffer buf(args->buf, args->len);
+      auto buf = elle::ConstWeakBuffer(args->buf, args->len);
       elle::Buffer copy;
       if (server->xorify())
       {
         copy.append(args->buf, args->len);
         for (unsigned int i = 0; i < args->len; ++i)
           copy[i] ^= server->xorify();
-        buf = Buffer(copy.contents(), copy.size());
+        buf = elle::WeakBuffer(copy.contents(), copy.size());
       }
       server->send_to(buf, ep);
       return 0;
@@ -558,9 +557,9 @@ namespace reactor
     }
 
     void
-    UTPServer::Impl::send_to(Buffer buf, EndPoint where)
+    UTPServer::Impl::send_to(elle::ConstWeakBuffer buf, EndPoint where)
     {
-      this->_send_buffer.emplace_back(elle::Buffer(buf.data(), buf.size()),
+      this->_send_buffer.emplace_back(elle::Buffer(buf.contents(), buf.size()),
                                       where);
       if (!this->_sending)
       {

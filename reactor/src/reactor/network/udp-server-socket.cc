@@ -1,4 +1,3 @@
-#include <reactor/network/buffer.hh>
 #include <reactor/network/socket-operation.hh>
 #include <reactor/network/udp-server-socket.hh>
 #include <reactor/network/udp-server.hh>
@@ -40,7 +39,7 @@ namespace reactor
     `-----*/
 
     void
-    UDPServerSocket::read(Buffer buffer,
+    UDPServerSocket::read(elle::WeakBuffer buffer,
                           DurationOpt timeout,
                           int* bytes_read)
     {
@@ -52,7 +51,7 @@ namespace reactor
     }
 
     Size
-    UDPServerSocket::read_some(Buffer buffer,
+    UDPServerSocket::read_some(elle::WeakBuffer buffer,
                                DurationOpt timeout,
                                int* bytes_read)
     {
@@ -66,7 +65,7 @@ namespace reactor
       ELLE_ASSERT_GT(_read_buffer_size, 0);
       Size size = std::min(buffer.size(), _read_buffer_size);
       ELLE_TRACE("%s: read %s bytes", *this, size);
-      memmove(buffer.data(), _read_buffer, size);
+      memmove(buffer.mutable_contents(), _read_buffer, size);
       if (size != _read_buffer_size)
         memmove(_read_buffer, _read_buffer + size, _read_buffer_size - size);
       _read_buffer_size -= size;
@@ -87,7 +86,7 @@ namespace reactor
         using Super = SocketOperation<AsioSocket>;
         UDPWrite(Scheduler& scheduler,
                  PlainSocket<AsioSocket>* socket,
-                 Buffer& buffer)
+                 elle::ConstWeakBuffer& buffer)
           : Super(scheduler, socket)
           , _buffer(buffer)
           , _written(0)
@@ -96,7 +95,7 @@ namespace reactor
       protected:
         virtual void _start()
         {
-          this->socket()->async_send(boost::asio::buffer(_buffer.data(),
+          this->socket()->async_send(boost::asio::buffer(_buffer.contents(),
                                                          _buffer.size()),
                                      boost::bind(&UDPWrite::_wakeup,
                                                  this, _1, _2));
@@ -114,7 +113,7 @@ namespace reactor
           this->_signal();
         }
 
-        Buffer& _buffer;
+        elle::ConstWeakBuffer& _buffer;
         Size _written;
     };
 

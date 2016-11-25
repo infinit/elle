@@ -4,7 +4,7 @@
 # include <arpa/inet.h>
 #endif
 
-#include <elle/buffer.hh>
+#include <elle/Buffer.hh>
 #include <elle/log.hh>
 
 #include <cryptography/hash.hh>
