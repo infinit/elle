@@ -338,14 +338,17 @@ namespace das
         ELLE_ATTRIBUTE(std::string, name);
         ELLE_ATTRIBUTE(bool, option);
       };
+    }
 
-      static
-      IsOption
-      is_option(std::string const& a, Options const& opts)
-      {
-        return IsOption(a, opts);
-      }
+    static
+    _details::IsOption
+    is_option(std::string const& a, Options const& opts = Options())
+    {
+      return _details::IsOption(a, opts);
+    }
 
+    namespace _details
+    {
       template <typename ... Formals>
       struct CLI;
 
