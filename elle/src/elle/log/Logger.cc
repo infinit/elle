@@ -294,7 +294,9 @@ namespace elle
               res = filter.level;
             // If enabled unconditionally, cache it.
             if (filter.context.empty())
-              this->_component_levels.emplace(name, res);
+              // Several filters might apply (e.g.,
+              // $ELLE_LOG_LEVEL="LOG,DUMP"), keep the last one.
+              this->_component_levels[name] = res;
           }
         if (Level::none < res)
           this->_component_max_size =
