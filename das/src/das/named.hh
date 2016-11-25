@@ -378,9 +378,10 @@ namespace das
         >::type
         defaults_type;
 
-      DefaultStore(Head&& head, Tail&& ... tail)
-        : DefaultStore<Tail...>(std::forward<Tail>(tail)...)
-        , std::conditional<is_effective<Head>::value, Head, Empty<Head, Tail ...>>::type(std::forward<Head>(head))
+      template <typename CHead, typename ... CTail>
+      DefaultStore(CHead&& head, CTail&& ... tail)
+        : DefaultStore<Tail...>(std::forward<CTail>(tail)...)
+        , std::conditional<is_effective<Head>::value, Head, Empty<Head, Tail ...>>::type(std::forward<CHead>(head))
       {}
 
       template <typename T>
@@ -413,9 +414,10 @@ namespace das
     class Function
     {
     public:
-      Function(F f, Args&& ... args)
+      template <typename ... CArgs>
+      Function(F f, CArgs&& ... args)
         : _function(std::move(f))
-        , _prototype(DefaultStore<Args...>(std::forward<Args>(args)...))
+        , _prototype(DefaultStore<Args...>(std::forward<CArgs>(args)...))
       {}
 
       template <typename ... Effective>
