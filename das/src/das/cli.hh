@@ -202,6 +202,17 @@ namespace das
         }
 
         template <typename I>
+        std::enable_if_t<std::is_base_of<boost::optional_detail::optional_tag, I>::value, I>
+        convert(I const& v) const
+        {
+          if (this->_value.empty())
+            return boost::none;
+          if (this->_value.size() > 1)
+            throw DuplicateOption(this->_option);
+          return convert<typename I::value_type>(this->_value[0]);
+        }
+
+        template <typename I>
         std::enable_if_t<
           std::is_integral<I>::value && !std::is_same<I, bool>::value, I>
         convert(std::string const& v) const
