@@ -67,6 +67,7 @@ class State:
         self.__state = {}
     except OSError:
       self.__state = {}
+    self.__validate_state()
     return self
 
   def __exit__(self, t, v, tb):
@@ -80,6 +81,14 @@ class State:
         raise
       else:
         mv(tmp, self.state_path)
+
+  def __validate_state(self):
+    trees = self.__state.setdefault('build-trees', {})
+    for b in list(trees):
+      tree = trees[b]
+      if not os.path.exists(tree['path']):
+        print('Missing build tree %s, evicting from state' % tree['path'])
+        del trees[b]
 
   def __options_parser(self):
     import argparse
