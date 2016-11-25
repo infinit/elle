@@ -1,6 +1,5 @@
 #include <reactor/connectivity/connectivity.hh>
 
-#include <reactor/network/buffer.hh>
 #include <reactor/network/rdv-socket.hh>
 #include <reactor/network/rdv.hh>
 #include <reactor/network/resolve.hh>
@@ -59,7 +58,8 @@ namespace reactor
     std::string
     nat(std::string const& host, int port)
     {
-      // check cone-nat by comparing our endpoints from rdv server and connectivity server
+      // check cone-nat by comparing our endpoints from rdv server and
+      // connectivity server
       reactor::network::RDVSocket socket;
       socket.close();
       socket.bind(
@@ -86,7 +86,8 @@ namespace reactor
             }
             else
             {
-              bool cone = (line.substr(0, p) == elle::sprintf("%s", socket.public_endpoint()));
+              bool cone
+                = line.substr(0, p) == elle::sprintf("%s", socket.public_endpoint());
               result = "UDP-RDV OK: ";
               if (cone)
                 result += "CONE NAT";
