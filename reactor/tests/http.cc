@@ -646,7 +646,7 @@ ELLE_TEST_SCHEDULED(download_progress)
   };
   const int payload_length = 12;
   std::string header("HTTP/1.1 200 OK\r\nContent-Length: "
-                     + boost::lexical_cast<std::string>(payload_length)
+                     + std::to_string(payload_length)
                      + "\r\n\r\n");
   std::string payload(payload_length, 'a');
   SlowHttpServer server(header + payload, 1);
@@ -674,7 +674,7 @@ ELLE_TEST_SCHEDULED(download_stall)
 {
   const int payload_length = 2000;
   std::string header("HTTP/1.1 200 OK\r\nContent-Length: "
-                     + boost::lexical_cast<std::string>(payload_length)
+                     + std::to_string(payload_length)
                      + "\r\n\r\n");
   std::string payload(payload_length, 'a');
   SlowHttpServer server(header + payload, 10);

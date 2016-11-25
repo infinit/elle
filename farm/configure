@@ -93,7 +93,7 @@ if %(beyond_public)r and %(project)r == 'Filesystem':
   extra_args['beyond_public'] = True
 
 if %(project)r == 'Elle':
-  extra_args['enable_cryptographic_rotation'] = True
+  extra_args['enable_cryptographic_rotation'] = False
 
 with drake.Drake(%(dir_source)r) as d:
   python = %(python)r

@@ -117,6 +117,7 @@ ELLE_TEST_SCHEDULED(utp_timeout)
   free(megabuf);
 }
 
+#ifdef INFINIT_LINUX
 ELLE_TEST_SCHEDULED(utp_failures)
 {
   SocketPair sp;
@@ -128,6 +129,7 @@ ELLE_TEST_SCHEDULED(utp_failures)
   ELLE_LOG("read");
   ELLE_ASSERT_EQ(sp.s2->read(3), "foo");
 }
+#endif
 
 ELLE_TEST_SCHEDULED(streams)
 {
@@ -213,19 +215,6 @@ SocketPair::SocketPair()
   ELLE_LOG("SocketPair accepting");
   s2 = srv1.accept();
   ELLE_LOG("SocketPair ready");
-}
-
-static
-void
-loop_socket(reactor::network::UTPSocket* ts)
-{
-  std::unique_ptr<reactor::network::UTPSocket> s(ts);
-  while (true)
-  {
-    elle::Buffer buf = s->read(4000);
-    ELLE_LOG("pong %s", buf.size());
-    s->write(buf);
-  }
 }
 
 ELLE_TEST_SUITE()

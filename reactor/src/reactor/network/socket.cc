@@ -83,7 +83,7 @@ namespace reactor
           try
           {
             this->_socket->read_some(
-              network::Buffer(this->read_buffer, sizeof(this->read_buffer)),
+              network::Buffer(this->read_buffer, sizeof this->read_buffer),
               {},
               &size);
           }
@@ -370,7 +370,7 @@ namespace reactor
     Socket::read_some(Size size,
                       DurationOpt timeout)
     {
-      elle::Buffer res(size);
+      auto res = elle::Buffer(size);
       auto r = this->read_some(network::Buffer(res.mutable_contents(), size),
                                timeout);
       res.size(r);
