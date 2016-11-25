@@ -50,11 +50,11 @@ ELLE_TEST_SCHEDULED(basic)
     sp.s1->write("foo");
     ELLE_ASSERT_EQ(sp.s2->read_some(3).string(), "foo");
     sp.s2->write("bar");
-    ELLE_ASSERT(sp.s1->read_some(3).string() == "bar");
+    ELLE_ASSERT_EQ(sp.s1->read_some(3).string(), "bar");
     sp.s1->write("baz");
     sp.s2->write("bam");
-    ELLE_ASSERT(sp.s1->read_some(3).string() == "bam");
-    ELLE_ASSERT(sp.s2->read_some(3).string() == "baz");
+    ELLE_ASSERT_EQ(sp.s1->read_some(3).string(), "bam");
+    ELLE_ASSERT_EQ(sp.s2->read_some(3).string(), "baz");
     ELLE_LOG("done");
   }
   ELLE_LOG("done2");
@@ -145,7 +145,7 @@ ELLE_TEST_SCHEDULED(big)
 {
   SocketPair sp;
   size_t buffer_size = 20000u;
-  std::string data(buffer_size, '-');
+  auto data = std::string(buffer_size, '-');
   // note: there is no garantee utp will buffer that much
   sp.s1->write(data);
   elle::Buffer buf = sp.s2->read(buffer_size);
@@ -191,11 +191,11 @@ ELLE_TEST_SCHEDULED(destruction)
     sp.s1->write("foo");
     ELLE_ASSERT_EQ(sp.s2->read_some(3).string(), "foo");
     sp.s2->write("bar");
-    ELLE_ASSERT(sp.s1->read_some(3).string() == "bar");
+    ELLE_ASSERT_EQ(sp.s1->read_some(3).string(), "bar");
     sp.s1->write("baz");
     sp.s2->write("bam");
-    ELLE_ASSERT(sp.s1->read_some(3).string() == "bam");
-    ELLE_ASSERT(sp.s2->read_some(3).string() == "baz");
+    ELLE_ASSERT_EQ(sp.s1->read_some(3).string(), "bam");
+    ELLE_ASSERT_EQ(sp.s2->read_some(3).string(), "baz");
     ELLE_LOG("done");
     sp.s1.reset();
     sp.s2.reset();

@@ -37,27 +37,28 @@ static
 std::unique_ptr<SSLCertificate>
 load_certificate()
 {
-  boost::filesystem::path tmp;
+  namespace fs = boost::filesystem;
+  fs::path tmp;
   while (true)
   {
-    tmp = boost::filesystem::temp_directory_path() / boost::filesystem::unique_path();
-    if (boost::filesystem::create_directory(tmp))
+    tmp = fs::temp_directory_path() / fs::unique_path();
+    if (fs::create_directory(tmp))
       break;
   }
-  elle::SafeFinally remove_tmp([tmp] { boost::filesystem::remove_all(tmp); } );
+  elle::SafeFinally remove_tmp([tmp] { fs::remove_all(tmp); } );
   auto cert = tmp / "server-cert.pem";
   auto key = tmp / "server-key.pem";
   auto dh1024 = tmp / "dh1024.pem";
   {
-    boost::filesystem::ofstream cert_f(cert, std::ios::binary);
+    fs::ofstream cert_f(cert, std::ios::binary);
     cert_f.write(server_cert.data(), server_cert.size());
   }
   {
-    boost::filesystem::ofstream key_f(key, std::ios::binary);
+    fs::ofstream key_f(key, std::ios::binary);
     key_f.write(server_key.data(), server_key.size());
   }
   {
-    boost::filesystem::ofstream dh1024_f(dh1024, std::ios::binary);
+    fs::ofstream dh1024_f(dh1024, std::ios::binary);
     dh1024_f.write(server_dh1024.data(), server_dh1024.size());
   }
   return elle::make_unique<SSLCertificate>(cert.string(),
@@ -635,8 +636,10 @@ ELLE_TEST_SCHEDULED(shutdown_asynchronous_timeout)
         elle::Buffer data(4096);
         // Read at the TCP level, discarding the SSL shutdown data and waiting
         // for a TCP shutdown anyway.
-        std::function<void (const boost::system::error_code& error,
-                            std::size_t read)> read_callback =
+        using callback =
+          std::function<void (const boost::system::error_code& error,
+                              std::size_t read)>;
+        callback read_callback =
           [&] (const boost::system::error_code& error, std::size_t read)
           {
             if (!error)
