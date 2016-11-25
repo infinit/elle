@@ -16,7 +16,6 @@
 #include <reactor/exception.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/nat.hh>
-#include <reactor/network/buffer.hh>
 #include <reactor/network/resolve.hh>
 #include <reactor/network/udt-rdv-server.hh>
 #include <reactor/operation.hh>

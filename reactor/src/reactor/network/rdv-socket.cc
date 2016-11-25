@@ -4,7 +4,6 @@
 #include <boost/uuid/uuid_io.hpp>
 
 #include <reactor/network/resolve.hh>
-#include <reactor/network/buffer.hh>
 #include <reactor/network/rdv.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/scheduler.hh>
