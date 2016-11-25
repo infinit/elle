@@ -55,7 +55,7 @@ namespace elle
     /// An uninitialized buffer of the specified size.
     template <
       typename T,
-      typename std::enable_if<std::is_integral<T>::value, int>::type = 0>
+      std::enable_if_t<std::is_integral<T>::value, int> = 0>
     Buffer(T size);
     /// A buffer containing a copy of the given data.
     Buffer(void const* data, Size size);

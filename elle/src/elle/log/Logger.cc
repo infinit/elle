@@ -5,12 +5,14 @@
 #endif
 
 #include <functional>
+#include <iterator> // cbegin, etc.
 #include <memory>
+#include <regex>
 #include <thread>
 
-#include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/thread/tss.hpp>
+#include <boost/tokenizer.hpp>
 
 #include <elle/Exception.hh>
 #include <elle/Plugin.hh>
@@ -62,8 +64,7 @@ namespace elle
       std::unique_ptr<Indentation>
       clone() override
       {
-        std::unique_ptr<Indentation> res = elle::make_unique<PlainIndentation>();
-        return res;
+        return elle::make_unique<PlainIndentation>();
       }
 
     private:
@@ -115,43 +116,15 @@ namespace elle
       : _indentation(std::make_unique<PlainIndentation>())
       , _time_universal(false)
       , _time_microsec(false)
-      , _component_patterns()
-      , _component_levels()
       , _component_max_size(0)
     {
       this->_setup_indentation();
       // FIXME: resets indentation
       elle::Plugin<Indenter>::hook_added().connect(
         [this] (Indenter&) { this->_setup_indentation(); });
-      auto levels_str = elle::os::getenv("ELLE_LOG_LEVEL", log_level);
-      if (!levels_str.empty())
-      {
-        std::vector<std::string> levels;
-        boost::algorithm::split(levels, levels_str,
-                                boost::algorithm::is_any_of(","),
-                                boost::algorithm::token_compress_on);
-        for (auto& pattern: levels)
-        {
-          auto colon = pattern.find(":");
-          auto filter = Filter{};
-          if (colon != std::string::npos)
-          {
-            std::string level_str = pattern.substr(colon + 1);
-            boost::algorithm::trim(level_str);
-            filter.level = parse_level(level_str);
-            pattern = pattern.substr(0, colon);
-            boost::algorithm::trim(pattern);
-            filter.pattern = pattern;
-          }
-          else
-          {
-            boost::algorithm::trim(pattern);
-            filter.level = parse_level(pattern);
-            filter.pattern = "*";
-          }
-          _component_patterns.push_back(std::move(filter));
-        }
-      }
+      auto levels = elle::os::getenv("ELLE_LOG_LEVEL", log_level);
+      if (!levels.empty())
+        this->_setup_levels(levels);
     }
 
     Logger::~Logger()
@@ -175,6 +148,35 @@ namespace elle
       this->_indentation = factory();
     }
 
+    void
+    Logger::_setup_levels(const std::string& levels)
+    {
+      using tokenizer = boost::tokenizer<boost::char_separator<char>>;
+      auto sep = boost::char_separator<char>{","};
+      for (auto& level: tokenizer{levels, sep})
+      {
+        static auto re =
+          std::regex{" *"
+                     "(?:(.*)  *)?"     // 1: context
+                     "(?:"
+                     "([^ :]*)"         // 2: component
+                     " *: *"
+                     ")?"
+                     "([^ :]*)"         // 3: level
+                     " *"};
+
+        auto m = std::smatch{};
+        if (std::regex_match(level, m, re))
+          this->_component_patterns
+            .emplace_back(m[1],
+                          m[2].length() ? m[2].str() : "*",
+                          parse_level(m[3]));
+        else
+          throw elle::Exception(
+            elle::sprintf("invalid level specification: %s", level));
+      }
+    }
+
     /*----------.
     | Messaging |
     `----------*/
@@ -190,13 +192,16 @@ namespace elle
     {
       std::lock_guard<std::recursive_mutex> lock(_mutex);
 
+      if (this->component_level(component) < level)
+        return;
+
       int indent = this->indentation();
-      std::vector<std::pair<std::string, std::string>> tags;
+      auto tags = std::vector<std::pair<std::string, std::string>>{};
       for (auto const& tag: elle::Plugin<Tag>::plugins())
       {
         std::string content = tag.second->content();
         if (!content.empty())
-          tags.push_back(std::make_pair(tag.second->name(), content));
+          tags.emplace_back(tag.second->name(), content);
       }
       auto time = this->_time_microsec ?
          ( this->_time_universal ?
@@ -221,8 +226,9 @@ namespace elle
     | Enabled |
     `--------*/
 
+    static
     bool
-    Logger::Filter::match(const std::string& s) const
+    _fnmatch(const std::string& pattern, const std::string& s)
     {
 #ifdef INFINIT_WINDOWS
       return ::PathMatchSpec(s.c_str(), pattern.c_str()) == TRUE;
@@ -231,30 +237,99 @@ namespace elle
 #endif
     }
 
+    bool
+    Logger::Filter::match(const std::string& s) const
+    {
+      return _fnmatch(pattern, s);
+    }
+
+    bool
+    Logger::Filter::match(const component_stack_t& stack) const
+    {
+      // Either there is no request on the context, or some component
+      // matches it.
+      return
+        (context.empty()
+         || std::find_if(stack.cbegin(), stack.cend(),
+                         [this](const auto& comp)
+                         {
+                           return _fnmatch(context, comp);
+                         })
+         != stack.cend());
+    }
+
+    bool
+    Logger::Filter::match(const std::string& s,
+                          const component_stack_t& stack) const
+    {
+      return this->match(s) && this->match(stack);
+    }
+
+    bool
+    Logger::component_is_active(const std::string& name,
+                                Level level) const
+    {
+      std::lock_guard<std::recursive_mutex> lock(_mutex);
+      for (auto const& filter: this->_component_patterns)
+        if (_fnmatch(filter.pattern, name) && level <= filter.level
+            || _fnmatch(filter.context, name))
+          return true;
+      // Default level is log.
+      return level <= Level::log;
+    }
+
+    Logger::Level
+    Logger::component_level(std::string const& name)
+    {
+      std::lock_guard<std::recursive_mutex> lock(_mutex);
+      auto res = Level::log;
+
+      auto i = this->_component_levels.find(name);
+      if (i == this->_component_levels.cend())
+      {
+        for (auto const& filter: this->_component_patterns)
+          if (filter.match(name))
+          {
+            if (filter.match(this->_component_stack))
+              res = filter.level;
+            // If enabled unconditionally, cache it.
+            if (filter.context.empty())
+              // Several filters might apply (e.g.,
+              // $ELLE_LOG_LEVEL="LOG,DUMP"), keep the last one.
+              this->_component_levels[name] = res;
+          }
+        if (Level::none < res)
+          this->_component_max_size =
+            std::max(this->_component_max_size,
+                     static_cast<unsigned int>(name.size()));
+      }
+      else
+        res = i->second;
+      return res;
+    }
 
     Logger::Level
     Logger::component_enabled(std::string const& name)
     {
-      std::lock_guard<std::recursive_mutex> lock(_mutex);
-      auto elt = this->_component_levels.find(name);
-      Level res;
-      if (elt == this->_component_levels.end())
-      {
-        res = Level::log;
-        for (auto const& filter: this->_component_patterns)
-          if (filter.match(name))
-            res = filter.level;
-
-        if (res > Level::none)
-          this->_component_max_size =
-            std::max(this->_component_max_size,
-                     static_cast<unsigned int>(name.size()));
-        this->_component_levels[name] = res;
-      }
-      else
-        res = elt->second;
-      return res;
+      return this->component_level(name);
     }
+
+    /*-------------.
+    | Components.  |
+    `-------------*/
+
+    void
+    Logger::component_push(std::string const& name)
+    {
+      this->_component_stack.emplace_back(name);
+    }
+
+    void
+    Logger::component_pop()
+    {
+      this->_component_stack.pop_back();
+    }
+
 
     /*------.
     | Level |

@@ -28,7 +28,7 @@ struct Sub
 template <typename S, typename T>
 auto
 no_such_attribute(T const& o, int i)
-  -> typename std::enable_if<sizeof(S::attr_get(o)) >= 0, bool>::type
+  -> std::enable_if_t<sizeof(S::attr_get(o)) >= 0, bool>
 {
   return false;
 }

@@ -44,10 +44,12 @@ namespace elle
     ELLE_ATTRIBUTE_R(long, count);
     ELLE_ATTRIBUTE_R(double, min);
     ELLE_ATTRIBUTE_R(double, max);
-    ELLE_ATTRIBUTE_R(boost::posix_time::ptime, start);
     ELLE_ATTRIBUTE_R(boost::posix_time::time_duration, log_interval);
     ELLE_ATTRIBUTE(double, roundfactor);
     ELLE_ATTRIBUTE_R(bool, enabled);
+    // Make it last, so that it is set only when the remainder was
+    // initialized.
+    ELLE_ATTRIBUTE_R(boost::posix_time::ptime, start);
   };
 }
 

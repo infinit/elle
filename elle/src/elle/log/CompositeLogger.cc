@@ -31,7 +31,7 @@ namespace elle
       for (auto& l: _loggers)
       {
         l->indentation() = indentation + 1;
-        l->component_enabled(component); // for max size computation
+        l->component_level(component); // for max size computation
         l->message(level, type, component, message, file, line, function);
       }
     }

@@ -10,12 +10,12 @@ namespace std
   namespace
   {
     template <int idx, typename T>
-    typename std::enable_if<idx == tuple_size<T>::value, void>::type
+    std::enable_if_t<idx == tuple_size<T>::value, void>
     print_tuple(std::ostream&, T const&, bool)
     {};
 
     template <int idx, typename T>
-    typename std::enable_if<idx < tuple_size<T>::value, void>::type
+    std::enable_if_t<idx < tuple_size<T>::value, void>
     print_tuple(std::ostream& s, T const& v, bool first)
     {
       if (!first)

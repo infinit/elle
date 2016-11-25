@@ -122,6 +122,31 @@ s()
   }
 }
 
+static
+void
+nested()
+{
+  ELLE_LOG_COMPONENT("foo");
+  ELLE_LOG("foo.1")
+  {
+    ELLE_LOG_COMPONENT("bar");
+    ELLE_LOG("bar.1")
+    {
+      ELLE_LOG_COMPONENT("baz");
+      ELLE_LOG("baz.1");
+      ELLE_LOG("baz.2");
+    }
+    ELLE_LOG("bar.2");
+  }
+  ELLE_LOG("foo.2")
+  {
+    ELLE_LOG_COMPONENT("baz");
+    ELLE_LOG("baz.3");
+    ELLE_LOG("baz.4");
+  }
+  ELLE_LOG("foo.3");
+}
+
 static LL static_global{};
 static std::unique_ptr<LL> static_uptr{new LL{}};
 LL global{};
@@ -166,5 +191,6 @@ int main()
   global.foo();
 
   ELLE_LOG("Multi\nline comment\nOh yeah\n\n\nPIF\n\n\n");
-  return 0;
+
+  nested();
 }

@@ -9,35 +9,48 @@
 
 # else
 
-#  define ELLE_LOG_COMPONENT(_component_)                               \
-  static char const* __attribute__((unused))                            \
-    _trace_component_ = _component_;                                    \
+// It would be extremely useful to turn this const char* into a
+// std::string: since the rest of the API is based on std::string,
+// each time we invoke a Log feature, we pay the construction of a
+// std::string.  Unfortunately, it happens that we use Log in the
+// destruction of objects, some of them being global.  As a result, on
+// program exit, we may very well already have destroyed this
+// std::string, and then use it in a Log.
+//
+// This was observed with tests/elle/log.cc on jessie and Centos with
+// GCC4.
+//
+// Using symbols would address both the issues of object destruction,
+// and optimization.
+#  define ELLE_LOG_COMPONENT(_component_)       \
+  static constexpr auto __attribute__((unused)) \
+    _trace_component_ = _component_;
 
 #  define ELLE_LOG_VALUE(Lvl, T, ...)                                   \
-     [&] {                                                              \
-       static bool enabled =                                            \
-         elle::log::detail::Send::_enabled(elle::log::Logger::Type::T,  \
-                                        elle::log::Logger::Level::Lvl,  \
-                                        _trace_component_);             \
-        return enabled;}()  ?                                           \
+    [&] {                                                               \
+       static bool active =                                             \
+         elle::log::detail::Send::active(elle::log::Logger::Level::Lvl, \
+                                         elle::log::Logger::Type::T,    \
+                                         _trace_component_);            \
+        return active;}()  ?                                            \
       ::elle::log::detail::Send                                         \
       (elle::log::Logger::Level::Lvl,                                   \
        elle::log::Logger::Type::T,                                      \
        true,                                                            \
        _trace_component_,                                               \
        __FILE__, __LINE__, ELLE_COMPILER_PRETTY_FUNCTION,               \
-       __VA_ARGS__) :  ::elle::log::detail::Send()
+       __VA_ARGS__) : ::elle::log::detail::Send()
 
 #  define ELLE_LOG_LEVEL_SCOPE(Lvl, T, ...)                             \
     auto BOOST_PP_CAT(__trace_ctx_, __LINE__) =                         \
       ELLE_LOG_VALUE(Lvl, T, __VA_ARGS__)                               \
 
-#  define ELLE_LOG_LEVEL(Lvl, Type, ...)                                      \
-  if (ELLE_LOG_LEVEL_SCOPE(Lvl, Type, __VA_ARGS__))                           \
-  {                                                                           \
-    elle::unreachable();                                                      \
-  }                                                                           \
-  else                                                                        \
+#  define ELLE_LOG_LEVEL(Lvl, Type, ...)                                \
+  if (ELLE_LOG_LEVEL_SCOPE(Lvl, Type, __VA_ARGS__))                     \
+  {                                                                     \
+    elle::unreachable();                                                \
+  }                                                                     \
+  else                                                                  \
 /**/
 # endif
 
