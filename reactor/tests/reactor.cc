@@ -112,8 +112,8 @@ test_basics_interleave()
   reactor::Scheduler sched;
 
   int step = 0;
-  reactor::Thread c1(sched, "1", boost::bind(coro1, boost::ref(step)));
-  reactor::Thread c2(sched, "2", boost::bind(coro2, boost::ref(step)));
+  reactor::Thread c1(sched, "1", std::bind(coro1, std::ref(step)));
+  reactor::Thread c2(sched, "2", std::bind(coro2, std::ref(step)));
   sched.run();
   BOOST_CHECK_EQUAL(step, 5);
 }
@@ -409,10 +409,10 @@ test_signals_one_on_one()
   reactor::Waitables signals;
   signals << signal;
   reactor::Thread w(sched, "waiter",
-                    boost::bind(waiter, boost::ref(step), signals));
+                    std::bind(waiter, std::ref(step), signals));
   reactor::Thread s(sched, "sender",
-                    boost::bind(sender_one, boost::ref(step),
-                                boost::ref(signal), 1));
+                    std::bind(sender_one, std::ref(step),
+                              std::ref(signal), 1));
   sched.run();
   BOOST_CHECK_EQUAL(step, 1);
 }
@@ -429,10 +429,10 @@ test_signals_one_on_two()
   reactor::Waitables signals;
   signals << signal1 << signal2;
   reactor::Thread w(sched, "waiter",
-                    boost::bind(waiter, boost::ref(step), signals));
+                    std::bind(waiter, std::ref(step), signals));
   reactor::Thread s(sched, "sender",
-                    boost::bind(sender_two, boost::ref(step),
-                                boost::ref(signal1), boost::ref(signal2)));
+                    std::bind(sender_two, std::ref(step),
+                              std::ref(signal1), std::ref(signal2)));
   sched.run();
   BOOST_CHECK_EQUAL(step, 1);
 }
@@ -448,12 +448,12 @@ test_signals_two_on_one()
   reactor::Waitables signals;
   signals << signal;
   reactor::Thread w1(sched, "waiter1",
-                     boost::bind(waiter, boost::ref(step), signals));
+                     std::bind(waiter, std::ref(step), signals));
   reactor::Thread w2(sched, "waiter2",
-                     boost::bind(waiter, boost::ref(step), signals));
+                     std::bind(waiter, std::ref(step), signals));
   reactor::Thread s(sched, "sender",
-                    boost::bind(sender_one, boost::ref(step),
-                                boost::ref(signal), 2));
+                    std::bind(sender_one, std::ref(step),
+                              std::ref(signal), 2));
   sched.run();
   BOOST_CHECK_EQUAL(step, 2);
 }
@@ -1049,10 +1049,10 @@ test_join()
 
   int count = 0;
   reactor::Thread j(sched, "joined",
-                    boost::bind(joined, boost::ref(count)));
+                    std::bind(joined, std::ref(count)));
   reactor::Thread w(sched, "waiter",
-                    boost::bind(join_waiter,
-                                boost::ref(j), boost::ref(count)));
+                    std::bind(join_waiter,
+                              std::ref(j), std::ref(count)));
   sched.run();
   BOOST_CHECK_EQUAL(count, 3);
 }
@@ -1078,8 +1078,8 @@ test_join_multiple()
   int count = 0;
   reactor::Thread e(sched, "empty", [] {});
   reactor::Thread w(sched, "waiter",
-                    boost::bind(join_waiter_multiple,
-                                boost::ref(e), boost::ref(count)));
+                    std::bind(join_waiter_multiple,
+                              std::ref(e), std::ref(count)));
   sched.run();
   BOOST_CHECK_EQUAL(count, 1);
 }
@@ -1141,7 +1141,7 @@ test_timeout_do()
 
   reactor::Signal s;
   reactor::Thread t(sched, "timeout",
-                    boost::bind(timeout, boost::ref(s), false));
+                    std::bind(timeout, std::ref(s), false));
   sched.run();
 }
 
@@ -1153,9 +1153,9 @@ test_timeout_dont()
 
   reactor::Signal s;
   reactor::Thread t(sched, "timeout",
-                    boost::bind(timeout, boost::ref(s), true));
+                    std::bind(timeout, std::ref(s), true));
   reactor::Thread p(sched, "poker",
-                    boost::bind(timeout_send, boost::ref(s)));
+                    std::bind(timeout_send, std::ref(s)));
   sched.run();
 }
 
@@ -1303,7 +1303,7 @@ void
 spawn(reactor::Signal& s,
       int& res, reactor::Scheduler& sched)
 {
-  res = sched.mt_run<int>("spawned", boost::bind(spawned, boost::ref(s)));
+  res = sched.mt_run<int>("spawned", std::bind(spawned, std::ref(s)));
 }
 
 static
@@ -1313,7 +1313,8 @@ spawner()
   reactor::Signal s;
   reactor::Scheduler& sched = *reactor::Scheduler::scheduler();
   int res = 0;
-  boost::thread spawner(boost::bind(spawn, boost::ref(s), boost::ref(res), std::ref(sched)));
+  boost::thread spawner(std::bind(spawn,
+                                  std::ref(s), std::ref(res), std::ref(sched)));
   reactor::wait(s);
   spawner.join();
   BOOST_CHECK_EQUAL(res, 42);
@@ -1388,7 +1389,7 @@ test_semaphore_noblock()
   reactor::Scheduler sched;
   reactor::Semaphore s(2);
   reactor::Thread wait(sched, "wait",
-                       boost::bind(&semaphore_noblock_wait, boost::ref(s)));
+                       std::bind(&semaphore_noblock_wait, std::ref(s)));
   sched.run();
 }
 
@@ -1426,9 +1427,9 @@ test_semaphore_block()
   reactor::Scheduler sched;
   reactor::Semaphore s;
   reactor::Thread wait(sched, "wait",
-                       boost::bind(&semaphore_block_wait, boost::ref(s)));
+                       std::bind(&semaphore_block_wait, std::ref(s)));
   reactor::Thread post(sched, "post",
-                       boost::bind(&semaphore_block_post, boost::ref(s)));
+                       std::bind(&semaphore_block_post, std::ref(s)));
   sched.run();
 }
 
@@ -1507,14 +1508,14 @@ namespace mutex
     reactor::Mutex mutex;
     int step = 0;
     reactor::Thread c1("counter1",
-                       boost::bind(&mutex_count,
-                                   boost::ref(step), boost::ref(mutex), 1));
+                       std::bind(&mutex_count,
+                                 std::ref(step), std::ref(mutex), 1));
     reactor::Thread c2("counter2",
-                       boost::bind(&mutex_count,
-                                   boost::ref(step), boost::ref(mutex), 1));
+                       std::bind(&mutex_count,
+                                 std::ref(step), std::ref(mutex), 1));
     reactor::Thread c3("counter3",
-                       boost::bind(&mutex_count,
-                                   boost::ref(step), boost::ref(mutex), 1));
+                       std::bind(&mutex_count,
+                                 std::ref(step), std::ref(mutex), 1));
     reactor::wait({c1, c2, c3});
   }
 
@@ -1581,14 +1582,14 @@ test_rw_mutex_multi_read()
   reactor::RWMutex mutex;
   int step = 0;
   reactor::Thread r1(sched, "reader1",
-                     boost::bind(rw_mutex_read,
-                                 boost::ref(mutex), boost::ref(step)));
+                     std::bind(rw_mutex_read,
+                               std::ref(mutex), std::ref(step)));
   reactor::Thread r2(sched, "reader2",
-                     boost::bind(rw_mutex_read,
-                                 boost::ref(mutex), boost::ref(step)));
+                     std::bind(rw_mutex_read,
+                               std::ref(mutex), std::ref(step)));
   reactor::Thread r3(sched, "reader3",
-                     boost::bind(rw_mutex_read,
-                                 boost::ref(mutex), boost::ref(step)));
+                     std::bind(rw_mutex_read,
+                               std::ref(mutex), std::ref(step)));
   sched.run();
 }
 
@@ -1612,14 +1613,14 @@ test_rw_mutex_multi_write()
   reactor::RWMutex mutex;
   int step = 0;
   reactor::Thread r1(sched, "writer1",
-                     boost::bind(rw_mutex_write,
-                                 boost::ref(mutex), boost::ref(step)));
+                     std::bind(rw_mutex_write,
+                               std::ref(mutex), std::ref(step)));
   reactor::Thread r2(sched, "writer2",
-                     boost::bind(rw_mutex_write,
-                                 boost::ref(mutex), boost::ref(step)));
+                     std::bind(rw_mutex_write,
+                               std::ref(mutex), std::ref(step)));
   reactor::Thread r3(sched, "writer3",
-                     boost::bind(rw_mutex_write,
-                                 boost::ref(mutex), boost::ref(step)));
+                     std::bind(rw_mutex_write,
+                               std::ref(mutex), std::ref(step)));
   sched.run();
 }
 
@@ -1659,32 +1660,32 @@ test_rw_mutex_both()
   reactor::RWMutex mutex;
   int step = 0;
   reactor::Thread r1(sched, "reader1",
-                     boost::bind(rw_mutex_both_read,
-                                 boost::ref(mutex), boost::ref(step)));
+                     std::bind(rw_mutex_both_read,
+                               std::ref(mutex), std::ref(step)));
   reactor::Thread r2(sched, "reader2",
-                     boost::bind(rw_mutex_both_read,
-                                 boost::ref(mutex), boost::ref(step)));
+                     std::bind(rw_mutex_both_read,
+                               std::ref(mutex), std::ref(step)));
   sched.step();
 
 
   reactor::Thread w1(sched, "writer1",
-                     boost::bind(rw_mutex_both_write,
-                                 boost::ref(mutex), boost::ref(step)));
+                     std::bind(rw_mutex_both_write,
+                               std::ref(mutex), std::ref(step)));
 
   reactor::Thread w2(sched, "writer2",
-                     boost::bind(rw_mutex_both_write,
-                                 boost::ref(mutex), boost::ref(step)));
+                     std::bind(rw_mutex_both_write,
+                               std::ref(mutex), std::ref(step)));
   while (!r1.done())
     sched.step();
   BOOST_CHECK(r2.done());
   sched.step();
 
   reactor::Thread r3(sched, "reader3",
-                     boost::bind(rw_mutex_both_read,
-                                 boost::ref(mutex), boost::ref(step)));
+                     std::bind(rw_mutex_both_read,
+                               std::ref(mutex), std::ref(step)));
   reactor::Thread r4(sched, "reader4",
-                     boost::bind(rw_mutex_both_read,
-                                 boost::ref(mutex), boost::ref(step)));
+                     std::bind(rw_mutex_both_read,
+                               std::ref(mutex), std::ref(step)));
   while (!w1.done() || !w2.done())
     sched.step();
 
@@ -1692,12 +1693,12 @@ test_rw_mutex_both()
 
 
   reactor::Thread w3(sched, "writer2",
-                     boost::bind(rw_mutex_both_write,
-                                 boost::ref(mutex), boost::ref(step)));
+                     std::bind(rw_mutex_both_write,
+                               std::ref(mutex), std::ref(step)));
 
   reactor::Thread w4(sched, "writer4",
-                     boost::bind(rw_mutex_both_write,
-                                 boost::ref(mutex), boost::ref(step)));
+                     std::bind(rw_mutex_both_write,
+                               std::ref(mutex), std::ref(step)));
 
   sched.run();
 }
@@ -1726,10 +1727,10 @@ test_storage()
   reactor::Scheduler sched;
   reactor::LocalStorage<int> val;
 
-  reactor::Thread t1(sched, "1", boost::bind(storage, boost::ref(val), 0));
-  reactor::Thread t2(sched, "2", boost::bind(storage, boost::ref(val), 1));
-  reactor::Thread t3(sched, "3", boost::bind(storage, boost::ref(val), 2));
-  reactor::Thread t4(sched, "4", boost::bind(storage, boost::ref(val), 3));
+  reactor::Thread t1(sched, "1", std::bind(storage, std::ref(val), 0));
+  reactor::Thread t2(sched, "2", std::bind(storage, std::ref(val), 1));
+  reactor::Thread t3(sched, "3", std::bind(storage, std::ref(val), 2));
+  reactor::Thread t4(sched, "4", std::bind(storage, std::ref(val), 3));
 
   sched.run();
 }
