@@ -2,7 +2,9 @@
 
 #include <utility>
 
+#include <elle/attribute.hh>
 #include <elle/meta.hh>
+
 #include <das/Symbol.hh>
 
 namespace das
@@ -329,17 +331,19 @@ namespace das
                        List<>,
                        List<Args...>,
                        List<>>::template result_of<F>::type
-        call(F const& f, Args&& ... args)
+        call(F const& f, Args&& ... args) const
       {
         return Applier<
           DefaultStore,
           List<typename make_formal<Formal>::type...>,
           List<>,
           List<Args...>,
-          List<>>::apply(defaults, f, std::forward<Args>(args)...);
+          List<>>::apply(
+            // FIXME: keep defaults const
+            const_cast<DefaultStore&>(defaults),
+            f, std::forward<Args>(args)...);
       }
     };
-
 
     // The Tail remainder is there to uniquify
     template <typename T, typename ... Tail>
@@ -403,6 +407,35 @@ namespace das
       return Prototype<DefaultStore<Args...>,
                        typename std::remove_cv_reference<Args>::type...>
         (DefaultStore<Args...>(std::forward<Args>(args)...));
+    }
+
+    template <typename F, typename ... Args>
+    class Function
+    {
+    public:
+      Function(F f, Args&& ... args)
+        : _function(std::move(f))
+        , _prototype(DefaultStore<Args...>(std::forward<Args>(args)...))
+      {}
+
+      template <typename ... Effective>
+      auto
+      operator() (Effective&& ... effective) const
+      {
+        return this->_prototype.call(
+          this->_function, std::forward<Effective>(effective)...);
+      }
+
+      ELLE_ATTRIBUTE_R(F, function);
+      ELLE_ATTRIBUTE_R((Prototype<DefaultStore<Args...>, Args...>), prototype);
+    };
+
+    template <typename F, typename ... Args>
+    Function<F, typename std::remove_cv_reference<Args>::type...>
+    function(F f, Args&& ... args)
+    {
+      return Function<F, typename std::remove_cv_reference<Args>::type...>(
+        std::move(f), std::forward<Args>(args)...);
     }
   }
 }
