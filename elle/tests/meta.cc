@@ -44,13 +44,15 @@ namespace list
   namespace map
   {
     typedef List<int, float, std::string> l;
-    template <typename T>
+    template <typename T, typename Check>
     struct intify
     {
+      static_assert(std::is_same<Check, double>::value, "");
       using type = int;
     };
     static_assert(
-      std::is_same<l::map<intify>::type, List<int, int, int>>::value,
+      std::is_same<typename l::map<intify, double>::type,
+                   List<int, int, int>>::value,
       "list::map yielded the wrong type");
     template <typename T>
     struct pointerize
@@ -80,7 +82,7 @@ namespace list
   }
 }
 
-template <typename T>
+template <typename T, typename Token>
 struct print_type
 {
   using type = std::string;
@@ -88,7 +90,8 @@ struct print_type
   type
   value(std::string const& prefix, std::string const& suffix)
   {
-    return prefix + elle::type_info<T>().name() + suffix;
+    return prefix + elle::type_info<Token>().name() + ":" +
+      elle::type_info<T>().name() + suffix;
   }
 };
 
@@ -159,15 +162,14 @@ map()
 {
   {
     using l = List<int, float, char>;
-    using map = l::map<print_type>;
+    using map = l::map<print_type, int>;
     static_assert(
       std::is_same<map::type,
                    List<std::string, std::string, std::string>>::value,
       "list::map yielded the wrong type");
-    static_assert(
-      elle::meta::_details::map_runtime<print_type, int>(0), "blerg");
-    BOOST_CHECK_EQUAL(l::map<print_type>::value("<", ">"),
-                      std::make_tuple("<int>", "<float>", "<char>"));
+    BOOST_CHECK_EQUAL(
+      map::value("<", ">"),
+      std::make_tuple("<int:int>", "<int:float>", "<int:char>"));
   }
   {
     using l = List<Bar, Baz>;

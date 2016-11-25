@@ -22,8 +22,8 @@ namespace elle
       struct
       index_of;
 
-      /// List<F<Elts>...>
-      template <template <typename> class F>
+      /// List<F<Elts, Args...>...>
+      template <template <typename, typename ...> class F, typename ... Args>
       struct
       map;
 
