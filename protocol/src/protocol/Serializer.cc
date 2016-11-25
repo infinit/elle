@@ -4,6 +4,7 @@
 # include <arpa/inet.h>
 #endif
 
+#include <elle/buffer.hh>
 #include <elle/log.hh>
 
 #include <cryptography/hash.hh>
@@ -16,7 +17,6 @@
 #include <reactor/Barrier.hh>
 #include <reactor/network/socket.hh>
 #include <reactor/network/utp-socket.hh>
-#include <reactor/network/buffer.hh>
 
 #include <protocol/Serializer.hh>
 #include <protocol/exceptions.hh>

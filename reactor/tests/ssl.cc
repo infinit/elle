@@ -214,7 +214,7 @@ private:
             while (true)
             {
               char data[BUFSIZ];
-              auto read = from.read_some(reactor::network::Buffer(data, BUFSIZ));
+              auto read = from.read_some(elle::WeakBuffer(data, sizeof data));
               for (unsigned i = 0; i < read - this->_secret.size(); ++i)
               {
                 BOOST_CHECK_NE(std::string(data + i, this->_secret.size()),
@@ -537,7 +537,7 @@ ELLE_TEST_SCHEDULED(shutdown_asynchronous)
                   while (true)
                   {
                     char buffer[1024];
-                    reactor::network::Buffer b(buffer, sizeof(buffer));
+                    elle::WeakBuffer b(buffer, sizeof buffer);
                     {
                       auto size = from->read_some(b);
                       reactor::wait(forwarding);

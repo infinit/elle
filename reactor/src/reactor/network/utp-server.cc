@@ -1,6 +1,7 @@
 #include <reactor/network/utp-server.hh>
 
 #ifdef INFINIT_LINUX
+# include <sys/time.h> // timespec
 # include <linux/errqueue.h>
 # include <netinet/ip_icmp.h>
 #endif
@@ -506,8 +507,8 @@ namespace reactor
                 ELLE_DEBUG("Socket closed, exiting");
                 return;
               }
-              sz = this->_socket->receive_from(
-                Buffer(buf.mutable_contents(), buf.size()), source);
+              sz = this->_socket->receive_from
+                (elle::WeakBuffer(buf.mutable_contents(), buf.size()), source);
               buf.size(sz);
               if (this->_xorify)
               {

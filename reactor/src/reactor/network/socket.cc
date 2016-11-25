@@ -6,7 +6,6 @@
 #include <elle/format/hexadecimal.hh>
 
 #include <reactor/lockable.hh>
-#include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/socket.hh>
 #include <reactor/network/tcp-socket.hh>
@@ -83,7 +82,7 @@ namespace reactor
           try
           {
             this->_socket->read_some(
-              network::Buffer(this->read_buffer, sizeof this->read_buffer),
+              elle::WeakBuffer(this->read_buffer, sizeof this->read_buffer),
               {},
               &size);
           }
@@ -349,7 +348,7 @@ namespace reactor
     `-----*/
 
     void
-    Socket::read(network::Buffer, DurationOpt, int*)
+    Socket::read(elle::WeakBuffer, DurationOpt, int*)
     {
       std::abort();
       // XXX[unused arguments for now, do something with it]
@@ -361,8 +360,8 @@ namespace reactor
     Socket::read(Size size,
                  DurationOpt timeout)
     {
-      elle::Buffer res(size);
-      this->read(network::Buffer(res.mutable_contents(), size), timeout);
+      auto res = elle::Buffer(size);
+      this->read(elle::WeakBuffer(res.mutable_contents(), size), timeout);
       return res;
     }
 
@@ -371,7 +370,7 @@ namespace reactor
                       DurationOpt timeout)
     {
       auto res = elle::Buffer(size);
-      auto r = this->read_some(network::Buffer(res.mutable_contents(), size),
+      auto r = this->read_some(elle::WeakBuffer(res.mutable_contents(), size),
                                timeout);
       res.size(r);
       return res;
@@ -441,13 +440,13 @@ namespace reactor
       typedef DataOperation<Socket> Super;
       Read(PlainSocket& plain,
            AsioSocket& socket,
-           Buffer& buffer,
-           bool some):
-        DataOperation<AsioSocket>(socket),
-        _buffer(buffer),
-        _read(0),
-        _some(some),
-        _socket(plain)
+           elle::WeakBuffer& buffer,
+           bool some)
+        : DataOperation<AsioSocket>(socket)
+        , _buffer(buffer)
+        , _read(0)
+        , _some(some)
+        , _socket(plain)
       {}
 
       virtual
@@ -465,12 +464,14 @@ namespace reactor
         // FIXME: be synchronous if enough bytes are available
         if (this->_some)
           this->_socket.socket()->async_read_some(
-            boost::asio::buffer(this->_buffer.data(), this->_buffer.size()),
+            boost::asio::buffer(this->_buffer.mutable_contents(),
+                                this->_buffer.size()),
             boost::bind(&Read::_wakeup, this, _1, _2));
         else
           boost::asio::async_read(
             *this->_socket.socket(),
-            boost::asio::buffer(this->_buffer.data(), this->_buffer.size()),
+            boost::asio::buffer(this->_buffer.mutable_contents(),
+                                this->_buffer.size()),
             boost::bind(&Read::_wakeup, this, _1, _2));
       }
 
@@ -483,7 +484,7 @@ namespace reactor
         Super::_wakeup(error);
       }
 
-      ELLE_ATTRIBUTE(Buffer&, buffer);
+      ELLE_ATTRIBUTE(elle::WeakBuffer&, buffer);
       ELLE_ATTRIBUTE_R(Size, read);
       ELLE_ATTRIBUTE(bool, some);
       ELLE_ATTRIBUTE(PlainSocket const&, socket);
@@ -491,7 +492,7 @@ namespace reactor
 
     template <typename AsioSocket, typename EndPoint>
     void
-    StreamSocket<AsioSocket, EndPoint>::read(Buffer buf,
+    StreamSocket<AsioSocket, EndPoint>::read(elle::WeakBuffer buf,
                                              DurationOpt timeout,
                                              int* bytes_read)
     {
@@ -500,7 +501,7 @@ namespace reactor
 
     template <typename AsioSocket, typename EndPoint>
     Size
-    StreamSocket<AsioSocket, EndPoint>::read_some(Buffer buf,
+    StreamSocket<AsioSocket, EndPoint>::read_some(elle::WeakBuffer buf,
                                                   DurationOpt timeout,
                                                   int* bytes_read)
     {
@@ -509,7 +510,7 @@ namespace reactor
 
     template <typename AsioSocket, typename EndPoint>
     Size
-    StreamSocket<AsioSocket, EndPoint>::_read(Buffer buf,
+    StreamSocket<AsioSocket, EndPoint>::_read(elle::WeakBuffer buf,
                                               DurationOpt timeout,
                                               bool some,
                                               int* bytes_read)
@@ -522,21 +523,20 @@ namespace reactor
       if (this->_streambuffer.size())
       {
         std::istream s(&this->_streambuffer);
-        s.readsome(reinterpret_cast<char*>(buf.data()), buf.size());
+        s.readsome(reinterpret_cast<char*>(buf.mutable_contents()), buf.size());
         unsigned size = s.gcount();
         ELLE_ASSERT_GT(size, 0u);
         if (size == buf.size() || some)
         {
           ELLE_DEBUG("%s: completed read of %s (cached) bytes: %s",
-                     *this, size, elle::ConstWeakBuffer(buf.data(),
-                                                        buf.size()).string());
+                     *this, size, buf);
           if (bytes_read)
             *bytes_read = size;
           return size;
         }
         else if (size)
           ELLE_TRACE("%s: read %s cached bytes, carrying on", *this, size);
-        buf = Buffer(buf.data() + size, buf.size() - size);
+        buf = buf.range(size);
       }
       using Spe = SocketSpecialization<AsioSocket>;
       auto read = Read<Self, typename Spe::Socket> (*this,
@@ -564,7 +564,7 @@ namespace reactor
       ELLE_TRACE("%s: completed read of %s bytes: %s",
                  *this, read.read(), buf);
 
-      elle::ConstWeakBuffer data(buf.data(), read.read());
+      auto data = elle::ConstWeakBuffer(buf.contents(), read.read());
       elle::Lazy<std::string> hex(
         [&data]
         {

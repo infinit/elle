@@ -30,7 +30,7 @@ namespace reactor
       void set_local_id(std::string const& id);
       /// We expect user to call receive_from in a loop, before rdv_connect.
       Size
-      receive_from(Buffer buffer,
+      receive_from(elle::WeakBuffer buffer,
                    boost::asio::ip::udp::endpoint &endpoint,
                    DurationOpt timeout = DurationOpt());
       /// Contact an RDV-aware peer.
@@ -40,7 +40,7 @@ namespace reactor
               DurationOpt timeout = DurationOpt());
       bool rdv_connected() const;
 
-      using reader = std::function<void(Buffer, Endpoint)>;
+      using reader = std::function<void(elle::WeakBuffer, Endpoint)>;
       // Register a function that will be called for each received packet
       // begining with magic. Magic must be 8 bytes long.
       void
@@ -49,7 +49,7 @@ namespace reactor
       ELLE_ATTRIBUTE_R(Endpoint, public_endpoint);
 
     private:
-      void send_to_failsafe(Buffer buffer, Endpoint endpoint);
+      void send_to_failsafe(elle::ConstWeakBuffer buffer, Endpoint endpoint);
       void send_ping(Endpoint target, std::string const& tid = {});
       void loop_breach();
       void loop_keep_alive();

@@ -329,6 +329,9 @@ namespace elle
     WeakBuffer(WeakBuffer const& other);
     /// WeakBuffer move.
     WeakBuffer(WeakBuffer&& other);
+    /// WeakBuffer assignement.
+    WeakBuffer& operator = (WeakBuffer const& other) = default;
+
   private:
     /// WeakBuffer cannot take ownership of memory.
     WeakBuffer(Buffer&&);

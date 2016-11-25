@@ -49,13 +49,14 @@ namespace reactor
       public:
         virtual
         Size
-        read_some(Buffer buffer,
+        read_some(elle::WeakBuffer buffer,
                   DurationOpt timeout = DurationOpt(),
                   int* bytes_read = nullptr) override;
 
-        Size receive_from(Buffer buffer,
-                          boost::asio::ip::udp::endpoint &endpoint,
-                          DurationOpt timeout = DurationOpt());
+        Size
+        receive_from(elle::WeakBuffer buffer,
+                     boost::asio::ip::udp::endpoint &endpoint,
+                     DurationOpt timeout = DurationOpt());
 
       /*------.
       | Write |
@@ -69,7 +70,7 @@ namespace reactor
         read_until(std::string const& delimiter,
                    DurationOpt opt = DurationOpt()) override;
 
-        void send_to(Buffer buffer,
+        void send_to(elle::ConstWeakBuffer buffer,
                      EndPoint endpoint);
 
       /*----------------.

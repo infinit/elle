@@ -378,10 +378,10 @@ namespace reactor
       ELLE_TRACE_SCOPE("%s: read sized content of size %s", *this, length);
       auto content = elle::Buffer(length);
       content.size(length);
-      socket.read(
-        reactor::network::Buffer(content.mutable_contents(), length));
+      socket.read(elle::WeakBuffer(content.mutable_contents(), length));
       return content;
     }
+
     void
     HttpServer::print(std::ostream& stream) const
     {

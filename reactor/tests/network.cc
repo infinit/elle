@@ -2,6 +2,7 @@
 
 #include <boost/bind.hpp>
 
+#include <elle/buffer.hh>
 #include <elle/log.hh>
 #include <elle/memory.hh>
 #include <elle/test.hh>
@@ -9,7 +10,6 @@
 
 #include <reactor/asio.hh>
 #include <reactor/Scope.hh>
-#include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/resolve.hh>
 #include <reactor/network/tcp-server.hh>
@@ -28,7 +28,6 @@
 ELLE_LOG_COMPONENT("reactor.network.test");
 
 using reactor::network::Byte;
-using reactor::network::Buffer;
 using reactor::Signal;
 using reactor::network::TCPSocket;
 using reactor::network::TCPServer;
@@ -62,7 +61,7 @@ public:
       char buffer[512];
       try
       {
-        socket->read_some(reactor::network::Buffer(buffer, sizeof buffer));
+        socket->read_some(elle::WeakBuffer(buffer, sizeof buffer));
       }
       catch (reactor::network::ConnectionClosed const&)
       {
@@ -149,7 +148,7 @@ test_timeout_read()
       // Poke the server to establish the pseudo connection in the UDP case.
       socket.write(elle::ConstWeakBuffer("poke"));
       Byte b;
-      reactor::network::Buffer buffer(&b, 1);
+      auto buffer = elle::WeakBuffer(&b, 1);
       BOOST_CHECK_THROW(
         socket.read_some(buffer, boost::posix_time::milliseconds(200)),
         reactor::network::TimeOut);
@@ -182,7 +181,7 @@ serve(std::unique_ptr<Socket> socket)
     reactor::network::Size read = 0;
     try
     {
-      read = socket->read_some(Buffer(buffer, sizeof buffer - 1),
+      read = socket->read_some(elle::WeakBuffer(buffer, sizeof buffer - 1),
                                boost::posix_time::milliseconds(100));
     }
     catch (reactor::network::ConnectionClosed&)
@@ -215,7 +214,7 @@ client(typename Socket::EndPoint const& ep,
     Byte buf[256];
     assert(message.size() + 1 < sizeof buf);
     s.write(elle::ConstWeakBuffer(message));
-    reactor::network::Size read = s.read_some(Buffer(buf, sizeof buf));
+    reactor::network::Size read = s.read_some(elle::WeakBuffer(buf, sizeof buf));
     buf[read] = 0;
     BOOST_CHECK_EQUAL(message, reinterpret_cast<char*>(buf));
     ++check;
@@ -475,7 +474,7 @@ read_until()
       reactor::network::TCPSocket sock("127.0.0.1", server.port());
       BOOST_CHECK_EQUAL(sock.read_until("\r\n"), "foo\r\n");
       char c;
-      sock.read(reactor::network::Buffer(&c, 1));
+      sock.read(elle::WeakBuffer(&c, 1));
       BOOST_CHECK_EQUAL(c, 'x');
       BOOST_CHECK_EQUAL(sock.read_until("\r\n"), "\r\n");
       BOOST_CHECK_EQUAL(sock.read_until("\r\n"), "bar\r\n");
@@ -642,7 +641,7 @@ ELLE_TEST_SCHEDULED(read_terminate_recover)
         // and not be killed right away.
         reactor::wait(written);
         reading.open();
-        socket->read(reactor::network::Buffer(buffer, sizeof buffer),
+        socket->read(elle::WeakBuffer(buffer, sizeof buffer),
                      elle::DurationOpt(), &bytes_read);
       }
       catch (reactor::Terminate const& e)
@@ -650,8 +649,8 @@ ELLE_TEST_SCHEDULED(read_terminate_recover)
         terminated.open();
         BOOST_CHECK_EQUAL(bytes_read, 50);
         BOOST_CHECK(!memcmp(buffer, wbuf, 50));
-        socket->read(reactor::network::Buffer(buffer + bytes_read,
-                                              sizeof buffer - bytes_read));
+        socket->read(elle::WeakBuffer(buffer + bytes_read,
+                                      sizeof buffer - bytes_read));
         BOOST_CHECK(!memcmp(buffer, wbuf, sizeof wbuf));
         throw;
       }

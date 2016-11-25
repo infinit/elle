@@ -8,7 +8,6 @@
 #include <reactor/asio.hh>
 #include <reactor/Barrier.hh>
 #include <reactor/Scope.hh>
-#include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/tcp-server.hh>
 #include <reactor/network/tcp-socket.hh>
@@ -242,8 +241,6 @@ private:
   void
   _route()
   {
-    using reactor::network::Buffer;
-
     std::unique_ptr<reactor::network::Socket> a(this->_a_server.accept());
     std::unique_ptr<reactor::network::Socket> b(this->_b_server.accept());
 
@@ -262,7 +259,8 @@ private:
               char buffer[1024];
               ELLE_DEBUG("reading");
               int64_t size =
-                sender->read_some(Buffer(buffer, sizeof(buffer)), valgrind(250_ms, 10));
+                sender->read_some(elle::WeakBuffer(buffer, sizeof buffer),
+                                  valgrind(250_ms, 10));
               ELLE_DEBUG("read %s", size);
               conf(elle::ConstWeakBuffer(buffer, size));
               if (conf.corrupt_offset >= 0
