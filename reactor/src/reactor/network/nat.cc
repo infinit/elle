@@ -10,7 +10,6 @@
 
 #include <reactor/network/nat.hh>
 
-#include <reactor/network/buffer.hh>
 #include <reactor/network/resolve.hh>
 #include <reactor/sleep.hh>
 #include <reactor/thread.hh>
@@ -147,10 +146,10 @@ namespace reactor
       ELLE_DEBUG_SCOPE("try punching port %s", port);
 
       std::string question{"echo sasp"};
-      this->_handle->send_to(network::Buffer(question), _longinus);
+      this->_handle->send_to(elle::ConstWeakBuffer(question), _longinus);
 
-      std::string buffer_data(1024, ' ');
-      network::Buffer buffer(buffer_data);
+      auto buffer_data = std::string(1024, ' ');
+      auto buffer = elle::WeakBuffer(buffer_data);
       int size;
       try
       {
@@ -330,7 +329,7 @@ namespace reactor
           boost::asio::ip::address_v4 addr(ntohl(sin->sin_addr.s_addr));
           boost::asio::ip::udp::endpoint dest{addr, ntohs(sin->sin_port)};
 
-          network::Buffer b(spMsg->GetData(), spMsg->GetSize());
+          auto b = elle::WeakBuffer(spMsg->GetData(), spMsg->GetSize());
           this->_handle->send_to(b, dest);
         }
         else if (r == E_STUNCLIENT_RESULTS_READY)
