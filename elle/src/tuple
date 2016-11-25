@@ -32,7 +32,7 @@ namespace std
         F, Tuple, Total - 1, N..., sizeof...(N)>;
       static
       auto
-      call(F f, Tuple && t)
+      call(F const& f, Tuple && t)
         -> decltype(Next::call(f, std::forward<Tuple>(t)))
       {
         return Next::call(f, std::forward<Tuple>(t));
@@ -44,7 +44,7 @@ namespace std
     {
       static
       auto
-      call(F f, Tuple && t)
+      call(F const& f, Tuple && t)
         -> decltype(f(std::get<N>(std::forward<Tuple>(t))...))
       {
         return f(std::get<N>(std::forward<Tuple>(t))...);
