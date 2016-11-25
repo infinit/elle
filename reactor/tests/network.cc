@@ -270,7 +270,7 @@ test_echo_server()
             clients.push_back(
               new reactor::Thread(
                 "serve",
-                boost::bind(&serve<Socket>,
+                std::bind(&serve<Socket>,
                             elle::utility::move_on_copy(socket))));
           }
           reactor::wait(reactor::Waitables(begin(clients), end(clients)));
@@ -278,11 +278,11 @@ test_echo_server()
             delete thread;
         });
       reactor::Thread c1("client1",
-                         boost::bind(client<Server, Socket>,
+                         std::bind(client<Server, Socket>,
                                      server.local_endpoint(),
                                      messages_1, std::ref(check_1)));
       reactor::Thread c2("client2",
-                         boost::bind(client<Server, Socket>,
+                         std::bind(client<Server, Socket>,
                                      server.local_endpoint(),
                                      messages_2, std::ref(check_2)));
       reactor::wait(c1);

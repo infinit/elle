@@ -376,10 +376,10 @@ dialog(elle::Version const& version,
   {
     auto& _alice = scope.run_background(
       "alice",
-      boost::bind(a, boost::ref(*alice)));
+      std::bind(a, std::ref(*alice)));
     auto& _bob = scope.run_background(
       "bob",
-      boost::bind(b, boost::ref(*bob)));
+      std::bind(b, std::ref(*bob)));
     if (f)
       scope.run_background(
         "other",
