@@ -147,10 +147,9 @@ ELLE_TEST_SCHEDULED(kill_reader)
   ChanneledStream cs1(ser1);
   while (!cs2p)
     reactor::sleep(50_ms);
-  Serializer& ser2(*ser2p);
-  ChanneledStream& cs2(*cs2p);
+  ChanneledStream& cs2 = *cs2p;
 
-
+  // FIXME: unused.
   int cid1, cid2, cid3;
   bool r1 = false, r2 = false, r3 = false;
   reactor::Thread::unique_ptr t1, t2, t3;

@@ -82,9 +82,9 @@ namespace reactor
     class UDPWrite: public SocketOperation<boost::asio::ip::udp::socket>
     {
       public:
-        typedef boost::asio::ip::udp::socket AsioSocket;
-        typedef boost::asio::ip::udp::endpoint EndPoint;
-        typedef SocketOperation<AsioSocket> Super;
+        using AsioSocket = boost::asio::ip::udp::socket;
+        using EndPoint = boost::asio::ip::udp::endpoint;
+        using Super = SocketOperation<AsioSocket>;
         UDPWrite(Scheduler& scheduler,
                  PlainSocket<AsioSocket>* socket,
                  Buffer& buffer)

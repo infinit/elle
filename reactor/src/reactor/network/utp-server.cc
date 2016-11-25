@@ -56,7 +56,7 @@ namespace reactor
     on_sendto(utp_callback_arguments* args)
     {
       UTPServer::EndPoint ep;
-      struct sockaddr_in *sin = (struct sockaddr_in*)args->address;
+      sockaddr_in *sin = (sockaddr_in*)args->address;
       if (sin->sin_family == AF_INET)
       {
         ep = UTPServer::EndPoint(
@@ -65,7 +65,7 @@ namespace reactor
       }
       else if (sin->sin_family == AF_INET6)
       {
-        struct sockaddr_in6 *sin = (struct sockaddr_in6*)args->address;
+        sockaddr_in6 *sin = (sockaddr_in6*)args->address;
         std::array<unsigned char, 16> addr {{0}};
         memcpy(addr.data(), sin->sin6_addr.s6_addr, 16);
         ep = UTPServer::EndPoint(boost::asio::ip::address_v6(addr),
@@ -73,8 +73,7 @@ namespace reactor
       }
       else
       {
-        throw elle::Error(
-          elle::sprintf("unknown protocol %s", sin->sin_family));
+        elle::err("unknown protocol %s", sin->sin_family);
       }
       auto server = get_server(args);
       ELLE_ASSERT(server);
@@ -97,9 +96,8 @@ namespace reactor
     {
       ELLE_DEBUG("on_read");
       auto s = get(args);
-      if (!s)
-        return 0;
-      s->on_read(elle::ConstWeakBuffer(args->buf, args->len));
+      if (s)
+        s->on_read(elle::ConstWeakBuffer(args->buf, args->len));
       return 0;
     }
 
@@ -109,9 +107,8 @@ namespace reactor
     {
       ELLE_DEBUG("on_error %s", utp_error_code_names[args->error_code]);
       auto s = get(args);
-      if (!s)
-        return 0;
-      s->on_close();
+      if (s)
+        s->on_close();
       return 0;
     }
 
@@ -121,22 +118,21 @@ namespace reactor
     {
       auto s = get(args);
       ELLE_DEBUG("on_state_change %s on %s", utp_state_names[args->state], s);
-      if (!s)
-        return 0;
-      switch(args->state)
-      {
-        case UTP_STATE_CONNECT:
-        case UTP_STATE_WRITABLE:
-          s->_write_cont();
-          //s->_write_barrier.open();
-          break;
-        case UTP_STATE_EOF:
-          s->on_close();
-          break;
-        case UTP_STATE_DESTROYING:
-          s->_destroyed();
-          break;
-      }
+      if (s)
+        switch (args->state)
+          {
+          case UTP_STATE_CONNECT:
+          case UTP_STATE_WRITABLE:
+            s->_write_cont();
+            //s->_write_barrier.open();
+            break;
+          case UTP_STATE_EOF:
+            s->on_close();
+            break;
+          case UTP_STATE_DESTROYING:
+            s->_destroyed();
+            break;
+          }
       return 0;
     }
 
@@ -566,8 +562,6 @@ namespace reactor
     {
       this->_send_buffer.emplace_back(elle::Buffer(buf.data(), buf.size()),
                                       where);
-      typedef boost::system::error_code errc;
-      std::function<void (errc const& erc, size_t sz)> send_cont;
       if (!this->_sending)
       {
         this->_sending = true;
@@ -614,9 +608,7 @@ namespace reactor
         endpoint = EndPoint(boost::asio::ip::address_v6::v4_mapped(
                               endpoint.address().to_v4()), endpoint.port());
       this->_socket->socket()->async_send_to(
-        boost::asio::buffer(
-          buf.first.contents(),
-          buf.first.size()),
+        boost::asio::buffer(buf.first.contents(), buf.first.size()),
         endpoint,
         [this] (boost::system::error_code const& errc, size_t size)
         { this->_send_cont(errc, size); });

@@ -2,6 +2,7 @@
 
 #include <utp.h>
 
+#include <elle/err.hh>
 #include <elle/finally.hh>
 #include <elle/log.hh>
 
@@ -280,7 +281,7 @@ namespace reactor
                           &hints, &ai);
       }
       if (res)
-        throw elle::Error("Failed to resolve " + host);
+        elle::err("Failed to resolve %s", host);
       this->_impl->_destroyed_barrier.close();
       utp_connect(this->_impl->_socket, ai->ai_addr, ai->ai_addrlen);
       freeaddrinfo(ai);
