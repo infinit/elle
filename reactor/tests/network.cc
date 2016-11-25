@@ -622,7 +622,7 @@ ELLE_TEST_SCHEDULED(resolution_abort)
 ELLE_TEST_SCHEDULED(read_terminate_recover)
 {
   char wbuf[100];
-  for (int i = 0; i < sizeof wbuf; ++i)
+  for (auto i = 0u; i < sizeof wbuf; ++i)
     wbuf[i] = rand();
   reactor::network::TCPServer server;
   server.listen();
@@ -674,7 +674,7 @@ ELLE_TEST_SCHEDULED(read_terminate_recover)
 ELLE_TEST_SCHEDULED(read_terminate_recover_iostream)
 {
   char wbuf[100];
-  for (int i = 0; i < sizeof wbuf; ++i)
+  for (auto i = 0u; i < sizeof wbuf; ++i)
     wbuf[i] = rand();
   reactor::network::TCPServer server;
   server.listen();

@@ -405,7 +405,47 @@ multiline()
     "            splitted\n"
     "            into\n"
     "            5 lines\n";
-  BOOST_CHECK_EQUAL(output.str(),expected);
+  BOOST_CHECK_EQUAL(output.str(), expected);
+}
+
+/// Check that we components are displayed with just the needed width.
+static
+void
+component_width()
+{
+  auto generate_log = []
+  {
+    std::stringstream output;
+    elle::log::logger(std::make_unique<elle::log::TextLogger>(output));
+    ELLE_LOG_COMPONENT("foo");
+    ELLE_TRACE("foo.1")
+    {
+      ELLE_LOG_COMPONENT("bar");
+      ELLE_TRACE("bar.1")
+      {
+        ELLE_LOG_COMPONENT("quuuuux");
+        ELLE_DUMP("quuuuux.1");
+      }
+      ELLE_TRACE("bar.2");
+    }
+    ELLE_TRACE("foo.2");
+    return output.str();
+  };
+
+  elle::os::setenv("ELLE_LOG_LEVEL", "DUMP", 1);
+  BOOST_CHECK_EQUAL(generate_log(),
+                    "[foo] foo.1\n"
+                    "[bar]   bar.1\n"
+                    "[quuuuux]     quuuuux.1\n"
+                    "[  bar  ]   bar.2\n"
+                    "[  foo  ] foo.2\n");
+
+  elle::os::setenv("ELLE_LOG_LEVEL", "TRACE", 1);
+  BOOST_CHECK_EQUAL(generate_log(),
+                    "[foo] foo.1\n"
+                    "[bar]   bar.1\n"
+                    "[bar]   bar.2\n"
+                    "[foo] foo.2\n");
 }
 
 /// Check the use of context filters: print logs only when nested in
@@ -417,8 +457,7 @@ nested()
   auto generate_log = []
   {
     std::stringstream output;
-    elle::log::logger(
-      std::unique_ptr<elle::log::Logger>{new elle::log::TextLogger{output}});
+    elle::log::logger(std::make_unique<elle::log::TextLogger>(output));
     ELLE_LOG_COMPONENT("foo");
     ELLE_TRACE("foo.1")
     {
@@ -535,6 +574,7 @@ ELLE_TEST_SUITE()
   format->add(BOOST_TEST_CASE(error));
   format->add(BOOST_TEST_CASE(multiline));
   format->add(BOOST_TEST_CASE(trim));
+  format->add(BOOST_TEST_CASE(component_width));
   format->add(BOOST_TEST_CASE(nested));
 #endif
 }

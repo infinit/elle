@@ -156,9 +156,9 @@ namespace elle
       /// Whether participates as a context or as a component for this
       /// level.
       bool
-      component_is_active(std::string const& name, Level level = Level::log) const;
+      component_is_active(std::string const& name, Level level = Level::log);
 
-      /// Whether can be enabled, in the current context of components.
+      /// Log level in the current context of components.
       Level
       component_level(std::string const& name);
 
