@@ -51,7 +51,7 @@ namespace reactor
       }
     };
 
-    size_t const Socket::buffer_size = 1 << 16;
+    constexpr size_t const Socket::buffer_size = 1 << 16;
 
     namespace
     {
@@ -538,14 +538,14 @@ namespace reactor
           ELLE_TRACE("%s: read %s cached bytes, carrying on", *this, size);
         buf = Buffer(buf.data() + size, buf.size() - size);
       }
-      typedef SocketSpecialization<AsioSocket> Spe;
-      Read<Self, typename Spe::Socket> read(*this,
-                                            Spe::socket(*this->socket()),
-                                            buf, some);
+      using Spe = SocketSpecialization<AsioSocket>;
+      auto read = Read<Self, typename Spe::Socket> (*this,
+                                                    Spe::socket(*this->socket()),
+                                                    buf, some);
       bool finished;
       try
       {
-        finished  = read.run(timeout);
+        finished = read.run(timeout);
       }
       catch (...)
       {

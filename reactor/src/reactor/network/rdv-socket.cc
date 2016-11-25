@@ -78,9 +78,9 @@ namespace reactor
         bool server_hit = (endpoint == _server);
         auto addr = endpoint.address();
         if (endpoint.port() == _server.port()
-          && addr.is_v6()
-          && addr.to_v6().is_v4_mapped()
-          && addr.to_v6().to_v4() == _server.address())
+            && addr.is_v6()
+            && addr.to_v6().is_v4_mapped()
+            && addr.to_v6().to_v4() == _server.address())
           server_hit = true;
         if (!_server_reached.opened() &&  server_hit)
         {
@@ -331,7 +331,7 @@ namespace reactor
 
     void
     RDVSocket::register_reader(std::string const& magic,
-                               std::function<void(Buffer, Endpoint)> handler)
+                               reader handler)
     {
       ELLE_ASSERT_EQ(signed(magic.size()), 8);
       _readers[magic] = handler;

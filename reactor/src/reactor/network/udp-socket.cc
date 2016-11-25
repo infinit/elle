@@ -146,7 +146,7 @@ namespace reactor
       else
         ELLE_TRACE("%s: read at most %s bytes",
                        *this, buffer.size());
-      UDPRead read(scheduler(), this, buffer);
+      auto read = UDPRead(scheduler(), this, buffer);
       if (!read.run(timeout))
         throw TimeOut();
       if (bytes_read)
@@ -344,7 +344,7 @@ namespace reactor
       if (endpoint.address().is_v4() && this->local_endpoint().address().is_v6())
         endpoint = EndPoint(boost::asio::ip::address_v6::v4_mapped(endpoint.address().to_v4()), endpoint.port());
 
-      UDPSendTo sendto(scheduler(), this, buffer, endpoint);
+      auto sendto = UDPSendTo(scheduler(), this, buffer, endpoint);
       sendto.run();
     }
 

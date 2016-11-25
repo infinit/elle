@@ -17,15 +17,14 @@ ELLE_TEST_SCHEDULED(udp)
   reactor::network::UDPSocket s;
   s.socket()->close();
   s.bind(boost::asio::ip::udp::endpoint({}, 0));
-  auto t = new reactor::Thread("recv", [&] {
+  reactor::Thread t("recv", [&] {
       char data[1000];
       boost::asio::ip::udp::endpoint ep;
       s.receive_from(Buffer(data, 1000), ep);
-  });
+    });
   reactor::sleep(100_ms);
-  t->terminate();
-  reactor::wait(*t);
-  delete t;
+  t.terminate();
+  reactor::wait(t);
 }
 
 

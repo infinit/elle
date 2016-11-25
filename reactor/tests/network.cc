@@ -56,7 +56,7 @@ public:
   void
   silent_server()
   {
-    std::unique_ptr<reactor::network::Socket> socket(this->accept());
+    std::unique_ptr<reactor::network::Socket> socket = this->accept();
     while (true)
     {
       char buffer[512];
@@ -732,12 +732,12 @@ ELLE_TEST_SCHEDULED(read_terminate_deadlock)
     [&]
     {
       auto socket = server.accept();
-      char buffer[8] = {static_cast<char>(0xfd)};
+      char buffer[8] = {char(0xfd)};
       int read = 0;
       elle::IOStreamClear clearer(*socket);
       reading.open();
       while (read < 8)
-        read += std::readsome(*socket, buffer + read, sizeof(buffer) - read);
+        read += std::readsome(*socket, buffer + read, sizeof buffer - read);
       reactor::sleep();
     });
   reactor::network::TCPSocket socket(

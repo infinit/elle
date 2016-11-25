@@ -21,7 +21,7 @@
 
 ELLE_LOG_COMPONENT("infinit.protocol.test");
 
-static elle::Buffer::Size buffer_size = 4096;
+constexpr static elle::Buffer::Size buffer_size = 4096;
 
 struct Focket // Fake socket.
   : public elle::IOStream
@@ -265,9 +265,9 @@ private:
                 sender->read_some(Buffer(buffer, sizeof(buffer)), valgrind(250_ms, 10));
               ELLE_DEBUG("read %s", size);
               conf(elle::ConstWeakBuffer(buffer, size));
-              if (conf.corrupt_offset >= 0 && \
-                  conf.corrupt_offset >= routed && \
-                  conf.corrupt_offset < routed + size)
+              if (conf.corrupt_offset >= 0
+                  && conf.corrupt_offset >= routed
+                  && conf.corrupt_offset < routed + size)
               {
                 int offset = conf.corrupt_offset - routed;
                 ELLE_LOG("%s: corrupt byte %s", *this, offset);
@@ -508,8 +508,8 @@ _connection_lost_reader(elle::Version const& version,
       elle::Buffer pp;
       elle::IOStream p(pp.ostreambuf());
       char buffer[1025];
-      memset(buffer, 0xAA, sizeof(buffer));
-      buffer[sizeof(buffer) - 1] = 0;
+      memset(buffer, 0xAA, sizeof buffer);
+      buffer[sizeof buffer - 1] = 0;
       p << buffer;
       p.flush();
       s.write(pp);
@@ -588,8 +588,8 @@ _corruption(elle::Version const& version,
       elle::Buffer pp;
       elle::IOStream p(pp.ostreambuf());
       char buffer[1025];
-      memset(buffer, 0xAA, sizeof(buffer));
-      buffer[sizeof(buffer) - 1] = 0;
+      memset(buffer, 0xAA, sizeof buffer);
+      buffer[sizeof buffer - 1] = 0;
       p << buffer;
       p.flush();
       s.write(pp);
