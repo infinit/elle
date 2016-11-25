@@ -11,7 +11,6 @@
 
 #include <reactor/exception.hh>
 #include <reactor/network/exception.hh>
-#include <reactor/network/buffer.hh>
 #include <reactor/network/resolve.hh>
 #include <reactor/network/udt-server.hh>
 #include <reactor/operation.hh>
@@ -32,15 +31,15 @@ namespace reactor
     | Accepting |
     `----------*/
 
-    class UDTAccept:
-      public Operation
+    class UDTAccept
+      : public Operation
     {
     public:
       UDTAccept(Scheduler& scheduler,
-                boost::asio::ip::udt::acceptor& acceptor):
-        Operation(scheduler),
-        _acceptor(acceptor),
-        _socket(nullptr)
+                boost::asio::ip::udt::acceptor& acceptor)
+        : Operation(scheduler)
+        , _acceptor(acceptor)
+        , _socket(nullptr)
       {}
 
       virtual
@@ -132,7 +131,7 @@ namespace reactor
     UDTServer::local_endpoint() const
     {
       // XXX We have to do the matching function in asio-udt.
-      return UDTServer::EndPoint{
+      return {
         boost::asio::ip::udp::v4(),
         static_cast<unsigned short>(this->port()),
       };
@@ -149,6 +148,5 @@ namespace reactor
     {
       s << "UDTServer " << this->local_endpoint();
     }
-
   }
 }

@@ -1,3 +1,9 @@
+#include <elle/IOStream.hh>
+#include <elle/With.hh>
+#include <elle/buffer.hh>
+#include <elle/cast.hh>
+#include <elle/test.hh>
+
 #include <protocol/exceptions.hh>
 #include <protocol/Serializer.hh>
 #include <protocol/ChanneledStream.hh>
@@ -8,16 +14,11 @@
 #include <reactor/asio.hh>
 #include <reactor/Barrier.hh>
 #include <reactor/Scope.hh>
-#include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/tcp-server.hh>
 #include <reactor/network/tcp-socket.hh>
 #include <reactor/scheduler.hh>
 
-#include <elle/test.hh>
-#include <elle/cast.hh>
-#include <elle/IOStream.hh>
-#include <elle/With.hh>
 
 ELLE_LOG_COMPONENT("infinit.protocol.test");
 

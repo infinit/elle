@@ -24,7 +24,6 @@
 # include <reactor/http/Method.hh>
 # include <reactor/http/StatusCode.hh>
 # include <reactor/http/Version.hh>
-# include <reactor/network/buffer.hh>
 # include <reactor/network/socket.hh>
 # include <reactor/network/tcp-server.hh>
 # include <reactor/network/tcp-socket.hh>
@@ -71,14 +70,13 @@ namespace reactor
         std::string
         url(std::string const& path);
 
-        typedef std::unordered_map<std::string, std::string> Headers;
-        typedef std::unordered_map<std::string, std::string> Cookies;
-        typedef std::unordered_map<std::string, std::string> Parameters;
-        typedef std::function<std::string (Headers const&,
-                                           Cookies const&,
-                                           Parameters const&,
-                                           elle::Buffer const&)>
-        Function;
+        using Headers = std::unordered_map<std::string, std::string>;
+        using Cookies = std::unordered_map<std::string, std::string>;
+        using Parameters = std::unordered_map<std::string, std::string>;
+        using Function = std::function<std::string (Headers const&,
+                                                    Cookies const&,
+                                                    Parameters const&,
+                                                    elle::Buffer const&)>;
         // Matching a Method to a specific function.
         // e.g.: {GET -> get_function, POST -> post_function, ...}
         struct enum_hash
@@ -92,10 +90,11 @@ namespace reactor
           }
         };
         // XXX: Find better names.
-        typedef std::unordered_map<reactor::http::Method, Function, enum_hash> MethodFunctions;
+        using MethodFunctions =
+          std::unordered_map<reactor::http::Method, Function, enum_hash>;
         // Matching a route a MethodFunctions.
         // e.g.: {"/foo" -> {GET -> get_function, POST -> post_function, ...}}
-        typedef std::unordered_map<std::string, MethodFunctions> Routes;
+        using Routes = std::unordered_map<std::string, MethodFunctions>;
         ELLE_ATTRIBUTE_X(Routes, routes);
         ELLE_ATTRIBUTE(std::unique_ptr<reactor::network::Server>, server);
         ELLE_ATTRIBUTE_R(int, port);
@@ -104,7 +103,8 @@ namespace reactor
         ELLE_ATTRIBUTE_RW(std::function<void (std::string const&)>, check_method);
         ELLE_ATTRIBUTE_RW(std::function<void (bool)>, check_expect_continue);
         ELLE_ATTRIBUTE_RW(std::function<void (bool)>, check_chunked);
-      private:
+
+    private:
         // Wrapper around the command line.
         // Extract method, path and version.
         struct CommandLine
@@ -143,7 +143,7 @@ namespace reactor
         _response(reactor::network::Socket& socket,
                   http::StatusCode code,
                   elle::ConstWeakBuffer content,
-                  Cookies const& cookies = std::unordered_map<std::string,std::string>());
+                  Cookies const& cookies = Cookies{});
         elle::Buffer
         read_sized_content(reactor::network::Socket& socket, unsigned int length);
         ELLE_ATTRIBUTE_RX(Headers, headers);

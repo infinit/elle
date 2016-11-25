@@ -7,20 +7,20 @@
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/lexical_cast.hpp>
 
+#include <elle/log.hh>
+#include <elle/os/environ.hh>
+#include <elle/printf.hh>
+
 #include <asio-udt/acceptor.hh>
 
 #include <reactor/exception.hh>
 #include <reactor/network/exception.hh>
+#include <reactor/network/nat.hh>
 #include <reactor/network/buffer.hh>
 #include <reactor/network/resolve.hh>
 #include <reactor/network/udt-rdv-server.hh>
 #include <reactor/operation.hh>
 #include <reactor/scheduler.hh>
-
-#include <elle/printf.hh>
-#include <elle/log.hh>
-#include <reactor/network/nat.hh>
-#include <elle/os/environ.hh>
 
 ELLE_LOG_COMPONENT("reactor.network.UDTRendezVousServer");
 
@@ -32,19 +32,19 @@ namespace reactor
     | Construction |
     `-------------*/
 
-    UDTRendezVousServer::UDTRendezVousServer(Scheduler& sched):
-      Super(sched),
-      _accepted(),
-      _sockets(),
-      _udp_socket(new UDPSocket{sched})
+    UDTRendezVousServer::UDTRendezVousServer(Scheduler& sched)
+      : Super(sched)
+      , _accepted()
+      , _sockets()
+      , _udp_socket(new UDPSocket{sched})
     {}
 
     UDTRendezVousServer::UDTRendezVousServer(Scheduler& sched,
-                         std::unique_ptr<UDPSocket> sock):
-      Super(sched),
-      _accepted(),
-      _sockets(),
-      _udp_socket(std::move(sock))
+                                             std::unique_ptr<UDPSocket> sock)
+      : Super(sched)
+      , _accepted()
+      , _sockets()
+      , _udp_socket(std::move(sock))
     {}
 
     UDTRendezVousServer::~UDTRendezVousServer()
