@@ -67,6 +67,7 @@ class State:
         self.__state = {}
     except OSError:
       self.__state = {}
+    self.__validate_state()
     return self
 
   def __exit__(self, t, v, tb):
@@ -80,6 +81,14 @@ class State:
         raise
       else:
         mv(tmp, self.state_path)
+
+  def __validate_state(self):
+    trees = self.__state.setdefault('build-trees', {})
+    for b in list(trees):
+      tree = trees[b]
+      if not os.path.exists(tree['path']):
+        print('Missing build tree %s, evicting from state' % tree['path'])
+        del trees[b]
 
   def __options_parser(self):
     import argparse
@@ -343,10 +352,16 @@ class State:
       sh.ssh(State.cache_url, 'lockfile-remove', self.__path)
 
   @property
-  def cache_dir(self):
+  def old_cache_dir(self):
     import getpass
     ns = self.__opts.cache_namespace or getpass.getuser()
     return 'cache/%s/%s' % (ns, self.branch)
+
+  @property
+  def cache_dir(self):
+    import getpass
+    ns = self.__opts.cache_namespace or getpass.getuser()
+    return 'cache/%s/%s' % (ns, self.branch.replace('/', '_'))
 
   def rsync(self, s, d, exclude=None):
     v = self.__opts.verbose
@@ -373,7 +388,38 @@ class State:
     if v:
       print(res)
 
+  def migrate_build_tree(self):
+    """ Migrate cached build tree to new flattened layout if needed
+    """
+    if self.__opts.cache_id is None:
+      return # you're on your own
+    dirname = os.path.dirname(self.old_cache_dir)
+    expr = '^' + os.path.basename(self.old_cache_dir) + '-([0-9]+)$'
+    print('scanning %s for %s' % (dirname, expr))
+    try:
+      # move build trees at old location
+      for f in sh.ssh(self.cache_url, 'ls', dirname):
+        f = f[:-1] # \n
+        hit = re.match(expr, f)
+        if hit:
+          bid = hit.group(1)
+          target = self.cache_dir + '-' + bid
+          print('moving to %s from %s' % (target, os.path.join(dirname, f)))
+          sh.ssh(self.cache_url, 'test', '-e', target, '||',
+            'mv', os.path.join(dirname, f), target)
+      # create symlink if missing at new location
+      for l in sh.ssh(self.cache_url, 'readlink', self.old_cache_dir):
+        l = l[:-1].split('-')[-1]
+        sh.ssh(self.cache_url, 'test', '-e', self.cache_dir, '||',
+          'ln', '-sfn',
+          '%s-%s' % (os.path.basename(self.cache_dir), l),
+          self.cache_dir)
+    except sh.ErrorReturnCode as e:
+      print('Command failure: %s' % str(e))
+      pass
+
   def download_build_tree(self):
+    self.migrate_build_tree()
     try:
       sh.ssh(self.cache_url, 'test', '-e', self.cache_dir)
     except sh.ErrorReturnCode:
@@ -395,12 +441,14 @@ class State:
     }
 
   def upload_build_tree(self):
+    self.migrate_build_tree()
     d = self.cache_dir
     concurrent = self.__opts.cache_id is not None
     if concurrent:
       d = '%s-%s' % (d, self.__opts.cache_id)
     if not self.__opts.dry_run:
-      sh.ssh(self.cache_url, 'mkdir', '-p', d)
+      sh.ssh(self.cache_url, 'mkdir', '-p', d,
+        '&&', 'touch', '%s.is_build_tree' % self.cache_dir)
       with State.Lock(d):
         self.rsync(
           '%s/' % self.build_tree,
