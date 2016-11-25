@@ -494,5 +494,34 @@ namespace das
       std::vector<std::string> copy = args;
       return _call(p, f, copy, opts);
     }
+
+    template <typename Symbol>
+    struct help_map
+    {
+      using type = bool;
+      static
+      bool
+      value(std::ostream& s, Options const& opts)
+      {
+        auto opt = opts.find(Symbol::name());
+        if (opt != opts.end())
+        {
+          s << "  -" << opt->second.short_name << ", --" << Symbol::name()
+            << ": " << opt->second.help << "\n";
+        }
+        else
+          s << "  --" << Symbol::name() << "\n";
+        return true;
+      };
+    };
+
+    template <typename F, typename ... T>
+    void
+    help(named::Function<F, T...> const& f,
+         std::ostream& s,
+         Options const& opts = Options())
+    {
+      elle::meta::List<T...>::template map<help_map>::value(s, opts);
+    }
   }
 }
