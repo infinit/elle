@@ -22,6 +22,10 @@ namespace das
         : value(std::forward<Passing>(e.value))
       {}
 
+      Effective(Effective const& e)
+        : value(e.value)
+      {}
+
       Effective(Passing v)
         : value(std::forward<Passing>(v))
       {}
