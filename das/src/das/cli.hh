@@ -528,6 +528,15 @@ namespace das
       };
     };
 
+    template <typename D, typename ... T>
+    void
+    help(named::Prototype<D, T...> const& f,
+         std::ostream& s,
+         Options const& opts = Options())
+    {
+      elle::meta::List<T...>::template map<help_map>::value(s, opts);
+    }
+
     template <typename F, typename ... T>
     void
     help(named::Function<F, T...> const& f,
