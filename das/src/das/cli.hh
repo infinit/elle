@@ -6,6 +6,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include <boost/optional.hpp>
+
 #include <elle/Error.hh>
 
 #include <das/named.hh>
