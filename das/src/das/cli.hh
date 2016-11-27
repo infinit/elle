@@ -519,11 +519,15 @@ namespace das
         auto opt = opts.find(Symbol::name());
         if (opt != opts.end())
         {
-          s << "  -" << opt->second.short_name << ", --" << Symbol::name()
-            << ": " << opt->second.help << "\n";
+          s << "  ";
+          if (opt->second.short_name != 0)
+            s << "-" << opt->second.short_name << ", ";
+          else
+            s << "    ";
+          s << " --" << Symbol::name() << ": " << opt->second.help << "\n";
         }
         else
-          s << "  --" << Symbol::name() << "\n";
+          s << "       --" << Symbol::name() << "\n";
         return true;
       };
     };
