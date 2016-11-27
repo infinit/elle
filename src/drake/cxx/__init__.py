@@ -568,11 +568,6 @@ class Toolkit(metaclass = _ToolkitType):
 
         return self._hook_bin_src
 
-def concatenate(chunks, prefix = ''):
-  return ''.join(map(lambda v: ' %s%s' % (prefix,
-                                          utils.shell_escape(v)),
-                     chunks))
-
 class GccToolkit(Toolkit):
 
   class Kind(drake.Enumerated,
