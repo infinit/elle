@@ -111,7 +111,8 @@ namespace reactor
       , _output(0)
       , _output_available(false)
       , _output_offset(0)
-      , _curl(boost::asio::use_service<Service>(Scheduler::scheduler()->io_service()))
+      , _curl(boost::asio::use_service<Service>(
+                reactor::scheduler().io_service()))
       , _url(url)
       , _method(method)
       , _query_string()
