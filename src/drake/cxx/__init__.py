@@ -712,7 +712,7 @@ class GccToolkit(Toolkit):
           if v is None:
               res.append('-D%s' % name)
           else:
-              res.append('-D%s=%s' % (name, utils.shell_escape(v)))
+              res.append('-D%s=%s' % (name, v))
       for include in cfg.system_include_path:
           res.append('-isystem')
           res.append(utils.shell_escape(include))
