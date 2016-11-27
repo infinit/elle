@@ -2977,7 +2977,7 @@ class Copy(Builder):
     to     -- Destination path.
     """
     self.__source = source
-    self.__target = source.clone(to.canonize())
+    self.__target = source.clone(drake.Path(to).canonize())
     self.__post_process = post_process
     if self.__source is self.__target:
       return
