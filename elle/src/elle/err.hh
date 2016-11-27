@@ -22,6 +22,15 @@ namespace elle
   {
     elle::err(sprintf(fmt, std::forward<Args>(args)...));
   }
+
+  template <typename E, typename ... Args>
+  ELLE_COMPILER_ATTRIBUTE_NORETURN
+  inline
+  void
+  err(std::string const& fmt, Args&& ... args)
+  {
+    throw E(sprintf(fmt, std::forward<Args>(args)...));
+  }
 }
 
 #endif
