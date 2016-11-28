@@ -519,6 +519,7 @@ int dRAND_clean()
     return 0;
   if (ENGINE_free(_engine) == 0)
     return 0;
+  ENGINE_cleanup();
 
   _engine = NULL;
 
