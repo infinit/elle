@@ -25,7 +25,7 @@
     _type_                                                              \
     generate()                                                          \
     {                                                                   \
-      return (_generate<_type_>());                                     \
+      return _generate<_type_>();                                       \
     }                                                                   \
                                                                         \
     static                                                              \
@@ -87,12 +87,9 @@ namespace infinit
       {
         // Make sure the cryptographic system is set up.
         cryptography::require();
-
         T value;
-
-        fill(reinterpret_cast<unsigned char*>(&value), sizeof (value));
-
-        return (value);
+        fill(reinterpret_cast<unsigned char*>(&value), sizeof value);
+        return value;
       }
 
       /*-----------.
@@ -106,9 +103,8 @@ namespace infinit
         T
         generate()
         {
-          static_assert(sizeof (T) == 0,
+          static_assert(sizeof(T) == 0,
                         "unsupported type for random generation");
-          elle::unreachable();
         }
       };
 
@@ -120,13 +116,7 @@ namespace infinit
         generate()
         {
           int32_t value = _generate<bool>();
-
-          if (value > 0)
-            return (true);
-          else
-            return (false);
-
-          elle::unreachable();
+          return value > 0;
         }
       };
 
@@ -137,7 +127,7 @@ namespace infinit
         double
         generate()
         {
-          return (_generate<double>());
+          return _generate<double>();
         }
       };
 
@@ -172,9 +162,7 @@ namespace infinit
           for (uint32_t i = 0; i < length; i++)
           {
             uint32_t n;
-
             fill(reinterpret_cast<unsigned char*>(&n), sizeof (n));
-
             value[i] = alphabet[n % alphabet.length()];
           }
 

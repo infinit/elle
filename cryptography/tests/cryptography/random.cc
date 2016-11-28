@@ -1,5 +1,7 @@
 #include "cryptography.hh"
 
+#include <boost/type_index.hpp>
+
 #include <cryptography/random.hh>
 
 /*--------.
@@ -27,13 +29,29 @@ test_operate_real()
 
 template <typename T>
 void
-test_operate_x(T minimum,
-               T maximum)
+test_operate_x(T min, T max)
 {
-  infinit::cryptography::random::generate<T>();
-  T value = infinit::cryptography::random::generate<T>(minimum, maximum);
-  BOOST_CHECK_GE(value, minimum);
-  BOOST_CHECK_LE(value, maximum);
+  BOOST_TEST_MESSAGE("Testing T = "
+                     << boost::typeindex::type_id<T>().pretty_name());
+  {
+    auto min = std::numeric_limits<T>::min();
+    auto max = std::numeric_limits<T>::max();
+    auto val = infinit::cryptography::random::generate<T>();
+    BOOST_TEST_MESSAGE("min = " << +min);
+    BOOST_TEST_MESSAGE("val = " << +val);
+    BOOST_TEST_MESSAGE("max = " << +max);
+    BOOST_CHECK_LE(std::numeric_limits<T>::min(), val);
+    BOOST_CHECK_LE(val, std::numeric_limits<T>::max());
+
+  }
+  {
+    T val = infinit::cryptography::random::generate<T>(min, max);
+    BOOST_TEST_MESSAGE("min = " << +min);
+    BOOST_TEST_MESSAGE("val = " << +val);
+    BOOST_TEST_MESSAGE("max = " << +max);
+    BOOST_CHECK_LE(min, val);
+    BOOST_CHECK_LE(val, max);
+  }
 }
 
 static
@@ -68,7 +86,6 @@ test_operate()
 {
   test_operate_boolean();
   test_operate_x<char>(15, 48);
-  test_operate_real();
   test_operate_x<int8_t>(-60, -58);
   test_operate_x<int16_t>(-21000, 21000);
   test_operate_x<int32_t>(-848, 73435);
@@ -77,6 +94,7 @@ test_operate()
   test_operate_x<uint16_t>(1238, 53104);
   test_operate_x<uint32_t>(424242, 424242);
   test_operate_x<uint64_t>(23409, 1209242094821);
+  test_operate_real();
   test_operate_string();
   test_operate_buffer();
 }
