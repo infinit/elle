@@ -187,7 +187,7 @@ namespace das
 
         template <typename I>
         std::enable_if_t<std::is_same<I, bool>::value, I>
-        convert(std::string const& v) const
+        convert(std::string const& v)
         {
           if (v == "true")
             return true;
@@ -198,14 +198,14 @@ namespace das
 
         template <typename I>
         std::enable_if_t<std::is_same<I, std::string>::value, I>
-        convert(std::string const& v) const
+        convert(std::string const& v)
         {
           return v;
         }
 
         template <typename I>
         std::enable_if_t<std::is_base_of<boost::optional_detail::optional_tag, I>::value, I>
-        convert(I const& v) const
+        convert(I const& v)
         {
           if (this->_value.empty())
             return boost::none;
@@ -217,7 +217,7 @@ namespace das
         template <typename I>
         std::enable_if_t<
           std::is_integral<I>::value && !std::is_same<I, bool>::value, I>
-        convert(std::string const& v) const
+        convert(std::string const& v)
         {
           try
           {
@@ -240,7 +240,7 @@ namespace das
           !D::template default_for<
             typename das::named::make_formal<Formal>::type>::has,
           T>
-        missing() const
+        missing()
         {
           throw MissingOption(this->_option);
         }
@@ -250,13 +250,13 @@ namespace das
           D::template default_for<
             typename das::named::make_formal<Formal>::type>::has,
           T>
-        missing() const
+        missing()
         {
           using clang_workaround = Formal;
           return this->_prototype.defaults.clang_workaround::value;
         }
 
-        operator bool() const
+        operator bool()
         {
           if (this->_value.empty())
             return this->_flag;
@@ -265,14 +265,14 @@ namespace das
         }
 
         template <typename I>
-        operator I() const
+        operator I()
         {
           return this->convert<I>();
         }
 
         template <typename I>
         I
-        convert() const
+        convert()
         {
           if (this->_value.empty())
             return missing<I>();
@@ -281,13 +281,13 @@ namespace das
           return convert<I>(this->_value[0]);
         }
 
-        operator std::vector<std::string>() const
+        operator std::vector<std::string>()
         {
           return this->_value;
         }
 
         template <typename T>
-        operator std::vector<T>() const
+        operator std::vector<T>()
         {
           std::vector<T> res;
           for_each(
