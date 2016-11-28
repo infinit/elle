@@ -4,6 +4,13 @@
 
 #include <cryptography/random.hh>
 
+// On some platforms "random" exists:
+//
+// /usr/include/stdlib.h:321:17: note: previous declaration 'long int random()'
+// extern long int random (void) __THROW;
+//                 ^
+namespace icrand = infinit::cryptography::random;
+
 /*--------.
 | Operate |
 `--------*/
@@ -12,17 +19,15 @@ static
 void
 test_operate_boolean()
 {
-  infinit::cryptography::random::generate<bool>();
+  icrand::generate<bool>();
 }
 
 static
 void
 test_operate_real()
 {
-  double value1 =
-    infinit::cryptography::random::generate<double>();
-  double value2 =
-    infinit::cryptography::random::generate<double>();
+  double value1 = icrand::generate<double>();
+  double value2 = icrand::generate<double>();
   // With very high probability.
   BOOST_CHECK_NE(value1, value2);
 }
@@ -36,7 +41,7 @@ test_operate_x(T min, T max)
   {
     auto min = std::numeric_limits<T>::min();
     auto max = std::numeric_limits<T>::max();
-    auto val = infinit::cryptography::random::generate<T>();
+    auto val = icrand::generate<T>();
     BOOST_TEST_MESSAGE("min = " << +min);
     BOOST_TEST_MESSAGE("val = " << +val);
     BOOST_TEST_MESSAGE("max = " << +max);
@@ -45,7 +50,7 @@ test_operate_x(T min, T max)
 
   }
   {
-    T val = infinit::cryptography::random::generate<T>(min, max);
+    T val = icrand::generate<T>(min, max);
     BOOST_TEST_MESSAGE("min = " << +min);
     BOOST_TEST_MESSAGE("val = " << +val);
     BOOST_TEST_MESSAGE("max = " << +max);
@@ -58,10 +63,8 @@ static
 void
 test_operate_string()
 {
-  std::string value1 =
-    infinit::cryptography::random::generate<std::string>(262);
-  std::string value2 =
-    infinit::cryptography::random::generate<std::string>(262);
+  std::string value1 = icrand::generate<std::string>(262);
+  std::string value2 = icrand::generate<std::string>(262);
   // With very high probability.
   std::cerr << std::hex;
   BOOST_CHECK_NE(elle::ConstWeakBuffer(value1), elle::ConstWeakBuffer(value2));
@@ -71,10 +74,8 @@ static
 void
 test_operate_buffer()
 {
-  elle::Buffer value1 =
-    infinit::cryptography::random::generate<elle::Buffer>(262);
-  elle::Buffer value2 =
-    infinit::cryptography::random::generate<elle::Buffer>(262);
+  elle::Buffer value1 = icrand::generate<elle::Buffer>(262);
+  elle::Buffer value2 = icrand::generate<elle::Buffer>(262);
   // With very high probability.
   std::cerr << std::hex;
   BOOST_CHECK_NE(value1, value2);
@@ -106,8 +107,6 @@ test_operate()
 ELLE_TEST_SUITE()
 {
   boost::unit_test::test_suite* suite = BOOST_TEST_SUITE("random");
-
   suite->add(BOOST_TEST_CASE(test_operate));
-
   boost::unit_test::framework::master_test_suite().add(suite);
 }
