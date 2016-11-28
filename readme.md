@@ -37,17 +37,17 @@ git clone https://github.com/infinit/elle --recursive # Clone elle and its submo
 
 ### Build system
 
-Elle uses [drake](https://github.com/infinit/drake) and has it as a submodule.
+Elle uses [Drake](https://github.com/infinit/drake) and has it as a submodule.
 
-You can find a generic drake configuration script at `_build/<architecture>/drake`.
+You can find a generic Drake configuration script at `_build/<architecture>/drake`.
 
 ### How to compile
 ```bash
-sudo pip3 install elle/drake/requirements.txt # Install drake dependencies.
-cd elle/_build/<archiecture> # (e.g: elle/_build/linux64)
+sudo pip3 install elle/drake/requirements.txt # Install Drake dependencies.
+cd elle/_build/<architecture> # (e.g: elle/_build/linux64)
 ./drake //build -j 2 # Build all libraries using 2 jobs.
 ```
-> *Note:* If you don't want drake dependencies to be installed on your system, you should consider using [virtualenv](https://virtualenv.pypa.io/en/stable/installation).
+> *Note:* If you don't want Drake dependencies to be installed on your system, you should consider using [virtualenv](https://virtualenv.pypa.io/en/stable/installation).
 
 Because Elle has been designed to be modular, you can build specific parts of Elle by running `./drake //<module>/build`:
 
@@ -243,7 +243,8 @@ main()
 
 ### Dependencies:
 
-Elle depends on a few libraries which are automatically downloaded and built for your system by `drake` if needed.
+Elle depends on a few libraries which are automatically downloaded and built for your system by Drake if needed.
+
 - [Boost](http://boost.org) (v1.60.0, _patched_)
 - [PatchELF](http://nixos.org/patchelf.html) (v0.9)
 - [zlib](http://www.zlib.net) (v1.2.8)
