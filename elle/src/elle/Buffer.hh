@@ -234,6 +234,15 @@ namespace elle
     ConstWeakBuffer(std::string const& data) /* implicit */;
     /// WeakBuffer with \a data content.
     ConstWeakBuffer(char const* data) /* implicit */;
+    /// From a C array.
+    template <typename Char, std::size_t S,
+              typename = std::enable_if_t<sizeof(Char) == 1>>
+    ConstWeakBuffer(Char const (&array)[S], Size size);
+    /// From a C array.
+    template <typename Char, std::size_t S,
+              typename = std::enable_if_t<sizeof(Char) == 1>>
+    ConstWeakBuffer(Char const (&array)[S]);
+
   private:
     /// ConstWeakBuffer cannot take ownership of memory.
     ConstWeakBuffer(Buffer&&) = delete;
@@ -342,6 +351,11 @@ namespace elle
     WeakBuffer(void* data, Size size);
     /// WeakBuffer for the given Buffer content.
     WeakBuffer(Buffer const& buffer) /* implicit */;
+    /// From a C array.
+    template <typename Char, std::size_t S,
+              typename = std::enable_if_t<sizeof(Char) == 1>>
+    WeakBuffer(Char (&array)[S]);
+
     /// WeakBuffer assignement.
     WeakBuffer& operator = (WeakBuffer const& other) = default;
 

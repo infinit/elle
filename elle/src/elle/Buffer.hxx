@@ -74,6 +74,18 @@ namespace elle
     : ConstWeakBuffer()
   {}
 
+  template <typename Char, std::size_t S,
+            typename>
+  ConstWeakBuffer::ConstWeakBuffer(Char const (&array)[S], Size size)
+    : Self(&array, size)
+  {}
+
+  template <typename Char, std::size_t S,
+            typename>
+  ConstWeakBuffer::ConstWeakBuffer(Char const (&array)[S])
+    : Self(array, S)
+  {}
+
   inline
   WeakBuffer::WeakBuffer(void* data, Size size)
     : Super(data, size)
@@ -92,6 +104,12 @@ namespace elle
   inline
   WeakBuffer::WeakBuffer(WeakBuffer&& other)
     : Super(std::move(other))
+  {}
+
+  template <typename Char, std::size_t S,
+            typename>
+  WeakBuffer::WeakBuffer(Char (&array)[S])
+    : Self(&array, S)
   {}
 
   inline

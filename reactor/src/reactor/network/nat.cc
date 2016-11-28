@@ -235,10 +235,10 @@ namespace reactor
 
       if (results.fBindingTestSuccess)
       {
-        results.addrLocal.ToStringBuffer(buff, sizeof buff);
+        results.addrLocal.ToStringBuffer(buff);
         ELLE_DEBUG("Local address: %s", buff);
 
-        results.addrMapped.ToStringBuffer(buff, sizeof buff);
+        results.addrMapped.ToStringBuffer(buff);
         ELLE_DEBUG("Mapped address: %s", buff);
       }
 
@@ -366,10 +366,10 @@ namespace reactor
       if (results.fBindingTestSuccess)
       {
         char buff[100];
-        results.addrMapped.ToStringBuffer(buff, sizeof buff);
+        results.addrMapped.ToStringBuffer(buff);
         this->_mapped_endpoint = to_endpoint(buff);
 
-        results.addrLocal.ToStringBuffer(buff, sizeof buff);
+        results.addrLocal.ToStringBuffer(buff);
         this->_local_endpoint = to_endpoint(buff);
       }
       if (results.fBehaviorTestSuccess)

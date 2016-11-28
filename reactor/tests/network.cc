@@ -61,7 +61,7 @@ public:
       char buffer[512];
       try
       {
-        socket->read_some(elle::WeakBuffer(buffer, sizeof buffer));
+        socket->read_some(elle::WeakBuffer(buffer));
       }
       catch (reactor::network::ConnectionClosed const&)
       {
@@ -214,7 +214,7 @@ client(typename Socket::EndPoint const& ep,
     Byte buf[256];
     assert(message.size() + 1 < sizeof buf);
     s.write(elle::ConstWeakBuffer(message));
-    reactor::network::Size read = s.read_some(elle::WeakBuffer(buf, sizeof buf));
+    reactor::network::Size read = s.read_some(elle::WeakBuffer(buf));
     buf[read] = 0;
     BOOST_CHECK_EQUAL(message, reinterpret_cast<char*>(buf));
     ++check;
@@ -641,7 +641,7 @@ ELLE_TEST_SCHEDULED(read_terminate_recover)
         // and not be killed right away.
         reactor::wait(written);
         reading.open();
-        socket->read(elle::WeakBuffer(buffer, sizeof buffer),
+        socket->read(elle::WeakBuffer(buffer),
                      elle::DurationOpt(), &bytes_read);
       }
       catch (reactor::Terminate const& e)
