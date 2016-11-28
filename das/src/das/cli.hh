@@ -9,6 +9,7 @@
 #include <boost/optional.hpp>
 
 #include <elle/Error.hh>
+#include <elle/assert.hh>
 
 #include <das/named.hh>
 
@@ -110,13 +111,17 @@ namespace das
 
     struct Option
     {
-      Option(char short_name = 0, std::string help = "")
+      Option(char short_name = 0,
+             std::string help = "",
+             bool positional = false)
         : short_name(short_name)
         , help(std::move(help))
+        , positional(positional)
       {}
 
       char short_name;
       std::string help;
+      bool positional;
     };
 
     using Options = std::unordered_map<std::string, Option>;
@@ -129,19 +134,23 @@ namespace das
       public:
         Value(das::named::Prototype<D, Formals...> const& p,
               std::string option,
+              boost::optional<std::vector<std::string>&> positional,
               std::vector<std::string> value)
           : _prototype(p)
           , _option(std::move(option))
           , _value(std::move(value))
+          , _positional(positional)
           , _flag(false)
         {}
 
         Value(das::named::Prototype<D, Formals...> const& p,
               std::string option,
+              boost::optional<std::vector<std::string>&> positional,
               bool flag)
           : _prototype(p)
           , _option(std::move(option))
           , _value()
+          , _positional(positional)
           , _flag(flag)
         {}
 
@@ -242,7 +251,14 @@ namespace das
           T>
         missing()
         {
-          throw MissingOption(this->_option);
+          if (this->_positional && !this->_positional->empty())
+          {
+            this->_value.emplace_back(std::move(*this->_positional->begin()));
+            this->_positional->erase(this->_positional->begin());
+            return this->convert<T>();
+          }
+          else
+            throw MissingOption(this->_option);
         }
 
         template <typename T>
@@ -301,6 +317,7 @@ namespace das
           (das::named::Prototype<D, Formals...> const&), prototype);
         ELLE_ATTRIBUTE(std::string, option);
         ELLE_ATTRIBUTE(std::vector<std::string>, value);
+        ELLE_ATTRIBUTE(boost::optional<std::vector<std::string>&>, positional);
         ELLE_ATTRIBUTE(bool, flag);
       };
 
@@ -381,13 +398,8 @@ namespace das
               Options const& opts)
           -> decltype(std::forward_tuple(f, std::move(parsed)))
         {
-          if (!args.empty())
-          {
-            if (is_option(args[0], opts))
-              throw UnknownOption(args[0]);
-            else
-              throw UnrecognizedValue(args[0]);
-          }
+          if (!args.empty() && is_option(args[0], opts))
+            throw UnknownOption(args[0]);
           return forward_tuple(f, std::move(parsed));
         }
       };
@@ -449,11 +461,28 @@ namespace das
             else
               ++it;
           }
+          bool positional = false;
+          for (auto const& opt: opts)
+            if (opt.first == Head::name())
+            {
+              positional = opt.second.positional;
+              break;
+            }
+          boost::optional<std::vector<std::string>&> pos;
+          if (positional)
+            pos.reset(args);
           auto v = flag ?
-            Value<Head, D, Formals...>(p, Head::name(), flag) :
-            Value<Head, D, Formals...>(p, Head::name(), std::move(value));
+            Value<Head, D, Formals...>(p, Head::name(), std::move(pos), flag) :
+            Value<Head, D, Formals...>(
+              p, Head::name(), std::move(pos), std::move(value));
+          auto const check_extra = [&] (auto&& ... a)
+            {
+              if (!args.empty())
+                throw UnrecognizedValue(args[0]);
+              return f(std::forward<decltype(a)>(a)...);
+            };
           return CLI<Tail...>::value(
-            p, f,
+            p, check_extra,
             std::tuple_cat(std::move(parsed), std::make_tuple(std::move(v))),
             args,
             opts);
