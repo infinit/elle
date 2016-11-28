@@ -98,8 +98,9 @@ namespace infinit
         bool
         generate()
         {
-          int32_t value = _generate<bool>();
-          return value > 0;
+          // Because of RVO, we actually get a "bool" which ranges
+          // from 0 to 255 here.
+          return _generate<bool>() % 2;
         }
       };
 
