@@ -1,9 +1,9 @@
-Drake [![Build Status](https://travis-ci.org/mefyl/drake.svg?branch=master)](https://travis-ci.org/mefyl/drake)
-=====
+# Drake [![Build Status](https://travis-ci.org/mefyl/drake.svg?branch=master)](https://travis-ci.org/mefyl/drake)
+
 The well-formed build system.
 
-About
------
+## About
+
 Drake is a build system written in Python3 that transforms a list of *source* nodes into a list of *target* nodes. Each target (or list of targets) is defined by a *builder* which takes a list of sources as its input. These targets can then be sources of other builders; resulting in a chain of dependencies. Drake resolves these chains to determine the build order and avoids rebuilding targets unnecessarily by hashing source and target files.
 
 Its advantages include:
@@ -11,41 +11,89 @@ Its advantages include:
 - Build any target without the need for rule specification
 - Built in cross compiling capabilities
 
-Requirements
-------------
-Drake requires *Python3* along with the following modules:
-- greenlet
-- oset
+## Requirements
 
 **Linux:**
 
 If your distribution did not come with Python3 and *pip* for Python3, install them with your package manager. With a Debian based distribution (such as Ubuntu), this can be done as follows:
-```
+```bash
 sudo apt-get install python3 python3-pip
 ```
 
 **OS X:**
 
 Python3 can be installed using [homebrew](http://brew.sh).
-```
+```bash
 brew install python3
 ```
 
+Drake requires *Python3* along with the following modules:
+- [greenlet](https://pypi.python.org/pypi/greenlet) *(Micro-threads)*.
+- [oset](https://pypi.python.org/pypi/oset) *(Set that remembers original insertion order)*.
+
+Some builders require specific modules, such as:
+- [mako](https://pypi.python.org/pypi/Mako) *(Templating)*.
+- [mistune](https://pypi.python.org/pypi/mistune) *(Markdown parser)*.
+
 Drake's requirements can be found in the root directory of this repository. To install them use:
-```
+```bash
 pip3 install -r requirements.txt
 ```
 
-Hello World Example
--------------------
-This example shows how to build a simple executable from the source file *hello_world.cc*.
+## Basic structures of a drakefile and a drake script
 
-See the [source directory](https://github.com/infinit/drake/tree/master/examples/hello_world).
+Consider the following hierarchy:
+```bash
+.
+├── build
+│   └── drake
+├── drakefile
+```
+
+The `drake script`, located at **./build/drake**:
+```python
+# Import the module.
+try:
+  import drake
+except ImportError:
+  # If you don't have drake in your PYTHONPATH.
+  import sys, os
+  # Change to the actual location of the Drake module.
+  path_to_the_drake_module = "/opt/drake/src"
+  sys.path.insert(0, os.path.realpath(path_to_the_drake_module))
+  import drake
+
+# Instantiate Drake to look for a drakefile at '../drakefile'.
+path_to_the_drakefile_directory = '..'
+with drake.Drake(path_to_the_drakefile_directory) as d:
+  # Pass arguments to the drakefile configure function.
+  d.run(
+    arg1 = "example",
+    arg2 = "Hello world!"
+  )
+```
+
+The `drakefile`, located at **./drakefile**:
+```python
+import drake
+
+def configure(arg1,
+              arg2):
+  print("got arg1: %s and arg2: %s" % (arg1, arg2))
+```
+
+## Examples
+
+### Hello World Example
+
+This example shows how to build a simple executable from the C++ source file *hello_world.cc*.
+
+See the [source directory](examples/hello_world).
 
 The *drakefile* in the root describes the build process. Each platform in the *_build* directory has it's own *drake* script which has some initial configuration.
 
 To build the example project, we invoke the build *rule* as follows:
-```
+```bash
 $> cd _build/<platform>
 $> ./drake //build
 ./drake: Entering directory <current directory>
@@ -55,34 +103,34 @@ Link hello_world
 ```
 
 The target could also be built by specifying its output path:
-```
+```bash
 $> ./drake hello_world
 ...
 ```
 
 The resulting executable can be found in the root of the build directory:
-```
+```bash
 $> ./hello_world
 Hello world
 ```
 
-User Libraries Example
------------------
+### User Libraries Example
+
 In this example, a static and dynamic library are built from user sources.
 
-See the [source directory](https://github.com/infinit/drake/tree/master/examples/user_libraries).
+See the [source directory](examples/user_libraries).
 
 The drakefile shows how to build both a static and a dynamic library from user specified sources.
 
 Once again, we build the example project by invoking the build rule:
-```
+```bash
 $> cd _build/<platform>
 $> ./drake //build
 ...
 ```
 
 Any of the targets can be built individually by invoking drake with their output path:
-```
+```bash
 $> ./drake geometry/Shape.o
 ...
 $> ./drake lib/libcolor.a
@@ -91,40 +139,40 @@ $> ./drake lib/libcolor.a
 
 If you would like to see the underlying commands that drake is launching, you can set the `DRAKE_RAW` environment variable:
 
-```
+```bash
 $> DRAKE_RAW=1 ./drake //build
 ...
 ```
 
 The resulting executable is in the *bin* directory and can be run as follows:
-```
+```bash
 $> ./bin/colored_shape
 ...
 ```
 
-GNU Dependencies Example
-------------------------
+### GNU Dependencies Example
+
 This example is an executable that fetches the contents of *https://example.com*. To do this, we build our own cURL (which depends on zlib and OpenSSL) using drake.
 
-See the [source directory](https://github.com/infinit/drake/tree/master/examples/gnu_builder).
+See the [source directory](examples/gnu_builder).
 
 The drakefile shows how cURL, OpenSSL and zlib tarballs are fetched by drake and built in the correct order so that our executable can be linked with cURL.
 
 To build the project:
-```
+```bash
 $> cd _build/<platform>
 $> ./drake //build
 ...
 ```
 
 To run the resulting executable:
-```
+```bash
 $> ./bin/http_request
 ...
 ```
 
-Helpful Environment Variables
------------------------------
+## Helpful Environment Variables
+
 **DRAKE_RAW**
 
 Setting `DRAKE_RAW=1` in your environment will cause drake to output the raw commands that it calls to perform your build.
