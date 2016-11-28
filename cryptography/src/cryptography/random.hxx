@@ -48,37 +48,20 @@ namespace infinit
       | Functions |
       `----------*/
 
-      template <typename T>
-      typename std::enable_if<std::is_signed<T>::value, T>::type
-      _abs(T const value)
-      {
-        return std::abs(value);
-      }
-
-      template <typename T>
-      typename std::enable_if<std::is_unsigned<T>::value, T>::type
-      _abs(T const value)
-      {
-        return value;
-      }
-
+      /// Val is in [T::min, T::max].  Bring it into [min, max].
       template <typename T>
       T
-      _rangify(T const value,
-               T const minimum,
-               T const maximum)
+      _rangify(T const Val,
+               T const min, T const max)
       {
-        ELLE_ASSERT_LTE(minimum, maximum);
-
-        T ranged =
-          static_cast<T>(
-            static_cast<double>(_abs(value)) /
-            (static_cast<double>(std::numeric_limits<T>::max()) -
-             static_cast<double>(std::numeric_limits<T>::min())) *
-            (static_cast<double>(maximum) -
-             static_cast<double>(minimum)));
-
-        return (minimum + ranged);
+        ELLE_ASSERT_LTE(min, max);
+        auto tmin = double(std::numeric_limits<T>::min());
+        auto tmax = double(std::numeric_limits<T>::max());
+        // The width of [T::min, T::max].
+        auto twidth = tmax - tmin;
+        // The width of [min, max].
+        auto width = double(max) - double(min);
+        return min + static_cast<T>((double(Val) - tmin) / twidth * width);
       }
 
       template <typename T>
