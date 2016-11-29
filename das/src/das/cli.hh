@@ -375,6 +375,12 @@ namespace das
         operator std::vector<T>()
         {
           std::vector<T> res;
+          if (this->_value.empty() && this->_positional)
+          {
+            std::move(this->_args.begin(), this->_args.end(),
+                      std::back_inserter(this->_value));
+            this->_args.clear();
+          }
           for_each(
             this->_value.begin(), this->_value.end(),
             [&] (std::string const& v) { res.emplace_back(convert<T>(v)); });

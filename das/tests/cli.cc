@@ -248,6 +248,24 @@ positional()
         das::cli::call(proto, f, {"247"}, opts), 248);
     }
   }
+  {
+    auto const f =
+      [] (std::vector<int> const& ints)
+      {
+        return std::accumulate(ints.begin(), ints.end(), 0);
+      };
+    auto const proto = das::named::prototype(foo);
+    {
+      das::cli::Options opts = {
+        {"foo", {'f', "", true}},
+      };
+      BOOST_CHECK_EQUAL(
+        das::cli::call(proto, f, {"1", "2", "3"}, opts), 6);
+      BOOST_CHECK_THROW(
+        das::cli::call(proto, f, {"-f", "1", "2", "3"}, opts),
+        das::cli::UnrecognizedValue);
+    }
+  }
 }
 
 ELLE_TEST_SUITE()
