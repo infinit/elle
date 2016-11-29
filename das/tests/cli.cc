@@ -268,6 +268,16 @@ positional()
   }
 }
 
+static
+void
+serialization()
+{
+  auto const f = [] (elle::Version v) { return v; };
+  auto const proto = das::named::prototype(foo);
+    BOOST_CHECK_EQUAL(
+      das::cli::call(proto, f, {"--foo", "0.1.2"}), elle::Version(0, 1, 2));
+}
+
 ELLE_TEST_SUITE()
 {
   auto& master = boost::unit_test::framework::master_test_suite();
@@ -285,4 +295,5 @@ ELLE_TEST_SUITE()
   master.add(BOOST_TEST_CASE(short_options));
   master.add(BOOST_TEST_CASE(dash));
   master.add(BOOST_TEST_CASE(positional));
+  master.add(BOOST_TEST_CASE(serialization));
 }

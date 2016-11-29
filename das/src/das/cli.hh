@@ -10,6 +10,7 @@
 
 #include <elle/Error.hh>
 #include <elle/assert.hh>
+#include <elle/serialization/json.hh>
 
 #include <das/named.hh>
 
@@ -264,7 +265,7 @@ namespace das
 
         template <typename I>
         std::enable_if_t<std::is_same<I, bool>::value, I>
-        convert(std::string const& v)
+        convert(std::string const& v, int)
         {
           if (v == "true")
             return true;
@@ -275,26 +276,26 @@ namespace das
 
         template <typename I>
         std::enable_if_t<std::is_same<I, std::string>::value, I>
-        convert(std::string const& v)
+        convert(std::string const& v, int)
         {
           return v;
         }
 
         template <typename I>
         std::enable_if_t<std::is_base_of<boost::optional_detail::optional_tag, I>::value, I>
-        convert(std::string const& v)
+        convert(std::string const& v, int)
         {
           if (this->_value.empty())
             return boost::none;
           if (this->_value.size() > 1)
             throw DuplicateOption(this->_option);
-          return convert<typename I::value_type>(this->_value[0]);
+          return convert<typename I::value_type>(this->_value[0], 0);
         }
 
         template <typename I>
         std::enable_if_t<
           std::is_integral<I>::value && !std::is_same<I, bool>::value, I>
-        convert(std::string const& v)
+        convert(std::string const& v, int)
         {
           try
           {
@@ -310,6 +311,14 @@ namespace das
             throw OptionValueError(
               this->_option, v, "integer out of range");
           }
+        }
+
+        template <typename I>
+        I
+        convert(std::string const& v, ...)
+        {
+          elle::serialization::json::SerializerIn s(elle::json::Json(v), false);
+          return s.deserialize<I>();
         }
 
         template <typename T>
@@ -349,7 +358,7 @@ namespace das
           }
           if (this->_value.size() > 1)
             throw DuplicateOption(this->_option);
-          return convert<I>(this->_value[0]);
+          return convert<I>(this->_value[0], 0);
         }
 
         template <typename I>
@@ -383,7 +392,7 @@ namespace das
           }
           for_each(
             this->_value.begin(), this->_value.end(),
-            [&] (std::string const& v) { res.emplace_back(convert<T>(v)); });
+            [&] (std::string const& v) { res.emplace_back(convert<T>(v, 0)); });
           this->_check_remaining();
           return res;
         }
