@@ -260,7 +260,9 @@ namespace reactor
         {
           // FIXME: Only the latest backtrace will be stored, but this is still
           // better than the creation time backtrace, I suppose.
-          e.backtrace(elle::Backtrace::current());
+          static bool keep = elle::os::inenv("ELLE_KEEP_ORIGINAL_BACKTRACE");
+          if (!keep)
+            e.backtrace(elle::Backtrace::current());
         }
         catch (...)
         {}
@@ -346,7 +348,9 @@ namespace reactor
         {
           // FIXME: Only the latest backtrace will be stored, but this is still
           // better than the creation time backtrace, I suppose.
-          e.backtrace(elle::Backtrace::current());
+          static bool keep = elle::os::inenv("ELLE_KEEP_ORIGINAL_BACKTRACE");
+          if (!keep)
+            e.backtrace(elle::Backtrace::current());
           throw;
         }
       }
