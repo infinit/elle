@@ -1,20 +1,8 @@
-# Elle, the Infinit utility libraries
+# Elle, *the coroutine-based asynchronous C++ development framework.*
 
-Elle is a set of portable libraries, written in modern C++. It contains a rich set of highly reusable concepts, algorithms, API wrappers, ...
+Elle is a collection of libraries, written in modern C++ (C++14). It contains a rich set of highly reusable concepts, algorithms, API wrappers, ...
 
-Elle is split into different smaller specialized libraries to provide elegant ways to approach [coroutine](https://en.wikipedia.org/wiki/Coroutine), networking, formatting, serialization, logging, [RPCs](https://en.wikipedia.org/wiki/Remote_procedure_call)...
-
-## Strucure
-
-As mentioned earlier, Elle is a set of libraries, designed to ease C++ development through robusts and flexible implementations, including:
-- [elle](elle): Utilities including serialization, logs, buffer, formatting, ...
-- [reactor](reactor): An asynchronous framework using a coroutines scheduler
-- [cryptography](cryptography): Object-oriented cryptography wrapper around OpenSSL
-- [protocol](protocol): Network communication library (RCPs))
-- [das](das): Model manipulator and generator
-- [athena](athena): Bizantine environment library
-- [aws](aws): *reactorified* AWS API wrapper
-- [dropbox](dropbox): *reactorified* Dropbox API wrapper
+Elle is split into different smaller specialized libraries to provide elegant ways to approach [coroutine](https://en.wikipedia.org/wiki/Coroutine), networking, formatting, serialization, logging, [RPCs](https://en.wikipedia.org/wiki/Remote_procedure_call), etc.
 
 > *Notes:*
 > - Elle is under development, used and maintained by [infinit](https://infinit.sh) as a set of core libraries. APIs, structures and concepts may change over time. You can use it as is but we don't guaranty any API backwards compatibility.
@@ -32,7 +20,7 @@ git clone https://github.com/infinit/elle --recursive # Clone elle and its submo
 
 ### Requirements
 
--  [gcc](https://gcc.gnu.org) (>= 4.9.2) or [clang](http://clang.llvm.org) (>= 3.5.0) or [mingw](http://mingw.org) (>= 5.3.0).
+- [gcc](https://gcc.gnu.org) (>= 4.9.2) or [clang](http://clang.llvm.org) (>= 3.5.0) or [mingw](http://mingw.org) (>= 5.3.0).
 - [python3](https://www.python.org/download/releases/3.0) (>= 3.4.0)
 
 ### Build system
@@ -58,6 +46,18 @@ Because Elle has been designed to be modular, you can build specific parts of El
 ./drake //...
 ```
 It will result on `<module>/lib/lib<module>.so` and its dependencies on Linux, `<module>/lib/lib<module>.dylib` on MacOS, ...
+
+## Structure
+
+As mentioned earlier, Elle is a set of libraries, designed to ease C++ development through robust and flexible implementations, including:
+- [elle](elle): Utilities including serialization, logs, buffer, formatting, ...
+- [reactor](reactor): An asynchronous framework using a coroutines scheduler
+- [cryptography](cryptography): Object-oriented cryptography wrapper around OpenSSL
+- [protocol](protocol): Network communication library (RCPs))
+- [das](das): Model manipulator and generator
+- [athena](athena): Bizantine environment library
+- [aws](aws): *reactorified* AWS API wrapper
+- [dropbox](dropbox): *reactorified* Dropbox API wrapper
 
 ## Example
 

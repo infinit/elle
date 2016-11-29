@@ -6,7 +6,7 @@ This library is part of the [Elle](https://github.com/infinit/elle) set of libra
 
 ## Motivation
 
-To demonstrate capabilities our [Filesystem](https://github.com/infinit/fs) we've created a wrapper for Dropbox. This libraries is just a backend, wrapping the Dropbox web API using the [reactor](/reactor).
+To demonstrate capabilities of our [file system](https://github.com/infinit/fs) interface used by our storage platform, we've created a wrapper for the Dropbox web API using the [reactor](/reactor).
 
 ## How to compile
 

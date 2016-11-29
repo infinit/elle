@@ -1,12 +1,13 @@
 # elle, the Infinit utilities.
 
-elle is a library containing fundamental functionalities from buffers to memory management and serialization, e.g.:
+elle is a library containing fundamental functionalities from buffers to memory management and serialization, etc.
 
 elle is part of the [Elle](https://github.com/infinit/elle) set of libraries.
 
 ## Motivation
 
-c++ standard library lacks some of fundamental concepts, that's why the [Boost](http://www.boost.org) library exists and tends to fill this lack of functionality. Based on both, elle introduces new concepts and functionnalities to makes developers life easier.
+C++ standard library lacks some of fundamental concepts, that's why the [Boost](http://www.boost.org) libraries exist and tends to fill this lack of functionality. Based on both, elle introduces new concepts and functionnalities to makes developers life easier.
+
 elle includes many helpers such as:
 
 * [attributes](#attributes): Macros that automatically declares and implements setters and getters
@@ -15,24 +16,13 @@ elle includes many helpers such as:
 * [logs](#logs): adjustable logs
 * ...
 
-## How to compile
+## Examples
 
-_See [Elle: How to compile](https://github.com/infinit/elle#how-to-compile)._
-
-```bash
-./drake //elle/build -j 2
-```
-
-## Example
-
-```cpp
-include <elle.hh>
-```
-## Concepts
+Here are [examples](examples):
 
 ### Attributes
 
-Attributes are designed to avoid writing recurrent setter / getter patterns, easily add or remove attributes.
+Attributes are designed to avoid writing recurrent setter/getter patterns, easily add or remove attributes.
 
 ```cpp
 struct Object
@@ -68,16 +58,18 @@ elle::ConstWeakBuffer slice(buffer.contents() + 4, 2);
 std::cout << slice.string() << std::endl; // th
 
 // Construct a WeakBuffer on another slice of the original buffer memory.
-elle::ConstWeakBuffer mslice(buffer.contents() + 6, 2);
+elle::WeakBuffer mslice(buffer.contents() + 6, 2);
 std::cout << mslice.string() << std::endl; // in
 
 // Edit the memory.
-mslice[1] = 'o';
+mslice[0] = 'o';
+std::cout << mslice.string() << std::endl; // in
 
 // The original buffer benefits from the change done previously.
-std::cout << buffer[3] << std::endl; // o
-std::cout << buffer.string() << std::endl; //xxx
+std::cout << buffer[6] << std::endl; // o
+std::cout << buffer.string() << std::endl; // somethong interesting
 ```
+
 Full example [here](https://github.com/infinit/elle/elle/examples/buffer.cc).
 
 ### Serialization
@@ -214,4 +206,12 @@ ELLE_LOG_LEVEL=component1:DUMP,component2:NONE ./log
 [component1] [main] Something only relevant for nerdz
 [component1] [main] The log in the following scope will have indented
 [component1] [main]   < white spaces
+```
+
+## How to compile
+
+_See [Elle: How to compile](https://github.com/infinit/elle#how-to-compile)._
+
+```bash
+./drake //elle/build -j 2
 ```
