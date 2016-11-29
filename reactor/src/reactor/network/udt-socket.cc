@@ -2,7 +2,6 @@
 
 #include <elle/log.hh>
 
-#include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/resolve.hh>
 #include <reactor/network/socket-operation.hh>
@@ -128,9 +127,9 @@ namespace reactor
         typedef boost::asio::ip::udt::socket AsioSocket;
         typedef boost::asio::ip::udt::socket::endpoint_type EndPoint;
         UDTRead(Scheduler& scheduler,
-             PlainSocket<AsioSocket>* socket,
-             Buffer& buffer,
-             bool some)
+                PlainSocket<AsioSocket>* socket,
+                elle::WeakBuffer& buffer,
+                bool some)
           : SocketOperation<AsioSocket>(scheduler, socket)
           , _buffer(buffer)
           , _read(0)
@@ -150,12 +149,12 @@ namespace reactor
           // FIXME: be synchronous if enough bytes are available
           if (_some)
             this->socket()->async_read_some(
-              boost::asio::buffer(_buffer.data(), _buffer.size()),
+              boost::asio::buffer(_buffer.mutable_contents(), _buffer.size()),
               boost::bind(&UDTRead::_wakeup, this, _1, _2));
           else
             boost::asio::async_read(
               *this->socket(),
-              boost::asio::buffer(_buffer.data(), _buffer.size()),
+              boost::asio::buffer(_buffer.mutable_contents(), _buffer.size()),
               boost::bind(&UDTRead::_wakeup, this, _1, _2));
         }
 
@@ -180,25 +179,25 @@ namespace reactor
           this->_signal();
         }
 
-        Buffer& _buffer;
+        elle::WeakBuffer& _buffer;
         ELLE_ATTRIBUTE_R(Size, read);
         bool _some;
     };
 
     void
-    UDTSocket::read(Buffer buf, DurationOpt timeout)
+    UDTSocket::read(elle::WeakBuffer buf, DurationOpt timeout)
     {
       _read(buf, timeout, false);
     }
 
     Size
-    UDTSocket::read_some(Buffer buf, DurationOpt timeout)
+    UDTSocket::read_some(elle::WeakBuffer buf, DurationOpt timeout)
     {
       return _read(buf, timeout, true);
     }
 
     Size
-    UDTSocket::_read(Buffer buf, DurationOpt timeout, bool some)
+    UDTSocket::_read(elle::WeakBuffer buf, DurationOpt timeout, bool some)
     {
       ELLE_TRACE_SCOPE("%s: read %s%s bytes (timeout: %s)",
                            *this, some ? "up to " : "", buf.size(), timeout);
@@ -233,8 +232,8 @@ namespace reactor
         typedef boost::asio::ip::udt::socket::endpoint_type EndPoint;
         typedef SocketOperation<AsioSocket> Super;
         UDTWrite(Scheduler& scheduler,
-              PlainSocket<AsioSocket>* socket,
-              Buffer& buffer)
+                 PlainSocket<AsioSocket>* socket,
+                 elle::ConstWeakBuffer& buffer)
           : Super(scheduler, socket)
           , _buffer(buffer)
           , _written(0)
@@ -262,12 +261,12 @@ namespace reactor
           this->_signal();
         }
 
-        Buffer& _buffer;
+        elle::ConstWeakBuffer& _buffer;
         ELLE_ATTRIBUTE_R(Size, written);
     };
 
     void
-    UDTSocket::write(Buffer buffer)
+    UDTSocket::write(elle::ConstWeakBuffer buffer)
     {
       ELLE_TRACE_SCOPE("%s: write %s bytes", *this, buffer.size());
       scheduler().current()->wait(_write_mutex);

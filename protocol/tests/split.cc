@@ -1,4 +1,5 @@
 #include <elle/With.hh>
+#include <elle/Buffer.hh>
 #include <elle/cast.hh>
 #include <elle/test.hh>
 
@@ -6,7 +7,6 @@
 
 #include <reactor/Scope.hh>
 #include <reactor/asio.hh>
-#include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/tcp-server.hh>
 #include <reactor/network/tcp-socket.hh>
@@ -21,10 +21,7 @@
 
 ELLE_LOG_COMPONENT("infinit.protocol.test");
 
-static const elle::Version v010{0, 1, 0};
-static const elle::Version v020{0, 2, 0};
-
-typedef infinit::protocol::Serializer Serializer;
+using Serializer = infinit::protocol::Serializer;
 
 struct setup
 {
@@ -105,31 +102,13 @@ exchange(Serializer& sender,
   }
 }
 
-ELLE_TEST_SCHEDULED(run_v010)
+ELLE_TEST_SCHEDULED(run_version, (elle::Version, version))
 {
-  auto s = setup(v010);
+  auto s = setup(version);
   auto& bob = *s.bob;
   auto& alice = *s.alice;
-  ELLE_ASSERT_EQ(bob.version(), v010);
-  ELLE_ASSERT_EQ(alice.version(), v010);
-  for (size_t size: {0, 1, 100, 10000, 100000})
-  {
-    exchange(
-      bob, alice,
-      infinit::cryptography::random::generate<std::string>(size));
-    exchange(
-      alice, bob,
-      infinit::cryptography::random::generate<std::string>(size));
-  }
-}
-
-ELLE_TEST_SCHEDULED(run_v020)
-{
-  auto s = setup(v020);
-  auto& bob = *s.bob;
-  auto& alice = *s.alice;
-  ELLE_ASSERT_EQ(bob.version(), v020);
-  ELLE_ASSERT_EQ(alice.version(), v020);
+  ELLE_ASSERT_EQ(bob.version(), version);
+  ELLE_ASSERT_EQ(alice.version(), version);
   for (size_t size: {0, 1, 100, 10000, 100000})
   {
     exchange(
@@ -168,10 +147,9 @@ ELLE_TEST_SCHEDULED(kill_reader)
   ChanneledStream cs1(ser1);
   while (!cs2p)
     reactor::sleep(50_ms);
-  Serializer& ser2(*ser2p);
-  ChanneledStream& cs2(*cs2p);
+  ChanneledStream& cs2 = *cs2p;
 
-
+  // FIXME: unused.
   int cid1, cid2, cid3;
   bool r1 = false, r2 = false, r3 = false;
   reactor::Thread::unique_ptr t1, t2, t3;
@@ -224,7 +202,8 @@ ELLE_TEST_SCHEDULED(kill_reader)
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
-  suite.add(BOOST_TEST_CASE(run_v010), 0, valgrind(5, 25));
-  suite.add(BOOST_TEST_CASE(run_v020), 0, valgrind(5, 25));
+  using versions = std::initializer_list<elle::Version>;
+  for (auto const& v: versions{{0, 1, 0}, {0, 2, 0}})
+    suite.add(BOOST_TEST_CASE(std::bind(run_version, v)), 0, valgrind(5, 25));
   suite.add(BOOST_TEST_CASE(kill_reader), 0, valgrind(5, 25));
 }

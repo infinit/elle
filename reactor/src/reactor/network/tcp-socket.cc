@@ -5,7 +5,6 @@
 #include <elle/log.hh>
 #include <elle/memory.hh>
 
-#include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/resolve.hh>
 #include <reactor/network/tcp-socket.hh>

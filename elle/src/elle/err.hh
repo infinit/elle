@@ -1,19 +1,19 @@
-#ifndef ELLE_ERR_HH
-# define ELLE_ERR_HH
+#pragma once
 
-# include <iosfwd>
-# include <utility>
+#include <utility>
 
-# include <elle/compiler.hh>
-# include <elle/printf-fwd.hh>
+#include <elle/compiler.hh>
+#include <elle/printf-fwd.hh>
 
 namespace elle
 {
+  /// Throw an elle::Error.
   ELLE_API
   ELLE_COMPILER_ATTRIBUTE_NORETURN
   void
   err(std::string const& msg);
 
+  /// Format and throw an elle::Error.
   template <typename ... Args>
   ELLE_COMPILER_ATTRIBUTE_NORETURN
   inline
@@ -33,4 +33,3 @@ namespace elle
   }
 }
 
-#endif

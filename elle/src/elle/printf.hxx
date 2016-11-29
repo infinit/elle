@@ -67,7 +67,7 @@ namespace elle
       boost::format format(parsed);
       format % elle::type_info(value);
       format % reinterpret_cast<const void*>(&value);
-      fmt % str(format);
+      fmt % format.str();
     }
 
     inline
@@ -183,7 +183,7 @@ namespace elle
     {
       auto format = _details::format(std::forward<F>(fmt),
                                      std::forward<T>(values) ...);
-      return str(format);
+      return format.str();
     }
     catch (boost::io::format_error const& e)
     {

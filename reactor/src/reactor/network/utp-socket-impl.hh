@@ -7,8 +7,7 @@
 # include <reactor/MultiLockBarrier.hh>
 # include <reactor/mutex.hh>
 
-typedef struct UTPSocket utp_socket;
-typedef struct struct_utp_context utp_context;
+# include <utp.h>
 
 namespace reactor
 {
@@ -20,6 +19,9 @@ namespace reactor
     | Types |
     `------*/
     public:
+      /// Import from libutp/utp.h.
+      using utp_socket = ::UTPSocket;
+      /// From reactor/network/utp-socket.hh.
       friend class UTPSocket;
 
     /*-------------.

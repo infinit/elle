@@ -191,9 +191,9 @@ namespace elle
               Buffer const& buffer);
 
 
-  /*-----------.
-  | WeakBuffer |
-  `-----------*/
+  /*----------------.
+  | ConstWeakBuffer |
+  `----------------*/
 
   /// @brief A C array pointer and its size.
   ///
@@ -306,6 +306,11 @@ namespace elle
     dump(const Natural32 shift = 0) const;
   };
 
+
+  /*-----------.
+  | WeakBuffer |
+  `-----------*/
+
   /// A ConstWeakBuffer with mutable data.
   class ELLE_API WeakBuffer:
     public ConstWeakBuffer, private boost::totally_ordered<WeakBuffer>
@@ -324,6 +329,9 @@ namespace elle
     WeakBuffer(WeakBuffer const& other);
     /// WeakBuffer move.
     WeakBuffer(WeakBuffer&& other);
+    /// WeakBuffer assignement.
+    WeakBuffer& operator = (WeakBuffer const& other) = default;
+
   private:
     /// WeakBuffer cannot take ownership of memory.
     WeakBuffer(Buffer&&);
@@ -340,6 +348,7 @@ namespace elle
     /// A subset of this buffer.
     WeakBuffer
     range(int start, int end) const;
+
 
   /*---------.
   | Iterable |
@@ -361,7 +370,6 @@ namespace elle
 
     /// Construct an input streambuf from the buffer.
     std::streambuf* istreambuf() const;
-
   };
 
   /*----------.

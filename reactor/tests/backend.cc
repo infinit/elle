@@ -39,13 +39,13 @@ test_die()
   m = new Backend;
   int i = 0;
   {
-    auto t = m->make_thread("test_die", boost::bind(inc, &i));
+    auto t = m->make_thread("test_die", std::bind(inc, &i));
     t->step();
     BOOST_CHECK_EQUAL(i, 1);
     BOOST_CHECK(t->status() == Thread::Status::done);
   }
   {
-    auto t = m->make_thread("test_die", boost::bind(inc, &i));
+    auto t = m->make_thread("test_die", std::bind(inc, &i));
     t->step();
     BOOST_CHECK_EQUAL(i, 2);
     BOOST_CHECK(t->status() == Thread::Status::done);

@@ -2,6 +2,7 @@
 #include <boost/asio.hpp>
 #include <boost/test/unit_test.hpp>
 
+#include <elle/Buffer.hh>
 #include <elle/With.hh>
 #include <elle/test.hh>
 #include <elle/utility/Move.hh>
@@ -12,7 +13,6 @@
 #include <reactor/http/EscapedString.hh>
 #include <reactor/http/Request.hh>
 #include <reactor/http/exceptions.hh>
-#include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/tcp-server.hh>
 #include <reactor/scheduler.hh>
@@ -206,14 +206,14 @@ concurrent()
             [&, socket]
             {
               char buffer[1024];
-              socket->getline(buffer, sizeof(buffer), '\n');
+              socket->getline(buffer, sizeof buffer, '\n');
               buffer[socket->gcount()] = 0;
               ELLE_LOG("got request: %s", buffer);
               BOOST_CHECK_EQUAL(buffer, "GET /some/path HTTP/1.1\r");
               while (std::string(buffer) != "\r")
               {
                 ELLE_LOG("got header from: %s", buffer);
-                socket->getline(buffer, sizeof(buffer), '\n');
+                socket->getline(buffer, sizeof buffer, '\n');
                 buffer[socket->gcount()] = 0;
               }
               if (++clients == concurrent)
@@ -563,7 +563,7 @@ class NoHeaderHttpServer:
   virtual
   void
   _response(reactor::network::Socket& socket,
-           reactor::http::StatusCode,
+            reactor::http::StatusCode,
             elle::ConstWeakBuffer,
             HTTPServer::Cookies const&) override
   {

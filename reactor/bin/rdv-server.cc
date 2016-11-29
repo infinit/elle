@@ -1,9 +1,8 @@
-#include <reactor/network/rdv.hh>
 #include <boost/optional.hpp>
 
 #include <elle/serialization/json.hh>
 
-#include <reactor/network/buffer.hh>
+#include <reactor/network/rdv.hh>
 #include <reactor/network/udp-socket.hh>
 #include <reactor/scheduler.hh>
 
@@ -19,7 +18,7 @@ static void send_with_magik(elle::Buffer const& b, rdv::Endpoint peer)
 {
   elle::Buffer data(reactor::network::rdv::rdv_magic, 8);
   data.append(b.contents(), b.size());
-  server->send_to(Buffer(data.contents(), data.size()), peer);
+  server->send_to(elle::ConstWeakBuffer(data), peer);
 }
 
 static void run(int argc, char** argv)
@@ -37,8 +36,7 @@ static void run(int argc, char** argv)
   {
     buf.size(5000);
     rdv::Endpoint source;
-    int sz = srv.receive_from(reactor::network::Buffer(buf.mutable_contents(), buf.size()),
-                                   source);
+    int sz = srv.receive_from(elle::WeakBuffer(buf), source);
     buf.size(sz);
     if (memcmp(buf.contents(), rdv::rdv_magic, 8) == 0)
     {

@@ -10,7 +10,6 @@
 
 #include <reactor/network/nat.hh>
 
-#include <reactor/network/buffer.hh>
 #include <reactor/network/resolve.hh>
 #include <reactor/sleep.hh>
 #include <reactor/thread.hh>
@@ -147,10 +146,10 @@ namespace reactor
       ELLE_DEBUG_SCOPE("try punching port %s", port);
 
       std::string question{"echo sasp"};
-      this->_handle->send_to(network::Buffer(question), _longinus);
+      this->_handle->send_to(elle::ConstWeakBuffer(question), _longinus);
 
-      std::string buffer_data(1024, ' ');
-      network::Buffer buffer(buffer_data);
+      auto buffer_data = std::string(1024, ' ');
+      auto buffer = elle::WeakBuffer(buffer_data);
       int size;
       try
       {
@@ -164,7 +163,7 @@ namespace reactor
       ELLE_DUMP("longinus said: %s", answer);
 
       // XXX This is not optimal
-      std::vector<std::string> splitted;
+      auto splitted = std::vector<std::string>{};
       boost::split(splitted, answer, boost::is_any_of(" :\n"));
       if (splitted.size() != 3)
       {
@@ -183,7 +182,7 @@ namespace reactor
       return ip::udp::endpoint{ip::address::from_string(addr), remote_port};
     }
 
-#if defined(REACTOR_HAVE_STUN)
+#if defined REACTOR_HAVE_STUN
     static std::string NatBehaviorToString(NatBehavior behavior)
     {
       std::string pretty_behavior;
@@ -236,10 +235,10 @@ namespace reactor
 
       if (results.fBindingTestSuccess)
       {
-        results.addrLocal.ToStringBuffer(buff, sizeof(buff));
+        results.addrLocal.ToStringBuffer(buff, sizeof buff);
         ELLE_DEBUG("Local address: %s", buff);
 
-        results.addrMapped.ToStringBuffer(buff, sizeof(buff));
+        results.addrMapped.ToStringBuffer(buff, sizeof buff);
         ELLE_DEBUG("Mapped address: %s", buff);
       }
 
@@ -324,13 +323,13 @@ namespace reactor
                                                GetMillisecondCounter());
         if (SUCCEEDED(r))
         {
-          struct sockaddr const* s = addrDest.GetSockAddr();
-          struct sockaddr_in const* sin = (struct sockaddr_in*)s;
+          sockaddr const* s = addrDest.GetSockAddr();
+          sockaddr_in const* sin = (struct sockaddr_in*)s;
 
           boost::asio::ip::address_v4 addr(ntohl(sin->sin_addr.s_addr));
           boost::asio::ip::udp::endpoint dest{addr, ntohs(sin->sin_port)};
 
-          network::Buffer b(spMsg->GetData(), spMsg->GetSize());
+          auto b = elle::WeakBuffer(spMsg->GetData(), spMsg->GetSize());
           this->_handle->send_to(b, dest);
         }
         else if (r == E_STUNCLIENT_RESULTS_READY)
@@ -349,7 +348,7 @@ namespace reactor
         network::Buffer b(spMsg->GetData(), spMsg->GetAllocatedSize());
         try
         {
-          int size = this->_handle->receive_from(b, remote_stun, boost::posix_time::millisec(500));
+          int size = this->_handle->receive_from(b, remote_stun, 500_ms);
           CSocketAddress addrRemote(*remote_stun.data());
           CSocketAddress addrLocal(*this->_handle->local_endpoint().data());
           spMsg->SetSize(size);
@@ -367,10 +366,10 @@ namespace reactor
       if (results.fBindingTestSuccess)
       {
         char buff[100];
-        results.addrMapped.ToStringBuffer(buff, sizeof(buff));
+        results.addrMapped.ToStringBuffer(buff, sizeof buff);
         this->_mapped_endpoint = to_endpoint(buff);
 
-        results.addrLocal.ToStringBuffer(buff, sizeof(buff));
+        results.addrLocal.ToStringBuffer(buff, sizeof buff);
         this->_local_endpoint = to_endpoint(buff);
       }
       if (results.fBehaviorTestSuccess)

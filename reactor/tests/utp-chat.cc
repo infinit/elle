@@ -1,11 +1,8 @@
-#include <reactor/network/utp-socket.hh>
-#include <reactor/network/utp-server.hh>
-
-#include <reactor/network/buffer.hh>
-#include <reactor/scheduler.hh>
-
 #include <elle/os/environ.hh>
 
+#include <reactor/network/utp-server.hh>
+#include <reactor/network/utp-socket.hh>
+#include <reactor/scheduler.hh>
 
 ELLE_LOG_COMPONENT("utp-chat");
 

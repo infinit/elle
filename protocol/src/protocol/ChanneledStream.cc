@@ -112,7 +112,7 @@ namespace infinit
           if (!channel->_packets.empty())
             {
               // FIXME: use helper to pop
-              elle::Buffer packet(std::move(channel->_packets.front()));
+              auto packet = std::move(channel->_packets.front());
               channel->_packets.pop_front();
               ELLE_TRACE("%s: %f available.", *this, packet);
               return packet;
@@ -140,7 +140,7 @@ namespace infinit
           {
             this->_reading = true;
             elle::Buffer p(this->_backend.read());
-            int channel_id = uint32_get(p, this->version());
+            int channel_id = this->uint32_get(p, this->version());
             // FIXME: The size of the packet isn't
             // adjusted. This is cosmetic though.
             auto it = this->_channels.find(channel_id);
@@ -150,7 +150,10 @@ namespace infinit
                          *this, p, *it->second, requested_channel);
               it->second->_packets.push_back(std::move(p));
               if (channel_id == requested_channel)
-                {goon = false; return;}
+                {
+                  goon = false;
+                  return;
+                }
               else
                 it->second->_available.signal_one();
             }
@@ -163,7 +166,10 @@ namespace infinit
               res._packets.push_back(std::move(p));
               this->_channels_new.push_back(std::move(res));
               if (new_channel)
-                {goon = false; return;}
+                {
+                  goon = false;
+                  return;
+                }
               else
                 this->_channel_available.signal_one();
             }
@@ -240,8 +246,8 @@ namespace infinit
     {
       ELLE_TRACE_SCOPE("%s: send %f on channel %s", *this, packet, id);
 
-      elle::Buffer backend_packet;
-      uint32_put(backend_packet, id, this->version());
+      auto backend_packet = elle::Buffer{};
+      this->uint32_put(backend_packet, id, this->version());
       backend_packet.append(packet.contents(), packet.size());
       this->_backend.write(backend_packet);
     }

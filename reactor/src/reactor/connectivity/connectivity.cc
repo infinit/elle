@@ -1,6 +1,5 @@
 #include <reactor/connectivity/connectivity.hh>
 
-#include <reactor/network/buffer.hh>
 #include <reactor/network/rdv-socket.hh>
 #include <reactor/network/rdv.hh>
 #include <reactor/network/resolve.hh>
@@ -48,7 +47,7 @@ namespace reactor
       s.send_to(std::string("foo\n"), server_ep);
       boost::asio::ip::udp::endpoint ep;
       char buffer[5000];
-      auto sz = s.receive_from(reactor::network::Buffer(buffer, 5000), ep, 5_sec);
+      auto sz = s.receive_from(elle::WeakBuffer(buffer, sizeof buffer), ep, 5_sec);
       std::string line(buffer, sz);
       auto p = line.find(' ');
       if (line.substr(p+1) != "foo\n")
@@ -59,7 +58,8 @@ namespace reactor
     std::string
     nat(std::string const& host, int port)
     {
-      // check cone-nat by comparing our endpoints from rdv server and connectivity server
+      // check cone-nat by comparing our endpoints from rdv server and
+      // connectivity server
       reactor::network::RDVSocket socket;
       socket.close();
       socket.bind(
@@ -75,8 +75,7 @@ namespace reactor
             elle::Buffer buf;
             buf.size(5000);
             boost::asio::ip::udp::endpoint ep;
-            int sz = socket.receive_from(reactor::network::Buffer(buf.mutable_contents(),
-                                                                  buf.size()), ep);
+            int sz = socket.receive_from(buf, ep);
             buf.size(sz);
             std::string line(buf.string());
             auto p = line.find(' ');
@@ -87,7 +86,8 @@ namespace reactor
             }
             else
             {
-              bool cone = (line.substr(0, p) == elle::sprintf("%s", socket.public_endpoint()));
+              bool cone
+                = line.substr(0, p) == elle::sprintf("%s", socket.public_endpoint());
               result = "UDP-RDV OK: ";
               if (cone)
                 result += "CONE NAT";

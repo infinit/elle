@@ -1,9 +1,7 @@
 #include <elle/utility/Move.hh>
 
-#include <reactor/network/rdv.hh>
-
-#include <reactor/network/buffer.hh>
 #include <reactor/network/rdv-socket.hh>
+#include <reactor/network/rdv.hh>
 #include <reactor/network/tcp-server.hh>
 #include <reactor/network/tcp-socket.hh>
 #include <reactor/network/udp-socket.hh>
@@ -33,7 +31,7 @@ serve_tcp(int port)
           {
             std::string line;
             std::getline(**socket, line);
-            **socket << elle::sprintf("%s", (*socket)->peer()) << ' ' << line << std::endl;
+            **socket << (*socket)->peer() << ' ' << line << std::endl;
           }
         }
         catch (elle::Error const& e)
@@ -56,12 +54,11 @@ serve_udp(int port)
     elle::Buffer buf;
     buf.size(5000);
     boost::asio::ip::udp::endpoint ep;
-    int sz = server->receive_from(reactor::network::Buffer(buf.mutable_contents(),
-                                                           buf.size()), ep);
+    int sz = server->receive_from(elle::WeakBuffer(buf), ep);
     buf.size(sz);
     ELLE_TRACE("received UDP %s", ep);
     auto reply = elle::sprintf("%s %s", ep, buf.string());
-    server->send_to(reactor::network::Buffer(reply.data(), reply.size()), ep);
+    server->send_to(elle::ConstWeakBuffer(reply), ep);
   }
 }
 
@@ -80,12 +77,11 @@ static void serve_rdv(int port)
     elle::Buffer buf;
     buf.size(5000);
     boost::asio::ip::udp::endpoint ep;
-    int sz = socket.receive_from(reactor::network::Buffer(buf.mutable_contents(),
-                                                           buf.size()), ep);
+    int sz = socket.receive_from(elle::WeakBuffer(buf), ep);
     buf.size(sz);
     ELLE_TRACE("received UDP %s", ep);
     auto reply = elle::sprintf("%s %s", ep, buf.string());
-    socket.send_to(reactor::network::Buffer(reply.data(), reply.size()), ep);
+    socket.send_to(elle::ConstWeakBuffer(reply), ep);
   }
 }
 
@@ -94,7 +90,8 @@ static void serve_utp(int port, int xorit)
   reactor::network::UTPServer server;
   server.xorify(xorit);
   server.listen(port);
-  server.rdv_connect("connectivity-server" + std::to_string(port), "rdv.infinit.sh:7890");
+  server.rdv_connect("connectivity-server" + std::to_string(port),
+                     "rdv.infinit.sh:7890");
   while (true)
   {
     auto socket = server.accept().release();
@@ -107,7 +104,7 @@ static void serve_utp(int port, int xorit)
           {
             std::string line;
             std::getline(*socket, line);
-            *socket << elle::sprintf("%s", socket->peer()) << ' ' << line << std::endl;
+            *socket << socket->peer() << ' ' << line << std::endl;
           }
         }
         catch (std::ios_base::failure const& e)
