@@ -91,9 +91,12 @@ namespace athena
 
     template <typename T, typename Version, typename ClientId>
     void
-    Client<T, Version, ClientId>::_check_headcount(Quorum const& q,
-                                                   int reached,
-                                                   bool reading) const
+    Client<T, Version, ClientId>::_check_headcount(
+      Quorum const& q,
+      int reached,
+      std::vector<std::exception_ptr> errors,
+      bool reading
+      ) const
     {
       ELLE_LOG_COMPONENT("athena.paxos.Client");
       ELLE_DEBUG("reached %s peers", reached);
@@ -101,8 +104,40 @@ namespace athena
       if (reached <= (size - (reading ? 1 : 0)) / 2)
       {
         ELLE_TRACE("too few peers to reach consensus: %s of %s", reached, size);
-        throw TooFewPeers(reached, size);
+        if (!reached && !errors.empty())
+          std::rethrow_exception(errors.front()); // FIXME do something clever
+        else
+          throw TooFewPeers(reached, size);
       }
+    }
+
+    template<typename Owner, typename Peers, typename F>
+    std::pair<int, std::vector<std::exception_ptr>>
+    peer_parallel_call(Owner const& h, Peers& peers, F func, std::string const& label)
+    {
+      ELLE_LOG_COMPONENT("athena.paxos.Client");
+      using Peer = typename Peers::value_type;
+      int reached = 0;
+      std::vector<std::exception_ptr> exceptions;
+      reactor::for_each_parallel(peers, [&] (Peer& peer)->void {
+          try
+          {
+            func(peer);
+            ++reached;
+          }
+          catch (Unavailable const& e)
+          {
+            ELLE_TRACE("%s: peer %s unavailable: %s",
+                       h, peer, e.what());
+          }
+          catch (elle::Error const& e)
+          {
+            ELLE_TRACE("%s: peer %s exception: %s",
+                       h, peer, e.what());
+            exceptions.push_back(std::current_exception());
+          }
+      }, label);
+      return std::make_pair(reached, exceptions);
     }
 
     template <typename T, typename Version, typename ClientId>
@@ -125,38 +160,26 @@ namespace athena
         Proposal proposal(std::move(version), this->_round, this->_id);
         ELLE_DEBUG("%s: send proposal: %s", *this, proposal)
         {
-          int reached = 0;
-          reactor::for_each_parallel(
-            this->_peers,
+          auto result = peer_parallel_call(*this, this->_peers,
             [&] (std::unique_ptr<Peer> const& peer) -> void
             {
-              try
+              ELLE_DEBUG_SCOPE("%s: send proposal %s to %s",
+                               *this, proposal, peer);
+              if (auto p = peer->propose(q, proposal))
               {
-                ELLE_DEBUG_SCOPE("%s: send proposal %s to %s",
-                                 *this, proposal, peer);
-                if (auto p = peer->propose(q, proposal))
+                if (!previous || previous->proposal < p->proposal)
                 {
-                  if (!previous || previous->proposal < p->proposal)
-                  {
-                    // FIXME: what if previous was accepted and p is not ?
-                    ELLE_DEBUG_SCOPE("%s: value already accepted at %f: %f",
-                                     *this, p->proposal, p->value);
-                    previous = std::move(p);
-                  }
+                  // FIXME: what if previous was accepted and p is not ?
+                  ELLE_DEBUG_SCOPE("%s: value already accepted at %f: %f",
+                                   *this, p->proposal, p->value);
+                  previous = std::move(p);
                 }
-                ++reached;
               }
-              catch (Unavailable const& e)
-              {
-                ELLE_TRACE("%s: peer %s unavailable: %s",
-                           *this, peer, e.what());
-              }
-            },
-            std::string("send proposal"));
+            }, std::string("send proposal"));
           if (previous && previous->confirmed)
             return previous;
           ELLE_TRACE("check headcount")
-            this->_check_headcount(q, reached);
+            this->_check_headcount(q, result.first, result.second);
           if (previous)
           {
             ELLE_DEBUG("replace value with %s", previous->value);
@@ -171,35 +194,24 @@ namespace athena
         }
         ELLE_DEBUG("%s: send acceptation", *this)
         {
-          int reached = 0;
           bool conflicted = false;
-          reactor::for_each_parallel(
-            this->_peers,
+          auto result = peer_parallel_call(*this, this->_peers,
             [&] (std::unique_ptr<Peer> const& peer) -> void
             {
-              try
+              ELLE_DEBUG_SCOPE("%s: send acceptation %s to %s",
+                               *this, proposal, *peer);
+              auto minimum = peer->accept(
+                q, proposal, previous ? previous->value : value);
+              // FIXME: If the majority doesn't conflict, the value was
+              // still chosen - right ? Take that in account.
+              if (proposal < minimum)
               {
-                ELLE_DEBUG_SCOPE("%s: send acceptation %s to %s",
-                                 *this, proposal, *peer);
-                auto minimum = peer->accept(
-                  q, proposal, previous ? previous->value : value);
-                // FIXME: If the majority doesn't conflict, the value was
-                // still chosen - right ? Take that in account.
-                if (proposal < minimum)
-                {
-                  ELLE_DEBUG("%s: conflicted proposal on peer %s: %s",
-                             *this, peer, minimum);
-                  version = minimum.version;
-                  this->_round = minimum.round;
-                  conflicted = true;
-                  reactor::break_parallel();
-                }
-                ++reached;
-              }
-              catch (Unavailable const& e)
-              {
-                ELLE_TRACE("%s: peer %s unavailable: %s",
-                           *this, peer, e.what());
+                ELLE_DEBUG("%s: conflicted proposal on peer %s: %s",
+                           *this, peer, minimum);
+                version = minimum.version;
+                this->_round = minimum.round;
+                conflicted = true;
+                reactor::break_parallel();
               }
             },
             std::string("send acceptation"));
@@ -218,31 +230,20 @@ namespace athena
             continue;
           }
           else
-            this->_check_headcount(q, reached);
+            this->_check_headcount(q, result.first, result.second);
         }
         ELLE_TRACE("%s: chose %f", this, previous ? previous->value : value);
         ELLE_DEBUG("%s: send confirmation", *this)
         {
-          auto reached = 0;
-          reactor::for_each_parallel(
-            this->_peers,
+          auto result = peer_parallel_call(*this, this->_peers,
             [&] (std::unique_ptr<Peer> const& peer) -> void
             {
-              try
-              {
-                ELLE_DEBUG_SCOPE("%s: send confirmation %s to %s",
-                                 *this, proposal, *peer);
-                peer->confirm(q, proposal);
-                ++reached;
-              }
-              catch (Unavailable const& e)
-              {
-                ELLE_TRACE("%s: peer %s unavailable: %s",
-                           *this, peer, e.what());
-              }
+              ELLE_DEBUG_SCOPE("%s: send confirmation %s to %s",
+                               *this, proposal, *peer);
+              peer->confirm(q, proposal);
             },
             std::string("send confirmation"));
-          this->_check_headcount(q, reached);
+          this->_check_headcount(q, result.first, result.second);
         }
         break;
       }
@@ -266,29 +267,18 @@ namespace athena
       for (auto const& peer: this->_peers)
         q.insert(peer->id());
       ELLE_DUMP("quorum: %s", q);
-      auto reached = 0;
       boost::optional<typename Client<T, Version, CId>::Accepted> res;
-      reactor::for_each_parallel(
-        this->_peers,
+      auto result = peer_parallel_call(*this, this->_peers,
         [&] (std::unique_ptr<Peer> const& peer) -> void
         {
-          try
-          {
-            ELLE_DEBUG_SCOPE("%s: get from %s", *this, *peer);
-            auto accepted = peer->get(q);
-            if (accepted)
-              if (!res || res->proposal < accepted->proposal)
-                res.emplace(std::move(accepted.get()));
-            ++reached;
-          }
-          catch (Unavailable const& e)
-          {
-            ELLE_TRACE("%s: peer %s unavailable: %s",
-                       *this, peer, e.what());
-          }
+          ELLE_DEBUG_SCOPE("%s: get from %s", *this, *peer);
+          auto accepted = peer->get(q);
+          if (accepted)
+            if (!res || res->proposal < accepted->proposal)
+              res.emplace(std::move(accepted.get()));
         },
         std::string("get quorum"));
-      this->_check_headcount(q, reached, true);
+      this->_check_headcount(q, result.first, result.second, true);
       typedef std::pair<boost::optional<T>, Quorum> Res;
       if (res)
         return Res(res->value.template get<T>(), q);

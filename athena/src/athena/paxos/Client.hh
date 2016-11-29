@@ -110,6 +110,7 @@ namespace athena
       void
       _check_headcount(Quorum const& q,
                        int reached,
+                       std::vector<std::exception_ptr> errors = std::vector<std::exception_ptr>(),
                        bool reading = false) const;
 
     /*----------.
