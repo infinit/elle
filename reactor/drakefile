@@ -872,6 +872,23 @@ def configure(curl_config,
         )
       rule_check << python_runner.status
 
+  ## -------- ##
+  ## Examples ##
+  ## -------- ##
+
+  cxx_config_examples = drake.cxx.Config(local_cxx_config)
+  rule_examples = drake.Rule('examples')
+  for example in [
+    'examples/demo/echo_server'
+  ]:
+    name = example
+    source = drake.nodes('%s.cc' % name)
+    rule_examples << drake.cxx.Executable(
+      name,
+      source + [library, elle_lib],
+      cxx_toolkit, cxx_config_examples)
+  rule_build << rule_examples
+
   ## ------- ##
   ## Install ##
   ## ------- ##
