@@ -18,43 +18,43 @@ namespace infinit
       ///
       ///   generate<bool>();
       ///   generate<char>();
-      ///   generate<char>(char minimum,
-      ///                  char maximum);
+      ///   generate<char>(char min, char max);
       ///   generate<double>();
       ///   generate<int8_t>();
-      ///   generate<int8_t>(int8_t minimum,
-      ///                    int8_t maximum);
+      ///   generate<int8_t>(int8_t min, int8_t max);
       ///   generate<int16_t>();
-      ///   generate<int16_t>(int16_t minimum,
-      ///                     int16_t maximum);
+      ///   generate<int16_t>(int16_t min, int16_t max);
       ///   generate<int32_t>();
-      ///   generate<int32_t>(int32_t minimum,
-      ///                     int32_t maximum);
+      ///   generate<int32_t>(int32_t min, int32_t max);
       ///   generate<int64_t>();
-      ///   generate<int64_t>(int64_t minimum,
-      ///                     int64_t maximum);
+      ///   generate<int64_t>(int64_t min, int64_t max);
       ///   generate<uint8_t>();
-      ///   generate<uint8_t>(uint8_t minimum,
-      ///                     uint8_t maximum);
+      ///   generate<uint8_t>(uint8_t min, uint8_t max);
       ///   generate<uint16_t>();
-      ///   generate<uint16_t>(uint16_t minimum,
-      ///                      uint16_t maximum);
+      ///   generate<uint16_t>(uint16_t min, uint16_t max);
       ///   generate<uint32_t>();
-      ///   generate<uint32_t>(uint32_t minimum,
-      ///                      uint32_t maximum);
+      ///   generate<uint32_t>(uint32_t min, uint32_t max);
       ///   generate<uint64_t>();
-      ///   generate<uint64_t>(uint64_t minimum,
-      ///                      uint64_t maximum);
-      ///   generate<std::string>(uint32_t length);
-      ///   generate<elle::Buffer>(uint32_t size);
-      template <typename T,
-                typename... A>
+      ///   generate<uint64_t>(uint64_t min, uint64_t max);
+      template <typename T>
       T
-      generate(A... arguments);
+      generate();
+
+      template <typename T>
+      T
+      generate(T min, T max);
+
+      /// generate<std::string>(uint32_t length);
+      /// generate<elle::Buffer>(uint32_t size);
+      template <typename T>
+      T
+      generate(uint32_t const length);
+
       /// Fill a buffer with random bytes. See RAND_bytes.
       void
       fill(unsigned char* buffer,
            size_t const size);
+
       /// Set up the random generator by adding entropy.
       ///
       /// !WARNING! Do not use unless you know exactly what you're doing.
