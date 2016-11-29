@@ -20,6 +20,7 @@ rule_build = None
 rule_check = None
 rule_install = None
 rule_tests = None
+rule_examples = None
 
 with open(str(drake.path_source('../drake-utils.py')), 'r') as f:
   exec(f.read(), globals(), globals())
@@ -47,7 +48,7 @@ def configure(curl_config,
 ):
 
   global config, lib_static, lib_dynamic, library, cxx_lib
-  global rule_build, rule_install
+  global rule_build, rule_install, rule_examples
   global python_lib, dokan_lib
   global connectivity, fnetusermount_binaries
 

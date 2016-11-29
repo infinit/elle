@@ -1387,3 +1387,6 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
 
   install = drake.Rule('install')
   recurse(install, 'rule_install')
+
+  examples = drake.Rule('examples')
+  recurse(examples, 'rule_examples')

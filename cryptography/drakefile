@@ -15,6 +15,8 @@ rule_build = None
 rule_check = None
 rule_install = None
 rule_tests = None
+rule_samples = None
+rule_examples = None
 
 def configure(openssl_config,
               openssl_lib_crypto,
@@ -348,6 +350,26 @@ def configure(openssl_config,
     )
     python_runner.reporting = drake.Runner.Reporting.on_failure
     rule_check << python_runner.status
+
+  ## ------- ##
+  ## Samples ##
+  ## ------- ##
+
+  global rule_samples
+  rule_samples = drake.Rule('samples')
+
+  samples = [
+    'sample',
+  ]
+
+  for sample in samples:
+    rule_samples << drake.cxx.Executable(
+      sample,
+      [
+        drake.node('%s.cc' % sample),
+        library, elle_library, openssl_lib_ssl, openssl_lib_crypto
+      ],
+      cxx_toolkit, exe_cxx_config)
 
   ## ------- ##
   ## Install ##

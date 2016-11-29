@@ -6,7 +6,6 @@ import drake.valgrind
 import sys
 import os
 
-
 config = None
 lib_static = None
 lib_dynamic = None
@@ -18,6 +17,7 @@ rule_build = None
 rule_check = None
 rule_install = None
 rule_tests = None
+rule_examples = None
 
 python_plugin_datetime = None
 
@@ -45,7 +45,7 @@ def configure(zlib_lib,
 
   global config, lib_static, lib_dynamic, library, library_zlib
   global python
-  global rule_build, rule_check, rule_install, rule_tests
+  global rule_build, rule_check, rule_install, rule_tests, rule_examples
   global python_plugin_datetime
   global ldap
 

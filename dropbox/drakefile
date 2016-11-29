@@ -3,6 +3,7 @@ import drake
 rule_build = None
 rule_check = None
 rule_tests = None
+rule_examples = None
 
 lib_dynamic = None
 lib_static  = None
@@ -20,7 +21,7 @@ def configure(cxx_toolkit,
               valgrind_tests = True):
 
   global lib_dynamic, lib_static
-  global rule_build, rule_check, rule_tests
+  global rule_build, rule_check, rule_tests, rule_examples
   global config
 
   ## ----------------- ##
