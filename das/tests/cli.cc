@@ -22,7 +22,7 @@ basics()
       "barquux");
   }
   BOOST_CHECK_THROW(
-    das::cli::call(proto, f, {"--foo", "bar", "--bar", "quux"}),
+    das::cli::call(proto, f, {"--foo", "bar", "--baz", "x", "--bar", "quux"}),
     das::cli::UnknownOption);
   BOOST_CHECK_THROW(
     das::cli::call(proto, f, {"--foo", "bar", "garbage", "--baz", "quux"}),
@@ -185,7 +185,7 @@ void
 dash()
 {
   auto const f = [] (int foo) { return foo; };
-  auto const proto = das::named::prototype(composite_option);
+  auto const proto = das::named::prototype(composite_option = 0);
   {
     BOOST_CHECK_EQUAL(
       das::cli::call(proto, f, {"--composite-option", "193"}), 193);
@@ -216,6 +216,40 @@ short_options()
   }
 }
 
+static
+void
+positional()
+{
+  auto const f =
+    [] (int foo, int bar) { return foo + bar; };
+  {
+    auto const proto = das::named::prototype(foo, bar);
+    {
+      das::cli::Options opts = {
+        {"foo", {'f', ""}},
+        {"bar", {'b', "", true}},
+      };
+      BOOST_CHECK_EQUAL(
+        das::cli::call(proto, f, {"-f", "1", "-b", "2"}, opts), 3);
+      BOOST_CHECK_EQUAL(
+        das::cli::call(proto, f, {"-f", "3", "4"}, opts), 7);
+      BOOST_CHECK_EQUAL(
+        das::cli::call(proto, f, {"6", "-f", "5"}, opts), 11);
+    }
+  }
+  {
+    auto const proto = das::named::prototype(foo = 1, bar = 1);
+    {
+      das::cli::Options opts = {
+        {"foo", {'f', "", true}},
+        {"bar", {'b', ""}},
+      };
+      BOOST_CHECK_EQUAL(
+        das::cli::call(proto, f, {"247"}, opts), 248);
+    }
+  }
+}
+
 ELLE_TEST_SUITE()
 {
   auto& master = boost::unit_test::framework::master_test_suite();
@@ -232,4 +266,5 @@ ELLE_TEST_SUITE()
   master.add(BOOST_TEST_CASE(defaults));
   master.add(BOOST_TEST_CASE(short_options));
   master.add(BOOST_TEST_CASE(dash));
+  master.add(BOOST_TEST_CASE(positional));
 }
