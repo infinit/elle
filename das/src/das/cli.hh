@@ -564,26 +564,33 @@ namespace das
       return _call(p, f, copy, opts);
     }
 
-    template <typename Symbol>
+    template <typename Symbol, typename Defaults>
     struct help_map
     {
       using type = bool;
       static
       bool
-      value(std::ostream& s, Options const& opts)
+      value(std::ostream& s, Options const& opts, Defaults const& defaults)
       {
         auto opt = opts.find(Symbol::name());
         if (opt != opts.end())
         {
-          s << "  ";
           if (opt->second.short_name != 0)
-            s << "-" << opt->second.short_name << ", ";
+            elle::fprintf(s, "  -%s, ", opt->second.short_name);
           else
-            s << "    ";
-          s << " --" << Symbol::name() << ": " << opt->second.help << "\n";
+            elle::fprintf(s, "       ");
+          elle::fprintf(s, " --%s: %s", Symbol::name(), opt->second.help);
+          static_if(Defaults::template default_for<
+                    typename das::named::make_formal<Symbol>::type>::has)
+          {
+            auto const& v = defaults.Symbol::value;
+            if (!std::is_same<decltype(v), bool const&>::value)
+              elle::fprintf(s, " (default: %s)", defaults.Symbol::value);
+          };
+          elle::fprintf(s, "\n");
         }
         else
-          s << "       --" << Symbol::name() << "\n";
+          elle::fprintf(s, "       --%s\n", Symbol::name());
         return true;
       };
     };
@@ -594,7 +601,8 @@ namespace das
          std::ostream& s,
          Options const& opts = Options())
     {
-      elle::meta::List<T...>::template map<help_map>::value(s, opts);
+      elle::meta::List<T...>::template map<help_map, D>::value(
+        s, opts, f.defaults);
     }
 
     template <typename F, typename ... T>
@@ -603,7 +611,9 @@ namespace das
          std::ostream& s,
          Options const& opts = Options())
     {
-      elle::meta::List<T...>::template map<help_map>::value(s, opts);
+      elle::meta::List<T...>::
+        template map<help_map, named::DefaultStore<T...>>::value(
+          s, opts, f.prototype().defaults);
     }
   }
 }
