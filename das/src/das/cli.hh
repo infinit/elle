@@ -128,30 +128,98 @@ namespace das
 
     namespace _details
     {
+      class IsOption
+      {
+      public:
+        IsOption(std::string a, Options const& opts)
+          : _arg(std::move(a))
+          , _name()
+          , _option(false)
+        {
+          if (this->_arg.size() > 2 &&
+              this->_arg[0] == '-' && this->_arg[1] == '-')
+          {
+            this->_option = true;
+            this->_name = this->_arg.substr(2);
+          }
+          else if (this->_arg.size() == 2 &&
+                   this->_arg[0] == '-' && std::isalpha(this->_arg[1]))
+          {
+            this->_option = true;
+            for (auto const& opt: opts)
+              if (opt.second.short_name == this->_arg[1])
+              {
+                this->_name = opt.first;
+                break;
+              }
+          }
+        }
+
+        bool
+        operator ==(std::string const& o)
+        {
+          if (this->_option)
+          {
+            auto r = o;
+            std::replace(r.begin(), r.end(), '_', '-');
+            return this->_name == r;
+          }
+          else
+            return false;
+        }
+
+        operator bool()
+        {
+          return this->_option;
+        }
+
+        ELLE_ATTRIBUTE(std::string, arg);
+        ELLE_ATTRIBUTE(std::string, name);
+        ELLE_ATTRIBUTE(bool, option);
+      };
+    }
+
+    static
+    _details::IsOption
+    is_option(std::string const& a, Options const& opts = Options())
+    {
+      return _details::IsOption(a, opts);
+    }
+
+    namespace _details
+    {
       template <typename Formal, typename D, typename ... Formals>
       class Value
       {
       public:
         Value(das::named::Prototype<D, Formals...> const& p,
               std::string option,
-              boost::optional<std::vector<std::string>&> positional,
-              std::vector<std::string> value)
+              bool positional,
+              std::vector<std::string>& args,
+              std::vector<std::string> value,
+              int& remaining)
           : _prototype(p)
           , _option(std::move(option))
           , _value(std::move(value))
           , _positional(positional)
+          , _args(args)
           , _flag(false)
+          , _remaining(remaining)
         {}
 
         Value(das::named::Prototype<D, Formals...> const& p,
               std::string option,
-              boost::optional<std::vector<std::string>&> positional,
-              bool flag)
+              bool positional,
+              std::vector<std::string>& args,
+              bool flag,
+              int& remaining)
           : _prototype(p)
           , _option(std::move(option))
           , _value()
           , _positional(positional)
+          , _args(args)
           , _flag(flag)
+          , _remaining(remaining)
         {}
 
         template <typename I>
@@ -251,14 +319,7 @@ namespace das
           T>
         missing()
         {
-          if (this->_positional && !this->_positional->empty())
-          {
-            this->_value.emplace_back(std::move(*this->_positional->begin()));
-            this->_positional->erase(this->_positional->begin());
-            return this->convert<T>();
-          }
-          else
-            throw MissingOption(this->_option);
+          throw MissingOption(this->_option);
         }
 
         template <typename T>
@@ -272,34 +333,42 @@ namespace das
           return this->_prototype.defaults.clang_workaround::value;
         }
 
-        operator bool()
-        {
-          if (this->_value.empty())
-            return this->_flag;
-          else
-            return this->convert<bool>();
-        }
-
-        template <typename I>
-        operator I()
-        {
-          return this->convert<I>();
-        }
-
         template <typename I>
         I
         convert()
         {
           if (this->_value.empty())
-            return missing<I>();
+          {
+            if (this->_positional && !this->_args.empty())
+            {
+              this->_value.emplace_back(std::move(*this->_args.begin()));
+              this->_args.erase(this->_args.begin());
+            }
+            else
+              return missing<I>();
+          }
           if (this->_value.size() > 1)
             throw DuplicateOption(this->_option);
           return convert<I>(this->_value[0]);
         }
 
-        operator std::vector<std::string>()
+        template <typename I>
+        operator I()
         {
-          return this->_value;
+          auto res = this->convert<I>();
+          this->_check_remaining();
+          return res;
+        }
+
+        operator bool()
+        {
+          bool res;
+          if (this->_value.empty())
+            res = this->_flag;
+          else
+            res = this->convert<bool>();
+          this->_check_remaining();
+          return res;
         }
 
         template <typename T>
@@ -309,7 +378,21 @@ namespace das
           for_each(
             this->_value.begin(), this->_value.end(),
             [&] (std::string const& v) { res.emplace_back(convert<T>(v)); });
+          this->_check_remaining();
           return res;
+        }
+
+        void
+        _check_remaining()
+        {
+          if (!--this->_remaining)
+            if (!this->_args.empty())
+            {
+              if (is_option(*this->_args.begin()))
+                throw UnknownOption(*this->_args.begin());
+              else
+                throw UnrecognizedValue(*this->_args.begin());
+            }
         }
 
       private:
@@ -317,64 +400,11 @@ namespace das
           (das::named::Prototype<D, Formals...> const&), prototype);
         ELLE_ATTRIBUTE(std::string, option);
         ELLE_ATTRIBUTE(std::vector<std::string>, value);
-        ELLE_ATTRIBUTE(boost::optional<std::vector<std::string>&>, positional);
+        ELLE_ATTRIBUTE(bool, positional);
+        ELLE_ATTRIBUTE(std::vector<std::string>&, args);
         ELLE_ATTRIBUTE(bool, flag);
+        ELLE_ATTRIBUTE(int&, remaining);
       };
-
-      class IsOption
-      {
-      public:
-        IsOption(std::string a, Options const& opts)
-          : _arg(std::move(a))
-          , _name()
-          , _option(false)
-        {
-          if (this->_arg.size() > 2 &&
-              this->_arg[0] == '-' && this->_arg[1] == '-')
-          {
-            this->_option = true;
-            this->_name = this->_arg.substr(2);
-          }
-          else if (this->_arg.size() == 2 &&
-                   this->_arg[0] == '-' && std::isalpha(this->_arg[1]))
-            for (auto const& opt: opts)
-              if (opt.second.short_name == this->_arg[1])
-              {
-                this->_option = true;
-                this->_name = opt.first;
-                break;
-              }
-        }
-
-        bool
-        operator ==(std::string const& o)
-        {
-          if (this->_option)
-          {
-            auto r = o;
-            std::replace(r.begin(), r.end(), '_', '-');
-            return this->_name == r;
-          }
-          else
-            return false;
-        }
-
-        operator bool()
-        {
-          return this->_option;
-        }
-
-        ELLE_ATTRIBUTE(std::string, arg);
-        ELLE_ATTRIBUTE(std::string, name);
-        ELLE_ATTRIBUTE(bool, option);
-      };
-    }
-
-    static
-    _details::IsOption
-    is_option(std::string const& a, Options const& opts = Options())
-    {
-      return _details::IsOption(a, opts);
     }
 
     namespace _details
@@ -395,11 +425,10 @@ namespace das
               F const& f,
               std::tuple<Parsed...> parsed,
               std::vector<std::string>& args,
-              Options const& opts)
+              Options const& opts,
+              int&)
           -> decltype(std::forward_tuple(f, std::move(parsed)))
         {
-          if (!args.empty() && is_option(args[0], opts))
-            throw UnknownOption(args[0]);
           return forward_tuple(f, std::move(parsed));
         }
       };
@@ -417,14 +446,16 @@ namespace das
               F const& f,
               std::tuple<Parsed...> parsed,
               std::vector<std::string>& args,
-              Options const& opts)
+              Options const& opts,
+              int& counter)
           -> decltype(CLI<Tail...>::value(
             p, f,
             std::tuple_cat(
               std::move(parsed),
               std::declval<std::tuple<_details::Value<Head, D, Formals...>>>()),
             args,
-            opts))
+            opts,
+            counter))
         {
           std::vector<std::string> value;
           bool flag = false;
@@ -461,31 +492,25 @@ namespace das
             else
               ++it;
           }
-          bool positional = false;
+          bool pos = false;
           for (auto const& opt: opts)
             if (opt.first == Head::name())
             {
-              positional = opt.second.positional;
+              pos = opt.second.positional;
               break;
             }
-          boost::optional<std::vector<std::string>&> pos;
-          if (positional)
-            pos.reset(args);
           auto v = flag ?
-            Value<Head, D, Formals...>(p, Head::name(), std::move(pos), flag) :
             Value<Head, D, Formals...>(
-              p, Head::name(), std::move(pos), std::move(value));
-          auto const check_extra = [&] (auto&& ... a)
-            {
-              if (!args.empty())
-                throw UnrecognizedValue(args[0]);
-              return f(std::forward<decltype(a)>(a)...);
-            };
+              p, Head::name(), pos, args, flag, counter) :
+            Value<Head, D, Formals...>(
+              p, Head::name(), pos, args, std::move(value), counter);
           return CLI<Tail...>::value(
-            p, check_extra,
+            p,
+            f,
             std::tuple_cat(std::move(parsed), std::make_tuple(std::move(v))),
             args,
-            opts);
+            opts,
+            counter);
         }
       };
     }
@@ -497,10 +522,12 @@ namespace das
           std::vector<std::string>& args,
           Options const& opts = Options())
       -> decltype(
-        _details::CLI<Formals...>::value(p, f, std::tuple<>(), args, opts))
+        _details::CLI<Formals...>::value(
+          p, f, std::tuple<>(), args, opts, std::declval<int&>()))
     {
+      int counter = sizeof ... (Formals);
       return _details::CLI<Formals...>::value(
-        p, f, std::tuple<>(), args, opts);
+        p, f, std::tuple<>(), args, opts, counter);
     }
 
     template <typename F, typename D, typename ... Formals>
