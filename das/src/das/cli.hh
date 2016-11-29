@@ -282,7 +282,7 @@ namespace das
 
         template <typename I>
         std::enable_if_t<std::is_base_of<boost::optional_detail::optional_tag, I>::value, I>
-        convert(I const& v)
+        convert(std::string const& v)
         {
           if (this->_value.empty())
             return boost::none;
