@@ -507,13 +507,10 @@ namespace das
             else
               ++it;
           }
-          bool pos = false;
-          for (auto const& opt: opts)
-            if (opt.first == Head::name())
-            {
-              pos = opt.second.positional;
-              break;
-            }
+          bool pos = [&] {
+            auto it = opts.find(Head::name());
+            return it != opts.end() && it->second.positional;
+          }();
           auto v = flag ?
             Value<Head, D, Formals...>(
               p, Head::name(), pos, args, flag, counter) :
