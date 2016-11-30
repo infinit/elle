@@ -195,40 +195,107 @@ dash()
   }
 }
 
-static
-void
-short_options()
+namespace short_options_ct
 {
-  auto const f =
-    [] (int foo, int bar) { return foo + bar; };
-  auto const proto = das::named::prototype(foo, bar);
+  DAS_CLI_SYMBOL(foo, 'f', "", false);
+  DAS_CLI_SYMBOL(bar, 'b', "", false);
+
+  static
+  void
+  compile_time()
   {
-    das::cli::Options opts = {
-      {"foo", {'f', ""}},
-      {"bar", {'b', ""}},
-    };
-    BOOST_CHECK_EQUAL(
-      das::cli::call(proto, f, {"--foo", "1", "-b", "2"}, opts), 3);
-    BOOST_CHECK_EQUAL(
-      das::cli::call(proto, f, {"-f", "3", "--bar", "4"}, opts), 7);
-    BOOST_CHECK_EQUAL(
-      das::cli::call(proto, f, {"-f", "5", "-b", "6"}, opts), 11);
+    auto const f =
+      [] (int foo, int bar) { return foo + bar; };
+    auto const proto = das::named::prototype(foo, bar);
+    {
+      BOOST_CHECK_EQUAL(
+        das::cli::call(proto, f, {"--foo", "1", "-b", "2"}), 3);
+      BOOST_CHECK_EQUAL(
+        das::cli::call(proto, f, {"-f", "3", "--bar", "4"}), 7);
+      BOOST_CHECK_EQUAL(
+        das::cli::call(proto, f, {"-f", "5", "-b", "6"}), 11);
+    }
   }
 }
 
-static
-void
-positional()
+namespace short_options_rt
 {
-  auto const f =
-    [] (int foo, int bar) { return foo + bar; };
+  static
+  void
+  run_time()
   {
+    auto const f =
+      [] (int foo, int bar) { return foo + bar; };
     auto const proto = das::named::prototype(foo, bar);
     {
       das::cli::Options opts = {
         {"foo", {'f', ""}},
-        {"bar", {'b', "", true}},
+        {"bar", {'b', ""}},
       };
+      BOOST_CHECK_EQUAL(
+        das::cli::call(proto, f, {"--foo", "1", "-b", "2"}, opts), 3);
+      BOOST_CHECK_EQUAL(
+        das::cli::call(proto, f, {"-f", "3", "--bar", "4"}, opts), 7);
+      BOOST_CHECK_EQUAL(
+        das::cli::call(proto, f, {"-f", "5", "-b", "6"}, opts), 11);
+    }
+  }
+}
+
+namespace positional_ct
+{
+  DAS_CLI_SYMBOL(foo, 'f', "", false);
+  DAS_CLI_SYMBOL(bar, 'b', "", true);
+
+  static
+  void
+  compile_time()
+  {
+    auto const f =
+      [] (int foo, int bar) { return foo + bar; };
+    {
+      auto const proto = das::named::prototype(foo, bar);
+      BOOST_CHECK_EQUAL(
+        das::cli::call(proto, f, {"-f", "1", "-b", "2"}), 3);
+      BOOST_CHECK_EQUAL(
+        das::cli::call(proto, f, {"-f", "3", "4"}), 7);
+      BOOST_CHECK_EQUAL(
+        das::cli::call(proto, f, {"6", "-f", "5"}), 11);
+    }
+    {
+      auto const proto = das::named::prototype(foo = 1, bar = 2);
+      BOOST_CHECK_EQUAL(das::cli::call(proto, f, {"247"}), 248);
+    }
+    {
+      auto const f =
+        [] (std::vector<int> const& ints)
+        {
+          return std::accumulate(ints.begin(), ints.end(), 0);
+        };
+      auto const proto = das::named::prototype(bar);
+      BOOST_CHECK_EQUAL(
+        das::cli::call(proto, f, {"1", "2", "3"}), 6);
+      BOOST_CHECK_THROW(
+        das::cli::call(proto, f, {"-b", "1", "2", "3"}),
+        das::cli::UnrecognizedValue);
+    }
+  }
+}
+
+namespace positional_rt
+{
+  static
+  void
+  run_time()
+  {
+    auto const f =
+      [] (int foo, int bar) { return foo + bar; };
+    das::cli::Options opts = {
+      {"foo", {'f', "", false}},
+      {"bar", {'b', "", true}},
+    };
+    {
+      auto const proto = das::named::prototype(foo, bar);
       BOOST_CHECK_EQUAL(
         das::cli::call(proto, f, {"-f", "1", "-b", "2"}, opts), 3);
       BOOST_CHECK_EQUAL(
@@ -236,33 +303,21 @@ positional()
       BOOST_CHECK_EQUAL(
         das::cli::call(proto, f, {"6", "-f", "5"}, opts), 11);
     }
-  }
-  {
-    auto const proto = das::named::prototype(foo = 1, bar = 1);
     {
-      das::cli::Options opts = {
-        {"foo", {'f', "", true}},
-        {"bar", {'b', ""}},
-      };
-      BOOST_CHECK_EQUAL(
-        das::cli::call(proto, f, {"247"}, opts), 248);
+      auto const proto = das::named::prototype(foo = 1, bar = 2);
+      BOOST_CHECK_EQUAL(das::cli::call(proto, f, {"247"}, opts), 248);
     }
-  }
-  {
-    auto const f =
-      [] (std::vector<int> const& ints)
-      {
-        return std::accumulate(ints.begin(), ints.end(), 0);
-      };
-    auto const proto = das::named::prototype(foo);
     {
-      das::cli::Options opts = {
-        {"foo", {'f', "", true}},
-      };
+      auto const f =
+        [] (std::vector<int> const& ints)
+        {
+          return std::accumulate(ints.begin(), ints.end(), 0);
+        };
+      auto const proto = das::named::prototype(bar);
       BOOST_CHECK_EQUAL(
         das::cli::call(proto, f, {"1", "2", "3"}, opts), 6);
       BOOST_CHECK_THROW(
-        das::cli::call(proto, f, {"-f", "1", "2", "3"}, opts),
+        das::cli::call(proto, f, {"-b", "1", "2", "3"}, opts),
         das::cli::UnrecognizedValue);
     }
   }
@@ -282,9 +337,9 @@ ELLE_TEST_SUITE()
 {
   auto& master = boost::unit_test::framework::master_test_suite();
   master.add(BOOST_TEST_CASE(basics));
-  auto conversions = BOOST_TEST_SUITE("conversions");
-  master.add(conversions);
   {
+    auto conversions = BOOST_TEST_SUITE("conversions");
+    master.add(conversions);
     using namespace conversions;
     conversions->add(BOOST_TEST_CASE(integers));
     conversions->add(BOOST_TEST_CASE(boolean));
@@ -292,8 +347,22 @@ ELLE_TEST_SUITE()
     conversions->add(BOOST_TEST_CASE(multiple_integers));
   }
   master.add(BOOST_TEST_CASE(defaults));
-  master.add(BOOST_TEST_CASE(short_options));
+  {
+    auto suite = BOOST_TEST_SUITE("short_options");
+    master.add(suite);
+    using namespace short_options_ct;
+    using namespace short_options_rt;
+    suite->add(BOOST_TEST_CASE(compile_time));
+    suite->add(BOOST_TEST_CASE(run_time));
+  }
   master.add(BOOST_TEST_CASE(dash));
-  master.add(BOOST_TEST_CASE(positional));
+  {
+    auto suite = BOOST_TEST_SUITE("positional");
+    master.add(suite);
+    using namespace positional_ct;
+    using namespace positional_rt;
+    suite->add(BOOST_TEST_CASE(compile_time));
+    suite->add(BOOST_TEST_CASE(run_time));
+  }
   master.add(BOOST_TEST_CASE(serialization));
 }

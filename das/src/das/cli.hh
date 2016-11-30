@@ -110,6 +110,10 @@ namespace das
 #undef DAS_CLI_OPTION_ERROR
 #undef DAS_CLI_VALUE_ERROR
 
+    /// Base tag for cli symbols
+    class CLI_Symbol
+    {};
+
     struct Option
     {
       Option(char short_name = 0,
@@ -133,37 +137,38 @@ namespace das
       {
       public:
         IsOption(std::string a, Options const& opts)
-          : _arg(std::move(a))
-          , _name()
-          , _option(false)
-        {
-          if (this->_arg.size() > 2 &&
-              this->_arg[0] == '-' && this->_arg[1] == '-')
-          {
-            this->_option = true;
-            this->_name = this->_arg.substr(2);
-          }
-          else if (this->_arg.size() == 2 &&
-                   this->_arg[0] == '-' && std::isalpha(this->_arg[1]))
-          {
-            this->_option = true;
-            for (auto const& opt: opts)
-              if (opt.second.short_name == this->_arg[1])
-              {
-                this->_name = opt.first;
-                break;
-              }
-          }
-        }
+          : _option(a.size() > 2 && a[0] == '-' && a[1] == '-'
+                    || a.size() == 2 && a[0] == '-' && std::isalpha(a[1]))
+          , _arg(std::move(a))
+        {}
 
+        template <typename T>
         bool
-        operator ==(std::string const& o)
+        is(Options const& opts)
         {
           if (this->_option)
           {
-            auto r = o;
-            std::replace(r.begin(), r.end(), '_', '-');
-            return this->_name == r;
+            if (this->_arg[0] == '-' && this->_arg[1] == '-')
+            {
+              auto r = T::name();
+              std::replace(r.begin(), r.end(), '_', '-');
+              return this->_arg.substr(2) == r;
+            }
+            else
+            {
+              auto res = false;
+              static_if((std::is_base_of<CLI_Symbol, T>::value))
+              {
+                if (this->_arg[1] == T::short_name())
+                  res = true;
+              };
+              {
+                auto it = opts.find(T::name());
+                if (it != opts.end())
+                  res = this->_arg[1] == it->second.short_name;
+              }
+              return res;
+            }
           }
           else
             return false;
@@ -174,9 +179,8 @@ namespace das
           return this->_option;
         }
 
-        ELLE_ATTRIBUTE(std::string, arg);
-        ELLE_ATTRIBUTE(std::string, name);
         ELLE_ATTRIBUTE(bool, option);
+        ELLE_ATTRIBUTE(std::string, arg);
       };
     }
 
@@ -478,7 +482,7 @@ namespace das
           while (it != args.end())
           {
             if (auto o = is_option(*it, opts))
-              if (o == Head::name())
+              if (o.is<Head>(opts))
               {
                 it = args.erase(it);
                 if (it != args.end() && !is_option(*it, opts))
@@ -507,10 +511,17 @@ namespace das
             else
               ++it;
           }
-          bool pos = [&] {
+          bool pos = false;
+          using Formal = typename das::named::make_formal<Head>::type;
+          static_if((std::is_base_of<CLI_Symbol, Formal>::value))
+          {
+            pos = Formal::positional();
+          };
+          {
             auto it = opts.find(Head::name());
-            return it != opts.end() && it->second.positional;
-          }();
+            if (it != opts.end())
+              pos = it->second.positional;
+          }
           auto v = flag ?
             Value<Head, D, Formals...>(
               p, Head::name(), pos, args, flag, counter) :
@@ -629,3 +640,40 @@ namespace das
     }
   }
 }
+
+#define DAS_CLI_SYMBOL(Name, ...) DAS_CLI_SYMBOL_NAMED(Name, Name, __VA_ARGS__)
+
+#define DAS_CLI_SYMBOL_NAMED(Name, CName, Short, Help, Pos)             \
+  DAS_SYMBOL_TYPE_NAMED(Name, CName);                                   \
+  constexpr static                                                      \
+  class CLI_Symbol_##Name                                               \
+    : public _Symbol_##Name<CLI_Symbol_##Name>                          \
+    , public ::das::cli::CLI_Symbol                                     \
+  {                                                                     \
+  public:                                                               \
+    using _Symbol_##Name<CLI_Symbol_##Name>::operator=;                 \
+    constexpr                                                           \
+      CLI_Symbol_##Name()                                               \
+    {}                                                                  \
+                                                                        \
+    static constexpr                                                    \
+    char                                                                \
+    short_name()                                                        \
+    {                                                                   \
+      return Short;                                                     \
+    }                                                                   \
+                                                                        \
+    static constexpr                                                    \
+    char const*                                                         \
+    help()                                                              \
+    {                                                                   \
+      return Help;                                                      \
+    }                                                                   \
+                                                                        \
+    static constexpr                                                    \
+    bool                                                                \
+    positional()                                                        \
+    {                                                                   \
+      return Pos;                                                       \
+    }                                                                   \
+  } CName = {};
