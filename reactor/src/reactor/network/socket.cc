@@ -82,7 +82,7 @@ namespace reactor
           try
           {
             this->_socket->read_some(
-              elle::WeakBuffer(this->read_buffer, sizeof this->read_buffer),
+              elle::WeakBuffer(this->read_buffer),
               {},
               &size);
           }
@@ -361,7 +361,7 @@ namespace reactor
                  DurationOpt timeout)
     {
       auto res = elle::Buffer(size);
-      this->read(elle::WeakBuffer(res.mutable_contents(), size), timeout);
+      this->read(elle::WeakBuffer(res), timeout);
       return res;
     }
 
@@ -370,8 +370,7 @@ namespace reactor
                       DurationOpt timeout)
     {
       auto res = elle::Buffer(size);
-      auto r = this->read_some(elle::WeakBuffer(res.mutable_contents(), size),
-                               timeout);
+      auto r = this->read_some(elle::WeakBuffer(res), timeout);
       res.size(r);
       return res;
     }

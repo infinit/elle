@@ -214,7 +214,7 @@ private:
             while (true)
             {
               char data[BUFSIZ];
-              auto read = from.read_some(elle::WeakBuffer(data, sizeof data));
+              auto read = from.read_some(elle::WeakBuffer(data));
               for (unsigned i = 0; i < read - this->_secret.size(); ++i)
               {
                 BOOST_CHECK_NE(std::string(data + i, this->_secret.size()),
@@ -428,7 +428,7 @@ ELLE_TEST_SCHEDULED(handshake_error)
 // Check we flush before shutting down the door.
 ELLE_TEST_SCHEDULED(shutdown_flush)
 {
-  std::string const data= "nobody can hear you scream\n";
+  std::string const data = "nobody can hear you scream\n";
   reactor::Barrier listening;
   int port = 0;
   elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
@@ -537,7 +537,7 @@ ELLE_TEST_SCHEDULED(shutdown_asynchronous)
                   while (true)
                   {
                     char buffer[1024];
-                    elle::WeakBuffer b(buffer, sizeof buffer);
+                    auto b = elle::WeakBuffer(buffer);
                     {
                       auto size = from->read_some(b);
                       reactor::wait(forwarding);

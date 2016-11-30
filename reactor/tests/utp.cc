@@ -19,7 +19,7 @@ ELLE_TEST_SCHEDULED(udp)
   reactor::Thread t("recv", [&] {
       char data[1000];
       boost::asio::ip::udp::endpoint ep;
-      s.receive_from(elle::WeakBuffer(data, sizeof data), ep);
+      s.receive_from(elle::WeakBuffer(data), ep);
     });
   reactor::sleep(100_ms);
   t.terminate();

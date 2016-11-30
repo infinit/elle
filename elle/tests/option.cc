@@ -1,4 +1,5 @@
 #include <elle/Option.hh>
+#include <elle/compiler.hh>
 #include <elle/log.hh>
 #include <elle/serialization/binary.hh>
 #include <elle/serialization/json.hh>
@@ -46,6 +47,7 @@ operator << (std::ostream& o, Count const& c)
   return o << "Count(" << c.count << ")";
 }
 
+ELLE_COMPILER_ATTRIBUTE_MAYBE_UNUSED
 static
 void
 option()
@@ -101,6 +103,7 @@ operator << (std::ostream& o, Nope const& n)
 }
 
 
+ELLE_COMPILER_ATTRIBUTE_MAYBE_UNUSED
 static
 void
 construction()
