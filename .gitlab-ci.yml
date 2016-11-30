@@ -8,6 +8,7 @@ variables:
 x86_64-centos6-gcc4:
   stage: build
   script:
+    - export DRAKE_MTIME=0 # rsync and mtime comparisons don't play along very well
     - git submodule sync
     - git submodule update --init --recursive
     - git fetch origin --tags
@@ -37,6 +38,7 @@ x86_64-centos6-gcc4:
 x86_64-ubuntu-gcc4:
   stage: build
   script:
+    - export DRAKE_MTIME=0 # rsync and mtime comparisons don't play along very well
     - git submodule sync --recursive
     - git submodule update --init --recursive
     - git fetch origin --tags
@@ -67,6 +69,7 @@ x86_64-ubuntu-gcc4:
 x86_64-jessie-gcc4:
   stage: build
   script:
+    - export DRAKE_MTIME=0 # rsync and mtime comparisons don't play along very well
     - git submodule sync --recursive
     - git submodule update --init --recursive
     - git fetch origin --tags
@@ -96,6 +99,7 @@ x86_64-jessie-gcc4:
 x86_64-alpine-gcc:
   stage: build
   script:
+    - export DRAKE_MTIME=0 # rsync and mtime comparisons don't play along very well
     - git submodule sync --recursive
     - git submodule update --init --recursive
     - git fetch origin --tags
@@ -126,6 +130,7 @@ x86_64-alpine-gcc:
 i386-jessie-gcc4:
   stage: build
   script:
+    - export DRAKE_MTIME=0 # rsync and mtime comparisons don't play along very well
     - git submodule sync --recursive
     - git submodule update --init --recursive
     - git fetch origin --tags
@@ -155,6 +160,7 @@ i386-jessie-gcc4:
 x86_64-windows-mingw4:
   stage: build
   script:
+    - export DRAKE_MTIME=0 # rsync and mtime comparisons don't play along very well
     - git submodule sync --recursive
     - git submodule update --init --recursive
     - git fetch origin --tags
@@ -184,6 +190,7 @@ x86_64-windows-mingw4:
 #i686-windows-mingw4:
 #  stage: build
 #  script:
+#    - export DRAKE_MTIME=0 # rsync and mtime comparisons don't play along very well
 #    - git submodule sync --recursive
 #    - git submodule update --init --recursive
 #    - git fetch origin --tags
@@ -200,6 +207,7 @@ x86_64-windows-mingw4:
 x86_64-osx-clang:
   stage: build
   script:
+    - export DRAKE_MTIME=0 # rsync and mtime comparisons don't play along very well
     - git submodule sync --recursive
     - git submodule update --init --recursive
     - git fetch origin --tags
