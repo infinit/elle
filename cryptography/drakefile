@@ -15,7 +15,6 @@ rule_build = None
 rule_check = None
 rule_install = None
 rule_tests = None
-rule_samples = None
 rule_examples = None
 
 def configure(openssl_config,
@@ -295,22 +294,26 @@ def configure(openssl_config,
     "dh/PublicKey.cc",
     ]
   if enable_rotation:
-    tests += [ "rsa/Seed.cc",
-               "rsa/scenario.cc",
-               ]
+    tests += [
+      "rsa/Seed.cc",
+      "rsa/scenario.cc",
+    ]
 
-  tests_cxx_config = drake.cxx.Config(cxx_config)
+  exe_cxx_config = drake.cxx.Config(cxx_config)
+
   if cxx_toolkit.os == drake.os.android:
-    tests_cxx_config.lib('stdc++')
-    tests_cxx_config.lib('atomic')
-  tests_cxx_config += config
-  tests_cxx_config += boost.config()
+    exe_cxx_config.lib('stdc++')
+    exe_cxx_config.lib('atomic')
+  exe_cxx_config += config
+  exe_cxx_config += boost.config()
+  exe_cxx_config += boost_timer
+  exe_cxx_config += boost_thread
+  exe_cxx_config += boost_filesystem
+  exe_cxx_config += openssl_config
+  exe_cxx_config += elle.config
+
+  tests_cxx_config = drake.cxx.Config(exe_cxx_config)
   tests_cxx_config += boost_test
-  tests_cxx_config += boost_timer
-  tests_cxx_config += boost_thread
-  tests_cxx_config += boost_filesystem
-  tests_cxx_config += openssl_config
-  tests_cxx_config += elle.config
 
   global rule_check, rule_tests
   rule_check = drake.TestSuite('check')
@@ -323,16 +326,15 @@ def configure(openssl_config,
 
   for test in tests:
     config_test = drake.cxx.Config(tests_cxx_config)
-    config_test.lib_path_runtime('%s../../lib' % ('../' * test.count('/')))
     path = drake.Path('tests/cryptography/%s' % test)
     bin_path = drake.Path('tests/cryptography/%s' % os.path.splitext(test)[0])
-    sources = drake.nodes(path)
-    sources.append(library)
-    sources.append(elle_library)
-    sources.append(openssl_lib_crypto) # Some tests use BIGNUM
-    sources.append(openssl_lib_ssl)
-    bin = drake.cxx.Executable(bin_path, sources,
-                               cxx_toolkit, config_test)
+    bin = drake.cxx.Executable(
+      bin_path,
+      [
+        drake.node(path),
+        library, elle_library, openssl_lib_ssl, openssl_lib_crypto
+      ],
+      cxx_toolkit, config_test)
     rule_tests << bin
     if valgrind_tests:
       runner = drake.valgrind.ValgrindRunner(exe = bin,
@@ -351,25 +353,27 @@ def configure(openssl_config,
     python_runner.reporting = drake.Runner.Reporting.on_failure
     rule_check << python_runner.status
 
-  ## ------- ##
-  ## Samples ##
-  ## ------- ##
+  ## -------- ##
+  ## Examples ##
+  ## -------- ##
 
-  global rule_samples
-  rule_samples = drake.Rule('samples')
+  global rule_examples
+  rule_examples = drake.Rule('examples')
 
-  samples = [
-    'sample',
+  examples = [
+    'examples/samples/sample',
+    'examples/demo/crypt'
   ]
 
-  for sample in samples:
-    rule_samples << drake.cxx.Executable(
-      sample,
+  for example in examples:
+    rule_examples << drake.cxx.Executable(
+      example,
       [
-        drake.node('%s.cc' % sample),
+        drake.node('%s.cc' % example),
         library, elle_library, openssl_lib_ssl, openssl_lib_crypto
       ],
       cxx_toolkit, exe_cxx_config)
+  rule_build << rule_examples
 
   ## ------- ##
   ## Install ##

@@ -16,10 +16,9 @@
 # include <cryptography/fwd.hh>
 # include <cryptography/random.hh>
 # include <cryptography/SecretKey.hh>
+# include <cryptography/hash.hh>
 # include <cryptography/rsa/KeyPair.hh>
 # include <cryptography/dsa/KeyPair.hh>
-
-# include <iostream>
 
 int
 main()
@@ -87,7 +86,7 @@ main()
       infinit::cryptography::hash(data,
                                   infinit::cryptography::Oneway::sha1);
 
-    elle::printf("4) %s\n", elle::format::hexadecimal::encode(digest.buffer()));
+    elle::printf("4) %s\n", elle::format::hexadecimal::encode(digest));
   }
 
   return (0);
