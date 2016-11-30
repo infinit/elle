@@ -1,12 +1,16 @@
 # elle, the Infinit utilities.
 
-elle is a library containing fundamental functionalities from buffers to memory management and serialization, etc.
+elle is a library containing fundamental functionalities from buffers to memory
+management and serialization, etc.
 
 elle is part of the [Elle](https://github.com/infinit/elle) set of libraries.
 
 ## Motivation
 
-C++ standard library lacks some of fundamental concepts, that's why the [Boost](http://www.boost.org) libraries exist and tends to fill this lack of functionality. Based on both, elle introduces new concepts and functionnalities to makes developers life easier.
+C++ standard library lacks some of fundamental concepts, that's why the
+[Boost](http://www.boost.org) libraries exist and tends to fill this lack of
+functionality. Based on both, elle introduces new concepts and functionnalities
+to makes developers life easier.
 
 elle includes many helpers such as:
 
@@ -37,7 +41,7 @@ std::cout << a.value() << std::endl;
 a.done(true);
 std::cout << a.done() << std::endl;
 ```
-Full example [here](https://github.com/infinit/elle/elle/examples/attributes.cc).
+Full example [here](https://github.com/infinit/elle/elle/examples/samples/attributes.cc).
 
 ### Buffers
 
@@ -70,7 +74,7 @@ std::cout << buffer[6] << std::endl; // o
 std::cout << buffer.string() << std::endl; // somethong interesting
 ```
 
-Full example [here](https://github.com/infinit/elle/elle/examples/buffer.cc).
+Full example [here](https://github.com/infinit/elle/elle/examples/samples/buffer.cc).
 
 ### Serialization
 
@@ -119,7 +123,7 @@ private:
   std::vector<std::string> tags;
 };
 ```
-Full example [here](https://github.com/infinit/elle/elle/examples/serialization.cc).
+Full example [here](https://github.com/infinit/elle/elle/examples/samples/serialization.cc).
 
 ### Traits
 
@@ -155,7 +159,7 @@ ELLE_ASSERT_EQ(elle::sprintf("%s", counter), "This counter that has hit 42 times
 counter.hit(1002);
 ELLE_ASSERT_EQ(elle::sprintf("%s", counter), "This counter that has hit tones of times");
 ```
-Full example [here](https://github.com/infinit/elle/elle/examples/printable.cc).
+Full example [here](https://github.com/infinit/elle/elle/examples/samples/printable.cc).
 
 ### Logs
 
@@ -189,7 +193,7 @@ ELLE_DEBUG("The log in the following scope will have indented")
   ELLE_WARN("Something wrong");
 }
 ```
-Full example [here](https://github.com/infinit/elle/elle/examples/log.cc).
+Full example [here](https://github.com/infinit/elle/elle/examples/samples/log.cc).
 
 The program will output differently according to the value of ELLE_LOG_LEVEL in the environment.
 
