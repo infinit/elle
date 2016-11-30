@@ -31,11 +31,10 @@ static void run(int argc, char**argv)
     {
       while (true)
       {
-        elle::Buffer buf;
+        auto buf = elle::Buffer{};
         buf.size(5000);
         rdv::Endpoint ep;
-        int sz = socket.receive_from(reactor::network::Buffer(buf.mutable_contents(),
-                                                              buf.size()), ep);
+        int sz = socket.receive_from(elle::WeakBuffer(buf), ep);
         std::cout.write((const char*)buf.contents(), sz);
         std::cout << std::endl;
       }

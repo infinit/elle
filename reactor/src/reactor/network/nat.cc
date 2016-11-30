@@ -159,7 +159,7 @@ namespace reactor
       {
         throw PunchTimeout("read_some");
       }
-      std::string answer(buffer_data.c_str(), size);
+      auto answer = std::string(buffer_data.c_str(), size);
       ELLE_DUMP("longinus said: %s", answer);
 
       // XXX This is not optimal
@@ -345,7 +345,7 @@ namespace reactor
           ELLE_ERR("Fatal error !");
 
         boost::asio::ip::udp::endpoint remote_stun;
-        network::Buffer b(spMsg->GetData(), spMsg->GetAllocatedSize());
+        auto b = elle::WeakBuffer(spMsg->GetData(), spMsg->GetAllocatedSize());
         try
         {
           int size = this->_handle->receive_from(b, remote_stun, 500_ms);
