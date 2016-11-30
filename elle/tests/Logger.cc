@@ -35,7 +35,7 @@ _message_test(bool env)
     logger = new elle::log::TextLogger(ss, "DUMP", true);
   }
   elle::log::logger(std::unique_ptr<elle::log::Logger>(logger));
-  BOOST_CHECK_EQUAL(logger->component_enabled("Test"), Level::dump);
+  BOOST_CHECK_EQUAL(logger->component_level("Test"), Level::dump);
 
   {
     ELLE_LOG_COMPONENT("Test");
@@ -146,7 +146,7 @@ _environment_format_test(bool env)
     );
   }
   elle::log::logger(std::unique_ptr<elle::log::Logger>(logger));
-  BOOST_CHECK_EQUAL(logger->component_enabled("Test"),
+  BOOST_CHECK_EQUAL(logger->component_level("Test"),
                     Level::log);
   ELLE_LOG("Test");
   // FIXME: Checking time printing is non-deterministic.
@@ -183,7 +183,7 @@ _environment_format_test(bool env)
     );
   }
   elle::log::logger(std::unique_ptr<elle::log::Logger>(logger));
-  BOOST_CHECK_EQUAL(logger->component_enabled("Test"),
+  BOOST_CHECK_EQUAL(logger->component_level("Test"),
                     Level::log);
 
   ELLE_LOG("Test 2");
@@ -218,7 +218,7 @@ _environment_format_test(bool env)
     );
   }
   elle::log::logger(std::unique_ptr<elle::log::Logger>(logger));
-  BOOST_CHECK_EQUAL(logger->component_enabled("Test"),
+  BOOST_CHECK_EQUAL(logger->component_level("Test"),
                     Level::log);
   ELLE_LOG("Test 3");
   res << "[1m[Test] [" << boost::lexical_cast<std::string>(getpid()) << "] "
@@ -255,7 +255,7 @@ _environment_format_test(bool env)
     );
   }
   elle::log::logger(std::unique_ptr<elle::log::Logger>(logger));
-  BOOST_CHECK_EQUAL(logger->component_enabled("Test"),
+  BOOST_CHECK_EQUAL(logger->component_level("Test"),
                     Level::log);
   ELLE_LOG("Test 4");
   // FIXME: Checking time printing is non-deterministic.
@@ -295,7 +295,7 @@ _environment_format_test(bool env)
     );
   }
   elle::log::logger(std::unique_ptr<elle::log::Logger>(logger));
-  BOOST_CHECK_EQUAL(logger->component_enabled("Test"), Level::log);
+  BOOST_CHECK_EQUAL(logger->component_level("Test"), Level::log);
   ELLE_WARN("Test 5");
   // FIXME: Checking time printing is non-deterministic.
   // res << "[33;01;33m"
@@ -329,7 +329,7 @@ _environment_format_test(bool env)
     );
   }
   elle::log::logger(std::unique_ptr<elle::log::Logger>(logger));
-  BOOST_CHECK_EQUAL(logger->component_enabled("Test"), Level::log);
+  BOOST_CHECK_EQUAL(logger->component_level("Test"), Level::log);
   ELLE_WARN("Test 5");
   res << "[33;01;33m"
       << "[Test] [warning] Test 5\n[0m";
@@ -356,8 +356,8 @@ parallel_write()
 {
   std::stringstream output;
   elle::log::TextLogger logger(output);
-  logger.component_enabled("in");
-  logger.component_enabled("out");
+  logger.component_level("in");
+  logger.component_level("out");
 
   auto action = [&logger](int& counter)
     {
@@ -405,7 +405,104 @@ multiline()
     "            splitted\n"
     "            into\n"
     "            5 lines\n";
-  BOOST_CHECK_EQUAL(output.str(),expected);
+  BOOST_CHECK_EQUAL(output.str(), expected);
+}
+
+/// Check that we components are displayed with just the needed width.
+static
+void
+component_width()
+{
+  auto generate_log = []
+  {
+    std::stringstream output;
+    elle::log::logger(std::make_unique<elle::log::TextLogger>(output));
+    ELLE_LOG_COMPONENT("foo");
+    ELLE_TRACE("foo.1")
+    {
+      ELLE_LOG_COMPONENT("bar");
+      ELLE_TRACE("bar.1")
+      {
+        ELLE_LOG_COMPONENT("quuuuux");
+        ELLE_DUMP("quuuuux.1");
+      }
+      ELLE_TRACE("bar.2");
+    }
+    ELLE_TRACE("foo.2");
+    return output.str();
+  };
+
+  elle::os::setenv("ELLE_LOG_LEVEL", "DUMP", 1);
+  BOOST_CHECK_EQUAL(generate_log(),
+                    "[foo] foo.1\n"
+                    "[bar]   bar.1\n"
+                    "[quuuuux]     quuuuux.1\n"
+                    "[  bar  ]   bar.2\n"
+                    "[  foo  ] foo.2\n");
+
+  elle::os::setenv("ELLE_LOG_LEVEL", "TRACE", 1);
+  BOOST_CHECK_EQUAL(generate_log(),
+                    "[foo] foo.1\n"
+                    "[bar]   bar.1\n"
+                    "[bar]   bar.2\n"
+                    "[foo] foo.2\n");
+}
+
+/// Check the use of context filters: print logs only when nested in
+/// some component.
+static
+void
+nested()
+{
+  auto generate_log = []
+  {
+    std::stringstream output;
+    elle::log::logger(std::make_unique<elle::log::TextLogger>(output));
+    ELLE_LOG_COMPONENT("foo");
+    ELLE_TRACE("foo.1")
+    {
+      ELLE_LOG_COMPONENT("bar");
+      ELLE_TRACE("bar.1")
+      {
+        ELLE_LOG_COMPONENT("baz");
+        ELLE_TRACE("baz.1");
+        ELLE_TRACE("baz.2");
+      }
+      ELLE_TRACE("bar.2");
+    }
+    ELLE_TRACE("foo.2")
+    {
+      ELLE_LOG_COMPONENT("baz");
+      ELLE_TRACE("baz.3");
+      ELLE_TRACE("baz.4");
+    }
+    ELLE_TRACE("foo.3");
+    return output.str();
+  };
+
+  elle::os::setenv("ELLE_LOG_LEVEL", "TRACE", 1);
+  BOOST_CHECK_EQUAL(generate_log(),
+                    "[foo] foo.1\n"
+                    "[bar]   bar.1\n"
+                    "[baz]     baz.1\n"
+                    "[baz]     baz.2\n"
+                    "[bar]   bar.2\n"
+                    "[foo] foo.2\n"
+                    "[baz]   baz.3\n"
+                    "[baz]   baz.4\n"
+                    "[foo] foo.3\n");
+
+  elle::os::setenv("ELLE_LOG_LEVEL", "baz:TRACE", 1);
+  BOOST_CHECK_EQUAL(generate_log(),
+                    "[baz]     baz.1\n"
+                    "[baz]     baz.2\n"
+                    "[baz]   baz.3\n"
+                    "[baz]   baz.4\n");
+
+  elle::os::setenv("ELLE_LOG_LEVEL", "bar baz:TRACE", 1);
+  BOOST_CHECK_EQUAL(generate_log(),
+                    "[baz]     baz.1\n"
+                    "[baz]     baz.2\n");
 }
 
 static
@@ -477,5 +574,7 @@ ELLE_TEST_SUITE()
   format->add(BOOST_TEST_CASE(error));
   format->add(BOOST_TEST_CASE(multiline));
   format->add(BOOST_TEST_CASE(trim));
+  format->add(BOOST_TEST_CASE(component_width));
+  format->add(BOOST_TEST_CASE(nested));
 #endif
 }

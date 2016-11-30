@@ -8,9 +8,9 @@ namespace reactor
   namespace network
   {
     HttpServer::HttpServer(std::unique_ptr<Server> server)
-    : _server(std::move(server))
-    , _port(0)
-    , _accepter()
+      : _server(std::move(server))
+      , _port(0)
+      , _accepter()
     {
       ELLE_LOG_COMPONENT("reactor.test.http");
       if (!this->_server)
@@ -49,6 +49,7 @@ namespace reactor
       ELLE_TRACE_SCOPE("%s: destruction", *this);
       this->_finalize();
     }
+
     void
     HttpServer::_finalize()
     {
@@ -322,6 +323,7 @@ namespace reactor
       }
       ELLE_TRACE("%s: close connection with %s", *this, socket);
     }
+
     void
     HttpServer::register_route(std::string const& route,
                                http::Method method,
@@ -331,12 +333,14 @@ namespace reactor
       ELLE_TRACE("%s: register %s on %s", *this, route, method);
       this->_routes[route][method] = function;
     }
+
     bool
     HttpServer::is_json(Headers const& headers) const
     {
       return (headers.find("Content-Type") != headers.end() &&
         (headers.at("Content-Type") == "application/json"));
     }
+
     void
     HttpServer::_response(reactor::network::Socket& socket,
                   http::StatusCode code,
@@ -365,17 +369,19 @@ namespace reactor
         }
       }
     }
+
     elle::Buffer
-    HttpServer::read_sized_content(reactor::network::Socket& socket, unsigned int length)
+    HttpServer::read_sized_content(reactor::network::Socket& socket,
+                                   unsigned int length)
     {
       ELLE_LOG_COMPONENT("reactor.test.http");
       ELLE_TRACE_SCOPE("%s: read sized content of size %s", *this, length);
-      elle::Buffer content(length);
+      auto content = elle::Buffer(length);
       content.size(length);
-      socket.read(
-        reactor::network::Buffer(content.mutable_contents(), length));
+      socket.read(elle::WeakBuffer(content.mutable_contents(), length));
       return content;
     }
+
     void
     HttpServer::print(std::ostream& stream) const
     {

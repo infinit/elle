@@ -68,11 +68,12 @@ void
 parallel_write()
 {
   std::stringstream output;
-  std::unique_ptr<elle::log::Logger> logger
-    (new elle::log::TextLogger(output));
+  auto logger =
+    std::unique_ptr<elle::log::Logger>(
+      std::make_unique<elle::log::TextLogger>(output));
 
-  logger->component_enabled("in");
-  logger->component_enabled("out");
+  logger->component_is_active("in");
+  logger->component_is_active("out");
   elle::log::logger(std::move(logger));
 
   auto action = [](int& counter)

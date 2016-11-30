@@ -12,7 +12,6 @@
 
 #include <reactor/Barrier.hh>
 #include <reactor/Scope.hh>
-#include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/fingerprinted-socket.hh>
 #include <reactor/network/ssl-server.hh>
@@ -37,27 +36,28 @@ static
 std::unique_ptr<SSLCertificate>
 load_certificate()
 {
-  boost::filesystem::path tmp;
+  namespace fs = boost::filesystem;
+  fs::path tmp;
   while (true)
   {
-    tmp = boost::filesystem::temp_directory_path() / boost::filesystem::unique_path();
-    if (boost::filesystem::create_directory(tmp))
+    tmp = fs::temp_directory_path() / fs::unique_path();
+    if (fs::create_directory(tmp))
       break;
   }
-  elle::SafeFinally remove_tmp([tmp] { boost::filesystem::remove_all(tmp); } );
+  elle::SafeFinally remove_tmp([tmp] { fs::remove_all(tmp); } );
   auto cert = tmp / "server-cert.pem";
   auto key = tmp / "server-key.pem";
   auto dh1024 = tmp / "dh1024.pem";
   {
-    boost::filesystem::ofstream cert_f(cert, std::ios::binary);
+    fs::ofstream cert_f(cert, std::ios::binary);
     cert_f.write(server_cert.data(), server_cert.size());
   }
   {
-    boost::filesystem::ofstream key_f(key, std::ios::binary);
+    fs::ofstream key_f(key, std::ios::binary);
     key_f.write(server_key.data(), server_key.size());
   }
   {
-    boost::filesystem::ofstream dh1024_f(dh1024, std::ios::binary);
+    fs::ofstream dh1024_f(dh1024, std::ios::binary);
     dh1024_f.write(server_dh1024.data(), server_dh1024.size());
   }
   return elle::make_unique<SSLCertificate>(cert.string(),
@@ -97,7 +97,7 @@ ELLE_TEST_SCHEDULED(transfer)
         std::unique_ptr<Socket> socket(server.accept());
         static char servdata[5] = { 0 };
         socket->std::iostream::read(servdata, 4);
-        BOOST_CHECK(std::string(servdata) == std::string("lulz"));
+        BOOST_CHECK_EQUAL(std::string(servdata), "lulz");
         socket->write(std::string("lol"));
         socket->write(std::string("lulz"));
       });
@@ -109,15 +109,15 @@ ELLE_TEST_SCHEDULED(transfer)
         reactor::wait(listening);
         auto endpoint = reactor::network::resolve_tcp(
           "127.0.0.1",
-          boost::lexical_cast<std::string>(port));
+          std::to_string(port));
         FingerprintedSocket socket(endpoint,
                                    fingerprint);
         socket.write(std::string("lulz"));
         static char clientdata[5] = { 0 };
         socket.std::iostream::read(clientdata, 3);
-        BOOST_CHECK(std::string(clientdata) == std::string("lol"));
+        BOOST_CHECK_EQUAL(std::string(clientdata), "lol");
         socket.std::iostream::read(clientdata, 4);
-        BOOST_CHECK(std::string(clientdata) == std::string("lulz"));
+        BOOST_CHECK_EQUAL(std::string(clientdata), "lulz");
       });
     reactor::wait(scope);
   };
@@ -166,7 +166,7 @@ ELLE_TEST_SCHEDULED(short_read)
         reactor::wait(listening);
         auto endpoint = reactor::network::resolve_tcp(
           "127.0.0.1",
-          boost::lexical_cast<std::string>(port));
+          std::to_string(port));
         {
           FingerprintedSocket socket(endpoint,
                                      fingerprint);
@@ -214,7 +214,7 @@ private:
             while (true)
             {
               char data[BUFSIZ];
-              auto read = from.read_some(reactor::network::Buffer(data, BUFSIZ));
+              auto read = from.read_some(elle::WeakBuffer(data, sizeof data));
               for (unsigned i = 0; i < read - this->_secret.size(); ++i)
               {
                 BOOST_CHECK_NE(std::string(data + i, this->_secret.size()),
@@ -246,7 +246,7 @@ ELLE_TEST_SCHEDULED(encryption)
   Sniffer sniffer("lulz");
 
   auto certificate = load_certificate();
-  auto port = boost::lexical_cast<std::string>(sniffer.server().port());
+  auto port = std::to_string(sniffer.server().port());
 
   std::string question = "lulz why do that ?";
   std::string answer = "well for the lulz !";
@@ -299,7 +299,7 @@ ELLE_TEST_SCHEDULED(handshake_timeout)
     reactor::wait(listening);
     BOOST_CHECK_THROW(
       SSLSocket("127.0.0.1",
-                boost::lexical_cast<std::string>(port),
+                std::to_string(port),
                 timeout),
       reactor::network::TimeOut);
     timed_out.open();
@@ -331,7 +331,7 @@ ELLE_TEST_SCHEDULED(connection_closed)
       [&]
       {
         reactor::wait(listening);
-        SSLSocket s("127.0.0.1", boost::lexical_cast<std::string>(port));
+        SSLSocket s("127.0.0.1", std::to_string(port));
         BOOST_CHECK_EQUAL(s.read(4).string(), "data");
         read.open();
         BOOST_CHECK_THROW(s.read(4), reactor::network::ConnectionClosed);
@@ -367,7 +367,7 @@ ELLE_TEST_SCHEDULED(handshake_stuck)
       {
         reactor::wait(listening);
         reactor::network::TCPSocket s("127.0.0.1",
-                                      boost::lexical_cast<std::string>(port));
+                                      std::to_string(port));
         stuck.open();
         BOOST_CHECK_THROW(s.read(4), reactor::network::ConnectionClosed);
       });
@@ -377,7 +377,7 @@ ELLE_TEST_SCHEDULED(handshake_stuck)
       {
         reactor::wait(listening);
         reactor::wait(stuck);
-        SSLSocket s("127.0.0.1", boost::lexical_cast<std::string>(port));
+        SSLSocket s("127.0.0.1", std::to_string(port));
         BOOST_CHECK_EQUAL(s.read(9).string(), "not stuck");
         not_stuck = true;
       });
@@ -407,7 +407,7 @@ ELLE_TEST_SCHEDULED(handshake_error)
     auto valid = [&]
       {
         reactor::network::SSLSocket valid(
-          "127.0.0.1", boost::lexical_cast<std::string>(port));
+          "127.0.0.1", std::to_string(port));
         BOOST_CHECK_EQUAL(valid.read(5).string(), "snafu");
       };
     scope.run_background("valid client 1", valid);
@@ -416,7 +416,7 @@ ELLE_TEST_SCHEDULED(handshake_error)
       [&]
       {
         reactor::network::TCPSocket invalid(
-          "127.0.0.1", boost::lexical_cast<std::string>(port));
+          "127.0.0.1", std::to_string(port));
         invalid.write(elle::ConstWeakBuffer("fubar\n"));
         BOOST_CHECK_THROW(invalid.read(1), reactor::network::ConnectionClosed);
       });
@@ -449,7 +449,7 @@ ELLE_TEST_SCHEDULED(shutdown_flush)
     reactor::wait(listening);
     {
       reactor::network::SSLSocket client(
-        "127.0.0.1", boost::lexical_cast<std::string>(port));
+        "127.0.0.1", std::to_string(port));
       // Use the buffered interface
       client << data;
     }
@@ -469,7 +469,7 @@ ELLE_TEST_SCHEDULED(shutdown_timeout)
     });
   {
     reactor::network::SSLSocket valid(
-      "127.0.0.1", boost::lexical_cast<std::string>(server.port()));
+      "127.0.0.1", std::to_string(server.port()));
     BOOST_CHECK(!reactor::wait(server_thread, 1_sec));
   }
   reactor::wait(server_thread);
@@ -537,7 +537,7 @@ ELLE_TEST_SCHEDULED(shutdown_asynchronous)
                   while (true)
                   {
                     char buffer[1024];
-                    reactor::network::Buffer b(buffer, sizeof(buffer));
+                    elle::WeakBuffer b(buffer, sizeof buffer);
                     {
                       auto size = from->read_some(b);
                       reactor::wait(forwarding);
@@ -557,7 +557,7 @@ ELLE_TEST_SCHEDULED(shutdown_asynchronous)
     {
       ELLE_LOG_SCOPE("connect first client");
       reactor::network::SSLSocket synchronous(
-        "127.0.0.1", boost::lexical_cast<std::string>(forwarder.port()));
+        "127.0.0.1", std::to_string(forwarder.port()));
       forwarding.close();
       connected1.open();
       BOOST_CHECK_THROW(synchronous.read(1, 1_sec),
@@ -571,7 +571,7 @@ ELLE_TEST_SCHEDULED(shutdown_asynchronous)
     {
       ELLE_LOG_SCOPE("connect second client");
       reactor::network::SSLSocket asynchronous(
-        "127.0.0.1", boost::lexical_cast<std::string>(forwarder.port()));
+        "127.0.0.1", std::to_string(forwarder.port()));
       forwarding.close();
       connected2.open();
       BOOST_CHECK_THROW(asynchronous.read(1, 1_sec),
@@ -635,8 +635,10 @@ ELLE_TEST_SCHEDULED(shutdown_asynchronous_timeout)
         elle::Buffer data(4096);
         // Read at the TCP level, discarding the SSL shutdown data and waiting
         // for a TCP shutdown anyway.
-        std::function<void (const boost::system::error_code& error,
-                            std::size_t read)> read_callback =
+        using callback =
+          std::function<void (const boost::system::error_code& error,
+                              std::size_t read)>;
+        callback read_callback =
           [&] (const boost::system::error_code& error, std::size_t read)
           {
             if (!error)
@@ -664,7 +666,7 @@ ELLE_TEST_SCHEDULED(shutdown_asynchronous_timeout)
     ELLE_LOG("connect client")
     {
       reactor::network::SSLSocket client(
-        "127.0.0.1", boost::lexical_cast<std::string>(port), valgrind(200_ms));
+        "127.0.0.1", std::to_string(port), valgrind(200_ms));
       client.shutdown_asynchronous(true);
     }
     ELLE_LOG("wait for SSL shutdown timeout")
@@ -698,7 +700,7 @@ ELLE_TEST_SCHEDULED(shutdown_asynchronous_concurrent)
     ELLE_LOG("connect client")
     {
       reactor::network::SSLSocket client(
-        "127.0.0.1", boost::lexical_cast<std::string>(port),
+        "127.0.0.1", std::to_string(port),
         valgrind(500_ms, 5));
       client.shutdown_asynchronous(true);
       reactor::wait(closed);

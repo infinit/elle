@@ -4,7 +4,6 @@
 #include <boost/uuid/uuid_io.hpp>
 
 #include <reactor/network/resolve.hh>
-#include <reactor/network/buffer.hh>
 #include <reactor/network/rdv.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/scheduler.hh>
@@ -57,7 +56,8 @@ namespace reactor
       auto now = boost::posix_time::second_clock::universal_time();
       while (true)
       {
-        send_to_failsafe(Buffer(buf), ep);
+        send_to_failsafe(elle::ConstWeakBuffer(buf.contents(), buf.size()),
+                         ep);
         if (reactor::wait(_server_reached, 500_ms))
           return;
         if (timeout
@@ -65,9 +65,10 @@ namespace reactor
           throw TimeOut();
       }
     }
-    Size RDVSocket::receive_from(Buffer buffer,
-        boost::asio::ip::udp::endpoint &endpoint,
-        DurationOpt timeout)
+
+    Size RDVSocket::receive_from(elle::WeakBuffer buffer,
+                                 boost::asio::ip::udp::endpoint &endpoint,
+                                 DurationOpt timeout)
     {
       while (true)
       {
@@ -78,9 +79,9 @@ namespace reactor
         bool server_hit = (endpoint == _server);
         auto addr = endpoint.address();
         if (endpoint.port() == _server.port()
-          && addr.is_v6()
-          && addr.to_v6().is_v4_mapped()
-          && addr.to_v6().to_v4() == _server.address())
+            && addr.is_v6()
+            && addr.to_v6().is_v4_mapped()
+            && addr.to_v6().to_v4() == _server.address())
           server_hit = true;
         if (!_server_reached.opened() &&  server_hit)
         {
@@ -88,17 +89,17 @@ namespace reactor
           _server_reached.open();
           set_endpoint = true;
         }
-        std::string magic(buffer.data(), buffer.data() + 8);
+        auto magic = std::string(buffer.contents(), buffer.contents() + 8);
         auto it = _readers.find(magic);
         if (it != _readers.end())
         {
-          it->second(Buffer(buffer.data(), sz), endpoint);
+          it->second(elle::WeakBuffer(buffer.mutable_contents(), sz), endpoint);
         }
         else if (magic == rdv::rdv_magic)
         {
           rdv::Message repl =
             elle::serialization::json::deserialize<rdv::Message>(
-              elle::Buffer(buffer.data() + 8, sz - 8), false);
+              elle::Buffer(buffer.contents() + 8, sz - 8), false);
           if (set_endpoint && repl.source_endpoint)
           {
             _public_endpoint = *repl.source_endpoint;
@@ -266,7 +267,7 @@ namespace reactor
       elle::Buffer data;
       data.append(reactor::network::rdv::rdv_magic, 8);
       data.append(b.contents(), b.size());
-      send_to_failsafe(Buffer(data.contents(), data.size()), peer);
+      send_to_failsafe(elle::ConstWeakBuffer(data.contents(), data.size()), peer);
     }
 
     void
@@ -331,7 +332,7 @@ namespace reactor
 
     void
     RDVSocket::register_reader(std::string const& magic,
-                               std::function<void(Buffer, Endpoint)> handler)
+                               reader handler)
     {
       ELLE_ASSERT_EQ(signed(magic.size()), 8);
       _readers[magic] = handler;
@@ -344,7 +345,7 @@ namespace reactor
     }
 
     void
-    RDVSocket::send_to_failsafe(Buffer buffer, Endpoint endpoint)
+    RDVSocket::send_to_failsafe(elle::ConstWeakBuffer buffer, Endpoint endpoint)
     {
       try
       {

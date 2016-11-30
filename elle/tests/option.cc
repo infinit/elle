@@ -38,6 +38,7 @@ public:
   bool destroyed = false;
 };
 
+ELLE_COMPILER_ATTRIBUTE_MAYBE_UNUSED
 static
 std::ostream&
 operator << (std::ostream& o, Count const& c)
@@ -91,6 +92,7 @@ public:
   int i;
 };
 
+ELLE_COMPILER_ATTRIBUTE_MAYBE_UNUSED
 static
 std::ostream&
 operator << (std::ostream& o, Nope const& n)

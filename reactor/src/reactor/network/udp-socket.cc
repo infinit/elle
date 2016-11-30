@@ -1,6 +1,5 @@
 #include <boost/lexical_cast.hpp>
 
-#include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/resolve.hh>
 #include <reactor/network/SocketOperation.hh>
@@ -90,7 +89,7 @@ namespace reactor
         typedef SocketOperation<AsioSocket> Super;
         UDPRead(Scheduler& scheduler,
                 PlainSocket<AsioSocket>* socket,
-                Buffer& buffer):
+                elle::WeakBuffer& buffer):
           Super(*socket->socket()),
           _buffer(buffer),
           _read(0)
@@ -115,7 +114,7 @@ namespace reactor
           // FIXME: be synchronous if enough bytes are available
           EndPoint peer;
           this->socket().async_receive(
-            boost::asio::buffer(_buffer.data(), _buffer.size()),
+            boost::asio::buffer(_buffer.mutable_contents(), _buffer.size()),
             boost::bind(&UDPRead::_wakeup, this, _1, _2));
         }
 
@@ -133,12 +132,13 @@ namespace reactor
           this->_signal();
         }
 
-        Buffer& _buffer;
-        Size _read;
+      elle::WeakBuffer& _buffer;
+      Size _read;
     };
 
     Size
-    UDPSocket::read_some(Buffer buffer, DurationOpt timeout, int* bytes_read)
+    UDPSocket::read_some(elle::WeakBuffer buffer, DurationOpt timeout,
+                         int* bytes_read)
     {
       if (timeout)
         ELLE_TRACE("%s: read at most %s bytes with timeout %s",
@@ -146,7 +146,7 @@ namespace reactor
       else
         ELLE_TRACE("%s: read at most %s bytes",
                        *this, buffer.size());
-      UDPRead read(scheduler(), this, buffer);
+      auto read = UDPRead(scheduler(), this, buffer);
       if (!read.run(timeout))
         throw TimeOut();
       if (bytes_read)
@@ -163,7 +163,7 @@ namespace reactor
         typedef DataOperation<AsioSocket> Super;
         UDPRecvFrom(Scheduler& scheduler,
                     PlainSocket<AsioSocket>* socket,
-                    Buffer& buffer,
+                    elle::WeakBuffer& buffer,
                     boost::asio::ip::udp::endpoint & endpoint)
           : Super(*socket->socket())
           , _buffer(buffer)
@@ -192,7 +192,7 @@ namespace reactor
           };
 
           this->socket().async_receive_from(
-            boost::asio::buffer(_buffer.data(), _buffer.size()),
+            boost::asio::buffer(_buffer.mutable_contents(), _buffer.size()),
             this->_endpoint,
             wake);
         }
@@ -215,13 +215,13 @@ namespace reactor
           Super::_wakeup(error);
         }
 
-        Buffer& _buffer;
+        elle::WeakBuffer& _buffer;
         Size _read;
         boost::asio::ip::udp::endpoint &_endpoint;
     };
 
     Size
-    UDPSocket::receive_from(Buffer buffer,
+    UDPSocket::receive_from(elle::WeakBuffer buffer,
                             boost::asio::ip::udp::endpoint &endpoint,
                             DurationOpt timeout)
     {
@@ -231,7 +231,7 @@ namespace reactor
       else
         ELLE_TRACE("%s: read at most %s bytes",
                        *this, buffer.size());
-      UDPRecvFrom recvfrom(scheduler(), this, buffer, endpoint);
+      auto recvfrom = UDPRecvFrom(scheduler(), this, buffer, endpoint);
       if (!recvfrom.run(timeout))
         throw TimeOut();
       return recvfrom.read();
@@ -289,7 +289,7 @@ namespace reactor
         typedef DataOperation<AsioSocket> Super;
         UDPSendTo(Scheduler& scheduler,
                   PlainSocket<AsioSocket>* socket,
-                  Buffer& buffer,
+                  elle::ConstWeakBuffer& buffer,
                   EndPoint const & endpoint):
           Super(*socket->socket()),
           _buffer(buffer),
@@ -303,7 +303,7 @@ namespace reactor
           auto wake = [&] (boost::system::error_code const e, std::size_t w) {
             this->_wakeup(e, w);
           };
-          auto buffer = boost::asio::buffer(_buffer.data(), _buffer.size());
+          auto buffer = boost::asio::buffer(_buffer.contents(), _buffer.size());
           this->socket().async_send_to(buffer, this->_endpoint, wake);
         }
 
@@ -320,7 +320,7 @@ namespace reactor
           Super::_wakeup(error);
         }
 
-        Buffer& _buffer;
+        elle::ConstWeakBuffer& _buffer;
         Size _written;
         EndPoint _endpoint;
     };
@@ -335,7 +335,7 @@ namespace reactor
     }
 
     void
-    UDPSocket::send_to(Buffer buffer,
+    UDPSocket::send_to(elle::ConstWeakBuffer buffer,
                        EndPoint endpoint)
     {
       ELLE_TRACE("%s: send_to %s bytes to %s",
@@ -344,7 +344,7 @@ namespace reactor
       if (endpoint.address().is_v4() && this->local_endpoint().address().is_v6())
         endpoint = EndPoint(boost::asio::ip::address_v6::v4_mapped(endpoint.address().to_v4()), endpoint.port());
 
-      UDPSendTo sendto(scheduler(), this, buffer, endpoint);
+      auto sendto = UDPSendTo(scheduler(), this, buffer, endpoint);
       sendto.run();
     }
 

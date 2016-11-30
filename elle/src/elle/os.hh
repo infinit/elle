@@ -6,7 +6,7 @@
 /// python module `os'.
 ///
 
+# include <elle/filesystem/path.hh>
 # include <elle/os/environ.hh>
-# include <elle/os/path.hh>
 
 #endif

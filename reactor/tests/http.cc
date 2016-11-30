@@ -2,6 +2,7 @@
 #include <boost/asio.hpp>
 #include <boost/test/unit_test.hpp>
 
+#include <elle/Buffer.hh>
 #include <elle/With.hh>
 #include <elle/test.hh>
 #include <elle/utility/Move.hh>
@@ -12,7 +13,6 @@
 #include <reactor/http/EscapedString.hh>
 #include <reactor/http/Request.hh>
 #include <reactor/http/exceptions.hh>
-#include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/tcp-server.hh>
 #include <reactor/scheduler.hh>
@@ -206,14 +206,14 @@ concurrent()
             [&, socket]
             {
               char buffer[1024];
-              socket->getline(buffer, sizeof(buffer), '\n');
+              socket->getline(buffer, sizeof buffer, '\n');
               buffer[socket->gcount()] = 0;
               ELLE_LOG("got request: %s", buffer);
               BOOST_CHECK_EQUAL(buffer, "GET /some/path HTTP/1.1\r");
               while (std::string(buffer) != "\r")
               {
                 ELLE_LOG("got header from: %s", buffer);
-                socket->getline(buffer, sizeof(buffer), '\n');
+                socket->getline(buffer, sizeof buffer, '\n');
                 buffer[socket->gcount()] = 0;
               }
               if (++clients == concurrent)
@@ -524,7 +524,6 @@ protected:
   ELLE_ATTRIBUTE_RX(reactor::Barrier, serving);
 };
 
-#if !(BOOST_OS_WINDOWS)
 ELLE_TEST_SCHEDULED(interrupted)
 {
   ScheduledSilentHttpServer server;
@@ -549,7 +548,6 @@ ELLE_TEST_SCHEDULED(interrupted)
     reactor::sleep(500_ms); // FIXME: wait for Curl to read
   }
 }
-#endif
 
 ELLE_TEST_SCHEDULED(escaped_string)
 {
@@ -565,7 +563,7 @@ class NoHeaderHttpServer:
   virtual
   void
   _response(reactor::network::Socket& socket,
-           reactor::http::StatusCode,
+            reactor::http::StatusCode,
             elle::ConstWeakBuffer,
             HTTPServer::Cookies const&) override
   {
@@ -648,7 +646,7 @@ ELLE_TEST_SCHEDULED(download_progress)
   };
   const int payload_length = 12;
   std::string header("HTTP/1.1 200 OK\r\nContent-Length: "
-                     + boost::lexical_cast<std::string>(payload_length)
+                     + std::to_string(payload_length)
                      + "\r\n\r\n");
   std::string payload(payload_length, 'a');
   SlowHttpServer server(header + payload, 1);
@@ -672,12 +670,11 @@ ELLE_TEST_SCHEDULED(download_progress)
   reactor::wait(t);
 }
 
-#if !(BOOST_OS_WINDOWS)
 ELLE_TEST_SCHEDULED(download_stall)
 {
   const int payload_length = 2000;
   std::string header("HTTP/1.1 200 OK\r\nContent-Length: "
-                     + boost::lexical_cast<std::string>(payload_length)
+                     + std::to_string(payload_length)
                      + "\r\n\r\n");
   std::string payload(payload_length, 'a');
   SlowHttpServer server(header + payload, 10);
@@ -697,7 +694,6 @@ ELLE_TEST_SCHEDULED(download_stall)
   server.sem.release();
   server.sem.release();
 }
-#endif
 
 ELLE_TEST_SCHEDULED(query_string)
 {
@@ -816,17 +812,11 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(put_11_chunked), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(cookies), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(request_move), 0, valgrind(1));
-#if !(BOOST_OS_WINDOWS)
-  // Fails inexplicably. Could be SJ/LJ exceptions on mingw32.
   suite.add(BOOST_TEST_CASE(interrupted), 0, valgrind(1));
-#endif
   suite.add(BOOST_TEST_CASE(escaped_string), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(no_header_answer), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(download_progress), 0, valgrind(10));
-#if !(BOOST_OS_WINDOWS)
-  // Fails inexplicably. Could be SJ/LJ exceptions on mingw32.
   suite.add(BOOST_TEST_CASE(download_stall), 0, valgrind(40));
-#endif
   suite.add(BOOST_TEST_CASE(query_string), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(keep_alive), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(redirection), 0, valgrind(1));

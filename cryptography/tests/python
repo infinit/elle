@@ -1,0 +1,40 @@
+#!/usr/bin/env python3
+
+import base64
+import cryptography
+import unittest
+
+
+def bytes_to_hex(bytes):
+  return ''.join('%02x' % b for b in bytes)
+
+
+class TestHash(unittest.TestCase):
+
+  def test_empty(self):
+    self.assertEqual(
+      bytes_to_hex(cryptography.hash(b'')),
+      'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855')
+
+  def test_text(self):
+    self.assertEqual(
+      bytes_to_hex(cryptography.hash(b'supercalifragilisticexpialidocious')),
+      'c1111e162eb6d424f42b1b970b98780963ee494bac8ae1f3ad2ef42f426ab3cc')
+
+  def test_binary(self):
+    self.assertEqual(
+      bytes_to_hex(cryptography.hash(b'\x01\x23\x45\x67\x89')),
+      'db24abe2d0a20fac957859eb755b3dbf695becdb9f5890e3a2a2411273ae50ad')
+
+
+class TestRSA(unittest.TestCase):
+
+  public_key = 'MIIBCgKCAQEAqKF6mFmmaH/xjxhUSMH4q9unjTCLfr8ZWQwLuX9EzezDGowOjt+yioyGoB/beUp5SVpaWFZTcgDSIHA6s7UAmR18pdDRaCCOS6dbQCSZvKNL5sWxR+HazBT6cOJkVjZf3Q6Bhs1c7Amzi4HidUdZVVHSlqGM4It1yzhwTgShW5jaALEPO9oGUc6lmCtfYgseFcsapNAaXKwAX4q6s1vxx+N50GoAx5aw0M9rOjEmZJ5OdPyqdc+C8cm4RHi1xoGdUnMrEC2C7go2o8CZup3zStPGeDgZWylGvVi77v4n+KxK0oI2gOLwPp6ny+IGpWrT8oSCTHeCp53oDnztAgj2fQIDAQAB'
+
+  def test_der_load(self):
+    b = base64.b64decode(TestRSA.public_key.encode('latin-1'))
+    k = cryptography.der_decode(b)
+    self.assertEqual(cryptography.der_encode(k), b)
+
+
+unittest.main()

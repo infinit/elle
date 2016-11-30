@@ -1,5 +1,8 @@
-#include "reactor.hh"
+#include <memory>
 
+#include <boost/bind.hpp>
+
+#include <elle/Buffer.hh>
 #include <elle/log.hh>
 #include <elle/memory.hh>
 #include <elle/test.hh>
@@ -7,7 +10,6 @@
 
 #include <reactor/asio.hh>
 #include <reactor/Scope.hh>
-#include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/resolve.hh>
 #include <reactor/network/tcp-server.hh>
@@ -21,15 +23,11 @@
 #include <reactor/signal.hh>
 #include <reactor/thread.hh>
 
-#include <boost/bind.hpp>
-#include <boost/foreach.hpp>
-
-#include <memory>
+#include "reactor.hh"
 
 ELLE_LOG_COMPONENT("reactor.network.test");
 
 using reactor::network::Byte;
-using reactor::network::Buffer;
 using reactor::Signal;
 using reactor::network::TCPSocket;
 using reactor::network::TCPServer;
@@ -57,13 +55,13 @@ public:
   void
   silent_server()
   {
-    std::unique_ptr<reactor::network::Socket> socket(this->accept());
+    std::unique_ptr<reactor::network::Socket> socket = this->accept();
     while (true)
     {
       char buffer[512];
       try
       {
-        socket->read_some(reactor::network::Buffer(buffer, sizeof(buffer)));
+        socket->read_some(elle::WeakBuffer(buffer, sizeof buffer));
       }
       catch (reactor::network::ConnectionClosed const&)
       {
@@ -150,7 +148,7 @@ test_timeout_read()
       // Poke the server to establish the pseudo connection in the UDP case.
       socket.write(elle::ConstWeakBuffer("poke"));
       Byte b;
-      reactor::network::Buffer buffer(&b, 1);
+      auto buffer = elle::WeakBuffer(&b, 1);
       BOOST_CHECK_THROW(
         socket.read_some(buffer, boost::posix_time::milliseconds(200)),
         reactor::network::TimeOut);
@@ -183,7 +181,7 @@ serve(std::unique_ptr<Socket> socket)
     reactor::network::Size read = 0;
     try
     {
-      read = socket->read_some(Buffer(buffer, sizeof(buffer) - 1),
+      read = socket->read_some(elle::WeakBuffer(buffer, sizeof buffer - 1),
                                boost::posix_time::milliseconds(100));
     }
     catch (reactor::network::ConnectionClosed&)
@@ -211,11 +209,12 @@ client(typename Socket::EndPoint const& ep,
        std::vector<std::string> messages, unsigned& check)
 {
   Socket s(ep);
-  BOOST_FOREACH (const std::string& message, messages)
+  for (const std::string& message: messages)
   {
-    s.write(elle::ConstWeakBuffer(message));
     Byte buf[256];
-    reactor::network::Size read = s.read_some(Buffer(buf, 256));
+    assert(message.size() + 1 < sizeof buf);
+    s.write(elle::ConstWeakBuffer(message));
+    reactor::network::Size read = s.read_some(elle::WeakBuffer(buf, sizeof buf));
     buf[read] = 0;
     BOOST_CHECK_EQUAL(message, reinterpret_cast<char*>(buf));
     ++check;
@@ -228,9 +227,30 @@ test_echo_server()
 {
   reactor::Scheduler sched;
   unsigned check_1 = 0;
-  std::vector<std::string> messages_1;
+  auto messages_1 = std::vector<std::string>
+    {
+      "Hello server!\n",
+      "How are you?\n",
+    };
   unsigned check_2 = 0;
-  std::vector<std::string> messages_2;
+  auto messages_2 = std::vector<std::string>
+    {
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n",
+      "Phasellus gravida auctor felis, "
+      "sed eleifend turpis commodo pretium.\n",
+      "Vestibulum ante ipsum primis in faucibus orci "
+      "luctus et ultrices posuere cubilia Curae; "
+      "Proin porttitor cursus ornare.\n",
+      "Praesent sodales sodales est non placerat.\n",
+      "Etiam iaculis ultrices libero ac ultrices.\n",
+      "Integer ultricies pharetra tempus.\n",
+      "Morbi metus ligula, facilisis tristique interdum et,"
+      "tincidunt eget tellus.\n",
+      "Sed a lacinia turpis.\n",
+      "Vestibulum leo tellus, ultrices a convallis eget, cursus id dolor.\n",
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit.\n",
+      "Aliquam erat volutpat.\n",
+    };
   reactor::Thread main(
     sched,
     "main",
@@ -250,41 +270,21 @@ test_echo_server()
             clients.push_back(
               new reactor::Thread(
                 "serve",
-                boost::bind(&serve<Socket>,
+                std::bind(&serve<Socket>,
                             elle::utility::move_on_copy(socket))));
           }
           reactor::wait(reactor::Waitables(begin(clients), end(clients)));
-          BOOST_FOREACH(auto* thread, clients)
+          for (auto* thread: clients)
             delete thread;
         });
-      messages_1.push_back("Hello server!\n");
-      messages_1.push_back("How are you?\n");
       reactor::Thread c1("client1",
-                         boost::bind(client<Server, Socket>,
+                         std::bind(client<Server, Socket>,
                                      server.local_endpoint(),
-                                     messages_1, boost::ref(check_1)));
-      messages_2.push_back("Lorem ipsum dolor sit amet, "
-                           "consectetur adipiscing elit.\n");
-      messages_2.push_back("Phasellus gravida auctor felis, "
-                           "sed eleifend turpis commodo pretium.\n");
-      messages_2.push_back("Vestibulum ante ipsum primis in faucibus orci "
-                           "luctus et ultrices posuere cubilia Curae; "
-                           "Proin porttitor cursus ornare.\n");
-      messages_2.push_back("Praesent sodales sodales est non placerat.\n");
-      messages_2.push_back("Etiam iaculis ultrices libero ac ultrices.\n");
-      messages_2.push_back("Integer ultricies pharetra tempus.\n");
-      messages_2.push_back("Morbi metus ligula, facilisis tristique interdum et,"
-                           "tincidunt eget tellus.\n");
-      messages_2.push_back("Sed a lacinia turpis.\n");
-      messages_2.push_back("Vestibulum leo tellus, ultrices a convallis eget, "
-                           "cursus id dolor.\n");
-      messages_2.push_back("Lorem ipsum dolor sit amet, "
-                           "consectetur adipiscing elit.\n");
-      messages_2.push_back("Aliquam erat volutpat.\n");
+                                     messages_1, std::ref(check_1)));
       reactor::Thread c2("client2",
-                         boost::bind(client<Server, Socket>,
+                         std::bind(client<Server, Socket>,
                                      server.local_endpoint(),
-                                     messages_2, boost::ref(check_2)));
+                                     messages_2, std::ref(check_2)));
       reactor::wait(c1);
       reactor::wait(c2);
       reactor::wait(s);
@@ -474,7 +474,7 @@ read_until()
       reactor::network::TCPSocket sock("127.0.0.1", server.port());
       BOOST_CHECK_EQUAL(sock.read_until("\r\n"), "foo\r\n");
       char c;
-      sock.read(reactor::network::Buffer(&c, 1));
+      sock.read(elle::WeakBuffer(&c, 1));
       BOOST_CHECK_EQUAL(c, 'x');
       BOOST_CHECK_EQUAL(sock.read_until("\r\n"), "\r\n");
       BOOST_CHECK_EQUAL(sock.read_until("\r\n"), "bar\r\n");
@@ -621,7 +621,7 @@ ELLE_TEST_SCHEDULED(resolution_abort)
 ELLE_TEST_SCHEDULED(read_terminate_recover)
 {
   char wbuf[100];
-  for (int i = 0; i < 100;++i)
+  for (auto i = 0u; i < sizeof wbuf; ++i)
     wbuf[i] = rand();
   reactor::network::TCPServer server;
   server.listen();
@@ -633,7 +633,7 @@ ELLE_TEST_SCHEDULED(read_terminate_recover)
     [&]
     {
       auto socket = server.accept();
-      char buffer[100] = {static_cast<char>(0xfd)};
+      char buffer[100] = {char(0xfd)};
       int bytes_read = 0;
       try
       {
@@ -641,16 +641,17 @@ ELLE_TEST_SCHEDULED(read_terminate_recover)
         // and not be killed right away.
         reactor::wait(written);
         reading.open();
-        socket->read(reactor::network::Buffer(buffer, 100),
-                  elle::DurationOpt(), &bytes_read);
+        socket->read(elle::WeakBuffer(buffer, sizeof buffer),
+                     elle::DurationOpt(), &bytes_read);
       }
       catch (reactor::Terminate const& e)
       {
         terminated.open();
         BOOST_CHECK_EQUAL(bytes_read, 50);
         BOOST_CHECK(!memcmp(buffer, wbuf, 50));
-        socket->read(reactor::network::Buffer(buffer+bytes_read, 100-bytes_read));
-        BOOST_CHECK(!memcmp(buffer, wbuf, 100));
+        socket->read(elle::WeakBuffer(buffer + bytes_read,
+                                      sizeof buffer - bytes_read));
+        BOOST_CHECK(!memcmp(buffer, wbuf, sizeof wbuf));
         throw;
       }
       BOOST_FAIL("unreachable");
@@ -672,7 +673,7 @@ ELLE_TEST_SCHEDULED(read_terminate_recover)
 ELLE_TEST_SCHEDULED(read_terminate_recover_iostream)
 {
   char wbuf[100];
-  for (int i = 0; i < 100;++i)
+  for (auto i = 0u; i < sizeof wbuf; ++i)
     wbuf[i] = rand();
   reactor::network::TCPServer server;
   server.listen();
@@ -683,7 +684,7 @@ ELLE_TEST_SCHEDULED(read_terminate_recover_iostream)
     [&]
     {
       auto socket = server.accept();
-      char buffer[101] = {static_cast<char>(0xfd)};
+      char buffer[101] = {char(0xfd)};
       int read = 0;
       try
       {
@@ -692,15 +693,15 @@ ELLE_TEST_SCHEDULED(read_terminate_recover_iostream)
         ELLE_LOG("read 100 bytes")
           while (read < 100)
             read +=
-              std::readsome(*socket, buffer + read, sizeof(buffer) - read);
+              std::readsome(*socket, buffer + read, sizeof buffer - read);
       }
       catch (reactor::Terminate const& e)
       {
         terminated.open();
         while (read < 100)
           read +=
-            std::readsome(*socket, buffer + read, sizeof(buffer) - read);
-        BOOST_CHECK(!memcmp(buffer, wbuf, 100));
+            std::readsome(*socket, buffer + read, sizeof buffer - read);
+        BOOST_CHECK(!memcmp(buffer, wbuf, sizeof wbuf));
         throw;
       }
       BOOST_FAIL("unreachable");
@@ -730,12 +731,12 @@ ELLE_TEST_SCHEDULED(read_terminate_deadlock)
     [&]
     {
       auto socket = server.accept();
-      char buffer[8] = {static_cast<char>(0xfd)};
+      char buffer[8] = {char(0xfd)};
       int read = 0;
       elle::IOStreamClear clearer(*socket);
       reading.open();
       while (read < 8)
-        read += std::readsome(*socket, buffer + read, sizeof(buffer) - read);
+        read += std::readsome(*socket, buffer + read, sizeof buffer - read);
       reactor::sleep();
     });
   reactor::network::TCPSocket socket(

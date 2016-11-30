@@ -924,8 +924,8 @@ namespace reactor
       dokanOptions->ThreadCount = 1; // use default
       dokanOptions->Timeout = 300000; // irp timeout in ms
       auto& logger = elle::log::logger();
-      if (logger.component_enabled("reactor.filesystem.dokanx")
-        >= elle::log::Logger::Level::debug)
+      if (logger.component_is_active("reactor.filesystem.dokanx",
+                                     elle::log::Logger::Level::debug))
       {
         dokanOptions->Options |= DOKAN_OPTION_DEBUG;
         dokanOptions->Options |= DOKAN_OPTION_STDERR;

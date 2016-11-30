@@ -120,7 +120,7 @@ public:
   propose(typename Client::Quorum const& q,
           typename Client::Proposal const& p) override
   {
-    throw typename Client::Peer::Unavailable();
+    throw paxos::Unavailable();
   }
 
   virtual
@@ -129,7 +129,7 @@ public:
          typename Client::Proposal const& p,
          elle::Option<T, typename Client::Quorum> const& value) override
   {
-    throw typename Client::Peer::Unavailable();
+    throw paxos::Unavailable();
   }
 
   virtual
@@ -137,14 +137,14 @@ public:
   confirm(typename Client::Quorum const& q,
           typename Client::Proposal const& p) override
   {
-    throw typename Client::Peer::Unavailable();
+    throw paxos::Unavailable();
   }
 
   virtual
   boost::optional<typename Client::Accepted>
   get(typename Client::Quorum const& q) override
   {
-    throw typename Client::Peer::Unavailable();
+    throw paxos::Unavailable();
   }
 };
 
@@ -231,7 +231,7 @@ public:
     typename Client::Proposal const& p) override
   {
     if (fail)
-      throw typename Peer<T, Version, ServerId>::Unavailable();
+      throw paxos::Unavailable();
     this->propose_signal.signal();
     reactor::wait(this->propose_barrier);
     return Peer<T, Version, ServerId>::propose(q, p);
@@ -244,7 +244,7 @@ public:
          elle::Option<T, typename Client::Quorum> const& value) override
   {
     if (fail)
-      throw typename Peer<T, Version, ServerId>::Unavailable();
+      throw paxos::Unavailable();
     this->accept_signal.signal();
     reactor::wait(this->accept_barrier);
     return Peer<T, Version, ServerId>::accept(q, p, value);
@@ -256,7 +256,7 @@ public:
           typename Client::Proposal const& p) override
   {
     if (fail)
-      throw typename Peer<T, Version, ServerId>::Unavailable();
+      throw paxos::Unavailable();
     this->confirm_signal.signal();
     reactor::wait(this->confirm_barrier);
     return Peer<T, Version, ServerId>::confirm(q, p);
@@ -737,7 +737,7 @@ public:
          typename Client::Proposal const& p,
          elle::Option<T, typename Client::Quorum> const& value) override
   {
-    throw typename Super::Unavailable();
+    throw paxos::Unavailable();
   }
 
   bool fail;

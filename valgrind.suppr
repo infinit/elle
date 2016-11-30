@@ -25,3 +25,14 @@
    fun:_Znwm
    fun:__cxa_get_globals
 }
+
+{
+   drand_init
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:CRYPTO_malloc
+   fun:ENGINE_new
+   ...
+   fun:dRAND_init
+}

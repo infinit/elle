@@ -8,7 +8,8 @@ variables:
 x86_64-centos6-gcc4:
   stage: build
   script:
-    - time scl enable devtoolset-4 rh-python34 "./buildenv --cleanup-build-trees --build-trees-root \"/cache/$CI_PROJECT_NAME\"  --verbose"
+    - export DRAKE_MTIME=0 # rsync and mtime comparisons don't play along very well
+    - git submodule sync
     - git submodule update --init --recursive
     - git fetch origin --tags
     - SOURCE_DIR="${CI_PROJECT_DIR}"
@@ -25,8 +26,8 @@ x86_64-centos6-gcc4:
     - scl enable devtoolset-4 rh-python34 "python3 drake -j 4 //install"
     - TARBALL="elle-x86_64-centos6-gcc4-$DESC.tbz"
     - tar -cvjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
-    - scp "$TARBALL" debian@debian.infinit.io:/tmp
-    - rm  "$TARBALL"
+    - scp "$TARBALL" buildslave@packages.infinit.sh:tmp
+    - rm "$TARBALL"
     - cd "$SOURCE_DIR"
     - time scl enable devtoolset-4 rh-python34 "./buildenv --cache-upload-build-tree --exclude='*.deb,*.rpm' --branch \"$CI_BUILD_REF_NAME\" --build-trees-root \"/cache/$CI_PROJECT_NAME\" --cache-namespace \"$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME\" --cache-id \"$CI_RUNNER_ID\" --verbose"
   tags:
@@ -37,7 +38,8 @@ x86_64-centos6-gcc4:
 x86_64-ubuntu-gcc4:
   stage: build
   script:
-    - time ./buildenv --cleanup-build-trees --build-trees-root "/cache/$CI_PROJECT_NAME"  --verbose
+    - export DRAKE_MTIME=0 # rsync and mtime comparisons don't play along very well
+    - git submodule sync --recursive
     - git submodule update --init --recursive
     - git fetch origin --tags
     - SOURCE_DIR="${CI_PROJECT_DIR}"
@@ -55,8 +57,8 @@ x86_64-ubuntu-gcc4:
     - python3 drake -j $(nproc) //install
     - TARBALL="$BUILD_DIR/elle-x86_64-ubuntu-gcc4-$DESC.tbz"
     - tar -cvjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
-    - scp "$TARBALL" debian@debian.infinit.io:/tmp
-    - rm  "$TARBALL"
+    - scp "$TARBALL" buildslave@packages.infinit.sh:tmp
+    - rm "$TARBALL"
     - cd "$SOURCE_DIR"
     - time ./buildenv --cache-upload-build-tree --exclude='*.deb,*.rpm' --branch "$CI_BUILD_REF_NAME" --build-trees-root "/cache/$CI_PROJECT_NAME" --cache-namespace "$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME" --cache-id "$CI_RUNNER_ID" --verbose
   tags:
@@ -67,7 +69,8 @@ x86_64-ubuntu-gcc4:
 x86_64-jessie-gcc4:
   stage: build
   script:
-    - time ./buildenv --cleanup-build-trees --build-trees-root "/cache/$CI_PROJECT_NAME"  --verbose
+    - export DRAKE_MTIME=0 # rsync and mtime comparisons don't play along very well
+    - git submodule sync --recursive
     - git submodule update --init --recursive
     - git fetch origin --tags
     - SOURCE_DIR="${CI_PROJECT_DIR}"
@@ -84,8 +87,8 @@ x86_64-jessie-gcc4:
     - python3 drake -j 4 //install
     - TARBALL="$BUILD_DIR/elle-x86_64-jessie-gcc4-$DESC.tbz"
     - tar -cvjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
-    - scp "$TARBALL" debian@debian.infinit.io:/tmp
-    - rm  "$TARBALL"
+    - scp "$TARBALL" buildslave@packages.infinit.sh:tmp
+    - rm "$TARBALL"
     - cd "$SOURCE_DIR"
     - time ./buildenv --cache-upload-build-tree --exclude='*.deb,*.rpm' --branch "$CI_BUILD_REF_NAME" --build-trees-root "/cache/$CI_PROJECT_NAME" --cache-namespace "$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME" --cache-id "$CI_RUNNER_ID" --verbose
   tags:
@@ -96,7 +99,8 @@ x86_64-jessie-gcc4:
 x86_64-alpine-gcc:
   stage: build
   script:
-    - time ./buildenv --cleanup-build-trees --build-trees-root "/cache/$CI_PROJECT_NAME"  --verbose
+    - export DRAKE_MTIME=0 # rsync and mtime comparisons don't play along very well
+    - git submodule sync --recursive
     - git submodule update --init --recursive
     - git fetch origin --tags
     - SOURCE_DIR="${CI_PROJECT_DIR}"
@@ -113,8 +117,8 @@ x86_64-alpine-gcc:
     - python3 drake -j 4 //install
     - TARBALL="$BUILD_DIR/elle-x86_64-alpine-gcc-$DESC.tbz"
     - tar -cvjf $TARBALL -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
-    - scp $TARBALL debian@debian.infinit.io:/tmp
-    - rm  "$TARBALL"
+    - scp "$TARBALL" buildslave@packages.infinit.sh:tmp
+    - rm "$TARBALL"
     - cd "$SOURCE_DIR"
     - time ./buildenv --cache-upload-build-tree --exclude='*.deb,*.rpm,*.tbz' --branch "$CI_BUILD_REF_NAME" --build-trees-root "/cache/$CI_PROJECT_NAME" --cache-namespace "$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME" --cache-id "$CI_RUNNER_ID" --verbose
 
@@ -126,7 +130,8 @@ x86_64-alpine-gcc:
 i386-jessie-gcc4:
   stage: build
   script:
-    - time ./buildenv --cleanup-build-trees --build-trees-root "/cache/$CI_PROJECT_NAME"  --verbose
+    - export DRAKE_MTIME=0 # rsync and mtime comparisons don't play along very well
+    - git submodule sync --recursive
     - git submodule update --init --recursive
     - git fetch origin --tags
     - SOURCE_DIR="${CI_PROJECT_DIR}"
@@ -143,8 +148,8 @@ i386-jessie-gcc4:
     - python3 drake -j 4 //install
     - TARBALL="$BUILD_DIR/elle-i386-jessie-gcc4-$DESC.tbz"
     - tar -cvjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
-    - scp "$TARBALL" debian@debian.infinit.io:/tmp
-    - rm  "$TARBALL"
+    - scp "$TARBALL" buildslave@packages.infinit.sh:tmp
+    - rm "$TARBALL"
     - cd "$SOURCE_DIR"
     - time ./buildenv --cache-upload-build-tree --exclude='*.deb,*.rpm' --branch "$CI_BUILD_REF_NAME" --build-trees-root "/cache/$CI_PROJECT_NAME" --cache-namespace "$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME" --cache-id "$CI_RUNNER_ID" --verbose
   tags:
@@ -155,7 +160,8 @@ i386-jessie-gcc4:
 x86_64-windows-mingw4:
   stage: build
   script:
-    - time ./buildenv --cleanup-build-trees --build-trees-root "/cache/$CI_PROJECT_NAME"  --verbose
+    - export DRAKE_MTIME=0 # rsync and mtime comparisons don't play along very well
+    - git submodule sync --recursive
     - git submodule update --init --recursive
     - git fetch origin --tags
     - SOURCE_DIR="${CI_PROJECT_DIR}"
@@ -172,8 +178,8 @@ x86_64-windows-mingw4:
     - python3 drake -j 4 //install
     - TARBALL="$BUILD_DIR/elle-x86_64-windows-mingw4-$DESC.tbz"
     - tar -cvjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
-    - scp "$TARBALL" debian@debian.infinit.io:/tmp
-    - rm  "$TARBALL"
+    - scp "$TARBALL" buildslave@packages.infinit.sh:tmp
+    - rm "$TARBALL"
     - cd "$SOURCE_DIR"
     - time ./buildenv --cache-upload-build-tree --exclude='*.deb,*.rpm' --branch "$CI_BUILD_REF_NAME" --build-trees-root "/cache/$CI_PROJECT_NAME" --cache-namespace "$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME" --cache-id "$CI_RUNNER_ID" --verbose
   tags:
@@ -184,6 +190,8 @@ x86_64-windows-mingw4:
 #i686-windows-mingw4:
 #  stage: build
 #  script:
+#    - export DRAKE_MTIME=0 # rsync and mtime comparisons don't play along very well
+#    - git submodule sync --recursive
 #    - git submodule update --init --recursive
 #    - git fetch origin --tags
 #    - mkdir -p ../elle-build ../elle-install
@@ -199,6 +207,8 @@ x86_64-windows-mingw4:
 x86_64-osx-clang:
   stage: build
   script:
+    - export DRAKE_MTIME=0 # rsync and mtime comparisons don't play along very well
+    - git submodule sync --recursive
     - git submodule update --init --recursive
     - git fetch origin --tags
     - mkdir -p ../elle-build ../elle-install
@@ -207,9 +217,9 @@ x86_64-osx-clang:
     - cd ../elle-build && python3 drake -j 4 //check
     - cd ../elle-build && python3 drake -j 4 //install
     - TARBALL=elle-x86_64-osx-clang3-$(GIT_DIR=../elle/.git git describe).tbz
-    - gtar -cvjf ../$TARBALL -C ../elle-install . --show-transformed-names --transform "s,^\\./,elle-$(GIT_DIR=../elle/.git git describe)/,"
-    - scp ../$TARBALL debian@debian.infinit.io:/tmp
-    - rm  "../$TARBALL"
+    - gtar -cvjf "../$TARBALL" -C ../elle-install . --show-transformed-names --transform "s,^\\./,elle-$(GIT_DIR=../elle/.git git describe)/,"
+    - scp "../$TARBALL" buildslave@packages.infinit.sh:tmp
+    - rm "../$TARBALL"
   tags:
     - x86_64
     - osx

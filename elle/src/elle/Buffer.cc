@@ -205,6 +205,13 @@ namespace elle
     //   this->_contents + old_size
   }
 
+  void Buffer::pop_front(Size size)
+  {
+    ELLE_ASSERT(size <= _size);
+    memmove(_contents, _contents + size, _size - size);
+    _size -= size;
+  }
+
   void
   Buffer::size(boost::call_traits<Buffer::Size>::param_type size_)
   {

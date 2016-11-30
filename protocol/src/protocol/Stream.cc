@@ -2,6 +2,7 @@
 
 #include <protocol/Stream.hh>
 #include <protocol/Serializer.hh>
+#include <protocol/exceptions.hh>
 
 #include <reactor/scheduler.hh>
 
@@ -11,10 +12,14 @@
 #include <arpa/inet.h>
 #endif
 
+#include <elle/serialization/binary.hh>
+
 namespace infinit
 {
   namespace protocol
   {
+    using namespace elle::serialization::binary;
+
     /*-------------.
     | Construction |
     `-------------*/
@@ -45,56 +50,81 @@ namespace infinit
     `------------------*/
 
     void
-    Stream::uint32_put(elle::Buffer& b, uint32_t i)
+    Stream::uint32_put(elle::Buffer& b, uint32_t i, elle::Version const& v)
     {
-      i = htonl(i);
-      b.append(&i, 4);
-    }
-
-    uint32_t
-    Stream::uint32_get(elle::Buffer& b)
-    {
-      uint32_t i;
-      ELLE_ASSERT_GTE((signed)b.size(), 4);
-      i = *(uint32_t*)b.contents();
-      memmove(b.mutable_contents(), b.contents() + 4, b.size() - 4);
-      b.size(b.size() - 4);
-      return ntohl(i);
-    }
-
-    void
-    Stream::uint32_put(std::ostream& s, uint32_t  i)
-    {
-      elle::IOStreamClear clearer(s);
-      // FIXME: should rethrow the underlying streambuf error.
-      if (!s.good())
-        throw elle::Exception("stream is not good");
-      i = htonl(i);
-      s.write(reinterpret_cast<char*>(&i), sizeof(i));
-    }
-
-    uint32_t
-    Stream::uint32_get(std::istream& s, int first_char)
-    {
-      uint32_t res = 0;
-      elle::IOStreamClear clearer(s);
-      // FIXME: should rethrow the underlying streambuf error.
-      if (!s.good())
-        throw elle::Exception("stream is not good");
-      if (first_char != -1)
+      if (v >= elle::Version(0, 3, 0))
       {
-        res = first_char + ((unsigned int)first_char << 24);
-        s.read(reinterpret_cast<char*>(&res)+1, sizeof(res)-1);;
+        elle::IOStream output(b.ostreambuf());
+        SerializerOut::serialize_number(output, i);
       }
       else
       {
-        s.read(reinterpret_cast<char*>(&res), sizeof(res));
+        i = htonl(i);
+        b.append(&i, 4);
       }
-      if (s.gcount() != signed(sizeof(res)) - ((first_char == -1) ? 0 : 1))
+    }
+
+    uint32_t
+    Stream::uint32_get(elle::Buffer& b, elle::Version const& v)
+    {
+      if (v >= elle::Version(0, 3, 0))
       {
-        throw Serializer::EOF();
+        elle::IOStream input(b.istreambuf());
+        int64_t res;
+        b.pop_front(SerializerIn::serialize_number(input, res));
+        return (uint32_t) res;
       }
-      return ntohl(res);
+      else
+      {
+        uint32_t i;
+        ELLE_ASSERT_GTE((signed)b.size(), 4);
+        i = *(uint32_t*)b.contents();
+        b.pop_front(4);
+        return ntohl(i);
+      }
+    }
+
+    void
+    Stream::uint32_put(std::ostream& s, uint32_t i, elle::Version const& v)
+    {
+      if (v >= elle::Version(0, 3, 0))
+      {
+        SerializerOut::serialize_number(s, i);
+      }
+      else
+      {
+        elle::IOStreamClear clearer(s);
+        // FIXME: should rethrow the underlying streambuf error.
+        if (!s.good())
+          throw elle::Exception("stream is not good");
+        i = htonl(i);
+        s.write(reinterpret_cast<char*>(&i), sizeof(i));
+      }
+    }
+
+    uint32_t
+    Stream::uint32_get(std::istream& s, elle::Version const& v)
+    {
+      if (v >= elle::Version(0, 3, 0))
+      {
+        int64_t res = 0;
+        SerializerIn::serialize_number(s, res);
+        if (res < 0 || std::numeric_limits<uint32_t>::max() < res)
+          throw Error(elle::sprintf("unexpected uint32_t: %s", res));
+        return (uint32_t) res;
+      }
+      else
+      {
+        uint32_t res = 0;
+        elle::IOStreamClear clearer(s);
+        // FIXME: should rethrow the underlying streambuf error.
+        if (!s.good())
+          throw elle::Exception("stream is not good");
+        s.read(reinterpret_cast<char*>(&res), sizeof(res));
+        if (s.gcount() != signed(sizeof(res)))
+          throw Serializer::EOF();
+        return ntohl(res);
+      }
     }
   }
 }

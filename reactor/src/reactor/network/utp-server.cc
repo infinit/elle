@@ -1,6 +1,5 @@
-#include <reactor/network/utp-server.hh>
-
 #ifdef INFINIT_LINUX
+# include <sys/time.h> // timespec
 # include <linux/errqueue.h>
 # include <netinet/ip_icmp.h>
 #endif
@@ -12,15 +11,16 @@
 # include <sys/socket.h>
 #endif
 
-#include <utp.h>
-
 #include <elle/Buffer.hh>
 #include <elle/log.hh>
 
-#include <reactor/network/buffer.hh> // FIXME: replace with elle::WeakBuffer
-#include <reactor/scheduler.hh>
 #include <reactor/network/utp-server-impl.hh>
+#include <reactor/network/utp-server.hh>
 #include <reactor/network/utp-socket-impl.hh>
+#include <reactor/scheduler.hh>
+
+// Include late, as it typedef's str and cstr.
+#include <utp.h>
 
 ELLE_LOG_COMPONENT("reactor.network.UTPServer");
 
@@ -55,7 +55,7 @@ namespace reactor
     on_sendto(utp_callback_arguments* args)
     {
       UTPServer::EndPoint ep;
-      struct sockaddr_in *sin = (struct sockaddr_in*)args->address;
+      sockaddr_in *sin = (sockaddr_in*)args->address;
       if (sin->sin_family == AF_INET)
       {
         ep = UTPServer::EndPoint(
@@ -64,27 +64,26 @@ namespace reactor
       }
       else if (sin->sin_family == AF_INET6)
       {
-        struct sockaddr_in6 *sin = (struct sockaddr_in6*)args->address;
-        std::array<unsigned char, 16> addr {{0}};
+        sockaddr_in6 *sin = (sockaddr_in6*)args->address;
+        auto addr = std::array<unsigned char, 16>{{0}};
         memcpy(addr.data(), sin->sin6_addr.s6_addr, 16);
         ep = UTPServer::EndPoint(boost::asio::ip::address_v6(addr),
                                  ntohs(sin->sin6_port));
       }
       else
       {
-        throw elle::Error(
-          elle::sprintf("unknown protocol %s", sin->sin_family));
+        elle::err("unknown protocol %s", sin->sin_family);
       }
       auto server = get_server(args);
       ELLE_ASSERT(server);
-      Buffer buf(args->buf, args->len);
+      auto buf = elle::ConstWeakBuffer(args->buf, args->len);
       elle::Buffer copy;
       if (server->xorify())
       {
         copy.append(args->buf, args->len);
         for (unsigned int i = 0; i < args->len; ++i)
           copy[i] ^= server->xorify();
-        buf = Buffer(copy.contents(), copy.size());
+        buf = elle::WeakBuffer(copy.contents(), copy.size());
       }
       server->send_to(buf, ep);
       return 0;
@@ -96,9 +95,8 @@ namespace reactor
     {
       ELLE_DEBUG("on_read");
       auto s = get(args);
-      if (!s)
-        return 0;
-      s->on_read(elle::ConstWeakBuffer(args->buf, args->len));
+      if (s)
+        s->on_read(elle::ConstWeakBuffer(args->buf, args->len));
       return 0;
     }
 
@@ -108,9 +106,8 @@ namespace reactor
     {
       ELLE_DEBUG("on_error %s", utp_error_code_names[args->error_code]);
       auto s = get(args);
-      if (!s)
-        return 0;
-      s->on_close();
+      if (s)
+        s->on_close();
       return 0;
     }
 
@@ -120,22 +117,21 @@ namespace reactor
     {
       auto s = get(args);
       ELLE_DEBUG("on_state_change %s on %s", utp_state_names[args->state], s);
-      if (!s)
-        return 0;
-      switch(args->state)
-      {
-        case UTP_STATE_CONNECT:
-        case UTP_STATE_WRITABLE:
-          s->_write_cont();
-          //s->_write_barrier.open();
-          break;
-        case UTP_STATE_EOF:
-          s->on_close();
-          break;
-        case UTP_STATE_DESTROYING:
-          s->_destroyed();
-          break;
-      }
+      if (s)
+        switch (args->state)
+          {
+          case UTP_STATE_CONNECT:
+          case UTP_STATE_WRITABLE:
+            s->_write_cont();
+            //s->_write_barrier.open();
+            break;
+          case UTP_STATE_EOF:
+            s->on_close();
+            break;
+          case UTP_STATE_DESTROYING:
+            s->_destroyed();
+            break;
+          }
       return 0;
     }
 
@@ -506,8 +502,8 @@ namespace reactor
                 ELLE_DEBUG("Socket closed, exiting");
                 return;
               }
-              sz = this->_socket->receive_from(
-                Buffer(buf.mutable_contents(), buf.size()), source);
+              sz = this->_socket->receive_from
+                (elle::WeakBuffer(buf.mutable_contents(), buf.size()), source);
               buf.size(sz);
               if (this->_xorify)
               {
@@ -561,12 +557,10 @@ namespace reactor
     }
 
     void
-    UTPServer::Impl::send_to(Buffer buf, EndPoint where)
+    UTPServer::Impl::send_to(elle::ConstWeakBuffer buf, EndPoint where)
     {
-      this->_send_buffer.emplace_back(elle::Buffer(buf.data(), buf.size()),
+      this->_send_buffer.emplace_back(elle::Buffer(buf.contents(), buf.size()),
                                       where);
-      typedef boost::system::error_code errc;
-      std::function<void (errc const& erc, size_t sz)> send_cont;
       if (!this->_sending)
       {
         this->_sending = true;
@@ -613,9 +607,7 @@ namespace reactor
         endpoint = EndPoint(boost::asio::ip::address_v6::v4_mapped(
                               endpoint.address().to_v4()), endpoint.port());
       this->_socket->socket()->async_send_to(
-        boost::asio::buffer(
-          buf.first.contents(),
-          buf.first.size()),
+        boost::asio::buffer(buf.first.contents(), buf.first.size()),
         endpoint,
         [this] (boost::system::error_code const& errc, size_t size)
         { this->_send_cont(errc, size); });

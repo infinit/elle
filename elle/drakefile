@@ -526,6 +526,7 @@ def configure(zlib_lib,
   rule_check = drake.TestSuite('check')
 
   tests = [
+    'AtomicFile.cc',
     'Backtrace.cc',
     'Buffer.cc',
     'Exception.cc',
@@ -563,9 +564,9 @@ def configure(zlib_lib,
     'set.cc',
     'system/user_paths.cc',
     'tuple.cc',
+    'type_traits.cc',
     'unordered_map.cc',
     'utility/Suffixes.cc',
-    'AtomicFile.cc',
     ]
   if cxx_toolkit.os is not drake.os.android:
     tests.extend([

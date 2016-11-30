@@ -10,11 +10,22 @@ import resource
 resource.setrlimit(resource.RLIMIT_NOFILE, (500, -1))
 
 enable_cryptographic_rotation = bool(os.getenv('INFINIT_CRYPTOGRAPHY_ROTATION', False))
-cryptographic_legacy_mode = bool(os.getenv('INFINIT_CRYPTOGRAPHY_LEGACY', False))
 
 import drake
 import drake.cxx
 import drake.cxx.boost
+
+python3 = None
+for minor in range(9, 0, -1):
+  for dir in ['/usr/local', '/opt/local/Library']:
+    p = '{}/Frameworks/Python.framework/Versions/3.{}'.format(dir, minor)
+    if os.path.isdir(p):
+      python3 = p
+      break
+  # Guido says we don't need multi-level breaks.
+  if python3:
+    break
+print("using python3 =", python3)
 
 with drake.Drake('../..') as d:
   cxx_compiler = os.getenv('CXX', 'clang++')
@@ -27,12 +38,10 @@ with drake.Drake('../..') as d:
   # XXX[still required but it shouldn't be the case]
   cxx_config.flag('-stdlib=libc++')
 
-  python3 = '/usr/local/Frameworks/Python.framework/Versions/3.4'
   d.run(cxx_toolkit,
         None,
         cxx_config,
         enable_cryptographic_rotation = enable_cryptographic_rotation,
-        cryptographic_legacy_mode = cryptographic_legacy_mode,
         python3 = python3,
         # XXX fuse = '/usr/local',
   )

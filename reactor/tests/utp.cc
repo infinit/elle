@@ -1,7 +1,6 @@
 #include <elle/assert.hh>
 #include <elle/test.hh>
 
-#include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/udp-socket.hh>
 #include <reactor/network/utp-server.hh>
@@ -17,15 +16,14 @@ ELLE_TEST_SCHEDULED(udp)
   reactor::network::UDPSocket s;
   s.socket()->close();
   s.bind(boost::asio::ip::udp::endpoint({}, 0));
-  auto t = new reactor::Thread("recv", [&] {
+  reactor::Thread t("recv", [&] {
       char data[1000];
       boost::asio::ip::udp::endpoint ep;
-      s.receive_from(Buffer(data, 1000), ep);
-  });
+      s.receive_from(elle::WeakBuffer(data, sizeof data), ep);
+    });
   reactor::sleep(100_ms);
-  t->terminate();
-  reactor::wait(*t);
-  delete t;
+  t.terminate();
+  reactor::wait(t);
 }
 
 
@@ -51,11 +49,11 @@ ELLE_TEST_SCHEDULED(basic)
     sp.s1->write("foo");
     ELLE_ASSERT_EQ(sp.s2->read_some(3).string(), "foo");
     sp.s2->write("bar");
-    ELLE_ASSERT(sp.s1->read_some(3).string() == "bar");
+    ELLE_ASSERT_EQ(sp.s1->read_some(3).string(), "bar");
     sp.s1->write("baz");
     sp.s2->write("bam");
-    ELLE_ASSERT(sp.s1->read_some(3).string() == "bam");
-    ELLE_ASSERT(sp.s2->read_some(3).string() == "baz");
+    ELLE_ASSERT_EQ(sp.s1->read_some(3).string(), "bam");
+    ELLE_ASSERT_EQ(sp.s2->read_some(3).string(), "baz");
     ELLE_LOG("done");
   }
   ELLE_LOG("done2");
@@ -117,6 +115,7 @@ ELLE_TEST_SCHEDULED(utp_timeout)
   free(megabuf);
 }
 
+#ifdef INFINIT_LINUX
 ELLE_TEST_SCHEDULED(utp_failures)
 {
   SocketPair sp;
@@ -128,6 +127,7 @@ ELLE_TEST_SCHEDULED(utp_failures)
   ELLE_LOG("read");
   ELLE_ASSERT_EQ(sp.s2->read(3), "foo");
 }
+#endif
 
 ELLE_TEST_SCHEDULED(streams)
 {
@@ -144,7 +144,7 @@ ELLE_TEST_SCHEDULED(big)
 {
   SocketPair sp;
   size_t buffer_size = 20000u;
-  std::string data(buffer_size, '-');
+  auto data = std::string(buffer_size, '-');
   // note: there is no garantee utp will buffer that much
   sp.s1->write(data);
   elle::Buffer buf = sp.s2->read(buffer_size);
@@ -190,11 +190,11 @@ ELLE_TEST_SCHEDULED(destruction)
     sp.s1->write("foo");
     ELLE_ASSERT_EQ(sp.s2->read_some(3).string(), "foo");
     sp.s2->write("bar");
-    ELLE_ASSERT(sp.s1->read_some(3).string() == "bar");
+    ELLE_ASSERT_EQ(sp.s1->read_some(3).string(), "bar");
     sp.s1->write("baz");
     sp.s2->write("bam");
-    ELLE_ASSERT(sp.s1->read_some(3).string() == "bam");
-    ELLE_ASSERT(sp.s2->read_some(3).string() == "baz");
+    ELLE_ASSERT_EQ(sp.s1->read_some(3).string(), "bam");
+    ELLE_ASSERT_EQ(sp.s2->read_some(3).string(), "baz");
     ELLE_LOG("done");
     sp.s1.reset();
     sp.s2.reset();
@@ -213,19 +213,6 @@ SocketPair::SocketPair()
   ELLE_LOG("SocketPair accepting");
   s2 = srv1.accept();
   ELLE_LOG("SocketPair ready");
-}
-
-static
-void
-loop_socket(reactor::network::UTPSocket* ts)
-{
-  std::unique_ptr<reactor::network::UTPSocket> s(ts);
-  while (true)
-  {
-    elle::Buffer buf = s->read(4000);
-    ELLE_LOG("pong %s", buf.size());
-    s->write(buf);
-  }
 }
 
 ELLE_TEST_SUITE()

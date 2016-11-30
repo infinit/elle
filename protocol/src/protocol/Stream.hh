@@ -5,10 +5,9 @@
 
 # include <elle/Buffer.hh>
 # include <elle/Printable.hh>
+# include <elle/Version.hh>
 
 # include <reactor/fwd.hh>
-
-
 
 namespace infinit
 {
@@ -22,12 +21,17 @@ namespace infinit
     public:
       Stream(reactor::Scheduler& scheduler);
       Stream();
-      virtual ~Stream();
+      virtual
+      ~Stream();
 
     /*-----------.
     | Properties |
     `-----------*/
       ELLE_ATTRIBUTE_R(reactor::Scheduler&, scheduler);
+      /// The protocol is versioned.
+      ///
+      /// Expose the version of the backend.
+      ELLE_attribute_r(elle::Version, version, virtual) = 0;
 
     /*----------.
     | Receiving |
@@ -54,19 +58,19 @@ namespace infinit
     public:
       static
       void
-      uint32_put(std::ostream& s, uint32_t  i);
+      uint32_put(std::ostream& s, uint32_t i, elle::Version const& v);
 
       static
       uint32_t
-      uint32_get(std::istream& s, int first_char = -1);
+      uint32_get(std::istream& s, elle::Version const& v);
 
       static
       void
-      uint32_put(elle::Buffer& s, uint32_t  i);
+      uint32_put(elle::Buffer& s, uint32_t i, elle::Version const& v);
 
       static
       uint32_t
-      uint32_get(elle::Buffer& s);
+      uint32_get(elle::Buffer& s, elle::Version const& v);
     };
   }
 }

@@ -10,12 +10,12 @@ namespace std
   namespace
   {
     template <int idx, typename T>
-    typename std::enable_if<idx == tuple_size<T>::value, void>::type
+    std::enable_if_t<idx == tuple_size<T>::value, void>
     print_tuple(std::ostream&, T const&, bool)
     {};
 
     template <int idx, typename T>
-    typename std::enable_if<idx < tuple_size<T>::value, void>::type
+    std::enable_if_t<idx < tuple_size<T>::value, void>
     print_tuple(std::ostream& s, T const& v, bool first)
     {
       if (!first)
@@ -32,7 +32,7 @@ namespace std
         F, Tuple, Total - 1, N..., sizeof...(N)>;
       static
       auto
-      call(F f, Tuple && t)
+      call(F const& f, Tuple && t)
         -> decltype(Next::call(f, std::forward<Tuple>(t)))
       {
         return Next::call(f, std::forward<Tuple>(t));
@@ -44,7 +44,7 @@ namespace std
     {
       static
       auto
-      call(F f, Tuple && t)
+      call(F const& f, Tuple && t)
         -> decltype(f(std::get<N>(std::forward<Tuple>(t))...))
       {
         return f(std::get<N>(std::forward<Tuple>(t))...);
@@ -72,6 +72,37 @@ namespace std
     return
       _forward_tuple<F, T, std::tuple_size<typename std::decay<T>::type>::value>
       ::call(f, std::forward<T>(tuple));
+  }
+
+  /*----.
+  | Any |
+  `----*/
+
+  namespace _details
+  {
+    template <int i, typename ... T>
+    std::enable_if_t<i == 0, bool>
+    any(std::tuple<T...> const& v)
+    {
+      return false;
+    }
+
+    template <int i, typename ... T>
+    std::enable_if_t<0 < i, bool>
+    any(std::tuple<T...> const& v)
+    {
+      if (std::get<i - 1>(v))
+        return true;
+      else
+        return any<i - 1>(v);
+    }
+  }
+
+  template <typename ... T>
+  bool
+  any(std::tuple<T...> const& v)
+  {
+    return _details::any<sizeof ... (T)>(v);
   }
 }
 

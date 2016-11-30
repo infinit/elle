@@ -1,4 +1,5 @@
 #include <elle/With.hh>
+#include <elle/Buffer.hh>
 #include <elle/cast.hh>
 #include <elle/test.hh>
 
@@ -6,7 +7,6 @@
 
 #include <reactor/Scope.hh>
 #include <reactor/asio.hh>
-#include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/tcp-server.hh>
 #include <reactor/network/tcp-socket.hh>
@@ -16,13 +16,12 @@
 
 #include <protocol/Serializer.hh>
 #include <protocol/exceptions.hh>
+#include <protocol/Channel.hh>
+#include <protocol/ChanneledStream.hh>
 
 ELLE_LOG_COMPONENT("infinit.protocol.test");
 
-static const elle::Version v010{0, 1, 0};
-static const elle::Version v020{0, 2, 0};
-
-typedef infinit::protocol::Serializer Serializer;
+using Serializer = infinit::protocol::Serializer;
 
 struct setup
 {
@@ -103,13 +102,13 @@ exchange(Serializer& sender,
   }
 }
 
-ELLE_TEST_SCHEDULED(run_v010)
+ELLE_TEST_SCHEDULED(run_version, (elle::Version, version))
 {
-  auto s = setup(v010);
+  auto s = setup(version);
   auto& bob = *s.bob;
   auto& alice = *s.alice;
-  ELLE_ASSERT_EQ(bob.version(), v010);
-  ELLE_ASSERT_EQ(alice.version(), v010);
+  ELLE_ASSERT_EQ(bob.version(), version);
+  ELLE_ASSERT_EQ(alice.version(), version);
   for (size_t size: {0, 1, 100, 10000, 100000})
   {
     exchange(
@@ -121,27 +120,90 @@ ELLE_TEST_SCHEDULED(run_v010)
   }
 }
 
-ELLE_TEST_SCHEDULED(run_v020)
+ELLE_TEST_SCHEDULED(kill_reader)
 {
-  auto s = setup(v020);
-  auto& bob = *s.bob;
-  auto& alice = *s.alice;
-  ELLE_ASSERT_EQ(bob.version(), v020);
-  ELLE_ASSERT_EQ(alice.version(), v020);
-  for (size_t size: {0, 1, 100, 10000, 100000})
-  {
-    exchange(
-      bob, alice,
-      infinit::cryptography::random::generate<std::string>(size));
-    exchange(
-      alice, bob,
-      infinit::cryptography::random::generate<std::string>(size));
-  }
+  /* When channeledstream's effective reader is terminated, it
+   * used to wake a single thread that was waiting on the stream using signal().
+   * So if that thread terminates at that exact momemnt, there is no more
+   * any reader on the stream.
+  */
+  using namespace infinit::protocol;
+  auto v = elle::Version(0,2,0);
+  reactor::Barrier b;
+  reactor::network::TCPServer srv;
+  srv.listen(0);
+  std::unique_ptr<reactor::network::TCPSocket> s2;
+  std::unique_ptr<Serializer> ser2p;
+  std::unique_ptr<ChanneledStream> cs2p;
+  new reactor::Thread("accept", [&] {
+      s2 = srv.accept();
+      ser2p.reset(new Serializer(*s2, v, false));
+      cs2p.reset(new ChanneledStream(*ser2p));
+  }, true);
+
+  reactor::network::TCPSocket s1("127.0.0.1",
+                                 srv.local_endpoint().port());
+  Serializer ser1(s1, v, false);
+  ChanneledStream cs1(ser1);
+  while (!cs2p)
+    reactor::sleep(50_ms);
+  ChanneledStream& cs2 = *cs2p;
+
+  // FIXME: unused.
+  int cid1, cid2, cid3;
+  bool r1 = false, r2 = false, r3 = false;
+  reactor::Thread::unique_ptr t1, t2, t3;
+  t1.reset(new reactor::Thread("t1", [&] {
+      infinit::protocol::Channel c(cs1);
+      b.open();
+      cid1 = c.id();
+      try {
+        c.read();
+      }
+      catch (std::exception const& e)
+      {
+        t3->terminate_now();
+        throw;
+      }
+      r1 = true;
+  }));
+  reactor::wait(b);
+  b.close();
+  //t1 is now the channel listener
+  t2.reset(new reactor::Thread("t2", [&] {
+      infinit::protocol::Channel c(cs1);
+      b.open();
+      cid2 = c.id();
+      c.write(elle::Buffer("foo"));
+      c.read();
+      r2 = true;
+  }));
+  // t2 is waiting
+  reactor::wait(b);
+  b.close();
+  t3.reset(new reactor::Thread("t3", [&] {
+      infinit::protocol::Channel c(cs1);
+      b.open();
+      cid3 = c.id();
+      c.read();
+      r3 = true;
+  }));
+  reactor::wait(b);
+  // t1 will kill t3, but it also works when killing from outside
+  t1->terminate_now();
+  // ensure t2 took over reading
+  Channel c = cs2.accept();
+  c.write(elle::Buffer("foo"));
+  while (!r2)
+    reactor::sleep(100_ms);
+  BOOST_CHECK(r2);
 }
 
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
-  suite.add(BOOST_TEST_CASE(run_v010), 0, valgrind(5, 25));
-  suite.add(BOOST_TEST_CASE(run_v020), 0, valgrind(5, 25));
+  using versions = std::initializer_list<elle::Version>;
+  for (auto const& v: versions{{0, 1, 0}, {0, 2, 0}})
+    suite.add(BOOST_TEST_CASE(std::bind(run_version, v)), 0, valgrind(5, 25));
+  suite.add(BOOST_TEST_CASE(kill_reader), 0, valgrind(5, 25));
 }

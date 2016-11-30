@@ -33,6 +33,12 @@ namespace infinit
     private:
       Channel(ChanneledStream& backend, int id);
 
+    /*--------.
+    | Version |
+    `--------*/
+    public:
+      ELLE_attribute_r(elle::Version, version, override);
+
     /*----------.
     | Printable |
     `----------*/

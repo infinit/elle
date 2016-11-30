@@ -60,6 +60,13 @@ namespace elle
       void
       SerializerOut::_serialize_number(int64_t n_)
       {
+        SerializerOut::serialize_number(this->output(), n_);
+      }
+
+      size_t
+      SerializerOut::serialize_number(std::ostream& output,
+                                      int64_t n_)
+      {
         int64_t n = n_;
         bool neg = n < 0;
         if (neg)
@@ -68,7 +75,8 @@ namespace elle
         { // sgn 0 val
           unsigned char ser = (neg ? 0x80 : 0) + n;
           ELLE_DUMP("serialize %s as 0x%02x", n_, int(ser));
-          output().write((const char*)&ser, 1);
+          output.write((const char*)&ser, 1);
+          return 1;
         }
         else if (n <= 0x1fff)
         { // sgn 1 0 val val2
@@ -76,7 +84,8 @@ namespace elle
           ser[0] = (neg ? 0xC0 : 0x40) + (n >> 8);
           ser[1] = n;
           ELLE_DUMP("serialize %s as 0x%02x%02x", n_, int(ser[0]), int(ser[1]));
-          output().write((const char*)ser, 2);
+          output.write((const char*)ser, 2);
+          return 2;
         } // sgn 1 1 0 val val2 val3
         else if (n <= 0x0fffff)
         {
@@ -86,20 +95,22 @@ namespace elle
           ser[2] = n;
           ELLE_DUMP("serialize %s as 0x%02x%02x%02x",
                     n_, int(ser[0]), int(ser[1]), int(ser[2]));
-          output().write((const char*)ser, 3);
+          output.write((const char*)ser, 3);
+          return 3;
         }
         else
         {
           unsigned char c = neg? 0xFF : 0x7F;
-          output().write((const char*)&c, 1);
-          output().write((const char*)(const void*)&n, 8);
+          output.write((const char*)&c, 1);
+          output.write((const char*)(const void*)&n, 8);
           ELLE_DUMP("serialize %s as 0x%02x%08x", n_, int(c), n);
+          return 9;
           /*
           unsigned char ser[9];
           ser[0] = neg? 0xFF : 0x7F;
           for (int i=1; i<9; ++i)
             ser[i] = n >> ((i-1)*8);
-          output().write((const char*)ser, 9);*/
+          output.write((const char*)ser, 9);*/
         }
       }
 

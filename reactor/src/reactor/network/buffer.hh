@@ -1,71 +1,69 @@
-#ifndef INFINIT_REACTOR_NETWORK_BUFFER_HH
-# define INFINIT_REACTOR_NETWORK_BUFFER_HH
+#pragma once
 
-# include <cstring>
+#include <string>
 
-# include <string>
+#include <reactor/network/fwd.hh>
 
-# include <reactor/network/fwd.hh>
-
-# include <elle/assert.hh>
-# include <elle/Buffer.hh>
+#include <elle/assert.hh>
+#include <elle/Buffer.hh>
 
 namespace reactor
 {
   namespace network
   {
+    /// A non-owning zone of memory.
+    ///
+    /// Typically used with an automatic array for network buffers.
+    /// Of course, the given memory must survice these buffers.
     class Buffer
     {
-      public:
-        Buffer(const Byte* data, Size size)
-          : _data(const_cast<Byte*>(data))
-          , _size(size)
-        {}
+    public:
+      Buffer(Byte* data, Size size)
+        : _data(data)
+        , _size(size)
+      {}
 
-        Buffer(const char* data, Size size)
-          : _data(const_cast<Byte*>(reinterpret_cast<const Byte*>(data)))
-          , _size(size)
-        {}
+      Buffer(const Byte* data, Size size)
+        : Buffer(const_cast<Byte*>(data), size)
+      {}
 
-        Buffer(const std::string& data)
-          : _data(reinterpret_cast<Byte*>(const_cast<char*>(data.data())))
-          , _size(data.size())
-        {}
+      Buffer(const char* data, Size size)
+        : Buffer(reinterpret_cast<const Byte*>(data), size)
+      {}
 
-        Buffer(const Buffer& other)
-          : _data(other._data)
-          , _size(other._size)
-        {}
+      Buffer(const std::string& data)
+        : Buffer(data.data(), data.size())
+      {}
 
-        Buffer(const elle::Buffer& data)
-          : _data(data.mutable_contents())
-          , _size(data.size())
-        {}
+      Buffer(const Buffer& other)
+        : Buffer(other._data, other._size)
+      {}
 
-        ~Buffer()
-        {}
+      Buffer(const elle::Buffer& data)
+        : Buffer(data.mutable_contents(), data.size())
+      {}
 
-        Size size()
-        {
-          return _size;
-        }
+      ~Buffer() = default;
 
-        Byte* data()
-        {
-          return _data;
-        }
+      Size size() const
+      {
+        return _size;
+      }
 
-        Byte& operator[](Size pos)
-        {
-          ELLE_ASSERT_LT(pos, _size);
-          return _data[pos];
-        }
+      Byte* data()
+      {
+        return _data;
+      }
 
-      private:
-        Byte* _data;
-        Size _size;
+      Byte& operator[](Size pos)
+      {
+        ELLE_ASSERT_LT(pos, _size);
+        return _data[pos];
+      }
+
+    private:
+      Byte* _data;
+      Size _size;
     };
   }
 }
-
-#endif

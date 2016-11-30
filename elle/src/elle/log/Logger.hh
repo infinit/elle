@@ -99,6 +99,10 @@ namespace elle
       void
       _setup_indentation();
 
+      /// Process a string formatted like $ELLE_LOG_LEVEL.
+      void
+      _setup_levels(const std::string& levels);
+
     /*------------.
     | Indentation |
     `------------*/
@@ -114,7 +118,7 @@ namespace elle
       void
       unindent();
     private:
-      std::recursive_mutex _mutex;
+      mutable std::recursive_mutex _mutex;
       std::unique_ptr<Indentation> _indentation;
       ELLE_ATTRIBUTE_RW(bool, time_universal);
       ELLE_ATTRIBUTE_RW(bool, time_microsec);
@@ -149,24 +153,76 @@ namespace elle
     | Components |
     `-----------*/
     public:
+      /// Whether participates as a context or as a component for this
+      /// level.
+      bool
+      component_is_active(std::string const& name, Level level = Level::log);
+
+      /// Log level in the current context of components.
+      Level
+      component_level(std::string const& name);
+
+      /// Obsolete alias for component_level.
+      [[deprecated("Replaced by component_level, which has the same interface")]]
       Level
       component_enabled(std::string const& name);
+
+      /// Push this component in the component stack.
+      void
+      component_push(std::string const& name);
+
+      /// Pop the top component from the component stack.
+      void
+      component_pop();
+
     private:
+      /// Nested components.
+      ///
+      /// Yes, a stack of (copies) of strings.  Cannot use
+      /// reference_wrapper, as there is no guarantee that the
+      /// component names outlive us.
+      using component_stack_t = std::vector<std::string>;
+
       /// Rule about components.
       struct Filter
       {
-        /// A pattern, e.g., `'infinit.cryptography.*.SecretKey`.
+        Filter(std::string c, std::string p, Level l)
+          : context{std::move(c)}
+          , pattern{std::move(p)}
+          , level{l}
+        {}
+
+        /// Whether this filter accepts this component name.
+        bool
+        match(const std::string& component) const;
+
+        /// Whether this filter accepts this component stack
+        bool
+        match(const component_stack_t& stack) const;
+
+        /// Whether this filter accepts this component name in this component stack.
+        bool
+        match(const std::string& component,
+              const component_stack_t& stack) const;
+
+        /// A context pattern denoting the requested nesting
+        /// component, e.g., `infinit.model.*.ACB`.
+        std::string context;
+        /// A component pattern, e.g., `infinit.cryptography.*.SecretKey`.
         std::string pattern;
         /// The corrresponding level.
         Level level;
-
-        /// Whether this filter accepts a component name.
-        bool
-        match(const std::string& component) const;
       };
+
+      /// Translation of $ELLE_LOG_LEVEL into ordered filters.
       std::vector<Filter> _component_patterns;
+      /// A cache of the decoding of $ELLE_LOG_LEVEL: component-name
+      /// => Level.  Filled only for unconditional levels (i.e., when
+      /// $ELLE_LOG_LEVEL uses no context specification).
       std::unordered_map<std::string, Level> _component_levels;
       ELLE_ATTRIBUTE_R(unsigned int, component_max_size);
+      /// Nested components.
+      ELLE_ATTRIBUTE_R(component_stack_t, component_stack);
     };
 
     ELLE_API

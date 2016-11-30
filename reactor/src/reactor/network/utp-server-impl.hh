@@ -1,9 +1,11 @@
-#ifndef REACTOR_NETWORK_UTP_SERVER_IMPL_HH
-# define REACTOR_NETWORK_UTP_SERVER_IMPL_HH
+#pragma once
 
-# include <reactor/network/utp-server.hh>
+#include <deque>
 
-# include <deque>
+#include <elle/Buffer.hh>
+
+#include <reactor/network/utp-server.hh>
+#include <reactor/network/utp-socket-impl.hh>
 
 namespace reactor
 {
@@ -26,11 +28,13 @@ namespace reactor
       void
       on_accept(utp_socket* s);
       void
-      send_to(Buffer buf, EndPoint where);
+      send_to(elle::ConstWeakBuffer buf, EndPoint where);
       void
       _send();
       void
       _send_cont(boost::system::error_code const&, size_t);
+      /// Import from libutp/utp.h.
+      using utp_context = ::struct_utp_context;
       ELLE_ATTRIBUTE(utp_context*, ctx);
       ELLE_ATTRIBUTE_R(std::unique_ptr<RDVSocket>, socket);
       ELLE_ATTRIBUTE_R(unsigned char, xorify);
@@ -49,4 +53,3 @@ namespace reactor
   }
 }
 
-#endif

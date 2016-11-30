@@ -52,12 +52,6 @@ namespace athena
         virtual
         boost::optional<Accepted>
         get(Quorum const& q) = 0;
-        class Unavailable
-          : public elle::Error
-        {
-        public:
-          Unavailable();
-        };
         ELLE_ATTRIBUTE_R(ClientId, id);
       /*----------.
       | Printable |

@@ -58,6 +58,16 @@ namespace infinit
       }
     }
 
+    /*--------.
+    | Version |
+    `--------*/
+    const elle::Version&
+    Channel::version() const
+    {
+      return this->_backend.version();
+    }
+
+
     /*---------.
     | Printing |
     `---------*/

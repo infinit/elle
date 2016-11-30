@@ -50,6 +50,18 @@ namespace athena
       this->_peers = std::move(peers);
     }
 
+    class Unavailable
+      : public elle::Error
+    {
+      public:
+        Unavailable()
+        : elle::Error("peer unavailable")
+        {}
+        Unavailable(elle::serialization::SerializerIn& input)
+        : elle::Error(input)
+      {}
+    };
+
     class TooFewPeers
       : public elle::Error
     {
@@ -134,7 +146,7 @@ namespace athena
                 }
                 ++reached;
               }
-              catch (typename Peer::Unavailable const& e)
+              catch (Unavailable const& e)
               {
                 ELLE_TRACE("%s: peer %s unavailable: %s",
                            *this, peer, e.what());
@@ -184,7 +196,7 @@ namespace athena
                 }
                 ++reached;
               }
-              catch (typename Peer::Unavailable const& e)
+              catch (Unavailable const& e)
               {
                 ELLE_TRACE("%s: peer %s unavailable: %s",
                            *this, peer, e.what());
@@ -223,7 +235,7 @@ namespace athena
                 peer->confirm(q, proposal);
                 ++reached;
               }
-              catch (typename Peer::Unavailable const& e)
+              catch (Unavailable const& e)
               {
                 ELLE_TRACE("%s: peer %s unavailable: %s",
                            *this, peer, e.what());
@@ -269,7 +281,7 @@ namespace athena
                 res.emplace(std::move(accepted.get()));
             ++reached;
           }
-          catch (typename Peer::Unavailable const& e)
+          catch (Unavailable const& e)
           {
             ELLE_TRACE("%s: peer %s unavailable: %s",
                        *this, peer, e.what());
@@ -294,15 +306,6 @@ namespace athena
     {
       elle::fprintf(output, "paxos::Client(%f)", this->_id);
     }
-
-    /*------------.
-    | Unavailable |
-    `------------*/
-
-    template <typename T, typename Version, typename CId>
-    Client<T, Version, CId>::Peer::Unavailable::Unavailable()
-      : elle::Error("paxos peer unavailable")
-    {}
   }
 }
 

@@ -29,6 +29,11 @@ namespace infinit
       ChanneledStream(reactor::Scheduler& scheduler, Stream& backend);
       ChanneledStream(Stream& backend);
 
+    /*--------.
+    | Version |
+    `--------*/
+      ELLE_attribute_r(elle::Version, version, override);
+
     /*----.
     | IDs |
     `----*/

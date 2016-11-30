@@ -75,7 +75,7 @@ namespace infinit
     | Details |
     `--------*/
       ELLE_ATTRIBUTE_RX(std::iostream&, stream);
-      ELLE_ATTRIBUTE_R(elle::Version, version);
+      ELLE_ATTRIBUTE_R(elle::Version, version, override);
       ELLE_ATTRIBUTE_R(elle::Buffer::Size, chunk_size);
       ELLE_ATTRIBUTE_R(bool, checksum);
     public:

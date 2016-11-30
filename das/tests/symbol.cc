@@ -28,7 +28,7 @@ struct Sub
 template <typename S, typename T>
 auto
 no_such_attribute(T const& o, int i)
-  -> typename std::enable_if<sizeof(S::attr_get(o)) >= 0, bool>::type
+  -> std::enable_if_t<sizeof(S::attr_get(o)) >= 0, bool>
 {
   return false;
 }
@@ -57,14 +57,60 @@ attributes()
     std::is_same<
       typename symbols::Symbol_bar::attr_type<S>::type, std::string>::value,
     "wrong attribute type");
+  BOOST_CHECK(decltype(symbols::foo)::attr_has<S>());
   BOOST_CHECK(!no_such_attribute<decltype(symbols::foo)>(s, 0));
+  BOOST_CHECK(!decltype(symbols::baz)::attr_has<S>());
   BOOST_CHECK(no_such_attribute<decltype(symbols::baz)>(s, 0));
   Sub sub;
   BOOST_CHECK_EQUAL(symbols::foo.attr_get(sub), 0);
+}
+
+struct M
+{
+  int
+  foo(int i = 41)
+  {
+    return i + 1;
+  }
+
+  bool
+  bar(char)
+  {
+    return true;
+  }
+
+  bool
+  bar(double)
+  {
+    return false;
+  }
+};
+
+static
+void
+methods()
+{
+  static_assert(symbols::foo.method_has<M>(), "method_has error");
+  static_assert(symbols::foo.method_has<M, int>(), "method_has error");
+  static_assert(!symbols::foo.method_has<M, int, int>(), "method_has error");
+  static_assert(
+    std::is_same<
+      decltype(symbols::foo)::method_type<M>::type, int>::value,
+    "method_type error");
+  static_assert(
+    std::is_same<
+      decltype(symbols::foo)::method_type<M, int>::type, int>::value,
+    "method_type error");
+  M m;
+  BOOST_CHECK_EQUAL(symbols::foo.method_call(m), 42);
+  BOOST_CHECK_EQUAL(symbols::foo.method_call(m, 5), 6);
+  BOOST_CHECK(symbols::bar.method_call(m, 'c'));
+  BOOST_CHECK(!symbols::bar.method_call(m, 0.));
 }
 
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
   suite.add(BOOST_TEST_CASE(attributes), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(methods), 0, valgrind(1));
 }

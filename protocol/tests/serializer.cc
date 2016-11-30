@@ -8,7 +8,6 @@
 #include <reactor/asio.hh>
 #include <reactor/Barrier.hh>
 #include <reactor/Scope.hh>
-#include <reactor/network/buffer.hh>
 #include <reactor/network/exception.hh>
 #include <reactor/network/tcp-server.hh>
 #include <reactor/network/tcp-socket.hh>
@@ -21,7 +20,7 @@
 
 ELLE_LOG_COMPONENT("infinit.protocol.test");
 
-static elle::Buffer::Size buffer_size = 4096;
+constexpr static elle::Buffer::Size buffer_size = 4096;
 
 struct Focket // Fake socket.
   : public elle::IOStream
@@ -242,8 +241,6 @@ private:
   void
   _route()
   {
-    using reactor::network::Buffer;
-
     std::unique_ptr<reactor::network::Socket> a(this->_a_server.accept());
     std::unique_ptr<reactor::network::Socket> b(this->_b_server.accept());
 
@@ -262,12 +259,13 @@ private:
               char buffer[1024];
               ELLE_DEBUG("reading");
               int64_t size =
-                sender->read_some(Buffer(buffer, sizeof(buffer)), 1_sec);
+                sender->read_some(elle::WeakBuffer(buffer, sizeof buffer),
+                                  valgrind(250_ms, 10));
               ELLE_DEBUG("read %s", size);
               conf(elle::ConstWeakBuffer(buffer, size));
-              if (conf.corrupt_offset >= 0 && \
-                  conf.corrupt_offset >= routed && \
-                  conf.corrupt_offset < routed + size)
+              if (conf.corrupt_offset >= 0
+                  && conf.corrupt_offset >= routed
+                  && conf.corrupt_offset < routed + size)
               {
                 int offset = conf.corrupt_offset - routed;
                 ELLE_LOG("%s: corrupt byte %s", *this, offset);
@@ -349,7 +347,8 @@ dialog(elle::Version const& version,
        std::function<void (SocketProvider&)> const& conf,
        std::function<void (infinit::protocol::Serializer&)> const& a,
        std::function<void (infinit::protocol::Serializer&)> const& b,
-       std::function<void (reactor::Thread&, reactor::Thread&, SocketProvider&)> const& f = std::function<void (reactor::Thread&, reactor::Thread&, SocketProvider&)>())
+       std::function<void (reactor::Thread&, reactor::Thread&,
+                           SocketProvider&)> const& f = {})
 {
   SocketProvider sockets;
   std::unique_ptr<infinit::protocol::Serializer> alice;
@@ -377,10 +376,10 @@ dialog(elle::Version const& version,
   {
     auto& _alice = scope.run_background(
       "alice",
-      boost::bind(a, boost::ref(*alice)));
+      std::bind(a, std::ref(*alice)));
     auto& _bob = scope.run_background(
       "bob",
-      boost::bind(b, boost::ref(*bob)));
+      std::bind(b, std::ref(*bob)));
     if (f)
       scope.run_background(
         "other",
@@ -507,8 +506,8 @@ _connection_lost_reader(elle::Version const& version,
       elle::Buffer pp;
       elle::IOStream p(pp.ostreambuf());
       char buffer[1025];
-      memset(buffer, 0xAA, sizeof(buffer));
-      buffer[sizeof(buffer) - 1] = 0;
+      memset(buffer, 0xAA, sizeof buffer);
+      buffer[sizeof buffer - 1] = 0;
       p << buffer;
       p.flush();
       s.write(pp);
@@ -548,7 +547,7 @@ _connection_lost_sender(elle::Version const& version,
       {
         while (true)
         {
-          reactor::sleep(100_ms);
+          reactor::sleep(valgrind(10_ms, 10));
           s.write(p);
         }
       }
@@ -587,8 +586,8 @@ _corruption(elle::Version const& version,
       elle::Buffer pp;
       elle::IOStream p(pp.ostreambuf());
       char buffer[1025];
-      memset(buffer, 0xAA, sizeof(buffer));
-      buffer[sizeof(buffer) - 1] = 0;
+      memset(buffer, 0xAA, sizeof buffer);
+      buffer[sizeof buffer - 1] = 0;
       p << buffer;
       p.flush();
       s.write(pp);
@@ -678,13 +677,13 @@ _interruption(elle::Version const& version,
         } while (true);
         // Version one will go throught even if a termination has been required.
         ELLE_DEBUG("wait for %s", terminated)
-          terminated.wait(1_sec);
+          terminated.wait(valgrind(250_ms, 10));
         if (version == elle::Version{0, 1, 0})
         {
           ELLE_DEBUG("wait for %s", received)
-            received.wait(1_sec);
+            received.wait(valgrind(250_ms, 10));
         }
-        else if (version == elle::Version{0, 2, 0})
+        else if (version >= elle::Version{0, 2, 0})
         {
           ELLE_DEBUG("make sure the original packet hasn't been received")
             if (number != 1)
@@ -742,16 +741,15 @@ _termination(elle::Version const& version,
       ELLE_TRACE("waitinng for thread")
         reactor::wait(tready);
       auto& backend = s.stream();
-      uint32_t sz = htonl(6);
-      backend.write(static_cast<const char*>((void*)&sz), 4);
+      infinit::protocol::Stream::uint32_put(backend, 6, version);
       backend.write("foo", 3);
       backend.flush();
-      reactor::sleep(100_ms);
+      reactor::sleep(valgrind(10_ms, 10));
       ELLE_TRACE("killing thread")
         t->terminate();
-      reactor::sleep(100_ms);
+      reactor::sleep(valgrind(10_ms, 10));
       backend.write("baz", 3);
-      backend.write(static_cast<const char*>((void*)&sz), 4);
+      infinit::protocol::Stream::uint32_put(backend, 6, version);
       backend.write("foobar", 6);
       backend.flush();
       ELLE_TRACE("writer done");
@@ -761,6 +759,8 @@ _termination(elle::Version const& version,
 ELLE_TEST_SCHEDULED(termination)
 {
   _termination(elle::Version{0, 1, 0}, false);
+  _termination(elle::Version{0, 2, 0}, false);
+  _termination(elle::Version{0, 3, 0}, false);
 }
 
 ELLE_TEST_SCHEDULED(eof)
@@ -801,60 +801,65 @@ ELLE_TEST_SCHEDULED(eof)
   }
 }
 
-ELLE_TEST_SCHEDULED(message_v020)
+ELLE_TEST_SCHEDULED(message)
 {
-  uint32_t chunk_size = 0;
-  dialog<Connector>(
-    elle::Version{0, 2, 0},
-    false,
-    [] (Connector&)
-    {
-    },
-    [&] (infinit::protocol::Serializer& s)
-    {
-      chunk_size = s.chunk_size();
-      auto buf = s.read();
-      ELLE_LOG("recieved %f (size %s)", buf, buf.size());
-      elle::Buffer expected{std::string(chunk_size * 2, 'y')};
-      BOOST_CHECK_EQUAL(buf.size(), expected.size());
-      BOOST_CHECK_EQUAL(buf, expected);
-    },
-    [&] (infinit::protocol::Serializer& s)
-    {
-    },
-    [&] (reactor::Thread&, reactor::Thread&, Connector& connector)
-    {
-      // XXX: This could be better... Once we have the version that send
-      // messages, re-write that test.
-      while (chunk_size == 0)
-        reactor::yield();
-      auto size = 2 * chunk_size;
-      auto chunk = elle::Buffer{std::string(chunk_size, 'y')};
-      auto keep_going = [&] () {
-        unsigned char keep_going = 0;
-        connector._alice_buffer.append(&keep_going, 1);
-      };
-      // Send the size.
+  for (auto version: {elle::Version{0, 2, 0}, elle::Version{0, 3, 0}})
+  {
+    uint32_t chunk_size = 0;
+    dialog<Connector>(
+      version,
+      false,
+      [] (Connector&)
       {
-        size = htonl(size);
-        connector._alice_buffer.append(&size, 4);
-      }
-      // Write first part.
-      connector._alice_buffer.append(chunk.mutable_contents(), chunk.size());
-      // Put a message in the middle of the stream.
+      },
+      [&] (infinit::protocol::Serializer& s)
       {
-        unsigned char message_control = 2;
-        std::string message = "this should be ignored";
-        uint32_t size = htonl(message.length());
-        connector._alice_buffer.append(&message_control, 1);
-        connector._alice_buffer.append(&size, 4);
-        connector._alice_buffer.append(message.c_str(), message.length());
-      }
-      // Keep going.
-      keep_going();
-      // Write the second part.
-      connector._alice_buffer.append(chunk.mutable_contents(), chunk.size());
-    });
+        chunk_size = s.chunk_size();
+        auto buf = s.read();
+        ELLE_LOG("recieved %f (size %s)", buf, buf.size());
+        elle::Buffer expected{std::string(chunk_size * 2, 'y')};
+        BOOST_CHECK_EQUAL(buf.size(), expected.size());
+        BOOST_CHECK_EQUAL(buf, expected);
+      },
+      [&] (infinit::protocol::Serializer& s)
+      {
+      },
+      [&] (reactor::Thread&, reactor::Thread&, Connector& connector)
+      {
+        // XXX: This could be better... Once we have the version that send
+        // messages, re-write that test.
+        while (chunk_size == 0)
+          reactor::yield();
+        auto size = 2 * chunk_size;
+        auto chunk = elle::Buffer{std::string(chunk_size, 'y')};
+        auto keep_going = [&] () {
+          unsigned char keep_going = 0;
+          connector._alice_buffer.append(&keep_going, 1);
+        };
+        // Send the size.
+        {
+          infinit::protocol::Stream::uint32_put(
+            connector._alice_buffer, size, version);
+        }
+        // Write first part.
+        connector._alice_buffer.append(chunk.mutable_contents(), chunk.size());
+        // Put a message in the middle of the stream.
+        {
+          unsigned char message_control = 2;
+          std::string message = "this should be ignored";
+
+          connector._alice_buffer.append(&message_control, 1);
+          infinit::protocol::Stream::uint32_put(
+            connector._alice_buffer, message.length(), version);
+          // connector._alice_buffer.append(&size, 4);
+          connector._alice_buffer.append(message.c_str(), message.length());
+        }
+        // Keep going.
+        keep_going();
+        // Write the second part.
+        connector._alice_buffer.append(chunk.mutable_contents(), chunk.size());
+      });
+  }
 }
 
 ELLE_TEST_SCHEDULED(interruption2)
@@ -863,101 +868,113 @@ ELLE_TEST_SCHEDULED(interruption2)
   // packet.
   namespace ip = infinit::protocol;
 
-  reactor::Barrier pinger_block;
-  dialog<Connector>(
-    elle::Version{0, 2, 0},
-    false,
-    [] (Connector&)
-    {
-    },
-    [&] (infinit::protocol::Serializer& s)
-    { // echo server, sending partial result until pinger_block is opened.
-      ip::ChanneledStream stream(s);
-      while (true)
+  for (auto version: {elle::Version{0, 2, 0}, elle::Version{0, 3, 0}})
+  {
+    reactor::Barrier pinger_block;
+    dialog<Connector>(
+      version,
+      false,
+      [] (Connector&)
       {
-        ELLE_TRACE("accept");
-        ip::Channel c = stream.accept();
+      },
+      [&] (infinit::protocol::Serializer& s)
+      { // echo server, sending partial result until pinger_block is opened.
+        ip::ChanneledStream stream(s);
+        while (true)
+        {
+          ELLE_TRACE("accept");
+          ip::Channel c = stream.accept();
+          auto buf = c.read();
+          // Forge a packet in `message`.
+          elle::Buffer message;
+          // 1. the channel id.
+          infinit::protocol::Stream::uint32_put(message, c.id(), version);
+          // 2. the content.
+          {
+            elle::IOStream m(message.ostreambuf());
+            m.write((const char*)buf.contents(), buf.size());
+          }
+          // First send the size of `message`.
+          infinit::protocol::Stream::uint32_put(s.stream(), message.size(), version);
+          {
+            // Send `message`, but lacking the end.
+            s.stream().write((const char*)message.contents(), message.size() - 1);
+          }
+          ELLE_TRACE("partial write, wait for signal");
+          reactor::wait(pinger_block);
+          ELLE_TRACE("finish write");
+          pinger_block.close();
+          // Finish sending `message`.
+          s.stream().write((const char*)message.contents() + message.size()-1, 1);
+          s.stream().flush();
+          ELLE_TRACE("packet transmited");
+        }
+      },
+      [&] (infinit::protocol::Serializer& s)
+      {
+        ip::ChanneledStream stream(s);
+        ip::Channel c(stream);
+        c.write(elle::Buffer("foo"));
+        reactor::Barrier b;
+        b.close();
+        reactor::Thread t("c2read", [&] {
+            ip::Channel c2(stream);
+            ELLE_TRACE("open b and read");
+            b.open();
+            auto buf = c2.read();
+            elle::unreachable();
+          });
+        ELLE_TRACE("Wait b");
+        b.wait();
+        pinger_block.open();
+        ELLE_TRACE("kill t");
+        t.terminate_now();
+        ELLE_TRACE("t is gone");
+        ip::Channel c2(stream);
+        c2.write(elle::Buffer("bar"));
+        pinger_block.open();
+        ELLE_TRACE("read on %s", c.id());
         auto buf = c.read();
+        BOOST_CHECK_EQUAL(buf.string(), "foo");
 
-        uint32_t len = buf.size() + 4;
-        len = htonl(len);
-        s.stream().write((const char*)&len, 4);
-        uint32_t id = c.id();
-        id = htonl(id);
-        s.stream().write((const char*)&id, 4);
-        s.stream().write((const char*)buf.contents(), buf.size()-1);
-        ELLE_TRACE("partial write, wait for signal");
-        reactor::wait(pinger_block);
-        ELLE_TRACE("finish write");
-        pinger_block.close();
-        s.stream().write((const char*)buf.contents() + buf.size()-1, 1);
-        s.stream().flush();
-        ELLE_TRACE("packet transmited");
-      }
-    },
-    [&] (infinit::protocol::Serializer& s)
-    {
-      ip::ChanneledStream stream(s);
-      ip::Channel c(stream);
-      c.write(elle::Buffer("foo"));
-      reactor::Barrier b;
-      b.close();
-      reactor::Thread t("c2read", [&] {
-          ip::Channel c2(stream);
-          ELLE_TRACE("open b and read");
-          b.open();
-          auto buf = c2.read();
-          elle::unreachable();
-      });
-      ELLE_TRACE("Wait b");
-      b.wait();
-      pinger_block.open();
-      ELLE_TRACE("kill t");
-      t.terminate_now();
-      ELLE_TRACE("t is gone");
-      ip::Channel c2(stream);
-      c2.write(elle::Buffer("bar"));
-      pinger_block.open();
-      ELLE_TRACE("read on %s", c.id());
-      auto buf = c.read();
-      BOOST_CHECK_EQUAL(buf.string(), "foo");
-      // just read some more to check we're still on
-      ip::Channel c3(stream);
-      c3.write(elle::Buffer("baz"));
-      while (pinger_block.opened())
-        reactor::yield();
-      pinger_block.open();
-      ELLE_TRACE("read c3");
-      buf = c3.read();
-      BOOST_CHECK_EQUAL(buf.string(), "baz");
+        // just read some more to check we're still on
+        ip::Channel c3(stream);
+        c3.write(elle::Buffer("baz"));
+        while (pinger_block.opened())
+          reactor::yield();
+        pinger_block.open();
+        ELLE_TRACE("read c3");
+        buf = c3.read();
+        BOOST_CHECK_EQUAL(buf.string(), "baz");
 
-      // check killing reader thread before any data is read
-      b.close();
-      reactor::Thread t2("read nothing", [&] {
-          ip::Channel c2(stream);
-          ELLE_TRACE("open b and read");
-          b.open();
-          auto buf = c2.read();
-          elle::unreachable();
+        // check killing reader thread before any data is read
+        b.close();
+        reactor::Thread t2("read nothing", [&] {
+            ip::Channel c2(stream);
+            ELLE_TRACE("open b and read");
+            b.open();
+            auto buf = c2.read();
+            elle::unreachable();
+          });
+        ELLE_TRACE("Wait b");
+        b.wait();
+        t2.terminate_now();
+        // check everything still works
+        ip::Channel c4(stream);
+        c4.write(elle::Buffer("maz"));
+        while (pinger_block.opened())
+          reactor::yield();
+        pinger_block.open();
+        ELLE_TRACE("read c4");
+        buf = c4.read();
+        BOOST_CHECK_EQUAL(buf.string(), "maz");
+      },
+      [&] (reactor::Thread& t1, reactor::Thread& t2, Connector& connector)
+      {
+        reactor::wait(t2);
+        t1.terminate_now();
       });
-      ELLE_TRACE("Wait b");
-      b.wait();
-      t2.terminate_now();
-      // check everything still works
-      ip::Channel c4(stream);
-      c4.write(elle::Buffer("maz"));
-      while (pinger_block.opened())
-        reactor::yield();
-      pinger_block.open();
-      ELLE_TRACE("read c4");
-      buf = c4.read();
-      BOOST_CHECK_EQUAL(buf.string(), "maz");
-    },
-    [&] (reactor::Thread& t1, reactor::Thread& t2, Connector& connector)
-    {
-      reactor::wait(t2);
-      t1.terminate_now();
-    });
+  }
 }
 
 ELLE_TEST_SUITE()
@@ -972,5 +989,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(interruption2), 0, valgrind(3, 10));
   suite.add(BOOST_TEST_CASE(termination), 0, valgrind(3, 10));
   suite.add(BOOST_TEST_CASE(eof), 0, valgrind(3));
-  suite.add(BOOST_TEST_CASE(message_v020), 0, valgrind(3));
+  suite.add(BOOST_TEST_CASE(message), 0, valgrind(3));
 }

@@ -277,42 +277,56 @@ namespace elle
       int64_t
       SerializerIn::_serialize_number()
       {
+        int64_t res;
+        SerializerIn::serialize_number(this->input(), res);
+        return res;
+      }
+
+      size_t
+      SerializerIn::serialize_number(std::istream& input,
+                                     int64_t& res)
+      {
         ELLE_DEBUG_SCOPE("deserialize number");
-        uint64_t res;
-        unsigned char c = get(input());
+        unsigned char c = get(input);
+        int64_t value;
         bool negative = c & 0x80;
+        size_t size = 0;
         if (!(c & 0x40))
         {
           ELLE_DUMP("1-byte coding");
-          res = c&0x3f;
+          value = c&0x3f;
+          size = 1;
         }
         else if (! (c&0x20))
         {
           ELLE_DUMP("2-bytes coding");
-          unsigned char c2 = get(input());
-          res = ((c&0x1F) << 8) + c2;
+          unsigned char c2 = get(input);
+          value = ((c&0x1F) << 8) + c2;
+          size = 2;
         }
         else if (! (c&0x10))
         {
           ELLE_DUMP("4-bytes coding");
-          unsigned char c2 = get(input());
-          unsigned char c3 = get(input());
-          res = ((c&0x0F) << 16) + (c2 << 8) + c3;
+          unsigned char c2 = get(input);
+          unsigned char c3 = get(input);
+          value = ((c&0x0F) << 16) + (c2 << 8) + c3;
+          size = 3;
         }
         else
         {
           ELLE_DUMP("8-bytes coding");
-          input().read((char*)(void*)&res, 8);
+          input.read((char*)(void*)&value, 8);
+          size = 9;
           /*
           unsigned char elems[8];
-          input().read((char*)elems, 8);
-          res = 0;
+          input.read((char*)elems, 8);
+          value = 0;
           for (int i=0; i<8; ++i)
-            res += uint64_t(elems[i]) << (8*i);*/
+            value += uint64_t(elems[i]) << (8*i);*/
         }
-        int64_t s = negative ? - (int64_t)res : res;
-        ELLE_DEBUG("value: %s", s);
-        return s;
+        res = negative ? - (int64_t)value : value;
+        ELLE_DEBUG("value: %s", res);
+        return size;
       }
     }
   }

@@ -4,6 +4,7 @@
 # include <arpa/inet.h>
 #endif
 
+#include <elle/Buffer.hh>
 #include <elle/log.hh>
 
 #include <cryptography/hash.hh>
@@ -16,7 +17,6 @@
 #include <reactor/Barrier.hh>
 #include <reactor/network/socket.hh>
 #include <reactor/network/utp-socket.hh>
-#include <reactor/network/buffer.hh>
 
 #include <protocol/Serializer.hh>
 #include <protocol/exceptions.hh>
@@ -36,10 +36,12 @@ namespace infinit
     protected:
       pImpl(std::iostream& stream,
             elle::Buffer::Size chunk_size,
-            bool checksum)
+            bool checksum,
+            elle::Version const& version)
         : _stream(stream)
         , _chunk_size(chunk_size)
         , _checksum(checksum)
+        , _version(version)
         , _lock_write()
         , _lock_read()
       {}
@@ -88,6 +90,7 @@ namespace infinit
       ELLE_ATTRIBUTE_RX(std::iostream&, stream, protected);
       ELLE_ATTRIBUTE(elle::Buffer::Size, chunk_size, protected);
       ELLE_ATTRIBUTE(bool, checksum, protected);
+      ELLE_ATTRIBUTE_R(elle::Version, version);
       ELLE_ATTRIBUTE(reactor::Mutex, lock_write, protected);
       ELLE_ATTRIBUTE(reactor::Mutex, lock_read, protected);
     };
@@ -99,7 +102,8 @@ namespace infinit
       Version010Impl(std::iostream& stream,
                      elle::Buffer::Size chunk_size,
                      bool checksum)
-        :  Serializer::pImpl(stream, chunk_size, checksum)
+        :  Serializer::pImpl(stream, chunk_size, checksum,
+                             elle::Version(0, 1, 0))
       {}
 
     public:
@@ -110,14 +114,15 @@ namespace infinit
       _write(elle::Buffer const&) final;
     };
 
-    struct Version020Impl
+    struct Impl
       : public Serializer::pImpl
     {
     public:
-      Version020Impl(std::iostream& stream,
-                 elle::Buffer::Size chunk_size,
-                 bool checksum)
-        :  Serializer::pImpl(stream, chunk_size, checksum)
+      Impl(std::iostream& stream,
+                     elle::Buffer::Size chunk_size,
+                     bool checksum,
+                     elle::Version const& version)
+        :  Serializer::pImpl(stream, chunk_size, checksum, version)
       {}
 
     public:
@@ -176,7 +181,7 @@ namespace infinit
           new Version010Impl(stream, this->_chunk_size, checksum));
       else
         this->_impl.reset(
-          new Version020Impl(stream, this->_chunk_size, checksum));
+          new Impl(stream, this->_chunk_size, checksum, version));
     }
 
     Serializer::~Serializer()
@@ -220,7 +225,7 @@ namespace infinit
 
     // Read a chunk from the given stream.
     // The data struct is:
-    // - the size: 4 bytes
+    // - the size: n bytes
     // - the content: $size bytes.
     static
     void
@@ -272,14 +277,12 @@ namespace infinit
     static
     elle::Buffer
     read(Serializer::Inner& stream,
-         boost::optional<uint32_t> size = boost::none,
-         int first_char = -1)
+         elle::Version const& version,
+         boost::optional<uint32_t> size = boost::none)
     {
       ELLE_DEBUG_SCOPE("read %s (size: %s)", stream, size);
-      if (first_char != -1 && size)
-        ELLE_ABORT("read with extra char and known size is not supported");
       if (!size)
-        size = Serializer::Super::uint32_get(stream, first_char);
+        size = Serializer::Super::uint32_get(stream, version);
       ELLE_DUMP("expected size: %s", *size);
       elle::Buffer content(*size);
       read(stream, content, *size);
@@ -331,6 +334,7 @@ namespace infinit
     static
     void
     write(Serializer::Inner& stream,
+          elle::Version const& version,
           elle::Buffer const& content,
           bool write_size = true,
           elle::Buffer::Size offset = 0,
@@ -345,7 +349,7 @@ namespace infinit
                        offset,
                        write_size);
       if (write_size)
-        Serializer::Super::uint32_put(stream, to_send);
+        Serializer::Super::uint32_put(stream, to_send, version);
       stream.write(
         reinterpret_cast<char*>(content.mutable_contents()) + offset,
         to_send);
@@ -358,24 +362,20 @@ namespace infinit
     elle::Buffer
     Version010Impl::_read()
     {
-      int c = -1;
-      {
-        elle::With<reactor::Thread::Interruptible>() << [&]
-        {
-          c = this->_stream.get();
-        };
-      }
-      if (c == -1)
+      // Make sure the stream isn't terminated.
+      if (elle::With<reactor::Thread::Interruptible>() << [&]
+         {
+           return this->_stream.peek();
+         } == std::iostream::traits_type::eof())
         throw Serializer::EOF();
       elle::Buffer hash;
       if (this->_checksum)
       {
         ELLE_DEBUG("read checksum")
-          hash = infinit::protocol::read(this->_stream, {}, c);
-        c = -1;
+          hash = infinit::protocol::read(this->_stream, {});
       }
       ELLE_DEBUG("read actual data");
-      auto packet = infinit::protocol::read(this->_stream, {}, c);
+      auto packet = infinit::protocol::read(this->_stream, {});
       ELLE_DUMP("packet content: '%f'", packet);
       // Check checksums match.
       if (this->_checksum)
@@ -394,10 +394,10 @@ namespace infinit
         {
           auto hash = compute_checksum(packet);
           ELLE_DEBUG("send checksum %x", hash)
-          infinit::protocol::write(this->_stream, hash);
+            infinit::protocol::write(this->_stream, this->version(), hash);
         }
         ELLE_DEBUG("send actual data")
-          infinit::protocol::write(this->_stream, packet);
+          infinit::protocol::write(this->_stream, this->version(), packet);
         this->_stream.flush();
       };
     }
@@ -443,35 +443,32 @@ namespace infinit
 
     static
     void
-    ignore_message(Serializer::Inner& stream)
+    ignore_message(Serializer::Inner& stream, elle::Version const& version)
     {
       // Version 0.2.0 handle but ignore messages.
-      auto res = infinit::protocol::read(stream);
+      auto res = infinit::protocol::read(stream, version);
       ELLE_WARN("%f was ignored", res);
     }
 
     elle::Buffer
-    Version020Impl::_read()
+    Impl::_read()
     {
       ELLE_TRACE_SCOPE("%s: read packet", this);
-      int c = -1;
-      {
-        elle::With<reactor::Thread::Interruptible>() << [&]
-        {
-          c = this->_stream.get();
-        };
-      }
-      if (c == -1)
+      // Make sure the stream isn't terminated.
+      if (elle::With<reactor::Thread::Interruptible>() << [&]
+         {
+           return this->_stream.peek();
+         } == std::iostream::traits_type::eof())
         throw Serializer::EOF();
       elle::Buffer hash;
       if (this->_checksum)
       {
         ELLE_DEBUG("read checksum")
-          hash = infinit::protocol::read(this->_stream, {}, c);
-        c = -1;
+          hash = infinit::protocol::read(this->_stream, this->version(), {});
       }
       // Get the total size.
-      uint32_t total_size(Serializer::Super::uint32_get(this->_stream, c));
+      uint32_t total_size(Serializer::Super::uint32_get(this->_stream,
+                                                        this->version()));
       ELLE_DEBUG("packet size: %s", total_size);
       elle::Buffer packet(static_cast<std::size_t>(total_size));
       elle::Buffer::Size offset = 0;
@@ -485,7 +482,7 @@ namespace infinit
         if (offset >= total_size)
           break;
         while (check_control(this->_stream) == Control::message)
-          ignore_message(this->_stream);
+          ignore_message(this->_stream, this->version());
       }
       ELLE_DUMP("packet content: '%f'", packet);
       // Check hash.
@@ -496,7 +493,7 @@ namespace infinit
     }
 
     void
-    Version020Impl::_write(elle::Buffer const& packet)
+    Impl::_write(elle::Buffer const& packet)
     {
       ELLE_DEBUG_SCOPE("chunk writer, sz=%s, chunk=%s", packet.size(),
                        this->_chunk_size);
@@ -508,7 +505,8 @@ namespace infinit
             auto to_send = std::min(this->_chunk_size, packet.size() - offset);
             ELLE_DEBUG("send actual data: %s", to_send)
             infinit::protocol::write(
-              this->_stream, packet, false, offset, to_send);
+              this->_stream,
+              this->version(), packet, false, offset, to_send);
             offset += to_send;
             this->_stream.flush();
           };
@@ -520,13 +518,13 @@ namespace infinit
             {
               auto hash = compute_checksum(packet);
               ELLE_DEBUG("send checksum %x", hash)
-                infinit::protocol::write(this->_stream, hash);
+                infinit::protocol::write(this->_stream, this->version(), hash);
             }
             // Send the size.
             {
               auto size = packet.size();
               ELLE_DEBUG("send packet size %s", size)
-                Serializer::Super::uint32_put(this->_stream, size);
+                Serializer::Super::uint32_put(this->_stream, size, this->version());
             }
             // Send first chunk
             send();

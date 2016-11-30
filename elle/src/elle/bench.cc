@@ -19,16 +19,17 @@ namespace elle
     , _max(0)
     , _log_interval(log_interval)
     , _roundfactor(std::pow(10, roundto))
-  {
-    _enabled = elle::log::detail::Send::_enabled(elle::log::Logger::Type::info,
-      elle::log::Logger::Level::trace, _name.c_str());
-    _start = boost::posix_time::microsec_clock::universal_time();
-  }
+    , _enabled{elle::log::detail::Send::active(elle::log::Logger::Level::trace,
+                                               elle::log::Logger::Type::info,
+                                               _name.c_str())}
+    , _start{boost::posix_time::microsec_clock::universal_time()}
+  {}
 
   void
   Bench::add(double val)
   {
-    if (!_count) _min = _max = val;
+    if (!_count)
+      _min = _max = val;
     ++_count;
     _sum += val;
     _min = std::min (val, _min);
@@ -45,7 +46,7 @@ namespace elle
   void
   Bench::reset()
   {
-    _sum=_count=_min=_max=0;
+    _sum = _count = _min = _max = 0;
     _start = boost::posix_time::microsec_clock::universal_time();
   }
 
@@ -77,7 +78,7 @@ namespace elle
   }
 
   Bench::BenchScope::BenchScope(Bench& owner)
-    :_owner(owner)
+    : _owner(owner)
   {
     _start = boost::posix_time::microsec_clock::universal_time();
   }

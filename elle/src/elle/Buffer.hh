@@ -55,7 +55,7 @@ namespace elle
     /// An uninitialized buffer of the specified size.
     template <
       typename T,
-      typename std::enable_if<std::is_integral<T>::value, int>::type = 0>
+      std::enable_if_t<std::is_integral<T>::value, int> = 0>
     Buffer(T size);
     /// A buffer containing a copy of the given data.
     Buffer(void const* data, Size size);
@@ -66,9 +66,9 @@ namespace elle
     Buffer(char const* data);
     /// A buffer with the content of the moved buffer.
     Buffer(Buffer&& other);
-    /// A copy of the source buffer
+    /// A copy of the source buffer.
     Buffer(Buffer const& source);
-    /// A copy of the source buffer
+    /// A copy of the source buffer.
     explicit
     Buffer(ConstWeakBuffer const& source);
     /// Steal the content of the moved buffer.
@@ -103,7 +103,7 @@ namespace elle
     static Size _next_size(Size);
 
   public:
-    static const Size max_size = std::numeric_limits<Size>::max();
+    static constexpr Size max_size = std::numeric_limits<Size>::max();
 
   /*-----------.
   | Operations |
@@ -112,6 +112,10 @@ namespace elle
     /// Append a copy of the data to the end of the buffer.
     void
     append(void const* data, Size size);
+    /// Drop a number of bytes.
+    /// Costly, as it memmoves the remaing bytes.
+    void
+    pop_front(Size size = 1);
 
   /*---------------------.
   | Relational Operators |
@@ -187,9 +191,9 @@ namespace elle
               Buffer const& buffer);
 
 
-  /*-----------.
-  | WeakBuffer |
-  `-----------*/
+  /*----------------.
+  | ConstWeakBuffer |
+  `----------------*/
 
   /// @brief A C array pointer and its size.
   ///
@@ -299,6 +303,11 @@ namespace elle
     dump(const Natural32 shift = 0) const;
   };
 
+
+  /*-----------.
+  | WeakBuffer |
+  `-----------*/
+
   /// A ConstWeakBuffer with mutable data.
   class ELLE_API WeakBuffer:
     public ConstWeakBuffer, private boost::totally_ordered<WeakBuffer>
@@ -317,6 +326,9 @@ namespace elle
     WeakBuffer(WeakBuffer const& other);
     /// WeakBuffer move.
     WeakBuffer(WeakBuffer&& other);
+    /// WeakBuffer assignement.
+    WeakBuffer& operator = (WeakBuffer const& other) = default;
+
   private:
     /// WeakBuffer cannot take ownership of memory.
     WeakBuffer(Buffer&&);
@@ -336,6 +348,7 @@ namespace elle
     /// A subset of this buffer.
     WeakBuffer
     range(int start, int end) const;
+
 
   /*---------.
   | Iterable |
@@ -357,7 +370,6 @@ namespace elle
 
     /// Construct an input streambuf from the buffer.
     std::streambuf* istreambuf() const;
-
   };
 
   /*----------.

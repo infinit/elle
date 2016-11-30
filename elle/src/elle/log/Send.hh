@@ -43,16 +43,18 @@ namespace elle
       | Indentation |
       `------------*/
       protected:
+        /// Augment indentation level, and stack this component.
         void
-        _indent();
+        _indent(const std::string& component);
         void
         _unindent();
       private:
-        bool _proceed;
+        /// Whether not to be ignored.
+        bool _active;
       public: // used by macros
-        static bool _enabled(elle::log::Logger::Type type,
-                             elle::log::Logger::Level level,
-                             std::string const& component);
+        static bool active(elle::log::Logger::Level level,
+                           elle::log::Logger::Type type,
+                           std::string const& component);
 
       private:
         void _send(elle::log::Logger::Level level,

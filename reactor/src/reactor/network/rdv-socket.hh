@@ -1,5 +1,4 @@
-#ifndef REACTOR_NETWORK_RDV_SOCKET_HH
-# define REACTOR_NETWORK_RDV_SOCKET_HH
+#pragma once
 
 #include <reactor/network/udp-socket.hh>
 #include <reactor/Barrier.hh>
@@ -29,49 +28,51 @@ namespace reactor
                        Endpoint server,
                        DurationOpt timeout = DurationOpt());
       void set_local_id(std::string const& id);
-      // We expect user to call receive_from in a loop, before rdv_connect
-      Size receive_from(Buffer buffer,
-        boost::asio::ip::udp::endpoint &endpoint,
-        DurationOpt timeout = DurationOpt());
-      // Contact a RDV-aware peer
-      Endpoint contact(std::string const& id,
-        std::vector<Endpoint> const& endpoints = {},
-        DurationOpt timeout = DurationOpt());
+      /// We expect user to call receive_from in a loop, before rdv_connect.
+      Size
+      receive_from(elle::WeakBuffer buffer,
+                   boost::asio::ip::udp::endpoint &endpoint,
+                   DurationOpt timeout = DurationOpt());
+      /// Contact an RDV-aware peer.
+      Endpoint
+      contact(std::string const& id,
+              std::vector<Endpoint> const& endpoints = {},
+              DurationOpt timeout = DurationOpt());
       bool rdv_connected() const;
+
+      using reader = std::function<void(elle::WeakBuffer, Endpoint)>;
       // Register a function that will be called for each received packet
       // begining with magic. Magic must be 8 bytes long.
-      void register_reader(std::string const& magic,
-                           std::function<void(Buffer, Endpoint)> data_callback);
+      void
+      register_reader(std::string const& magic, reader data_callback);
       void unregister_reader(std::string const& magic);
       ELLE_ATTRIBUTE_R(Endpoint, public_endpoint);
-      private:
-        void send_to_failsafe(Buffer buffer, Endpoint endpoint);
-        void send_ping(Endpoint target, std::string const& tid = {});
-        void loop_breach();
-        void loop_keep_alive();
-        void send_with_magik(elle::Buffer const& buf, Endpoint target);
-        std::string _id;
-        Endpoint _server;
-        Endpoint _self;
-        Barrier _server_reached;
-        struct ContactInfo
-        {
-          ContactInfo(RDVSocket const& owner, std::string const& id);
-          void set_result(Endpoint endpoint);
-          Barrier barrier;
-          boost::optional<Endpoint> result;
-          boost::posix_time::ptime result_time;
-          int waiters;
-        };
-        std::unordered_map<std::string, ContactInfo> _contacts;
-        std::vector<std::pair<Endpoint, int>> _breach_requests;
-        std::unordered_map<std::string,
-          std::function<void(Buffer, Endpoint)>> _readers;
-        reactor::Thread _breacher;
-        reactor::Thread _keep_alive;
-        MultiLockBarrier _tasks;
+
+    private:
+      void send_to_failsafe(elle::ConstWeakBuffer buffer, Endpoint endpoint);
+      void send_ping(Endpoint target, std::string const& tid = {});
+      void loop_breach();
+      void loop_keep_alive();
+      void send_with_magik(elle::Buffer const& buf, Endpoint target);
+      std::string _id;
+      Endpoint _server;
+      Endpoint _self;
+      Barrier _server_reached;
+      struct ContactInfo
+      {
+        ContactInfo(RDVSocket const& owner, std::string const& id);
+        void set_result(Endpoint endpoint);
+        Barrier barrier;
+        boost::optional<Endpoint> result;
+        boost::posix_time::ptime result_time;
+        int waiters;
+      };
+      std::unordered_map<std::string, ContactInfo> _contacts;
+      std::vector<std::pair<Endpoint, int>> _breach_requests;
+      std::unordered_map<std::string, reader> _readers;
+      reactor::Thread _breacher;
+      reactor::Thread _keep_alive;
+      MultiLockBarrier _tasks;
     };
   }
 }
-
-#endif
