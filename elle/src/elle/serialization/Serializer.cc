@@ -109,14 +109,15 @@ namespace elle
     {
       if (this->in())
       {
-        elle::Buffer buf;
+        auto buf = elle::Buffer{};
         this->_serialize(buf);
         ELLE_ASSERT_EQ(buf.size(), v.size());
+        // FIXME: why an actual copy?
         memcpy(v.mutable_contents(), buf.mutable_contents(), v.size());
       }
       else
       {
-        elle::Buffer buf(v.mutable_contents(), v.size());
+        auto buf = elle::Buffer(v);
         this->_serialize(buf);
       }
     }

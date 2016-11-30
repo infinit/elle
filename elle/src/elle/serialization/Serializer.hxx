@@ -35,8 +35,7 @@ namespace elle
 # define ELLE_SERIALIZATION_STATIC_PREDICATE(Name, Test)                \
   template <typename T, typename S>                                     \
   inline constexpr                                                      \
-  std::enable_if_exists_t<ELLE_ATTRIBUTE_STRIP_PARENS(Test),     \
-                                 bool>                            \
+  std::enable_if_exists_t<ELLE_ATTRIBUTE_STRIP_PARENS(Test), bool>      \
   BOOST_PP_CAT(_, Name)(int)                                            \
   {                                                                     \
     return true;                                                        \
