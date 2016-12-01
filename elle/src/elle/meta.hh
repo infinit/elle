@@ -98,6 +98,12 @@ namespace elle
       {}
     };
 
+    template <typename T>
+    struct Identity
+    {
+      using type = T;
+    };
+
     template <bool Cond, typename T>
     typename _static_if<Cond, T, Ignore>::type
     static_if(T const& then)
