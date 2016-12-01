@@ -41,7 +41,7 @@ std::cout << a.value() << std::endl;
 a.done(true);
 std::cout << a.done() << std::endl;
 ```
-Full example [here](https://github.com/infinit/elle/elle/examples/samples/attributes.cc).
+Full example [here](examples/samples/attributes.cc).
 
 ### Buffers
 
@@ -74,7 +74,7 @@ std::cout << buffer[6] << std::endl; // o
 std::cout << buffer.string() << std::endl; // somethong interesting
 ```
 
-Full example [here](https://github.com/infinit/elle/elle/examples/samples/buffer.cc).
+Full example [here](examples/samples/buffer.cc).
 
 ### Serialization
 
@@ -123,7 +123,7 @@ private:
   std::vector<std::string> tags;
 };
 ```
-Full example [here](https://github.com/infinit/elle/elle/examples/samples/serialization.cc).
+Full example [here](examples/samples/serialization.cc).
 
 ### Traits
 
@@ -159,7 +159,7 @@ ELLE_ASSERT_EQ(elle::sprintf("%s", counter), "This counter that has hit 42 times
 counter.hit(1002);
 ELLE_ASSERT_EQ(elle::sprintf("%s", counter), "This counter that has hit tones of times");
 ```
-Full example [here](https://github.com/infinit/elle/elle/examples/samples/printable.cc).
+Full example [here](examples/samples/printable.cc).
 
 ### Logs
 
@@ -196,7 +196,7 @@ ELLE_DEBUG("The log in the following scope will be indented")
   ELLE_WARN("Something wrong happened");
 }
 ```
-Full example [here](https://github.com/infinit/elle/elle/examples/samples/log.cc).
+Full example [here](examples/samples/log.cc).
 
 The program will output differently according to the value of ELLE_LOG_LEVEL in the environment.
 
