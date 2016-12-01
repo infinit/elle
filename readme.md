@@ -5,7 +5,7 @@ Elle is a collection of libraries, written in modern C++ (C++14). It contains a 
 Elle is split into different smaller specialized libraries to provide elegant ways to approach [coroutine](https://en.wikipedia.org/wiki/Coroutine), networking, formatting, serialization, logging, [RPCs](https://en.wikipedia.org/wiki/Remote_procedure_call), etc.
 
 > *Notes:*
-> - Elle is under development, used and maintained by [infinit](https://infinit.sh) as a set of core libraries. APIs, structures and concepts may change over time. You can use it as is but we don't guaranty any API backwards compatibility.
+> - Elle is under development, used and maintained by [Infinit](https://infinit.sh) as a set of core libraries. APIs, structures and concepts may change over time. You can use it as is but we don't guaranty any API backward compatibility.
 > - Elle has a sub-library also called elle, which might change name in a near future.
 
 ## Example
@@ -27,25 +27,25 @@ std::cout << elle::json::pretty_print(elle::json::read(r)) << std::endl;
 ```
 Full example [here](examples/samples/get_wikipedia.cc).
 
+## Getting Elle.
+
+To download the sources and build Elle by yourself, you can just get it from GitHub by running the following commands.
+
+```bash
+git clone https://github.com/infinit/elle --recursive # Clone elle and its submodules.
+```
+
 ## Structure
 
 As mentioned earlier, Elle is a set of libraries, designed to ease C++ development through robust and flexible implementations, including:
 - [elle](elle): Utilities including serialization, logs, buffer, formatting, ...
 - [reactor](reactor): An asynchronous framework using a coroutines scheduler
 - [cryptography](cryptography): Object-oriented cryptography wrapper around OpenSSL
-- [protocol](protocol): Network communication library (RCPs))
+- [protocol](protocol): Network communication library (RPCs))
 - [das](das): Model manipulator and generator
-- [athena](athena): Bizantine environment library
+- [athena](athena): Byzantine environment library
 - [aws](aws): *reactorified* AWS API wrapper
 - [dropbox](dropbox): *reactorified* Dropbox API wrapper
-
-## Getting Elle.
-
-To download the sources and build Elle by yourself, you can just get it from github by running the following commands.
-
-```bash
-git clone https://github.com/infinit/elle --recursive # Clone elle and its submodules.
-```
 
 ## How to build Elle (or parts of Elle)
 
@@ -65,8 +65,9 @@ First you need to install drakes requirements.
 ```bash
 sudo pip3 install elle/drake/requirements.txt # Install Drake dependencies.
 ```
+> *Note:* If you don't want Drake dependencies to be installed on your system, you should consider using [virtualenv](https://virtualenv.pypa.io/en/stable/installation).
 
-Then, go to _build/<architecture> where you can find a generic Drake configuration script.
+Then, change directory to `_build/<architecture>` where you can find a generic Drake configuration script.
 
 #### Linux
 
@@ -82,8 +83,6 @@ cd elle/_build/linux64
 cd elle/_build/osx
 ./drake //build -j 2 # Build all libraries using 2 jobs.
 ```
-
-> *Note:* If you don't want Drake dependencies to be installed on your system, you should consider using [virtualenv](https://virtualenv.pypa.io/en/stable/installation).
 
 Because Elle has been designed to be modular, you can build specific parts of Elle by running `./drake //<module>/build`:
 
