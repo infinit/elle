@@ -61,3 +61,8 @@ _See [Elle: How to compile](https://github.com/infinit/elle#how-to-compile)._
 
 - [Highly concurrent yet natural programming](http://www.slideshare.net/infinit-one/highly-concurrent-yet-natural-programming)
 - [Infinit filesystem, Reactor reloaded](http://www.slideshare.net/infinit-one/infinit-filesystem-reactor-reloaded)
+
+## Maintainers
+
+ * Website: https://infinit.sh/open-source
+ * Email: open+elle@infinit.sh

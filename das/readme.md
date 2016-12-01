@@ -40,3 +40,8 @@ std::cout << record << std::endl; // Record(title = Sandstorm, artist = Darube)
 elle::serialization::json::SerializerOut serializer(std::cout, false);
 das::serialize(record, serializer); // {"title": "Sandstorm", "artist": "Darube"}
 ```
+
+## Maintainers
+
+ * Website: https://infinit.sh/open-source
+ * Email: open+elle@infinit.sh

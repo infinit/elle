@@ -219,3 +219,8 @@ _See [Elle: How to compile](https://github.com/infinit/elle#how-to-compile)._
 ```bash
 ./drake //elle/build -j 2
 ```
+
+## Maintainers
+
+ * Website: https://infinit.sh/open-source
+ * Email: open+elle@infinit.sh

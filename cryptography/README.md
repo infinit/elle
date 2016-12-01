@@ -62,8 +62,7 @@ The Cryptography library relies upon the following libraries:
  * [**Elle**](http://open.infinit.io/elle) offers a set of fundamental
  functionalities from buffer to memory management and serialization.
 
-Maintainers
------------
+## Maintainers
 
- * Website: http://open.infinit.io
- * Email: contact@open.infinit.io
+ * Website: https://infinit.sh/open-source
+ * Email: open+elle@infinit.sh
