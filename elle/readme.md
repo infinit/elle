@@ -173,24 +173,27 @@ ELLE_LOG_COMPONENT("component1");
 // [...]
 
 // Report if the log level is set to at least LOG (default).
-ELLE_LOG("Something super relevant with two parameters (%s) and this one (%s)", 42, elle::Buffer("buffer"));
+ELLE_LOG("Something super relevant with two parameters (%s) and (%s)",
+         42, elle::Buffer("buffer"));
 // Report if the log level is set to at least TRACE.
 ELLE_TRACE("Something relevant");
 // Report if the log level is set to at least DEBUG.
 ELLE_DEBUG("Something less relevant");
 // Report if the log level is set to at least DUMP.
 ELLE_DUMP("Something only relevant for nerdz");
-
-ELLE_DEBUG("The log in the following scope will have indented")
+// Logs in the following block will be indented.
+ELLE_DEBUG("The log in the following scope will be indented")
 {
-  ELLE_DEBUG("< whites spaces");
+  ELLE_DEBUG("This log will be prefixed by two white spaces");
 }
-
+// Create a block with another log component.
 {
   // Nested log component, replacing "component1".
   ELLE_LOG_COMPONENT("component2");
-  ELLE_ERR("Something extremely wrong");
-  ELLE_WARN("Something wrong");
+  // Report errors (ELLE_LOG but in red).
+  ELLE_ERR("Something extremely wrong happened");
+  // Report warning (ELLE_LOG but in yellow).
+  ELLE_WARN("Something wrong happened");
 }
 ```
 Full example [here](https://github.com/infinit/elle/elle/examples/samples/log.cc).
