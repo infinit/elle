@@ -1390,3 +1390,22 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
 
   examples = drake.Rule('examples')
   recurse(examples, 'rule_examples')
+
+  examples = drake.Rule('examples')
+  for example in [
+    'examples/samples/http_get_signed_json',
+    'examples/samples/get_wikipedia'
+  ]:
+    config = cxx_config + das.config + elle.config + reactor.config + cryptography.config
+    if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
+      config += boost.config_system(static = True)
+    else:
+      config.library_add(
+        drake.copy(boost.system_dynamic, 'lib', strip_prefix = True))
+    examples << drake.cxx.Executable(
+      example,
+      [
+        drake.node('%s.cc' % example),
+        elle.library, reactor.library, cryptography.library
+      ],
+      cxx_toolkit, config)
