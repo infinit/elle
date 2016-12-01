@@ -59,26 +59,51 @@ namespace elle
       static bool constexpr value = Head::value && All<Tail...>::value;
     };
 
-    template <bool C>
+    template <bool C, typename T, typename E>
     struct _static_if
     {
-      template <typename F>
+      using type = T;
+      static
+      T const&
+      value(T const& t, E const&)
+      {
+        return t;
+      }
+    };
+
+    template <typename T, typename E>
+    struct _static_if<false, T, E>
+    {
+      using type = E;
+      static
+      E const&
+      value(T const&, E const& e)
+      {
+        return e;
+      }
+    };
+
+    template <bool Cond, typename T, typename E>
+    typename _static_if<Cond, T, E>::type const&
+    static_if(T const& then, E const& else_)
+    {
+      return _static_if<Cond, T, E>::value(then, else_);
+    }
+
+    struct Ignore
+    {
+      template <typename ... Args>
       void
-      operator <<(F const&)
+      operator()(Args&& ...)
       {}
     };
 
-    template <>
-    struct _static_if<true>
+    template <bool Cond, typename T>
+    typename _static_if<Cond, T, Ignore>::type
+    static_if(T const& then)
     {
-      template <typename F>
-      void
-      operator <<(F const& f)
-      {
-        f(0);
-      }
-    };
-#define static_if(Cond) ::elle::meta::_static_if<Cond>() << [&] (auto)
+      return static_if<Cond>(then, Ignore());
+    }
   }
 }
 

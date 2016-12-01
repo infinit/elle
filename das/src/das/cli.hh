@@ -157,11 +157,12 @@ namespace das
             else
             {
               auto res = false;
-              static_if((std::is_base_of<CLI_Symbol, T>::value))
-              {
-                if (this->_arg[1] == T::short_name())
-                  res = true;
-              };
+              elle::meta::static_if<std::is_base_of<CLI_Symbol, T>::value>(
+                [this] (auto& res)
+                {
+                  if (this->_arg[1] == T::short_name())
+                    res = true;
+                })(res);
               {
                 auto it = opts.find(T::name());
                 if (it != opts.end())
@@ -513,10 +514,11 @@ namespace das
           }
           bool pos = false;
           using Formal = typename das::named::make_formal<Head>::type;
-          static_if((std::is_base_of<CLI_Symbol, Formal>::value))
-          {
-            pos = Formal::positional();
-          };
+          elle::meta::static_if<std::is_base_of<CLI_Symbol, Formal>::value>(
+            [] (auto& pos)
+            {
+              pos = Formal::positional();
+            })(pos);
           {
             auto it = opts.find(Head::name());
             if (it != opts.end())
@@ -603,14 +605,18 @@ namespace das
           else
             elle::fprintf(s, "       ");
           elle::fprintf(s, " --%s: %s", Symbol::name(), opt->second.help);
-          static_if(Defaults::template default_for<
-                    typename das::named::make_formal<Symbol>::type>::has)
-          {
-            auto const& v = defaults.Symbol::value;
-            if (!std::is_same<decltype(v), bool const&>::value)
-              elle::fprintf(s, " (default: %s)", defaults.Symbol::value);
-          };
-          elle::fprintf(s, "\n");
+          elle::meta::static_if<Defaults::template default_for<
+            typename das::named::make_formal<Symbol>::type>::has>(
+              [&defaults] (auto& s)
+              {
+                auto const& v = defaults.Symbol::value;
+                if (!std::is_same<decltype(v), bool const&>::value)
+                  elle::fprintf(s, " (default: %s)\n", defaults.Symbol::value);
+              },
+              [] (auto& s)
+              {
+                elle::fprintf(s, "\n");
+              })(s);
         }
         else
           elle::fprintf(s, "       --%s\n", Symbol::name());
