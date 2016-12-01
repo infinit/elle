@@ -516,10 +516,10 @@ namespace das
           bool pos = false;
           using Formal = typename das::named::make_formal<Head>::type;
           elle::meta::static_if<std::is_base_of<CLI_Symbol, Formal>::value>(
-            [] (auto& pos)
+            [] (auto& pos, auto t)
             {
-              pos = Formal::positional();
-            })(pos);
+              pos = decltype(t)::type::positional();
+            })(pos, elle::meta::Identity<Formal>());
           {
             auto it = opts.find(Head::name());
             if (it != opts.end())
