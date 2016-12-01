@@ -625,13 +625,25 @@ namespace das
             [] (auto& s) {
               elle::fprintf(s, "      --%s", Symbol::name());
             })(s);
-        elle::meta::static_if<Defaults::template default_for<
-          typename das::named::make_formal<Symbol>::type>::has>(
+        elle::meta::static_if<Defaults::template default_for<Formal>::has>(
             [&defaults] (auto& s)
             {
-              auto const& v = defaults.Symbol::value;
-              if (!std::is_same<decltype(v), bool const&>::value)
-                elle::fprintf(s, " (default: %s)", defaults.Symbol::value);
+              elle::meta::static_if<
+                std::is_base_of<
+                  boost::optional_detail::optional_tag,
+                  typename std::decay<decltype(Symbol::value)>::type>::value>(
+                    [&defaults] (auto& s)
+                    {
+                      auto const& v = defaults.Symbol::value;
+                      if (v != boost::none)
+                        elle::fprintf(s, " (default: %s)", v);
+                    },
+                    [&defaults] (auto& s)
+                    {
+                      auto const& v = defaults.Symbol::value;
+                      if (!std::is_same<decltype(v), bool const&>::value)
+                        elle::fprintf(s, " (default: %s)", v);
+                    })(s);
             })(s);
         elle::fprintf(s, "\n");
         return true;
