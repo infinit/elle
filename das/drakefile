@@ -99,7 +99,7 @@ def configure(cxx_toolkit,
 
   rule_examples = drake.Rule('examples')
   examples = [
-    'das.cc',
+    'examples/samples/das',
   ]
   config_examples = local_config_tests
   for example in examples:
@@ -110,6 +110,6 @@ def configure(cxx_toolkit,
       config_examples.library_add(
         drake.copy(boost.date_time_dynamic, 'lib', strip_prefix = True))
     rule_examples << drake.cxx.Executable(
-      'examples/%s' % name,
-      [drake.node('examples/%s' % example), das, elle_library],
+      example,
+      [drake.node('%s.cc' % example), das, elle_library],
       cxx_toolkit, config_examples)
