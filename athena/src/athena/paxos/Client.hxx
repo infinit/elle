@@ -119,6 +119,7 @@ namespace athena
         q.insert(peer->id());
       ELLE_DUMP("quorum: %s", q);
       boost::optional<Accepted> previous;
+      std::set<Peer*> peers_down;
       while (true)
       {
         ++this->_round;
@@ -148,6 +149,7 @@ namespace athena
               }
               catch (Unavailable const& e)
               {
+                peers_down.insert(peer.get());
                 ELLE_TRACE("%s: peer %s unavailable: %s",
                            *this, peer, e.what());
               }
@@ -177,6 +179,8 @@ namespace athena
             this->_peers,
             [&] (std::unique_ptr<Peer> const& peer) -> void
             {
+              if (peers_down.find(peer.get()) != peers_down.end())
+                return;
               try
               {
                 ELLE_DEBUG_SCOPE("%s: send acceptation %s to %s",
@@ -198,6 +202,7 @@ namespace athena
               }
               catch (Unavailable const& e)
               {
+                peers_down.insert(peer.get());
                 ELLE_TRACE("%s: peer %s unavailable: %s",
                            *this, peer, e.what());
               }
@@ -228,6 +233,8 @@ namespace athena
             this->_peers,
             [&] (std::unique_ptr<Peer> const& peer) -> void
             {
+              if (peers_down.find(peer.get()) != peers_down.end())
+                return;
               try
               {
                 ELLE_DEBUG_SCOPE("%s: send confirmation %s to %s",
