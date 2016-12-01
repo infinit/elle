@@ -589,6 +589,20 @@ namespace das
       return _call(p, f, copy, opts);
     }
 
+    inline
+    void
+    print_help(std::ostream& s,
+               std::string const& name,
+               char short_name,
+               std::string const& help)
+    {
+      if (short_name != 0)
+        elle::fprintf(s, "  -%s, ", short_name);
+      else
+        elle::fprintf(s, "      ");
+      elle::fprintf(s, "--%s: %s", name, help);
+    }
+
     template <typename Symbol, typename Defaults>
     struct help_map
     {
@@ -597,31 +611,30 @@ namespace das
       bool
       value(std::ostream& s, Options const& opts, Defaults const& defaults)
       {
+        using Formal = typename das::named::make_formal<Symbol>::type;
         auto opt = opts.find(Symbol::name());
         if (opt != opts.end())
-        {
-          if (opt->second.short_name != 0)
-            elle::fprintf(s, "  -%s, ", opt->second.short_name);
-          else
-            elle::fprintf(s, "       ");
-          elle::fprintf(s, " --%s: %s", Symbol::name(), opt->second.help);
-          elle::meta::static_if<Defaults::template default_for<
-            typename das::named::make_formal<Symbol>::type>::has>(
-              [&defaults] (auto& s)
-              {
-                auto const& v = defaults.Symbol::value;
-                if (!std::is_same<decltype(v), bool const&>::value)
-                  elle::fprintf(s, " (default: %s)\n", defaults.Symbol::value);
-              },
-              [] (auto& s)
-              {
-                elle::fprintf(s, "\n");
-              })(s);
-        }
+          print_help(
+            s, Symbol::name(), opt->second.short_name, opt->second.help);
         else
-          elle::fprintf(s, "       --%s\n", Symbol::name());
+          elle::meta::static_if<std::is_base_of<CLI_Symbol, Formal>::value>(
+            [] (auto& s) {
+              print_help(s, Formal::name(), Formal::short_name(), Formal::help());
+            },
+            [] (auto& s) {
+              elle::fprintf(s, "      --%s", Symbol::name());
+            })(s);
+        elle::meta::static_if<Defaults::template default_for<
+          typename das::named::make_formal<Symbol>::type>::has>(
+            [&defaults] (auto& s)
+            {
+              auto const& v = defaults.Symbol::value;
+              if (!std::is_same<decltype(v), bool const&>::value)
+                elle::fprintf(s, " (default: %s)", defaults.Symbol::value);
+            })(s);
+        elle::fprintf(s, "\n");
         return true;
-      };
+      }
     };
 
     template <typename D, typename ... T>
