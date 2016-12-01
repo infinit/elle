@@ -157,10 +157,11 @@ namespace das
             else
             {
               auto res = false;
-              elle::meta::static_if<std::is_base_of<CLI_Symbol, T>::value>(
+              using Formal = typename das::named::make_formal<T>::type;
+              elle::meta::static_if<std::is_base_of<CLI_Symbol, Formal>::value>(
                 [this] (auto& res)
                 {
-                  if (this->_arg[1] == T::short_name())
+                  if (this->_arg[1] == Formal::short_name())
                     res = true;
                 })(res);
               {
