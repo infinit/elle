@@ -2592,40 +2592,43 @@ namespace background
       bool sleeping = false;
       bool over = false;
       std::condition_variable sync;
-      auto mtx = std::make_shared<std::mutex>();
+      std::mutex mtx;
+      auto f = std::unique_ptr<reactor::BackgroundFuture<int>>{};
       reactor::Thread t(
         "future",
-        [&, mtx]
+        [&]
         {
-          reactor::BackgroundFuture<int> f(
-            [&, mtx]
+          f = std::make_unique<reactor::BackgroundFuture<int>>(
+            [&]
             {
               {
-                std::unique_lock<std::mutex> lock(*mtx);
+                std::unique_lock<std::mutex> lock(mtx);
                 sleeping = true;
                 sync.notify_one();
               }
+              // Wait for the main thread to have killed t.
               {
-                std::unique_lock<std::mutex> lock(*mtx);
-                while (!over)
-                  sync.wait(lock);
+                std::unique_lock<std::mutex> lock(mtx);
+                sync.wait(lock, [&] { return over; });
               }
               return 42;
             });
           {
-            std::unique_lock<std::mutex> lock(*mtx);
-            while (!sleeping)
-              sync.wait(lock);
+            std::unique_lock<std::mutex> lock(mtx);
+            sync.wait(lock, [&] { return sleeping; });
           }
           destroying.open();
         });
       reactor::wait(destroying);
       t.terminate_now();
       {
-        std::unique_lock<std::mutex> lock(*mtx);
+        std::unique_lock<std::mutex> lock(mtx);
         over = true;
         sync.notify_one();
       }
+      // Wait for the background task to be done before claiming its
+      // memory.
+      f->value();
     }
   }
 }

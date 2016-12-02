@@ -9,8 +9,7 @@
 namespace reactor
 {
   template <typename T>
-  template<
-    typename std::enable_if_exists<decltype(T()), int>::type>
+  template <typename>
   BackgroundFuture<T>::BackgroundFuture()
     : _operation()
     , _value()
@@ -88,7 +87,7 @@ namespace reactor
       ELLE_TRACE_SCOPE("%s: join", *this);
       if (this->_operation->running())
         reactor::wait(this->_operation.get());
-      if (!this->_operation) // an other thread called _resolve and reseted it
+      if (!this->_operation) // an other thread called _resolve and reset it
         ELLE_ASSERT(this->_value);
       else
       {
