@@ -643,7 +643,7 @@ def configure(zlib_lib,
   cxx_config_examples = cxx_config_tests
   cxx_config_examples.enable_debug_symbols()
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
-    cxx_config.examples += boost.config_date_time(static = True)
+    cxx_config_examples += boost.config_date_time(static = True)
   else:
     cxx_config_examples.library_add(
       drake.copy(boost.date_time_dynamic, 'lib', strip_prefix = True))
