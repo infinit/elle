@@ -1,11 +1,10 @@
-#ifndef INFINIT_REACTOR_SCHEDULER_HXX
-# define INFINIT_REACTOR_SCHEDULER_HXX
+#include <condition_variable>
 
-# include <elle/assert.hh>
+#include <elle/assert.hh>
 
-# include <reactor/exception.hh>
-# include <reactor/signal.hh>
-# include <reactor/thread.hh>
+#include <reactor/exception.hh>
+#include <reactor/signal.hh>
+#include <reactor/thread.hh>
 
 namespace reactor
 {
@@ -14,8 +13,8 @@ namespace reactor
   `----------------*/
 
   template <typename R>
-  static void wrapper(boost::mutex& mutex,
-                      boost::condition_variable& cond,
+  static void wrapper(std::mutex& mutex,
+                      std::condition_variable& cond,
                       const std::function<R ()>& action,
                       std::exception_ptr& exn,
                       R& res)
@@ -32,7 +31,7 @@ namespace reactor
     {
       exn = std::current_exception();
     }
-    boost::unique_lock<boost::mutex> lock(mutex);
+    std::unique_lock<std::mutex> lock(mutex);
     cond.notify_one();
   }
 
@@ -43,11 +42,11 @@ namespace reactor
   {
     ELLE_ASSERT(!this->done());
     R result;
-    boost::mutex mutex;
-    boost::condition_variable condition;
+    std::mutex mutex;
+    std::condition_variable condition;
     std::exception_ptr exn;
     {
-      boost::unique_lock<boost::mutex> lock(mutex);
+      std::unique_lock<std::mutex> lock(mutex);
       new reactor::Thread(*this, name,
                           std::bind(&wrapper<R>,
                                     std::ref(mutex),
@@ -114,4 +113,3 @@ namespace reactor
   }
 }
 
-#endif

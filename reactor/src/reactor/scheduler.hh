@@ -2,6 +2,7 @@
 # define INFINIT_REACTOR_SCHEDULER_HH
 
 # include <memory>
+# include <mutex>
 # include <thread>
 
 # include <boost/multi_index_container.hpp>
@@ -95,7 +96,7 @@ namespace reactor
                         bool suicide);
     Thread* _current;
     Threads _starting;
-    boost::mutex _starting_mtx;
+    std::mutex _starting_mtx;
     Threads _running;
     Threads _frozen;
 

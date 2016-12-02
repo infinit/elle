@@ -65,7 +65,7 @@ namespace reactor
         , _caller(0)
       {
         ELLE_TRACE("%s: spawn", this->_name);
-        boost::unique_lock<boost::mutex> lock(_manager._mutex);
+        std::unique_lock<std::mutex> lock(_manager._mutex);
         _thread = boost::thread(boost::bind(&Thread::_run, this));
         _manager._cond.wait(lock);
       }
@@ -124,10 +124,10 @@ namespace reactor
         Thread* current = _manager._current;
         _caller = current;
         _manager._current = this;
-        boost::unique_lock<boost::mutex> lock(current->_mutex);
+        std::unique_lock<std::mutex> lock(current->_mutex);
         ELLE_TRACE("%s: step from %s", this->_name, _caller->_name);
         {
-          boost::unique_lock<boost::mutex> lock(_mutex);
+          std::unique_lock<std::mutex> lock(_mutex);
           _cond.notify_one();
         }
         current->_cond.wait(lock);
@@ -143,9 +143,9 @@ namespace reactor
       Thread::_run()
       {
         {
-          boost::unique_lock<boost::mutex> lock(_mutex);
+          std::unique_lock<std::mutex> lock(_mutex);
           {
-            boost::unique_lock<boost::mutex> lock(_manager._mutex);
+            std::unique_lock<std::mutex> lock(_manager._mutex);
             _manager._cond.notify_one();
           }
           ELLE_TRACE("%s: ready to go", this->_name);
@@ -175,7 +175,7 @@ namespace reactor
         ELLE_TRACE("%s: done", this->_name);
         _manager._current = caller;
         {
-          boost::unique_lock<boost::mutex> lock(caller->_mutex);
+          std::unique_lock<std::mutex> lock(caller->_mutex);
           caller->_cond.notify_one();
         }
       }
@@ -185,14 +185,14 @@ namespace reactor
       {
         ELLE_ASSERT_EQ(_manager._current, this);
         ELLE_ASSERT_EQ(_status, status::running);
-        boost::unique_lock<boost::mutex> lock(_mutex);
+        std::unique_lock<std::mutex> lock(_mutex);
         _status = status::waiting;
         _manager._current = _caller;
         ELLE_TRACE("%s: yield back to %s",
                        this->_name, _manager._current->_name);
         _caller = 0;
         {
-          boost::unique_lock<boost::mutex> lock(_manager._current->_mutex);
+          std::unique_lock<std::mutex> lock(_manager._current->_mutex);
           _manager._current->_cond.notify_one();
         }
         _cond.wait(lock);

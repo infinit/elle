@@ -267,7 +267,7 @@ namespace reactor
     PushScheduler p(this);
     // Could avoid locking if no jobs are pending with a boolean.
     {
-      boost::unique_lock<boost::mutex> lock(this->_starting_mtx);
+      std::unique_lock<std::mutex> lock(this->_starting_mtx);
       auto& ordered = this->_starting.get<1>();
       this->_running.insert(ordered.begin(), ordered.end());
       this->_starting.clear();
@@ -405,7 +405,7 @@ namespace reactor
   {
     // FIXME: be thread safe only if needed
     {
-      boost::unique_lock<boost::mutex> lock(this->_starting_mtx);
+      std::unique_lock<std::mutex> lock(this->_starting_mtx);
       this->_starting.insert(&thread);
       // Wake the scheduler.
       this->_io_service.post(nothing);
