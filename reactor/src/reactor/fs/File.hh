@@ -1,13 +1,13 @@
-#ifndef REACTOR_FS_FILE_HH
-# define REACTOR_FS_FILE_HH
+#pragma once
 
-# include <asio-fs/File.hh>
+#include <boost/filesystem/path.hpp>
 
-# include <reactor/scheduler.hh>
+#include <asio-fs/File.hh>
 
-# include <elle/IOStream.hh>
+#include <reactor/scheduler.hh>
 
-# include <boost/filesystem/path.hpp>
+#include <elle/IOStream.hh>
+
 
 namespace reactor
 {
@@ -43,6 +43,5 @@ namespace reactor
   }
 }
 
-# include <reactor/fs/File.hxx>
+#include <reactor/fs/File.hxx>
 
-#endif

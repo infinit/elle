@@ -1,9 +1,8 @@
-#ifndef INFINIT_REACTOR_BARRIER_HH
-# define INFINIT_REACTOR_BARRIER_HH
+#pragma once
 
-# include <reactor/signals.hh>
+#include <reactor/signals.hh>
 
-# include <reactor/waitable.hh>
+#include <reactor/waitable.hh>
 
 namespace reactor
 {
@@ -15,17 +14,17 @@ namespace reactor
   /// A Barrier is similar to a Signal, except it holds a state, enabling to
   /// detect if an event happens or already happened, while signals only pulse
   /// when triggered.
-  class Barrier:
-    public Waitable
+  class Barrier
+    : public Waitable
   {
   /*------.
   | Types |
   `------*/
   public:
     /// Our own type.
-    typedef Barrier Self;
+    using Self = Barrier;
     /// The parent type.
-    typedef Waitable Super;
+    using Super = Waitable;
 
   /*-------------.
   | Construction |
@@ -107,6 +106,4 @@ namespace reactor
   };
 }
 
-# include <reactor/Barrier.hxx>
-
-#endif
+#include <reactor/Barrier.hxx>

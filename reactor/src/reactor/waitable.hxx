@@ -1,6 +1,3 @@
-#ifndef INFINIT_REACTOR_WAITABLE_HXX
-# define INFINIT_REACTOR_WAITABLE_HXX
-
 #include <exception>
 
 namespace reactor
@@ -20,5 +17,3 @@ namespace reactor
   }
 }
 
-
-#endif

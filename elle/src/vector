@@ -1,20 +1,19 @@
 // -*- c++ -*-
-#ifndef ELLE_VECTOR
-# define ELLE_VECTOR
+#pragma once
 
-# include <ostream>
-# include_next <vector>
-# include <elle/printf-fwd.hh>
+#include <ostream>
+#include_next <vector>
+#include <elle/printf-fwd.hh>
 
 namespace std
 {
-  template <class V, class ... OTHER>
+  template <typename... Args>
   ostream&
-  operator <<(ostream& out, vector<V, OTHER...> const& v)
+  operator <<(ostream& out, vector<Args...> const& v)
   {
     elle::fprintf(out, "[");
     bool first = true;
-    for (V const& elt: v)
+    for (auto const& elt: v)
     {
       if (first)
       {
@@ -28,5 +27,3 @@ namespace std
     return out;
   }
 }
-
-#endif

@@ -70,13 +70,13 @@ namespace reactor
   | Threads management |
   `-------------------*/
   public:
-    typedef boost::multi_index::multi_index_container<
+    using Threads = boost::multi_index::multi_index_container<
     Thread*,
     boost::multi_index::indexed_by<
       boost::multi_index::hashed_unique<boost::multi_index::identity<Thread*>>,
       boost::multi_index::sequenced<>
       >
-    > Threads;
+    >;
     Thread* current() const;
     Threads terminate();
     void terminate_now();
@@ -135,9 +135,9 @@ namespace reactor
      */
     void run_later(std::string const& name,
                    std::function<void ()> const& f);
-    void CallLater(const std::function<void ()>&      f,
-                   const std::string&                   name,
-                   Duration                             delay);
+    void CallLater(const std::function<void ()>& f,
+                   const std::string& name,
+                   Duration delay);
 
   /*----------------.
   | Background jobs |

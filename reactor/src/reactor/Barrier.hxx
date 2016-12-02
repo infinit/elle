@@ -1,6 +1,3 @@
-#ifndef ELLE_BARRIER_HXX
-# define ELLE_BARRIER_HXX
-
 namespace reactor
 {
   template <typename E, typename ... Args>
@@ -20,7 +17,4 @@ namespace reactor
     this->open();
     this->_raise(e);
   }
-
 }
-
-#endif
