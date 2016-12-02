@@ -402,11 +402,11 @@ namespace das
 
     template <typename ... Args>
     Prototype<DefaultStore<Args...>,
-              typename std::remove_cv_reference<Args>::type...>
+              std::remove_cv_reference_t<Args>...>
     prototype(Args&& ... args)
     {
       return Prototype<DefaultStore<Args...>,
-                       typename std::remove_cv_reference<Args>::type...>
+                       std::remove_cv_reference_t<Args>...>
         (DefaultStore<Args...>(std::forward<Args>(args)...));
     }
 
@@ -433,10 +433,10 @@ namespace das
     };
 
     template <typename F, typename ... Args>
-    Function<F, typename std::remove_cv_reference<Args>::type...>
+    Function<F, std::remove_cv_reference_t<Args>...>
     function(F f, Args&& ... args)
     {
-      return Function<F, typename std::remove_cv_reference<Args>::type...>(
+      return Function<F, std::remove_cv_reference_t<Args>...>(
         std::move(f), std::forward<Args>(args)...);
     }
   }

@@ -89,7 +89,7 @@ namespace elle
 
       template <typename T, typename A>
       std::enable_if_t<
-        std::is_same<typename std::remove_cv_reference<T>::type, Head>::value,
+        std::is_same<std::remove_cv_reference_t<T>, Head>::value,
         void>
       _emplace(A&& value)
       {
@@ -99,7 +99,7 @@ namespace elle
 
       template <typename T, typename A>
       std::enable_if_t<
-        !std::is_same<typename std::remove_cv_reference<T>::type, Head>::value,
+        !std::is_same<std::remove_cv_reference_t<T>, Head>::value,
         void>
       _emplace(A&& value)
       {
@@ -225,7 +225,7 @@ namespace elle
   template <typename T>
   Option<Types ...>::Option(T&& value)
   {
-    this->template _emplace<typename std::remove_cv_reference<T>::type>(
+    this->template _emplace<std::remove_cv_reference_t<T>>(
       std::forward<T>(value));
   }
 
@@ -266,7 +266,7 @@ namespace elle
   void
   Option<Types ...>::emplace(T&& value)
   {
-    typedef typename std::remove_cv_reference<T>::type Plain;
+    using Plain = std::remove_cv_reference_t<T>;
     this->template _apply<_details::OptionReset>();
     this->template _emplace<Plain>(std::forward<T>(value));
   };
