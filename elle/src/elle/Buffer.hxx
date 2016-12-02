@@ -1,11 +1,8 @@
-#ifndef  ELLE_BUFFER_HXX
-# define ELLE_BUFFER_HXX
+#include <elle/BadAlloc.hh>
+#include <elle/assert.hh>
 
-# include <elle/BadAlloc.hh>
-# include <elle/assert.hh>
-
-# include <stdexcept>
-# include <iosfwd>
+#include <stdexcept>
+#include <iosfwd>
 
 namespace elle
 {
@@ -46,27 +43,27 @@ namespace elle
 
   inline
   ConstWeakBuffer::ConstWeakBuffer(std::string const& data)
-    : ConstWeakBuffer(data.c_str(), data.size())
+    : Self(data.c_str(), data.size())
   {}
 
   inline
   ConstWeakBuffer::ConstWeakBuffer(char const* data)
-    : ConstWeakBuffer(data, strlen(data))
+    : Self(data, strlen(data))
   {}
 
   inline
   ConstWeakBuffer::ConstWeakBuffer(Buffer const& buffer)
-    : ConstWeakBuffer(buffer.mutable_contents(), buffer.size())
+    : Self(buffer.mutable_contents(), buffer.size())
   {}
 
   inline
   ConstWeakBuffer::ConstWeakBuffer(ConstWeakBuffer const& other)
-    : ConstWeakBuffer(other._contents, other._size)
+    : Self(other._contents, other._size)
   {}
 
   inline
   ConstWeakBuffer::ConstWeakBuffer(ConstWeakBuffer&& other)
-    : ConstWeakBuffer(other)
+    : Self(other)
   {
     other._contents = nullptr;
     other._size = 0;
@@ -77,24 +74,42 @@ namespace elle
     : ConstWeakBuffer()
   {}
 
+  template <typename Char, std::size_t S,
+            typename>
+  ConstWeakBuffer::ConstWeakBuffer(Char const (&array)[S], Size size)
+    : Self(&array, size)
+  {}
+
+  template <typename Char, std::size_t S,
+            typename>
+  ConstWeakBuffer::ConstWeakBuffer(Char const (&array)[S])
+    : Self(array, S)
+  {}
+
   inline
   WeakBuffer::WeakBuffer(void* data, Size size)
-    : ConstWeakBuffer(data, size)
+    : Super(data, size)
   {}
 
   inline
   WeakBuffer::WeakBuffer(Buffer const& buffer)
-    : ConstWeakBuffer(buffer)
+    : Super(buffer)
   {}
 
   inline
   WeakBuffer::WeakBuffer(WeakBuffer const& other)
-    : ConstWeakBuffer(other)
+    : Super(other)
   {}
 
   inline
   WeakBuffer::WeakBuffer(WeakBuffer&& other)
-    : ConstWeakBuffer(std::move(other))
+    : Super(std::move(other))
+  {}
+
+  template <typename Char, std::size_t S,
+            typename>
+  WeakBuffer::WeakBuffer(Char (&array)[S])
+    : Self(&array, S)
   {}
 
   inline
@@ -111,5 +126,3 @@ namespace elle
     return this->_contents;
   }
 }
-
-#endif

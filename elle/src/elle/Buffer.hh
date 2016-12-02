@@ -1,15 +1,16 @@
 #ifndef ELLE_BUFFER_HH
 # define ELLE_BUFFER_HH
 
+# include <iosfwd>
+# include <limits>
+# include <memory>
+
+# include <boost/operators.hpp>
+
 # include <elle/IOStream.hh>
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
 # include <elle/types.hh>
-
-# include <iosfwd>
-# include <memory>
-# include <boost/operators.hpp>
-# include <limits>
 
 namespace elle
 {
@@ -208,20 +209,17 @@ namespace elle
   | Types |
   `------*/
   public:
+    using Self = ConstWeakBuffer;
+
     /// Size of a Buffer.
-    typedef Buffer::Size Size;
+    using Size = Buffer::Size;
+
   /*-------------.
   | Construction |
   `-------------*/
   public:
     /// ConstWeakBuffer with null memory segment and size.
     ConstWeakBuffer();
-    /// WeakBuffer for the given memory segment.
-    ConstWeakBuffer(const void* data, Size size);
-    /// WeakBuffer with \a data content.
-    ConstWeakBuffer(std::string const& data) /* implicit */;
-    /// WeakBuffer with \a data content.
-    ConstWeakBuffer(char const* data) /* implicit */;
     /// ConstWeakBuffer for the given Buffer content.
     ConstWeakBuffer(Buffer const& buffer) /* implicit */;
     /// ConstWeakBuffer copy.
@@ -229,9 +227,25 @@ namespace elle
     /// ConstWeakBuffer move.
     ConstWeakBuffer(ConstWeakBuffer&& other);
     ConstWeakBuffer& operator = (ConstWeakBuffer const& other) = default;
+
+    /// WeakBuffer for the given memory segment.
+    ConstWeakBuffer(const void* data, Size size);
+    /// WeakBuffer with \a data content.
+    ConstWeakBuffer(std::string const& data) /* implicit */;
+    /// WeakBuffer with \a data content.
+    ConstWeakBuffer(char const* data) /* implicit */;
+    /// From a C array.
+    template <typename Char, std::size_t S,
+              typename = std::enable_if_t<sizeof(Char) == 1>>
+    ConstWeakBuffer(Char const (&array)[S], Size size);
+    /// From a C array.
+    template <typename Char, std::size_t S,
+              typename = std::enable_if_t<sizeof(Char) == 1>>
+    ConstWeakBuffer(Char const (&array)[S]);
+
   private:
     /// ConstWeakBuffer cannot take ownership of memory.
-    ConstWeakBuffer(Buffer&&);
+    ConstWeakBuffer(Buffer&&) = delete;
 
   /*--------.
   | Content |
@@ -312,26 +326,39 @@ namespace elle
   class ELLE_API WeakBuffer:
     public ConstWeakBuffer, private boost::totally_ordered<WeakBuffer>
   {
+  /*------.
+  | Types |
+  `------*/
+    using Super = ConstWeakBuffer;
+    using Self = WeakBuffer;
+
+  public:
   /*-------------.
   | Construction |
   `-------------*/
   public:
     /// WeakBuffer with null memory segment and size.
     WeakBuffer();
-    /// WeakBuffer for the given memory segment.
-    WeakBuffer(void* data, Size size);
-    /// WeakBuffer for the given Buffer content.
-    WeakBuffer(Buffer const& buffer) /* implicit */;
     /// WeakBuffer copy.
     WeakBuffer(WeakBuffer const& other);
     /// WeakBuffer move.
     WeakBuffer(WeakBuffer&& other);
+
+    /// WeakBuffer for the given memory segment.
+    WeakBuffer(void* data, Size size);
+    /// WeakBuffer for the given Buffer content.
+    WeakBuffer(Buffer const& buffer) /* implicit */;
+    /// From a C array.
+    template <typename Char, std::size_t S,
+              typename = std::enable_if_t<sizeof(Char) == 1>>
+    WeakBuffer(Char (&array)[S]);
+
     /// WeakBuffer assignement.
     WeakBuffer& operator = (WeakBuffer const& other) = default;
 
   private:
     /// WeakBuffer cannot take ownership of memory.
-    WeakBuffer(Buffer&&);
+    WeakBuffer(Buffer&&) = delete;
 
   /*--------.
   | Content |

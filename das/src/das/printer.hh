@@ -1,8 +1,7 @@
-#ifndef DAS_PRINTER_HH
-# define DAS_PRINTER_HH
+#pragma once
 
-# include <elle/printf.hh>
-# include <das/model.hh>
+#include <elle/printf.hh>
+#include <das/model.hh>
 
 namespace das
 {
@@ -26,8 +25,7 @@ namespace das
   }
 
   template <typename T>
-  typename std::enable_if_exists<
-    typename das::DefaultModel<T>::type, std::ostream&>::type
+  std::enable_if_exists_t<typename das::DefaultModel<T>::type, std::ostream&>
   operator <<(std::ostream& s, T const& o)
   {
     using Fields = typename DefaultModel<T>::type::Fields;
@@ -36,5 +34,3 @@ namespace das
     return s;
   }
 }
-
-#endif

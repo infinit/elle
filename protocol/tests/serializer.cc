@@ -259,7 +259,7 @@ private:
               char buffer[1024];
               ELLE_DEBUG("reading");
               int64_t size =
-                sender->read_some(elle::WeakBuffer(buffer, sizeof buffer),
+                sender->read_some(elle::WeakBuffer(buffer),
                                   valgrind(250_ms, 10));
               ELLE_DEBUG("read %s", size);
               conf(elle::ConstWeakBuffer(buffer, size));

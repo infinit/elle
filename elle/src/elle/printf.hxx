@@ -21,8 +21,8 @@ namespace _elle_printf_details
 {
   template <typename T>
   constexpr
-  typename std::enable_if_exists<
-    decltype(std::declval<std::ostream&>() << std::declval<T>()), bool>::type
+  std::enable_if_exists_t<
+    decltype(std::declval<std::ostream&>() << std::declval<T>()), bool>
   _is_streamable(int)
   {
     return true;

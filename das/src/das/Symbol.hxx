@@ -4,15 +4,15 @@
 # include <type_traits>
 
 # define DAS_SYMBOL(Name) DAS_SYMBOL_NAMED(Name, Name)
+# define DAS_SYMBOL_TYPE(Name) DAS_SYMBOL_TYPE_NAMED(Name, Name)
 
-# define DAS_SYMBOL_NAMED(Name, CName)                          \
-  __attribute__((unused))                                       \
-  constexpr static                                              \
-  class Symbol_##Name                                           \
-    : public ::das::SpecificSymbol<Symbol_##Name>               \
+# define DAS_SYMBOL_TYPE_NAMED_(Name, CName)                    \
+  template <typename S>                                         \
+  class _Symbol_##Name                                          \
+    : public ::das::SpecificSymbol<S>                           \
   {                                                             \
   public:                                                       \
-    using ::das::SpecificSymbol<Symbol_##Name>::operator=;      \
+    using ::das::SpecificSymbol<S>::operator=;                  \
                                                                 \
     /* Name */                                                  \
                                                                 \
@@ -36,7 +36,7 @@
     bool                                                        \
     attr_has()                                                  \
     {                                                           \
-      return Symbol_##Name::_attr_has<T>(0);                    \
+      return S::template _attr_has<T>(0);                       \
     }                                                           \
                                                                 \
     template <typename T>                                       \
@@ -82,7 +82,7 @@
     bool                                                        \
     method_has()                                                \
     {                                                           \
-      return Symbol_##Name::_method_has<T, Args...>(0);         \
+      return S::template _method_has<T, Args...>(0);            \
     }                                                           \
                                                                 \
     template <typename T, typename ... Args>                    \
@@ -120,6 +120,26 @@
     {                                                           \
       return false;                                             \
     }                                                           \
+  };                                                            \
+
+# define DAS_SYMBOL_TYPE_NAMED(Name, CName)                     \
+  DAS_SYMBOL_TYPE_NAMED_(Name, CName);                          \
+  class Symbol_##Name                                           \
+    : public _Symbol_##Name<Symbol_##Name>                      \
+  {                                                             \
+  public:                                                       \
+    using _Symbol_##Name<Symbol_##Name>::operator =;            \
+  };                                                            \
+
+# define DAS_SYMBOL_NAMED(Name, CName)                          \
+  DAS_SYMBOL_TYPE_NAMED_(Name, CName);                          \
+  __attribute__((unused))                                       \
+  constexpr static                                              \
+  class Symbol_##Name                                           \
+    : public _Symbol_##Name<Symbol_##Name>                      \
+  {                                                             \
+  public:                                                       \
+    using _Symbol_##Name<Symbol_##Name>::operator =;            \
   } CName = {};                                                 \
 
 #endif

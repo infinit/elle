@@ -12,9 +12,8 @@ namespace reactor
   class BackgroundFuture
   {
   public:
-    typedef std::function<T ()> Action;
-    template<
-      typename std::enable_if_exists<decltype(T()), int>::type = 0>
+    using Action = std::function<T ()>;
+    template<typename = std::enable_if_exists_t<decltype(T())>>
     BackgroundFuture();
     BackgroundFuture(T value);
     BackgroundFuture(Action action);

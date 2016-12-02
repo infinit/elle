@@ -28,6 +28,7 @@ def configure(cxx_toolkit,
   config = drake.cxx.Config(elle.config)
   config.add_local_include_path('src')
   local_config = drake.cxx.Config(config) + cxx_config
+  local_config.warnings.parentheses = False
 
   ## ------ ##
   ## Libdas ##

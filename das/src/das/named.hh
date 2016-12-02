@@ -242,7 +242,7 @@ namespace das
 
     template <typename T>
     static
-    constexpr typename std::enable_if_exists<typename T::Formal, bool>::type
+    constexpr std::enable_if_exists_t<typename T::Formal, bool>
     is_named(int)
     {
       return std::is_base_of<das::Symbol, typename T::Formal>::value;
@@ -402,11 +402,11 @@ namespace das
 
     template <typename ... Args>
     Prototype<DefaultStore<Args...>,
-              typename std::remove_cv_reference<Args>::type...>
+              std::remove_cv_reference_t<Args>...>
     prototype(Args&& ... args)
     {
       return Prototype<DefaultStore<Args...>,
-                       typename std::remove_cv_reference<Args>::type...>
+                       std::remove_cv_reference_t<Args>...>
         (DefaultStore<Args...>(std::forward<Args>(args)...));
     }
 
@@ -433,10 +433,10 @@ namespace das
     };
 
     template <typename F, typename ... Args>
-    Function<F, typename std::remove_cv_reference<Args>::type...>
+    Function<F, std::remove_cv_reference_t<Args>...>
     function(F f, Args&& ... args)
     {
-      return Function<F, typename std::remove_cv_reference<Args>::type...>(
+      return Function<F, std::remove_cv_reference_t<Args>...>(
         std::move(f), std::forward<Args>(args)...);
     }
   }
