@@ -633,22 +633,10 @@ namespace das
         elle::meta::static_if<Defaults::template default_for<Formal>::has>(
             [&defaults] (auto& s)
             {
-              elle::meta::static_if<
-                std::is_base_of<
-                  boost::optional_detail::optional_tag,
-                  typename std::decay<decltype(Symbol::value)>::type>::value>(
-                    [&defaults] (auto& s)
-                    {
-                      auto const& v = defaults.Symbol::value;
-                      if (v != boost::none)
-                        elle::fprintf(s, " (default: %s)", v);
-                    },
-                    [&defaults] (auto& s)
-                    {
-                      auto const& v = defaults.Symbol::value;
-                      if (!std::is_same<decltype(v), bool const&>::value)
-                        elle::fprintf(s, " (default: %s)", v);
-                    })(s);
+              auto const& v = defaults.Symbol::value;
+              if (!std::is_same<decltype(v), bool const&>::value &&
+                  !std::is_same<decltype(v), boost::none_t const&>::value)
+                elle::fprintf(s, " (default: %s)", v);
             })(s);
         elle::fprintf(s, "\n");
         return true;
