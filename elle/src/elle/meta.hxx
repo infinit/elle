@@ -101,9 +101,9 @@ namespace elle
                 typename Head,
                 typename Args>
       static constexpr
-      typename std::enable_if_exists<
+      std::enable_if_exists_t<
         decltype(Args::template apply<F, Head>::type::value),
-        bool>::type
+        bool>
       map_runtime(int)
       {
         return true;
@@ -113,8 +113,8 @@ namespace elle
                 typename Head,
                 typename Args>
       static constexpr
-      typename std::enable_if_exists<
-        typename Args::template apply<F, Head>::type::type, bool>::type
+      std::enable_if_exists_t<
+        typename Args::template apply<F, Head>::type::type, bool>
       map_runtime(...)
       {
         return false;

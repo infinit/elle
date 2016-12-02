@@ -242,7 +242,7 @@ namespace das
 
     template <typename T>
     static
-    constexpr typename std::enable_if_exists<typename T::Formal, bool>::type
+    constexpr std::enable_if_exists_t<typename T::Formal, bool>
     is_named(int)
     {
       return std::is_base_of<das::Symbol, typename T::Formal>::value;

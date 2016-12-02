@@ -35,7 +35,7 @@ namespace das
 
     template <typename T>
     static constexpr
-    typename std::enable_if_exists<typename T::Model::Fields, int>::type
+    std::enable_if_exists_t<typename T::Model::Fields, int>
     _default_model(int)
     {
       return 1;

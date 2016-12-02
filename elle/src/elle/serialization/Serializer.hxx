@@ -35,8 +35,8 @@ namespace elle
 # define ELLE_SERIALIZATION_STATIC_PREDICATE(Name, Test)                \
   template <typename T, typename S>                                     \
   inline constexpr                                                      \
-  typename std::enable_if_exists<ELLE_ATTRIBUTE_STRIP_PARENS(Test),     \
-                                 bool>::type                            \
+  std::enable_if_exists_t<ELLE_ATTRIBUTE_STRIP_PARENS(Test),     \
+                                 bool>                            \
   BOOST_PP_CAT(_, Name)(int)                                            \
   {                                                                     \
     return true;                                                        \
@@ -1001,11 +1001,11 @@ namespace elle
     }
 
     template <typename S, typename C>
-    typename std::enable_if_exists<
+    std::enable_if_exists_t<
       decltype(
         std::declval<C>().emplace(
           std::declval<elle::serialization::SerializerIn>())),
-      void>::type
+      void>
     Serializer::_deserialize_in_array(C& collection)
     {
       collection.emplace(
@@ -1014,11 +1014,11 @@ namespace elle
     }
 
     template <typename S, typename C>
-    typename std::enable_if_exists<
+    std::enable_if_exists_t<
       decltype(
         std::declval<C>().emplace_back(
           std::declval<elle::serialization::SerializerIn>())),
-      void>::type
+      void>
     Serializer::_deserialize_in_array(C& collection)
     {
       collection.emplace_back(
@@ -1453,10 +1453,10 @@ namespace elle
       };
 
       template <typename T>
-      typename std::enable_if_exists<
+      std::enable_if_exists_t<
         decltype(T::dependencies),
         std::unordered_map<elle::TypeInfo, elle::Version>
-      >::type
+      >
       dependencies(elle::Version const& version, int)
       {
         return T::dependencies.at(version);;

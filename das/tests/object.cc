@@ -47,8 +47,8 @@ namespace das
   // }
 
   // template <typename T>
-  // typename std::enable_if_exists<
-  //   typename DefaultModel<T>::type, std::ostream&>::type
+  // std::enable_if_exists_t<
+  //   typename DefaultModel<T>, std::ostream&>::type
   // operator <<(std::ostream& s, T const& o)
   // {
   //   using Fields = typename DefaultModel<T>::type::Fields;

@@ -4,7 +4,7 @@
 
 // enable_if_exists
 template <typename T>
-static constexpr typename std::enable_if_exists<typename T::foo, bool>::type
+static constexpr std::enable_if_exists_t<typename T::foo, bool>
 test(int)
 {
   return true;

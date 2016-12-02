@@ -341,18 +341,18 @@ namespace elle
       void
       _serialize_anonymous_exception(std::exception_ptr& e);
       template <typename S = void, typename C>
-      typename std::enable_if_exists<
+      std::enable_if_exists_t<
         decltype(
           std::declval<C>().emplace(
             std::declval<elle::serialization::SerializerIn>())),
-        void>::type
+        void>
       _deserialize_in_array(C& collection);
       template <typename S = void, typename C>
-      typename std::enable_if_exists<
+      std::enable_if_exists_t<
         decltype(
           std::declval<C>().emplace_back(
             std::declval<elle::serialization::SerializerIn>())),
-        void>::type
+        void>
       _deserialize_in_array(C& collection);
       template <typename T>
       friend struct Serialize;
