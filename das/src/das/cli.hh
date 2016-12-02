@@ -156,14 +156,14 @@ namespace das
             }
             else
             {
-              auto res = false;
               using Formal = typename das::named::make_formal<T>::type;
-              elle::meta::static_if<std::is_base_of<CLI_Symbol, Formal>::value>(
-                [this] (auto& res)
+              auto res =
+                elle::meta::static_if<std::is_base_of<CLI_Symbol, Formal>::value>(
+                [this] (auto&& formal)
                 {
-                  if (this->_arg[1] == Formal::short_name())
-                    res = true;
-                })(res);
+                  return this->_arg[1] == formal.short_name();
+                },
+                [](auto&&) { return false; })(Formal{});
               {
                 auto it = opts.find(T::name());
                 if (it != opts.end())
