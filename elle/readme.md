@@ -1,4 +1,4 @@
-# elle, the Infinit utilities.
+# elle
 
 elle is a library containing fundamental functionalities from buffers to memory
 management and serialization, etc.
@@ -14,9 +14,11 @@ to makes developers life easier.
 
 elle includes many helpers such as:
 
-* [attributes](#attributes): Macros that automatically declares and implements setters and getters
+* [attributes](#attributes): Macros that automatically declares and implements
+setters and getters
 * [buffers](#buffers): Abstract memory management
-* [serialization](#serialization): json & binary serializations supporting versioning
+* [serialization](#serialization): json & binary serializations supporting
+versioning
 * [logs](#logs): adjustable logs
 * ...
 
@@ -26,7 +28,8 @@ Here are [examples](examples):
 
 ### Attributes
 
-Attributes are designed to avoid writing recurrent setter/getter patterns, easily add or remove attributes.
+Attributes are designed to avoid writing recurrent setter/getter patterns,
+easily add or remove attributes.
 
 ```cpp
 struct Object
@@ -50,7 +53,8 @@ Buffers represent memory. There are 3 types of buffers:
 - elle::ConstWeakBuffer (A read-only, glorifiend C array pointer)
 - elle::WeakBuffer (Like ConstWeakBuffer, but mutable)
 
-Each buffer has a stream API, can be iterated, supports indexing, comparison and hashing, direct memory access and can be converted to std::string.
+Each buffer has a stream API, can be iterated, supports indexing, comparison and
+hashing, direct memory access and can be converted to std::string.
 
 ```cpp
 // Construct a Buffer.
@@ -73,14 +77,17 @@ std::cout << mslice.string() << std::endl; // in
 std::cout << buffer[6] << std::endl; // o
 std::cout << buffer.string() << std::endl; // somethong interesting
 ```
-
 Full example [here](examples/samples/buffer.cc).
 
 ### Serialization
 
-elle includes a serialization library designed to support modern C++, including smart pointers, inheritance and provide versionning, the less intrusive way possible. It supports naively most of the basic C++ objects, most elle objects and is easly extendable via a conversion API.
+elle includes a serialization library designed to support modern C++, including
+smart pointers, inheritance and provide versionning, the less intrusive way
+possible. It supports naively most of the basic C++ objects, most elle objects
+and is easly extendable via a conversion API.
 
-The following example shows versionned class Record, whose evolved from at versions *0.2.0* and *0.3.0*.
+The following example shows versionned class Record, whose evolved from at
+ersions *0.2.0* and *0.3.0*.
 ```cpp
 struct Record
 {
@@ -91,10 +98,7 @@ struct Record
   {
   }
 
-  Record(elle::serialization::SerializerIn& in)
-  {
-    this->serialize(in);
-  }
+  // ...
 
   void
   serialize(elle::serialization::Serializer& s,
@@ -103,17 +107,11 @@ struct Record
     s.serialize("name", this->_name);
     s.serialize("id", this->_id);
     if (version < elle::Version(0, 2, 0))
-    {
       this->_date = boost::posix_time::time_from_string("2016-10-10 00:00:00.000");
-    }
     else
-    {
       s.serialize("date", this->_date);
-    }
     if (version < elle::Version(0, 3, 0))
-    {
       s.serialize("tags", this->_tags);
-    }
   }
 
 private:
@@ -163,7 +161,8 @@ Full example [here](examples/samples/printable.cc).
 
 ### Logs
 
-elle contains a logging library designed around *components* and *levels* designed to have the lowest overhead possible if components aren't enabled.
+elle contains a logging library designed around *components* and *levels*
+designed to have the lowest overhead possible if components aren't enabled.
 
 The example below demonstrates its basic concepts:
 
@@ -198,7 +197,8 @@ ELLE_DEBUG("The log in the following scope will be indented")
 ```
 Full example [here](examples/samples/log.cc).
 
-The program will output differently according to the value of ELLE_LOG_LEVEL in the environment.
+The program will output differently according to the value of ELLE_LOG_LEVEL in
+the environment.
 
 ```bash
 ./log # default: ELLE_LOG_LEVEL=LOG
