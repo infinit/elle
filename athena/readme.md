@@ -2,7 +2,7 @@
 
 Athena is a byzantine environment library, providing tools to establish quorums and reach consensuses.
 
-The reactor is part of the [Elle](https://github.com/infinit/elle) set of libraries.
+> This library is part of the [Elle](https://github.com/infinit/elle) set of libraries.
 
 ## Motivation
 

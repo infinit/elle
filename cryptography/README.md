@@ -7,7 +7,7 @@ to higher-level mechanisms.
 Note that the Cryptography library is mostly buffer-oriented even though some
 operations are allowed on streams such a symmetric encryption, hashing and more.
 
-Cryptoraphy is part of the [Elle](https://github.com/infinit/elle) set of
+> Cryptoraphy is part of the [Elle](https://github.com/infinit/elle) set of
 libraries.
 
 ## Motivation

@@ -2,7 +2,7 @@
 
 The Dropbox library provides a *reactorification* for the [Dropbox](https://www.dropbox.com/developers) API.
 
-This library is part of the [Elle](https://github.com/infinit/elle) set of libraries.
+> This library is part of the [Elle](https://github.com/infinit/elle) set of libraries.
 
 ## Motivation
 

@@ -2,7 +2,7 @@
 
 Das is a compile time model generation system.
 
-Das is part of the [Elle](https://github.com/infinit/elle) set of libraries.
+> Das is part of the [Elle](https://github.com/infinit/elle) set of libraries.
 
 ## Motivation
 
