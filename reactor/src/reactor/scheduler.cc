@@ -5,6 +5,7 @@
 #include <elle/attribute.hh>
 #include <elle/finally.hh>
 #include <elle/log.hh>
+#include <elle/make-vector.hh>
 #include <elle/memory.hh>
 #include <elle/Plugin.hh>
 #include <elle/os/environ.hh>
@@ -273,7 +274,7 @@ namespace reactor
       this->_starting.clear();
     }
     auto& ordered = this->_running.get<1>();
-    std::vector<Thread*> running(ordered.begin(), ordered.end());
+    auto running = make_vector(ordered);
     ELLE_TRACE_SCOPE("Scheduler: new round with %s jobs", running.size());
 
     ELLE_DUMP("%s: starting: %s", *this, this->_starting);
