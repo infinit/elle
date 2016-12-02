@@ -133,6 +133,14 @@ namespace das
 
     namespace _details
     {
+      inline
+      std::string
+      option_name_from_c(std::string n)
+      {
+        std::replace(n.begin(), n.end(), '_', '-');
+        return n;
+      }
+
       class IsOption
       {
       public:
@@ -149,11 +157,7 @@ namespace das
           if (this->_option)
           {
             if (this->_arg[0] == '-' && this->_arg[1] == '-')
-            {
-              auto r = T::name();
-              std::replace(r.begin(), r.end(), '_', '-');
-              return this->_arg.substr(2) == r;
-            }
+              return this->_arg.substr(2) == option_name_from_c(T::name());
             else
             {
               using Formal = typename das::named::make_formal<T>::type;
@@ -601,7 +605,7 @@ namespace das
         elle::fprintf(s, "  -%s, ", short_name);
       else
         elle::fprintf(s, "      ");
-      elle::fprintf(s, "--%s: %s", name, help);
+      elle::fprintf(s, "--%s: %s", _details::option_name_from_c(name), help);
     }
 
     template <typename Symbol, typename Defaults>
@@ -623,7 +627,8 @@ namespace das
               print_help(s, Formal::name(), Formal::short_name(), Formal::help());
             },
             [] (auto& s) {
-              elle::fprintf(s, "      --%s", Symbol::name());
+              elle::fprintf(s, "      --%s",
+                            _details::option_name_from_c(Symbol::name()));
             })(s);
         elle::meta::static_if<Defaults::template default_for<Formal>::has>(
             [&defaults] (auto& s)
