@@ -19,9 +19,45 @@
 #include <openssl/hmac.h>
 #include <openssl/rand.h>
 
+#include <thread>
+
 #if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
 ELLE_LOG_COMPONENT("infinit.cryptography.raw");
 #endif
+
+static const int max_block_size = 4096;
+static const int buffer_sizes[] = {
+  infinit::cryptography::constants::stream_block_size,
+  infinit::cryptography::constants::stream_block_size + max_block_size
+};
+
+static
+std::mutex&
+_buffers_mutex()
+{
+  static std::mutex mutex;
+  return mutex;
+}
+
+static
+std::pair<unsigned char*, unsigned char*>
+buffers()
+{
+  static std::unordered_map<std::thread::id,
+    std::pair<unsigned char*, unsigned char*>> map;
+  std::unique_lock<std::mutex> ulock(_buffers_mutex());
+  auto tid = std::this_thread::get_id();
+  auto it = map.find(tid);
+  if (it != map.end())
+    return it->second;
+  else
+  {
+    auto res = std::make_pair((unsigned char*)malloc(buffer_sizes[0]),
+                              (unsigned char*)malloc(buffer_sizes[1]));
+    map[tid] = res;
+    return res;
+  }
+}
 
 //
 // ---------- Asymmetric ------------------------------------------------------
@@ -194,13 +230,13 @@ namespace infinit
             prolog(&context, ctx);
 
           // Sign the plain's stream.
-          std::vector<unsigned char> _input(constants::stream_block_size);
+          unsigned char* _input = buffers().first;
 
           while (!plain.eof())
           {
             // Read the plain's input stream and put a block of data in a
             // temporary buffer.
-            plain.read(reinterpret_cast<char*>(_input.data()), _input.size());
+            plain.read(reinterpret_cast<char*>(_input), constants::stream_block_size);
             if (plain.bad())
               throw Error(
                 elle::sprintf("unable to read the plain's input stream: %s",
@@ -208,7 +244,7 @@ namespace infinit
 
             // Update the signature context.
             if (::EVP_DigestSignUpdate(&context,
-                                       _input.data(),
+                                       _input,
                                        plain.gcount()) <= 0)
               throw Error(
                 elle::sprintf("unable to apply the signature function: %s",
@@ -285,13 +321,13 @@ namespace infinit
             prolog(&context, ctx);
 
           // Verify the signature's stream.
-          std::vector<unsigned char> _input(constants::stream_block_size);
+          unsigned char* _input = buffers().first;
 
           while (!plain.eof())
           {
             // Read the plain's input stream and put a block of data in a
             // temporary buffer.
-            plain.read(reinterpret_cast<char*>(_input.data()), _input.size());
+            plain.read(reinterpret_cast<char*>(_input), constants::stream_block_size);
             if (plain.bad())
               throw Error(
                 elle::sprintf("unable to read the plain's input stream: %s",
@@ -299,7 +335,7 @@ namespace infinit
 
             // Update the verify context.
             if (::EVP_DigestVerifyUpdate(&context,
-                                         _input.data(),
+                                         _input,
                                          plain.gcount()) <= 0)
               throw Error(
                 elle::sprintf("unable to apply the verify function: %s",
@@ -569,17 +605,16 @@ namespace infinit
           // that the algorithm can output on top of the encrypted input
           // plain text.
           int block_size = ::EVP_CIPHER_CTX_block_size(&context);
-
+          ELLE_ASSERT_LTE(block_size, max_block_size);
           // Encrypt the input stream.
-          std::vector<unsigned char> _input(constants::stream_block_size);
-          std::vector<unsigned char> _output(constants::stream_block_size +
-                                             block_size);
-
+          auto bufs = buffers();
+          unsigned char* _input = bufs.first;
+          unsigned char* _output = bufs.second;
           while (!plain.eof())
           {
             // Read the plain's input stream and put a block of data in a
             // temporary buffer.
-            plain.read(reinterpret_cast<char*>(_input.data()), _input.size());
+            plain.read(reinterpret_cast<char*>(_input), constants::stream_block_size);
             if (plain.bad())
               throw Error(
                 elle::sprintf("unable to read the plain's input stream: %s",
@@ -589,16 +624,16 @@ namespace infinit
 
             // Encrypt the input buffer.
             if (::EVP_EncryptUpdate(&context,
-                                    _output.data(),
+                                    _output,
                                     &size_update,
-                                    _input.data(),
+                                    _input,
                                     plain.gcount()) <= 0)
             throw Error(
               elle::sprintf("unable to apply the encryption function: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
             // Write the output buffer to the code stream.
-            code.write(reinterpret_cast<const char *>(_output.data()),
+            code.write(reinterpret_cast<const char *>(_output),
                        size_update);
             if (!code.good())
               throw Error(
@@ -614,14 +649,14 @@ namespace infinit
           int size_final(0);
 
           if (::EVP_EncryptFinal_ex(&context,
-                                    _output.data(),
+                                    _output,
                                     &size_final) <= 0)
             throw Error(
               elle::sprintf("unable to finalize the encryption process: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
           // Write the final output buffer to the code's output stream.
-          code.write(reinterpret_cast<const char *>(_output.data()),
+          code.write(reinterpret_cast<const char *>(_output),
                      size_final);
           if (!code.good())
             throw Error(
@@ -712,17 +747,17 @@ namespace infinit
 
           // Retreive the cipher-specific block size.
           int block_size = ::EVP_CIPHER_CTX_block_size(&context);
-
+          ELLE_ASSERT_LTE(block_size, max_block_size);
           // Decipher the code's stream.
-          std::vector<unsigned char> _input(constants::stream_block_size);
-          std::vector<unsigned char> _output(constants::stream_block_size +
-                                             block_size);
+          auto bufs = buffers();
+          unsigned char* _input = bufs.first;
+          unsigned char* _output = bufs.second;
 
           while (!code.eof())
           {
             // Read the code's input stream and put a block of data in a
             // temporary buffer.
-            code.read(reinterpret_cast<char*>(_input.data()), _input.size());
+            code.read(reinterpret_cast<char*>(_input), constants::stream_block_size);
             if (code.bad())
               throw Error(
                 elle::sprintf("unable to read the code's input stream: %s",
@@ -732,16 +767,16 @@ namespace infinit
             int size_update(0);
 
             if (::EVP_DecryptUpdate(&context,
-                                    _output.data(),
+                                    _output,
                                     &size_update,
-                                    _input.data(),
+                                    _input,
                                     code.gcount()) <= 0)
               throw Error(
                 elle::sprintf("unable to apply the decryption function: %s",
                               ::ERR_error_string(ERR_get_error(), nullptr)));
 
             // Write the output buffer to the plain stream.
-            plain.write(reinterpret_cast<const char *>(_output.data()),
+            plain.write(reinterpret_cast<const char *>(_output),
                         size_update);
             if (!plain.good())
               throw Error(
@@ -757,14 +792,14 @@ namespace infinit
           int size_final(0);
 
           if (::EVP_DecryptFinal_ex(&context,
-                                    _output.data(),
+                                    _output,
                                     &size_final) <= 0)
             throw Error(
               elle::sprintf("unable to finalize the decryption process: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
           // Write the final output buffer to the plain's output stream.
-          plain.write(reinterpret_cast<const char *>(_output.data()),
+          plain.write(reinterpret_cast<const char *>(_output),
                       size_final);
           if (!plain.good())
             throw Error(
@@ -821,13 +856,13 @@ namespace infinit
           prolog(&context);
 
         // Hash the plain's stream.
-        std::vector<unsigned char> _input(constants::stream_block_size);
+        unsigned char* _input = buffers().first;
 
         while (!plain.eof())
         {
           // Read the plain's input stream and put a block of data in a
           // temporary buffer.
-          plain.read(reinterpret_cast<char*>(_input.data()), _input.size());
+          plain.read(reinterpret_cast<char*>(_input), constants::stream_block_size);
           if (plain.bad())
             throw Error(
               elle::sprintf("unable to read the plain's input stream: %s",
@@ -835,7 +870,7 @@ namespace infinit
 
           // Update the digest context.
           if (::EVP_DigestUpdate(&context,
-                                 _input.data(),
+                                 _input,
                                  plain.gcount()) <= 0)
             throw Error(
               elle::sprintf("unable to apply the digest function: %s",
@@ -919,13 +954,13 @@ namespace infinit
             prolog(&context);
 
           // HMAC-sign the plain's stream.
-          std::vector<unsigned char> _input(constants::stream_block_size);
+          unsigned char* _input = buffers().first;
 
           while (!plain.eof())
           {
             // Read the plain's input stream and put a block of data in a
             // temporary buffer.
-            plain.read(reinterpret_cast<char*>(_input.data()), _input.size());
+            plain.read(reinterpret_cast<char*>(_input), constants::stream_block_size);
             if (plain.bad())
               throw Error(
                 elle::sprintf("unable to read the plain's input stream: %s",
@@ -933,7 +968,7 @@ namespace infinit
 
             // Update the HMAC.
             if (::EVP_DigestSignUpdate(&context,
-                                       _input.data(),
+                                       _input,
                                        plain.gcount()) <= 0)
               throw Error(
                 elle::sprintf("unable to apply the HMAC function: %s",
@@ -1012,13 +1047,13 @@ namespace infinit
             prolog(&context);
 
           // HMAC-verify the plain's stream against the digest.
-          std::vector<unsigned char> _input(constants::stream_block_size);
+          unsigned char* _input = buffers().first;
 
           while (!plain.eof())
           {
             // Read the plain's input stream and put a block of data in a
             // temporary buffer.
-            plain.read(reinterpret_cast<char*>(_input.data()), _input.size());
+            plain.read(reinterpret_cast<char*>(_input), constants::stream_block_size);
             if (plain.bad())
               throw Error(
                 elle::sprintf("unable to read the plain's input stream: %s",
@@ -1026,7 +1061,7 @@ namespace infinit
 
             // Update the HMAC.
             if (::EVP_DigestVerifyUpdate(&context,
-                                         _input.data(),
+                                         _input,
                                          plain.gcount()) <= 0)
               throw Error(
                 elle::sprintf("unable to apply the HMAC function: %s",
