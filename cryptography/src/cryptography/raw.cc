@@ -39,22 +39,31 @@ _buffers_mutex()
   return mutex;
 }
 
+struct BufferDeleter
+{
+  void operator()(unsigned char* buf)
+  {
+    free(buf);
+  }
+};
+
 static
 std::pair<unsigned char*, unsigned char*>
 buffers()
 {
-  static std::unordered_map<std::thread::id,
-    std::pair<unsigned char*, unsigned char*>> map;
+  using UPTR = std::unique_ptr<unsigned char, BufferDeleter>;
+  static std::unordered_map<std::thread::id, std::pair<UPTR, UPTR>> map;
   std::unique_lock<std::mutex> ulock(_buffers_mutex());
   auto tid = std::this_thread::get_id();
   auto it = map.find(tid);
   if (it != map.end())
-    return it->second;
+    return std::make_pair(it->second.first.get(), it->second.second.get());
   else
   {
-    auto res = std::make_pair((unsigned char*)malloc(buffer_sizes[0]),
-                              (unsigned char*)malloc(buffer_sizes[1]));
-    map[tid] = res;
+    auto p = std::make_pair(UPTR((unsigned char*)malloc(buffer_sizes[0])),
+                              UPTR((unsigned char*)malloc(buffer_sizes[1])));
+    auto res = std::make_pair(p.first.get(), p.second.get());
+    map[tid] = std::move(p);
     return res;
   }
 }
