@@ -106,8 +106,8 @@ namespace elle
     | Construction |
     `-------------*/
     public:
-      Serializer(bool versioned);
-      Serializer(Versions versions,bool versioned);
+      Serializer(bool out, bool versioned);
+      Serializer(bool out, Versions versions,bool versioned);
 
     /*-----------.
     | Properties |
@@ -122,8 +122,7 @@ namespace elle
       ELLE_ATTRIBUTE_R(bool, versioned);
       ELLE_ATTRIBUTE_R(boost::optional<Versions>, versions);
     private:
-      bool
-      _out() const;
+      ELLE_ATTRIBUTE(bool, out, protected);
 
     /*--------------.
     | Serialization |

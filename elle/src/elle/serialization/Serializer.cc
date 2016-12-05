@@ -8,14 +8,16 @@ namespace elle
 {
   namespace serialization
   {
-    Serializer::Serializer(bool versioned)
+    Serializer::Serializer(bool out, bool versioned)
       : _versioned(versioned)
       , _versions()
+      , _out(out)
     {}
 
-    Serializer::Serializer(Versions versions, bool versioned)
+    Serializer::Serializer(bool out, Versions versions, bool versioned)
       : _versioned(versioned)
       , _versions(std::move(versions))
+      , _out(out)
     {}
 
     /*--------------.
@@ -89,19 +91,13 @@ namespace elle
     bool
     Serializer::in() const
     {
-      return !this->_out();
+      return !this->_out;
     }
 
     bool
     Serializer::out() const
     {
-      return this->_out();
-    }
-
-    bool
-    Serializer::_out() const
-    {
-      return dynamic_cast<SerializerOut const*>(this);
+      return this->_out;
     }
 
     void

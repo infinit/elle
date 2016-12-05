@@ -908,7 +908,7 @@ namespace elle
       ELLE_LOG_COMPONENT("elle.serialization.Serializer");
       ELLE_TRACE_SCOPE("%s: serialize dictionary%s",
                        this, _details::current_name(*this));
-      if (this->_out())
+      if (this->_out)
       {
         this->_size(map.size());
         for (std::pair<std::string, V> pair: map)
@@ -959,7 +959,7 @@ namespace elle
                        this, _details::current_name(*this));
       typedef typename C::key_type K;
       typedef typename C::mapped_type V;
-      if (this->_out())
+      if (this->_out)
       {
         this->_serialize_array(
           map.size(),
@@ -1210,7 +1210,7 @@ namespace elle
       ELLE_LOG_COMPONENT("elle.serialization.Serializer");
       ELLE_TRACE_SCOPE("%s: serialize pair%s",
                        this, _details::current_name(*this));
-      if (this->_out())
+      if (this->_out)
         static_cast<SerializerOut*>(this)->serialize(pair);
       else
         pair =
