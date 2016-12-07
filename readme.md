@@ -77,10 +77,10 @@ cd elle/_build/linux64
 ./drake //build -j 2 # Build all libraries using 2 jobs.
 ```
 
-#### MacOSx
+#### macOS
 
 ```bash
-cd elle/_build/osx
+cd elle/_build/macos64
 ./drake //build -j 2 # Build all libraries using 2 jobs.
 ```
 
@@ -92,7 +92,7 @@ Because Elle has been designed to be modular, you can build specific parts of El
 ./drake //protocol/build -j 2 # To build the libprotocol and its dependencies.
 ./drake //...
 ```
-It will result on `<module>/lib/lib<module>.so` and its dependencies on Linux, `<module>/lib/lib<module>.dylib` on MacOS, ...
+It will result on `<module>/lib/lib<module>.so` and its dependencies on Linux, `<module>/lib/lib<module>.dylib` on macOS, ...
 
 ### Dependencies
 
