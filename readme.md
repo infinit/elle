@@ -9,7 +9,11 @@ Elle is split into different smaller specialized libraries to provide elegant wa
 > - Elle has a sub-library also called elle, which might change name in a near future.
 
 ## Example
+
+Here is an example showing an asynchronous HTTP operation in a natural form (no callbacks) and basic json serialization.
+
 ```cpp
+// Initialize the HTTP Request.
 reactor::http::Request r("https://en.wikipedia.org/w/api.php",
                          reactor::http::Method::GET);
 r.query_string({
@@ -20,7 +24,7 @@ r.query_string({
   {"exintro", ""},
   {"titles", "JSON"}
 });
-// Perform the http request and yield until response is available.
+// Perform the HTTP request and yield until response is available.
 r.finalize();
 // Deserialize the json response.
 std::cout << elle::json::pretty_print(elle::json::read(r)) << std::endl;
@@ -29,7 +33,7 @@ Full example [here](examples/samples/get_wikipedia.cc).
 
 ## Getting Elle.
 
-To download the sources and build Elle by yourself, you can just get it from GitHub by running the following commands.
+To download sources and build Elle by yourself, you can just get them from GitHub by running the following commands.
 
 ```bash
 git clone https://github.com/infinit/elle --recursive # Clone elle and its submodules.
@@ -67,7 +71,7 @@ sudo pip3 install elle/drake/requirements.txt # Install Drake dependencies.
 ```
 > *Note:* If you don't want Drake dependencies to be installed on your system, you should consider using [virtualenv](https://virtualenv.pypa.io/en/stable/installation).
 
-Then, change directory to `_build/<architecture>` where you can find a generic Drake configuration script.
+Change directory to `elle/_build/<architecture>` where you can find a generic Drake [configuration script](https://github.com/infinit/drake#basic-structures-of-a-drakefile-and-a-drake-script).
 
 #### Linux
 
