@@ -1,15 +1,19 @@
 # Elle, *the coroutine-based asynchronous C++ development framework.*
 
-Elle is a collection of libraries, written in modern C++ (C++14). It contains a rich set of highly reusable concepts, algorithms, API wrappers, ...
+Elle is a library, written in modern C++ (C++14). It contains a rich set of highly reusable concepts, algorithms, API wrappers, ...
 
-Elle is split into different smaller specialized libraries to provide elegant ways to approach [coroutine](https://en.wikipedia.org/wiki/Coroutine), networking, formatting, serialization, logging, [RPCs](https://en.wikipedia.org/wiki/Remote_procedure_call), etc.
+Elle is split into different specialized sub-libraries to provide elegant ways to approach asynchronism (using [coroutines](https://en.wikipedia.org/wiki/Coroutine)), networking, formatting, serialization, logging, [RPCs](https://en.wikipedia.org/wiki/Remote_procedure_call), etc.
 
 > *Notes:*
-> - Elle is under development, used and maintained by [Infinit](https://infinit.sh) as a set of core libraries. APIs, structures and concepts may change over time. You can use it as is but we don't guarantee any API backward compatibility.
+> - Elle is under development, used and maintained by [Infinit](https://infinit.sh) as a core library. APIs, structures and concepts may change over time. You can use it as is but we don't guarantee any API backward compatibility.
 > - Elle has a sub-library also called elle, which might change name in a near future.
 
 ## Example
+
+Here is an example showing an asynchronous HTTP operation in a natural form (no callbacks) and basic JSON serialization.
+
 ```cpp
+// Initialize the HTTP Request.
 reactor::http::Request r("https://en.wikipedia.org/w/api.php",
                          reactor::http::Method::GET);
 r.query_string({
@@ -20,7 +24,7 @@ r.query_string({
   {"exintro", ""},
   {"titles", "JSON"}
 });
-// Perform the http request and yield until response is available.
+// Perform the HTTP request and yield until response is available.
 r.finalize();
 // Deserialize the json response.
 std::cout << elle::json::pretty_print(elle::json::read(r)) << std::endl;
@@ -29,21 +33,23 @@ Full example [here](examples/samples/get_wikipedia.cc).
 
 ## Getting Elle.
 
-To download the sources and build Elle by yourself, you can just get it from GitHub by running the following commands.
+To download the source code and build Elle by yourself, get it from GitHub.
 
 ```bash
 git clone https://github.com/infinit/elle --recursive # Clone elle and its submodules.
 ```
 
+> *Note:* If you cloned it using the GitHub "clone" button, do not forget to run `git submodules update --init --recursive`!
+
 ## Structure
 
-As mentioned earlier, Elle is a set of libraries, designed to ease C++ development through robust and flexible implementations, including:
+As mentioned earlier, Elle is composed of a set of sub-libraries, designed to ease C++ development through robust and flexible implementations, including:
 - [elle](elle): Utilities including serialization, logs, buffer, formatting, ...
 - [reactor](reactor): An asynchronous framework using a coroutines scheduler
 - [cryptography](cryptography): Object-oriented cryptography wrapper around OpenSSL
-- [protocol](protocol): Network communication library (RPCs)
-- [das](das): Model manipulator and generator
-- [athena](athena): Byzantine environment library
+- [protocol](protocol): Network communication designed to support RPCs
+- [das](das): Symbol-based introspection
+- [athena](athena): Byzantine environment algorithms (Paxos)
 - [aws](aws): *reactorified* AWS API wrapper
 - [dropbox](dropbox): *reactorified* Dropbox API wrapper
 
@@ -52,7 +58,7 @@ As mentioned earlier, Elle is a set of libraries, designed to ease C++ developme
 ### Requirements
 
 - [gcc](https://gcc.gnu.org) (>= 4.9.2) or [clang](http://clang.llvm.org) (>= 3.5.0) or [mingw](http://mingw.org) (>= 5.3.0).
-- [python3](https://www.python.org/download) (>= 3.4.0)
+- [python3](https://www.python.org/download) (>= 3.4.0) and [pip3](https://pip.pypa.io/en/stable).
 
 ### Build system
 
@@ -65,9 +71,9 @@ First you need to install drakes requirements.
 ```bash
 sudo pip3 install elle/drake/requirements.txt # Install Drake dependencies.
 ```
-> *Note:* If you don't want Drake dependencies to be installed on your system, you should consider using [virtualenv](https://virtualenv.pypa.io/en/stable/installation).
+> *Note:* If you don't want Drake dependencies to be installed system-wide, you should consider using [virtualenv](https://virtualenv.pypa.io/en/stable/installation).
 
-Then, change directory to `_build/<architecture>` where you can find a generic Drake configuration script.
+Change directory to `elle/_build/<architecture>` where you can find a generic Drake [configuration script](https://github.com/infinit/drake#basic-structures-of-a-drakefile-and-a-drake-script).
 
 #### Linux
 
