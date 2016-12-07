@@ -69,169 +69,12 @@ namespace elle
       elle::err("type is not a truth value: %s", elle::type_info<T>());
     }
 
-    /*----.
-    | AST |
-    `----*/
-
-    class Expression
-      : public elle::Printable
-    {};
-
-    class Composite
-      : public Expression
-    {
-    public:
-      Composite(std::vector<std::shared_ptr<Expression>> expressions = {})
-        : expressions(std::move(expressions))
-      {}
-
-      void
-      print(std::ostream& s) const override
-      {
-        bool first = true;
-        s << "Composite(";
-        for (auto const& e: this->expressions)
-        {
-          if (first)
-            first = false;
-          else
-            s << ", ";
-          s << *e;
-        }
-        s << ")";
-      }
-
-      std::vector<std::shared_ptr<Expression>> expressions;
-    };
-
-    class Branch
-      : public Expression
-    {
-    public:
-      Branch(std::shared_ptr<Expression> cond,
-             std::shared_ptr<Expression> then)
-        : cond(cond)
-        , then(then)
-      {}
-
-      virtual
-      void
-      print(std::ostream& s) const override
-      {
-        s << "Branch(";
-        this->cond->print(s);
-        s << ", ";
-        this->then->print(s);
-        s << ")";
-      }
-
-      std::shared_ptr<Expression> cond;
-      std::shared_ptr<Expression> then;
-    };
-
-    class Index
-      : public Expression
-    {
-    public:
-      Index(int n)
-        : n(n)
-      {}
-
-      static
-      std::shared_ptr<Index>
-      make(int n)
-      {
-        return std::make_shared<Index>(n);
-      }
-
-      virtual
-      void
-      print(std::ostream& s) const override
-      {
-        s << "Index(" << n << ")";
-      }
-
-      int n;
-    };
-
-    class Next
-      : public Expression
-    {
-    public:
-      Next()
-      {}
-
-      static
-      std::shared_ptr<Next>
-      make()
-      {
-        return std::make_shared<Next>();
-      }
-
-      virtual
-      void
-      print(std::ostream& s) const override
-      {
-        s << "Next()";
-      }
-    };
-
-    class Name
-      : public Expression
-    {
-    public:
-      Name(std::string n)
-        : n(n)
-      {}
-
-      static
-      std::shared_ptr<Name>
-      make(std::string& n)
-      {
-        return std::make_shared<Name>(n);
-      }
-
-      virtual
-      void
-      print(std::ostream& s) const override
-      {
-        s << "Name(" << n << ")";
-      }
-
-      std::string n;
-    };
-
-    class Literal
-      : public Expression
-    {
-    public:
-      Literal(std::string text)
-        : text(text)
-      {}
-
-      static
-      std::shared_ptr<Literal>
-      make(std::string& text)
-      {
-        return std::make_shared<Literal>(text);
-      }
-
-      virtual
-      void
-      print(std::ostream& s) const override
-      {
-        s << "Literal(" << text << ")";
-      }
-
-      std::string text;
-    };
-
     /*--------------------------.
     | Print individual elements |
     `--------------------------*/
 
     template <typename T>
-    static
+    inline
     std::enable_if_t<_elle_print_details::is_streamable<T>(), void>
     print(std::ostream& o, T&& value)
     {
@@ -239,7 +82,7 @@ namespace elle
     }
 
     template <typename T>
-    static
+    inline
     std::enable_if_t<!_elle_print_details::is_streamable<T>(), void>
     print(std::ostream& o, T&& value)
     {
@@ -272,6 +115,7 @@ namespace elle
     }
 
     template <typename T>
+    inline
     void
     print(std::ostream& o, std::unique_ptr<T> const& value)
     {
@@ -282,6 +126,7 @@ namespace elle
     }
 
     template <typename T>
+    inline
     void
     print(std::ostream& o, std::unique_ptr<T>& value)
     {
@@ -292,6 +137,7 @@ namespace elle
     }
 
     template <typename T>
+    inline
     void
     print(std::ostream& o, std::shared_ptr<T> const& value)
     {
@@ -302,6 +148,7 @@ namespace elle
     }
 
     template <typename T>
+    inline
     void
     print(std::ostream& o, std::shared_ptr<T>& value)
     {
@@ -322,6 +169,7 @@ namespace elle
     }
 
     template <typename T>
+    inline
     void
     print(std::ostream& o, T* value)
     {
@@ -341,14 +189,14 @@ namespace elle
       template <typename T>
       Argument(T const& value)
         : std::function<void (std::ostream&)>(
-          [&] (std::ostream& o) { print(o, value); })
-        , _bool([&] { return branch_test(value); })
+          [&value] (std::ostream& o) { print(o, value); })
+        , _bool([&value] { return branch_test(value); })
       {}
 
       Argument(char const* value)
         : std::function<void (std::ostream&)>(
-          [&] (std::ostream& o) { print(o, value); })
-        , _bool([&] { return value && strlen(value) > 0; })
+          [value] (std::ostream& o) { print(o, value); })
+        , _bool([value] { return value && strlen(value) > 0; })
       {}
 
       operator bool() const
@@ -374,183 +222,53 @@ namespace elle
       NamedArguments(std::initializer_list<NamedArgument> l)
       {
         for (auto& e: l)
-          this->emplace(e);
+          this->emplace(std::move(e));
       }
     };
 
-    /*------.
-    | Print |
-    `------*/
-
-    template <typename R = void,
-              int I = 0,
-              typename F,
-              typename ... Tuple,
-              typename ... Args>
-    typename std::enable_if<I == sizeof ... (Tuple), R>::type
-    tuple_call(int n,
-               F const& f,
-               std::tuple<Tuple...> const& t,
-               Args&& ... args);
-
-    template <typename R,
-              int I = 0,
-              typename F,
-              typename ... Tuple,
-              typename ... Args>
-    typename std::enable_if<I < sizeof ... (Tuple), R>::type
-    tuple_call(int n,
-               F const& f,
-               std::tuple<Tuple...> const& t,
-               Args&& ... args)
-    {
-      if (n == I)
-        return f(std::get<I>(t), std::forward<Args>(args) ...);
-      else
-        return tuple_call<R, I + 1>(n, f, t, std::forward<Args>(args) ...);
-    }
-
-    template <typename R = void,
-              int I = 0,
-              typename F,
-              typename ... Tuple,
-              typename ... Args>
-    ELLE_COMPILER_ATTRIBUTE_NORETURN
-    typename std::enable_if<I == sizeof ... (Tuple), R>::type
-    tuple_call(int n,
-               F const&,
-               std::tuple<Tuple...> const&,
-               Args&& ...)
-    {
-      elle::err(
-        "too few arguments for format: %s, expected at least %s", I, n);
-    }
-
-    template <int I = 0,
-              typename F,
-              typename Head,
-              typename ... Tuple,
-              typename ... Args>
-    typename std::result_of<F(Head, Args ...)>::type
-    tuple_call(int n,
-               F const& f,
-               std::tuple<Head, Tuple...> const& t,
-               Args&& ... args)
-    {
-      return tuple_call<typename std::result_of<F(Head, Args ...)>::type, I>(
-        n, f, t, std::forward<Args>(args)...);
-    }
-
-    template <typename ... Args>
     void
     print(std::ostream& s,
-          Expression const& ast,
-          std::tuple<Args...> const& args,
-          int& count,
-          bool p,
-          NamedArguments const& named = {})
+          std::string const& fmt,
+          std::vector<Argument> const& args,
+          NamedArguments const& named);
+
+    template <typename Head, typename ... Args>
+    inline
+    void
+    fill_erasure(std::vector<Argument>& res,
+                 Head const& head,
+                 Args const& ... args)
+
     {
-      auto const printer =
-        [] (auto const& v, std::ostream& s) { print(s, v); };
-      auto* id = &typeid(ast);
-      if (id == &typeid(Composite))
-        for (auto const& e:static_cast<Composite const&>(ast).expressions)
-          print(s, *e, args, count, p, named);
-      else if (id == &typeid(Literal))
-      {
-        if (p)
-          s.write(static_cast<Literal const&>(ast).text.c_str(),
-                  static_cast<Literal const&>(ast).text.size());
-      }
-      else if (id == &typeid(Next))
-      {
-        if (p)
-          tuple_call(count, printer, args, s);
-        ++count;
-      }
-      else if (id == &typeid(Index))
-      {
-        if (p)
-          tuple_call(static_cast<Index const&>(ast).n, printer, args, s);
-      }
-      else if (id == &typeid(Name))
-      {
-        auto const& name = static_cast<Name const&>(ast).n;
-        auto it = named.find(name);
-        if (it != named.end())
-        {
-          if (p)
-            it->second(s);
-        }
-        else
-          elle::err("missing named format argument: %s", name);
-      }
-      else if (id == &typeid(Branch))
-      {
-        static auto const tester =
-          [] (auto const& v) { return branch_test(v); };
-        auto const& branch = static_cast<Branch const&>(ast);
-        auto* cid = &typeid(*branch.cond);
-        if (cid == &typeid(Next))
-          p = p && tuple_call<bool>(count++, tester, args);
-        else if (cid == &typeid(Index))
-          p = p && tuple_call<bool>(
-            static_cast<Index const&>(*branch.cond).n, tester, args);
-        else if (cid == &typeid(Name))
-        {
-          auto const& name = static_cast<Name const&>(*branch.cond).n;
-          auto it = named.find(name);
-          if (it != named.end())
-            p = bool(it->second);
-          else
-            elle::err("missing named format argument: %s", name);
-        }
-        else
-          elle::err("unexpected condition: %s", elle::type_info(*branch.cond));
-        print(s, *branch.then, args, count, p, named);
-      }
+      res.emplace_back(head);
+      fill_erasure(res, args...);
     }
+
+    inline
+    void
+    fill_erasure(std::vector<Argument>&)
+    {}
 
     template <typename ... Args>
-    void
-    print(std::ostream& s,
-          Expression const& ast,
-          NamedArguments const& args)
+    std::vector <Argument>
+    erasure(Args const& ... args)
     {
-      int count = 0;
-      print(s, ast, std::make_tuple(), count, true, args);
+      std::vector<Argument> res;
+      res.reserve(sizeof ... (args));
+      fill_erasure(res, args...);
+      return res;
     }
-
-    template <typename ... Args>
-    void
-    print(std::ostream& s,
-          Expression const& ast,
-          std::tuple<Args...> const& args)
-    {
-      int count = 0;
-      print(s, ast, args, count, true);
-    }
-
-    std::shared_ptr<Expression>
-    parse(std::string const& input);
   }
 
-  inline
-  void
-  print(std::ostream& o,
-        std::string const& fmt,
-        _details::NamedArguments const& args)
-  {
-    auto const ast = _details::parse(fmt);
-    _details::print(o, *ast, args);
-  }
+  /*-----------.
+  | Positional |
+  `-----------*/
 
   template <typename ... Args>
   void
   print(std::ostream& o, std::string const& fmt, Args&& ... args)
   {
-    auto const ast = _details::parse(fmt);
-    _details::print(o, *ast, std::make_tuple(std::forward<Args>(args)...));
+    _details::print(o, fmt, _details::erasure(args...), {});
   }
 
   template <typename ... Args>
@@ -560,6 +278,19 @@ namespace elle
     std::stringstream output;
     print(output, fmt, std::forward<Args>(args)...);
     return output.str();
+  }
+
+  /*------.
+  | Named |
+  `------*/
+
+  inline
+  void
+  print(std::ostream& o,
+        std::string const& fmt,
+        _details::NamedArguments const& args)
+  {
+    _details::print(o, fmt, {}, args);
   }
 
   inline
