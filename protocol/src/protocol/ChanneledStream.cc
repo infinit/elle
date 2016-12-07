@@ -206,14 +206,17 @@ namespace infinit
       ELLE_TRACE_SCOPE("%s: wait for incoming channel", *this);
       while (true)
       {
-        ELLE_DEBUG("%s: no channel available, waiting", *this);
-        if (!this->_reading)
-          this->_read(true, 0);
-        else
+        if (this->_channels_new.empty())
         {
-          ELLE_DEBUG("%s: reader already present, waiting.", *this);
-          reactor::Thread* current = scheduler().current();
-          current->wait(this->_channel_available);
+          ELLE_DEBUG("%s: no channel available, waiting", *this);
+          if (!this->_reading)
+            this->_read(true, 0);
+          else
+          {
+            ELLE_DEBUG("%s: reader already present, waiting.", *this);
+            reactor::Thread* current = scheduler().current();
+            current->wait(this->_channel_available);
+          }
         }
         if (this->_channels_new.empty())
           continue;
