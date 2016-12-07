@@ -6,7 +6,7 @@ Protocol is a library dedicated to construct communication channels on top of st
 
 ## Motivation
 
-The [reactor](/reactor) provides a robust way to establish connection through sockets. From there, we need to setup a sustainable solution to communicate. Unification and versioning of the communication protocol it is mandatory for robustness. Protocol provides all those features.
+The [reactor](/reactor) allows for establishing connection via sockets. From there, we need to set up a robust and sustainable solution to communicate. Protocol provides unification and versioning for communications.
 
 The `ChanneledStream` acts as a [multiplexer/demultiplexer](https://en.wikipedia.org/wiki/Multiplexing). You can have an unlimited number of separated and manageable channels in a single stream.
 
