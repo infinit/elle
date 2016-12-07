@@ -113,7 +113,6 @@ def configure(openssl_config,
   if cxx_toolkit.os in [drake.os.ios, drake.os.windows, drake.os.android]:
     cxx_config += boost.config_system(static = True)
   else:
-    cxx_config += boost.config_system(link = False)
     cxx_config.library_add(
       drake.copy(boost.system_dynamic, 'lib', strip_prefix = True))
   cxx_config += elle.config

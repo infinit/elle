@@ -590,7 +590,7 @@ def configure(zlib_lib,
     ('system/process-fail.cc', process_helpers, True),
   ])
 
-  cxx_config_exe = cxx_config + config
+  cxx_config_exe = drake.cxx.Config(cxx_config) + config
   cxx_config_exe.enable_debug_symbols()
   if cxx_toolkit.os == drake.os.android:
     cxx_config_exe.lib('stdc++')
@@ -649,7 +649,7 @@ def configure(zlib_lib,
     'examples/samples/printable',
     'examples/samples/log',
   ]
-  cxx_config_examples = cxx_config_tests
+  cxx_config_examples = drake.cxx.Config(cxx_config_tests)
   cxx_config_examples.enable_debug_symbols()
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
     cxx_config_examples += boost.config_date_time(static = True)
