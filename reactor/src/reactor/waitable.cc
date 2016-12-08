@@ -1,5 +1,6 @@
 #include <elle/assert.hh>
 #include <elle/log.hh>
+#include <elle/make-vector.hh>
 #include <elle/string/algorithm.hh>
 #include <elle/Backtrace.hh>
 
@@ -37,11 +38,13 @@ namespace reactor
   {
     if (!this->_waiters.empty())
     {
-      std::vector<std::string> threads;
-      for (auto thread: this->_waiters)
-        threads.push_back(elle::sprintf("%s", *thread.first));
+      auto threads =
+        make_vector(this->_waiters,
+                    [](auto& t){ return elle::sprintf("%s", *t.first); });
       ELLE_ABORT("%s destroyed while waited by %s at %s",
-                 *this, elle::join(threads.begin(), threads.end(), ", "), elle::Backtrace::current());
+                 *this,
+                 elle::join(threads.begin(), threads.end(), ", "),
+                 elle::Backtrace::current());
     }
   }
 

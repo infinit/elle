@@ -111,9 +111,9 @@ namespace reactor
           /// Underlying pthread.
           boost::thread _thread;
           /// The condition used to block/resume execution.
-          boost::condition_variable _cond;
+          std::condition_variable _cond;
           /// The mutex protecting the condition.
-          boost::mutex _mutex;
+          std::mutex _mutex;
           /// The thread that stepped us.
           Thread* _caller;
       };
@@ -159,9 +159,9 @@ namespace reactor
           /// Current thread.
           Thread* _current;
           /// The condition used to block/resume execution.
-          boost::condition_variable _cond;
+          std::condition_variable _cond;
           /// The mutex protecting the condition.
-          boost::mutex _mutex;
+          std::mutex _mutex;
       };
     }
   }

@@ -15,17 +15,17 @@ namespace reactor
     namespace
     {
       // Base file operation
-      class FileOperation:
-        public Operation
+      class FileOperation
+        : public Operation
       {
       protected:
         boost::asio::fs::File& _file;
 
       public:
         FileOperation(Scheduler& scheduler,
-                      boost::asio::fs::File& file):
-          Operation{scheduler},
-          _file(file)
+                      boost::asio::fs::File& file)
+          : Operation{scheduler}
+          , _file(file)
         {}
 
       private:
@@ -50,8 +50,8 @@ namespace reactor
       };
 
       // Read operation
-      class ReadOperation:
-        public FileOperation
+      class ReadOperation
+        : public FileOperation
       {
       private:
         elle::Buffer& _out;
@@ -59,9 +59,9 @@ namespace reactor
       public:
         ReadOperation(Scheduler& scheduler,
                       boost::asio::fs::File& file,
-                      elle::Buffer& out):
-          FileOperation{scheduler, file},
-          _out(out)
+                      elle::Buffer& out)
+          : FileOperation{scheduler, file}
+          , _out(out)
         {}
 
       private:
@@ -80,8 +80,8 @@ namespace reactor
       };
 
       // Read operation
-      class WriteOperation:
-        public FileOperation
+      class WriteOperation
+        : public FileOperation
       {
       private:
         elle::ConstWeakBuffer const& _in;
@@ -89,9 +89,9 @@ namespace reactor
       public:
         WriteOperation(Scheduler& scheduler,
                        boost::asio::fs::File& file,
-                       elle::ConstWeakBuffer const& in):
-          FileOperation{scheduler, file},
-          _in(in)
+                       elle::ConstWeakBuffer const& in)
+          : FileOperation{scheduler, file}
+          , _in(in)
         {}
 
       private:

@@ -5,6 +5,7 @@
 #include <elle/attribute.hh>
 #include <elle/finally.hh>
 #include <elle/log.hh>
+#include <elle/make-vector.hh>
 #include <elle/memory.hh>
 #include <elle/Plugin.hh>
 #include <elle/os/environ.hh>
@@ -267,13 +268,13 @@ namespace reactor
     PushScheduler p(this);
     // Could avoid locking if no jobs are pending with a boolean.
     {
-      boost::unique_lock<boost::mutex> lock(this->_starting_mtx);
+      std::unique_lock<std::mutex> lock(this->_starting_mtx);
       auto& ordered = this->_starting.get<1>();
       this->_running.insert(ordered.begin(), ordered.end());
       this->_starting.clear();
     }
     auto& ordered = this->_running.get<1>();
-    std::vector<Thread*> running(ordered.begin(), ordered.end());
+    auto running = make_vector(ordered);
     ELLE_TRACE_SCOPE("Scheduler: new round with %s jobs", running.size());
 
     ELLE_DUMP("%s: starting: %s", *this, this->_starting);
@@ -405,7 +406,7 @@ namespace reactor
   {
     // FIXME: be thread safe only if needed
     {
-      boost::unique_lock<boost::mutex> lock(this->_starting_mtx);
+      std::unique_lock<std::mutex> lock(this->_starting_mtx);
       this->_starting.insert(&thread);
       // Wake the scheduler.
       this->_io_service.post(nothing);
