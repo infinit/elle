@@ -6,15 +6,21 @@ namespace elle
   {
     SerializerIn::SerializerIn(std::istream& input,
                                bool versioned)
-      : Super(false, versioned)
+      : Super(versioned)
       , _input(input)
     {}
 
     SerializerIn::SerializerIn(std::istream& input,
                                Versions versions,
                                bool versioned)
-      : Super(false, std::move(versions), versioned)
+      : Super(std::move(versions), versioned)
       , _input(input)
     {}
+
+    bool
+    SerializerIn::out() const
+    {
+      return false;
+    }
   }
 }

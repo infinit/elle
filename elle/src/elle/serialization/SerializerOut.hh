@@ -28,6 +28,13 @@ namespace elle
       SerializerOut(std::ostream& output,
                     Versions versions, bool versioned = true);
 
+    /*-----------.
+    | Properties |
+    `-----------*/
+    public:
+      bool
+      out() const override;
+
     /*----------.
     | Overloads |
     `----------*/
