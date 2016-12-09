@@ -20,7 +20,7 @@ If your distribution did not come with Python3 and *pip* for Python3, install th
 sudo apt-get install python3 python3-pip
 ```
 
-**OS X:**
+**macOS:**
 
 Python3 can be installed using [homebrew](http://brew.sh).
 ```bash
