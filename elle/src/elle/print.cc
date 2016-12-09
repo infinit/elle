@@ -232,10 +232,9 @@ namespace elle
       std::shared_ptr<Expression> res;
       auto first = input.begin();
       auto last = input.end();
-      if (!qi::phrase_parse(first, last, phrase, qi::eoi, res))
+      if (!qi::phrase_parse(first, last, phrase, qi::eoi, res) || first != last)
         elle::err("invalid format: %s", input);
       ELLE_ASSERT(res);
-      ELLE_ASSERT(first == last);
       return res;
     }
 
