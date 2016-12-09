@@ -87,7 +87,7 @@ namespace sum
       if (!isDir)
         throw reactor::filesystem::Error(ENOTDIR, "Not a directory");
       if (name == "sum")
-        return elle::make_unique<Path>(num, true);
+        return std::make_unique<Path>(num, true);
       std::size_t pos;
       int n;
       try {
@@ -105,7 +105,7 @@ namespace sum
     {
       if ((flags & 3) != O_RDONLY)
         throw reactor::filesystem::Error(EACCES, "Write access denied");
-      return elle::make_unique<Handle>(num);
+      return std::make_unique<Handle>(num);
     }
     int num;
     bool isDir;
@@ -154,16 +154,16 @@ static void run_filesystem(reactor::filesystem::FileSystem &fs,
 
 static void test_sum(void)
 {
-  reactor::filesystem::FileSystem fs(elle::make_unique<sum::Operations>(), true);
-  #ifdef INFINIT_WINDOWS
+  reactor::filesystem::FileSystem fs(std::make_unique<sum::Operations>(), true);
+#ifdef INFINIT_WINDOWS
   boost::filesystem::path tmp("K:");
-  #else
+#else
   auto tmp = boost::filesystem::temp_directory_path() / boost::filesystem::unique_path();
   elle::SafeFinally remover([&] {
       boost::filesystem::remove(tmp);
   });
   boost::filesystem::create_directories(tmp);
-  #endif
+#endif
 
   reactor::Barrier* barrier;
   reactor::Scheduler* sched;
@@ -249,7 +249,7 @@ namespace xorfs
     std::unique_ptr<rfs::BindHandle>
     make_handle(boost::filesystem::path& where, int fd) override
     {
-      return elle::make_unique<Handle>(fd, where);
+      return std::make_unique<Handle>(fd, where);
     }
   };
 
@@ -274,7 +274,7 @@ test_xor(void)
       boost::filesystem::remove(tmpsource, erc);
   });
   reactor::filesystem::FileSystem fs(
-    elle::make_unique<xorfs::Encrypt>(tmpsource),
+    std::make_unique<xorfs::Encrypt>(tmpsource),
     false);
   boost::filesystem::create_directories(tmpmount);
   boost::filesystem::create_directories(tmpsource);
@@ -288,7 +288,7 @@ test_xor(void)
     return;
   }
   std::string text = "coincoin";
-  #if INFINIT_WINDOWS
+#if INFINIT_WINDOWS
   Sleep(200);
 #else
   ::usleep(200000);

@@ -87,10 +87,10 @@ ELLE_TEST_SCHEDULED(all_is_well)
   paxos::Server<int, int, int> server_2(12, {11, 12, 13});
   paxos::Server<int, int, int> server_3(13, {11, 12, 13});
   typedef paxos::Client<int, int, int>::Peers Peers;
-  Peers peers;
-  peers.push_back(elle::make_unique<Peer<int, int, int>>(11, server_1));
-  peers.push_back(elle::make_unique<Peer<int, int, int>>(12, server_2));
-  peers.push_back(elle::make_unique<Peer<int, int, int>>(13, server_3));
+  auto peers = Peers{};
+  peers.emplace_back(std::make_unique<Peer<int, int, int>>(11, server_1));
+  peers.emplace_back(std::make_unique<Peer<int, int, int>>(12, server_2));
+  peers.emplace_back(std::make_unique<Peer<int, int, int>>(13, server_3));
   paxos::Client<int, int, int> client(1, std::move(peers));
   try
   {
@@ -153,10 +153,10 @@ ELLE_TEST_SCHEDULED(two_of_three)
   paxos::Server<int, int, int> server_1(11, {11, 12, 13});
   paxos::Server<int, int, int> server_2(12, {11, 12, 13});
   typedef paxos::Client<int, int, int>::Peers Peers;
-  Peers peers;
-  peers.push_back(elle::make_unique<Peer<int, int, int>>(11, server_1));
-  peers.push_back(elle::make_unique<Peer<int, int, int>>(12, server_2));
-  peers.push_back(elle::make_unique<UnavailablePeer<int, int, int>>(13));
+  auto peers = Peers{};
+  peers.emplace_back(std::make_unique<Peer<int, int, int>>(11, server_1));
+  peers.emplace_back(std::make_unique<Peer<int, int, int>>(12, server_2));
+  peers.emplace_back(std::make_unique<UnavailablePeer<int, int, int>>(13));
   paxos::Client<int, int, int> client(1, std::move(peers));
   BOOST_CHECK(!client.choose(42));
   BOOST_CHECK_EQUAL(client.get(), 42);
@@ -166,10 +166,10 @@ ELLE_TEST_SCHEDULED(one_of_three)
 {
   paxos::Server<int, int, int> server_1(11, {11, 12, 13});
   typedef paxos::Client<int, int, int>::Peers Peers;
-  Peers peers;
-  peers.push_back(elle::make_unique<Peer<int, int, int>>(11, server_1));
-  peers.push_back(elle::make_unique<UnavailablePeer<int, int, int>>(12));
-  peers.push_back(elle::make_unique<UnavailablePeer<int, int, int>>(13));
+  auto peers = Peers{};
+  peers.emplace_back(std::make_unique<Peer<int, int, int>>(11, server_1));
+  peers.emplace_back(std::make_unique<UnavailablePeer<int, int, int>>(12));
+  peers.emplace_back(std::make_unique<UnavailablePeer<int, int, int>>(13));
   paxos::Client<int, int, int> client(1, std::move(peers));
   BOOST_CHECK_THROW(client.choose(42), athena::paxos::TooFewPeers);
   BOOST_CHECK_THROW(client.get(), athena::paxos::TooFewPeers);
@@ -181,15 +181,15 @@ ELLE_TEST_SCHEDULED(already_chosen)
   paxos::Server<int, int, int> server_2(12, {11, 12, 13});
   paxos::Server<int, int, int> server_3(13, {11, 12, 13});
   typedef paxos::Client<int, int, int>::Peers Peers;
-  Peers peers_1;
-  peers_1.push_back(elle::make_unique<Peer<int, int, int>>(11, server_1));
-  peers_1.push_back(elle::make_unique<Peer<int, int, int>>(12, server_2));
-  peers_1.push_back(elle::make_unique<Peer<int, int, int>>(13, server_3));
+  auto peers_1 = Peers{};
+  peers_1.emplace_back(std::make_unique<Peer<int, int, int>>(11, server_1));
+  peers_1.emplace_back(std::make_unique<Peer<int, int, int>>(12, server_2));
+  peers_1.emplace_back(std::make_unique<Peer<int, int, int>>(13, server_3));
   paxos::Client<int, int, int> client_1(1, std::move(peers_1));
-  Peers peers_2;
-  peers_2.push_back(elle::make_unique<Peer<int, int, int>>(11, server_1));
-  peers_2.push_back(elle::make_unique<Peer<int, int, int>>(12, server_2));
-  peers_2.push_back(elle::make_unique<Peer<int, int, int>>(13, server_3));
+  auto peers_2 = Peers{};
+  peers_2.emplace_back(std::make_unique<Peer<int, int, int>>(11, server_1));
+  peers_2.emplace_back(std::make_unique<Peer<int, int, int>>(12, server_2));
+  peers_2.emplace_back(std::make_unique<Peer<int, int, int>>(13, server_3));
   paxos::Client<int, int, int> client_2(1, std::move(peers_2));
   BOOST_CHECK(!client_1.choose(42));
   auto chosen = client_2.choose(43);
@@ -275,16 +275,16 @@ ELLE_TEST_SCHEDULED(concurrent)
   auto peer_1_2 = new InstrumentedPeer<int, int, int>(12, server_2);
   auto peer_1_3 = new InstrumentedPeer<int, int, int>(13, server_3);
   typedef paxos::Client<int, int, int>::Peers Peers;
-  Peers peers_1;
-  peers_1.push_back(elle::make_unique<Peer<int, int, int>>(11, server_1));
-  peers_1.push_back(std::unique_ptr<paxos::Client<int, int, int>::Peer>(peer_1_2));
-  peers_1.push_back(std::unique_ptr<paxos::Client<int, int, int>::Peer>(peer_1_3));
+  auto peers_1 = Peers{};
+  peers_1.emplace_back(std::make_unique<Peer<int, int, int>>(11, server_1));
+  peers_1.emplace_back(std::unique_ptr<paxos::Client<int, int, int>::Peer>(peer_1_2));
+  peers_1.emplace_back(std::unique_ptr<paxos::Client<int, int, int>::Peer>(peer_1_3));
   paxos::Client<int, int, int> client_1(1, std::move(peers_1));
   client_1.conflict_backoff(false);
-  Peers peers_2;
-  peers_2.push_back(elle::make_unique<Peer<int, int, int>>(11, server_1));
-  peers_2.push_back(elle::make_unique<Peer<int, int, int>>(12, server_2));
-  peers_2.push_back(elle::make_unique<Peer<int, int, int>>(13, server_3));
+  auto peers_2 = Peers{};
+  peers_2.emplace_back(std::make_unique<Peer<int, int, int>>(11, server_1));
+  peers_2.emplace_back(std::make_unique<Peer<int, int, int>>(12, server_2));
+  peers_2.emplace_back(std::make_unique<Peer<int, int, int>>(13, server_3));
   paxos::Client<int, int, int> client_2(2, std::move(peers_2));
   client_2.conflict_backoff(false);
   peer_1_2->propose_barrier.open();
@@ -314,18 +314,18 @@ ELLE_TEST_SCHEDULED(conflict)
   auto peer_1_2 = new InstrumentedPeer<int, int, int>(12, server_2);
   auto peer_1_3 = new InstrumentedPeer<int, int, int>(13, server_3);
   typedef paxos::Client<int, int, int>::Peers Peers;
-  Peers peers_1;
-  peers_1.push_back(elle::make_unique<Peer<int, int, int>>(11, server_1));
-  peers_1.push_back(
+  auto peers_1 = Peers{};
+  peers_1.emplace_back(std::make_unique<Peer<int, int, int>>(11, server_1));
+  peers_1.emplace_back(
     std::unique_ptr<paxos::Client<int, int, int>::Peer>(peer_1_2));
-  peers_1.push_back(
+  peers_1.emplace_back(
     std::unique_ptr<paxos::Client<int, int, int>::Peer>(peer_1_3));
   paxos::Client<int, int, int> client_1(1, std::move(peers_1));
   client_1.conflict_backoff(false);
-  Peers peers_2;
-  peers_2.push_back(elle::make_unique<UnavailablePeer<int, int, int>>(11));
-  peers_2.push_back(elle::make_unique<Peer<int, int, int>>(12, server_2));
-  peers_2.push_back(elle::make_unique<Peer<int, int, int>>(13, server_3));
+  auto peers_2 = Peers{};
+  peers_2.emplace_back(std::make_unique<UnavailablePeer<int, int, int>>(11));
+  peers_2.emplace_back(std::make_unique<Peer<int, int, int>>(12, server_2));
+  peers_2.emplace_back(std::make_unique<Peer<int, int, int>>(13, server_3));
   paxos::Client<int, int, int> client_2(2, std::move(peers_2));
   client_2.conflict_backoff(false);
   peer_1_2->propose_barrier.open();
@@ -353,15 +353,15 @@ ELLE_TEST_SCHEDULED(versions)
   paxos::Server<int, int, int> server_2(12, {11, 12, 13});
   paxos::Server<int, int, int> server_3(13, {11, 12, 13});
   typedef paxos::Client<int, int, int>::Peers Peers;
-  Peers peers_1;
-  peers_1.push_back(elle::make_unique<Peer<int, int, int>>(11, server_1));
-  peers_1.push_back(elle::make_unique<Peer<int, int, int>>(12, server_2));
-  peers_1.push_back(elle::make_unique<Peer<int, int, int>>(13, server_3));
+  auto peers_1 = Peers{};
+  peers_1.emplace_back(std::make_unique<Peer<int, int, int>>(11, server_1));
+  peers_1.emplace_back(std::make_unique<Peer<int, int, int>>(12, server_2));
+  peers_1.emplace_back(std::make_unique<Peer<int, int, int>>(13, server_3));
   paxos::Client<int, int, int> client_1(1, std::move(peers_1));
-  Peers peers_2;
-  peers_2.push_back(elle::make_unique<Peer<int, int, int>>(11, server_1));
-  peers_2.push_back(elle::make_unique<Peer<int, int, int>>(12, server_2));
-  peers_2.push_back(elle::make_unique<Peer<int, int, int>>(13, server_3));
+  auto peers_2 = Peers{};
+  peers_2.emplace_back(std::make_unique<Peer<int, int, int>>(11, server_1));
+  peers_2.emplace_back(std::make_unique<Peer<int, int, int>>(12, server_2));
+  peers_2.emplace_back(std::make_unique<Peer<int, int, int>>(13, server_3));
   paxos::Client<int, int, int> client_2(1, std::move(peers_2));
   ELLE_LOG("choose 1 for version 1")
     BOOST_CHECK(!client_1.choose(1, 1));
@@ -376,28 +376,28 @@ ELLE_TEST_SCHEDULED(versions_partial)
   paxos::Server<int, int, int> server_2(12, {11, 12, 13});
   paxos::Server<int, int, int> server_3(13, {11, 12, 13});
   typedef paxos::Client<int, int, int>::Peers Peers;
-  Peers peers_1;
+  auto peers_1 = Peers{};
   auto peer_1_1 = new InstrumentedPeer<int, int, int>(11, server_1);
-  peers_1.push_back(
+  peers_1.emplace_back(
     std::unique_ptr<paxos::Client<int, int, int>::Peer>(peer_1_1));
   peer_1_1->propose_barrier.open();
   peer_1_1->accept_barrier.open();
   auto peer_1_2 = new InstrumentedPeer<int, int, int>(12, server_2);
   peer_1_2->propose_barrier.open();
-  peers_1.push_back(
+  peers_1.emplace_back(
     std::unique_ptr<paxos::Client<int, int, int>::Peer>(peer_1_2));
   auto peer_1_3 = new InstrumentedPeer<int, int, int>(13, server_3);
   peer_1_3->propose_barrier.open();
-  peers_1.push_back(
+  peers_1.emplace_back(
     std::unique_ptr<paxos::Client<int, int, int>::Peer>(peer_1_3));
   paxos::Client<int, int, int> client_1(1, std::move(peers_1));
   client_1.conflict_backoff(false);
   ELLE_LOG("select 1 for version 1 (client 2)")
   {
-    Peers peers_2;
-    peers_2.push_back(elle::make_unique<Peer<int, int, int>>(11, server_1));
-    peers_2.push_back(elle::make_unique<Peer<int, int, int>>(12, server_2));
-    peers_2.push_back(elle::make_unique<Peer<int, int, int>>(13, server_3));
+    auto peers_2 = Peers{};
+    peers_2.emplace_back(std::make_unique<Peer<int, int, int>>(11, server_1));
+    peers_2.emplace_back(std::make_unique<Peer<int, int, int>>(12, server_2));
+    peers_2.emplace_back(std::make_unique<Peer<int, int, int>>(13, server_3));
     paxos::Client<int, int, int> client_2(2, std::move(peers_2));
     client_2.conflict_backoff(false);
     BOOST_CHECK(!client_2.choose(1, 1));
@@ -426,10 +426,10 @@ ELLE_TEST_SCHEDULED(versions_partial)
   //   +---------+---------+---------+
   ELLE_LOG("select 1 for version 1 (client 3)")
   {
-    Peers peers_3;
-    peers_3.push_back(elle::make_unique<Peer<int, int, int>>(11, server_1));
-    peers_3.push_back(elle::make_unique<Peer<int, int, int>>(12, server_2));
-    peers_3.push_back(elle::make_unique<Peer<int, int, int>>(13, server_3));
+    auto peers_3 = Peers{};
+    peers_3.emplace_back(std::make_unique<Peer<int, int, int>>(11, server_1));
+    peers_3.emplace_back(std::make_unique<Peer<int, int, int>>(12, server_2));
+    peers_3.emplace_back(std::make_unique<Peer<int, int, int>>(13, server_3));
     paxos::Client<int, int, int> client_3(3, std::move(peers_3));
     auto chosen = client_3.choose(1, 1);
     client_3.conflict_backoff(false);
@@ -463,15 +463,15 @@ ELLE_TEST_SCHEDULED(versions_aborted)
   paxos::Server<int, int, int> server_2(12, {11, 12, 13});
   paxos::Server<int, int, int> server_3(13, {11, 12, 13});
   typedef paxos::Client<int, int, int>::Peers Peers;
-  Peers peers_1;
-  peers_1.push_back(elle::make_unique<Peer<int, int, int>>(11, server_1));
-  peers_1.push_back(elle::make_unique<UnavailablePeer<int, int, int>>(12));
-  peers_1.push_back(elle::make_unique<UnavailablePeer<int, int, int>>(13));
+  auto peers_1 = Peers{};
+  peers_1.emplace_back(std::make_unique<Peer<int, int, int>>(11, server_1));
+  peers_1.emplace_back(std::make_unique<UnavailablePeer<int, int, int>>(12));
+  peers_1.emplace_back(std::make_unique<UnavailablePeer<int, int, int>>(13));
   paxos::Client<int, int, int> client_1(1, std::move(peers_1));
-  Peers peers_2;
-  peers_2.push_back(elle::make_unique<UnavailablePeer<int, int, int>>(11));
-  peers_2.push_back(elle::make_unique<Peer<int, int, int>>(12, server_2));
-  peers_2.push_back(elle::make_unique<Peer<int, int, int>>(13, server_3));
+  auto peers_2 = Peers{};
+  peers_2.emplace_back(std::make_unique<UnavailablePeer<int, int, int>>(11));
+  peers_2.emplace_back(std::make_unique<Peer<int, int, int>>(12, server_2));
+  peers_2.emplace_back(std::make_unique<Peer<int, int, int>>(13, server_3));
   paxos::Client<int, int, int> client_2(2, std::move(peers_2));
   BOOST_CHECK_THROW(client_1.choose(2, 2), elle::Error);
   BOOST_CHECK(!client_2.choose(1, 1));
@@ -487,18 +487,18 @@ ELLE_TEST_SCHEDULED(propose_before_current_proposal_acceptation)
   Server server_2(12, {11, 12, 13});
   Server server_3(13, {11, 12, 13});
   // Client 1.
-  Peers peers_1;
-  peers_1.push_back(elle::make_unique<Peer>(11, server_1));
-  peers_1.push_back(elle::make_unique<Peer>(12, server_2));
+  auto peers_1 = Peers{};
+  peers_1.emplace_back(std::make_unique<Peer>(11, server_1));
+  peers_1.emplace_back(std::make_unique<Peer>(12, server_2));
   auto peer_1_3 = new InstrumentedPeer<int, int, int>(13, server_3, true);
-  peers_1.push_back(std::unique_ptr<paxos::Client<int, int, int>::Peer>(peer_1_3));
+  peers_1.emplace_back(std::unique_ptr<paxos::Client<int, int, int>::Peer>(peer_1_3));
   paxos::Client<int, int, int> client_1(1, std::move(peers_1));
   // Client 2
-  Peers peers_2;
-  peers_2.push_back(elle::make_unique<Peer>(11, server_1));
-  peers_2.push_back(elle::make_unique<Peer>(12, server_2));
+  auto peers_2 = Peers{};
+  peers_2.emplace_back(std::make_unique<Peer>(11, server_1));
+  peers_2.emplace_back(std::make_unique<Peer>(12, server_2));
   auto peer_2_3 = new InstrumentedPeer<int, int, int>(13, server_3, true);
-  peers_2.push_back(std::unique_ptr<paxos::Client<int, int, int>::Peer>(peer_2_3));
+  peers_2.emplace_back(std::unique_ptr<paxos::Client<int, int, int>::Peer>(peer_2_3));
   paxos::Client<int, int, int> client_2(2, std::move(peers_2));
   // Do not confirm first proposal.
   peer_1_3->confirm_barrier.close();
@@ -546,8 +546,8 @@ ELLE_TEST_SCHEDULED(elect_extend)
   typedef Client::Peers Peers;
   Server server_1(11, {11});
   Server server_2(12, {11, 12});
-  Peers peers;
-  peers.push_back(elle::make_unique<Peer<int, int, int>>(11, server_1));
+  auto peers = Peers{};
+  peers.emplace_back(std::make_unique<Peer<int, int, int>>(11, server_1));
   paxos::Client<int, int, int> client(1, std::move(peers));
   ELLE_LOG("choose 0 for version 0")
     BOOST_CHECK(!client.choose(0, 0));
@@ -577,7 +577,7 @@ ELLE_TEST_SCHEDULED(elect_extend)
   ELLE_LOG("fail choosing 2 for version 2 with partial quorum")
     BOOST_CHECK_THROW(client.choose(2, 2), Server::WrongQuorum);
   client.peers().emplace_back(
-    elle::make_unique<Peer<int, int, int>>(12, server_2));
+    std::make_unique<Peer<int, int, int>>(12, server_2));
   ELLE_LOG("choose 2 for version 2 with extended quorum")
     BOOST_CHECK(!client.choose(2, 2));
   //        11
@@ -617,9 +617,9 @@ ELLE_TEST_SCHEDULED(elect_shrink)
   typedef Client::Peers Peers;
   Server server_1(11, {11, 12});
   Server server_2(12, {11, 12});
-  Peers peers;
-  peers.push_back(elle::make_unique<Peer>(11, server_1));
-  peers.push_back(elle::make_unique<Peer>(12, server_2));
+  auto peers = Peers{};
+  peers.emplace_back(std::make_unique<Peer>(11, server_1));
+  peers.emplace_back(std::make_unique<Peer>(12, server_2));
   paxos::Client<int, int, int> client(1, std::move(peers));
   ELLE_LOG("choose initial value")
     BOOST_CHECK(!client.choose(0, 0));
@@ -645,25 +645,25 @@ ELLE_TEST_SCHEDULED(evict_down_lag_behind)
   Server server_3(13, {11, 12, 13});
   auto make_client = [&]
     {
-      Peers peers;
-      peers.push_back(elle::make_unique<Peer>(11, server_1));
-      peers.push_back(elle::make_unique<Peer>(12, server_2));
-      peers.push_back(elle::make_unique<Peer>(13, server_3));
+      auto peers = Peers{};
+      peers.emplace_back(std::make_unique<Peer>(11, server_1));
+      peers.emplace_back(std::make_unique<Peer>(12, server_2));
+      peers.emplace_back(std::make_unique<Peer>(13, server_3));
       return paxos::Client<int, int, int>(1, std::move(peers));
     };
   auto make_2client = [&]
     {
-      Peers peers;
-      peers.push_back(elle::make_unique<Peer>(11, server_1));
-      peers.push_back(elle::make_unique<Peer>(12, server_2));
+      auto peers = Peers{};
+      peers.emplace_back(std::make_unique<Peer>(11, server_1));
+      peers.emplace_back(std::make_unique<Peer>(12, server_2));
       return paxos::Client<int, int, int>(1, std::move(peers));
     };
   auto make_partial_client = [&]
     {
-      Peers peers;
-      peers.push_back(elle::make_unique<Peer>(11, server_1));
-      peers.push_back(elle::make_unique<Peer>(12, server_2));
-      peers.push_back(elle::make_unique<UnavailablePeer<int, int, int>>(13));
+      auto peers = Peers{};
+      peers.emplace_back(std::make_unique<Peer>(11, server_1));
+      peers.emplace_back(std::make_unique<Peer>(12, server_2));
+      peers.emplace_back(std::make_unique<UnavailablePeer<int, int, int>>(13));
       return paxos::Client<int, int, int>(1, std::move(peers));
     };
   ELLE_LOG("choose 1 for version 1")
@@ -757,28 +757,28 @@ namespace quorum_divergence
     Server server_3(13, {11, 12, 13});
     auto client = [&]
     {
-      Peers peers;
-      peers.push_back(elle::make_unique<Peer<int, int, int>>(11, server_1));
-      peers.push_back(elle::make_unique<Peer<int, int, int>>(12, server_2));
-      peers.push_back(elle::make_unique<Peer<int, int, int>>(13, server_3));
+      auto peers = Peers{};
+      peers.emplace_back(std::make_unique<Peer<int, int, int>>(11, server_1));
+      peers.emplace_back(std::make_unique<Peer<int, int, int>>(12, server_2));
+      peers.emplace_back(std::make_unique<Peer<int, int, int>>(13, server_3));
       return paxos::Client<int, int, int>(1, std::move(peers));
     }();
     auto client_1_only = [&]
     {
-      Peers peers;
-      peers.push_back(elle::make_unique<Peer<int, int, int>>(11, server_1));
-      peers.push_back(
-        elle::make_unique<ProposeOnlyPeer<int, int, int>>(12, server_2));
-      peers.push_back(
-        elle::make_unique<ProposeOnlyPeer<int, int, int>>(13, server_3));
+      auto peers = Peers{};
+      peers.emplace_back(std::make_unique<Peer<int, int, int>>(11, server_1));
+      peers.emplace_back(
+        std::make_unique<ProposeOnlyPeer<int, int, int>>(12, server_2));
+      peers.emplace_back(
+        std::make_unique<ProposeOnlyPeer<int, int, int>>(13, server_3));
       return paxos::Client<int, int, int>(2, std::move(peers));
     }();
     auto client_partial_23 = [&]
     {
-      Peers peers;
-      peers.push_back(elle::make_unique<UnavailablePeer<int, int, int>>(11));
-      peers.push_back(elle::make_unique<Peer<int, int, int>>(12, server_2));
-      peers.push_back(elle::make_unique<Peer<int, int, int>>(13, server_3));
+      auto peers = Peers{};
+      peers.emplace_back(std::make_unique<UnavailablePeer<int, int, int>>(11));
+      peers.emplace_back(std::make_unique<Peer<int, int, int>>(12, server_2));
+      peers.emplace_back(std::make_unique<Peer<int, int, int>>(13, server_3));
       return paxos::Client<int, int, int>(3, std::move(peers));
     }();
     ELLE_LOG("choose 1 for version 1")
@@ -828,7 +828,7 @@ ELLE_TEST_SCHEDULED(serialization)
   {
     Server server_1(11, {11, 12});
     Server server_2(12, {11, 12});
-    Peers peers;
+    auto peers = Peers{};
     peers.emplace_back(new Peer(11, server_1));
     peers.emplace_back(new Peer(12, server_2));
     paxos::Client<int, int, int> client(1, std::move(peers));
@@ -845,7 +845,7 @@ ELLE_TEST_SCHEDULED(serialization)
       elle::serialization::json::deserialize<Server>(s1, false, ctx);
     auto server_2 =
       elle::serialization::json::deserialize<Server>(s2, false, ctx);
-    Peers peers;
+    auto peers = Peers{};
     peers.emplace_back(new Peer(11, server_1));
     peers.emplace_back(new Peer(12, server_2));
     paxos::Client<int, int, int> client(1, std::move(peers));
@@ -868,7 +868,7 @@ ELLE_TEST_SCHEDULED(partial_state)
   };
   auto make_client = [&] (std::vector<bool> availability)
     {
-      Peers peers;
+      auto peers = Peers{};
       int i = 0;
       for (auto a: availability)
       {
@@ -923,7 +923,7 @@ ELLE_TEST_SCHEDULED(non_partial_state)
   Server server(11, {11});
   auto make_client = [&] (std::unique_ptr<Peer<int, int, int>> p)
     {
-      Peers peers;
+      auto peers = Peers{};
       peers.emplace_back(std::move(p));
       Client client(1, std::move(peers));
       client.conflict_backoff(false);

@@ -27,7 +27,7 @@ ELLE_TEST_SCHEDULED(destruction_segv)
 {
   int fds[2];
   BOOST_CHECK_EQUAL(::pipe(fds), 0);
-  auto stream = elle::make_unique<reactor::FDStream>(fds[0]);
+  auto stream = std::make_unique<reactor::FDStream>(fds[0]);
   reactor::Barrier reading;
   reactor::Thread reader(
     "reader",

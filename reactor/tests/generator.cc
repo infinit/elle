@@ -30,7 +30,7 @@ ELLE_TEST_SCHEDULED(move)
 {
   auto f = [] (reactor::yielder<std::unique_ptr<int>>::type const& yield)
     {
-      yield(elle::make_unique<int>(42));
+      yield(std::make_unique<int>(42));
     };
   bool seen = false;
   for (auto i: reactor::generator<std::unique_ptr<int>>(f))

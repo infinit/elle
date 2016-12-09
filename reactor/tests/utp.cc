@@ -81,7 +81,7 @@ ELLE_TEST_SCHEDULED(utp_close)
     reactor::Thread* t;
     srv1.listen(0); srv2.listen(0);
     {
-      auto s1 = elle::make_unique<reactor::network::UTPSocket>(srv2);
+      auto s1 = std::make_unique<reactor::network::UTPSocket>(srv2);
       reactor::Barrier b;
       t = new reactor::Thread ("foo", [&] {
           b.open();
@@ -207,7 +207,7 @@ SocketPair::SocketPair()
 {
   srv1.listen(0);
   srv2.listen(0);
-  s1 = elle::make_unique<reactor::network::UTPSocket>(srv2);
+  s1 = std::make_unique<reactor::network::UTPSocket>(srv2);
   s1->connect("127.0.0.1",
               srv1.local_endpoint().port());
   ELLE_LOG("SocketPair accepting");
