@@ -1,3 +1,5 @@
+#include <memory>
+
 // #pragma GCC diagnostic push
 // #pragma GCC diagnostic ignored "-Wdeprecated"
 #include <boost/bind.hpp>
@@ -6,6 +8,7 @@
 #include <boost/spirit/include/qi.hpp>
 // #pragma GCC diagnostic pop
 
+#include <elle/Printable.hh>
 #include <elle/assert.hh>
 #include <elle/err.hh>
 #include <elle/print.hh>

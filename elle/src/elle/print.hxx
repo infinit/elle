@@ -2,7 +2,6 @@
 
 #include <cstring>
 #include <iostream>
-#include <memory>
 #include <string>
 #include <sstream>
 #include <unordered_map>
@@ -10,8 +9,6 @@
 
 #include <boost/format.hpp>
 
-#include <elle/assert.hh>
-#include <elle/Printable.hh>
 #include <elle/TypeInfo.hh>
 #include <elle/err.hh>
 
