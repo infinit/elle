@@ -201,7 +201,7 @@ namespace elle
         // Use the ISO extended input facet to interpret the string.
         std::stringstream ss(str);
         auto input_facet =
-          elle::make_unique<boost::posix_time::time_input_facet>();
+          std::make_unique<boost::posix_time::time_input_facet>();
         // ISO 8601
         input_facet->format("%Y-%m-%dT%H:%M:%S%F");
         ss.imbue(std::locale(ss.getloc(), input_facet.release()));

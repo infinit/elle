@@ -32,11 +32,10 @@ namespace elle
         char magic;
         input.read(&magic, 1);
         if (input.gcount() != 1)
-          throw Error("unable to read magic");
+          err<Error>("unable to read magic");
         if (magic != 0)
-          throw Error(
-            elle::sprintf("wrong magic for binary serialization: 0x%2x",
-                          int(magic)));
+          err<Error>("wrong magic for binary serialization: 0x%2x",
+                     int(magic));
       }
 
       bool
@@ -57,9 +56,8 @@ namespace elle
         int64_t value;
         this->_serialize(value);
         if (value < 0)
-          throw Error(elle::sprintf(
-                        "64-bits unsigned underflow on key \"%s\"",
-                        this->current_name()));
+          err<Error>("64-bits unsigned underflow on key \"%s\"",
+                     this->current_name());
         v = value;
       }
 
@@ -162,9 +160,9 @@ namespace elle
         buffer.size(sz);
         input().read((char*)buffer.mutable_contents(), sz);
         if (input().gcount() != sz)
-          throw Error(elle::sprintf(
-            "%s: short read when deserializing \"%s\": expected %s, got %s",
-            *this, this->current_name(), sz, input().gcount()));
+          err<Error>("%s: short read when deserializing \"%s\":"
+                     " expected %s, got %s",
+                     *this, this->current_name(), sz, input().gcount());
       }
 
       void
@@ -175,7 +173,7 @@ namespace elle
         // Use the ISO extended input facet to interpret the string.
         std::stringstream ss(str);
         auto input_facet =
-          elle::make_unique<boost::posix_time::time_input_facet>();
+          std::make_unique<boost::posix_time::time_input_facet>();
         // ISO 8601
         input_facet->format("%Y-%m-%dT%H:%M:%S%F");
         ss.imbue(std::locale(ss.getloc(), input_facet.release()));
@@ -190,7 +188,7 @@ namespace elle
           return;
         // Boost can't parse timezones, handle it manually.
         if (leftover == "Z")
-          ; // Accept UTC suffix.
+          {} // Accept UTC suffix.
         else if ((leftover[0] == '+' || leftover[0] == '-') && leftover.size() == 5)
         {
           // Handle timezone.
@@ -270,7 +268,7 @@ namespace elle
       {
         int res = s.get();
         if (res == EOF)
-          throw Error("end of stream while reading number");
+          err<Error>("end of stream while reading number");
         return res;
       }
 

@@ -1324,7 +1324,7 @@ namespace elle
           Hierarchy<T>::_map() [name] =
             [] (SerializerIn& s)
             {
-              return elle::make_unique<U>(s.deserialize<U>());
+              return std::make_unique<U>(s.deserialize<U>());
             };
           Hierarchy<T>::_rmap()[id] = name;
           ExceptionMaker<T>::template add<U>();
@@ -1338,10 +1338,9 @@ namespace elle
         }
       };
 
-      typedef
+      using TypeMap =
         std::unordered_map<std::string,
-                           std::function<std::unique_ptr<T>(SerializerIn&)>>
-        TypeMap;
+                           std::function<std::unique_ptr<T>(SerializerIn&)>>;
 #ifdef INFINIT_WINDOWS
 # ifdef ELLE_SERIALIZATION_USE_DLL
   __declspec(dllimport) static TypeMap& _map();
