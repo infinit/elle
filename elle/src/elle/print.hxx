@@ -53,15 +53,16 @@ namespace elle
     `--------*/
 
     template <typename T>
-    std::enable_if_t<std::is_convertible<T, bool>::value, bool>
-    branch_test(T const& t)
+    std::enable_if_exists_t<decltype(bool(std::declval<T>())), bool>
+    branch_test(T const& t, int)
     {
       return bool(t);
     }
 
     template <typename T>
-    std::enable_if_t<!std::is_convertible<T, bool>::value, bool>
-    branch_test(T const& t)
+    ELLE_COMPILER_ATTRIBUTE_NORETURN
+    bool
+    branch_test(T const& t, ...)
     {
       elle::err("type is not a truth value: %s", elle::type_info<T>());
     }
@@ -187,7 +188,7 @@ namespace elle
       Argument(T const& value)
         : std::function<void (std::ostream&)>(
           [&value] (std::ostream& o) { print(o, value); })
-        , _bool([&value] { return branch_test(value); })
+        , _bool([&value] { return branch_test(value, 0); })
       {}
 
       Argument(char const* value)
