@@ -623,21 +623,24 @@ namespace das
             s, Symbol::name(), opt->second.short_name, opt->second.help);
         else
           elle::meta::static_if<std::is_base_of<CLI_Symbol, Formal>::value>(
-            [] (auto& s) {
-              print_help(s, Formal::name(), Formal::short_name(), Formal::help());
+            [&s] (auto formal) {
+              using formal_t = typename decltype(formal)::type;
+              print_help(s,
+                         formal_t::name(), formal_t::short_name(), formal_t::help());
             },
-            [] (auto& s) {
+            [&s] (auto formal) {
+              using formal_t = typename decltype(formal)::type;
               elle::fprintf(s, "      --%s",
-                            _details::option_name_from_c(Symbol::name()));
-            })(s);
-        elle::meta::static_if<Defaults::template default_for<Formal>::has>(
-            [&defaults] (auto& s)
-            {
-              auto const& v = defaults.Symbol::value;
-              if (!std::is_same<decltype(v), bool const&>::value &&
-                  !std::is_same<decltype(v), boost::none_t const&>::value)
-                elle::fprintf(s, " (default: %s)", v);
-            })(s);
+                            _details::option_name_from_c(formal_t::name()));
+            })(elle::meta::Identity<Formal>{});
+        elle::meta::static_if<Defaults::template default_for<Formal>::has>
+          ([&s] (auto const& defaults)
+           {
+             auto const& v = defaults.Symbol::value;
+             if (!std::is_same<decltype(v), bool const&>::value &&
+                 !std::is_same<decltype(v), boost::none_t const&>::value)
+               elle::fprintf(s, " (default: %s)", v);
+           })(defaults);
         elle::fprintf(s, "\n");
         return true;
       }
