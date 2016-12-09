@@ -36,32 +36,48 @@ Some builders require specific modules, such as:
 - [mistune](https://pypi.python.org/pypi/mistune) *(Markdown parser)*.
 
 Drake's requirements can be found in the root directory of this repository. To install them use:
+
 ```bash
 pip3 install -r requirements.txt
 ```
 
-## Basic structures of a drakefile and a drake script
+## Basic structures of a drakefile and a Drake script
 
 Consider the following hierarchy:
 ```bash
-.
-├── build
-│   └── drake
-├── drakefile
+ .
+ ├── build
+(│   └── drake)
+ └── drakefile
 ```
 
-The `drake script`, located at **./build/drake**:
-```python
-# Import the module.
-try:
-  import drake
-except ImportError:
-  # If you don't have drake in your PYTHONPATH.
-  import sys, os
-  # Change to the actual location of the Drake module.
-  path_to_the_drake_module = "/opt/drake/src"
-  sys.path.insert(0, os.path.realpath(path_to_the_drake_module))
-  import drake
+The `drakefile`, located at **./drakefile**, contains the list of sources, targets, builders transforming sources to tragets, etc.
+
+```python3
+import drake
+
+def configure(arg1,
+              arg2):
+  # List sources
+  # List targets
+  # Declare builders
+  print("got arg1: %s and arg2: %s" % (arg1, arg2))
+```
+
+If you have no special configuration, you can run Drake directly from **./build** (assuming Drake is installed at `/opt/drake`):
+```
+$ cd build
+$ PYTHONPATH=/opt/drake/src /opt/drake/src/bin/drake .. --arg1="bob" --arg2="Hello world!"
+got arg1: bob and arg2: Hello world!
+...
+```
+
+Otherwise, the `Drake script`, located at **./build/drake** is the way to personalize your configuration.
+```python3
+#!/usr/bin/env python3
+import drake
+
+# ...
 
 # Instantiate Drake to look for a drakefile at '../drakefile'.
 path_to_the_drakefile_directory = '..'
@@ -73,13 +89,12 @@ with drake.Drake(path_to_the_drakefile_directory) as d:
   )
 ```
 
-The `drakefile`, located at **./drakefile**:
-```python
-import drake
-
-def configure(arg1,
-              arg2):
-  print("got arg1: %s and arg2: %s" % (arg1, arg2))
+With that structure, you can run (from `build`):
+```
+$ cd drake
+$ ./drake --arg1="sample"
+got arg1: sample and arg2: Hello world!
+...
 ```
 
 ## Examples
@@ -90,7 +105,7 @@ This example shows how to build a simple executable from the C++ source file *he
 
 See the [source directory](examples/hello_world).
 
-The *drakefile* in the root describes the build process. Each platform in the *_build* directory has it's own *drake* script which has some initial configuration.
+The *drakefile* in the root describes the build process. Each platform in the *_build* directory has it's own *Drake* script which has some initial configuration.
 
 To build the example project, we invoke the build *rule* as follows:
 ```bash
@@ -129,7 +144,7 @@ $> ./drake //build
 ...
 ```
 
-Any of the targets can be built individually by invoking drake with their output path:
+Any of the targets can be built individually by invoking Drake with their output path:
 ```bash
 $> ./drake geometry/Shape.o
 ...
@@ -137,7 +152,7 @@ $> ./drake lib/libcolor.a
 ...
 ```
 
-If you would like to see the underlying commands that drake is launching, you can set the `DRAKE_RAW` environment variable:
+If you would like to see the underlying commands that Drake is launching, you can set the `DRAKE_RAW` environment variable:
 
 ```bash
 $> DRAKE_RAW=1 ./drake //build
@@ -152,11 +167,11 @@ $> ./bin/colored_shape
 
 ### GNU Dependencies Example
 
-This example is an executable that fetches the contents of *https://example.com*. To do this, we build our own cURL (which depends on zlib and OpenSSL) using drake.
+This example is an executable that fetches the contents of *https://example.com*. To do this, we build our own cURL (which depends on zlib and OpenSSL) using Drake.
 
 See the [source directory](examples/gnu_builder).
 
-The drakefile shows how cURL, OpenSSL and zlib tarballs are fetched by drake and built in the correct order so that our executable can be linked with cURL.
+The drakefile shows how cURL, OpenSSL and zlib tarballs are fetched by Drake and built in the correct order so that our executable can be linked with cURL.
 
 To build the project:
 ```bash
@@ -175,8 +190,8 @@ $> ./bin/http_request
 
 **DRAKE_RAW**
 
-Setting `DRAKE_RAW=1` in your environment will cause drake to output the raw commands that it calls to perform your build.
+Setting `DRAKE_RAW=1` in your environment will cause Drake to output the raw commands that it calls to perform your build.
 
 **DRAKE_DEBUG_BACKTRACE**
 
-Setting `DRAKE_DEBUG_BACKTRACE=1` in your environment will cause drake to output a backtrace if there is an issue with your build.
+Setting `DRAKE_DEBUG_BACKTRACE=1` in your environment will cause Drake to output a backtrace if there is an issue with your build.
