@@ -1,5 +1,6 @@
-#ifndef DAS_SYMBOL_HH
-# define DAS_SYMBOL_HH
+#pragma once
+
+#include <string>
 
 namespace das
 {
@@ -47,6 +48,5 @@ namespace das
   };
 }
 
-# include <das/Symbol.hxx>
+#include <das/Symbol.hxx>
 
-#endif

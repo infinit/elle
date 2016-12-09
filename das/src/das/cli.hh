@@ -190,7 +190,7 @@ namespace das
       };
     }
 
-    static
+    static inline
     _details::IsOption
     is_option(std::string const& a, Options const& opts = Options())
     {
