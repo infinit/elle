@@ -71,14 +71,13 @@ namespace reactor
   wait(boost::signals2::signal<R(Prototype...)>& signal, Args const& ... values)
   {
     auto s = reactor::Signal{};
-    auto vals = std::make_tuple(std::forward<Args>(values)...);
+    auto vals = std::make_tuple(values...);
     boost::signals2::scoped_connection connection = signal.connect(
       [&] (Prototype const& ... args)
       {
-        if (vals == std::make_tuple(std::forward<Prototype>(args)...))
+        if (vals == std::make_tuple(args...))
           s.signal();
       });
     reactor::wait(s);
   }
 }
-
