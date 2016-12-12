@@ -2340,8 +2340,8 @@ class ShellCommand(Builder):
 
     def execute(self):
         """Run the command given at construction time."""
-        return self.cmd(self.__pretty or ' '.join(self.__command),
-                        self.__command,
+        return self.cmd(self.__pretty or ' '.join(self.command),
+                        self.command,
                         cwd = self.__cwd,
                         env = self.__environment,
                         redirect_stdout = self.__stdout)
