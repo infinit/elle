@@ -581,6 +581,8 @@ class GccToolkit(Toolkit):
                archiver = None,
                archiver_flags = [],
                ranlib = None):
+    if isinstance(compiler, Toolkit):
+      return compiler
     Toolkit.__init__(self)
     self.os = os
     self.__include_path = None
