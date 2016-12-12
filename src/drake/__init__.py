@@ -2350,6 +2350,10 @@ class ShellCommand(Builder):
     def command(self):
         return self.__command
 
+    @property
+    def pretty(self):
+        return self.__pretty
+
     def hash(self):
       return self.__command
 
