@@ -1728,7 +1728,8 @@ def command_flatten(command, env = None):
                   for var, value in env.items())
   else:
     output_env = ()
-  return ' '.join(chain(output_env, map(pipes.quote, command)))
+  return ' '.join(chain(output_env,
+                        (pipes.quote(str(a)) for a in command)))
 
 class Builder:
 
