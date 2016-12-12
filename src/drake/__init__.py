@@ -1633,7 +1633,7 @@ class Node(BaseNode):
   @property
   def mtime_local(self):
     if self.__mtime is None:
-      self.__mtime = _OS.path.getmtime(str(self.path()))
+      self.__mtime = _OS.lstat(str(self.path())).st_mtime
     return self.__mtime
 
   def touch(self, t):
@@ -4241,3 +4241,52 @@ class PythonModule(Builder):
                       env = environment)
   def hash(self):
     return self.command(None)
+
+
+class Symlinker(ShellCommand):
+
+  def __init__(self, link, target):
+    self.__link = link
+    self.__target = target
+    self.__path = self.__target.path()
+    super().__init__(
+      [],
+      [self.__link],
+      None,
+      'Symlink %s' % self.__link)
+    if not self.__path.absolute():
+      self.__path = self.__path.without_prefix(
+        self.__link.path().dirname())
+
+  def __hash__(self):
+    return {
+      'link': self.__path,
+    }
+
+  @property
+  def command(self):
+    return ['ln', '-sfn', self.__path, self.__link.path()]
+
+  def execute(self):
+    # Override ShellCommand execution to avoid forking, but still
+    # pretend to be a shell command for raw mode, Makefile generation,
+    # etc.
+    try:
+      self.output(
+        command_flatten(self.command) if _RAW else self.pretty)
+      _OS.symlink(str(self.__path), str(self.__link.path()))
+    except Exception as e:
+      print(e, file = sys.stderr)
+      return False
+    else:
+      return True
+
+  def __str__(self):
+    return 'Symlinker(%r, %r)' % (self.__path, self.__link)
+
+class Symlink(Node):
+
+  def __init__(self, path, target):
+    super().__init__(path)
+    self.__target = target
+    Symlinker(self, target)

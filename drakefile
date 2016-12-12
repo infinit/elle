@@ -74,6 +74,7 @@ def configure(prefix = '.'):
     'base/failure-cmd',
     'base/interrupt-dynamic-dependency',
     'base/mtime',
+    'base/symlink',
     'base/termination',
     'base/termination-keep-successful',
   ]

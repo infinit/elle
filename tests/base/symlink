@@ -1,0 +1,15 @@
+#!/usr/bin/env python3
+
+'''Check symlinks creation.'''
+
+import drake
+from utils import *
+
+with Drake() as d:
+  source = drake.touch('source')
+  s = drake.Symlink('link', source)
+  ss = drake.Symlink('sub/link', source)
+  s.build()
+  assertEq(os.readlink('link'), 'source')
+  ss.build()
+  assertEq(os.readlink('sub/link'), '../source')
