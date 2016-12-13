@@ -53,13 +53,9 @@ namespace infinit
       std::mutex* mutex;
       {
         std::lock_guard<std::mutex> lock(crypto_lock_mutex());
-        std::unordered_map<int, std::unique_ptr<std::mutex>>::iterator it =
-          mutexes().find(n);
+        auto it = mutexes().find(n);
         if (it == mutexes().end())
-        {
-          it = mutexes().emplace(
-            std::make_pair(n, elle::make_unique<std::mutex>())).first;
-        }
+          it = mutexes().emplace(n, std::make_unique<std::mutex>()).first;
         mutex = it->second.get();
       }
       if (set)

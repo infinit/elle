@@ -65,7 +65,7 @@ namespace elle
       std::unique_ptr<Indentation>
       clone() override
       {
-        return elle::make_unique<PlainIndentation>();
+        return std::make_unique<PlainIndentation>();
       }
 
     private:
@@ -137,7 +137,7 @@ namespace elle
       std::function<std::unique_ptr<Indentation> ()> factory =
         [] () -> std::unique_ptr<Indentation>
         {
-          return elle::make_unique<PlainIndentation>();
+          return std::make_unique<PlainIndentation>();
         };
       for (auto const& indenter: elle::Plugin<Indenter>::plugins())
       {
