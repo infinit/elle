@@ -4258,7 +4258,7 @@ class Symlinker(ShellCommand):
       self.__path = self.__path.without_prefix(
         self.__link.path().dirname())
 
-  def __hash__(self):
+  def hash(self):
     return {
       'link': self.__path,
     }
