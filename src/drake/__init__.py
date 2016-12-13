@@ -1644,7 +1644,7 @@ class Node(BaseNode):
           time.sleep(t - now)
         else:
           raise NotImplementedError()
-      _OS.utime(str(self.path()), (t, t))
+      _OS.utime(str(self.path()), (t, t), follow_symlinks=False)
       self.__mtime = None
       return self.mtime_local >= t
     try:
