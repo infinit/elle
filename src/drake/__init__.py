@@ -4272,6 +4272,8 @@ class Symlinker(ShellCommand):
     # pretend to be a shell command for raw mode, Makefile generation,
     # etc.
     try:
+      if _OS.path.exists(str(self.__link)):
+        _OS.remove(str(self.__link))
       self.output(
         command_flatten(self.command) if _RAW else self.pretty)
       _OS.symlink(str(self.__path), str(self.__link.path()))
