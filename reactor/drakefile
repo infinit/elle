@@ -324,6 +324,9 @@ def configure(curl_config,
         ],
         patch_dir = fuse_basename
       )
+      extra_args = []
+      if cxx_toolkit.architecture is drake.architecture.arm:
+        extra_args += ['--host', cxx_toolkit.cxx[:-4]]
       GNUBuilder(
         cxx_toolkit,
         configure = fuse_configure,
@@ -335,7 +338,7 @@ def configure(curl_config,
         '--disable-example',
         '--disable-static',
         '--enable-shared'
-        ],
+        ] + extra_args,
         targets = [fuse_lib] + fuse_includes,
       )
       fuse_config = drake.cxx.Config()

@@ -251,6 +251,8 @@ def configure(cxx_toolkit = None,
     zlib_makefile = None
     zlib_configure_call = zlib_configure
     zlib_configure_args = []
+    if cxx_toolkit.architecture is drake.architecture.arm:
+      zlib_env['CC'] = cxx_toolkit.cxx[:-4] + '-gcc'
     if cxx_toolkit.os is drake.os.macos:
       zlib_env['CC'] = cxx_toolkit.c
       zlib_lib = drake.cxx.DynLib('zlib/lib/libz.1.2.8.dylib')
@@ -427,6 +429,8 @@ def configure(cxx_toolkit = None,
       os_string = 'linux-x86_64'
     elif cxx_toolkit.architecture == drake.architecture.x86:
       os_string = 'linux-generic32'
+    elif cxx_toolkit.architecture == drake.architecture.arm:
+      os_string = 'linux-armv4'
   elif cxx_toolkit.os is drake.os.android:
     os_string = 'android'
   elif windows:
@@ -579,7 +583,10 @@ def configure(cxx_toolkit = None,
   #     'LDFLAGS=-Wl,-rpath-link,%s -ldl' % (openssl_prefix / 'lib'))
   curl_environment = {}
   curl_environment['CC'] = cxx_toolkit.c
-  curl_configure_args.append('--host=%s' % drake.host())
+  if cxx_toolkit.architecture is drake.architecture.arm:
+    curl_configure_args.append('--host=%s' % cxx_toolkit.cxx[:-4])
+  else:
+    curl_configure_args.append('--host=%s' % drake.host())
   if cxx_toolkit.os is drake.os.macos:
     path = drake.path_build(zlib_prefix, absolute = True) / 'lib'
     curl_configure_args.append('DYLD_FALLBACK_LIBRARY_PATH=%s' % path)
@@ -732,8 +739,10 @@ def configure(cxx_toolkit = None,
     elif cxx_toolkit.os is drake.os.linux:
       libarchive_lib = 'lib/libarchive.so.13'
       libarchive_env = {'LD_PRELOAD': libarchive_preload}
-
     libarchive_lib = drake.cxx.DynLib(libarchive_prefix / libarchive_lib)
+  if cxx_toolkit.architecture is drake.architecture.arm:
+    libarchive_configure_args += ['--host=%s' % cxx_toolkit.cxx[:-4]]
+
   libarchive_prefix_absolute = drake.path_build(libarchive_prefix,
                                                 absolute = True)
   if cxx_toolkit.os is not drake.os.ios:
@@ -1062,7 +1071,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
             'macosx-version=iphone-8.0',
             'abi=aapcs',
           ]
-        elif cxx_toolkit.os is drake.os.android:
+        elif cxx_toolkit.os is drake.os.android or cxx_toolkit.architecture == drake.architecture.arm:
           self.__command += [
             'cxxflags=-std=c++11',
             'linkflags=-std=c++11',
@@ -1148,7 +1157,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
   ## ------------- ##
   ldap_config = None
   ldap_libs = None
-  if not windows:
+  if not windows and cxx_toolkit.architecture is not drake.architecture.arm:
     ldap_version = drake.Version(2, 4, 44)
     ldap_basename = 'openldap-%s' % ldap_version
     ldap_url = 'http://www.openldap.org/software/download/OpenLDAP/openldap-release/%s.tgz' % ldap_basename

@@ -1,6 +1,6 @@
 #include <reactor/backend/backend.hh>
 
-#if defined(__arm__) || defined(__clang__)
+#if defined(__clang__)
 // libc++
 
 #include <reactor/libcxx-exceptions/cxa_exception.hpp>
