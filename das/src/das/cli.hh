@@ -601,11 +601,11 @@ namespace das
                char short_name,
                std::string const& help)
     {
-      if (short_name != 0)
+      if (short_name)
         elle::fprintf(s, "  -%s, ", short_name);
       else
         elle::fprintf(s, "      ");
-      elle::fprintf(s, "--%s: %s", _details::option_name_from_c(name), help);
+      elle::fprintf(s, "--%-15s  %s", _details::option_name_from_c(name), help);
     }
 
     template <typename Symbol, typename Defaults>
