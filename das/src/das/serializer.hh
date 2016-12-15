@@ -1,12 +1,11 @@
-#ifndef DAS_SERIALIZER_HH
-# define DAS_SERIALIZER_HH
+#pragma once
 
-# include <type_traits>
+#include <type_traits>
 
-# include <elle/serialization/SerializerIn.hh>
-# include <elle/serialization/SerializerOut.hh>
+#include <elle/serialization/SerializerIn.hh>
+#include <elle/serialization/SerializerOut.hh>
 
-# include <das/model.hh>
+#include <das/model.hh>
 
 namespace das
 {
@@ -174,7 +173,7 @@ namespace das
   }
 }
 
-# define DAS_SERIALIZE(Class, ...)                              \
+#define DAS_SERIALIZE(Class, ...)                               \
   namespace elle                                                \
   {                                                             \
     namespace serialization                                     \
@@ -186,6 +185,5 @@ namespace das
     }                                                           \
   }                                                             \
 
-# include <das/serializer.hxx>
+#include <das/serializer.hxx>
 
-#endif

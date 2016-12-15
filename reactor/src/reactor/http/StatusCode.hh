@@ -1,7 +1,6 @@
-#ifndef REACTOR_HTTP_STATUSCODE_HH
-# define REACTOR_HTTP_STATUSCODE_HH
+#pragma once
 
-# include <iosfwd>
+#include <iosfwd>
 
 namespace reactor
 {
@@ -70,4 +69,3 @@ namespace std
   };
 }
 
-#endif

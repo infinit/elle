@@ -1,17 +1,13 @@
-#ifndef ELLE_PRINTF_HXX
-# define ELLE_PRINTF_HXX
+#include <ostream>
+#include <typeinfo>
 
-# include <ostream>
-# include <typeinfo>
+#include <boost/format.hpp>
 
-# include <boost/format.hpp>
-
-# include <elle/Backtrace.hh>
-# include <elle/Exception.hh>
-# include <elle/TypeInfo.hh>
-# include <elle/assert.hh>
-# include <elle/log.hh>
-# include <elle/sfinae.hh>
+#include <elle/Backtrace.hh>
+#include <elle/Exception.hh>
+#include <elle/TypeInfo.hh>
+#include <elle/assert.hh>
+#include <elle/log.hh>
 
 // Work around Clang 3.5.0 bug where having this helper in the elle namespace
 // will find a << overload for elle::serialization::Serializer::SerializerIn
@@ -31,7 +27,7 @@ namespace _elle_printf_details
   template <typename T>
   constexpr
   bool
-  _is_streamable(unsigned int)
+  _is_streamable(...)
   {
     return false;
   };
@@ -226,4 +222,3 @@ namespace elle
 
 }
 
-#endif
