@@ -65,7 +65,7 @@ namespace reactor
     SSLSocket::SSLSocket(boost::asio::ip::tcp::endpoint const& endpoint,
                          DurationOpt timeout)
       : SSLCertificateOwner()
-      , Super(elle::make_unique<SSLStream>(
+      , Super(std::make_unique<SSLStream>(
                 reactor::Scheduler::scheduler()->io_service(),
                 this->certificate()->context()),
               endpoint, timeout)
@@ -86,7 +86,7 @@ namespace reactor
                          SSLCertificate& certificate,
                          DurationOpt timeout)
       : SSLCertificateOwner()
-      , Super(elle::make_unique<SSLStream>(
+      , Super(std::make_unique<SSLStream>(
                 reactor::Scheduler::scheduler()->io_service(),
                 certificate.context()),
               endpoint, timeout)
@@ -272,7 +272,7 @@ namespace reactor
         auto socket_raw = this->_socket.get();
         auto socket = elle::utility::move_on_copy(this->_socket);
         auto timer = elle::utility::move_on_copy(
-          elle::make_unique<boost::asio::deadline_timer>(
+          std::make_unique<boost::asio::deadline_timer>(
             reactor::scheduler().io_service()));
         auto timer_raw = (*timer).get();
         auto over = std::make_shared<bool>(false);

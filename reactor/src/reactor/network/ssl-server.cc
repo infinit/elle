@@ -63,7 +63,7 @@ namespace reactor
         {
           auto& io_service = reactor::Scheduler::scheduler()->io_service();
           auto ssl =
-            elle::make_unique<SSLStream>(io_service,
+            std::make_unique<SSLStream>(io_service,
                                          this->_certificate->context());
           EndPoint peer;
           this->_accept(ssl->next_layer(), peer);
