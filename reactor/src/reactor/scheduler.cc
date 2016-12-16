@@ -669,7 +669,7 @@ namespace reactor
   Scheduler::signal_handle(int signal, std::function<void ()> const& handler)
   {
     ELLE_TRACE_SCOPE("%s: handle signal %s", *this, signal_string(signal));
-    auto set = elle::make_unique<boost::asio::signal_set>(this->io_service(),
+    auto set = std::make_unique<boost::asio::signal_set>(this->io_service(),
                                                           signal);
     set->async_wait(std::bind(&signal_callback,
                               std::ref(*this),

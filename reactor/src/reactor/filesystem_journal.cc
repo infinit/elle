@@ -144,7 +144,7 @@ namespace reactor
     std::unique_ptr<Operations> install_journal(std::unique_ptr<Operations> backend,
                                                 std::string const& path)
     {
-      return elle::make_unique<JournalOperations>(std::move(backend), path);
+      return std::make_unique<JournalOperations>(std::move(backend), path);
     }
 
     class JournalHandle: public Handle
@@ -286,7 +286,7 @@ namespace reactor
         try
         {
           auto bh = _backend->create(flags, mode);
-          auto handle = elle::make_unique<JournalHandle>(_owner, std::move(bh));
+          auto handle = std::make_unique<JournalHandle>(_owner, std::move(bh));
           h = handle.get();
           _owner.push_ok(_full_path, "create");
           return std::move(handle);
@@ -308,7 +308,7 @@ namespace reactor
         try
         {
           auto bh = _backend->open(flags, mode);
-          auto handle = elle::make_unique<JournalHandle>(_owner, std::move(bh));
+          auto handle = std::make_unique<JournalHandle>(_owner, std::move(bh));
           h = handle.get();
           _owner.push_ok(_full_path, "open");
           return std::move(handle);
