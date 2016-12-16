@@ -15,7 +15,7 @@ namespace reactor
       ELLE_LOG_COMPONENT("reactor.test.http");
       if (!this->_server)
       {
-        auto server = elle::make_unique<TCPServer>();
+        auto server = std::make_unique<TCPServer>();
         server->listen();
         this->_port = server->port();
         this->_server = std::move(server);
@@ -31,7 +31,7 @@ namespace reactor
     HttpServer::HttpServer(int port)
     {
       ELLE_LOG_COMPONENT("reactor.test.http");
-      auto server = elle::make_unique<TCPServer>();
+      auto server = std::make_unique<TCPServer>();
       server->listen(port);
       this->_port = server->port();
       this->_server = std::move(server);

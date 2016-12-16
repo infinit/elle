@@ -476,7 +476,7 @@ namespace reactor
     void
     UTPServer::Impl::listen(EndPoint const& ep)
     {
-      this->_socket = elle::make_unique<RDVSocket>();
+      this->_socket = std::make_unique<RDVSocket>();
       this->_socket->close();
       this->_socket->bind(ep);
 #ifdef INFINIT_LINUX
@@ -485,7 +485,7 @@ namespace reactor
       setsockopt(this->_socket->socket()->native_handle(), SOL_IP, IP_RECVERR,
                  (char*)&on, sizeof(on));
 #endif
-      this->_listener = elle::make_unique<Thread>(
+      this->_listener = std::make_unique<Thread>(
         elle::sprintf("UTPServer(%s)", this->_socket->local_endpoint().port()),
         [this]
         {
@@ -574,7 +574,7 @@ namespace reactor
     UTPServer::Impl::on_accept(utp_socket* s)
     {
       this->_accept_queue.emplace_back(
-        new UTPSocket(elle::make_unique<UTPSocket::Impl>(
+        new UTPSocket(std::make_unique<UTPSocket::Impl>(
                         this->shared_from_this(), s, true)));
       this->_accept_barrier.open();
     }

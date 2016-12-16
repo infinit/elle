@@ -89,7 +89,7 @@ namespace reactor
     }
 
     UTPSocket::UTPSocket(UTPServer& server)
-      : UTPSocket(elle::make_unique<Impl>(server._impl,
+      : UTPSocket(std::make_unique<Impl>(server._impl,
                                           utp_create_socket(server._impl->_ctx),
                                           false))
     {
@@ -97,7 +97,7 @@ namespace reactor
     }
 
     UTPSocket::UTPSocket(UTPServer& server, std::string const& host, int port)
-      : UTPSocket(elle::make_unique<Impl>(server._impl,
+      : UTPSocket(std::make_unique<Impl>(server._impl,
                                           utp_create_socket(server._impl->_ctx),
                                           false))
     {

@@ -9,7 +9,7 @@ namespace reactor
     UnixDomainSocket::UnixDomainSocket(EndPoint const& ep,
                                        DurationOpt timeout)
       : Super(
-        elle::make_unique<boost::asio::local::stream_protocol::socket>(
+        std::make_unique<boost::asio::local::stream_protocol::socket>(
           reactor::scheduler().io_service()),
         ep, std::move(timeout))
     {}

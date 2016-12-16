@@ -23,7 +23,7 @@ namespace reactor
 
     UDPSocket::UDPSocket(Scheduler& sched)
       : Super(
-        elle::make_unique<boost::asio::ip::udp::socket>(
+        std::make_unique<boost::asio::ip::udp::socket>(
           sched.io_service()))
     {}
 
@@ -35,7 +35,7 @@ namespace reactor
                          const std::string& hostname,
                          const std::string& port)
       : Super(
-        elle::make_unique<boost::asio::ip::udp::socket>(sched.io_service()),
+        std::make_unique<boost::asio::ip::udp::socket>(sched.io_service()),
         resolve_udp(hostname, port),
         DurationOpt())
     {}
