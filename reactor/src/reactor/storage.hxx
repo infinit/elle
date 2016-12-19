@@ -24,52 +24,42 @@ namespace reactor
     return this->Get();
   }
 
-  // XXX: factor with Get(T const& def)
   template <typename T>
   T&
   LocalStorage<T>::Get()
   {
-    Scheduler* sched = Scheduler::scheduler();
-    Thread* current = sched ? sched->current() : 0;
-    void* key = current ? (void*)current : (void*)sched;
-    std::lock_guard<std::mutex> lock(_mutex);
-    typename Content::iterator it = this->_content.find(key);
-    if (it == this->_content.end())
-      {
-        if (current != nullptr)
-        {
-          auto link = current->destructed().connect(
-            std::bind(&Self::_Clean, this, current)
-          );
-          this->_links[current] = link;
-        }
-        return this->_content[key];
-      }
-    else
-      return it->second;
+    return _get([](auto&) {});
   }
-
 
   template <typename T>
   T&
   LocalStorage<T>::Get(T const& def)
   {
+    return _get([&def](auto& storage) { storage = def; });
+  }
+
+  template <typename T>
+  template <typename Fun>
+  T&
+  LocalStorage<T>::_get(Fun fun)
+  {
     Scheduler* sched = Scheduler::scheduler();
-    Thread* current = sched ? sched->current() : 0;
-    void* key = current ? (void*)current : (void*)sched;
+    Thread* current = sched ? sched->current() : nullptr;
+    void* key = current ? static_cast<void*>(current) : static_cast<void*>(sched);
     std::lock_guard<std::mutex> lock(_mutex);
-    typename Content::iterator it = this->_content.find(key);
+    auto it = this->_content.find(key);
     if (it == this->_content.end())
       {
-        this->_content[key] = def;
-        if (current != nullptr)
+        auto& res = this->_content[key];
+        fun(res);
+        if (current)
         {
           auto link = current->destructed().connect(
             std::bind(&Self::_Clean, this, current)
           );
           this->_links[current] = link;
         }
-        return this->_content[key];
+        return res;
       }
     else
       return it->second;

@@ -22,6 +22,9 @@ namespace reactor
     T& Get();
 
   private:
+    template <typename Fun>
+    T&
+    _get(Fun fun);
     void _Clean(Thread* t);
     using Content = std::unordered_map<void*, T>;
     Content _content;
