@@ -1,7 +1,6 @@
-#ifndef REACTOR_LOGGER_HH
-# define REACTOR_LOGGER_HH
+#pragma once
 
-# include <elle/Plugin.hh>
+#include <elle/Plugin.hh>
 
 namespace reactor
 {
@@ -11,5 +10,3 @@ namespace reactor
     extern elle::Plugin<elle::log::Tag> logger_tags;
   }
 }
-
-#endif

@@ -10,7 +10,7 @@ namespace reactor
     public elle::log::Indentation
   {
   public:
-    typedef elle::log::Indenter::Factory Factory;
+    using Factory = elle::log::Indenter::Factory;
     Indentation(Factory const& factory)
       : _factory(factory)
       , _indentations()
@@ -50,7 +50,7 @@ namespace reactor
       return idt;
     }
     ELLE_ATTRIBUTE(Factory, factory);
-    typedef LocalStorage<std::unique_ptr<elle::log::Indentation>> Indentations;
+    using Indentations = LocalStorage<std::unique_ptr<elle::log::Indentation>>;
     ELLE_ATTRIBUTE(Indentations, indentations);
   };
 

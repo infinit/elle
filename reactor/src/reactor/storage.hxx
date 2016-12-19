@@ -1,10 +1,7 @@
-#ifndef INFINIT_REACTOR_STORAGE_HXX
-# define INFINIT_REACTOR_STORAGE_HXX
+#include <reactor/scheduler.hh>
+#include <reactor/thread.hh>
 
-# include <reactor/scheduler.hh>
-# include <reactor/thread.hh>
-
-# include <elle/assert.hh>
+#include <elle/assert.hh>
 
 namespace reactor
 {
@@ -12,6 +9,14 @@ namespace reactor
   LocalStorage<T>::LocalStorage()
     : _content()
   {}
+
+  template <typename T>
+  LocalStorage<T>::~LocalStorage()
+  {
+    std::lock_guard<std::mutex> lock(_mutex);
+    for (auto const& i: this->_links)
+      i.second.disconnect();
+  }
 
   template <typename T>
   LocalStorage<T>::operator T&()
@@ -76,19 +81,8 @@ namespace reactor
   {
     std::lock_guard<std::mutex> lock(_mutex);
     this->_links.erase(current);
-    typename Content::iterator it = this->_content.find(current);
+    auto it = this->_content.find(current);
     ELLE_ASSERT_NEQ(it, this->_content.end());
     this->_content.erase(it);
   }
-  template <typename T>
-  LocalStorage<T>::~LocalStorage()
-  {
-    std::lock_guard<std::mutex> lock(_mutex);
-    for (auto const& i: this->_links)
-    {
-      i.second.disconnect();
-    }
-  }
 }
-
-#endif
