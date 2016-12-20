@@ -4,7 +4,7 @@ dOpenSSL
 The [**dOpenSSL**](http://github.com/infinit/dopenssl) library extends the OpenSSL
 Project cryptographic library so as to provide deterministic random generation
 functionalities. Basically, dOpenSSL guarantees that should a big number or a
-cryptographic key be generated, given a PNRG's state, the result would be always
+cryptographic key be generated, given a PRNG's state, the result would be always
 the same.
 
 The OpenSSL random generator introduces entropy in many places, making it
