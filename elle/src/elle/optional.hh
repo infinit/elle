@@ -1,9 +1,8 @@
-#ifndef ELLE_OPTIONAL_HH
-# define ELLE_OPTIONAL_HH
+#pragma once
 
-# include <boost/optional.hpp>
+#include <boost/optional.hpp>
 
-# include <elle/printf.hh>
+#include <elle/printf.hh>
 
 namespace boost
 {
@@ -18,5 +17,3 @@ namespace boost
     return s;
   }
 }
-
-#endif
