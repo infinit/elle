@@ -1,7 +1,7 @@
-#ifndef ELLE_BYTES_HH
-# define ELLE_BYTES_HH
+#pragma once
 
-# include <cstddef>
+#include <cstddef>
+#include <string>
 
 inline
 std::size_t
@@ -21,14 +21,14 @@ inline
 std::size_t
 operator "" _mB(unsigned long long size)
 {
-  return size * 1000000;
+  return size * 1'000'000;
 }
 
 inline
 std::size_t
 operator "" _gB(unsigned long long size)
 {
-  return size * 1000000000;
+  return size * 1000'000'000;
 }
 
 inline
@@ -52,4 +52,12 @@ operator "" _giB(unsigned long long size)
   return size * 1024 * 1024 * 1024;
 }
 
-#endif
+namespace elle
+{
+  /// Pretty-print a number of bytes.
+  ///
+  /// \param bytes  the number of bytes.
+  /// \param si     whether to use KB, MB instead of KiB, MiB, etc.
+  std::string
+  human_data_size(double bytes, bool si = true);
+}

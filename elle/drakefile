@@ -147,6 +147,7 @@ def configure(zlib_lib,
 
   sources = drake.nodes(
     'src/elle/bytes.hh',
+    'src/elle/bytes.cc',
     'src/elle/err.cc',
     'src/elle/err.hh',
     'src/elle/finally.cc',
@@ -646,3 +647,7 @@ def configure(zlib_lib,
     rule_install << drake.install(
       list(filter(lambda n: isinstance(n, drake.cxx.Header), sources)),
       prefix / 'include', 'src')
+
+# Local Variables:
+# mode: python
+# End:
