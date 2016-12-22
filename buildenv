@@ -10,7 +10,7 @@ import sh
 import shutil
 import sys
 
-SELF = os.path.realpath(sys.argv[0])
+SELF = sys.argv[0]
 ROOT = os.path.dirname(SELF)
 
 def json_converter(o):
