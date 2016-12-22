@@ -1,17 +1,18 @@
 // -*- c++ -*-
-#ifndef ELLE_MAP
-# define ELLE_MAP
+#pragma once
 
-# include <ostream>
-# include_next <map>
-# include <elle/printf-fwd.hh>
+#include <ostream>
+#include_next <map>
+#include <vector>
+
+#include <elle/printf-fwd.hh>
 
 namespace std
 {
-  template <class K, class V, class ...OTHER>
+  template <typename... Args>
   std::ostream&
   operator <<(ostream& out,
-              map<K, V, OTHER...> const& map)
+              map<Args...> const& map)
   {
     out << "{";
     bool first = true;
@@ -27,7 +28,7 @@ namespace std
     return out;
   }
 
-  template <typename E, typename ... Args>
+  template <typename... Args, typename E>
   bool
   contains(std::map<Args...> const& map, E const& e)
   {
@@ -35,4 +36,16 @@ namespace std
   }
 }
 
-#endif
+namespace elle
+{
+  template <typename K, typename... Args>
+  auto
+  keys(std::map<K, Args...> const& m)
+    -> std::vector<K>
+  {
+    auto res = std::vector<K>{};
+    for (const auto& p: m)
+      res.emplace_back(p.first);
+    return res;
+  }
+}

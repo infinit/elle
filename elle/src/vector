@@ -26,4 +26,21 @@ namespace std
     elle::fprintf(out, "]");
     return out;
   }
+
+  /// Look for \a e in \a v.
+  template <typename... Args, typename T>
+  auto
+  find(std::vector<Args...>& v, T const& e)
+    -> typename std::vector<Args...>::const_iterator
+  {
+    return std::find(std::begin(v), std::end(v), e);
+  }
+
+  /// Whether \a e is in \a v.
+  template <typename... Args, typename T>
+  bool
+  contains(std::vector<Args...> const& v, T const& e)
+  {
+    return std::find(v, e) != std::end(v);
+  }
 }
