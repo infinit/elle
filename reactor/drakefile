@@ -895,6 +895,7 @@ def configure(curl_config,
           'PYTHONPATH': str(drake.path_build('lib/python')),
         },
         )
+      python_runner.reporting = drake.Runner.Reporting.on_failure
       rule_check << python_runner.status
 
   ## ------- ##
