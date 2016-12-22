@@ -72,8 +72,13 @@ namespace reactor
   Thread::~Thread()
   {
     if (this->state() != state::done)
-      ELLE_ABORT("%s: destroyed in state %s", *this, this->state());
-    _destructed();
+    {
+      if (reactor::scheduler().current() == this)
+        ELLE_ABORT("%s: destroyed from itself in state %s",
+                   this, this->state());
+      this->terminate_now(false);
+    }
+    this->_destructed();
   }
 
   void
