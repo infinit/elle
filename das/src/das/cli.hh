@@ -131,16 +131,16 @@ namespace das
 
     using Options = std::unordered_map<std::string, Option>;
 
+    inline
+    std::string
+    option_name_from_c(std::string n)
+    {
+      std::replace(n.begin(), n.end(), '_', '-');
+      return n;
+    }
+
     namespace _details
     {
-      inline
-      std::string
-      option_name_from_c(std::string n)
-      {
-        std::replace(n.begin(), n.end(), '_', '-');
-        return n;
-      }
-
       class IsOption
       {
       public:
@@ -605,7 +605,7 @@ namespace das
         elle::fprintf(s, "  -%s, ", short_name);
       else
         elle::fprintf(s, "      ");
-      elle::fprintf(s, "--%-15s  %s", _details::option_name_from_c(name), help);
+      elle::fprintf(s, "--%-15s  %s", das::cli::option_name_from_c(name), help);
     }
 
     template <typename Symbol, typename Defaults>
@@ -630,8 +630,8 @@ namespace das
             },
             [&s] (auto formal) {
               using formal_t = typename decltype(formal)::type;
-              elle::fprintf(s, "      --%s",
-                            _details::option_name_from_c(formal_t::name()));
+              elle::fprintf(
+                s, "      --%s", option_name_from_c(formal_t::name()));
             })(elle::meta::Identity<Formal>{});
         elle::meta::static_if<Defaults::template default_for<Formal>::has>
           ([&s] (auto const& defaults)
