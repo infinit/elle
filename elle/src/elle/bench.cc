@@ -77,6 +77,18 @@ namespace elle
       uint64_t(this->_sum) / 1000u);
   }
 
+  void
+  Bench::print(std::ostream& os) const
+  {
+    os << elle::sprintf(
+      "AVG %12s %16tMIN %16s %32tMAX %12s %48tCNT %12s %64tTOT %8s ms",
+      this->_sum / this->_count,
+      this->_min,
+      this->_max,
+      this->_count,
+      uint64_t(this->_sum) / 1000u);
+  }
+
   Bench::BenchScope::BenchScope(Bench& owner)
     : _owner(owner)
   {

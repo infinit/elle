@@ -30,6 +30,8 @@ namespace elle
     log(); ///< log with ELLE_LOG
     void
     show();
+    void
+    print(std::ostream& os) const;
     struct BenchScope
     {
       BenchScope(Bench& owner);
