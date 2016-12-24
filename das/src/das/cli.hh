@@ -199,17 +199,31 @@ namespace das
 
     namespace _details
     {
-      template <typename Formal, typename D, typename ... Formals>
+      struct Empty
+      {
+        Empty(int const&)
+        {}
+      };
+
+      template <typename Formal, typename Default = void>
       class Value
+        : public std::conditional_t<
+            std::is_same<Default, void>::value,
+            Empty,
+            Default>
       {
       public:
-        Value(das::named::Prototype<D, Formals...> const& p,
+        using Super = std::conditional_t<
+          std::is_same<Default, void>::value, Empty, Default>;
+        static bool constexpr default_has = !std::is_same<Default, void>::value;
+
+        Value(std::conditional_t<default_has, Default, int> const& d,
               std::string option,
               bool positional,
               std::vector<std::string>& args,
               std::vector<std::string> value,
               int& remaining)
-          : _prototype(p)
+          : Super (d)
           , _option(std::move(option))
           , _value(std::move(value))
           , _positional(positional)
@@ -218,13 +232,13 @@ namespace das
           , _remaining(remaining)
         {}
 
-        Value(das::named::Prototype<D, Formals...> const& p,
+        Value(std::conditional_t<default_has, Default, int> const& d,
               std::string option,
               bool positional,
               std::vector<std::string>& args,
               bool flag,
               int& remaining)
-          : _prototype(p)
+          : Super(d)
           , _option(std::move(option))
           , _value()
           , _positional(positional)
@@ -332,24 +346,17 @@ namespace das
         }
 
         template <typename T>
-        std::enable_if_t<
-          !D::template default_for<
-            typename das::named::make_formal<Formal>::type>::has,
-          T>
+        std::enable_if_t<!default_has, T>
         missing()
         {
           throw MissingOption(this->_option);
         }
 
         template <typename T>
-        std::enable_if_t<
-          D::template default_for<
-            typename das::named::make_formal<Formal>::type>::has,
-          T>
+        std::enable_if_t<default_has, T>
         missing()
         {
-          using clang_workaround = Formal;
-          return this->_prototype.defaults.clang_workaround::value;
+          return this->Default::value;
         }
 
         template <typename I>
@@ -364,7 +371,7 @@ namespace das
               this->_args.erase(this->_args.begin());
             }
             else
-              return missing<I>();
+              return this->missing<I>();
           }
           if (this->_value.size() > 1)
             throw DuplicateOption(this->_option);
@@ -421,8 +428,6 @@ namespace das
         }
 
       private:
-        ELLE_ATTRIBUTE(
-          (das::named::Prototype<D, Formals...> const&), prototype);
         ELLE_ATTRIBUTE(std::string, option);
         ELLE_ATTRIBUTE(std::vector<std::string>, value);
         ELLE_ATTRIBUTE(bool, positional);
@@ -477,7 +482,15 @@ namespace das
             p, f,
             std::tuple_cat(
               std::move(parsed),
-              std::declval<std::tuple<_details::Value<Head, D, Formals...>>>()),
+              std::declval<std::tuple<
+                _details::Value<
+                  Head,
+                  std::conditional_t<
+                    D::template default_for<
+                      typename das::named::make_formal<Head>::type>::has,
+                    typename D::template default_for<
+                    typename das::named::make_formal<Head>::type>::type,
+                    void>>>>()),
             args,
             opts,
             counter))
@@ -529,11 +542,32 @@ namespace das
             if (it != opts.end())
               pos = it->second.positional;
           }
-          auto v = flag ?
-            Value<Head, D, Formals...>(
-              p, Head::name(), pos, args, flag, counter) :
-            Value<Head, D, Formals...>(
-              p, Head::name(), pos, args, std::move(value), counter);
+          static bool constexpr default_has =
+            D::template default_for<Formal>::has;
+          using Default = std::conditional_t<
+            default_has,
+            typename D::template default_for<Formal >::type,
+            void>;
+          auto v =
+            elle::meta::static_if<default_has>(
+              [&] (auto v)
+              {
+                if (flag)
+                  return typename decltype(v)::type(
+                    p.defaults, Head::name(), pos, args, flag, counter);
+                else
+                  return typename decltype(v)::type(
+                    p.defaults, Head::name(), pos, args, std::move(value), counter);
+              },
+              [&] (auto v)
+              {
+                if (flag)
+                  return typename decltype(v)::type(
+                    0, Head::name(), pos, args, flag, counter);
+                else
+                  return typename decltype(v)::type(
+                    0, Head::name(), pos, args, std::move(value), counter);
+              })(elle::meta::Identity<Value<Head, Default>>{});
           return CLI<Tail...>::value(
             p,
             f,
