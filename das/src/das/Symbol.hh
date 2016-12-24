@@ -12,11 +12,12 @@ namespace das
     : public Symbol
   {
   public:
-    template <typename E, typename Passing>
+    template <typename E, typename P>
     struct Effective
     {
       using Type = E;
       using Formal = S;
+      using Passing = P;
       Type value;
 
       Effective(Effective&& e)
@@ -49,4 +50,3 @@ namespace das
 }
 
 #include <das/Symbol.hxx>
-
