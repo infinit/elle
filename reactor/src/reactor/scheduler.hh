@@ -1,27 +1,26 @@
-#ifndef INFINIT_REACTOR_SCHEDULER_HH
-# define INFINIT_REACTOR_SCHEDULER_HH
+#pragma once
 
-# include <memory>
-# include <mutex>
-# include <thread>
+#include <memory>
+#include <mutex>
+#include <thread>
 
-# include <boost/multi_index_container.hpp>
-# include <boost/multi_index/hashed_index.hpp>
-# include <boost/multi_index/identity.hpp>
-# include <boost/multi_index/sequenced_index.hpp>
-# ifdef INFINIT_WINDOWS
-#  include <winsock2.h>
-# endif
-# include <boost/signals2.hpp>
-# include <boost/thread.hpp>
+#include <boost/multi_index_container.hpp>
+#include <boost/multi_index/hashed_index.hpp>
+#include <boost/multi_index/identity.hpp>
+#include <boost/multi_index/sequenced_index.hpp>
+#ifdef INFINIT_WINDOWS
+# include <winsock2.h>
+#endif
+#include <boost/signals2.hpp>
+#include <boost/thread.hpp>
 
-# include <elle/Printable.hh>
-# include <elle/attribute.hh>
+#include <elle/Printable.hh>
+#include <elle/attribute.hh>
 
-# include <reactor/asio.hh>
-# include <reactor/duration.hh>
-# include <reactor/fwd.hh>
-# include <reactor/backend/fwd.hh>
+#include <reactor/asio.hh>
+#include <reactor/duration.hh>
+#include <reactor/fwd.hh>
+#include <reactor/backend/fwd.hh>
 
 namespace reactor
 {
@@ -248,6 +247,4 @@ namespace reactor
   run_later(std::string const& name, std::function<void ()> const& f);
 }
 
-# include <reactor/scheduler.hxx>
-
-#endif
+#include <reactor/scheduler.hxx>

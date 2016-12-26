@@ -1,21 +1,20 @@
-#ifndef INFINIT_REACTOR_THREAD_HH
-# define INFINIT_REACTOR_THREAD_HH
+#pragma once
 
-# include <boost/signals2.hpp>
-# include <boost/system/error_code.hpp>
+#include <boost/signals2.hpp>
+#include <boost/system/error_code.hpp>
 
-# include <elle/Backtrace.hh>
-# include <elle/With.hh>
+#include <elle/Backtrace.hh>
+#include <elle/With.hh>
 
-# include <das/Symbol.hh>
-# include <das/named.hh>
+#include <das/Symbol.hh>
+#include <das/named.hh>
 
-# include <reactor/asio.hh>
-# include <reactor/backend/fwd.hh>
-# include <reactor/duration.hh>
-# include <reactor/fwd.hh>
-# include <reactor/signals.hh>
-# include <reactor/waitable.hh>
+#include <reactor/asio.hh>
+#include <reactor/backend/fwd.hh>
+#include <reactor/duration.hh>
+#include <reactor/fwd.hh>
+#include <reactor/signals.hh>
+#include <reactor/waitable.hh>
 
 namespace reactor
 {
@@ -28,8 +27,8 @@ namespace reactor
   | Types |
   `------*/
   public:
-    typedef Thread Self;
-    typedef backend::Action Action;
+    using Self = Thread;
+    using Action = backend::Action;
     class Terminator
       : public std::default_delete<reactor::Thread>
     {
@@ -139,7 +138,6 @@ namespace reactor
   | Printable |
   `----------*/
   public:
-    virtual
     void
     print(std::ostream& output) const override;
 
@@ -205,7 +203,6 @@ namespace reactor
       */
       void terminate_now(bool suicide = true);
     protected:
-      virtual
       bool
       _wait(Thread* thread, Waker const& waker) override;
     private:
@@ -343,6 +340,4 @@ namespace reactor
         bool dispose = false);
 }
 
-# include <reactor/thread.hxx>
-
-#endif
+#include <reactor/thread.hxx>

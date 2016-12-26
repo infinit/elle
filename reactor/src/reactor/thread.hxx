@@ -1,7 +1,4 @@
-#ifndef INFINIT_REACTOR_THREAD_HXX
-# define INFINIT_REACTOR_THREAD_HXX
-
-# include <elle/log.hh>
+#include <elle/log.hh>
 
 namespace reactor
 {
@@ -85,5 +82,3 @@ namespace reactor
         [this] {this->release(); });
   }
 }
-
-#endif
