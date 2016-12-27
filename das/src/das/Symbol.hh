@@ -20,8 +20,9 @@ namespace das
       using Passing = P;
       Type value;
 
-      Effective(Effective&& e)
-        : value(std::forward<Passing>(e.value))
+      template <typename OE, typename OP>
+      Effective(Effective<OE, OP>&& e)
+        : value(std::forward<OP>(e.value))
       {}
 
       Effective(Effective const& e)
