@@ -50,7 +50,6 @@ namespace das
         typedef
           typename std::result_of<F&(Remaining..., Applied...)>::type type;
       };
-
       template <typename F>
         static
         typename std::result_of<F&(Remaining..., Applied...)>::type
@@ -78,17 +77,16 @@ namespace das
                    List<RHead, RTail...>,
                    List<Store...>>
     {
-      typedef Applier<DefaultStore,
-                      List<Tail...>,
-                      List<Applied..., typename RHead::Type>,
-                      List<Store..., RTail...>,
-                      List<>> next;
+      using next = Applier<DefaultStore,
+                           List<Tail...>,
+                           List<Applied..., typename RHead::Passing>,
+                           List<Store..., RTail...>,
+                           List<>>;
       template <typename F>
         struct result_of
       {
         typedef typename next::template result_of<F>::type type;
       };
-
       template <typename F>
         static
         typename next::template result_of<F>::type
@@ -123,11 +121,11 @@ namespace das
                    List<RHead, RTail...>,
                    List<Store...>>
     {
-      typedef Applier<DefaultStore,
-                      List<Head, Tail...>,
-                      List<Applied...>,
-                      List<RTail...>,
-                      List<Store..., RHead>> next;
+      using next = Applier<DefaultStore,
+                           List<Head, Tail...>,
+                           List<Applied...>,
+                           List<RTail...>,
+                           List<Store..., RHead>>;
       template <typename F>
         struct result_of
       {
@@ -166,11 +164,11 @@ namespace das
                            List<StoreHead, StoreTail ...>,
                            false>
     {
-      typedef Applier<DefaultStore,
-                      List<Tail...>,
-                      List<Applied..., StoreHead>,
-                      List<StoreTail...>,
-                      List<>> next;
+      using next = Applier<DefaultStore,
+                           List<Tail...>,
+                           List<Applied..., StoreHead&&>,
+                           List<StoreTail...>,
+                           List<>>;
       template <typename F>
         struct result_of
       {
@@ -212,11 +210,11 @@ namespace das
       typedef
         typename DefaultStore::template default_for<Head>::type
         default_type;
-      typedef Applier<DefaultStore,
-                      List<Tail...>,
-                      List<Applied..., typename default_type::Type>,
-                      List<Store...>,
-                      List<>> next;
+      using next = Applier<DefaultStore,
+                           List<Tail...>,
+                           List<Applied..., typename default_type::Passing>,
+                           List<Store...>,
+                           List<>>;
       template <typename F>
         struct result_of
       {
@@ -227,14 +225,14 @@ namespace das
         typename result_of<F>::type
         apply(DefaultStore& defaults,
               F const& f,
-              Applied&& ... applied,
+              Applied ... applied,
               Store&& ... store)
       {
         return next::apply(
           defaults,
           f,
           std::forward<Applied>(applied)...,
-          std::forward<typename default_type::Type>
+          std::forward<typename default_type::Passing>
             (defaults.default_type::value),
           std::forward<Store>(store)...);
       }
@@ -366,22 +364,42 @@ namespace das
       };
     };
 
+    template <bool effective, typename T, typename D>
+    struct DefaultEffective
+    {
+      using type = D;
+    };
+
+    template <typename T, typename D>
+    struct DefaultEffective<true, T, D>
+    {
+      using type =
+        typename T::Formal::
+        template Effective<typename T::Type, typename T::Type const&>;
+    };
+
     template <typename Head, typename ... Tail>
     struct DefaultStore<Head, Tail...>
       : public DefaultStore<Tail...>
-      , public std::conditional<is_effective<Head>::value, Head, Empty<Head, Tail ...>>::type
+      , public DefaultEffective<
+          is_effective<Head>::value,
+          std::decay_t<Head>,
+          Empty<Head, Tail ...>>::type
     {
-      typedef typename std::conditional<
+      using SuperHead = typename DefaultEffective<
         is_effective<Head>::value,
-        typename DefaultStore<Tail...>::defaults_type::template prepend<Head>::type,
-        typename DefaultStore<Tail...>::defaults_type
-        >::type
-        defaults_type;
+        std::decay_t<Head>,
+        Empty<Head, Tail ...>>::type;
+      using defaults_type = typename std::conditional_t<
+        is_effective<Head>::value,
+        typename DefaultStore<Tail...>::defaults_type::
+          template prepend<SuperHead>::type,
+        typename DefaultStore<Tail...>::defaults_type>;
 
       template <typename CHead, typename ... CTail>
       DefaultStore(CHead&& head, CTail&& ... tail)
         : DefaultStore<Tail...>(std::forward<CTail>(tail)...)
-        , std::conditional<is_effective<Head>::value, Head, Empty<Head, Tail ...>>::type(std::forward<CHead>(head))
+        , SuperHead(std::forward<CHead>(head))
       {}
 
       template <typename T>
@@ -394,7 +412,7 @@ namespace das
         typedef typename
         std::conditional<
           std::is_same<T, typename make_formal<Head>::type>::value,
-          Head,
+          SuperHead,
           typename DefaultStore<Tail...>::template default_for<T>::type
           >::type type;
       };

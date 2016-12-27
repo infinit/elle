@@ -103,7 +103,7 @@ struct Movable
     , moved(false)
   {}
 
-  Movable(Movable& m)
+  Movable(Movable const& m)
     : copied(true)
     , moved(false)
   {
@@ -117,7 +117,7 @@ struct Movable
     m.moved = true;
   }
 
-  bool copied, moved;
+  mutable bool copied, moved;
 };
 
 static
@@ -155,6 +155,24 @@ forwarding()
     forwarding_value(arg1 = std::move(movable));
     BOOST_CHECK(!movable.copied);
     BOOST_CHECK(movable.moved);
+  }
+  {
+    Neither neither;
+    auto f =
+      das::named::function(_forwarding_ref, arg1 = neither, arg2 = neither);
+    f();
+    f(arg1 = neither);
+    f(arg2 = neither);
+    f(arg1 = neither, arg2 = neither);
+  }
+  {
+    Movable movable_def;
+    auto f = das::named::function([] (Movable m) { return m.moved; },
+                                  arg1 = std::move(movable_def));
+    BOOST_CHECK(movable_def.moved);
+    BOOST_CHECK(!f());
+    Movable movable;
+    BOOST_CHECK(f(std::move(movable)));
   }
 }
 
