@@ -11,6 +11,7 @@
 #include <elle/Error.hh>
 #include <elle/assert.hh>
 #include <elle/log.hh>
+#include <elle/make-vector.hh>
 #include <elle/serialization/json.hh>
 
 #include <das/named.hh>
@@ -104,8 +105,8 @@ namespace das
     DAS_CLI_OPTION_ERROR(Duplicate, "duplicate option");
     /// Option used as a flag and passed arguments
     DAS_CLI_OPTION_ERROR(
-      Mixed, "option can't be used both as a flag flag and with arguments");
-    /// Unrecognized letfover value
+      Mixed, "option can't be used both as a flag and with arguments");
+    /// Unrecognized left over value
     DAS_CLI_VALUE_ERROR(Unrecognized, "extra unrecognized argument");
 
 #undef DAS_CLI_OPTION_ERROR
@@ -414,20 +415,16 @@ namespace das
         operator std::vector<T>() const
         {
           ELLE_LOG_COMPONENT("das.cli");
-          std::vector<T> res;
           ELLE_TRACE_SCOPE(
-            "convert %s to %s", this->_option, elle::type_info(res));
+            "convert %s to %s", this->_option, elle::type_info(std::vector<T>{}));
           if (this->_values.empty() && this->_positional)
-          {
-            std::move(this->_args.begin(), this->_args.end(),
-                      std::back_inserter(this->_values));
-            this->_args.clear();
-          }
-          for_each(
-            this->_values.begin(), this->_values.end(),
-            [&] (std::string const& v) { res.emplace_back(convert<T>(v, 0)); });
+            this->_values = std::move(this->_args);
           this->_check_remaining();
-          return res;
+          return elle::make_vector(this->_values,
+                                   [&] (std::string const& v)
+                                   {
+                                     return convert<T>(v, 0);
+                                   });
         }
 
         void
@@ -527,7 +524,7 @@ namespace das
           using Formal = typename das::named::make_formal<Head>::type;
           bool flag = false;
           bool pos = false;
-          std::vector<std::string> value;
+          auto value = std::vector<std::string>{};
           auto v = [&]
             {
               ELLE_TRACE_SCOPE("parsing option %s", Head::name());

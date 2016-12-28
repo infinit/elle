@@ -11,7 +11,7 @@ DAS_SYMBOL(name);
 
 struct Device
 {
-  Device(int id, std::string name)
+  Device(int id, std::string const& name)
     : id(id)
     , name(name)
   {}

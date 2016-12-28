@@ -47,13 +47,13 @@ namespace das
   BoundMethod<O, S>
   bind_method(O& o)
   {
-    return BoundMethod<O, S>(o);
+    return {o};
   }
 
   template <typename O, typename S>
   BoundMethod<O, S>
   bind_method(O& o, S&)
   {
-    return BoundMethod<O, S>(o);
+    return {o};
   }
 }

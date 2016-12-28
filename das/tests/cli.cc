@@ -16,11 +16,10 @@ basics()
   auto const f =
     [] (std::string const& a, std::string const& b) { return a + b; };
   auto const proto = das::named::prototype(foo, baz);
-  {
-    BOOST_CHECK_EQUAL(
-      das::cli::call(proto, f, {"--foo", "bar", "--baz", "quux"}),
-      "barquux");
-  }
+
+  BOOST_CHECK_EQUAL(
+    das::cli::call(proto, f, {"--foo", "bar", "--baz", "quux"}),
+    "barquux");
   BOOST_CHECK_THROW(
     das::cli::call(proto, f, {"--foo", "bar", "--baz", "x", "--bar", "quux"}),
     das::cli::UnknownOption);
@@ -41,8 +40,8 @@ namespace conversions
   void
   check(std::string too_big, std::string too_little)
   {
-    auto const max = std::numeric_limits<I>::max();
-    auto const min = std::numeric_limits<I>::min();
+    auto constexpr max = std::numeric_limits<I>::max();
+    auto constexpr min = std::numeric_limits<I>::min();
     auto const proto = das::named::prototype(foo);
     auto const f = [] (I i)
       {
@@ -69,8 +68,8 @@ namespace conversions
     using Min = int64_t;
     using elle::sprintf;
     static_assert(std::is_integral<I>::value, "");
-    Max const max = std::numeric_limits<I>::max();
-    Min const min = std::numeric_limits<I>::min();
+    auto constexpr max = Max{std::numeric_limits<I>::max()};
+    auto constexpr min = Min{std::numeric_limits<I>::min()};
     check<I>(std::to_string(max + 1), std::to_string(min - 1));
   }
 
@@ -113,7 +112,7 @@ namespace conversions
   void
   multiple_strings()
   {
-    auto const f = [] (std::vector<std::string> strings)
+    auto const f = [] (std::vector<std::string> const& strings)
       {
         return std::accumulate(
           strings.begin(), strings.end(), std::string(""),

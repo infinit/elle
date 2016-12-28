@@ -48,12 +48,12 @@ namespace das
       template <typename F>
         struct result_of
       {
-        typedef
-          typename std::result_of<F&(Remaining..., Applied...)>::type type;
+        using type =
+          std::result_of_t<F&(Remaining..., Applied...)>;
       };
       template <typename F>
         static
-        typename std::result_of<F&(Remaining..., Applied...)>::type
+        std::result_of_t<F&(Remaining..., Applied...)>
         apply(DefaultStore&,
               F const& f,
               Applied&& ... applied,
@@ -86,7 +86,7 @@ namespace das
       template <typename F>
         struct result_of
       {
-        typedef typename next::template result_of<F>::type type;
+        using type = typename next::template result_of<F>::type;
       };
       template <typename F>
         static
@@ -133,7 +133,7 @@ namespace das
       template <typename F>
         struct result_of
       {
-        typedef typename next::template result_of<F>::type type;
+        using type = typename next::template result_of<F>::type;
       };
       template <typename F>
         static
@@ -176,7 +176,7 @@ namespace das
       template <typename F>
         struct result_of
       {
-        typedef typename next::template result_of<F>::type type;
+        using type = typename next::template result_of<F>::type;
       };
       template <typename F>
         static
@@ -214,9 +214,8 @@ namespace das
     {
       static_assert(DefaultStore::template default_for<Head>::has,
                     "missing argument");
-      typedef
-        typename DefaultStore::template default_for<Head>::type
-        default_type;
+      using default_type =
+        typename DefaultStore::template default_for<Head>::type;
       using next = Applier<DefaultStore,
                            List<Tail...>,
                            List<Applied..., typename default_type::Passing>,
@@ -225,7 +224,7 @@ namespace das
       template <typename F>
         struct result_of
       {
-        typedef typename next::template result_of<F>::type type;
+        using type = typename next::template result_of<F>::type;
       };
       template <typename F>
         static
@@ -314,9 +313,8 @@ namespace das
     template <typename T>
     struct make_formal
     {
-      typedef
-        typename std::remove_reference<decltype(_make_formal<T>(42))>::type
-        type;
+      using type =
+        std::remove_reference_t<decltype(_make_formal<T>(42))>;
     };
 
     template <typename T>
@@ -400,7 +398,7 @@ namespace das
       struct default_for
       {
         static constexpr bool has = false;
-        typedef void type;
+        using type = void;
       };
     };
 
@@ -449,12 +447,12 @@ namespace das
           std::is_same<T, typename make_formal<Head>::type>::value ?
           is_effective<Head>::value :
           DefaultStore<Tail...>::template default_for<T>::has;
-        typedef typename
-        std::conditional<
-          std::is_same<T, typename make_formal<Head>::type>::value,
-          SuperHead,
-          typename DefaultStore<Tail...>::template default_for<T>::type
-          >::type type;
+        using type =
+          std::conditional_t<
+            std::is_same<T, typename make_formal<Head>::type>::value,
+            SuperHead,
+            typename DefaultStore<Tail...>::template default_for<T>::type
+            >;
       };
     };
 

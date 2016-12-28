@@ -1,10 +1,9 @@
-#ifndef DAS_MODEL_CONVENIENCE_HH
-# define DAS_MODEL_CONVENIENCE_HH
+#pragma once
 
-# include <elle/attribute.hh>
-# include <elle/meta.hh>
+#include <elle/attribute.hh>
+#include <elle/meta.hh>
 
-# include <das/fwd.hh>
+#include <das/fwd.hh>
 
 namespace das
 {
@@ -77,5 +76,3 @@ namespace das                                   \
       ELLE_ATTRIBUTE_STRIP_PARENS(Model);       \
   };                                            \
 }                                               \
-
-#endif
