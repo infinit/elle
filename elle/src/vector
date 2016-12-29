@@ -27,11 +27,20 @@ namespace std
     return out;
   }
 
-  /// Look for \a e in \a v.
+  /// Look for \a e in \a v, const version.
+  template <typename... Args, typename T>
+  auto
+  find(std::vector<Args...> const& v, T const& e)
+    -> typename std::vector<Args...>::const_iterator
+  {
+    return std::find(std::begin(v), std::end(v), e);
+  }
+
+  /// Look for \a e in \a v, mutable version.
   template <typename... Args, typename T>
   auto
   find(std::vector<Args...>& v, T const& e)
-    -> typename std::vector<Args...>::const_iterator
+    -> typename std::vector<Args...>::iterator
   {
     return std::find(std::begin(v), std::end(v), e);
   }
@@ -42,5 +51,17 @@ namespace std
   contains(std::vector<Args...> const& v, T const& e)
   {
     return std::find(v, e) != std::end(v);
+  }
+
+  /// Emplace back only if not already in the vector.
+  ///
+  /// The need for this function is somewhat a smell: wouldn't a set
+  /// or a flat_set do better?
+  template <typename... Args, typename T>
+  void
+  push_back_if_missing(std::vector<Args...>& v, T const& e)
+  {
+    if (!contains(v, e))
+      v.push_back(e);
   }
 }
