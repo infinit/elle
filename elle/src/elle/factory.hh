@@ -7,6 +7,35 @@
 
 namespace elle
 {
+  namespace _details
+  {
+    template <typename F>
+    class Factory
+    {
+    public:
+      using Type = decltype(std::declval<F>()());
+
+      Factory(F f)
+        : _f(f)
+      {}
+
+      template <typename C>
+      operator C() const
+      {
+        return this->_f();
+      }
+
+      ELLE_ATTRIBUTE(F, f);
+    };
+  }
+
+  template <typename F>
+  _details::Factory<F>
+  factory(F f)
+  {
+    return _details::Factory<F>(std::move(f));
+  }
+
   template<typename T> class Factory
   {
   public:
