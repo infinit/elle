@@ -138,7 +138,8 @@ def configure(cxx_toolkit = None,
 
   if python3 is not False:
     if python_version is None:
-      python_version = (drake.Version(3, 5),
+      python_version = (drake.Version(3, 6),
+                        drake.Version(3, 5),
                         drake.Version(3, 4),
                         drake.Version(3, 3),
                         drake.Version(3, 2))
