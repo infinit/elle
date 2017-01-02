@@ -341,6 +341,78 @@ namespace waitable
       reactor::wait(w);
     }
   }
+
+  ELLE_TEST_SCHEDULED(boost_signal)
+  {
+    boost::signals2::signal<void ()> signal;
+    bool beacon = false;
+    reactor::Thread waiter(
+      "waiter",
+      [&]
+      {
+        reactor::wait(signal);
+        beacon = true;
+      });
+    reactor::yield();
+    reactor::yield();
+    BOOST_CHECK(!beacon);
+    signal();
+    BOOST_CHECK(!beacon);
+    reactor::yield();
+    reactor::yield();
+    BOOST_CHECK(beacon);
+  }
+
+  ELLE_TEST_SCHEDULED(boost_signal_args)
+  {
+    boost::signals2::signal<void (int i, int j)> signal;
+    bool beacon = false;
+    reactor::Thread waiter(
+      "waiter",
+      [&]
+      {
+        reactor::wait(signal, 1, 2);
+        beacon = true;
+      });
+    reactor::yield();
+    BOOST_CHECK(!beacon);
+    signal(1, 1);
+    reactor::yield();
+    reactor::yield();
+    BOOST_CHECK(!beacon);
+    signal(2, 2);
+    reactor::yield();
+    reactor::yield();
+    BOOST_CHECK(!beacon);
+    signal(1, 2);
+    reactor::yield();
+    reactor::yield();
+    BOOST_CHECK(beacon);
+  }
+
+  ELLE_TEST_SCHEDULED(boost_signal_predicate)
+  {
+    boost::signals2::signal<void (int i, int j)> signal;
+    bool beacon = false;
+    reactor::Thread waiter(
+      "waiter",
+      [&]
+      {
+        reactor::wait(signal, [] (int i, int j) { return i + j == 0; });
+        beacon = true;
+      });
+    reactor::yield();
+    reactor::yield();
+    BOOST_CHECK(!beacon);
+    signal(1, 1);
+    reactor::yield();
+    reactor::yield();
+    BOOST_CHECK(!beacon);
+    signal(2, -2);
+    reactor::yield();
+    reactor::yield();
+    BOOST_CHECK(beacon);
+  }
 }
 
 /*--------.
@@ -3280,11 +3352,14 @@ ELLE_TEST_SUITE()
   }
 
   {
-    boost::unit_test::test_suite* subsuite = BOOST_TEST_SUITE("waitable");
+    boost::unit_test::test_suite* subsuite = BOOST_TEST_SUITE("wait");
     boost::unit_test::framework::master_test_suite().add(subsuite);
     using namespace waitable;
     subsuite->add(BOOST_TEST_CASE(exception_no_wait), 0, valgrind(1, 5));
     subsuite->add(BOOST_TEST_CASE(logical_or), 0, valgrind(1, 5));
+    subsuite->add(BOOST_TEST_CASE(boost_signal), 0, valgrind(1, 5));
+    subsuite->add(BOOST_TEST_CASE(boost_signal_args), 0, valgrind(1, 5));
+    subsuite->add(BOOST_TEST_CASE(boost_signal_predicate), 0, valgrind(1, 5));
   }
 
   boost::unit_test::test_suite* signals = BOOST_TEST_SUITE("Signals");
