@@ -5,6 +5,9 @@ namespace elle
 {
   namespace meta
   {
+    struct Null
+    {};
+
     template <typename ... Elts>
     struct List
     {
@@ -32,10 +35,15 @@ namespace elle
       struct
       prepend;
 
-      /// List<F<Elts>...>
+      /// List<Elts[1:]>
       template <int = 0>
       struct
       tail;
+
+      /// Elts[0]
+      template <typename Default = Null>
+      struct
+      head;
     };
 
     /// Helper to declare `List` from values through `decltype`.
