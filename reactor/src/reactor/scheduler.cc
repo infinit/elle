@@ -1,13 +1,13 @@
 #include <reactor/scheduler.hh>
 
 #include <elle/Measure.hh>
+#include <elle/Plugin.hh>
 #include <elle/assert.hh>
 #include <elle/attribute.hh>
 #include <elle/finally.hh>
 #include <elle/log.hh>
 #include <elle/make-vector.hh>
 #include <elle/memory.hh>
-#include <elle/Plugin.hh>
 #include <elle/os/environ.hh>
 
 #include <reactor/BackgroundOperation.hh>
@@ -790,6 +790,18 @@ namespace reactor
     for (auto& w: waitables)
       conv.emplace_back(&w.get());
     return wait(conv);
+  }
+
+  void
+  wait(boost::signals2::signal<void ()>& signal)
+  {
+    auto s = reactor::Signal{};
+    boost::signals2::scoped_connection connection = signal.connect(
+      [&] ()
+      {
+        s.signal();
+      });
+    reactor::wait(s);
   }
 
   /** Run the given operation in the next cycle.

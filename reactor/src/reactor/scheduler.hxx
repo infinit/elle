@@ -67,7 +67,11 @@ namespace reactor
                           const std::function<void ()>& action);
 
   template <typename R, typename ... Prototype, typename ... Args>
-  void
+  std::enable_if_t<
+    !std::is_convertible<
+      typename elle::meta::List<Args...>::template head<void>::type,
+      std::function<void (Prototype ...)>>::value,
+    void>
   wait(boost::signals2::signal<R(Prototype...)>& signal, Args const& ... values)
   {
     auto s = reactor::Signal{};
@@ -76,6 +80,22 @@ namespace reactor
       [&] (Prototype const& ... args)
       {
         if (vals == std::make_tuple(args...))
+          s.signal();
+      });
+    reactor::wait(s);
+  }
+
+  template <typename R, typename ... Prototype, typename F>
+  std::enable_if_t<
+    std::is_convertible<F, std::function<bool (Prototype ...)>>::value,
+    void>
+  wait(boost::signals2::signal<R(Prototype...)>& signal, F predicate)
+  {
+    auto s = reactor::Signal{};
+    boost::signals2::scoped_connection connection = signal.connect(
+      [&] (Prototype const& ... args)
+      {
+        if (std::function<bool (Prototype ...)>(predicate)(args...))
           s.signal();
       });
     reactor::wait(s);

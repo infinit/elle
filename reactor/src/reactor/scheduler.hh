@@ -16,6 +16,7 @@
 
 #include <elle/Printable.hh>
 #include <elle/attribute.hh>
+#include <elle/meta.hh>
 
 #include <reactor/asio.hh>
 #include <reactor/duration.hh>
@@ -234,8 +235,15 @@ namespace reactor
   wait(std::vector<std::reference_wrapper<Waitable>> const& waitables,
        DurationOpt timeout = DurationOpt());
   /// Wait until \a signal is emitted.
-  template <typename R, typename ... Prototype, typename ... Args>
   void
+  wait(boost::signals2::signal<void ()>& signal);
+  template <typename R, typename ... Prototype, typename ... Args>
+  std::enable_if_t<
+    elle::meta::List<Args...>::size != 1 ||
+    !std::is_convertible<
+      typename elle::meta::List<Args...>::template head<void>::type,
+      std::function<void (Prototype ...)>>::value,
+    void>
   wait(boost::signals2::signal<R(Prototype...)>& signal,
        Args const& ... values);
   /** Run the given operation in the next cycle.
