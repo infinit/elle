@@ -256,7 +256,7 @@ def configure(cxx_toolkit = None,
       zlib_env['CC'] = cxx_toolkit.cxx[:-4] + '-gcc'
     if cxx_toolkit.os is drake.os.macos:
       zlib_env['CC'] = cxx_toolkit.c
-      zlib_lib = drake.cxx.DynLib('zlib/lib/libz.1.2.8.dylib')
+      zlib_lib = drake.cxx.DynLib('zlib/lib/libz.%s.dylib' % zlib_version)
     elif cxx_toolkit.os in [drake.os.linux]:
       zlib_env['CC'] = cxx_toolkit.c
       zlib_lib = drake.cxx.DynLib('zlib/lib/libz.so.1')
