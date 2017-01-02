@@ -223,7 +223,7 @@ def configure(cxx_toolkit = None,
   ## Zlib ##
   ## ---- ##
 
-  zlib_version = '1.2.8'
+  zlib_version = '1.2.9'
   zlib_basename = 'zlib-%s' % zlib_version
   zlib_tarball = drake.node('zlib/%s.tar.gz' % zlib_basename)
   zlib_prefix = drake.Path('zlib')
