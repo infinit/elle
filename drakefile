@@ -233,7 +233,7 @@ def configure(cxx_toolkit = None,
   drake.HTTPDownload(
     zlib_url,
     zlib_tarball,
-    fingerprint = '44d667c142d7cda120332623eab69f40'
+    fingerprint = 'e453644539a07783aa525e834491134e'
   )
   drake.TarballExtractor(
     zlib_tarball,
