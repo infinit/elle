@@ -605,6 +605,25 @@ namespace barrier
     b.open();
     reactor::wait(rewaiter);
   }
+
+  ELLE_TEST_SCHEDULED(changed)
+  {
+    reactor::Barrier b;
+    bool opened = false;
+    b.changed().connect(
+      [&] (bool o)
+      {
+        BOOST_CHECK_EQUAL(opened, !o);
+        opened = o;
+      });
+    b.close();
+    b.open();
+    BOOST_CHECK(opened);
+    b.open();
+    b.close();
+    BOOST_CHECK(!opened);
+    b.close();
+  }
 }
 
 /*------------------.
@@ -3280,10 +3299,11 @@ ELLE_TEST_SUITE()
     auto barrier = BOOST_TEST_SUITE("barrier");
     boost::unit_test::framework::master_test_suite().add(barrier);
     using namespace barrier;
+    barrier->add(BOOST_TEST_CASE(changed), 0, valgrind(1, 5));
     barrier->add(BOOST_TEST_CASE(closed), 0, valgrind(1, 5));
-    barrier->add(BOOST_TEST_CASE(opened), 0, valgrind(1, 5));
-    barrier->add(BOOST_TEST_CASE(inverted), 0, valgrind(1, 5));
     barrier->add(BOOST_TEST_CASE(exception), 0, valgrind(1, 5));
+    barrier->add(BOOST_TEST_CASE(inverted), 0, valgrind(1, 5));
+    barrier->add(BOOST_TEST_CASE(opened), 0, valgrind(1, 5));
   }
 
   boost::unit_test::test_suite* multilock_barrier =
@@ -3444,13 +3464,13 @@ ELLE_TEST_SUITE()
   boost::unit_test::framework::master_test_suite().add(background);
   {
     using namespace background;
-    background->add(BOOST_TEST_CASE(operation), 0, valgrind(3, 10));
-    background->add(BOOST_TEST_CASE(operations), 0, valgrind(3, 10));
-    background->add(BOOST_TEST_CASE(exception), 0, valgrind(1, 5));
-    background->add(BOOST_TEST_CASE(thread_exception_yield), 0, valgrind(1, 5));
     background->add(BOOST_TEST_CASE(aborted), 0, valgrind(1, 5));
     background->add(BOOST_TEST_CASE(aborted_throw), 0, valgrind(1, 5));
+    background->add(BOOST_TEST_CASE(exception), 0, valgrind(1, 5));
     background->add(BOOST_TEST_CASE(future), 0, valgrind(2, 5));
+    background->add(BOOST_TEST_CASE(operation), 0, valgrind(3, 10));
+    background->add(BOOST_TEST_CASE(operations), 0, valgrind(3, 10));
+    background->add(BOOST_TEST_CASE(thread_exception_yield), 0, valgrind(1, 5));
   }
 
   boost::unit_test::test_suite* released = BOOST_TEST_SUITE("released");

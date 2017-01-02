@@ -33,18 +33,26 @@ namespace reactor
   void
   Barrier::open()
   {
-    this->_opened = true;
-    this->_changed(this->_opened);
-    this->_signal();
+    if (!this->_opened)
+    {
+      this->_opened = true;
+      this->_changed(this->_opened);
+      this->_signal();
+    }
+    else
+      this->_raise(std::exception_ptr());
   }
 
   void
   Barrier::close()
   {
-    this->_raise(std::exception_ptr());
-    this->_opened = false;
-    this->_changed(this->_opened);
-    this->_inverted._signal();
+    if (this->_opened)
+    {
+      this->_raise(std::exception_ptr());
+      this->_opened = false;
+      this->_changed(this->_opened);
+      this->_inverted._signal();
+    }
   }
 
   bool
