@@ -82,6 +82,13 @@ class Git(VirtualNode):
       hasher.update(self.version().encode('utf-8'))
       return hasher.hexdigest()
 
+    def rev_parse(self, revision = 'HEAD', short = False):
+      cmd = ['rev-parse']
+      if short:
+        cmd += ['--short']
+      cmd += [revision]
+      return self.__cmd(cmd)
+
     def author_date(self):
         """The author date, as given by git %ai format."""
         if self.__author_date is None:
