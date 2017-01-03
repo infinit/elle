@@ -99,6 +99,16 @@ namespace elle
 
     template <typename T>
     void
+    feed(boost::format& fmt, std::ambivalent_ptr<T> const& value)
+    {
+      if (auto p = value.lock())
+        feed(fmt, *p);
+      else
+        fmt % "nullptr";
+    }
+
+    template <typename T>
+    void
     feed(boost::format& fmt, std::unique_ptr<T>& value)
     {
       if (value)
@@ -221,4 +231,3 @@ namespace elle
   }
 
 }
-
