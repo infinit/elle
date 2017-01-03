@@ -40,6 +40,7 @@ def configure(prefix = '.'):
      'src/drake/debug.py',
      'src/drake/flex.py',
      'src/drake/git.py',
+     'src/drake/go/__init__.py',
      'src/drake/log.py',
      'src/drake/opencv.py',
      'src/drake/python/__init__.py',
