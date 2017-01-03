@@ -19,6 +19,13 @@ namespace elle
     {}
     std::throw_with_nested(std::move(e));
   }
+
+  inline
+  std::string
+  exception_string(std::exception_ptr err)
+  {
+    return exception_string(err, std::current_exception());
+  }
 }
 
 

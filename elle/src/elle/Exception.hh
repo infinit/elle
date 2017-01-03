@@ -62,6 +62,9 @@ namespace elle
   ELLE_API
   std::string
   exception_string(std::exception_ptr err = std::exception_ptr{});
+  ELLE_API
+  std::string
+  exception_string(std::exception_ptr err, std::exception_ptr cur);
 }
 
 # include <elle/Exception.hxx>
