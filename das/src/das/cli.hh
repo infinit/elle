@@ -670,7 +670,7 @@ namespace das
         elle::meta::static_if<Defaults::template default_for<Formal>::has>
           ([&s] (auto const& defaults)
            {
-             auto const& v = defaults.Symbol::value;
+             auto const& v = defaults.Symbol::ByConstRef::value;
              if (!std::is_same<decltype(v), bool const&>::value &&
                  !std::is_same<decltype(v), boost::none_t const&>::value)
                elle::fprintf(s, " (default: %s)", v);
