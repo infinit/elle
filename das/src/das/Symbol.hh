@@ -12,6 +12,11 @@ namespace das
     : public Symbol
   {
   public:
+    /** A valued symbol
+     *
+     *  @param E The value type.
+     *  @param P The type through which the value was passed.
+     */
     template <typename E, typename P>
     struct Effective
     {
@@ -32,6 +37,11 @@ namespace das
       Effective(Passing v)
         : value(std::forward<Passing>(v))
       {}
+
+      using ByConstRef = Effective<E, std::remove_cv_reference_t<P> const&>;
+      using ByRef = Effective<E, std::remove_cv_reference_t<P>&>;
+      using ByRValueRef = Effective<E, std::remove_cv_reference_t<P>&&>;
+      using ByValue = Effective<E, std::remove_cv_reference_t<P>>;
 
       static inline
       std::string
