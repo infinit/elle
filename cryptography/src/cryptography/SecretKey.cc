@@ -59,12 +59,15 @@ namespace infinit
                         Oneway const oneway) const
     {
       elle::IOStream _plain(plain.istreambuf());
-      std::stringstream _code;
 
-      this->encipher(_plain, _code,
-                     cipher, mode, oneway);
+      elle::Buffer code(plain.size() + 1024);
+      code.size(0);
+      {
+        elle::IOStream _code(code.ostreambuf());
 
-      elle::Buffer code(_code.str().data(), _code.str().length());
+        this->encipher(_plain, _code,
+                       cipher, mode, oneway);
+      }
 
       return (code);
     }
@@ -76,12 +79,15 @@ namespace infinit
                         Oneway const oneway) const
     {
       elle::IOStream _code(code.istreambuf());
-      std::stringstream _plain;
 
-      this->decipher(_code, _plain,
-                     cipher, mode, oneway);
+      elle::Buffer plain(code.size());
+      plain.size(0);
+      {
+        elle::IOStream _plain(plain.ostreambuf());
 
-      elle::Buffer plain(_plain.str().data(), _plain.str().length());
+        this->decipher(_code, _plain,
+                       cipher, mode, oneway);
+      }
 
       return (plain);
     }
