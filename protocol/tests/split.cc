@@ -199,6 +199,66 @@ ELLE_TEST_SCHEDULED(kill_reader)
   BOOST_CHECK(r2);
 }
 
+ELLE_TEST_SCHEDULED(nonempty_queue)
+{
+  using namespace infinit::protocol;
+  auto v = elle::Version(0,2,0);
+  reactor::Barrier b1,b2;
+  reactor::network::TCPServer srv;
+  srv.listen(0);
+  std::unique_ptr<reactor::network::TCPSocket> s2;
+  std::unique_ptr<Serializer> ser2p;
+  std::unique_ptr<ChanneledStream> cs2p;
+  new reactor::Thread("accept", [&] {
+      s2 = srv.accept();
+      ser2p.reset(new Serializer(*s2, v, false));
+      cs2p.reset(new ChanneledStream(*ser2p));
+  }, true);
+
+  reactor::network::TCPSocket s1("127.0.0.1",
+                                 srv.local_endpoint().port());
+  Serializer ser1(s1, v, false);
+  ChanneledStream cs1(ser1);
+  while (!cs2p)
+    reactor::sleep(50_ms);
+  ChanneledStream& cs2 = *cs2p;
+  // force a reader on cs1
+  reactor::Thread::unique_ptr reader(new reactor::Thread("reader",
+    [&]
+    {
+      Channel r(cs1);
+      r.read();
+      ELLE_ASSERT(false);
+    }));
+
+  // accept first
+  {
+    new reactor::Thread("new_chan", [&] {
+        b1.open();
+        cs1.accept().read();
+        b2.open();
+    }, true);
+    reactor::wait(b1);
+    auto chan = Channel(cs2);
+    chan.write(elle::Buffer("foo"));
+    BOOST_CHECK(reactor::wait(b2, 1_sec));
+  }
+  //write first
+  {
+    b1.close();
+    b2.close();
+    auto chan = Channel(cs2);
+    chan.write(elle::Buffer("bar"));
+    new reactor::Thread("new_chan", [&] {
+        b1.open();
+        cs1.accept().read();
+        b2.open();
+    }, true);
+    BOOST_CHECK(reactor::wait(b2, 1_sec));
+  }
+}
+
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -206,4 +266,5 @@ ELLE_TEST_SUITE()
   for (auto const& v: versions{{0, 1, 0}, {0, 2, 0}})
     suite.add(BOOST_TEST_CASE(std::bind(run_version, v)), 0, valgrind(5, 25));
   suite.add(BOOST_TEST_CASE(kill_reader), 0, valgrind(5, 25));
+  suite.add(BOOST_TEST_CASE(nonempty_queue), 0, valgrind(5, 25));
 }

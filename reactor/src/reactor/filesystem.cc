@@ -432,7 +432,7 @@ namespace reactor
     std::unique_ptr<BindHandle>
     BindPath::make_handle(bfs::path& where, int fd)
     {
-      return elle::make_unique<BindHandle>(fd, where);
+      return std::make_unique<BindHandle>(fd, where);
     }
 
     BindHandle::BindHandle(int fd, bfs::path const& where)

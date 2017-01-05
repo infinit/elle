@@ -8,7 +8,7 @@ rfs::FileSystem* fs;
 static void run(int argc, char** argv)
 {
   std::unique_ptr<rfs::Operations> ops =
-    elle::make_unique<rfs::BindOperations>(argv[1]);
+    std::make_unique<rfs::BindOperations>(argv[1]);
   fs = new rfs::FileSystem(std::move(ops), false);
   std::vector<std::string> args(argv + 2, argv + argc);
   fs->mount(argv[2], args);

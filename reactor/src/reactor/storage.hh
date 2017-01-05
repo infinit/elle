@@ -1,12 +1,12 @@
-#ifndef INFINIT_REACTOR_STORAGE_HH
-# define INFINIT_REACTOR_STORAGE_HH
+#pragma once
 
-# include <mutex>
-# include <unordered_map>
+#include <mutex>
+#include <unordered_map>
 
-# include <boost/signals2.hpp>
+#include <boost/optional.hpp>
+#include <boost/signals2.hpp>
 
-# include <reactor/fwd.hh>
+#include <reactor/fwd.hh>
 
 namespace reactor
 {
@@ -14,7 +14,7 @@ namespace reactor
   class LocalStorage
   {
   public:
-    typedef LocalStorage<T> Self;
+    using Self = LocalStorage<T>;
     LocalStorage();
     ~LocalStorage();
     operator T&();
@@ -22,15 +22,17 @@ namespace reactor
     T& Get();
 
   private:
+    template <typename Fun>
+    T&
+    _get(Fun fun);
     void _Clean(Thread* t);
-    typedef std::unordered_map<void*, T> Content;
+    using Content = std::unordered_map<void*, T>;
     Content _content;
-    typedef std::unordered_map<void*, boost::signals2::connection> Links;
+    using Links = std::unordered_map<void*, boost::signals2::connection>;
     Links _links;
     std::mutex _mutex;
   };
 }
 
-# include <reactor/storage.hxx>
+#include <reactor/storage.hxx>
 
-#endif

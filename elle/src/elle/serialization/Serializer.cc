@@ -89,19 +89,7 @@ namespace elle
     bool
     Serializer::in() const
     {
-      return !this->_out();
-    }
-
-    bool
-    Serializer::out() const
-    {
-      return this->_out();
-    }
-
-    bool
-    Serializer::_out() const
-    {
-      return dynamic_cast<SerializerOut const*>(this);
+      return !this->out();
     }
 
     void
@@ -109,14 +97,15 @@ namespace elle
     {
       if (this->in())
       {
-        elle::Buffer buf;
+        auto buf = elle::Buffer{};
         this->_serialize(buf);
         ELLE_ASSERT_EQ(buf.size(), v.size());
+        // FIXME: why an actual copy?
         memcpy(v.mutable_contents(), buf.mutable_contents(), v.size());
       }
       else
       {
-        elle::Buffer buf(v.mutable_contents(), v.size());
+        auto buf = elle::Buffer(v);
         this->_serialize(buf);
       }
     }

@@ -147,6 +147,7 @@ def configure(zlib_lib,
 
   sources = drake.nodes(
     'src/elle/bytes.hh',
+    'src/elle/bytes.cc',
     'src/elle/err.cc',
     'src/elle/err.hh',
     'src/elle/finally.cc',
@@ -252,6 +253,8 @@ def configure(zlib_lib,
     'src/elle/os/file.cc',
     'src/elle/os/locale.hh',
     'src/elle/os/locale.cc',
+    'src/elle/print.cc',
+    'src/elle/print.hh',
     'src/elle/printf.hh',
     'src/elle/printf.hxx',
     'src/elle/ProducerPool.hh',
@@ -556,6 +559,7 @@ def configure(zlib_lib,
     'operator.cc',
     'option.cc',
     'os/environ.cc',
+    'print.cc',
     'printf.cc',
     'serialization.cc',
     'set.cc',
@@ -668,3 +672,7 @@ def configure(zlib_lib,
     rule_install << drake.install(
       list(filter(lambda n: isinstance(n, drake.cxx.Header), sources)),
       prefix / 'include', 'src')
+
+# Local Variables:
+# mode: python
+# End:

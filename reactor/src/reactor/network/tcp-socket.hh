@@ -1,7 +1,6 @@
-#ifndef INFINIT_REACTOR_NETWORK_TCP_SOCKET_HH
-# define INFINIT_REACTOR_NETWORK_TCP_SOCKET_HH
+#pragma once
 
-# include <reactor/network/socket.hh>
+#include <reactor/network/socket.hh>
 
 namespace reactor
 {
@@ -14,8 +13,8 @@ namespace reactor
     | Typedefs |
     `---------*/
     public:
-      typedef StreamSocket<boost::asio::ip::tcp::socket> Super;
-      typedef boost::asio::ip::tcp::resolver AsioResolver;
+      using Super = StreamSocket<boost::asio::ip::tcp::socket>;
+      using AsioResolver = boost::asio::ip::tcp::resolver;
 
     /*-------------.
     | Construction |
@@ -39,5 +38,3 @@ namespace reactor
     };
   }
 }
-
-#endif

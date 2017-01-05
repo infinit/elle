@@ -1,10 +1,7 @@
-#ifndef INFINIT_REACTOR_STORAGE_HXX
-# define INFINIT_REACTOR_STORAGE_HXX
+#include <reactor/scheduler.hh>
+#include <reactor/thread.hh>
 
-# include <reactor/scheduler.hh>
-# include <reactor/thread.hh>
-
-# include <elle/assert.hh>
+#include <elle/assert.hh>
 
 namespace reactor
 {
@@ -14,57 +11,55 @@ namespace reactor
   {}
 
   template <typename T>
+  LocalStorage<T>::~LocalStorage()
+  {
+    std::lock_guard<std::mutex> lock(_mutex);
+    for (auto const& i: this->_links)
+      i.second.disconnect();
+  }
+
+  template <typename T>
   LocalStorage<T>::operator T&()
   {
     return this->Get();
   }
 
-  // XXX: factor with Get(T const& def)
   template <typename T>
   T&
   LocalStorage<T>::Get()
   {
-    Scheduler* sched = Scheduler::scheduler();
-    Thread* current = sched ? sched->current() : 0;
-    void* key = current ? (void*)current : (void*)sched;
-    std::lock_guard<std::mutex> lock(_mutex);
-    typename Content::iterator it = this->_content.find(key);
-    if (it == this->_content.end())
-      {
-        if (current != nullptr)
-        {
-          auto link = current->destructed().connect(
-            std::bind(&Self::_Clean, this, current)
-          );
-          this->_links[current] = link;
-        }
-        return this->_content[key];
-      }
-    else
-      return it->second;
+    return _get([](auto&) {});
   }
-
 
   template <typename T>
   T&
   LocalStorage<T>::Get(T const& def)
   {
+    return _get([&def](auto& storage) { storage = def; });
+  }
+
+  template <typename T>
+  template <typename Fun>
+  T&
+  LocalStorage<T>::_get(Fun fun)
+  {
     Scheduler* sched = Scheduler::scheduler();
-    Thread* current = sched ? sched->current() : 0;
-    void* key = current ? (void*)current : (void*)sched;
+    Thread* current = sched ? sched->current() : nullptr;
+    void* key = current ? static_cast<void*>(current) : static_cast<void*>(sched);
     std::lock_guard<std::mutex> lock(_mutex);
-    typename Content::iterator it = this->_content.find(key);
+    auto it = this->_content.find(key);
     if (it == this->_content.end())
       {
-        this->_content[key] = def;
-        if (current != nullptr)
+        auto& res = this->_content[key];
+        fun(res);
+        if (current)
         {
           auto link = current->destructed().connect(
             std::bind(&Self::_Clean, this, current)
           );
           this->_links[current] = link;
         }
-        return this->_content[key];
+        return res;
       }
     else
       return it->second;
@@ -76,19 +71,8 @@ namespace reactor
   {
     std::lock_guard<std::mutex> lock(_mutex);
     this->_links.erase(current);
-    typename Content::iterator it = this->_content.find(current);
+    auto it = this->_content.find(current);
     ELLE_ASSERT_NEQ(it, this->_content.end());
     this->_content.erase(it);
   }
-  template <typename T>
-  LocalStorage<T>::~LocalStorage()
-  {
-    std::lock_guard<std::mutex> lock(_mutex);
-    for (auto const& i: this->_links)
-    {
-      i.second.disconnect();
-    }
-  }
 }
-
-#endif

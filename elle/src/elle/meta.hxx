@@ -237,9 +237,38 @@ namespace elle
     };
 
     /*-----.
-    | Tail |
+    | Head |
     `-----*/
 
+    namespace
+    {
+      template <typename Default, typename ... List>
+      struct head_helper
+      {
+        using type = Default;
+      };
+
+      template <typename Default, typename Head, typename ... Tail>
+      struct head_helper<Default, Head, Tail...>
+      {
+        using type = Head;
+      };
+
+      template <typename ... List>
+      struct head_helper<Null, List ...>
+      {};
+    }
+
+    template <typename ... Elts>
+    template <typename Default>
+    struct List<Elts...>::head
+    {
+      using type = typename head_helper<Default, Elts...>::type;
+    };
+
+    /*-----.
+    | Tail |
+    `-----*/
 
     namespace
     {

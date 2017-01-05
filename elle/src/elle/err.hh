@@ -16,7 +16,6 @@ namespace elle
   /// Format and throw an elle::Error.
   template <typename ... Args>
   ELLE_COMPILER_ATTRIBUTE_NORETURN
-  inline
   void
   err(std::string const& fmt, Args&& ... args)
   {
@@ -25,7 +24,6 @@ namespace elle
 
   template <typename E, typename ... Args>
   ELLE_COMPILER_ATTRIBUTE_NORETURN
-  inline
   void
   err(std::string const& fmt, Args&& ... args)
   {

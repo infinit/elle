@@ -506,7 +506,7 @@ static
 void
 unordered_set()
 {
-  std::unordered_set<int> set{0, 1, 2};
+  auto set = std::unordered_set<int>{0, 1, 2};
   std::stringstream stream;
   {
     typename Format::SerializerOut output(stream);
@@ -524,6 +524,17 @@ static
 void
 unordered_map_string_legacy()
 {
+  using Map = std::unordered_map<std::string, std::string>;
+  auto reference = Map
+    {
+      {"screenshot_modal", "v1"},
+      {"send_view_20141027", "a"},
+      {"drip_onboarding_template", "a"},
+      {"send_file_url_template", "send-file-url"},
+      {"screenshot_modal_20141104", "b"},
+      {"drip_ghost-reminder_template", "control"},
+      {"drip_delight-sender_template", "a"},
+    };
   std::stringstream stream;
   stream << "{\"features\":[\
                 [\"screenshot_modal\",\"v1\"],\
@@ -534,14 +545,9 @@ unordered_map_string_legacy()
                 [\"drip_ghost-reminder_template\",\"control\"],\
                 [\"drip_delight-sender_template\",\"a\"]\
                 ],}";
-  std::unordered_map<std::string, std::string> res;
-  elle::serialization::json::SerializerIn input(stream);
-  input.serialize("features", res);
-
-  ELLE_DUMP("in:");
-  for (auto const& elt: res)
-    ELLE_DUMP("%s, %s", elt.first, elt.second);
-
+  auto input = elle::serialization::json::SerializerIn{stream};
+  BOOST_CHECK_EQUAL(reference,
+                    input.deserialize<Map>("features"));
 }
 
 template <typename Format>
@@ -549,17 +555,17 @@ static
 void
 buffer()
 {
-  elle::Buffer buffer(256);
+  auto buffer = elle::Buffer(256);
   for (int i = 0; i < 256; ++i)
     buffer[i] = i;
   std::stringstream stream;
   {
-    typename Format::SerializerOut output(stream);
+    auto output = typename Format::SerializerOut{stream};
     output.serialize("buffer", buffer);
   }
   {
-    elle::Buffer res;
-    typename Format::SerializerIn input(stream);
+    auto res = elle::Buffer{};
+    auto input = typename Format::SerializerIn{stream};
     input.serialize("buffer", res);
     BOOST_CHECK_EQUAL(buffer, res);
   }

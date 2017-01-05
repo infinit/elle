@@ -60,7 +60,7 @@ load_certificate()
     fs::ofstream dh1024_f(dh1024, std::ios::binary);
     dh1024_f.write(server_dh1024.data(), server_dh1024.size());
   }
-  return elle::make_unique<SSLCertificate>(cert.string(),
+  return std::make_unique<SSLCertificate>(cert.string(),
                                            key.string(),
                                            dh1024.string());
 }

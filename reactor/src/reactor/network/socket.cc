@@ -556,8 +556,8 @@ namespace reactor
           *bytes_read = read.read();
         throw TimeOut();
       }
-      ELLE_TRACE("%s: completed read of %s bytes: %s",
-                 *this, read.read(), buf);
+      ELLE_TRACE("%s: completed read of %s bytes", *this, read.read());
+      ELLE_DUMP(": %s", buf);
 
       auto data = elle::ConstWeakBuffer(buf.contents(), read.read());
       elle::Lazy<std::string> hex(

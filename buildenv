@@ -10,7 +10,7 @@ import sh
 import shutil
 import sys
 
-SELF = os.path.realpath(sys.argv[0])
+SELF = sys.argv[0]
 ROOT = os.path.dirname(SELF)
 
 def json_converter(o):
@@ -447,8 +447,7 @@ class State:
     if concurrent:
       d = '%s-%s' % (d, self.__opts.cache_id)
     if not self.__opts.dry_run:
-      sh.ssh(self.cache_url, 'mkdir', '-p', d,
-        '&&', 'touch', '%s.is_build_tree' % self.cache_dir)
+      sh.ssh(self.cache_url, 'mkdir', '-p', d)
       with State.Lock(d):
         self.rsync(
           '%s/' % self.build_tree,

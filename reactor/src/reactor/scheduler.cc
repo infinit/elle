@@ -1,12 +1,13 @@
 #include <reactor/scheduler.hh>
 
 #include <elle/Measure.hh>
+#include <elle/Plugin.hh>
 #include <elle/assert.hh>
 #include <elle/attribute.hh>
 #include <elle/finally.hh>
 #include <elle/log.hh>
+#include <elle/make-vector.hh>
 #include <elle/memory.hh>
-#include <elle/Plugin.hh>
 #include <elle/os/environ.hh>
 
 #include <reactor/BackgroundOperation.hh>
@@ -267,13 +268,13 @@ namespace reactor
     PushScheduler p(this);
     // Could avoid locking if no jobs are pending with a boolean.
     {
-      boost::unique_lock<boost::mutex> lock(this->_starting_mtx);
+      std::unique_lock<std::mutex> lock(this->_starting_mtx);
       auto& ordered = this->_starting.get<1>();
       this->_running.insert(ordered.begin(), ordered.end());
       this->_starting.clear();
     }
     auto& ordered = this->_running.get<1>();
-    std::vector<Thread*> running(ordered.begin(), ordered.end());
+    auto running = make_vector(ordered);
     ELLE_TRACE_SCOPE("Scheduler: new round with %s jobs", running.size());
 
     ELLE_DUMP("%s: starting: %s", *this, this->_starting);
@@ -405,7 +406,7 @@ namespace reactor
   {
     // FIXME: be thread safe only if needed
     {
-      boost::unique_lock<boost::mutex> lock(this->_starting_mtx);
+      std::unique_lock<std::mutex> lock(this->_starting_mtx);
       this->_starting.insert(&thread);
       // Wake the scheduler.
       this->_io_service.post(nothing);
@@ -668,7 +669,7 @@ namespace reactor
   Scheduler::signal_handle(int signal, std::function<void ()> const& handler)
   {
     ELLE_TRACE_SCOPE("%s: handle signal %s", *this, signal_string(signal));
-    auto set = elle::make_unique<boost::asio::signal_set>(this->io_service(),
+    auto set = std::make_unique<boost::asio::signal_set>(this->io_service(),
                                                           signal);
     set->async_wait(std::bind(&signal_callback,
                               std::ref(*this),
@@ -791,6 +792,18 @@ namespace reactor
     return wait(conv);
   }
 
+  void
+  wait(boost::signals2::signal<void ()>& signal)
+  {
+    auto s = reactor::Signal{};
+    boost::signals2::scoped_connection connection = signal.connect(
+      [&] ()
+      {
+        s.signal();
+      });
+    reactor::wait(s);
+  }
+
   /** Run the given operation in the next cycle.
    *
    *  \param name Descriptive name of the operation, for debugging.
@@ -815,7 +828,7 @@ namespace reactor
 # error "Unsupported platform"
 #endif
 
-#if defined(__arm__) || defined(INFINIT_MACOSX) || defined(INFINIT_IOS)
+#if defined(__clang__)
 // libc++
 # include <reactor/libcxx-exceptions/cxa_exception.hpp>
 # define THROW_SPEC

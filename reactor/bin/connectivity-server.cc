@@ -15,7 +15,7 @@ static
 void
 serve_tcp(int port)
 {
-  auto server = elle::make_unique<reactor::network::TCPServer>();
+  auto server = std::make_unique<reactor::network::TCPServer>();
   server->listen(port);
   while (true)
   {
@@ -46,7 +46,7 @@ static
 void
 serve_udp(int port)
 {
-  auto server = elle::make_unique<reactor::network::UDPSocket>();
+  auto server = std::make_unique<reactor::network::UDPSocket>();
   server->close();
   server->bind(boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), port));
   while (true)

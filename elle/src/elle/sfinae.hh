@@ -33,7 +33,7 @@ namespace elle
 # define ELLE_STATIC_PREDICATE(Name, Test)                              \
   template <typename T>                                                 \
   inline constexpr                                                      \
-  std::enable_if_exists_t<Test, bool>                      \
+  std::enable_if_exists_t<Test, bool>                                   \
   BOOST_PP_CAT(_, Name)(int)                                            \
   {                                                                     \
     return true;                                                        \

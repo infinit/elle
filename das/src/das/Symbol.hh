@@ -1,5 +1,6 @@
-#ifndef DAS_SYMBOL_HH
-# define DAS_SYMBOL_HH
+#pragma once
+
+#include <string>
 
 namespace das
 {
@@ -11,15 +12,17 @@ namespace das
     : public Symbol
   {
   public:
-    template <typename E, typename Passing>
+    template <typename E, typename P>
     struct Effective
     {
       using Type = E;
       using Formal = S;
+      using Passing = P;
       Type value;
 
-      Effective(Effective&& e)
-        : value(std::forward<Passing>(e.value))
+      template <typename OE, typename OP>
+      Effective(Effective<OE, OP>&& e)
+        : value(std::forward<OP>(e.value))
       {}
 
       Effective(Effective const& e)
@@ -47,6 +50,4 @@ namespace das
   };
 }
 
-# include <das/Symbol.hxx>
-
-#endif
+#include <das/Symbol.hxx>

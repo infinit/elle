@@ -4,11 +4,13 @@
 #include <errno.h>
 #include <sys/types.h>
 
+/*
 #ifdef INFINIT_LINUX
 # include <attr/xattr.h>
 #else
 # include <sys/xattr.h>
 #endif
+*/
 
 #include <unordered_map>
 
@@ -561,7 +563,7 @@ namespace reactor
       }
       catch (Error const& e)
       {
-        if (e.error_code() != ENOATTR)
+        if (e.error_code() != ENODATA)
           ELLE_TRACE("error: %s", e.what());
         return -e.error_code();
       }
@@ -612,7 +614,7 @@ namespace reactor
       }
       catch (Error const& e)
       {
-        if (e.error_code() != ENOATTR)
+        if (e.error_code() != ENODATA)
           ELLE_TRACE("error: %s", e.what());
         return -e.error_code();
       }

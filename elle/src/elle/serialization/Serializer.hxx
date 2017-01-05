@@ -35,8 +35,7 @@ namespace elle
 # define ELLE_SERIALIZATION_STATIC_PREDICATE(Name, Test)                \
   template <typename T, typename S>                                     \
   inline constexpr                                                      \
-  std::enable_if_exists_t<ELLE_ATTRIBUTE_STRIP_PARENS(Test),     \
-                                 bool>                            \
+  std::enable_if_exists_t<ELLE_ATTRIBUTE_STRIP_PARENS(Test), bool>      \
   BOOST_PP_CAT(_, Name)(int)                                            \
   {                                                                     \
     return true;                                                        \
@@ -909,7 +908,7 @@ namespace elle
       ELLE_LOG_COMPONENT("elle.serialization.Serializer");
       ELLE_TRACE_SCOPE("%s: serialize dictionary%s",
                        this, _details::current_name(*this));
-      if (this->_out())
+      if (this->out())
       {
         this->_size(map.size());
         for (std::pair<std::string, V> pair: map)
@@ -960,7 +959,7 @@ namespace elle
                        this, _details::current_name(*this));
       typedef typename C::key_type K;
       typedef typename C::mapped_type V;
-      if (this->_out())
+      if (this->out())
       {
         this->_serialize_array(
           map.size(),
@@ -1211,7 +1210,7 @@ namespace elle
       ELLE_LOG_COMPONENT("elle.serialization.Serializer");
       ELLE_TRACE_SCOPE("%s: serialize pair%s",
                        this, _details::current_name(*this));
-      if (this->_out())
+      if (this->out())
         static_cast<SerializerOut*>(this)->serialize(pair);
       else
         pair =
@@ -1325,7 +1324,7 @@ namespace elle
           Hierarchy<T>::_map() [name] =
             [] (SerializerIn& s)
             {
-              return elle::make_unique<U>(s.deserialize<U>());
+              return std::make_unique<U>(s.deserialize<U>());
             };
           Hierarchy<T>::_rmap()[id] = name;
           ExceptionMaker<T>::template add<U>();
@@ -1339,10 +1338,9 @@ namespace elle
         }
       };
 
-      typedef
+      using TypeMap =
         std::unordered_map<std::string,
-                           std::function<std::unique_ptr<T>(SerializerIn&)>>
-        TypeMap;
+                           std::function<std::unique_ptr<T>(SerializerIn&)>>;
 #ifdef INFINIT_WINDOWS
 # ifdef ELLE_SERIALIZATION_USE_DLL
   __declspec(dllimport) static TypeMap& _map();

@@ -24,7 +24,7 @@ namespace reactor
     UnixDomainServer::accept()
     {
       // Open a new raw socket.
-      auto new_socket = elle::make_unique<AsioSocket>(
+      auto new_socket = std::make_unique<AsioSocket>(
         reactor::Scheduler::scheduler()->io_service());
       EndPoint peer;
       this->_accept(*new_socket, peer);

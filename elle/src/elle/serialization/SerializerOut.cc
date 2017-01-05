@@ -23,6 +23,12 @@ namespace elle
       this->serialize(name, std::string(v));
     }
 
+    bool
+    SerializerOut::out() const
+    {
+      return true;
+    }
+
     std::ostream&
     SerializerOut::output()
     {

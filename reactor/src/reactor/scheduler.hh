@@ -1,26 +1,27 @@
-#ifndef INFINIT_REACTOR_SCHEDULER_HH
-# define INFINIT_REACTOR_SCHEDULER_HH
+#pragma once
 
-# include <memory>
-# include <thread>
+#include <memory>
+#include <mutex>
+#include <thread>
 
-# include <boost/multi_index_container.hpp>
-# include <boost/multi_index/hashed_index.hpp>
-# include <boost/multi_index/identity.hpp>
-# include <boost/multi_index/sequenced_index.hpp>
-# ifdef INFINIT_WINDOWS
-#  include <winsock2.h>
-# endif
-# include <boost/signals2.hpp>
-# include <boost/thread.hpp>
+#include <boost/multi_index_container.hpp>
+#include <boost/multi_index/hashed_index.hpp>
+#include <boost/multi_index/identity.hpp>
+#include <boost/multi_index/sequenced_index.hpp>
+#ifdef INFINIT_WINDOWS
+# include <winsock2.h>
+#endif
+#include <boost/signals2.hpp>
+#include <boost/thread.hpp>
 
-# include <elle/Printable.hh>
-# include <elle/attribute.hh>
+#include <elle/Printable.hh>
+#include <elle/attribute.hh>
+#include <elle/meta.hh>
 
-# include <reactor/asio.hh>
-# include <reactor/duration.hh>
-# include <reactor/fwd.hh>
-# include <reactor/backend/fwd.hh>
+#include <reactor/asio.hh>
+#include <reactor/duration.hh>
+#include <reactor/fwd.hh>
+#include <reactor/backend/fwd.hh>
 
 namespace reactor
 {
@@ -70,13 +71,13 @@ namespace reactor
   | Threads management |
   `-------------------*/
   public:
-    typedef boost::multi_index::multi_index_container<
+    using Threads = boost::multi_index::multi_index_container<
     Thread*,
     boost::multi_index::indexed_by<
       boost::multi_index::hashed_unique<boost::multi_index::identity<Thread*>>,
       boost::multi_index::sequenced<>
       >
-    > Threads;
+    >;
     Thread* current() const;
     Threads terminate();
     void terminate_now();
@@ -95,7 +96,7 @@ namespace reactor
                         bool suicide);
     Thread* _current;
     Threads _starting;
-    boost::mutex _starting_mtx;
+    std::mutex _starting_mtx;
     Threads _running;
     Threads _frozen;
 
@@ -135,9 +136,9 @@ namespace reactor
      */
     void run_later(std::string const& name,
                    std::function<void ()> const& f);
-    void CallLater(const std::function<void ()>&      f,
-                   const std::string&                   name,
-                   Duration                             delay);
+    void CallLater(const std::function<void ()>& f,
+                   const std::string& name,
+                   Duration delay);
 
   /*----------------.
   | Background jobs |
@@ -234,8 +235,15 @@ namespace reactor
   wait(std::vector<std::reference_wrapper<Waitable>> const& waitables,
        DurationOpt timeout = DurationOpt());
   /// Wait until \a signal is emitted.
-  template <typename R, typename ... Prototype, typename ... Args>
   void
+  wait(boost::signals2::signal<void ()>& signal);
+  template <typename R, typename ... Prototype, typename ... Args>
+  std::enable_if_t<
+    elle::meta::List<Args...>::size != 1 ||
+    !std::is_convertible<
+      typename elle::meta::List<Args...>::template head<void>::type,
+      std::function<void (Prototype ...)>>::value,
+    void>
   wait(boost::signals2::signal<R(Prototype...)>& signal,
        Args const& ... values);
   /** Run the given operation in the next cycle.
@@ -247,6 +255,4 @@ namespace reactor
   run_later(std::string const& name, std::function<void ()> const& f);
 }
 
-# include <reactor/scheduler.hxx>
-
-#endif
+#include <reactor/scheduler.hxx>

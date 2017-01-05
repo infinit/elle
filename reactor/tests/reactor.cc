@@ -341,6 +341,78 @@ namespace waitable
       reactor::wait(w);
     }
   }
+
+  ELLE_TEST_SCHEDULED(boost_signal)
+  {
+    boost::signals2::signal<void ()> signal;
+    bool beacon = false;
+    reactor::Thread waiter(
+      "waiter",
+      [&]
+      {
+        reactor::wait(signal);
+        beacon = true;
+      });
+    reactor::yield();
+    reactor::yield();
+    BOOST_CHECK(!beacon);
+    signal();
+    BOOST_CHECK(!beacon);
+    reactor::yield();
+    reactor::yield();
+    BOOST_CHECK(beacon);
+  }
+
+  ELLE_TEST_SCHEDULED(boost_signal_args)
+  {
+    boost::signals2::signal<void (int i, int j)> signal;
+    bool beacon = false;
+    reactor::Thread waiter(
+      "waiter",
+      [&]
+      {
+        reactor::wait(signal, 1, 2);
+        beacon = true;
+      });
+    reactor::yield();
+    BOOST_CHECK(!beacon);
+    signal(1, 1);
+    reactor::yield();
+    reactor::yield();
+    BOOST_CHECK(!beacon);
+    signal(2, 2);
+    reactor::yield();
+    reactor::yield();
+    BOOST_CHECK(!beacon);
+    signal(1, 2);
+    reactor::yield();
+    reactor::yield();
+    BOOST_CHECK(beacon);
+  }
+
+  ELLE_TEST_SCHEDULED(boost_signal_predicate)
+  {
+    boost::signals2::signal<void (int i, int j)> signal;
+    bool beacon = false;
+    reactor::Thread waiter(
+      "waiter",
+      [&]
+      {
+        reactor::wait(signal, [] (int i, int j) { return i + j == 0; });
+        beacon = true;
+      });
+    reactor::yield();
+    reactor::yield();
+    BOOST_CHECK(!beacon);
+    signal(1, 1);
+    reactor::yield();
+    reactor::yield();
+    BOOST_CHECK(!beacon);
+    signal(2, -2);
+    reactor::yield();
+    reactor::yield();
+    BOOST_CHECK(beacon);
+  }
 }
 
 /*--------.
@@ -604,6 +676,25 @@ namespace barrier
     reactor::yield();
     b.open();
     reactor::wait(rewaiter);
+  }
+
+  ELLE_TEST_SCHEDULED(changed)
+  {
+    reactor::Barrier b;
+    bool opened = false;
+    b.changed().connect(
+      [&] (bool o)
+      {
+        BOOST_CHECK_EQUAL(opened, !o);
+        opened = o;
+      });
+    b.close();
+    b.open();
+    BOOST_CHECK(opened);
+    b.open();
+    b.close();
+    BOOST_CHECK(!opened);
+    b.close();
   }
 }
 
@@ -3261,11 +3352,14 @@ ELLE_TEST_SUITE()
   }
 
   {
-    boost::unit_test::test_suite* subsuite = BOOST_TEST_SUITE("waitable");
+    boost::unit_test::test_suite* subsuite = BOOST_TEST_SUITE("wait");
     boost::unit_test::framework::master_test_suite().add(subsuite);
     using namespace waitable;
     subsuite->add(BOOST_TEST_CASE(exception_no_wait), 0, valgrind(1, 5));
     subsuite->add(BOOST_TEST_CASE(logical_or), 0, valgrind(1, 5));
+    subsuite->add(BOOST_TEST_CASE(boost_signal), 0, valgrind(1, 5));
+    subsuite->add(BOOST_TEST_CASE(boost_signal_args), 0, valgrind(1, 5));
+    subsuite->add(BOOST_TEST_CASE(boost_signal_predicate), 0, valgrind(1, 5));
   }
 
   boost::unit_test::test_suite* signals = BOOST_TEST_SUITE("Signals");
@@ -3280,10 +3374,11 @@ ELLE_TEST_SUITE()
     auto barrier = BOOST_TEST_SUITE("barrier");
     boost::unit_test::framework::master_test_suite().add(barrier);
     using namespace barrier;
+    barrier->add(BOOST_TEST_CASE(changed), 0, valgrind(1, 5));
     barrier->add(BOOST_TEST_CASE(closed), 0, valgrind(1, 5));
-    barrier->add(BOOST_TEST_CASE(opened), 0, valgrind(1, 5));
-    barrier->add(BOOST_TEST_CASE(inverted), 0, valgrind(1, 5));
     barrier->add(BOOST_TEST_CASE(exception), 0, valgrind(1, 5));
+    barrier->add(BOOST_TEST_CASE(inverted), 0, valgrind(1, 5));
+    barrier->add(BOOST_TEST_CASE(opened), 0, valgrind(1, 5));
   }
 
   boost::unit_test::test_suite* multilock_barrier =
@@ -3444,13 +3539,13 @@ ELLE_TEST_SUITE()
   boost::unit_test::framework::master_test_suite().add(background);
   {
     using namespace background;
-    background->add(BOOST_TEST_CASE(operation), 0, valgrind(3, 10));
-    background->add(BOOST_TEST_CASE(operations), 0, valgrind(3, 10));
-    background->add(BOOST_TEST_CASE(exception), 0, valgrind(1, 5));
-    background->add(BOOST_TEST_CASE(thread_exception_yield), 0, valgrind(1, 5));
     background->add(BOOST_TEST_CASE(aborted), 0, valgrind(1, 5));
     background->add(BOOST_TEST_CASE(aborted_throw), 0, valgrind(1, 5));
+    background->add(BOOST_TEST_CASE(exception), 0, valgrind(1, 5));
     background->add(BOOST_TEST_CASE(future), 0, valgrind(2, 5));
+    background->add(BOOST_TEST_CASE(operation), 0, valgrind(3, 10));
+    background->add(BOOST_TEST_CASE(operations), 0, valgrind(3, 10));
+    background->add(BOOST_TEST_CASE(thread_exception_yield), 0, valgrind(1, 5));
   }
 
   boost::unit_test::test_suite* released = BOOST_TEST_SUITE("released");

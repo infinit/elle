@@ -81,7 +81,7 @@ static void run(int argc, char**argv)
 int main(int argc, char** argv)
 {
   reactor::Scheduler sched;
-  exit_request = elle::make_unique<reactor::Barrier>();
+  exit_request = std::make_unique<reactor::Barrier>();
   reactor::Thread t(sched, "main", [&]
     {
       run(argc, argv);

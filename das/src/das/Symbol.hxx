@@ -1,12 +1,9 @@
-#ifndef DAS_SYMBOL_HXX
-# define DAS_SYMBOL_HXX
+#include <type_traits>
 
-# include <type_traits>
+#define DAS_SYMBOL(Name) DAS_SYMBOL_NAMED(Name, Name)
+#define DAS_SYMBOL_TYPE(Name) DAS_SYMBOL_TYPE_NAMED(Name, Name)
 
-# define DAS_SYMBOL(Name) DAS_SYMBOL_NAMED(Name, Name)
-# define DAS_SYMBOL_TYPE(Name) DAS_SYMBOL_TYPE_NAMED(Name, Name)
-
-# define DAS_SYMBOL_TYPE_NAMED_(Name, CName)                    \
+#define DAS_SYMBOL_TYPE_NAMED_(Name, CName)                     \
   template <typename S>                                         \
   class _Symbol_##Name                                          \
     : public ::das::SpecificSymbol<S>                           \
@@ -122,7 +119,7 @@
     }                                                           \
   };                                                            \
 
-# define DAS_SYMBOL_TYPE_NAMED(Name, CName)                     \
+#define DAS_SYMBOL_TYPE_NAMED(Name, CName)                      \
   DAS_SYMBOL_TYPE_NAMED_(Name, CName);                          \
   class Symbol_##Name                                           \
     : public _Symbol_##Name<Symbol_##Name>                      \
@@ -131,7 +128,7 @@
     using _Symbol_##Name<Symbol_##Name>::operator =;            \
   };                                                            \
 
-# define DAS_SYMBOL_NAMED(Name, CName)                          \
+#define DAS_SYMBOL_NAMED(Name, CName)                           \
   DAS_SYMBOL_TYPE_NAMED_(Name, CName);                          \
   __attribute__((unused))                                       \
   constexpr static                                              \
@@ -142,4 +139,3 @@
     using _Symbol_##Name<Symbol_##Name>::operator =;            \
   } CName = {};                                                 \
 
-#endif

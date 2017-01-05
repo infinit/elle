@@ -1,6 +1,3 @@
-#ifndef DAS_SERIALIZE_HXX
-# define DAS_SERIALIZE_HXX
-
 namespace das
 {
   template <typename O, typename M>
@@ -11,4 +8,3 @@ namespace das
   }
 }
 
-#endif

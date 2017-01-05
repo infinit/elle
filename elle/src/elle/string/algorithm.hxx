@@ -2,15 +2,11 @@
 
 namespace elle
 {
-  template <typename F, typename... T>
-  std::ostream&
-  fprintf(std::ostream& out,
-          F&& fmt,
-          T&&... values);
-
   template <typename IT>
   std::string
-  join(IT it, IT ite, std::string const& sep)
+  join(IT it, IT ite, std::string const& sep,
+       std::function<std::string (typename IT::value_type const&)> const& t)
+
   {
     std::stringstream out;
     bool first = true;
@@ -21,8 +17,21 @@ namespace elle
         first = false;
       else
         out << sep;
-      elle::fprintf(out, "%s", val);
+      if (t)
+        elle::fprintf(out, "%s", t(val));
+      else
+        elle::fprintf(out, "%s", val);
     }
     return out.str();
+  }
+
+
+  template <typename C>
+  std::string
+  join(C const& container,
+       std::string const& sep,
+       std::function<std::string (typename C::const_reference)> const& t)
+  {
+    return join(container.begin(), container.end(), sep, t);
   }
 } /* elle */

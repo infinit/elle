@@ -216,7 +216,7 @@ namespace elle
       {
         std::stringstream ss;
         auto output_facet =
-          elle::make_unique<boost::posix_time::time_facet>();
+          std::make_unique<boost::posix_time::time_facet>();
         // ISO 8601
         output_facet->format("%Y-%m-%dT%H:%M:%S%F%q");
         ss.imbue(std::locale(ss.getloc(), output_facet.release()));

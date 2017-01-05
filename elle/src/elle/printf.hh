@@ -1,10 +1,8 @@
-#ifndef ELLE_PRINTF_HH
-# define ELLE_PRINTF_HH
+#pragma once
 
-# include <iosfwd>
-# include <string>
+#include <iosfwd>
+#include <string>
 
-# include <elle/printf-fwd.hh>
-# include <elle/printf.hxx>
+#include <elle/printf-fwd.hh>
+#include <elle/printf.hxx>
 
-#endif

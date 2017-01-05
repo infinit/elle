@@ -18,10 +18,11 @@
 # include <elle/Buffer.hh>
 # include <elle/TypeInfo.hh>
 # include <elle/Version.hh>
+# include <elle/attribute.hh>
+# include <elle/err.hh>
 # include <elle/optional.hh>
 # include <elle/serialization/fwd.hh>
 # include <elle/sfinae.hh>
-# include <elle/attribute.hh>
 
 namespace elle
 {
@@ -37,6 +38,16 @@ namespace elle
     class ELLE_API Context
     {
     public:
+      template <typename... Args>
+      Context(Args&&... args)
+      {
+        using swallow = int[];
+        (void) swallow
+        {
+          (this->set(std::forward<Args>(args)), 0)...
+        };
+      }
+
       template <typename T>
       void
       set(T value)
@@ -51,8 +62,7 @@ namespace elle
         auto ti = type_info<T>();
         auto it = this->_value.find(ti);
         if (it == this->_value.end())
-          throw Error(
-            elle::sprintf("missing serialization context for %s", ti.name()));
+          elle::err("missing serialization context for %s", ti.name());
         value = boost::any_cast<T>(it->second);
       }
 
@@ -99,31 +109,31 @@ namespace elle
     | Types |
     `------*/
     public:
-      typedef Serializer Self;
-      typedef std::unordered_map<TypeInfo, Version> Versions;
+      using Self = Serializer;
+      using Versions = std::unordered_map<TypeInfo, Version>;
 
     /*-------------.
     | Construction |
     `-------------*/
     public:
       Serializer(bool versioned);
-      Serializer(Versions versions,bool versioned);
+      Serializer(Versions versions, bool versioned);
 
     /*-----------.
     | Properties |
     `-----------*/
     public:
+      /// Whether is a SerializerIn.
       bool
       in() const;
+      /// Whether is a SerializerOut.
+      virtual
       bool
-      out() const;
+      out() const = 0;
       bool
       text() const;
       ELLE_ATTRIBUTE_R(bool, versioned);
       ELLE_ATTRIBUTE_R(boost::optional<Versions>, versions);
-    private:
-      bool
-      _out() const;
 
     /*--------------.
     | Serialization |
@@ -152,8 +162,7 @@ namespace elle
                 template <typename, typename> class C,
                 typename T,
                 typename A>
-      typename
-      std::enable_if<std::is_default_constructible<T>::value, void>::type
+      std::enable_if_t<std::is_default_constructible<T>::value, void>
       serialize(std::string const& name, C<T, A>& collection, as<As>);
       template <typename T>
       void
@@ -311,8 +320,7 @@ namespace elle
       _serialize(boost::multi_index::multi_index_container<T, I>& collection);
       template <typename As,
                 template <typename, typename> class C, typename T, typename A>
-      typename
-      std::enable_if<std::is_default_constructible<T>::value, void>::type
+      std::enable_if_t<std::is_default_constructible<T>::value, void>
       _serialize(C<T, A>& collection, as<As>);
       template <typename T1, typename T2>
       void

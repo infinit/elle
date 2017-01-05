@@ -30,6 +30,13 @@ namespace elle
       SerializerIn(std::istream& input,
                    Versions versions, bool versioned = true);
 
+    /*-----------.
+    | Properties |
+    `-----------*/
+    public:
+      bool
+      out() const override;
+
     /*--------.
     | Helpers |
     `--------*/

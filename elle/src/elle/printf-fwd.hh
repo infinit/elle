@@ -1,7 +1,6 @@
-#ifndef ELLE_PRINTF_FWD_HH
-# define ELLE_PRINTF_FWD_HH
+#pragma once
 
-# include <iosfwd>
+#include <iosfwd>
 
 namespace elle
 {
@@ -22,4 +21,3 @@ namespace elle
           T&&... values);
 }
 
-#endif

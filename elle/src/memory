@@ -134,7 +134,7 @@ namespace std
       this->_payload.reset();
     }
 
-    operator bool()
+    operator bool() const
     {
       return this->lock() != nullptr;
     }

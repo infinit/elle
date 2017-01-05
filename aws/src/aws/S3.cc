@@ -893,7 +893,7 @@ namespace aws
       try
       {
         request =
-          elle::make_unique<reactor::http::Request>(full_url, method, cfg);
+          std::make_unique<reactor::http::Request>(full_url, method, cfg);
         if (progress_callback)
         {
           request->progress_changed().connect(

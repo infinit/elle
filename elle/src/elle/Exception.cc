@@ -58,12 +58,12 @@ namespace elle
   }
 
   std::string
-  exception_string(std::exception_ptr eptr)
+  exception_string(std::exception_ptr eptr, std::exception_ptr cur)
   {
     if (!eptr)
     {
-      ELLE_ASSERT(!!std::current_exception());
-      eptr = std::current_exception();
+      ELLE_ASSERT(cur);
+      eptr = cur;
     }
     if (!eptr)
       throw Exception{"no current exception present"};

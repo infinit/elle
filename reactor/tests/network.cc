@@ -302,7 +302,7 @@ ELLE_TEST_SCHEDULED(socket_destruction)
 {
   SilentServer<TCPServer, TCPSocket> server;
   auto socket =
-    elle::make_unique<reactor::network::TCPSocket>(server.local_endpoint());
+    std::make_unique<reactor::network::TCPSocket>(server.local_endpoint());
   *socket << "foo";
   socket->socket()->close();
   // Check the IOStream doesn't try to flush the buffer if the TCPSocket
@@ -318,7 +318,7 @@ ELLE_TEST_SCHEDULED(socket_destruction)
 ELLE_TEST_SCHEDULED(connection_refused)
 {
   BOOST_CHECK_THROW(
-    elle::make_unique<reactor::network::TCPSocket>("localhost", 0),
+    std::make_unique<reactor::network::TCPSocket>("localhost", 0),
     reactor::network::ConnectionRefused);
 }
 
@@ -337,7 +337,7 @@ socket_close()
     {
       SilentServer<TCPServer, TCPSocket> server;
       auto socket =
-        elle::make_unique<reactor::network::TCPSocket>(server.local_endpoint());
+        std::make_unique<reactor::network::TCPSocket>(server.local_endpoint());
       elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
       {
         scope.run_background(
