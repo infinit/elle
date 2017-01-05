@@ -3,6 +3,7 @@
 #include <utility>
 
 #include <elle/attribute.hh>
+#include <elle/log.hh>
 #include <elle/meta.hh>
 
 #include <das/Symbol.hh>
@@ -97,6 +98,9 @@ namespace das
               RTail&& ... remaining,
               Store&& ... store)
       {
+        ELLE_LOG_COMPONENT("das.named");
+        ELLE_DUMP(
+          "found named argument for %s: %s", RHead::name(), match.value);
         return next::apply(defaults,
                            f,
                            std::forward<Applied>(applied)...,
@@ -183,6 +187,9 @@ namespace das
               StoreHead&& store_head,
               StoreTail&& ... store_tail)
       {
+        ELLE_LOG_COMPONENT("das.named");
+        ELLE_DUMP(
+          "use positional argument for %s: %s", Head::name(), store_head);
         return next::apply(
           defaults,
           f,
@@ -228,6 +235,10 @@ namespace das
               Applied ... applied,
               Store&& ... store)
       {
+        ELLE_LOG_COMPONENT("das.named");
+        ELLE_DUMP(
+          "use default value for %s: %s",
+          Head::name(), defaults.default_type::value);
         return next::apply(
           defaults,
           f,
@@ -331,6 +342,9 @@ namespace das
                        List<>>::template result_of<F>::type
         call(F const& f, Args&& ... args) const
       {
+        ELLE_LOG_COMPONENT("das.named");
+        ELLE_TRACE_SCOPE("Prototype(%s): invoke %s%s",
+                         this, f, std::tuple<Args const& ...>(args...));
         return Applier<
           DefaultStore,
           List<typename make_formal<Formal>::type...>,
