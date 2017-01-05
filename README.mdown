@@ -51,7 +51,7 @@ Consider the following hierarchy:
  └── drakefile
 ```
 
-The `drakefile`, located at **./drakefile**, contains the list of sources, targets, builders transforming sources to tragets, etc.
+The `drakefile`, located at **./drakefile**, contains the list of sources, targets, builders transforming sources to targets, etc.
 
 ```python3
 import drake
