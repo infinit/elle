@@ -56,13 +56,18 @@ namespace reactor
     TCPServer::accept()
     {
       // Open a new raw socket.
-      auto new_socket = elle::make_unique<AsioSocket>(
-        reactor::Scheduler::scheduler()->io_service());
+      //
+      // Cannot use std::make_unique here, it crashes on Windows
+      // builds for obscure reasons.
+      auto new_socket = std::unique_ptr<AsioSocket>
+        (new AsioSocket(reactor::Scheduler::scheduler()->io_service()));
       EndPoint peer;
       this->_accept(*new_socket, peer);
       // Socket is now connected so make it into a TCPSocket.
-      std::unique_ptr<TCPSocket> res(
-        new TCPSocket(std::move(new_socket), peer));
+      //
+      // Cannot use make_unique: private ctor.
+      auto res = std::unique_ptr<TCPSocket>
+        (new TCPSocket(std::move(new_socket), peer));
       // TCP no delay disable Nagle's algorithm.
       if (this->_no_delay)
       {

@@ -1,12 +1,11 @@
-#ifndef ELLE_UTILITY_FACTORY_HH
-# define ELLE_UTILITY_FACTORY_HH
+#pragma once
 
-# include <elle/types.hh>
-# include <elle/attribute.hh>
+#include <map>
 
-# include <map>
+#include <boost/noncopyable.hpp>
 
-# include <boost/noncopyable.hpp>
+#include <elle/types.hh>
+#include <elle/attribute.hh>
 
 namespace elle
 {
@@ -69,9 +68,9 @@ namespace elle
       | Types |
       `------*/
     public:
-      typedef std::map<P const, Functionoid*> Container;
-      typedef typename Container::iterator Iterator;
-      typedef typename Container::const_iterator Scoutor;
+      using Container = std::map<P, Functionoid*>;
+      using Iterator = typename Container::iterator;
+      using Scoutor = typename Container::const_iterator;
 
       /*-------------.
       | Construction |
@@ -105,6 +104,5 @@ namespace elle
   }
 }
 
-# include <elle/utility/Factory.hxx>
+#include <elle/utility/Factory.hxx>
 
-#endif

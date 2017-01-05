@@ -227,6 +227,10 @@ def configure(cxx_toolkit = None,
   zlib_prefix = drake.Path('zlib')
   zlib_build = zlib_prefix / zlib_basename
   zlib_configure = drake.node(zlib_build / 'configure')
+  # They don't always update their configure (which is not generated
+  # by Autoconf).  However, the zlib.h file is updated with the
+  # version number.
+  zlib_main_header = drake.node(zlib_build / 'zlib.h')
   zlib_url = 'http://zlib.net/%s.tar.gz' % zlib_basename
   drake.HTTPDownload(
     zlib_url,
@@ -235,7 +239,9 @@ def configure(cxx_toolkit = None,
   )
   drake.TarballExtractor(
     zlib_tarball,
-    targets = ['%s/%s' % (zlib_basename, 'configure')],
+    targets = ['%s/%s' % (zlib_basename, 'configure'),
+               '%s/%s' % (zlib_basename, 'zlib.h'),
+               ],
   )
 
   zlib_env = {}
@@ -292,7 +298,7 @@ def configure(cxx_toolkit = None,
     targets = zlib_libs + drake.nodes('zlib/include/zlib.h',
                                       'zlib/include/zconf.h'),
     makefile = zlib_makefile,
-    sources = [zlib_configure],
+    sources = [zlib_configure, zlib_main_header],
     build_args = ['install'] + list(s.replace('\\', '/') for s in zlib_args)
   )
   zlib_config = drake.cxx.Config()

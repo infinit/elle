@@ -1,10 +1,7 @@
-#ifndef ELLE_UTILITY_FACTORY_HXX
-# define ELLE_UTILITY_FACTORY_HXX
-
-# include <elle/Exception.hh>
-# include <elle/log.hh>
-# include <elle/finally.hh>
-# include <elle/memory.hh>
+#include <elle/Exception.hh>
+#include <elle/log.hh>
+#include <elle/finally.hh>
+#include <elle/memory.hh>
 
 namespace elle
 {
@@ -91,7 +88,7 @@ namespace elle
 
       // Create a generatoid.
       auto generatoid =
-        elle::make_unique<Factory<P, A...>::Generatoid<T>>(product);
+        std::make_unique<Factory<P, A...>::Generatoid<T>>(product);
 
       // Insert the generator in the container.
       auto result =
@@ -116,7 +113,7 @@ namespace elle
       ELLE_LOG_COMPONENT("elle.utility.Factory");
       ELLE_TRACE_METHOD(product);
 
-      Factory<P, A...>::Scoutor scoutor;
+      auto scoutor = Factory<P, A...>::Scoutor{};
 
       // Retrieve the associated generator.
       if ((scoutor = this->_container.find(product)) ==
@@ -131,5 +128,3 @@ namespace elle
     }
   }
 }
-
-#endif
