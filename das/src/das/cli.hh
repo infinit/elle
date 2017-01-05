@@ -290,7 +290,7 @@ namespace das
 
         template <typename I>
         std::enable_if_t<std::is_same<I, bool>::value, I>
-        convert(std::string const& v, int)
+        convert(std::string const& v, int) const
         {
           if (v == "true")
             return true;
@@ -301,14 +301,14 @@ namespace das
 
         template <typename I>
         std::enable_if_t<std::is_same<I, std::string>::value, I>
-        convert(std::string const& v, int)
+        convert(std::string const& v, int) const
         {
           return v;
         }
 
         template <typename I>
         std::enable_if_t<std::is_base_of<boost::optional_detail::optional_tag, I>::value, I>
-        convert(std::string const& v, int)
+        convert(std::string const& v, int) const
         {
           if (this->_values.empty())
             return boost::none;
@@ -320,7 +320,7 @@ namespace das
         template <typename I>
         std::enable_if_t<
           std::is_integral<I>::value && !std::is_same<I, bool>::value, I>
-        convert(std::string const& v, int)
+        convert(std::string const& v, int) const
         {
           try
           {
@@ -340,7 +340,7 @@ namespace das
 
         template <typename I>
         I
-        convert(std::string const& v, ...)
+        convert(std::string const& v, ...) const
         {
           elle::serialization::json::SerializerIn s(elle::json::Json(v), false);
           return s.deserialize<I>();
@@ -348,7 +348,7 @@ namespace das
 
         template <typename T>
         std::enable_if_t<!default_has, T>
-        missing()
+        missing() const
         {
           ELLE_LOG_COMPONENT("das.cli");
           ELLE_TRACE("raise missing error");
@@ -357,7 +357,7 @@ namespace das
 
         template <typename T>
         std::enable_if_t<default_has, T>
-        missing()
+        missing() const
         {
           ELLE_LOG_COMPONENT("das.cli");
           ELLE_TRACE("use default value: %s", this->Default::value);
@@ -366,7 +366,7 @@ namespace das
 
         template <typename I>
         I
-        convert()
+        convert() const
         {
           ELLE_LOG_COMPONENT("das.cli");
           if (this->_values.empty())
@@ -386,8 +386,9 @@ namespace das
         }
 
         template <typename I>
-        operator I()
+        operator I() const
         {
+          static_assert(!std::is_same<std::decay_t<I>, bool>::value, "");
           ELLE_LOG_COMPONENT("das.cli");
           ELLE_TRACE_SCOPE(
             "convert %s to %s", this->_option, elle::type_info<I>());
@@ -410,7 +411,7 @@ namespace das
         }
 
         template <typename T>
-        operator std::vector<T>()
+        operator std::vector<T>() const
         {
           ELLE_LOG_COMPONENT("das.cli");
           std::vector<T> res;
@@ -430,7 +431,7 @@ namespace das
         }
 
         void
-        _check_remaining()
+        _check_remaining() const
         {
           if (!--this->_remaining)
             if (!this->_args.empty())
@@ -444,7 +445,7 @@ namespace das
 
       private:
         ELLE_ATTRIBUTE_R(std::string, option);
-        ELLE_ATTRIBUTE_R(std::vector<std::string>, values);
+        ELLE_ATTRIBUTE_R(std::vector<std::string>, values, mutable);
         ELLE_ATTRIBUTE(bool, positional);
         ELLE_ATTRIBUTE(std::vector<std::string>&, args);
         ELLE_ATTRIBUTE(bool, flag);
