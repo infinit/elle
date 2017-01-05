@@ -1,4 +1,6 @@
-#include <termios.h>
+#if !defined(INFINIT_WINDOWS)
+# include <termios.h>
+#endif
 
 #include <elle/Exception.hh>
 #include <elle/format/hexadecimal.hh>
