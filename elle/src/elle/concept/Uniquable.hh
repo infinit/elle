@@ -1,25 +1,24 @@
-#ifndef ELLE_CONCEPT_UNIQUABLE_HH
-# define ELLE_CONCEPT_UNIQUABLE_HH
+#pragma once
 
-# include <elle/types.hh>
+#include <elle/types.hh>
 
-# include <elle/io/fwd.hh>
-# include <elle/serialize/fwd.hh>
-# include <elle/serialize/Serializable.hh>
+#include <elle/io/fwd.hh>
+#include <elle/serialize/fwd.hh>
+#include <elle/serialize/Serializable.hh>
 
 /// The unique default archive type is defined with this macros.
-# define ELLE_CONCEPT_UNIQUABLE_DEFAULT_ARCHIVE                               \
-  elle::serialize::Base64Archive                                              \
+#define ELLE_CONCEPT_UNIQUABLE_DEFAULT_ARCHIVE                          \
+  elle::serialize::Base64Archive                                        \
   /**/
 
 // internal shortcut
-# define __ECU_ARCHIVE_TPL(Archive)                                           \
-  __ESS_ARCHIVE_TPL(Archive)                                                  \
+#define __ECU_ARCHIVE_TPL(Archive)                                      \
+  __ESS_ARCHIVE_TPL(Archive)                                            \
   /**/
 
 // internal shortcut
-# define __ECU_DEFAULT_ARCHIVE_TPL(Archive)                                   \
-  __ECU_ARCHIVE_TPL(Archive) = ELLE_CONCEPT_UNIQUABLE_DEFAULT_ARCHIVE         \
+#define __ECU_DEFAULT_ARCHIVE_TPL(Archive)                              \
+  __ECU_ARCHIVE_TPL(Archive) = ELLE_CONCEPT_UNIQUABLE_DEFAULT_ARCHIVE   \
   /**/
 
 namespace elle
@@ -73,6 +72,4 @@ namespace elle
   }
 }
 
-# include "Uniquable.hxx"
-
-#endif
+#include <elle/concept/Uniquable.hxx>

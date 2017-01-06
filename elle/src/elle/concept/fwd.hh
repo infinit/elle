@@ -1,15 +1,9 @@
-#ifndef ELLE_CONCEPT_FWD_HH
-# define ELLE_CONCEPT_FWD_HH
+#pragma once
 
 namespace elle
 {
   namespace concept
   {
-
-    // Nothing to forward declare here since concepts are
-    // inherited.
-
+    // Nothing to forward declare here since concepts are inherited.
   }
 }
-
-#endif

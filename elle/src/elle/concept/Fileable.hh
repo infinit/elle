@@ -1,5 +1,4 @@
-#ifndef ELLE_CONCEPT_FILEABLE_HH
-# define ELLE_CONCEPT_FILEABLE_HH
+#pragma once
 
 /// This module provides the 'Fileable' concept.
 /// Requirements:
@@ -37,24 +36,23 @@
 ///   {};
 /// ---------------------------------------------------------------------------
 
-# include <elle/types.hh>
-# include <elle/io/fwd.hh>
-# include <elle/serialize/Serializable.hh>
+#include <elle/types.hh>
+#include <elle/io/fwd.hh>
+#include <elle/serialize/Serializable.hh>
 
-# include <string>
-# include <typeinfo>
+#include <string>
+#include <typeinfo>
 
-# define ELLE_CONCEPT_FILEABLE_METHODS(...)                                   \
-  using elle::concept::Fileable<__VA_ARGS__>::store;                          \
-  using elle::concept::Fileable<__VA_ARGS__>::load;                           \
-  using elle::concept::Fileable<__VA_ARGS__>::erase;                          \
+#define ELLE_CONCEPT_FILEABLE_METHODS(...)                              \
+  using elle::concept::Fileable<__VA_ARGS__>::store;                    \
+  using elle::concept::Fileable<__VA_ARGS__>::load;                     \
+  using elle::concept::Fileable<__VA_ARGS__>::erase;                    \
   using elle::concept::Fileable<__VA_ARGS__>::exists;
 
 namespace elle
 {
   namespace concept
   {
-
     template <__ESS_DEFAULT_ARCHIVE_TPL(Archive)>
     struct Fileable:
       virtual serialize::_Serializable<Archive>
@@ -86,6 +84,5 @@ namespace elle
   }
 }
 
-# include "Fileable.hxx"
+#include <elle/concept/Fileable.hxx>
 
-#endif
