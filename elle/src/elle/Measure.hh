@@ -1,71 +1,63 @@
-#ifndef ELLE_MEASURE_HH
-# define ELLE_MEASURE_HH
+#pragma once
 
-# ifdef ELLE_WITH_MEASURE
-#  include <elle/memory.hh>
-#  include <elle/printf.hh>
+#ifdef ELLE_WITH_MEASURE
+# include <atomic>
+# include <chrono>
+# include <iostream>
+# include <string>
 
-#  include <atomic>
-#  include <chrono>
-#  include <iostream>
-#  include <string>
-# endif
+# include <elle/memory.hh>
+# include <elle/printf.hh>
+#endif
 
-# define ELLE_MEASURE_INSTANCE(_name)                                         \
-  ::elle::Measure(__FILE__, __LINE__, _name)                                  \
+#define ELLE_MEASURE_INSTANCE(_name)                                    \
+  ::elle::Measure(__FILE__, __LINE__, _name)                            \
+  /**/
+
+#define ELLE_MEASURE_SCOPE_INTERNAL(_name)                                   \
+  auto BOOST_PP_CAT(_elle_mesure_, __LINE__) = ELLE_MEASURE_INSTANCE(_name)  \
 /**/
 
-# define ELLE_MEASURE_SCOPE_INTERNAL(_name)                                   \
-  auto BOOST_PP_CAT(_elle_mesure_, __LINE__) = ELLE_MEASURE_INSTANCE(_name)   \
-/**/
+#define ELLE_MEASURE_SCOPE(_name)                                       \
+  ELLE_MEASURE_SCOPE_INTERNAL(_name);                                   \
+  (void)BOOST_PP_CAT(_elle_mesure_, __LINE__)                           \
+  /**/
 
-# define ELLE_MEASURE_SCOPE(_name)                                            \
-  ELLE_MEASURE_SCOPE_INTERNAL(_name);                                         \
-  (void)BOOST_PP_CAT(_elle_mesure_, __LINE__)                                 \
-/**/
-
-# define ELLE_MEASURE(_name)                                                  \
-  if (ELLE_MEASURE_SCOPE_INTERNAL(_name))                                     \
-    (void)BOOST_PP_CAT(_elle_mesure_, __LINE__);                              \
-  else                                                                        \
-/**/
+#define ELLE_MEASURE(_name)                                             \
+  if (ELLE_MEASURE_SCOPE_INTERNAL(_name))                               \
+    (void)BOOST_PP_CAT(_elle_mesure_, __LINE__);                        \
+  else                                                                  \
+    /**/
 
 namespace elle
 {
   struct Measure
   {
-# ifdef ELLE_WITH_MEASURE
-    std::chrono::system_clock::time_point const start;
-    char const* file;
-    unsigned int line;
-    std::string const name;
-    bool done;
-
-    Measure(char const* file,
-            unsigned int line,
-            std::string name):
-      start{std::chrono::system_clock::now()},
-      file{file},
-      line{line},
-      name{name},
-      done{false}
-    { _indent()++; }
+#ifdef ELLE_WITH_MEASURE
+    Measure(char const* file, unsigned int line, std::string name)
+      : file{file}
+      , line{line}
+      , name{name}
+    {
+      _indent()++;
+    }
 
     void
     end()
     {
-      if (this->done)
-        return;
-      this->done = true;
-      using namespace std::chrono;
-      auto d = duration_cast<milliseconds>(system_clock::now() - this->start);
-      elle::printf("%s %s took %s ms (%s:%s)\n",
-                   std::string(_indent(), '#'),
-                   this->name,
-                   d.count(),
-                   this->file,
-                   this->line);
-      _indent()--;
+      if (!this->done)
+      {
+        this->done = true;
+        using namespace std::chrono;
+        auto d = duration_cast<milliseconds>(system_clock::now() - this->start);
+        elle::printf("%s %s took %s ms (%s:%s)\n",
+                     std::string(_indent(), '#'),
+                     this->name,
+                     d.count(),
+                     this->file,
+                     this->line);
+        _indent()--;
+      }
     }
 
     ~Measure()
@@ -73,6 +65,12 @@ namespace elle
       this->end();
     }
 
+    char const* file;
+    unsigned int line;
+    std::string const name;
+    std::chrono::system_clock::time_point const start
+      = std::chrono::system_clock::now();
+    bool done = false;
 
   private:
     static
@@ -81,14 +79,12 @@ namespace elle
       static std::atomic_size_t i;
       return i;
     }
-# else
+#else
     // Empty implementation
     template <typename... Args>
     inline Measure(Args&&...) {}
     inline void end() {}
-# endif
+#endif
      operator bool() const { return false; }
   };
 }
-
-#endif
