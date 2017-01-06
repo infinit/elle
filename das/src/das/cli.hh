@@ -286,8 +286,7 @@ namespace das
               bool positional,
               std::vector<std::string>& args,
               std::vector<std::string> value,
-              int& remaining,
-              bool set)
+              int& remaining)
           : Super(d)
           , _option(std::move(option))
           , _values(std::move(value))
@@ -295,7 +294,6 @@ namespace das
           , _args(args)
           , _flag(false)
           , _remaining(remaining)
-          , _set{set}
         {}
 
         Value(std::conditional_t<default_has, Default, int> const& d,
@@ -303,8 +301,7 @@ namespace das
               bool positional,
               std::vector<std::string>& args,
               bool flag,
-              int& remaining,
-              bool set)
+              int& remaining)
           : Super(d)
           , _option(std::move(option))
           , _values()
@@ -312,7 +309,6 @@ namespace das
           , _args(args)
           , _flag(flag)
           , _remaining(remaining)
-          , _set{set}
         {}
 
         template <typename I>
@@ -504,8 +500,8 @@ namespace das
           auto res = this->operator I();
           ELLE_TRACE_SCOPE(
             "converted %s to %s (%s)",
-            this->_option, res, this->_set ? "explicit" : "implicit");
-          return {res, this->_set};
+            this->_option, res, this->_flag ? "explicit" : "implicit");
+          return {res, this->_flag};
         }
 
         void
@@ -525,10 +521,9 @@ namespace das
         ELLE_ATTRIBUTE_R(std::vector<std::string>, values, mutable);
         ELLE_ATTRIBUTE(bool, positional);
         ELLE_ATTRIBUTE(std::vector<std::string>&, args);
+        /// Whether was explicit set on the command line.
         ELLE_ATTRIBUTE(bool, flag);
         ELLE_ATTRIBUTE(int&, remaining);
-        /// Whether was explicit set on the command line.
-        ELLE_ATTRIBUTE(bool, set);
       };
 
       template <typename Formal, typename Default>
@@ -673,27 +668,27 @@ namespace das
                   using V = Value<typename decltype(head)::type, Default>;
                   if (flag)
                     return V(p.defaults, Head::name(), pos, args,
-                             flag, counter, true);
+                             flag, counter);
                   else
                   {
                     if (value.empty())
                       ELLE_DEBUG(
                         "no occurences, default value is %s", p.defaults.Default::value);
                     return V(p.defaults, Head::name(), pos, args,
-                             std::move(value), counter, false);
+                             std::move(value), counter);
                   }
                 },
                 [&] (auto head, auto)
                 {
                   using V = Value<typename decltype(head)::type, void>;
                   if (flag)
-                    return V(0, Head::name(), pos, args, flag, counter, true);
+                    return V(0, Head::name(), pos, args, flag, counter);
                   else
                   {
                     if (value.empty())
                       ELLE_DEBUG("no occurences and no default value");
                     return V(0, Head::name(), pos, args,
-                             std::move(value), counter, false);
+                             std::move(value), counter);
                   }
                 })(elle::meta::Identity<Head>{},
                    elle::meta::Identity<Default>{});
