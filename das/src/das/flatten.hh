@@ -1,9 +1,8 @@
-#ifndef DAS_FLATTEN_HH
-# define DAS_FLATTEN_HH
+#pragma once
 
-# include <type_traits>
+#include <type_traits>
 
-# include <das/model.hh>
+#include <das/model.hh>
 
 namespace das
 {
@@ -138,7 +137,7 @@ namespace das
     };
   }
 
-  // Flatten
+  /// Flatten a structure: return it as a tuple of values.
   template <typename Model, typename T>
   typename Model::Fields::template map<
     flatten_object<T, FlattenByValue>::template flatten>
@@ -148,9 +147,11 @@ namespace das
     return _flatten<Model, T, FlattenByValue>(o);
   }
 
+  /// Flatten a structure: return it as a tuple of values.
   template <typename T>
-  decltype(flatten<typename DefaultModel<T>::type, T>(std::declval<T>()))
+  auto
   flatten(T const& o)
+    -> decltype(flatten<typename DefaultModel<T>::type, T>(o))
   {
     return flatten<typename DefaultModel<T>::type, T>(o);
   }
@@ -166,9 +167,9 @@ namespace das
   }
 
   template <typename T>
-  decltype(
-    flatten_ref<typename DefaultModel<T>::type, T>(std::declval<T&>()))
+  auto
   flatten_ref(T& o)
+    -> decltype(flatten_ref<typename DefaultModel<T>::type, T>(o))
   {
     return flatten_ref<typename DefaultModel<T>::type, T>(o);
   }
@@ -184,12 +185,11 @@ namespace das
   }
 
   template <typename T>
-  decltype(
-    flatten_ref<typename DefaultModel<T>::type, T>(std::declval<T const&>()))
+  auto
   flatten_ref(T const& o)
+    -> decltype(flatten_ref<typename DefaultModel<T>::type, T>(o))
   {
     return flatten_ref<typename DefaultModel<T>::type, T>(o);
   }
 }
 
-#endif

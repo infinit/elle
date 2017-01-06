@@ -1,5 +1,4 @@
-#ifndef DAS_FWD_HH
-# define DAS_FWD_HH
+#pragma once
 
 namespace das
 {
@@ -7,5 +6,3 @@ namespace das
   struct Das
   {};
 }
-
-#endif

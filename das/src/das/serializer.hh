@@ -91,9 +91,9 @@ namespace das
   {
     /// Deserialize by constructor.
     template <typename O, typename M>
-    typename std::enable_if<
+    std::enable_if_t<
       M::Types::template apply<std::is_constructible, O>::type::value,
-      O>::type
+      O>
     deserialize_switch(elle::serialization::SerializerIn& s)
     {
       return std::forward_tuple(
@@ -127,10 +127,10 @@ namespace das
 
     /// Deserialize via default construct and fields assignment.
     template <typename O, typename M>
-    typename std::enable_if<
+    std::enable_if_t<
       !M::Types::template apply<std::is_constructible, O>::type::value &&
       M::Fields::template map<SetAttr<O>::template available>::type::template apply<elle::meta::All>::type::value,
-      O>::type
+      O>
     deserialize_switch(elle::serialization::SerializerIn& s)
     {
       O res;

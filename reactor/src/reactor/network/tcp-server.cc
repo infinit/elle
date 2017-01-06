@@ -57,10 +57,12 @@ namespace reactor
     {
       // Open a new raw socket.
       //
-      // Cannot use std::make_unique here, it crashes on Windows
-      // builds for obscure reasons.
-      auto new_socket = std::unique_ptr<AsioSocket>
-        (new AsioSocket(reactor::Scheduler::scheduler()->io_service()));
+      // We can neither directly build the std::unique_ptr here, nor
+      // use std::make_unique (which makes sense, as std::make_unique
+      // being inline, it should produce the same code), because it
+      // crashes on Windows builds for (very) obscure reasons.
+      auto new_socket = elle::make_unique<AsioSocket>
+        (reactor::Scheduler::scheduler()->io_service());
       EndPoint peer;
       this->_accept(*new_socket, peer);
       // Socket is now connected so make it into a TCPSocket.

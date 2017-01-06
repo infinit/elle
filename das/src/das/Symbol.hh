@@ -43,7 +43,7 @@ namespace das
       using ByRValueRef = Effective<E, std::remove_cv_reference_t<P>&&>;
       using ByValue = Effective<E, std::remove_cv_reference_t<P>>;
 
-      static inline
+      static
       std::string
       name()
       {

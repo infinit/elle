@@ -129,13 +129,6 @@
   };                                                            \
 
 #define DAS_SYMBOL_NAMED(Name, CName)                           \
-  DAS_SYMBOL_TYPE_NAMED_(Name, CName);                          \
+  DAS_SYMBOL_TYPE_NAMED(Name, CName);                           \
   __attribute__((unused))                                       \
-  constexpr static                                              \
-  class Symbol_##Name                                           \
-    : public _Symbol_##Name<Symbol_##Name>                      \
-  {                                                             \
-  public:                                                       \
-    using _Symbol_##Name<Symbol_##Name>::operator =;            \
-  } CName = {};                                                 \
-
+  constexpr static Symbol_##Name CName = {};
