@@ -207,6 +207,59 @@ namespace das
       return _details::IsOption(a, opts);
     }
 
+    /// Similar to an optional that knows its default value.
+    template <typename T>
+    struct Defaulted
+    {
+      Defaulted(T const& def, bool set = false)
+        : _value{def}
+        , _set{set}
+      {}
+
+      Defaulted(Defaulted const&) = default;
+      Defaulted& operator=(Defaulted const&) = default;
+
+      /// Override the default value.
+      template <typename U>
+      Defaulted& operator=(U&& u)
+      {
+        _value = std::forward<T>(u);
+        _set = true;
+        return *this;
+      }
+
+      /// Whether explicitly defined by the user.
+      operator bool() const
+      {
+        return _set;
+      }
+
+      /// The value.
+      T const& get() const
+      {
+        return _value;
+      }
+
+      /// The value.
+      T const& operator*() const
+      {
+        return get();
+      }
+
+      /// A pointer to the value.
+      T const* operator->() const
+      {
+        return &_value;
+      }
+
+    private:
+      /// The value.
+      T _value;
+      /// Whether a value was specified (as opposed to remaining equal
+      /// to the initial value).
+      bool _set = false;
+    };
+
     namespace _details
     {
       struct Empty
@@ -233,7 +286,8 @@ namespace das
               bool positional,
               std::vector<std::string>& args,
               std::vector<std::string> value,
-              int& remaining)
+              int& remaining,
+              bool set)
           : Super(d)
           , _option(std::move(option))
           , _values(std::move(value))
@@ -241,6 +295,7 @@ namespace das
           , _args(args)
           , _flag(false)
           , _remaining(remaining)
+          , _set{set}
         {}
 
         Value(std::conditional_t<default_has, Default, int> const& d,
@@ -248,7 +303,8 @@ namespace das
               bool positional,
               std::vector<std::string>& args,
               bool flag,
-              int& remaining)
+              int& remaining,
+              bool set)
           : Super(d)
           , _option(std::move(option))
           , _values()
@@ -256,6 +312,7 @@ namespace das
           , _args(args)
           , _flag(flag)
           , _remaining(remaining)
+          , _set{set}
         {}
 
         template <typename I>
@@ -436,6 +493,21 @@ namespace das
                                    });
         }
 
+        /// A conversion that allows to know whether we have the
+        /// option's default value, or a user defined one.
+        template <typename I>
+        operator Defaulted<I>() const
+        {
+          ELLE_LOG_COMPONENT("das.cli");
+          ELLE_TRACE_SCOPE(
+            "convert %s to %s", this->_option, elle::type_info<Defaulted<I>>());
+          auto res = this->operator I();
+          ELLE_TRACE_SCOPE(
+            "converted %s to %s (%s)",
+            this->_option, res, this->_set ? "explicit" : "implicit");
+          return {res, this->_set};
+        }
+
         void
         _check_remaining() const
         {
@@ -455,6 +527,8 @@ namespace das
         ELLE_ATTRIBUTE(std::vector<std::string>&, args);
         ELLE_ATTRIBUTE(bool, flag);
         ELLE_ATTRIBUTE(int&, remaining);
+        /// Whether was explicit set on the command line.
+        ELLE_ATTRIBUTE(bool, set);
       };
 
       template <typename Formal, typename Default>
@@ -599,27 +673,27 @@ namespace das
                   using V = Value<typename decltype(head)::type, Default>;
                   if (flag)
                     return V(p.defaults, Head::name(), pos, args,
-                             flag, counter);
+                             flag, counter, true);
                   else
                   {
                     if (value.empty())
                       ELLE_DEBUG(
                         "no occurences, default value is %s", p.defaults.Default::value);
                     return V(p.defaults, Head::name(), pos, args,
-                             std::move(value), counter);
+                             std::move(value), counter, false);
                   }
                 },
                 [&] (auto head, auto)
                 {
                   using V = Value<typename decltype(head)::type, void>;
                   if (flag)
-                    return V(0, Head::name(), pos, args, flag, counter);
+                    return V(0, Head::name(), pos, args, flag, counter, true);
                   else
                   {
                     if (value.empty())
                       ELLE_DEBUG("no occurences and no default value");
                     return V(0, Head::name(), pos, args,
-                             std::move(value), counter);
+                             std::move(value), counter, false);
                   }
                 })(elle::meta::Identity<Head>{},
                    elle::meta::Identity<Default>{});
