@@ -679,7 +679,7 @@ namespace das
          Options const& opts = Options())
       -> decltype(_call(f.prototype(), f, args, opts))
     {
-      return _call(f.prototype(), f, args, opts);
+      return _call(f.prototype(), f.function(), args, opts);
     }
 
     template <typename ... T>
@@ -689,7 +689,7 @@ namespace das
          Options const& opts = Options())
     {
       std::vector<std::string> copy = args;
-      return _call(f.prototype(), f, copy, opts);
+      return _call(f.prototype(), f.function(), copy, opts);
     }
 
     inline

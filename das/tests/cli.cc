@@ -140,12 +140,12 @@ namespace conversions
       {
         BOOST_CHECK_EQUAL(bool(expected), enabled);
       };
-    auto const proto = das::named::prototype(foo, bar);
-    das::cli::call(proto, f, {"--foo", "0"});
-    das::cli::call(proto, f, {"--foo", "1", "--bar"});
-    das::cli::call(proto, f, {"--bar", "--foo", "1"});
-    das::cli::call(proto, f, {"--foo", "1", "--bar", "true"});
-    das::cli::call(proto, f, {"--foo", "0", "--bar", "false"});
+    auto const named = das::named::function(f, foo, bar = false);
+    das::cli::call(named, {"--foo", "0"});
+    das::cli::call(named, {"--foo", "1", "--bar"});
+    das::cli::call(named, {"--bar", "--foo", "1"});
+    das::cli::call(named, {"--foo", "1", "--bar", "true"});
+    das::cli::call(named, {"--foo", "0", "--bar", "false"});
   }
 
   static
