@@ -20,6 +20,10 @@ namespace das
 {
   namespace cli
   {
+    /*---------.
+    | Errors.  |
+    `---------*/
+
     /// Command line error
     class Error
       : public elle::Error
@@ -115,6 +119,10 @@ namespace das
     /// Base tag for cli symbols
     class CLI_Symbol
     {};
+
+    /*----------.
+    | Options.  |
+    `----------*/
 
     struct Option
     {
@@ -217,6 +225,7 @@ namespace das
       public:
         using Super = std::conditional_t<
           std::is_same<Default, void>::value, Empty, Default>;
+        /// Whether a default value was specified.
         static bool constexpr default_has = !std::is_same<Default, void>::value;
 
         Value(std::conditional_t<default_has, Default, int> const& d,
@@ -225,7 +234,7 @@ namespace das
               std::vector<std::string>& args,
               std::vector<std::string> value,
               int& remaining)
-          : Super (d)
+          : Super(d)
           , _option(std::move(option))
           , _values(std::move(value))
           , _positional(positional)
@@ -430,14 +439,13 @@ namespace das
         void
         _check_remaining() const
         {
-          if (!--this->_remaining)
-            if (!this->_args.empty())
-            {
-              if (is_option(*this->_args.begin()))
-                throw UnknownOption(*this->_args.begin());
-              else
-                throw UnrecognizedValue(*this->_args.begin());
-            }
+          if (!--this->_remaining && !this->_args.empty())
+          {
+            if (is_option(*this->_args.begin()))
+              throw UnknownOption(*this->_args.begin());
+            else
+              throw UnrecognizedValue(*this->_args.begin());
+          }
         }
 
       private:
@@ -582,7 +590,7 @@ namespace das
                 D::template default_for<Formal>::has;
               using Default = std::conditional_t<
                 default_has,
-                typename D::template default_for<Formal >::type,
+                typename D::template default_for<Formal>::type,
                 void>;
               return elle::meta::static_if<default_has>(
                 [&] (auto head, auto def)
@@ -595,11 +603,8 @@ namespace das
                   else
                   {
                     if (value.empty())
-                    {
-                      Default const& couille = p.defaults;
                       ELLE_DEBUG(
-                        "no occurences, default value is %s", couille.value);
-                    }
+                        "no occurences, default value is %s", p.defaults.Default::value);
                     return V(p.defaults, Head::name(), pos, args,
                              std::move(value), counter);
                   }
