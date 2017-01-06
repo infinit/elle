@@ -23,6 +23,11 @@ namespace elle
     std::string
     stringify() const;
 
+    /// Non virtual version.
+    template <typename T>
+    struct as
+    {};
+
   /*-------------.
   | Construction |
   `-------------*/
@@ -36,6 +41,17 @@ namespace elle
   std::ostream&
   operator << (std::ostream& stream,
                Printable const& o);
+
+  /// Print pretty representation of \a o to \a stream.
+  template <typename T>
+  ELLE_API
+  std::ostream&
+  operator << (std::ostream& stream,
+               Printable::as<T> const& o)
+  {
+    static_cast<T const&>(o).print(stream);
+    return stream;
+  }
 }
 
 #endif
