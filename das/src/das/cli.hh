@@ -659,16 +659,6 @@ namespace das
       return _call(p, f, args, opts);
     }
 
-    template <typename ... T>
-    auto
-    call(named::Function<T...> const& f,
-         std::vector<std::string>& args,
-         Options const& opts = Options())
-      -> decltype(_call(f.prototype(), f, args, opts))
-    {
-      return _call(f.prototype(), f, args, opts);
-    }
-
     template <typename F, typename D, typename ... Formals, typename ... Args>
     auto
     call(das::named::Prototype<D, Formals...> const& p,
@@ -680,6 +670,26 @@ namespace das
     {
       std::vector<std::string> copy = args;
       return _call(p, f, copy, opts);
+    }
+
+    template <typename ... T>
+    auto
+    call(named::Function<T...> const& f,
+         std::vector<std::string>& args,
+         Options const& opts = Options())
+      -> decltype(_call(f.prototype(), f, args, opts))
+    {
+      return _call(f.prototype(), f, args, opts);
+    }
+
+    template <typename ... T>
+    auto
+    call(named::Function<T...> const& f,
+         std::vector<std::string> const& args,
+         Options const& opts = Options())
+    {
+      std::vector<std::string> copy = args;
+      return _call(f.prototype(), f, copy, opts);
     }
 
     inline
