@@ -328,6 +328,7 @@ namespace das
 
     template <typename DefaultStore, typename ... Formal>
     struct Prototype
+      : public elle::Printable::as<Prototype<DefaultStore, Formal...>>
     {
       DefaultStore defaults;
       Prototype(DefaultStore&& d)
@@ -354,6 +355,31 @@ namespace das
             // FIXME: keep defaults const
             const_cast<DefaultStore&>(defaults),
             f, std::forward<Args>(args)...);
+      }
+
+      template <typename Arg>
+      struct print_prototype
+      {
+        using type = bool;
+        static
+        bool
+        value(std::ostream& o, bool& first)
+        {
+          if (first)
+            first = false;
+          else
+            o << ", ";
+          o << Arg::name();
+          return true;
+        }
+      };
+
+      void
+      print(std::ostream& o) const
+      {
+        bool first = true;
+        elle::meta::List<Formal...>::
+          template map<print_prototype>::value(o, first);
       }
     };
 
@@ -444,6 +470,7 @@ namespace das
 
     template <typename F, typename ... Args>
     class Function
+      : public elle::Printable::as<Function<F, Args...>>
     {
     public:
       template <typename ... CArgs>
@@ -462,6 +489,14 @@ namespace das
 
       ELLE_ATTRIBUTE_R(F, function);
       ELLE_ATTRIBUTE_R((Prototype<DefaultStore<Args...>, Args...>), prototype);
+
+      void
+      print(std::ostream& out) const
+      {
+        // elle::fprintf(out, "%s[%s]", this->_function, this->_prototype);
+        elle::fprintf(
+          out, "%s[%s]", this->_function, this->_prototype);
+      }
     };
 
     template <typename F, typename ... Args>
