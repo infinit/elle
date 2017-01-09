@@ -152,7 +152,7 @@ ELLE_TEST_SCHEDULED(managed)
     {
       throw BeaconException();
     },
-    reactor::Thread::managed = true);
+    reactor::managed = true);
   BOOST_CHECK_THROW(reactor::wait(t), BeaconException);
   BOOST_CHECK_THROW(reactor::wait(t), BeaconException);
 }
@@ -228,7 +228,7 @@ ELLE_TEST_SCHEDULED(unique_ptr)
             throw;
           }
         },
-        reactor::Thread::dispose = true));
+        reactor::dispose = true));
     reactor::wait(sleeping);
     t.reset();
     BOOST_CHECK(beacon);
@@ -243,7 +243,7 @@ ELLE_TEST_SCHEDULED(unique_ptr)
         {
           run.open();
         },
-        reactor::Thread::dispose = true));
+        reactor::dispose = true));
     reactor::wait(run);
     BOOST_CHECK(!t);
     t.reset();
@@ -257,7 +257,7 @@ ELLE_TEST_SCHEDULED(unique_ptr)
       {
         reactor::wait(go);
       },
-      reactor::Thread::dispose = true);
+      reactor::dispose = true);
     auto t = new reactor::Thread::unique_ptr(raw);
     t->release();
     delete t;
@@ -412,6 +412,14 @@ namespace waitable
     reactor::yield();
     reactor::yield();
     BOOST_CHECK(beacon);
+  }
+
+  ELLE_TEST_SCHEDULED(boost_signal_waiter)
+  {
+    boost::signals2::signal<void ()> signal;
+    auto waiter = reactor::waiter(signal);
+    signal();
+    reactor::wait(waiter);
   }
 }
 
@@ -3360,6 +3368,7 @@ ELLE_TEST_SUITE()
     subsuite->add(BOOST_TEST_CASE(boost_signal), 0, valgrind(1, 5));
     subsuite->add(BOOST_TEST_CASE(boost_signal_args), 0, valgrind(1, 5));
     subsuite->add(BOOST_TEST_CASE(boost_signal_predicate), 0, valgrind(1, 5));
+    subsuite->add(BOOST_TEST_CASE(boost_signal_waiter), 0, valgrind(1, 5));
   }
 
   boost::unit_test::test_suite* signals = BOOST_TEST_SUITE("Signals");

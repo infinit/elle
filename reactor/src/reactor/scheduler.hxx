@@ -2,6 +2,7 @@
 
 #include <elle/assert.hh>
 
+#include <reactor/Barrier.hh>
 #include <reactor/exception.hh>
 #include <reactor/signal.hh>
 #include <reactor/thread.hh>
@@ -66,38 +67,68 @@ namespace reactor
   Scheduler::mt_run<void>(const std::string& name,
                           const std::function<void ()>& action);
 
-  template <typename R, typename ... Prototype, typename ... Args>
-  std::enable_if_t<
-    !std::is_convertible<
-      typename elle::meta::List<Args...>::template head<void>::type,
-      std::function<void (Prototype ...)>>::value,
-    void>
-  wait(boost::signals2::signal<R(Prototype...)>& signal, Args const& ... values)
+  class Waiter
+    : public Barrier
   {
-    auto s = reactor::Signal{};
-    auto vals = std::make_tuple(values...);
-    boost::signals2::scoped_connection connection = signal.connect(
-      [&] (Prototype const& ... args)
-      {
-        if (vals == std::make_tuple(args...))
-          s.signal();
-      });
-    reactor::wait(s);
+  public:
+    template <typename ... Prototype, typename F>
+    Waiter(
+      boost::signals2::signal<void (Prototype...)>& signal, F predicate)
+      : _connection(
+        signal.connect(
+          [&] (Prototype ... args)
+          {
+            if (std::function<bool (Prototype ...)>(predicate)(args...))
+              this->open();
+          }))
+    {}
+
+    ELLE_ATTRIBUTE(boost::signals2::scoped_connection, connection);
+  };
+
+  namespace _details
+  {
+    template <typename ... Prototype, typename ... Args>
+    std::enable_if_t<
+      !std::is_convertible<
+      typename elle::meta::List<Args...>::template head<void>::type,
+        std::function<bool (Prototype ...)>>::value,
+      Waiter>
+      waiter(boost::signals2::signal<void (Prototype ...)>& signal,
+             Args&& ... values)
+    {
+      return Waiter(
+        signal,
+        [&, vals = std::tuple<Args const& ...>(values...)]
+        (Prototype ... args)
+        {
+          return vals == std::tuple<Args const& ...>(args...);
+        });
+    }
+
+    template <typename R, typename ... Prototype, typename F>
+    std::enable_if_t<
+      std::is_convertible<F, std::function<bool (Prototype ...)>>::value,
+      Waiter>
+      waiter(boost::signals2::signal<R (Prototype...)>& signal,
+             F predicate)
+    {
+      return Waiter(signal, std::move(predicate));
+    }
   }
 
-  template <typename R, typename ... Prototype, typename F>
-  std::enable_if_t<
-    std::is_convertible<F, std::function<bool (Prototype ...)>>::value,
-    void>
-  wait(boost::signals2::signal<R(Prototype...)>& signal, F predicate)
+  template <typename Prototype, typename ... Args>
+  Waiter
+  waiter(boost::signals2::signal<Prototype>& signal, Args ... args)
   {
-    auto s = reactor::Signal{};
-    boost::signals2::scoped_connection connection = signal.connect(
-      [&] (Prototype const& ... args)
-      {
-        if (std::function<bool (Prototype ...)>(predicate)(args...))
-          s.signal();
-      });
-    reactor::wait(s);
+    return _details::waiter(signal, std::forward<Args>(args)...);
+  }
+
+  template <typename Prototype, typename ... Args>
+  void
+  wait(boost::signals2::signal<Prototype>& signal, Args&& ... args)
+  {
+    auto w = waiter(signal, std::forward<Args>(args)...);
+    reactor::wait(w);
   }
 }

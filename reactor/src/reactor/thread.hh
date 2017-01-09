@@ -20,6 +20,9 @@ namespace reactor
 {
   typedef std::shared_ptr<Thread> ThreadPtr;
 
+  DAS_SYMBOL(dispose);
+  DAS_SYMBOL(managed);
+
   class Thread:
     public Waitable
   {
@@ -62,8 +65,7 @@ namespace reactor
     Thread(const std::string& name,
            Action action,
            Args&& ... args);
-    DAS_SYMBOL(dispose);
-    DAS_SYMBOL(managed);
+
     // Returned shared ptr will be kept live until action finished
     static
     ThreadPtr
@@ -84,8 +86,8 @@ namespace reactor
     _scheduler_release();
   private:
     ThreadPtr _self;
-    ELLE_ATTRIBUTE(bool, dispose);
-    ELLE_ATTRIBUTE(bool, managed);
+    ELLE_ATTRIBUTE_RW(bool, dispose);
+    ELLE_ATTRIBUTE_RW(bool, managed);
 
   /*----------.
   | Backtrace |

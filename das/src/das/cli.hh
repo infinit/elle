@@ -20,6 +20,10 @@ namespace das
 {
   namespace cli
   {
+    /*---------.
+    | Errors.  |
+    `---------*/
+
     /// Command line error
     class Error
       : public elle::Error
@@ -116,6 +120,10 @@ namespace das
     class CLI_Symbol
     {};
 
+    /*----------.
+    | Options.  |
+    `----------*/
+
     struct Option
     {
       Option(char short_name = 0,
@@ -199,6 +207,59 @@ namespace das
       return _details::IsOption(a, opts);
     }
 
+    /// Similar to an optional that knows its default value.
+    template <typename T>
+    struct Defaulted
+    {
+      Defaulted(T const& def, bool set = false)
+        : _value{def}
+        , _set{set}
+      {}
+
+      Defaulted(Defaulted const&) = default;
+      Defaulted& operator=(Defaulted const&) = default;
+
+      /// Override the default value.
+      template <typename U>
+      Defaulted& operator=(U&& u)
+      {
+        _value = std::forward<U>(u);
+        _set = true;
+        return *this;
+      }
+
+      /// Whether explicitly defined by the user.
+      operator bool() const
+      {
+        return _set;
+      }
+
+      /// The value, readonly.
+      T const& get() const
+      {
+        return _value;
+      }
+
+      /// The value, readonly.
+      T const& operator*() const
+      {
+        return get();
+      }
+
+      /// A pointer to the value, readonly.
+      T const* operator->() const
+      {
+        return &_value;
+      }
+
+    private:
+      /// The value.
+      T _value;
+      /// Whether a value was specified (as opposed to remaining equal
+      /// to the initial value).
+      bool _set = false;
+    };
+
     namespace _details
     {
       struct Empty
@@ -217,6 +278,7 @@ namespace das
       public:
         using Super = std::conditional_t<
           std::is_same<Default, void>::value, Empty, Default>;
+        /// Whether a default value was specified.
         static bool constexpr default_has = !std::is_same<Default, void>::value;
 
         Value(std::conditional_t<default_has, Default, int> const& d,
@@ -225,7 +287,7 @@ namespace das
               std::vector<std::string>& args,
               std::vector<std::string> value,
               int& remaining)
-          : Super (d)
+          : Super(d)
           , _option(std::move(option))
           , _values(std::move(value))
           , _positional(positional)
@@ -427,17 +489,31 @@ namespace das
                                    });
         }
 
+        /// A conversion that allows to know whether we have the
+        /// option's default value, or a user defined one.
+        template <typename I>
+        operator Defaulted<I>() const
+        {
+          ELLE_LOG_COMPONENT("das.cli");
+          ELLE_TRACE_SCOPE(
+            "convert %s to %s", this->_option, elle::type_info<Defaulted<I>>());
+          auto res = this->operator I();
+          ELLE_TRACE_SCOPE(
+            "converted %s to %s (%s)",
+            this->_option, res, this->_flag ? "explicit" : "implicit");
+          return {res, this->_flag};
+        }
+
         void
         _check_remaining() const
         {
-          if (!--this->_remaining)
-            if (!this->_args.empty())
-            {
-              if (is_option(*this->_args.begin()))
-                throw UnknownOption(*this->_args.begin());
-              else
-                throw UnrecognizedValue(*this->_args.begin());
-            }
+          if (!--this->_remaining && !this->_args.empty())
+          {
+            if (is_option(*this->_args.begin()))
+              throw UnknownOption(*this->_args.begin());
+            else
+              throw UnrecognizedValue(*this->_args.begin());
+          }
         }
 
       private:
@@ -445,6 +521,7 @@ namespace das
         ELLE_ATTRIBUTE_R(std::vector<std::string>, values, mutable);
         ELLE_ATTRIBUTE(bool, positional);
         ELLE_ATTRIBUTE(std::vector<std::string>&, args);
+        /// Whether was explicit set on the command line.
         ELLE_ATTRIBUTE(bool, flag);
         ELLE_ATTRIBUTE(int&, remaining);
       };
@@ -582,7 +659,7 @@ namespace das
                 D::template default_for<Formal>::has;
               using Default = std::conditional_t<
                 default_has,
-                typename D::template default_for<Formal >::type,
+                typename D::template default_for<Formal>::type,
                 void>;
               return elle::meta::static_if<default_has>(
                 [&] (auto head, auto def)
@@ -595,11 +672,8 @@ namespace das
                   else
                   {
                     if (value.empty())
-                    {
-                      Default const& couille = p.defaults;
                       ELLE_DEBUG(
-                        "no occurences, default value is %s", couille.value);
-                    }
+                        "no occurences, default value is %s", p.defaults.Default::value);
                     return V(p.defaults, Head::name(), pos, args,
                              std::move(value), counter);
                   }
@@ -693,14 +767,16 @@ namespace das
     void
     print_help(std::ostream& s,
                std::string const& name,
-               char short_name,
-               std::string const& help)
+               char short_name = 0,
+               std::string const& help = {})
     {
       if (short_name)
         elle::fprintf(s, "  -%s, ", short_name);
       else
         elle::fprintf(s, "      ");
-      elle::fprintf(s, "--%-15s  %s", das::cli::option_name_from_c(name), help);
+      elle::fprintf(s, "--%-15s", das::cli::option_name_from_c(name));
+      if (!help.empty())
+        elle::fprintf(s, "  %s", help);
     }
 
     template <typename Symbol, typename Defaults>
@@ -713,10 +789,7 @@ namespace das
       {
         using Formal = typename das::named::make_formal<Symbol>::type;
         auto opt = opts.find(Symbol::name());
-        if (opt != opts.end())
-          print_help(
-            s, Symbol::name(), opt->second.short_name, opt->second.help);
-        else
+        if (opt == opts.end())
           elle::meta::static_if<std::is_base_of<CLI_Symbol, Formal>::value>(
             [&s] (auto formal) {
               using formal_t = typename decltype(formal)::type;
@@ -725,15 +798,17 @@ namespace das
             },
             [&s] (auto formal) {
               using formal_t = typename decltype(formal)::type;
-              elle::fprintf(
-                s, "      --%s", option_name_from_c(formal_t::name()));
+              print_help(s, option_name_from_c(formal_t::name()));
             })(elle::meta::Identity<Formal>{});
+        else
+          print_help(
+            s, Symbol::name(), opt->second.short_name, opt->second.help);
         elle::meta::static_if<Defaults::template default_for<Formal>::has>
           ([&s] (auto const& defaults)
            {
              auto const& v = defaults.Symbol::ByConstRef::value;
-             if (!std::is_same<decltype(v), bool const&>::value &&
-                 !std::is_same<decltype(v), boost::none_t const&>::value)
+             if (!std::is_same<decltype(v), bool const&>::value
+                 && !std::is_same<decltype(v), boost::none_t const&>::value)
                elle::fprintf(s, " (default: %s)", v);
            })(defaults);
         elle::fprintf(s, "\n");

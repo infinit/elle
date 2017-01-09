@@ -12,7 +12,7 @@ namespace reactor
                  Args&& ... args)
     : Thread(name, std::move(action))
   {
-    das::named::prototype(dispose = false, managed = false)
+    das::named::prototype(reactor::dispose = false, reactor::managed = false)
       .call([&] (bool dispose, bool managed)
             {
               this->_dispose = dispose;

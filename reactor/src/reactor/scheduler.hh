@@ -246,6 +246,14 @@ namespace reactor
     void>
   wait(boost::signals2::signal<R(Prototype...)>& signal,
        Args const& ... values);
+
+  class Waiter;
+
+  /// A barrier opened when \a signal is triggered.
+  template <typename Prototype, typename ... Args>
+  Waiter
+  waiter(boost::signals2::signal<Prototype>& signal, Args ... args);
+
   /** Run the given operation in the next cycle.
    *
    *  \param name Descriptive name of the operation, for debugging.
