@@ -767,14 +767,16 @@ namespace das
     void
     print_help(std::ostream& s,
                std::string const& name,
-               char short_name,
-               std::string const& help)
+               char short_name = 0,
+               std::string const& help = {})
     {
       if (short_name)
         elle::fprintf(s, "  -%s, ", short_name);
       else
         elle::fprintf(s, "      ");
-      elle::fprintf(s, "--%-15s  %s", das::cli::option_name_from_c(name), help);
+      elle::fprintf(s, "--%-15s", das::cli::option_name_from_c(name));
+      if (!help.empty())
+        elle::fprintf(s, "  %s", help);
     }
 
     template <typename Symbol, typename Defaults>
@@ -787,10 +789,7 @@ namespace das
       {
         using Formal = typename das::named::make_formal<Symbol>::type;
         auto opt = opts.find(Symbol::name());
-        if (opt != opts.end())
-          print_help(
-            s, Symbol::name(), opt->second.short_name, opt->second.help);
-        else
+        if (opt == opts.end())
           elle::meta::static_if<std::is_base_of<CLI_Symbol, Formal>::value>(
             [&s] (auto formal) {
               using formal_t = typename decltype(formal)::type;
@@ -799,15 +798,17 @@ namespace das
             },
             [&s] (auto formal) {
               using formal_t = typename decltype(formal)::type;
-              elle::fprintf(
-                s, "      --%s", option_name_from_c(formal_t::name()));
+              print_help(s, option_name_from_c(formal_t::name()));
             })(elle::meta::Identity<Formal>{});
+        else
+          print_help(
+            s, Symbol::name(), opt->second.short_name, opt->second.help);
         elle::meta::static_if<Defaults::template default_for<Formal>::has>
           ([&s] (auto const& defaults)
            {
              auto const& v = defaults.Symbol::ByConstRef::value;
-             if (!std::is_same<decltype(v), bool const&>::value &&
-                 !std::is_same<decltype(v), boost::none_t const&>::value)
+             if (!std::is_same<decltype(v), bool const&>::value
+                 && !std::is_same<decltype(v), boost::none_t const&>::value)
                elle::fprintf(s, " (default: %s)", v);
            })(defaults);
         elle::fprintf(s, "\n");
