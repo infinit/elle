@@ -322,6 +322,7 @@ def configure(openssl_config,
 
   for test in tests:
     config_test = drake.cxx.Config(tests_cxx_config)
+    config_test.lib_path_runtime('%s../../lib' % ('../' * test.count('/')))
     path = drake.Path('tests/cryptography/%s' % test)
     bin_path = drake.Path('tests/cryptography/%s' % os.path.splitext(test)[0])
     bin = drake.cxx.Executable(
