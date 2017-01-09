@@ -413,6 +413,14 @@ namespace waitable
     reactor::yield();
     BOOST_CHECK(beacon);
   }
+
+  ELLE_TEST_SCHEDULED(boost_signal_waiter)
+  {
+    boost::signals2::signal<void ()> signal;
+    auto waiter = reactor::waiter(signal);
+    signal();
+    reactor::wait(waiter);
+  }
 }
 
 /*--------.
@@ -3360,6 +3368,7 @@ ELLE_TEST_SUITE()
     subsuite->add(BOOST_TEST_CASE(boost_signal), 0, valgrind(1, 5));
     subsuite->add(BOOST_TEST_CASE(boost_signal_args), 0, valgrind(1, 5));
     subsuite->add(BOOST_TEST_CASE(boost_signal_predicate), 0, valgrind(1, 5));
+    subsuite->add(BOOST_TEST_CASE(boost_signal_waiter), 0, valgrind(1, 5));
   }
 
   boost::unit_test::test_suite* signals = BOOST_TEST_SUITE("Signals");
