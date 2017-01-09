@@ -281,12 +281,15 @@ namespace das
         /// Whether a default value was specified.
         static bool constexpr default_has = !std::is_same<Default, void>::value;
 
+        /// A value not found on the CLI, built from its default
+        /// value.
         Value(std::conditional_t<default_has, Default, int> const& d,
               std::string option,
               bool positional,
               std::vector<std::string>& args,
               std::vector<std::string> value,
-              int& remaining)
+              int& remaining,
+              bool set)
           : Super(d)
           , _option(std::move(option))
           , _values(std::move(value))
@@ -294,14 +297,17 @@ namespace das
           , _args(args)
           , _flag(false)
           , _remaining(remaining)
+          , _set(set)
         {}
 
+        /// A value found on the CLI, taking its value from there.
         Value(std::conditional_t<default_has, Default, int> const& d,
               std::string option,
               bool positional,
               std::vector<std::string>& args,
               bool flag,
-              int& remaining)
+              int& remaining,
+              bool set)
           : Super(d)
           , _option(std::move(option))
           , _values()
@@ -309,6 +315,7 @@ namespace das
           , _args(args)
           , _flag(flag)
           , _remaining(remaining)
+          , _set(set)
         {}
 
         template <typename I>
@@ -320,8 +327,8 @@ namespace das
           auto i = std::stoll(v, &end);
           if (end != v.size())
             throw OptionValueError(option, v, "invalid integer");
-          if (i > std::numeric_limits<I>::max() ||
-              i < std::numeric_limits<I>::min())
+          if (i < std::numeric_limits<I>::min()
+              || i > std::numeric_limits<I>::max())
             throw OptionValueError(option, v, "integer out of range");
           return i;
         }
@@ -500,8 +507,8 @@ namespace das
           auto res = this->operator I();
           ELLE_TRACE_SCOPE(
             "converted %s to %s (%s)",
-            this->_option, res, this->_flag ? "explicit" : "implicit");
-          return {res, this->_flag};
+            this->_option, res, this->_set ? "explicit" : "implicit");
+          return {res, this->_set};
         }
 
         void
@@ -521,16 +528,18 @@ namespace das
         ELLE_ATTRIBUTE_R(std::vector<std::string>, values, mutable);
         ELLE_ATTRIBUTE(bool, positional);
         ELLE_ATTRIBUTE(std::vector<std::string>&, args);
-        /// Whether was explicit set on the command line.
         ELLE_ATTRIBUTE(bool, flag);
         ELLE_ATTRIBUTE(int&, remaining);
+        /// Whether was explicit set on the command line.
+        ELLE_ATTRIBUTE_R(bool, set);
       };
 
       template <typename Formal, typename Default>
       std::ostream&
       operator <<(std::ostream& out, Value<Formal, Default> const& v)
       {
-        elle::fprintf(out, "Value(\"%s\", %s)", v.option(), v.values());
+        elle::fprintf(out, "Value(\"%s\", %s, %s)",
+                      v.option(), v.values(), v.set() ? "explicit" : "implicit");
         return out;
       }
     }
@@ -601,18 +610,18 @@ namespace das
           using Formal = typename das::named::make_formal<Head>::type;
           bool flag = false;
           bool pos = false;
+          bool set = false;
           auto value = std::vector<std::string>{};
           auto v = [&]
             {
               ELLE_TRACE_SCOPE("parsing option %s", Head::name());
-              auto it = args.begin();
-              while (it != args.end())
-              {
+              for (auto it = args.begin(); it != args.end(); /* empty */)
                 if (auto o = is_option(*it, opts))
                 {
                   if (o.is<Head>(opts))
                   {
                     std::string const option = *it;
+                    set = true;
                     it = args.erase(it);
                     if (it != args.end() && !is_option(*it, opts))
                     {
@@ -644,7 +653,6 @@ namespace das
                 }
                 else
                   ++it;
-              }
               elle::meta::static_if<std::is_base_of<CLI_Symbol, Formal>::value>(
                 [] (auto& pos, auto t)
                 {
@@ -661,37 +669,40 @@ namespace das
                 default_has,
                 typename D::template default_for<Formal>::type,
                 void>;
-              return elle::meta::static_if<default_has>(
+              auto res = elle::meta::static_if<default_has>(
                 [&] (auto head, auto def)
                 {
                   using Default = typename decltype(def)::type;
                   using V = Value<typename decltype(head)::type, Default>;
                   if (flag)
                     return V(p.defaults, Head::name(), pos, args,
-                             flag, counter);
+                             true, counter, set);
                   else
                   {
                     if (value.empty())
                       ELLE_DEBUG(
-                        "no occurences, default value is %s", p.defaults.Default::value);
+                        "no occurences, default value is %s",
+                        p.defaults.Default::value);
                     return V(p.defaults, Head::name(), pos, args,
-                             std::move(value), counter);
+                             std::move(value), counter, set);
                   }
                 },
                 [&] (auto head, auto)
                 {
                   using V = Value<typename decltype(head)::type, void>;
                   if (flag)
-                    return V(0, Head::name(), pos, args, flag, counter);
+                    return V(0, Head::name(), pos, args, true, counter, set);
                   else
                   {
                     if (value.empty())
                       ELLE_DEBUG("no occurences and no default value");
                     return V(0, Head::name(), pos, args,
-                             std::move(value), counter);
+                             std::move(value), counter, set);
                   }
                 })(elle::meta::Identity<Head>{},
                    elle::meta::Identity<Default>{});
+              ELLE_DEBUG("return: %s", res);
+              return res;
             }();
           return CLI<Tail...>::value(
             p,
