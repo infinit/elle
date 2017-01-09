@@ -223,7 +223,7 @@ namespace das
       template <typename U>
       Defaulted& operator=(U&& u)
       {
-        _value = std::forward<T>(u);
+        _value = std::forward<U>(u);
         _set = true;
         return *this;
       }
@@ -234,19 +234,19 @@ namespace das
         return _set;
       }
 
-      /// The value.
+      /// The value, readonly.
       T const& get() const
       {
         return _value;
       }
 
-      /// The value.
+      /// The value, readonly.
       T const& operator*() const
       {
         return get();
       }
 
-      /// A pointer to the value.
+      /// A pointer to the value, readonly.
       T const* operator->() const
       {
         return &_value;
