@@ -316,16 +316,14 @@ namespace reactor
   `----------------*/
 
   bool
-  Thread::wait(Waitable& s,
-               DurationOpt timeout)
+  Thread::wait(Waitable& s, DurationOpt timeout)
   {
     Waitables waitables(1, &s);
     return wait(waitables, timeout);
   }
 
   bool
-  Thread::wait(Waitables const& waitables,
-               DurationOpt timeout)
+  Thread::wait(Waitables const& waitables, DurationOpt timeout)
   {
 #ifndef INFINIT_IOS
     ELLE_TRACE_SCOPE("%s: wait %s%s", *this, waitables,
@@ -359,7 +357,6 @@ namespace reactor
           throw;
         }
       }
-
     if (freeze)
     {
       if (timeout)
