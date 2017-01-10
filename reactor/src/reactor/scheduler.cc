@@ -789,7 +789,7 @@ namespace reactor
     conv.reserve(waitables.size());
     for (auto& w: waitables)
       conv.emplace_back(&w.get());
-    return wait(conv);
+    return wait(conv, timeout);
   }
 
   void
