@@ -299,6 +299,12 @@ namespace reactor
         ELLE_TRACE_SCOPE("%s: destroy", this);
         this->_cleanup();
       }
+      catch (elle::Exception const& e)
+      {
+        ELLE_ERR("UTPServer exceptioned while shutting down: %s\n%s",
+                 e, e.backtrace())
+        std::abort();
+      }
       catch (...)
       {
         ELLE_ERR("UTPServer exceptioned while shutting down: %s",
