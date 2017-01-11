@@ -306,7 +306,7 @@ namespace reactor
       boost::system::error_code e;
       socket.cancel(e);
       if (e && e != boost::asio::error::bad_descriptor)
-        throw boost::system::system_error(e);
+        throw Exception(e.message());
       socket.close();
     }
 
