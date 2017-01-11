@@ -1,0 +1,17 @@
+diff --git a/boost/type_traits/detail/bool_trait_def.hpp b/boost/type_traits/detail/bool_trait_def.hpp
+index b6b0677..033cbe7 100644
+--- a/boost/type_traits/detail/bool_trait_def.hpp
++++ b/boost/type_traits/detail/bool_trait_def.hpp
+@@ -14,9 +14,9 @@
+ //
+ // This header is deprecated and no longer used by type_traits:
+ //
+-#if defined(__GNUC__) || defined(_MSC_VER)
+-# pragma message("NOTE: Use of this header (bool_trait_def.hpp) is deprecated")
+-#endif
++// #if defined(__GNUC__) || defined(_MSC_VER)
++// # pragma message("NOTE: Use of this header (bool_trait_def.hpp) is deprecated")
++// #endif
+
+ #include <boost/type_traits/detail/template_arity_spec.hpp>
+ #include <boost/type_traits/integral_constant.hpp>
