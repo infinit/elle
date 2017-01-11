@@ -16,6 +16,8 @@ ELLE_LOG_COMPONENT("reactor.Thread");
 // FIXME: bug hunting, remove
 #include <reactor/http/Request.hh>
 
+static auto const DBG = elle::os::inenv("REACTOR_SCHEDULER_DEBUG");
+
 namespace reactor
 {
   /*-------------.
@@ -174,8 +176,7 @@ namespace reactor
     {}
     catch (elle::Exception const& e)
     {
-      ELLE_TRACE_SCOPE("%s: exception escaped: %s",
-                       *this, elle::exception_string());
+      ELLE_TRACE_SCOPE("%s: exception escaped: %s", *this, e);
       ELLE_DUMP("exception type: %s", elle::demangle(typeid(e).name()));
       ELLE_DUMP("backtrace:\n%s", e.backtrace());
       this->_exception_thrown = std::current_exception();
@@ -207,8 +208,7 @@ namespace reactor
              && !this->_thread->unwinding()
              && !this->_thread->exception())
     {
-      static bool const debug = elle::os::inenv("REACTOR_SCHEDULER_DEBUG");
-      if (debug)
+      if (DBG)
         ELLE_ERR("%s: terminate exception was swallowed: %s",
                  *this, this->_yield_backtrace);
       static bool reraise = elle::os::inenv("REACTOR_RE_RAISE_SWALLOWED_TERMINATE");
@@ -231,10 +231,9 @@ namespace reactor
   void
   Thread::yield()
   {
-    static bool const debug = elle::os::inenv("REACTOR_SCHEDULER_DEBUG");
     ELLE_TRACE("%s: yield", *this)
     {
-      if (debug)
+      if (DBG)
         this->_yield_backtrace = elle::Backtrace::current();
       this->_thread->yield();
       ELLE_TRACE_SCOPE("%s: back from yield", *this);
