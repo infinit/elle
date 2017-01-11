@@ -25,14 +25,12 @@ namespace reactor
     ELLE_ATTRIBUTE_R(reactor::Duration, delay);
   };
 
-  class Terminate: public std::exception
+  class Terminate
+    : public elle::Exception
   {
-  private:
-    std::string _message;
   public:
-    typedef std::exception Super;
-    Terminate(const std::string& message);
-    virtual char const* what() const noexcept;
+    using Super = elle::Exception;
+    Terminate(std::string const& message);
   };
 }
 
