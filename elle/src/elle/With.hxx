@@ -1,11 +1,8 @@
-#ifndef ELLE_WITH_HXX
-# define ELLE_WITH_HXX
+#include <utility>
 
-# include <utility>
-
-# include <elle/log.hh>
-# include <elle/assert.hh>
-# include <elle/log.hh>
+#include <elle/log.hh>
+#include <elle/assert.hh>
+#include <elle/log.hh>
 
 namespace elle
 {
@@ -125,7 +122,7 @@ namespace elle
   auto
   With<T>::_run(F const& action) -> decltype(action(std::declval<T&>()))
   {
-    typedef decltype(action(std::declval<T&>())) Value;
+    using Value = decltype(action(std::declval<T&>()));
 
     ELLE_LOG_COMPONENT("elle.With");
 
@@ -178,6 +175,3 @@ namespace elle
     }
   }
 }
-
-
-#endif
