@@ -1,6 +1,7 @@
 #include <condition_variable>
 
 #include <elle/assert.hh>
+#include <elle/meta.hh>
 
 #include <reactor/Barrier.hh>
 #include <reactor/exception.hh>
@@ -72,13 +73,13 @@ namespace reactor
   {
   public:
     template <typename ... Prototype, typename F>
-    Waiter(
-      boost::signals2::signal<void (Prototype...)>& signal, F predicate)
+    Waiter(boost::signals2::signal<void (Prototype...)>& signal,
+           F predicate)
       : _connection(
         signal.connect(
-          [&] (Prototype ... args)
+          [this, pred = std::move(predicate)] (Prototype ... args)
           {
-            if (std::function<bool (Prototype ...)>(predicate)(args...))
+            if (pred(args...))
               this->open();
           }))
     {}
@@ -88,38 +89,42 @@ namespace reactor
 
   namespace _details
   {
-    template <typename ... Prototype, typename ... Args>
-    std::enable_if_t<
-      !std::is_convertible<
-      typename elle::meta::List<Args...>::template head<void>::type,
-        std::function<bool (Prototype ...)>>::value,
-      Waiter>
-      waiter(boost::signals2::signal<void (Prototype ...)>& signal,
-             Args&& ... values)
+    /// Waiting for a predicate.
+    template <typename R, typename ... Prototype, typename F,
+              typename = std::enable_if_t<
+                std::is_convertible<F, std::function<bool (Prototype ...)>>::value>>
+    Waiter
+    waiter(boost::signals2::signal<R (Prototype...)>& signal,
+           F predicate)
     {
-      return Waiter(
-        signal,
-        [&, vals = std::tuple<Args const& ...>(values...)]
-        (Prototype ... args)
-        {
-          return vals == std::tuple<Args const& ...>(args...);
-        });
+      return {signal, std::move(predicate)};
     }
 
-    template <typename R, typename ... Prototype, typename F>
-    std::enable_if_t<
-      std::is_convertible<F, std::function<bool (Prototype ...)>>::value,
-      Waiter>
-      waiter(boost::signals2::signal<R (Prototype...)>& signal,
-             F predicate)
+    /// Waiting for a value.
+    template <typename... Prototype, typename... Args,
+              typename = std::enable_if_t<
+                !std::is_convertible<
+                  typename elle::meta::List<Args...>::template head<void>::type,
+                  std::function<bool (Prototype ...)>>::value>>
+    Waiter
+    waiter(boost::signals2::signal<void (Prototype...)>& signal,
+           Args... values)
     {
-      return Waiter(signal, std::move(predicate));
+      // GCC 4.8 work-around: [vals = std::make_tuple(std::move(values)...)]
+      // fails to compile.
+      auto vals = std::make_tuple(std::move(values)...);
+      return Waiter{
+        signal,
+        [vals = std::move(vals)] (Prototype... args)
+        {
+          return vals == std::forward_as_tuple(args...);
+        }};
     }
   }
 
   template <typename Prototype, typename ... Args>
   Waiter
-  waiter(boost::signals2::signal<Prototype>& signal, Args ... args)
+  waiter(boost::signals2::signal<Prototype>& signal, Args&&... args)
   {
     return _details::waiter(signal, std::forward<Args>(args)...);
   }
