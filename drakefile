@@ -1,3 +1,5 @@
+# -*- Python -*-
+
 import collections
 import drake
 import drake.cxx
