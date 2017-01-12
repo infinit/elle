@@ -15,7 +15,6 @@ namespace elle
                    std::int64_t& ticks,
                    std::int64_t& num,
                    std::int64_t& denom);
-
   }
 }
 

@@ -21,20 +21,20 @@ namespace elle
         else if (unit == "ms")                                          \
         { Res(count, 1, 1000); }                                        \
         else if (unit == "us")                                          \
-        { Res(count, 1, 1000000); }                                     \
+        { Res(count, 1, 1'000'000); }                                   \
         else if (unit == "ns")                                          \
-        { Res(count, 1, 1000000000); }                                  \
+        { Res(count, 1, 1000'000'000); }                                \
         else if (unit == "ps")                                          \
-        { Res(count, 1, 1000000000000); }                               \
+        { Res(count, 1, 1'000'000'000'000); }                           \
         else if (unit == "fs")                                          \
-        { Res(count, 1, 1000000000000000); }                            \
+        { Res(count, 1, 1000'000'000'000'000); }                        \
         else                                                            \
           elle::err("invalid duration unit: %s", unit);                 \
       }                                                                 \
       else                                                              \
       { Res(std::atoi(repr.c_str()), 1, 1); }                           \
 
-    template <typename Ratio, typename R = long>
+    template <typename Ratio, typename R>
     std::chrono::duration<R, Ratio>
     duration_parse(std::string const& repr)
     {
