@@ -1,10 +1,9 @@
-#ifndef ELLE_ASSERT_HH
-# define ELLE_ASSERT_HH
+#pragma once
 
-# include <string>
-# include <stdexcept>
+#include <string>
+#include <stdexcept>
 
-# include <elle/compiler.hh>
+#include <elle/compiler.hh>
 
 namespace elle
 {
@@ -55,7 +54,7 @@ namespace elle
 /// Enforce a condition is true (always present in the code)
 /// @see ELLE_ASSERT for debug only assertions.
 #  define ELLE_ENFORCE(_condition_)                                           \
-  ::elle::_elle_assert(bool(_condition_), #_condition_, __FILE__, __LINE__)
+  ::elle::_elle_assert(_condition_, #_condition_, __FILE__, __LINE__)
 
 #  define ELLE_ENFORCE_EQ(A, B)                                               \
   ::elle::_assert_eq(A, B, #A, #B, __FILE__, __LINE__)
@@ -126,10 +125,26 @@ namespace elle
 
 namespace elle
 {
-  // Throw an AssertError if the predicate is false.
+  /** Throw an AssertError if the predicate is false.
+   *
+   *  @param predicate   Thruth value to test.
+   *  @param message     Error message if the predicate is false.
+   *  @param file        File the assertion is in.
+   *  @param line        Line the assertion is at.
+   *  @return            @param predicate if it is true.
+   *  @throw AssertError if @param predicate is false.
+   */
+  template <typename T>
   ELLE_API
-  void
-  _elle_assert(bool predicate,
+  T const&
+  _elle_assert(T const& predicate,
+               std::string const& message,
+               char const* file,
+               int line);
+  template <typename T>
+  ELLE_API
+  T&
+  _elle_assert(T& predicate,
                std::string const& message,
                char const* file,
                int line);
@@ -200,4 +215,4 @@ namespace elle
   }
 }
 
-#endif
+#include <elle/assert.hxx>

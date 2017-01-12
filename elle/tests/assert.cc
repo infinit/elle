@@ -54,6 +54,16 @@ failure_eq()
   BOOST_CHECK_THROW(ELLE_ASSERT_EQ(42, 51), elle::AssertError);
 }
 
+static
+void
+value()
+{
+  auto v = std::make_unique<int>(1);
+  // Check ENFORCE returns the tested value.
+  ELLE_ENFORCE(v).reset(new int(2));
+  ELLE_ASSERT_EQ(*v, 2);
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -63,4 +73,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(failure2));
   suite.add(BOOST_TEST_CASE(success_eq));
   suite.add(BOOST_TEST_CASE(failure_eq));
+  suite.add(BOOST_TEST_CASE(value));
 }
