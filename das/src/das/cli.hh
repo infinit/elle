@@ -160,17 +160,18 @@ namespace das
           , _arg(std::move(a))
         {}
 
-        template <typename T>
+        /// Whether this is the option corresponding to Formal F.
+        template <typename F>
         bool
         is(Options const& opts)
         {
           if (this->_option)
           {
             if (this->_arg[0] == '-' && this->_arg[1] == '-')
-              return this->_arg.substr(2) == option_name_from_c(T::name());
+              return this->_arg.substr(2) == option_name_from_c(F::name());
             else
             {
-              using Formal = typename das::named::make_formal<T>::type;
+              using Formal = typename das::named::make_formal<F>::type;
               auto res =
                 elle::meta::static_if<std::is_base_of<CLI_Symbol, Formal>::value>(
                 [this] (auto&& formal)
@@ -179,7 +180,7 @@ namespace das
                 },
                 [](auto&&) { return false; })(Formal{});
               {
-                auto it = opts.find(T::name());
+                auto it = opts.find(F::name());
                 if (it != opts.end())
                   res = this->_arg[1] == it->second.short_name;
               }
@@ -195,7 +196,9 @@ namespace das
           return this->_option;
         }
 
+        /// Whether is an option.
         ELLE_ATTRIBUTE(bool, option);
+        /// The long option name (without the `--`).
         ELLE_ATTRIBUTE(std::string, arg);
       };
     }
