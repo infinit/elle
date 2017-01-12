@@ -249,10 +249,17 @@ namespace reactor
 
   class Waiter;
 
-  /// A barrier opened when \a signal is triggered.
+  /// A barrier opened when \a signal is triggered, validated either
+  /// by a predicate, or by a comparison to a reference value.
   template <typename Prototype, typename ... Args>
   Waiter
-  waiter(boost::signals2::signal<Prototype>& signal, Args ... args);
+  waiter(boost::signals2::signal<Prototype>& signal, Args&&... args);
+
+  /// Wait for a signal, validated either by a predicate, or by a
+  /// comparison to a reference value.
+  template <typename Prototype, typename ... Args>
+  void
+  wait(boost::signals2::signal<Prototype>& signal, Args&&... args);
 
   /** Run the given operation in the next cycle.
    *

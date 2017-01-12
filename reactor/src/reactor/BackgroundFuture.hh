@@ -1,10 +1,9 @@
-#ifndef REACTOR_BACKGROUND_FUTURE_HH
-# define REACTOR_BACKGROUND_FUTURE_HH
+#pragma once
 
-# include <functional>
-# include <type_traits>
+#include <functional>
+#include <type_traits>
 
-# include <reactor/BackgroundOperation.hh>
+#include <reactor/BackgroundOperation.hh>
 
 namespace reactor
 {
@@ -38,6 +37,4 @@ namespace reactor
   };
 }
 
-# include <reactor/BackgroundFuture.hxx>
-
-#endif
+#include <reactor/BackgroundFuture.hxx>

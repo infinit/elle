@@ -1,10 +1,7 @@
-#ifndef REACTOR_BACKGROUND_FUTURE_HXX
-# define REACTOR_BACKGROUND_FUTURE_HXX
+#include <elle/utils.hh>
+#include <elle/log.hh>
 
-# include <elle/utils.hh>
-# include <elle/log.hh>
-
-# include <reactor/scheduler.hh>
+#include <reactor/scheduler.hh>
 
 namespace reactor
 {
@@ -73,7 +70,7 @@ namespace reactor
   T&
   BackgroundFuture<T>::value()
   {
-    elle::unconst(this)->_resolve();
+    this->_resolve();
     return this->_value.get();
   }
 
@@ -106,5 +103,3 @@ namespace reactor
     return !this->_value;
   }
 }
-
-#endif

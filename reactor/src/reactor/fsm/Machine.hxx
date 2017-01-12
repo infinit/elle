@@ -1,7 +1,4 @@
-#ifndef ELLE_REACTOR_MACHINE_HXX
-# define ELLE_REACTOR_MACHINE_HXX
-
-# include <reactor/fsm/CatchTransition.hh>
+#include <reactor/fsm/CatchTransition.hh>
 
 namespace reactor
 {
@@ -16,7 +13,7 @@ namespace reactor
     Machine::state_make(Args&& ... args)
     {
       return this->state_add(
-        std::unique_ptr<State>(new State(std::forward<Args>(args) ...)));
+        std::make_unique<State>(std::forward<Args>(args)...));
     }
 
     /*------------.
@@ -29,9 +26,10 @@ namespace reactor
                                            State& end,
                                            bool front)
     {
-      std::unique_ptr<CatchTransition> transition(
-        new CatchTransition(start, end, front));
-      std::function<bool (std::exception_ptr const&)> condition =
+      auto transition =
+        std::unique_ptr<CatchTransition>
+        (new CatchTransition(start, end, front));
+      auto condition = std::function<bool (std::exception_ptr const&)>{
         [] (std::exception_ptr const& exn) -> bool
         {
           try
@@ -46,14 +44,11 @@ namespace reactor
           {
             return false;
           }
-        };
+        }};
       transition->condition(condition);
       Transition& res = *transition.get();
       this->_transitions.insert(std::move(transition));
       return res;
     }
-
   }
 }
-
-#endif

@@ -1,8 +1,7 @@
-#ifndef REACTOR_FSM_CATCHTRANSITION_HH
-# define REACTOR_FSM_CATCHTRANSITION_HH
+#pragma once
 
-# include <reactor/fsm/Transition.hh>
-# include <reactor/fsm/fwd.hh>
+#include <reactor/fsm/Transition.hh>
+#include <reactor/fsm/fwd.hh>
 
 namespace reactor
 {
@@ -43,5 +42,3 @@ namespace reactor
     };
   }
 }
-
-#endif

@@ -11,8 +11,8 @@ namespace reactor
   {
     CatchTransition::CatchTransition(State& start,
                                      State& end,
-                                     bool make_first):
-      Transition(start, end, make_first)
+                                     bool make_first)
+      : Transition(start, end, make_first)
     {}
 
     void
@@ -37,6 +37,5 @@ namespace reactor
       stream << "Transition(" << this->start().name() << " , "
              << this->end().name() << " , EXCEPTION)";
     }
-
   }
 }

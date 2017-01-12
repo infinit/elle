@@ -1,10 +1,9 @@
-#ifndef REACTOR_FSM_TRANSITION_HH
-# define REACTOR_FSM_TRANSITION_HH
+#pragma once
 
-# include <boost/optional.hpp>
+#include <boost/optional.hpp>
 
-# include <reactor/fsm/fwd.hh>
-# include <reactor/waitable.hh>
+#include <reactor/fsm/fwd.hh>
+#include <reactor/waitable.hh>
 
 namespace reactor
 {
@@ -42,5 +41,3 @@ namespace reactor
     };
   }
 }
-
-#endif
