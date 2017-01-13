@@ -68,6 +68,8 @@ namespace reactor
     template <typename E, typename ... Args>
     void
     raise(Args&& ... args);
+    void
+    raise(std::exception_ptr e);
 
   /*----------.
   | Inversion |
