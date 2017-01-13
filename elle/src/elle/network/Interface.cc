@@ -134,6 +134,12 @@ namespace elle
         return autoip_addr == (autoip_netmask & addr_bits);
       }
 
+      bool
+      check_awdl(std::string const& ifa_name)
+      {
+        return ifa_name.find("awdl") == 0;
+      }
+
     }
 
     std::map<std::string, Interface>
@@ -161,6 +167,10 @@ namespace elle
 
         if ((filter & Interface::Filter::no_autoip) &&
             check_ipv4_autoip(iter->ifa_addr))
+          continue;
+
+        if ((filter & Interface::Filter::no_awdl) &&
+            check_awdl(iter->ifa_name))
           continue;
 
         std::ostringstream oss;

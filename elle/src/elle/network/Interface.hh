@@ -26,6 +26,7 @@ namespace elle
         no_loopback = 0x01, /// Exclude loopback interface.
         only_up     = 0x02, /// Exclude down interfaces.
         no_autoip   = 0x04, /// Exclude autoip interfaces.
+        no_awdl     = 0x08, /// Exclude Apple Wireless Direct Link interfaces.
       };
     public:
       /// Retreive a map of local interfaces, indexed by interface name.
