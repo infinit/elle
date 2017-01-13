@@ -13,12 +13,24 @@ namespace elle
 {
   namespace os ELLE_API
   {
-
     using Environ = std::unordered_map<std::string, std::string>;
 
     /// Retrieve a fresh copy of environ.
     Environ
     environ();
+
+    /// Retrieve a fresh copy of environ keeping only the entries that
+    /// validate the predicate.
+    template <typename Pred>
+    Environ
+    environ(Pred pred)
+    {
+      auto res = environ();
+      erase_if(res, [&pred](auto const& p) {
+          return !pred(p.first, p.second);
+        });
+      return res;
+    }
 
     std::string
     setenv(std::string const& key, std::string const& val, bool mode);
