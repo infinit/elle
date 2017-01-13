@@ -1,14 +1,13 @@
-#ifndef ELLE_CHRONO
-# define ELLE_CHRONO
+#pragma once
 
-# include_next <chrono>
+#include_next <chrono>
 
-# include <algorithm>
-# include <cmath>
-# include <cstdlib>
-# include <string>
+#include <algorithm>
+#include <cmath>
+#include <cstdlib>
+#include <string>
 
-# include <elle/err.hh>
+#include <elle/err.hh>
 
 namespace std
 {
@@ -82,4 +81,6 @@ namespace std
   }
 }
 
-#endif
+// Local Variables:
+// mode: c++
+// End:

@@ -1,10 +1,10 @@
 // -*- c++ -*-
-#ifndef ELLE_UNORDERED_MAP
-# define ELLE_UNORDERED_MAP
+#pragma once
 
-# include <ostream>
-# include_next <unordered_map>
-# include <elle/printf-fwd.hh>
+#include <ostream>
+#include_next <unordered_map>
+
+#include <elle/printf-fwd.hh>
 
 namespace std
 {
@@ -134,5 +134,3 @@ namespace std
     return const_values_iterator<K, V>(c.begin());
   }
 }
-
-#endif

@@ -1,10 +1,10 @@
 // -*- c++ -*-
-#ifndef ELLE_DEQUE
-# define ELLE_DEQUE
+#pragma once
 
-# include <ostream>
-# include_next <deque>
-# include <elle/printf-fwd.hh>
+#include <ostream>
+#include_next <deque>
+
+#include <elle/printf-fwd.hh>
 
 namespace std
 {
@@ -28,5 +28,3 @@ namespace std
     return out;
   }
 }
-
-#endif

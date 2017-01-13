@@ -113,7 +113,7 @@ namespace reactor
       // GCC 4.8 work-around: [vals = std::make_tuple(std::move(values)...)]
       // fails to compile.
       auto vals = std::make_tuple(std::move(values)...);
-      return Waiter{
+      return {
         signal,
         [vals = std::move(vals)] (Prototype... args)
         {

@@ -1,10 +1,9 @@
-#ifndef ELLE_UNORDERED_MAP_HH
-# define ELLE_UNORDERED_MAP_HH
+#pragma once
 
-# include <unordered_map>
+#include <unordered_map>
 
-# include <elle/Error.hh>
-# include <elle/printf.hh>
+#include <elle/err.hh>
+#include <elle/printf.hh>
 
 namespace elle
 {
@@ -48,5 +47,3 @@ namespace elle
     }
   };
 }
-
-#endif
