@@ -27,21 +27,6 @@ namespace elle
 {
   namespace os
   {
-    namespace
-    {
-      std::pair<std::string, std::string>
-      split_env_var(char const* str)
-      {
-        unsigned int i = 0;
-        while (str[i] != '\0' && str[i] != '=')
-          i++;
-         if (str[i] == '=')
-           return {{str, 0, i}, &str[i + 1]};
-         else // no '=' found.
-           return {str, ""};
-      }
-    }
-
     std::string
     setenv(std::string const& key,
            std::string const& val,
@@ -89,6 +74,11 @@ namespace elle
     environ()
     {
       auto res = Environ{};
+      auto insert = [&](char const* str) {
+        auto const* cp = strchr(str, '=');
+        assert(cp);
+        res.emplace(std::string{str, cp}, std::string{cp+1});
+      };
 #ifdef INFINIT_WINDOWS
       LPTCH strings = GetEnvironmentStrings();
       if (strings == nullptr)
@@ -97,7 +87,7 @@ namespace elle
       for (LPTSTR ptr = (LPTSTR) strings;
            *ptr != '\0';
            ptr += lstrlen(ptr) + 1)
-        res.insert(split_env_var(ptr));
+        insert(ptr);
 
       FreeEnvironmentStrings(strings);
 #else
@@ -110,7 +100,7 @@ namespace elle
         elle::err("cannot get environment strings");
 
       for (char** ptr = strings; *ptr != nullptr; ++ptr)
-        res.insert(split_env_var(*ptr));
+        insert(*ptr);
 #endif
       return res;
     }

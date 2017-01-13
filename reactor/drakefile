@@ -1,3 +1,5 @@
+# -*- Python -*-
+
 import drake
 import drake.cxx
 import drake.cxx.boost
