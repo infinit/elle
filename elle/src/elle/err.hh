@@ -30,4 +30,3 @@ namespace elle
     throw E(sprintf(fmt, std::forward<Args>(args)...));
   }
 }
-

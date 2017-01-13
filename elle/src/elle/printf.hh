@@ -5,4 +5,3 @@
 
 #include <elle/printf-fwd.hh>
 #include <elle/printf.hxx>
-
