@@ -151,7 +151,7 @@
 
 # define ELLE_attribute_rx(Type, Name, ...)                         \
   ELLE_attribute_r(Type, Name, __VA_ARGS__);                        \
-  ELLE_attribute_w(Type, Name, __VA_ARGS__);                        \
+  ELLE_attribute_x(Type, Name, __VA_ARGS__);                        \
 
 # define ELLE_ATTRIBUTE_rx(Type, Name, ...)                         \
   ELLE_ATTRIBUTE(Type, Name, __VA_ARGS__)                           \
