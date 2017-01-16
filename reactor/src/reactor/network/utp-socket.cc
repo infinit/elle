@@ -166,7 +166,16 @@ namespace reactor
       if (this->_socket && server)
       {
         ELLE_DEBUG("%s: closing underlying socket", this);
-        utp_close(this->_socket);
+        try
+        {
+          utp_close(this->_socket);
+        }
+        catch(Exception const& e)
+        {
+          // utp_close() tries to flush, which might fail if the UTPServer
+          // closed before us
+          ELLE_TRACE("Exception closing socket: %s", e);
+        }
       }
       if (this->_closing)
         return;
