@@ -391,7 +391,11 @@ namespace reactor
     PlainSocket<AsioSocket, EndPoint>::local_endpoint() const
     {
       typedef SocketSpecialization<AsioSocket> Spe;
-      return Spe::socket(*this->_socket).local_endpoint();
+      boost::system::error_code erc;
+      auto res = Spe::socket(*this->_socket).local_endpoint(erc);
+      if (erc)
+        throw Exception(erc.message());
+      return res;
     }
 
     /*-------------.
