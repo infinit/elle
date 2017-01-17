@@ -85,7 +85,11 @@ namespace reactor
           copy[i] ^= server->xorify();
         buf = elle::WeakBuffer(copy.contents(), copy.size());
       }
-      server->send_to(buf, ep);
+      server->send_to(buf, ep, [ctx=args->context, ep, header = elle::Buffer(args->buf, std::min(args->len, (size_t)20))]
+        (boost::system::error_code const& e) {
+          ELLE_TRACE("UTP send error on %s: %s", ep, e.message());
+          utp_process_icmp_error(ctx, header.contents(), header.size(), ep.data(), ep.size());
+      });
       return 0;
     }
 
