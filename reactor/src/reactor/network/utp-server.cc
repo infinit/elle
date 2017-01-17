@@ -563,10 +563,11 @@ namespace reactor
     }
 
     void
-    UTPServer::Impl::send_to(elle::ConstWeakBuffer buf, EndPoint where)
+    UTPServer::Impl::send_to(elle::ConstWeakBuffer buf, EndPoint where,
+      std::function<void(boost::system::error_code const&)> on_error)
     {
       this->_send_buffer.emplace_back(elle::Buffer(buf.contents(), buf.size()),
-                                      where);
+                                      where, on_error);
       if (!this->_sending)
       {
         this->_sending = true;
@@ -604,16 +605,16 @@ namespace reactor
     {
       auto& buf = this->_send_buffer.front();
       ELLE_TRACE_SCOPE(
-        "%s: send %s UDP bytes to %s", this, buf.first.size(), buf.second);
+        "%s: send %s UDP bytes to %s", this, buf.buffer.size(), buf.endpoint);
       // At least on windows, passing a v4 address to send_to() on a v6 socket
       // is an error
-      auto endpoint = buf.second;
+      auto endpoint = buf.endpoint;
       if (endpoint.address().is_v4() &&
           this->_socket->local_endpoint().address().is_v6())
         endpoint = EndPoint(boost::asio::ip::address_v6::v4_mapped(
                               endpoint.address().to_v4()), endpoint.port());
       this->_socket->socket()->async_send_to(
-        boost::asio::buffer(buf.first.contents(), buf.first.size()),
+        boost::asio::buffer(buf.buffer.contents(), buf.buffer.size()),
         endpoint,
         [this] (boost::system::error_code const& errc, size_t size)
         { this->_send_cont(errc, size); });
@@ -625,7 +626,12 @@ namespace reactor
       if (erc == boost::asio::error::operation_aborted)
         return;
       if (erc)
-        ELLE_WARN("%s: send_to error: %s", this, erc.message());
+      {
+        if (this->_send_buffer.front().on_error)
+          this->_send_buffer.front().on_error(erc);
+        else
+          ELLE_WARN("%s: unhandled send_to error: %s", this, erc.message());
+      }
       this->_send_buffer.pop_front();
       if (this->_send_buffer.empty())
         this->_sending = false;

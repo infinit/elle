@@ -1,6 +1,9 @@
 #pragma once
 
 #include <deque>
+#include <functional>
+
+#include <boost/system/system_error.hpp>
 
 #include <elle/Buffer.hh>
 
@@ -28,7 +31,9 @@ namespace reactor
       void
       on_accept(utp_socket* s);
       void
-      send_to(elle::ConstWeakBuffer buf, EndPoint where);
+      send_to(elle::ConstWeakBuffer buf,
+              EndPoint where,
+              std::function<void(boost::system::error_code const&)> on_error = {});
       void
       _send();
       void
@@ -42,8 +47,22 @@ namespace reactor
       ELLE_ATTRIBUTE(Barrier, accept_barrier);
       ELLE_ATTRIBUTE(std::unique_ptr<Thread>, listener);
       ELLE_ATTRIBUTE(std::unique_ptr<Thread>, checker);
-      ELLE_ATTRIBUTE(
-        (std::deque<std::pair<elle::Buffer, EndPoint>>), send_buffer);
+      struct SendBuffer
+      {
+        SendBuffer() {}
+        SendBuffer(elle::Buffer b,
+                   EndPoint ep,
+                   std::function<void(boost::system::error_code const&)> oe)
+          : buffer(std::move(b))
+          , endpoint(ep)
+          , on_error(std::move(oe))
+        {}
+
+        elle::Buffer buffer;
+        EndPoint endpoint;
+        std::function<void(boost::system::error_code const&)> on_error;
+      };
+      ELLE_ATTRIBUTE(std::deque<SendBuffer>, send_buffer);
       ELLE_ATTRIBUTE(bool, sending);
       ELLE_ATTRIBUTE(int, icmp_fd);
       ELLE_ATTRIBUTE_RX(std::vector<Thread::unique_ptr>, socket_shutdown_threads);
