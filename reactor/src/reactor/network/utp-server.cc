@@ -13,6 +13,7 @@
 
 #include <elle/Buffer.hh>
 #include <elle/log.hh>
+#include <elle/os/environ.hh>
 
 #include <reactor/network/utp-server-impl.hh>
 #include <reactor/network/utp-server.hh>
@@ -108,8 +109,8 @@ namespace reactor
     uint64
     on_error(utp_callback_arguments* args)
     {
-      ELLE_DEBUG("on_error %s", utp_error_code_names[args->error_code]);
       auto s = get(args);
+      ELLE_DEBUG("on_error %s on %s", utp_error_code_names[args->error_code], s);
       if (s)
         s->on_close();
       return 0;
@@ -166,7 +167,8 @@ namespace reactor
     uint64
     on_log(utp_callback_arguments* args)
     {
-      ELLE_DEBUG("utp: %s", args->buf);
+      ELLE_LOG_COMPONENT("reactor.network.UTPServer.backend");
+      ELLE_DEBUG("utp: %s", (const char*)args->buf);
       return 0;
     }
 
@@ -294,6 +296,8 @@ namespace reactor
       utp_context_set_option(this->_ctx, UTP_INITIAL_TIMEOUT, 300);
       utp_context_set_option(this->_ctx, UTP_TIMEOUT_INCRASE_PERCENT, 150);
       utp_context_set_option(this->_ctx, UTP_MAXIMUM_TIMEOUT, 5000);
+      if (elle::os::inenv("ELLE_UTP_DEBUG"))
+        utp_context_set_option(this->_ctx, UTP_LOG_DEBUG, 1);
     }
 
     UTPServer::Impl::~Impl()
@@ -320,6 +324,7 @@ namespace reactor
     void
     UTPServer::Impl::_check_icmp()
     {
+      ELLE_LOG_COMPONENT("reactor.network.UTPServer.ICMP");
 #if defined(INFINIT_MACOSX)
       if (this->_icmp_fd == -1)
       {
