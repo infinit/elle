@@ -379,13 +379,12 @@ namespace reactor
       int fd = this->_socket->socket()->native_handle();
       unsigned char vec_buf[4096], ancillary_buf[4096];
       struct iovec iov = { vec_buf, sizeof(vec_buf) };
-      struct sockaddr_in remote;
+      struct sockaddr_storage remote;
       struct msghdr msg;
       ssize_t len;
       struct cmsghdr* cmsg;
       struct sock_extended_err* e;
       struct sockaddr* icmp_addr;
-      struct sockaddr_in* icmp_sin;
       memset(&msg, 0, sizeof(msg));
       msg.msg_name = &remote;
       msg.msg_namelen = sizeof(remote);
@@ -402,25 +401,35 @@ namespace reactor
       for (cmsg = CMSG_FIRSTHDR(&msg); cmsg; cmsg = CMSG_NXTHDR(&msg, cmsg))
       {
         ELLE_DEBUG("Handling one!");
-        if (cmsg->cmsg_type != IP_RECVERR)
+        if (cmsg->cmsg_type != IP_RECVERR && cmsg->cmsg_type != IPV6_RECVERR)
         {
           ELLE_DEBUG("Unhandled errqueue type: %s", cmsg->cmsg_type);
           continue;
         }
-        if (cmsg->cmsg_level != SOL_IP)
+        if (cmsg->cmsg_level != SOL_IP && cmsg->cmsg_level != SOL_IPV6)
         {
           ELLE_DEBUG("Unhandled errqueue level: %s", cmsg->cmsg_level);
           continue;
         }
         ELLE_DEBUG("errqueue: IP_RECVERR, SOL_IP, len %s", cmsg->cmsg_len);
-        if (remote.sin_family != AF_INET)
+        if (remote.ss_family != AF_INET && remote.ss_family != AF_INET6)
         {
           ELLE_DEBUG("Address family is %s, not AF_INET? Ignoring",
-                     remote.sin_family);
+                     remote.ss_family);
           continue;
         }
-        ELLE_DEBUG("Remote host: %s:%s",
-                   inet_ntoa(remote.sin_addr), ntohs(remote.sin_port));
+        if (remote.ss_family == AF_INET)
+        {
+          struct sockaddr_in* si = (sockaddr_in*)&remote;
+          ELLE_DEBUG("Remote host: %s:%s", inet_ntoa(si->sin_addr), ntohs(si->sin_port));
+        }
+        else
+        {
+          struct sockaddr_in6* si = (sockaddr_in6*)&remote;
+          char buf[INET6_ADDRSTRLEN];
+          inet_ntop(AF_INET6, &si->sin6_addr, buf, INET6_ADDRSTRLEN);
+          ELLE_DEBUG("Remote host: %s:%s", buf, ntohs(si->sin6_port));
+        }
         e = (struct sock_extended_err*)CMSG_DATA(cmsg);
         if (!e)
         {
@@ -433,37 +442,22 @@ namespace reactor
           continue;
         }
         ELLE_DEBUG("    ee_errno:  %s", e->ee_errno);
-        ELLE_DEBUG("    ee_origin: %s", e->ee_origin);
-        ELLE_DEBUG("    ee_type:   %s", e->ee_type);
-        ELLE_DEBUG("    ee_code:   %s", e->ee_code);
+        ELLE_DEBUG("    ee_origin: %s", (int)e->ee_origin);
+        ELLE_DEBUG("    ee_type:   %s", (int)e->ee_type);
+        ELLE_DEBUG("    ee_code:   %s", (int)e->ee_code);
         // discovered MTU for EMSGSIZE errors
         ELLE_DEBUG("    ee_info:   %s", e->ee_info);
         ELLE_DEBUG("    ee_data:   %s", e->ee_data);
         // "Node that caused the error"
         // "Node that generated the error"
         icmp_addr = (struct sockaddr*)SO_EE_OFFENDER(e);
-        icmp_sin = (struct sockaddr_in*)icmp_addr;
-        if (icmp_addr->sa_family != AF_INET)
+        if (icmp_addr->sa_family != AF_INET && icmp_addr->sa_family != AF_INET6)
         {
           ELLE_DEBUG("ICMP's address family is %s, not AF_INET?",
                      icmp_addr->sa_family);
           continue;
         }
-        if (icmp_sin->sin_port != 0)
-        {
-          ELLE_DEBUG("ICMP's 'port' is not 0?");
-          continue;
-        }
         ELLE_DEBUG("msg_flags: %s", msg.msg_flags);
-        if (false)
-        {
-          if (msg.msg_flags & MSG_TRUNC)    fprintf(stderr, " MSG_TRUNC");
-          if (msg.msg_flags & MSG_CTRUNC)   fprintf(stderr, " MSG_CTRUNC");
-          if (msg.msg_flags & MSG_EOR)      fprintf(stderr, " MSG_EOR");
-          if (msg.msg_flags & MSG_OOB)      fprintf(stderr, " MSG_OOB");
-          if (msg.msg_flags & MSG_ERRQUEUE) fprintf(stderr, " MSG_ERRQUEUE");
-          fprintf(stderr, "\n");
-        }
         if (e->ee_type == 3 && e->ee_code == 4)
         {
           ELLE_TRACE(
@@ -475,7 +469,7 @@ namespace reactor
         }
         else
         {
-          ELLE_TRACE("ICMP type %s, code %s", e->ee_type, e->ee_code);
+          ELLE_TRACE("ICMP type %s, code %s", (int)e->ee_type, (int)e->ee_code);
           utp_process_icmp_error(this->_ctx, vec_buf, len,
                                  (struct sockaddr *)&remote, sizeof(remote));
         }
