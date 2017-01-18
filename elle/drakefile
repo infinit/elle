@@ -289,6 +289,7 @@ def configure(zlib_lib,
     )
   sources += [drake.cxx.Header(h) for h in [
     'src/chrono',
+    'src/cstdlib',
     'src/deque',
     'src/list',
     'src/map',
