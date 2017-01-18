@@ -75,4 +75,4 @@ namespace das                                   \
     using type =                                \
       ELLE_ATTRIBUTE_STRIP_PARENS(Model);       \
   };                                            \
-}                                               \
+}

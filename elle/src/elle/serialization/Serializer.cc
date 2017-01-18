@@ -25,7 +25,8 @@ namespace elle
     Serializer::Entry::Entry(Serializer& s, std::string const& name)
       : _serializer(s)
       , _log(ELLE_LOG_VALUE(
-               trace, info,
+               elle::log::Logger::Level::trace,
+               elle::log::Logger::Type::info,
                "%s: %sserialize \"%s\"", s, s.in() ? "de" : "", name))
       , _name(name)
       , _entered(this->_serializer._enter(name))

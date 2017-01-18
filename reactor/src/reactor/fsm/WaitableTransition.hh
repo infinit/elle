@@ -1,8 +1,7 @@
-#ifndef REACTOR_FSM_WAITABLETRANSITION_HH
-# define REACTOR_FSM_WAITABLETRANSITION_HH
+#pragma once
 
-# include <reactor/fsm/fwd.hh>
-# include <reactor/fsm/Transition.hh>
+#include <reactor/fsm/fwd.hh>
+#include <reactor/fsm/Transition.hh>
 
 namespace reactor
 {
@@ -39,5 +38,3 @@ namespace reactor
     };
   }
 }
-
-#endif

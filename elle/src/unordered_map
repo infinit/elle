@@ -1,17 +1,17 @@
 // -*- c++ -*-
-#ifndef ELLE_UNORDERED_MAP
-# define ELLE_UNORDERED_MAP
+#pragma once
 
-# include <ostream>
-# include_next <unordered_map>
-# include <elle/printf-fwd.hh>
+#include <ostream>
+#include_next <unordered_map>
+
+#include <elle/printf-fwd.hh>
 
 namespace std
 {
-  template <class K, class V, class ...Args>
+  template <typename... Args>
   std::ostream&
   operator <<(ostream& out,
-              unordered_map<K, V, Args...> const& map)
+              unordered_map<Args...> const& map)
   {
     out << "{";
     bool first = true;
@@ -27,112 +27,121 @@ namespace std
     return out;
   }
 
-  template <typename K, typename V, typename E>
+  template <typename... Args, typename E>
   bool
-  contains(std::unordered_map<K, V> const& map, E const& e)
+  contains(std::unordered_map<Args...> const& map, E const& e)
   {
     return map.find(e) != map.end();
   }
 
-  template <typename K, typename V>
+  template <typename... Args>
   class keys_iterator
-    : public std::unordered_map<K, V>::iterator
+    : public std::unordered_map<Args...>::iterator
   {
   public:
-    typedef typename std::unordered_map<K, V>::iterator parent_iterator;
+    using Super = typename std::unordered_map<Args...>::iterator;
     keys_iterator() = default;
-    keys_iterator(parent_iterator s)
-      : parent_iterator(s)
+    keys_iterator(Super s)
+      : Super(s)
     {}
 
-    K
+    auto
     operator*()
     {
-      return parent_iterator::operator*().first;
+      return Super::operator*().first;
     }
   };
 
-  template <typename K, typename V>
+  template <typename... Args>
   class const_keys_iterator
-    : public std::unordered_map<K, V>::const_iterator
+    : public std::unordered_map<Args...>::const_iterator
   {
   public:
-    typedef typename std::unordered_map<K, V>::const_iterator parent_iterator;
+    using Super = typename std::unordered_map<Args...>::const_iterator;
     const_keys_iterator() = default;
-    const_keys_iterator(parent_iterator s)
-      : parent_iterator(s)
+    const_keys_iterator(Super s)
+      : Super(s)
     {}
 
-    K
+    auto
     operator*()
     {
-      return parent_iterator::operator*().first;
+      return Super::operator*().first;
     }
   };
 
-  template <typename K, typename V>
-  const_keys_iterator<K, V>
-  iter_keys(typename std::unordered_map<K, V> const& c)
+  template <typename... Args>
+  const_keys_iterator<Args...>
+  iter_keys(std::unordered_map<Args...> const& c)
   {
-    return const_keys_iterator<K, V>(c.begin());
+    return const_keys_iterator<Args...>(c.begin());
   }
 
-  template <typename K, typename V>
-  const_keys_iterator<K, V>
-  iter_keys_end(typename std::unordered_map<K, V> const& c)
+  template <typename... Args>
+  const_keys_iterator<Args...>
+  iter_keys_end(std::unordered_map<Args...> const& c)
   {
-    return const_keys_iterator<K, V>(c.end());
+    return const_keys_iterator<Args...>(c.end());
   }
 
-  template <typename K, typename V>
+  template <typename... Args>
   class values_iterator
-    : public std::unordered_map<K, V>::iterator
+    : public std::unordered_map<Args...>::iterator
   {
   public:
-    typedef typename std::unordered_map<K, V>::iterator parent_iterator;
+    using Super = typename std::unordered_map<Args...>::iterator;
     values_iterator() = default;
-    values_iterator(parent_iterator s)
-      : parent_iterator(s)
+    values_iterator(Super s)
+      : Super(s)
     {}
 
-    V&
+    auto&
     operator*()
     {
-      return parent_iterator::operator*().second;
+      return Super::operator*().second;
     }
   };
 
-  template <typename K, typename V>
-  values_iterator<K, V>
-  iter_values(typename std::unordered_map<K, V>& c)
+  template <typename... Args>
+  values_iterator<Args...>
+  iter_values(std::unordered_map<Args...>& c)
   {
-    return values_iterator<K, V>(c.begin());
+    return values_iterator<Args...>(c.begin());
   }
 
-  template <typename K, typename V>
+  template <typename... Args>
   class const_values_iterator
-    : public std::unordered_map<K, V>::const_iterator
+    : public std::unordered_map<Args...>::const_iterator
   {
   public:
-    typedef typename std::unordered_map<K, V>::const_iterator parent_iterator;
+    using Super = typename std::unordered_map<Args...>::const_iterator;
     const_values_iterator() = default;
-    const_values_iterator(parent_iterator s)
-      : parent_iterator(s)
+    const_values_iterator(Super s)
+      : Super(s)
     {}
 
-    V const&
+    auto&
     operator*()
     {
-      return parent_iterator::operator*().second;
+      return Super::operator*().second;
     }
   };
 
-  template <typename K, typename V>
-  const_values_iterator<K, V>
-  iter_values(typename std::unordered_map<K, V> const& c)
+  template <typename... Args>
+  const_values_iterator<Args...>
+  iter_values(std::unordered_map<Args...> const& c)
   {
-    return const_values_iterator<K, V>(c.begin());
+    return const_values_iterator<Args...>(c.begin());
+  }
+
+  // http://www.open-std.org/JTC1/SC22/wg21/docs/papers/2014/n4161.htm
+  template <typename... Args, typename Pred>
+  void erase_if(unordered_map<Args...>& c, Pred pred)
+  {
+    for (auto it = begin(c); it != end(c);)
+      if (pred(*it))
+        it = c.erase(it);
+      else
+        ++it;
   }
 }
-
-#endif

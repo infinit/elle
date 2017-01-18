@@ -64,6 +64,14 @@ namespace reactor
       return Super::_wait(thread, waker);
   }
 
+  void
+  Barrier::raise(std::exception_ptr e)
+  {
+    this->_raise(e);
+    this->open();
+    this->_raise(e);
+  }
+
   /*----------.
   | Inversion |
   `----------*/

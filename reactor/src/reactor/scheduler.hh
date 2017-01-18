@@ -16,7 +16,6 @@
 
 #include <elle/Printable.hh>
 #include <elle/attribute.hh>
-#include <elle/meta.hh>
 
 #include <reactor/asio.hh>
 #include <reactor/duration.hh>
@@ -237,22 +236,21 @@ namespace reactor
   /// Wait until \a signal is emitted.
   void
   wait(boost::signals2::signal<void ()>& signal);
-  template <typename R, typename ... Prototype, typename ... Args>
-  std::enable_if_t<
-    elle::meta::List<Args...>::size != 1 ||
-    !std::is_convertible<
-      typename elle::meta::List<Args...>::template head<void>::type,
-      std::function<void (Prototype ...)>>::value,
-    void>
-  wait(boost::signals2::signal<R(Prototype...)>& signal,
-       Args const& ... values);
 
+  /// A barrier waiting for a signal.
   class Waiter;
 
-  /// A barrier opened when \a signal is triggered.
+  /// A barrier opened when \a signal is triggered, validated either
+  /// by a predicate, or by a comparison to a reference value.
   template <typename Prototype, typename ... Args>
   Waiter
-  waiter(boost::signals2::signal<Prototype>& signal, Args ... args);
+  waiter(boost::signals2::signal<Prototype>& signal, Args&&... args);
+
+  /// Wait for a signal, validated either by a predicate, or by a
+  /// comparison to a reference value.
+  template <typename Prototype, typename ... Args>
+  void
+  wait(boost::signals2::signal<Prototype>& signal, Args&&... args);
 
   /** Run the given operation in the next cycle.
    *

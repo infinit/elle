@@ -523,7 +523,7 @@ namespace infinit
                   ELLE_TRACE("%s: procedure %s succeeded", *this, name);
                 }
               }
-              catch (elle::Exception& e)
+              catch (elle::Error const& e)
               {
                 ELLE_TRACE("%s: procedure failed: %s", *this, e.what());
                 output << false;

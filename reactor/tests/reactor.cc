@@ -365,7 +365,7 @@ namespace waitable
 
   ELLE_TEST_SCHEDULED(boost_signal_args)
   {
-    boost::signals2::signal<void (int i, int j)> signal;
+    auto signal = boost::signals2::signal<void (int i, int j)>{};
     bool beacon = false;
     reactor::Thread waiter(
       "waiter",
@@ -392,7 +392,7 @@ namespace waitable
 
   ELLE_TEST_SCHEDULED(boost_signal_predicate)
   {
-    boost::signals2::signal<void (int i, int j)> signal;
+    auto signal = boost::signals2::signal<void (int i, int j)>{};
     bool beacon = false;
     reactor::Thread waiter(
       "waiter",

@@ -619,12 +619,11 @@ chrono_check(std::chrono::duration<Repr, Ratio> const& d)
     typename Format::SerializerOut output(stream);
     output.serialize("duration", d);
   }
-  std::cerr << stream.str() << std::endl;
   {
     std::chrono::duration<Repr, Ratio> res;
     typename Format::SerializerIn input(stream);
     input.serialize("duration", res);
-    BOOST_CHECK(d == res);
+    BOOST_CHECK_EQUAL(d, res);
   }
 }
 

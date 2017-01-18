@@ -1,19 +1,18 @@
-#ifndef REACTOR_FSM_STATE_HH
-# define REACTOR_FSM_STATE_HH
+#pragma once
 
-# include <functional>
-# include <string>
+#include <functional>
+#include <string>
 
-# include <boost/multi_index_container.hpp>
-# include <boost/multi_index/hashed_index.hpp>
-# include <boost/multi_index/identity.hpp>
-# include <boost/multi_index/sequenced_index.hpp>
+#include <boost/multi_index_container.hpp>
+#include <boost/multi_index/hashed_index.hpp>
+#include <boost/multi_index/identity.hpp>
+#include <boost/multi_index/sequenced_index.hpp>
 
-# include <elle/Printable.hh>
-# include <elle/attribute.hh>
+#include <elle/Printable.hh>
+#include <elle/attribute.hh>
 
-# include <reactor/fsm/fwd.hh>
-# include <reactor/signal.hh>
+#include <reactor/fsm/fwd.hh>
+#include <reactor/signal.hh>
 
 namespace reactor
 {
@@ -50,13 +49,14 @@ namespace reactor
       friend class Transition;
 
     public:
-      typedef boost::multi_index::multi_index_container<
-        Transition*,
+      using Transitions =
+      boost::multi_index::multi_index_container<
+      Transition*,
       boost::multi_index::indexed_by<
         boost::multi_index::hashed_unique<boost::multi_index::identity<Transition*>>,
         boost::multi_index::sequenced<>
         >
-      > Transitions;
+      >;
 
       ELLE_ATTRIBUTE_R(Transitions, transitions_out);
       ELLE_ATTRIBUTE_R(Transitions, transitions_in);
@@ -73,11 +73,8 @@ namespace reactor
     | Printable |
     `----------*/
     public:
-      virtual
       void
       print(std::ostream& stream) const override;
     };
   }
 }
-
-#endif

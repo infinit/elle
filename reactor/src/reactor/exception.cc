@@ -20,14 +20,7 @@ namespace reactor
     , _delay(delay)
   {}
 
-  Terminate::Terminate(const std::string& message):
-    Super(),
-    _message{elle::sprintf("thread termination: %s", message)}
+  Terminate::Terminate(const std::string& message)
+    : Super(elle::sprintf("thread termination: %s", message))
   {}
-
-  char const*
-  Terminate::what() const noexcept
-  {
-    return this->_message.c_str();
-  }
 }

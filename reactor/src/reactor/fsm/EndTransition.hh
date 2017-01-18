@@ -1,8 +1,7 @@
-#ifndef REACTOR_FSM_ENDTRANSITION_HH
-# define REACTOR_FSM_ENDTRANSITION_HH
+#pragma once
 
-# include <reactor/fsm/Transition.hh>
-# include <reactor/fsm/fwd.hh>
+#include <reactor/fsm/Transition.hh>
+#include <reactor/fsm/fwd.hh>
 
 namespace reactor
 {
@@ -28,11 +27,8 @@ namespace reactor
     | Printable |
     `----------*/
     public:
-      virtual
       void
       print(std::ostream& stream) const override;
     };
   }
 }
-
-#endif

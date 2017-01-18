@@ -7,9 +7,9 @@ namespace elle
 {
   /// This is really the `map` function in functional languages:
   /// a vector of the values of `fun(e)` for e in c.
-  template <typename Container, typename Fun>
+  template <typename Cont, typename Fun>
   auto
-  make_vector(Container& c, Fun&& fun)
+  make_vector(const Cont& c, Fun&& fun)
     -> std::vector<decltype(fun(*c.begin()))> // SFINAE
   {
     using Res = decltype(fun(*c.begin()));

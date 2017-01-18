@@ -11,16 +11,6 @@ ELLE_LOG_COMPONENT("elle.assert");
 namespace elle
 {
   void
-  _elle_assert(bool predicate,
-          std::string const& message,
-          char const* file,
-          int line)
-  {
-    if (!predicate)
-      _abort(message, file, line);
-  }
-
-  void
   unreachable()
   {
     _abort("unreachable code reached", "", 0);

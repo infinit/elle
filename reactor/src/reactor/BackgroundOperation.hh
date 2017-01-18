@@ -1,9 +1,8 @@
-#ifndef REACTOR_BACKGROUND_OPERATION_HH
-# define REACTOR_BACKGROUND_OPERATION_HH
+#pragma once
 
-# include <elle/optional.hh>
+#include <elle/optional.hh>
 
-# include <reactor/operation.hh>
+#include <reactor/operation.hh>
 
 namespace reactor
 {
@@ -43,15 +42,11 @@ namespace reactor
     ELLE_ATTRIBUTE(std::shared_ptr<Status>, status);
 
   protected:
-    virtual
     void
     _abort() override;
-    virtual
     void
     _start() override;
   };
 }
 
-# include <reactor/BackgroundOperation.hxx>
-
-#endif
+#include <reactor/BackgroundOperation.hxx>

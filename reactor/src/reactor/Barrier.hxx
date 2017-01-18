@@ -13,8 +13,6 @@ namespace reactor
     {
       e = std::current_exception();
     }
-    this->_raise(e);
-    this->open();
-    this->_raise(e);
+    this->raise(e);
   }
 }

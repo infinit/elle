@@ -20,6 +20,15 @@ basics()
   BOOST_CHECK_EQUAL(
     das::cli::call(proto, f, {"--foo", "bar", "--baz", "quux"}),
     "barquux");
+  BOOST_CHECK_EQUAL(
+    das::cli::call(proto, f, {"--foo=bar", "--baz", "quux"}),
+    "barquux");
+  BOOST_CHECK_EQUAL(
+    das::cli::call(proto, f, {"--foo=bar", "--baz=--quux"}),
+    "bar--quux");
+  BOOST_CHECK_EQUAL(
+    das::cli::call(proto, f, {"--foo=", "--baz="}),
+    "");
   BOOST_CHECK_THROW(
     das::cli::call(proto, f, {"--foo", "bar", "--baz", "x", "--bar", "quux"}),
     das::cli::UnknownOption);
@@ -206,14 +215,12 @@ namespace short_options_ct
     auto const f =
       [] (int foo, int bar) { return foo + bar; };
     auto const proto = das::named::prototype(foo, bar);
-    {
-      BOOST_CHECK_EQUAL(
-        das::cli::call(proto, f, {"--foo", "1", "-b", "2"}), 3);
-      BOOST_CHECK_EQUAL(
-        das::cli::call(proto, f, {"-f", "3", "--bar", "4"}), 7);
-      BOOST_CHECK_EQUAL(
-        das::cli::call(proto, f, {"-f", "5", "-b", "6"}), 11);
-    }
+    BOOST_CHECK_EQUAL(
+      das::cli::call(proto, f, {"--foo", "1", "-b", "2"}), 3);
+    BOOST_CHECK_EQUAL(
+      das::cli::call(proto, f, {"-f", "3", "--bar", "4"}), 7);
+    BOOST_CHECK_EQUAL(
+      das::cli::call(proto, f, {"-f", "5", "-b", "6"}), 11);
   }
 }
 

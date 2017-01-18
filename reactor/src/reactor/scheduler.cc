@@ -23,6 +23,8 @@
 
 ELLE_LOG_COMPONENT("reactor.Scheduler");
 
+static auto const DBG = elle::os::inenv("REACTOR_SCHEDULER_DEBUG");
+
 namespace reactor
 {
   namespace plugins
@@ -64,15 +66,13 @@ namespace reactor
     plugins::logger_tags.load();
 #ifndef INFINIT_WINDOWS
     // Thread dumper on SIGUSR2.
-    if (elle::os::inenv("REACTOR_SCHEDULER_DEBUG"))
-    {
+    if (DBG)
       this->signal_handle(
         SIGUSR2,
         [&]
         {
           this->dump_state();
         });
-    }
 #endif
   }
 
@@ -363,8 +363,11 @@ namespace reactor
     }
     catch (...)
     {
-      ELLE_TRACE_SCOPE("%s: exception escaped, terminating: %s",
-                       thread, elle::exception_string());
+      ELLE_LOG_LEVEL_SCOPE(
+        DBG ? elle::log::Logger::Level::log : elle::log::Logger::Level::trace,
+        DBG ? elle::log::Logger::Type::warning : elle::log::Logger::Type::info,
+        "%s: exception escaped, terminating: %s",
+        thread, elle::exception_string());
       this->_current = previous;
       this->_eptr = std::current_exception();
       this->terminate();
@@ -789,7 +792,7 @@ namespace reactor
     conv.reserve(waitables.size());
     for (auto& w: waitables)
       conv.emplace_back(&w.get());
-    return wait(conv);
+    return wait(conv, timeout);
   }
 
   void

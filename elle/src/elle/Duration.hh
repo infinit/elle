@@ -1,15 +1,14 @@
-#ifndef ELLE_DURATION_HH
-# define ELLE_DURATION_HH
+#pragma once
 
-# include <boost/optional.hpp>
+#include <boost/optional.hpp>
 
-# include <elle/compiler.hh>
-# include <elle/time.hh>
+#include <elle/compiler.hh>
+#include <elle/time.hh>
 
 namespace elle
 {
-  typedef boost::posix_time::time_duration Duration;
-  typedef boost::optional<Duration> DurationOpt;
+  using Duration = boost::posix_time::time_duration;
+  using DurationOpt = boost::optional<Duration>;
 
   ELLE_API
   std::ostream&
@@ -31,5 +30,3 @@ operator "" _min(unsigned long long time);
 ELLE_API
 boost::posix_time::hours
 operator "" _h(unsigned long long time);
-
-#endif

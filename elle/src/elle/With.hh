@@ -1,9 +1,8 @@
-#ifndef ELLE_WITH_HH
-# define ELLE_WITH_HH
+#pragma once
 
-# include <utility>
+#include <utility>
 
-# include <elle/compiler.hh>
+#include <elle/compiler.hh>
 
 namespace elle
 {
@@ -14,7 +13,7 @@ namespace elle
   | Types |
   `------*/
   public:
-    typedef With<T> Self;
+    using Self = With<T>;
 
   /*-------------.
   | Construction |
@@ -53,6 +52,5 @@ namespace elle
   };
 }
 
-# include <elle/With.hxx>
+#include <elle/With.hxx>
 
-#endif

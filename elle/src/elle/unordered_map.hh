@@ -1,35 +1,25 @@
-#ifndef ELLE_UNORDERED_MAP_HH
-# define ELLE_UNORDERED_MAP_HH
+#pragma once
 
-# include <unordered_map>
+#include <unordered_map>
 
-# include <elle/Error.hh>
-# include <elle/printf.hh>
+#include <elle/err.hh>
+#include <elle/printf.hh>
 
 namespace elle
 {
-  template <class Key,
-            class T,
-            class Hash = std::hash<Key>,
-            class Pred = std::equal_to<Key>,
-            class Alloc = std::allocator<std::pair<const Key, T>>>
+  template <typename... Args>
   class unordered_map
-    : public std::unordered_map<Key, T, Hash, Pred, Alloc>
+    : public std::unordered_map<Args...>
   {
   public:
-    typedef std::unordered_map<Key, T, Hash, Pred, Alloc> Super;
+    using Self = unordered_map;
+    using Super = std::unordered_map<Args...>;
+    using Super::Super;
+    using key_type = typename Super::key_type;
+    using mapped_type = typename Super::mapped_type;
 
-    template <typename ... Args>
-    unordered_map(Args&& ... args)
-      : Super(std::forward<Args>(args)...)
-    {}
-
-    unordered_map(std::initializer_list<typename Super::value_type> il)
-      : Super(std::move(il))
-    {}
-
-    T&
-    at(Key const& k)
+    mapped_type&
+    at(key_type const& k)
     {
       try
       {
@@ -37,16 +27,14 @@ namespace elle
       }
       catch (std::out_of_range const&)
       {
-        throw elle::Error(elle::sprintf("missing key: %s", k));
+        elle::err("missing key: %s", k);
       }
     }
 
-    const T&
-    at(Key const& k) const
+    mapped_type const&
+    at(key_type const& k) const
     {
-      return const_cast<unordered_map<Key, T, Hash, Pred, Alloc>*>(this)->at(k);
+      return const_cast<Self*>(this)->at(k);
     }
   };
 }
-
-#endif

@@ -1,0 +1,59 @@
+--- a/boost/type_traits/detail/bool_trait_def.hpp
++++ b/boost/type_traits/detail/bool_trait_def.hpp
+@@ -14,9 +14,9 @@
+ //
+ // This header is deprecated and no longer used by type_traits:
+ //
+-#if defined(__GNUC__) || defined(_MSC_VER)
+-# pragma message("NOTE: Use of this header (bool_trait_def.hpp) is deprecated")
+-#endif
++// #if defined(__GNUC__) || defined(_MSC_VER)
++// # pragma message("NOTE: Use of this header (bool_trait_def.hpp) is deprecated")
++// #endif
+
+ #include <boost/type_traits/detail/template_arity_spec.hpp>
+ #include <boost/type_traits/integral_constant.hpp>
+--- a/boost/type_traits/detail/ice_or.hpp
++++ b/boost/type_traits/detail/ice_or.hpp
+@@ -13,9 +13,9 @@
+ //
+ // This header is deprecated and no longer used by type_traits:
+ //
+-#if defined(__GNUC__) || defined(_MSC_VER)
+-# pragma message("NOTE: Use of this header (ice_or.hpp) is deprecated")
+-#endif
++// #if defined(__GNUC__) || defined(_MSC_VER)
++// # pragma message("NOTE: Use of this header (ice_or.hpp) is deprecated")
++// #endif
+
+ namespace boost {
+ namespace type_traits {
+--- a/boost/type_traits/detail/ice_and.hpp
++++ b/boost/type_traits/detail/ice_and.hpp
+@@ -13,9 +13,9 @@
+ //
+ // This header is deprecated and no longer used by type_traits:
+ //
+-#if defined(__GNUC__) || defined(_MSC_VER)
+-# pragma message("NOTE: Use of this header (ice_and.hpp) is deprecated")
+-#endif
++// #if defined(__GNUC__) || defined(_MSC_VER)
++// # pragma message("NOTE: Use of this header (ice_and.hpp) is deprecated")
++// #endif
+
+ namespace boost {
+ namespace type_traits {
+--- a/boost/type_traits/detail/template_arity_spec.hpp
++++ b/boost/type_traits/detail/template_arity_spec.hpp
+@@ -9,8 +9,8 @@
+ //
+ // This header is deprecated and no longer used by type_traits:
+ //
+-#if defined(__GNUC__) || defined(_MSC_VER)
+-# pragma message("NOTE: Use of this header (template_arity_spec.hpp) is deprecated")
+-#endif
++// #if defined(__GNUC__) || defined(_MSC_VER)
++// # pragma message("NOTE: Use of this header (template_arity_spec.hpp) is deprecated")
++// #endif
+
+ #   define BOOST_TT_AUX_TEMPLATE_ARITY_SPEC(i, name) /**/

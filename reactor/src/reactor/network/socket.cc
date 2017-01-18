@@ -302,7 +302,7 @@ namespace reactor
       boost::system::error_code e;
       socket.cancel(e);
       if (e && e != boost::asio::error::bad_descriptor)
-        throw boost::system::system_error(e);
+        throw Exception(e.message());
       socket.close();
     }
 
@@ -387,7 +387,11 @@ namespace reactor
     PlainSocket<AsioSocket, EndPoint>::local_endpoint() const
     {
       typedef SocketSpecialization<AsioSocket> Spe;
-      return Spe::socket(*this->_socket).local_endpoint();
+      boost::system::error_code erc;
+      auto res = Spe::socket(*this->_socket).local_endpoint(erc);
+      if (erc)
+        throw Exception(erc.message());
+      return res;
     }
 
     /*-------------.

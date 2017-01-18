@@ -45,9 +45,7 @@ namespace elle
 {
   namespace _details
   {
-
     template <typename T>
-    static
     std::enable_if_t<_elle_printf_details::is_streamable<T>(), void>
     feed(boost::format& fmt, T&& value)
     {
@@ -55,12 +53,11 @@ namespace elle
     }
 
     template <typename T>
-    static
     std::enable_if_t<!_elle_printf_details::is_streamable<T>(), void>
     feed(boost::format& fmt, T&& value)
     {
-      static boost::format parsed("%f(%x)");
-      boost::format format(parsed);
+      static const auto parsed = boost::format("%f(%x)");
+      auto format = parsed;
       format % elle::type_info(value);
       format % reinterpret_cast<const void*>(&value);
       fmt % format.str();
@@ -195,7 +192,7 @@ namespace elle
     {
       ELLE_LOG_COMPONENT("elle.printf");
       // Don't use printf to handle printf fatal errors.
-      static boost::format const f("format error with \"%s\": %s");
+      static auto const f = boost::format("format error with \"%s\": %s");
       auto msg = (boost::format(f) % fmt % e.what()).str();
       ELLE_ERR("%s", msg);
       elle::err(msg);
@@ -229,5 +226,4 @@ namespace elle
   {
     fprintf(std::cout, std::forward<F>(fmt), std::forward<T>(values) ...);
   }
-
 }

@@ -1,16 +1,15 @@
-#ifndef ELLE_FSM_MACHINE_HH
-# define ELLE_FSM_MACHINE_HH
+#pragma once
 
-# include <memory>
-# include <unordered_set>
-# include <vector>
+#include <memory>
+#include <unordered_set>
+#include <vector>
 
-# include <boost/signals2.hpp>
+#include <boost/signals2.hpp>
 
-# include <elle/Printable.hh>
+#include <elle/Printable.hh>
 
-# include <reactor/fsm/State.hh>
-# include <reactor/fsm/Transition.hh>
+#include <reactor/fsm/State.hh>
+#include <reactor/fsm/Transition.hh>
 
 namespace reactor
 {
@@ -23,7 +22,7 @@ namespace reactor
     | Types |
     `------*/
     public:
-      typedef std::function<bool ()> PreTrigger;
+      using PreTrigger = std::function<bool ()>;
 
     /*-------------.
     | Construction |
@@ -56,11 +55,9 @@ namespace reactor
         bool preemptive = false,
         PreTrigger const& pre_trigger = PreTrigger());
       Transition&
-      transition_add(State& start,
-                     State& end);
+      transition_add(State& start, State& end);
       Transition&
-      transition_add(State& start,
-                     State& end,
+      transition_add(State& start, State& end,
                      std::function<bool ()> const& condition);
       /// Add a transition upon exception.
       ///
@@ -71,8 +68,7 @@ namespace reactor
       /// \param  end   The state to switch to.
       /// \return       The added transition.
       Transition&
-      transition_add_catch(State& start,
-                           State& end);
+      transition_add_catch(State& start, State& end);
       /// Add a transition upon exception.
       ///
       /// Add a transition that will switch execution to state \a end if an
@@ -86,8 +82,7 @@ namespace reactor
       /// \return       The added transition.
       template <typename T>
       Transition&
-      transition_add_catch_specific(State& start,
-                                    State& end,
+      transition_add_catch_specific(State& start, State& end,
                                     bool front = false);
     private:
       ELLE_ATTRIBUTE(
@@ -124,6 +119,4 @@ namespace reactor
   }
 }
 
-# include <reactor/fsm/Machine.hxx>
-
-#endif
+#include <reactor/fsm/Machine.hxx>
