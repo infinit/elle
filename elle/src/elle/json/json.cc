@@ -113,10 +113,12 @@ namespace elle
         // the same type as `unsigned long`.
         CASE(long);
         CASE(unsigned long);
-        CASE(long long);
-        CASE(unsigned long long);
         CASE(float);
         CASE(double);
+        else if (CL(any.type()) == CL(typeid(long long)))
+          return int64_t(boost::any_cast<long long>(any));
+        else if (CL(any.type()) == CL(typeid(unsigned long long)))
+          return uint64_t(boost::any_cast<unsigned long long>(any));
         else if (CL(any.type()) == CL(typeid(NullType)))
           return json_spirit::Value();
         else if (CL(any.type()) == CL(typeid(void)))
