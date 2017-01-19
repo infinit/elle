@@ -144,6 +144,16 @@ namespace elle
         fmt % "nullptr";
     }
 
+    inline
+    void
+    feed(boost::format& fmt, void const* value)
+    {
+      if (value)
+        fmt % value;
+      else
+        fmt % "nullptr";
+    }
+
     template <typename T>
     void
     feed(boost::format& fmt, T* value)
