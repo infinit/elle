@@ -65,7 +65,7 @@ struct Device
   int id;
   NopeString name;
 
-  using Model = das::Model<DevicePOD, elle::meta::List<Symbol_id, Symbol_name>>;
+  using Model = das::Model<Device, elle::meta::List<Symbol_id, Symbol_name>>;
 };
 
 struct User

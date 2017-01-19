@@ -29,7 +29,7 @@
     };                                                          \
                                                                 \
     template <typename T>                                       \
-    static                                                      \
+    static constexpr                                            \
     bool                                                        \
     attr_has()                                                  \
     {                                                           \
@@ -56,7 +56,8 @@
                                                                 \
   private:                                                      \
     template <typename T>                                       \
-    static constexpr std::enable_if_exists_t<                   \
+    static constexpr                                            \
+    std::enable_if_exists_t<                                    \
       decltype(std::declval<T&>().CName), bool>                 \
     _attr_has(int)                                              \
     {                                                           \

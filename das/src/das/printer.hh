@@ -18,8 +18,16 @@ namespace das
         type
         value(O const& o)
         {
-          return elle::sprintf("%s = %s", S::name(), S::attr_get(o));
-         }
+          return elle::meta::static_if<S::template attr_has<O>()>(
+            [] (auto const& o)
+            {
+              return elle::sprintf("%s = %s", S::name(), S::attr_get(o));
+            },
+            [] (auto const& o)
+            {
+              return elle::sprintf("%s = %s", S::name(), S::method_call(o));
+            })(o);
+        }
       };
     };
   }
