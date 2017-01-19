@@ -1,8 +1,6 @@
-// -*- c++ -*-
-#ifndef ELLE_IOSFWD
-# define ELLE_IOSFWD
+#pragma once
 
-# include_next <iosfwd>
+#include_next <iosfwd>
 
 namespace std
 {
@@ -11,4 +9,6 @@ namespace std
   is_fixed(basic_ostream<charT, traits> const& o);
 }
 
-#endif
+// Local Variables:
+// mode: c++
+// End:

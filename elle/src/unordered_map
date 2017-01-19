@@ -1,4 +1,3 @@
-// -*- c++ -*-
 #pragma once
 
 #include <ostream>
@@ -145,3 +144,7 @@ namespace std
         ++it;
   }
 }
+
+// Local Variables:
+// mode: c++
+// End:

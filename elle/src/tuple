@@ -1,9 +1,7 @@
-// -*- c++ -*-
-#ifndef ELLE_TUPLE
-# define ELLE_TUPLE
+#pragma once
 
-# include_next <tuple>
-# include <elle/printf-fwd.hh>
+#include_next <tuple>
+#include <elle/printf-fwd.hh>
 
 namespace std
 {
@@ -106,4 +104,6 @@ namespace std
   }
 }
 
-#endif
+// Local Variables:
+// mode: c++
+// End:
