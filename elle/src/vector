@@ -17,10 +17,10 @@ namespace std
       if (first)
       {
         first = false;
-        elle::fprintf(out, "%s", elt);
+        elle::fprintf(out, is_fixed(out) ? "%f" : "%s", elt);
       }
       else
-        elle::fprintf(out, ", %s", elt);
+        elle::fprintf(out, is_fixed(out) ? ", %f" : ", %s", elt);
     }
     elle::fprintf(out, "]");
     return out;
