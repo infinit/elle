@@ -309,8 +309,9 @@ namespace reactor
       }
       catch (elle::Exception const& e)
       {
-        ELLE_ERR("UTPServer exceptioned while shutting down: %s\n%s",
-                 e, e.backtrace())
+        ELLE_ERR(
+          "UTPServer exceptioned while shutting down: %s\nexception: %s\n%s",
+          elle::Backtrace::current(), e, e.backtrace())
         std::abort();
       }
       catch (...)
