@@ -261,6 +261,11 @@ namespace reactor
         EndPoint res = server->_socket->contact(id, endpoints, timeout);
         ELLE_DEBUG("got contact: %s", res);
         this->connect(res.address().to_string(), res.port());
+        // Don't terminate from UTPServer::Impl destructor.
+        elle::With<reactor::Thread::NonInterruptible>() << [&]
+        {
+          server.reset();
+        };
       }
       else
         elle::err("unable to connect: UTP server was destroyed");
