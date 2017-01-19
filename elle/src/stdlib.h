@@ -4,12 +4,8 @@
 #if __APPLE__
 # define daemon daemon_repl
 #endif
-#include_next <cstdlib>
+#include_next <stdlib.h>
 #if __APPLE__
 # undef daemon
 extern "C" int daemon(int, int);
 #endif
-
-// Local Variables:
-// mode: c++
-// End:
