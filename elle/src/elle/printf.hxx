@@ -231,9 +231,9 @@ namespace elle
   }
 
   template<typename F, typename ... T>
-  void
+  std::ostream&
   printf(F&& fmt, T&& ... values)
   {
-    fprintf(std::cout, std::forward<F>(fmt), std::forward<T>(values) ...);
+    return fprintf(std::cout, std::forward<F>(fmt), std::forward<T>(values) ...);
   }
 }
