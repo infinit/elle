@@ -9,6 +9,7 @@
 #include <boost/optional.hpp>
 
 #include <elle/Error.hh>
+#include <elle/Defaulted.hh>
 #include <elle/assert.hh>
 #include <elle/log.hh>
 #include <elle/make-vector.hh>
@@ -209,59 +210,6 @@ namespace das
     {
       return _details::IsOption(a, opts);
     }
-
-    /// Similar to an optional that knows its default value.
-    template <typename T>
-    struct Defaulted
-    {
-      Defaulted(T const& def, bool set = false)
-        : _value{def}
-        , _set{set}
-      {}
-
-      Defaulted(Defaulted const&) = default;
-      Defaulted& operator=(Defaulted const&) = default;
-
-      /// Override the default value.
-      template <typename U>
-      Defaulted& operator=(U&& u)
-      {
-        _value = std::forward<U>(u);
-        _set = true;
-        return *this;
-      }
-
-      /// Whether explicitly defined by the user.
-      operator bool() const
-      {
-        return _set;
-      }
-
-      /// The value, readonly.
-      T const& get() const
-      {
-        return _value;
-      }
-
-      /// The value, readonly.
-      T const& operator*() const
-      {
-        return get();
-      }
-
-      /// A pointer to the value, readonly.
-      T const* operator->() const
-      {
-        return &_value;
-      }
-
-    private:
-      /// The value.
-      T _value;
-      /// Whether a value was specified (as opposed to remaining equal
-      /// to the initial value).
-      bool _set = false;
-    };
 
     namespace _details
     {
@@ -502,11 +450,12 @@ namespace das
         /// A conversion that allows to know whether we have the
         /// option's default value, or a user defined one.
         template <typename I>
-        operator Defaulted<I>() const
+        operator elle::Defaulted<I>() const
         {
           ELLE_LOG_COMPONENT("das.cli");
-          ELLE_TRACE_SCOPE(
-            "convert %s to %s", this->_option, elle::type_info<Defaulted<I>>());
+          ELLE_TRACE_SCOPE("convert %s to %s",
+                           this->_option,
+                           elle::type_info<elle::Defaulted<I>>());
           auto res = this->operator I();
           ELLE_TRACE_SCOPE(
             "converted %s to %s (%s)",
