@@ -1283,7 +1283,7 @@ class BaseNode(object, metaclass = _BaseNodeType):
 
   def dot(self, marks):
       """Print a dot representation of this nodes build graph."""
-      if (self in marks):
+      if self in marks:
           return True
       marks[self] = None
       print('  node_%s [label="%s"]' % (self.uid, self.__name))
@@ -2079,7 +2079,7 @@ class Builder:
              isinstance(res, float):
             for dst in self.__targets:
               if dst.mtime_local <= res:
-                if (dst.touch(res)):
+                if dst.touch(res):
                   print('Adjust mtime of %s' % dst)
         if execute:
           self._execute(depfile_builder)
@@ -2254,7 +2254,7 @@ class Builder:
 
   def dot(self, marks):
     """Print a dot representation of the build graph."""
-    if (self in marks):
+    if self in marks:
         return True
     marks[self] = None
 
@@ -4035,7 +4035,7 @@ class TarballExtractor(ArchiveExtractor):
     '''Move the extracted files to the destination.'''
     for f in _OS.listdir(str(tmp)):
       destination = str(drake.path_build(self.destination / f))
-      if (_OS.path.exists(destination)):
+      if _OS.path.exists(destination):
         shutil.rmtree(destination)
       shutil.move(str(tmp / f), destination)
 
