@@ -27,6 +27,8 @@ namespace elle
       os_version()
       {
 #if defined(INFINIT_MACOSX)
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wdeprecated-declarations"
         int32_t major_version, minor_version, bugfix_version;
         if (Gestalt(gestaltSystemVersionMajor, &major_version) != noErr)
           return "unknown";
@@ -36,6 +38,7 @@ namespace elle
           return "unknown";
         return elle::sprintf("%s.%s.%s",
                              major_version, minor_version, bugfix_version);
+# pragma clang diagnostic pop
 #elif defined(INFINIT_IOS)
         return [UIDevice currentDevice].systemVersion.UTF8String;
 #endif

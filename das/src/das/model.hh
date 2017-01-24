@@ -11,15 +11,52 @@ namespace das
   class Model
   {
   private:
-    template <typename A>
-    struct AttrType
+    template <bool attr, typename A>
+    struct FieldTypeHelper
     {
       using type = typename A::template attr_type<T>::type;
+      static
+      auto const&
+      get(T const& o)
+      {
+        return A::template attr_get(o);
+      }
+      static
+      auto&
+      get(T& o)
+      {
+        return A::template attr_get(o);
+      }
+    };
+
+    template <typename A>
+    struct FieldTypeHelper<false, A>
+    {
+      using type =
+        std::decay_t<decltype(A::template method_call(std::declval<T>()))>;
+      static
+      auto
+      get(T const& o) -> decltype(A::template method_call(o))
+      {
+        return A::template method_call(o);
+      }
+      static
+      auto
+      get(T& o) -> decltype(A::template method_call(o))
+      {
+        return A::template method_call(o);
+      }
     };
 
   public:
+    template <typename A>
+    struct FieldType
+      : public FieldTypeHelper<A::template attr_has<T>(), A>
+    {};
+
+    using Type = T;
     using Fields = Fields_;
-    using Types = typename Fields::template map<AttrType>::type;
+    using Types = typename Fields::template map<FieldType>::type;
   };
 
   namespace _details

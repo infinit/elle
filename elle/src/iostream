@@ -1,13 +1,10 @@
-// -*- c++ -*-
-#ifndef ELLE_IOSTREAM
-# define ELLE_IOSTREAM
+#pragma once
 
-# include_next <iostream>
+#include_next <iostream>
 
 namespace std
 {
   template <typename charT, typename traits>
-  inline
   bool
   is_fixed(std::basic_ostream<charT, traits> const& o)
   {
@@ -15,4 +12,6 @@ namespace std
   }
 }
 
-#endif
+// Local Variables:
+// mode: c++
+// End:

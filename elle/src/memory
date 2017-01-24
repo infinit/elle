@@ -1,9 +1,7 @@
-// -*- c++ -*-
-#ifndef ELLE_MEMORY
-# define ELLE_MEMORY
+#pragma once
 
-# include_next <cassert>
-# include_next <memory>
+#include_next <cassert>
+#include_next <memory>
 
 namespace std
 {
@@ -161,4 +159,6 @@ namespace std
   }
 }
 
-#endif
+// Local Variables:
+// mode: c++
+// End:

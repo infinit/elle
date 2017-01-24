@@ -34,7 +34,7 @@ namespace das
       int
       value(O const& o, elle::serialization::SerializerOut& s)
       {
-        s.serialize(T::name(), T::attr_get(o));
+        s.serialize(T::name(), M::template FieldType<T>::get(o));
         return 0;
       }
     };
@@ -42,7 +42,8 @@ namespace das
     template <typename T>
     struct Deserialize
     {
-      using type = typename T::template attr_type<O>::type;
+      using type = typename M::template FieldType<T>::type;
+      //typename T::template attr_type<O>::type;
       static
       type
       value(elle::serialization::SerializerIn& s)
@@ -104,15 +105,18 @@ namespace das
         M::Fields::template map<Serializer<O, M>::template Deserialize>::value(s));
     }
 
-    template <typename O>
+    template <typename M>
     struct SetAttr
     {
+      using O = typename M::Type;
+
       template <typename A>
       struct available
       {
         static bool constexpr value =
-          std::is_assignable<decltype(A::attr_get(std::declval<O&>())),
-                             typename A::template attr_type<O>::type>::value;
+          std::is_assignable<
+            decltype(M::template FieldType<A>::get(std::declval<O&>())),
+            typename M::template FieldType<A>::type>::value;
         using type = std::integral_constant<bool, value>;
       };
 
@@ -120,8 +124,8 @@ namespace das
       struct set
       {
         using type = decltype(
-          A::attr_get(std::declval<O&>()) =
-          std::declval<typename A::template attr_type<O>::type>());
+          M::template FieldType<A>::get(std::declval<O&>()) =
+          std::declval<M::template FieldType<A>::type>());
       };
     };
 
@@ -129,7 +133,7 @@ namespace das
     template <typename O, typename M>
     std::enable_if_t<
       !M::Types::template apply<std::is_constructible, O>::type::value &&
-      M::Fields::template map<SetAttr<O>::template available>::type::template apply<elle::meta::All>::type::value,
+      M::Fields::template map<SetAttr<M>::template available>::type::template apply<elle::meta::All>::type::value,
       O>
     deserialize_switch(elle::serialization::SerializerIn& s)
     {
@@ -186,4 +190,3 @@ namespace das
   }                                                             \
 
 #include <das/serializer.hxx>
-

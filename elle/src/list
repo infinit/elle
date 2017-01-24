@@ -1,10 +1,8 @@
-// -*- c++ -*-
-#ifndef ELLE_LIST
-# define ELLE_LIST
+#pragma once
 
-# include <ostream>
-# include_next <list>
-# include <elle/printf-fwd.hh>
+#include <ostream>
+#include_next <list>
+#include <elle/printf-fwd.hh>
 
 namespace std
 {
@@ -29,4 +27,6 @@ namespace std
   }
 }
 
-#endif
+// Local Variables:
+// mode: c++
+// End:

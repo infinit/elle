@@ -1,21 +1,19 @@
-// -*- c++ -*-
-#ifndef ELLE_UNORDERED_SET
-# define ELLE_UNORDERED_SET
+#pragma once
 
-# include <ostream>
-# include_next <unordered_set>
-# include <elle/printf-fwd.hh>
+#include <ostream>
+#include_next <unordered_set>
+#include <elle/printf-fwd.hh>
 
 namespace std
 {
-  template <class V, class ... OTHER>
+  template <typename... Args>
   ostream&
-  operator <<(ostream& out, unordered_set<V, OTHER...> const& v)
+  operator <<(ostream& out, unordered_set<Args...> const& v)
   {
     elle::fprintf(out, "{");
     bool first = true;
     bool fixed = out.flags() & std::ios::fixed;
-    for (V const& elt: v)
+    for (auto const& elt: v)
     {
       if (first)
       {
@@ -29,12 +27,14 @@ namespace std
     return out;
   }
 
-  template <typename T, typename ... Types>
+  template <typename T, typename... Args>
   bool
-  contains(std::unordered_set<Types ...> const& set, T const& e)
+  contains(std::unordered_set<Args...> const& set, T const& e)
   {
     return set.find(e) != set.end();
   }
 }
 
-#endif
+// Local Variables:
+// mode: c++
+// End:

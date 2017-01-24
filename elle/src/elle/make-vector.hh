@@ -23,12 +23,12 @@ namespace elle
 
   /// The content of \a cont as a vector.
   template <typename Cont>
-  std::vector<typename Cont::value_type>
-  make_vector(const Cont& cont)
+  auto
+  make_vector(const Cont& c)
+    -> std::vector<typename Cont::value_type>
   {
     using std::begin;
     using std::end;
-    return {begin(cont), end(cont)};
+    return {begin(c), end(c)};
   }
 }
-

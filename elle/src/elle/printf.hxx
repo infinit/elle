@@ -144,6 +144,16 @@ namespace elle
         fmt % "nullptr";
     }
 
+    inline
+    void
+    feed(boost::format& fmt, void const* value)
+    {
+      if (value)
+        fmt % value;
+      else
+        fmt % "nullptr";
+    }
+
     template <typename T>
     void
     feed(boost::format& fmt, T* value)
@@ -221,9 +231,9 @@ namespace elle
   }
 
   template<typename F, typename ... T>
-  void
+  std::ostream&
   printf(F&& fmt, T&& ... values)
   {
-    fprintf(std::cout, std::forward<F>(fmt), std::forward<T>(values) ...);
+    return fprintf(std::cout, std::forward<F>(fmt), std::forward<T>(values) ...);
   }
 }

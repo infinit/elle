@@ -1,7 +1,6 @@
-#ifndef ELLE_EXIT_HH
-# define ELLE_EXIT_HH
+#pragma once
 
-# include <elle/Exception.hh>
+#include <elle/Exception.hh>
 
 namespace elle
 {
@@ -12,8 +11,8 @@ namespace elle
   | Types |
   `------*/
   public:
-    typedef Exception Super;
-    typedef Exit Self;
+    using Super = Exception;
+    using Self = Exit;
 
   /*-------------.
   | Construction |
@@ -23,5 +22,3 @@ namespace elle
     ELLE_ATTRIBUTE_R(int, return_code);
   };
 }
-
-#endif

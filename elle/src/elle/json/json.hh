@@ -1,56 +1,68 @@
-#ifndef ELLE_JSON_JSON_HH
-# define ELLE_JSON_JSON_HH
+#pragma once
 
-# include <map>
-# include <unordered_map>
-# include <vector>
+#include <algorithm>
+#include <map>
+#include <unordered_map>
+#include <vector>
 
-# include <boost/any.hpp>
+#include <boost/any.hpp>
 
-# include <elle/compiler.hh>
+#include <elle/compiler.hh>
 
 namespace elle
 {
-  namespace json
+  namespace json ELLE_API
   {
-    typedef boost::any Json;
-    typedef std::vector<boost::any> Array;
-    typedef std::unordered_map<std::string, boost::any> Object;
-    typedef std::map<std::string, boost::any> OrderedObject;
+    using Json = boost::any;
+    using Array = std::vector<Json>;
+    using Object = std::unordered_map<std::string, Json>;
+    using OrderedObject = std::map<std::string, Json>;
 
-    class ELLE_API NullType
+    class NullType
     {};
 
-    ELLE_API
-    boost::any
+    template <typename Cont>
+    auto
+    make_array(const Cont& c)
+      -> Array
+    {
+      using std::begin;
+      using std::end;
+      return {begin(c), end(c)};
+    }
+
+    template <typename Cont, typename Fun>
+    auto
+    make_array(const Cont& c, Fun&& fun)
+      -> Array
+    {
+      auto res = Array{};
+      res.reserve(c.size());
+      std::transform(c.begin(), c.end(),
+                     std::back_inserter(res),
+                     std::forward<Fun>(fun));
+      return res;
+    }
+
+    Json
     read(std::istream& stream);
 
-    ELLE_API
-    boost::any
+    Json
     read(std::string const& json);
 
-    ELLE_API
     void
     write(std::ostream& stream,
-          boost::any const& any,
+          Json const& any,
           bool with_endl = true,
           bool pretty_print = false);
 
-    ELLE_API
     std::string
-    pretty_print(boost::any const& any);
+    pretty_print(Json const& any);
+
+    std::ostream&
+    operator <<(std::ostream& stream, elle::json::Object const& obj);
+
+    std::ostream&
+    operator <<(std::ostream& stream, elle::json::OrderedObject const& obj);
   }
 }
-
-namespace std
-{
-  ELLE_API
-  std::ostream&
-  operator <<(std::ostream& stream, elle::json::Object const& obj);
-
-  ELLE_API
-  std::ostream&
-  operator <<(std::ostream& stream, elle::json::OrderedObject const& obj);
-}
-
-#endif
