@@ -517,6 +517,17 @@ namespace reactor
     this->_exception = e;
   }
 
+  void
+  Thread::raise_and_wake(std::exception_ptr e)
+  {
+    this->raise(e);
+    if (this->state() == state::frozen)
+    {
+      this->_wait_abort(elle::sprintf("raise %s", elle::exception_string(e)));
+      ELLE_ASSERT_EQ(this->state(), state::running);
+    }
+  }
+
   /*--------.
   | Context |
   `--------*/

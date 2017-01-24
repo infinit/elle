@@ -32,7 +32,15 @@ namespace reactor
   Thread::raise(Args&&... args)
   {
     auto e = Exception{std::forward<Args>(args)...};
-    this->_exception = std::make_exception_ptr(std::move(e));
+    this->raise(std::make_exception_ptr(std::move(e)));
+  }
+
+  template <typename Exception, typename... Args>
+  void
+  Thread::raise_and_wake(Args&&... args)
+  {
+    auto e = Exception{std::forward<Args>(args)...};
+    this->raise_and_wake(std::make_exception_ptr(std::move(e)));
   }
 
   template <typename R>
