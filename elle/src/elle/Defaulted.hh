@@ -7,8 +7,8 @@ namespace elle
   class Defaulted
   {
   public:
-    Defaulted(T&& def, bool set = false)
-      : _value{std::forward<T>(def)}
+    Defaulted(T def, bool set = false)
+      : _value{std::move(def)}
       , _set{set}
     {}
 
