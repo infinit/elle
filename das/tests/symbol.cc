@@ -47,15 +47,13 @@ attributes()
   S s;
   BOOST_CHECK_EQUAL(symbols::foo.attr_get(s), 0);
   static_assert(
-    std::is_same<
-      typename symbols::Symbol_foo::attr_type<S>::type, int>::value,
+    std::is_same<symbols::Symbol_foo::attr_type<S>, int>::value,
     "wrong attribute type");
   BOOST_CHECK_EQUAL(symbols::foo.attr_get(s)++, 0);
   BOOST_CHECK_EQUAL(symbols::foo.attr_get(s), 1);
   BOOST_CHECK_EQUAL(symbols::bar.attr_get(static_cast<const S&>(s)), "");
   static_assert(
-    std::is_same<
-      typename symbols::Symbol_bar::attr_type<S>::type, std::string>::value,
+    std::is_same<symbols::Symbol_bar::attr_type<S>, std::string>::value,
     "wrong attribute type");
   BOOST_CHECK(decltype(symbols::foo)::attr_has<S>());
   BOOST_CHECK(!no_such_attribute<decltype(symbols::foo)>(s, 0));
@@ -94,12 +92,10 @@ methods()
   static_assert(symbols::foo.method_has<M, int>(), "method_has error");
   static_assert(!symbols::foo.method_has<M, int, int>(), "method_has error");
   static_assert(
-    std::is_same<
-      decltype(symbols::foo)::method_type<M>::type, int>::value,
+    std::is_same<decltype(symbols::foo)::method_type<M>, int>::value,
     "method_type error");
   static_assert(
-    std::is_same<
-      decltype(symbols::foo)::method_type<M, int>::type, int>::value,
+    std::is_same<decltype(symbols::foo)::method_type<M, int>, int>::value,
     "method_type error");
   M m;
   BOOST_CHECK_EQUAL(symbols::foo.method_call(m), 42);

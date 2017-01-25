@@ -43,7 +43,7 @@ namespace das
     struct Deserialize
     {
       using type = typename M::template FieldType<T>::type;
-      //typename T::template attr_type<O>::type;
+      //typename T::template attr_type<O>;
       static
       type
       value(elle::serialization::SerializerIn& s)
@@ -61,7 +61,7 @@ namespace das
       value(elle::serialization::SerializerIn& s, O& o)
       {
         T::attr_get(o) =
-          s.deserialize<typename T::template attr_type<O>::type>(T::name());
+          s.deserialize<typename T::template attr_type<O>>(T::name());
         return false;
       }
     };
