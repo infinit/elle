@@ -1,5 +1,4 @@
-#ifndef ELLE_META_HH
-# define ELLE_META_HH
+#pragma once
 
 namespace elle
 {
@@ -121,6 +120,4 @@ namespace elle
   }
 }
 
-# include <elle/meta.hxx>
-
-#endif
+#include <elle/meta.hxx>
