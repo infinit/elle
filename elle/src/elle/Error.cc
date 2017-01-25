@@ -23,6 +23,9 @@ namespace elle
     : Super(input)
   {}
 
-  static const elle::serialization::Hierarchy<elle::Exception>::
-  Register<Error> _register_serialization;
+  namespace
+  {
+    const elle::serialization::Hierarchy<elle::Exception>::
+    Register<Error> _register_serialization;
+  }
 }

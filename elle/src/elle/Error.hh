@@ -1,7 +1,6 @@
-#ifndef ELLE_ERROR_HH
-# define ELLE_ERROR_HH
+#pragma once
 
-# include <elle/Exception.hh>
+#include <elle/Exception.hh>
 
 namespace elle
 {
@@ -13,8 +12,8 @@ namespace elle
   | Types |
   `------*/
   public:
-    typedef Error Self;
-    typedef Exception Super;
+    using Self = Error;
+    using Super = Exception;
 
   /*-------------.
   | Construction |
@@ -30,5 +29,3 @@ namespace elle
     Error(elle::serialization::SerializerIn& input);
   };
 }
-
-#endif

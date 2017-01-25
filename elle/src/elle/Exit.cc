@@ -4,8 +4,8 @@
 
 namespace elle
 {
-  Exit::Exit(int return_code)
-    : Super(elle::sprintf("exit with return code %s", return_code))
-    , _return_code(return_code)
+  Exit::Exit(int r)
+    : Super(elle::sprintf("exit with return code %s", r))
+    , _return_code(r)
   {}
 }
