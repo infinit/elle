@@ -46,14 +46,10 @@ namespace das
                    List<>>
     {
       template <typename F>
-        struct result_of
-      {
-        using type =
-          std::result_of_t<F&(Remaining..., Applied...)>;
-      };
+      using result_of = std::result_of_t<F&(Remaining..., Applied...)>;
       template <typename F>
         static
-        std::result_of_t<F&(Remaining..., Applied...)>
+        result_of<F>
         apply(DefaultStore&,
               F const& f,
               Applied&& ... applied,
@@ -84,13 +80,10 @@ namespace das
                            List<Store..., RTail...>,
                            List<>>;
       template <typename F>
-        struct result_of
-      {
-        using type = typename next::template result_of<F>::type;
-      };
+      using result_of = typename next::template result_of<F>;
       template <typename F>
         static
-        typename next::template result_of<F>::type
+        result_of<F>
         apply(DefaultStore& defaults,
               F const& f,
               Applied&& ... applied,
@@ -131,13 +124,10 @@ namespace das
                            List<RTail...>,
                            List<Store..., RHead>>;
       template <typename F>
-        struct result_of
-      {
-        using type = typename next::template result_of<F>::type;
-      };
+      using result_of = typename next::template result_of<F>;
       template <typename F>
         static
-        typename next::template result_of<F>::type
+        result_of<F>
         apply(DefaultStore& defaults,
               F const& f,
               Applied&& ... applied,
@@ -174,13 +164,10 @@ namespace das
                            List<StoreTail...>,
                            List<>>;
       template <typename F>
-        struct result_of
-      {
-        using type = typename next::template result_of<F>::type;
-      };
+      using result_of = typename next::template result_of<F>;
       template <typename F>
         static
-        typename next::template result_of<F>::type
+        result_of<F>
         apply(DefaultStore& defaults,
               F const& f,
               Applied&& ... applied,
@@ -222,13 +209,10 @@ namespace das
                            List<Store...>,
                            List<>>;
       template <typename F>
-        struct result_of
-      {
-        using type = typename next::template result_of<F>::type;
-      };
+      using result_of = typename next::template result_of<F>;
       template <typename F>
         static
-        typename result_of<F>::type
+        result_of<F>
         apply(DefaultStore& defaults,
               F const& f,
               Applied ... applied,
@@ -338,7 +322,7 @@ namespace das
                        List<typename make_formal<Formal>::type...>,
                        List<>,
                        List<Args...>,
-                       List<>>::template result_of<F>::type
+                       List<>>::template result_of<F>
         call(F const& f, Args&& ... args) const
       {
         ELLE_LOG_COMPONENT("das.named");
