@@ -172,7 +172,7 @@ namespace das
               return this->_arg.substr(2) == option_name_from_c(F::name());
             else
             {
-              using Formal = typename das::named::make_formal<F>::type;
+              using Formal = das::named::make_formal<F>;
               auto res =
                 elle::meta::static_if<std::is_base_of<CLI_Symbol, Formal>::value>(
                 [this] (auto&& formal)
@@ -550,16 +550,16 @@ namespace das
                   Head,
                   std::conditional_t<
                     D::template default_for<
-                      typename das::named::make_formal<Head>::type>::has,
+                      das::named::make_formal<Head>>::has,
                     typename D::template default_for<
-                    typename das::named::make_formal<Head>::type>::type,
+                    das::named::make_formal<Head>>::type,
                     void>>>>()),
             args,
             opts,
             counter))
         {
           ELLE_LOG_COMPONENT("das.cli");
-          using Formal = typename das::named::make_formal<Head>::type;
+          using Formal = das::named::make_formal<Head>;
           bool flag = false;
           bool pos = false;
           bool set = false;
@@ -770,7 +770,7 @@ namespace das
       bool
       value(std::ostream& s, Options const& opts, Defaults const& defaults)
       {
-        using Formal = typename das::named::make_formal<Symbol>::type;
+        using Formal = das::named::make_formal<Symbol>;
         auto opt = opts.find(Symbol::name());
         if (opt == opts.end())
           elle::meta::static_if<std::is_base_of<CLI_Symbol, Formal>::value>(

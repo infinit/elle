@@ -285,11 +285,7 @@ namespace das
     _make_formal(int);
 
     template <typename T>
-    struct make_formal
-    {
-      using type =
-        std::remove_reference_t<decltype(_make_formal<T>(42))>;
-    };
+    using make_formal = std::remove_reference_t<decltype(_make_formal<T>(42))>;
 
     template <typename T>
     struct is_effective
@@ -316,7 +312,7 @@ namespace das
                          this, f, std::tuple<Args const& ...>(args...));
         return Applier<
           DefaultStore,
-          List<typename make_formal<Formal>::type...>,
+          List<make_formal<Formal>...>,
           List<>,
           List<Args...>,
           List<>>::apply(
@@ -414,12 +410,12 @@ namespace das
         struct default_for
       {
         static constexpr bool has =
-          std::is_same<T, typename make_formal<Head>::type>::value ?
+          std::is_same<T, make_formal<Head>>::value ?
           is_effective<Head>::value :
           DefaultStore<Tail...>::template default_for<T>::has;
         using type =
           std::conditional_t<
-            std::is_same<T, typename make_formal<Head>::type>::value,
+            std::is_same<T, make_formal<Head>>::value,
             SuperHead,
             typename DefaultStore<Tail...>::template default_for<T>::type
             >;
