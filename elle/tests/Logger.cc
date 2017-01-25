@@ -542,9 +542,9 @@ error()
       ELLE_LOG_COMPONENT("elle.printf");
       ELLE_LOG("force component creation");
     }
-    BOOST_CHECK_THROW(ELLE_LOG("invalid log", 42), elle::Error);
-    BOOST_CHECK_THROW(ELLE_LOG("invalid log %s"), elle::Error);
-    BOOST_CHECK_GT(output.str().size(), 0);
+    BOOST_CHECK_THROW(ELLE_LOG("invalid log", 42), elle::Exception);
+    BOOST_CHECK_THROW(ELLE_LOG("invalid log %s"), elle::Exception);
+    BOOST_CHECK(!output.str().empty());
     elle::log::detail::debug_formats(false);
   }
 }
