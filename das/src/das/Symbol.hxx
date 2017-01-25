@@ -126,7 +126,8 @@
     : public _Symbol_##Name<Symbol_##Name>                      \
   {                                                             \
   public:                                                       \
-    using _Symbol_##Name<Symbol_##Name>::operator =;            \
+    using Super = _Symbol_##Name<Symbol_##Name>;                \
+    using Super::operator =;                                    \
   };                                                            \
 
 #define DAS_SYMBOL_NAMED(Name, CName)                           \
