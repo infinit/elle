@@ -90,7 +90,7 @@ def configure(cxx_toolkit = None,
   zlib_rule = drake.Rule('zlib')
 
   # Specify the variables required to fetch and extract the zlib tarball.
-  zlib_version = '1.2.10'
+  zlib_version = '1.2.11'
   zlib_basename = 'zlib-%s' % zlib_version
   zlib_tarball = drake.node('zlib/%s.tar.gz' % zlib_basename)
   zlib_prefix = drake.Path('zlib')
