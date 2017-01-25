@@ -46,10 +46,8 @@ namespace das
                    List<>>
     {
       template <typename F>
-      using result_of = std::result_of_t<F&(Remaining..., Applied...)>;
-      template <typename F>
         static
-        result_of<F>
+        auto
         apply(DefaultStore&,
               F const& f,
               Applied&& ... applied,
@@ -80,10 +78,8 @@ namespace das
                            List<Store..., RTail...>,
                            List<>>;
       template <typename F>
-      using result_of = typename next::template result_of<F>;
-      template <typename F>
         static
-        result_of<F>
+        auto
         apply(DefaultStore& defaults,
               F const& f,
               Applied&& ... applied,
@@ -124,10 +120,8 @@ namespace das
                            List<RTail...>,
                            List<Store..., RHead>>;
       template <typename F>
-      using result_of = typename next::template result_of<F>;
-      template <typename F>
         static
-        result_of<F>
+        auto
         apply(DefaultStore& defaults,
               F const& f,
               Applied&& ... applied,
@@ -164,10 +158,8 @@ namespace das
                            List<StoreTail...>,
                            List<>>;
       template <typename F>
-      using result_of = typename next::template result_of<F>;
-      template <typename F>
         static
-        result_of<F>
+        auto
         apply(DefaultStore& defaults,
               F const& f,
               Applied&& ... applied,
@@ -209,10 +201,8 @@ namespace das
                            List<Store...>,
                            List<>>;
       template <typename F>
-      using result_of = typename next::template result_of<F>;
-      template <typename F>
         static
-        result_of<F>
+        auto
         apply(DefaultStore& defaults,
               F const& f,
               Applied ... applied,
@@ -318,11 +308,7 @@ namespace das
       {}
 
       template <typename F, typename ... Args>
-      typename Applier<DefaultStore,
-                       List<typename make_formal<Formal>::type...>,
-                       List<>,
-                       List<Args...>,
-                       List<>>::template result_of<F>
+      auto
         call(F const& f, Args&& ... args) const
       {
         ELLE_LOG_COMPONENT("das.named");
