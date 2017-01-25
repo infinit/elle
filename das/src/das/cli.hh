@@ -213,22 +213,10 @@ namespace das
 
     namespace _details
     {
-      struct Empty
-      {
-        Empty(int const&)
-        {}
-      };
-
       template <typename Default = void>
       class Value
-        : public std::conditional_t<
-            std::is_same<Default, void>::value,
-            Empty,
-            Default>
       {
       public:
-        using Super = std::conditional_t<
-          std::is_same<Default, void>::value, Empty, Default>;
         /// Whether a default value was specified.
         static bool constexpr default_has = !std::is_same<Default, void>::value;
 
@@ -241,7 +229,7 @@ namespace das
               std::vector<std::string> value,
               int& remaining,
               bool set)
-          : Super(d)
+          : _default(d)
           , _option(std::move(option))
           , _values(std::move(value))
           , _positional(positional)
@@ -259,7 +247,7 @@ namespace das
               bool flag,
               int& remaining,
               bool set)
-          : Super(d)
+          : _default(d)
           , _option(std::move(option))
           , _values()
           , _positional(positional)
@@ -268,6 +256,8 @@ namespace das
           , _remaining(remaining)
           , _set(set)
         {}
+
+        std::conditional_t<default_has, Default, int> const& _default;
 
         template <typename I>
         static
@@ -381,8 +371,8 @@ namespace das
         missing() const
         {
           ELLE_LOG_COMPONENT("das.cli");
-          ELLE_TRACE("use default value: %s", this->Default::value);
-          return this->Default::value;
+          ELLE_TRACE("use default value: %s", this->_default);
+          return this->_default;
         }
 
         template <typename I>
@@ -628,9 +618,9 @@ namespace das
               [&] (auto head, auto def)
               {
                 using Default = typename decltype(def)::type;
-                using V = Value<Default>;
+                using V = Value<typename Default::Type>;
                 if (flag)
-                  return V(p.defaults, Head::name(), pos, args,
+                  return V(p.defaults.Default::value, Head::name(), pos, args,
                            true, counter, set);
                 else
                 {
@@ -638,7 +628,7 @@ namespace das
                     ELLE_DEBUG(
                       "no occurences, default value is %s",
                       p.defaults.Default::value);
-                  return V(p.defaults, Head::name(), pos, args,
+                  return V(p.defaults.Default::value, Head::name(), pos, args,
                            std::move(value), counter, set);
                 }
               },
