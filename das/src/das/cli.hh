@@ -541,22 +541,6 @@ namespace das
               std::vector<std::string>& args,
               Options const& opts,
               int& counter)
-          -> decltype(CLI<Tail...>::value(
-            p, f,
-            std::tuple_cat(
-              std::move(parsed),
-              std::declval<std::tuple<
-                _details::Value<
-                  Head,
-                  std::conditional_t<
-                    D::template default_for<
-                      das::named::make_formal<Head>>::has,
-                    typename D::template default_for<
-                    das::named::make_formal<Head>>::type,
-                    void>>>>()),
-            args,
-            opts,
-            counter))
         {
           ELLE_LOG_COMPONENT("das.cli");
           using Formal = das::named::make_formal<Head>;
