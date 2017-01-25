@@ -41,8 +41,11 @@ namespace reactor
       }
       catch (boost::system::system_error& e)
       {
-        throw Exception(elle::sprintf("unable to listen on %s: %s",
-                                      end_point, e.what()));
+        auto message =
+          elle::sprintf("unable to listen on %s: %s", end_point, e.what());
+        if (e.code() == boost::system::errc::permission_denied)
+          throw PermissionDenied(message);
+        throw Exception(message);
       }
     }
 
