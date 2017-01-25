@@ -219,7 +219,7 @@ namespace das
         {}
       };
 
-      template <typename Formal, typename Default = void>
+      template <typename Default = void>
       class Value
         : public std::conditional_t<
             std::is_same<Default, void>::value,
@@ -486,9 +486,9 @@ namespace das
         ELLE_ATTRIBUTE_R(bool, set);
       };
 
-      template <typename Formal, typename Default>
+      template <typename Default>
       std::ostream&
-      operator <<(std::ostream& out, Value<Formal, Default> const& v)
+      operator <<(std::ostream& out, Value<Default> const& v)
       {
         elle::fprintf(out, "Value(\"%s\", %s, %s)",
                       v.option(), v.values(), v.set() ? "explicit" : "implicit");
@@ -629,7 +629,7 @@ namespace das
               [&] (auto head, auto def)
               {
                 using Default = typename decltype(def)::type;
-                using V = Value<typename decltype(head)::type, Default>;
+                using V = Value<Default>;
                 if (flag)
                   return V(p.defaults, Head::name(), pos, args,
                            true, counter, set);
@@ -645,7 +645,7 @@ namespace das
               },
               [&] (auto head, auto)
               {
-                using V = Value<typename decltype(head)::type, void>;
+                using V = Value<void>;
                 if (flag)
                   return V(0, Head::name(), pos, args, true, counter, set);
                 else
