@@ -516,7 +516,6 @@ namespace das
               std::vector<std::string>& args,
               Options const& opts,
               int&)
-          -> decltype(forward_tuple(f, std::move(parsed)))
         {
           ELLE_LOG_COMPONENT("das.cli");
           if (!args.empty())
@@ -677,9 +676,6 @@ namespace das
           F const& f,
           std::vector<std::string>& args,
           Options const& opts = Options())
-      -> decltype(
-        _details::CLI<Formals...>::value(
-          p, f, std::tuple<>(), args, opts, std::declval<int&>()))
     {
       int counter = sizeof ... (Formals);
       return _details::CLI<Formals...>::value(
@@ -692,7 +688,6 @@ namespace das
          F const& f,
          std::vector<std::string>& args,
          Options const& opts = Options())
-      -> decltype(_call(p, f, args, opts))
     {
       return _call(p, f, args, opts);
     }
@@ -703,10 +698,8 @@ namespace das
          F const& f,
          std::vector<std::string> const& args,
          Options const& opts = Options())
-      -> decltype(
-        _call(p, f, std::declval<std::vector<std::string>&>(), opts))
     {
-      std::vector<std::string> copy = args;
+      auto copy = args;
       return _call(p, f, copy, opts);
     }
 
@@ -715,7 +708,6 @@ namespace das
     call(named::Function<T...> const& f,
          std::vector<std::string>& args,
          Options const& opts = Options())
-      -> decltype(_call(f.prototype(), f, args, opts))
     {
       return _call(f.prototype(), f.function(), args, opts);
     }
@@ -810,15 +802,15 @@ namespace das
 
 #define DAS_CLI_SYMBOL_NAMED(Name, CName, Short, Help, Pos)             \
   DAS_SYMBOL_TYPE_NAMED(Name, CName);                                   \
-  constexpr static                                                      \
-  class CLI_Symbol_##Name                                               \
-    : public _Symbol_##Name<CLI_Symbol_##Name>                          \
+  class CS_##Name                                                       \
+    : public _Symbol_##Name<CS_##Name>                                  \
     , public ::das::cli::CLI_Symbol                                     \
   {                                                                     \
   public:                                                               \
-    using _Symbol_##Name<CLI_Symbol_##Name>::operator=;                 \
+    using Super = _Symbol_##Name<CS_##Name>;                            \
+    using Super::operator=;                                             \
     constexpr                                                           \
-      CLI_Symbol_##Name()                                               \
+    CS_##Name()                                                         \
     {}                                                                  \
                                                                         \
     static constexpr                                                    \
@@ -841,4 +833,5 @@ namespace das
     {                                                                   \
       return Pos;                                                       \
     }                                                                   \
-  } CName = {};
+  };                                                                    \
+  constexpr static CS_##Name CName = {};
