@@ -1,3 +1,6 @@
+#include <elle/err.hh>
+#include <elle/printf.hh>
+
 namespace elle
 {
   namespace chrono
