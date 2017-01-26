@@ -150,7 +150,6 @@ namespace das
   template <typename T>
   auto
   flatten(T const& o)
-    -> decltype(flatten<typename DefaultModel<T>::type, T>(o))
   {
     return flatten<typename DefaultModel<T>::type, T>(o);
   }
@@ -168,7 +167,6 @@ namespace das
   template <typename T>
   auto
   flatten_ref(T& o)
-    -> decltype(flatten_ref<typename DefaultModel<T>::type, T>(o))
   {
     return flatten_ref<typename DefaultModel<T>::type, T>(o);
   }
@@ -186,7 +184,6 @@ namespace das
   template <typename T>
   auto
   flatten_ref(T const& o)
-    -> decltype(flatten_ref<typename DefaultModel<T>::type, T>(o))
   {
     return flatten_ref<typename DefaultModel<T>::type, T>(o);
   }

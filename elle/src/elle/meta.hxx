@@ -134,10 +134,10 @@ namespace elle
       {
         template <typename ... Args>
         static
-        std::tuple<>
+        auto
         value(Args&& ...)
         {
-          return {};
+          return std::make_tuple();
         }
       };
 
@@ -155,7 +155,7 @@ namespace elle
       {
         template <typename ... Args>
         static
-        std::tuple<RHead, RTail...>
+        auto
         value(Args&& ... args)
         {
           auto head = std::tuple<typename F<Head, ExtraArgs...>::type>(
@@ -179,10 +179,10 @@ namespace elle
       {
         template <typename ... Args>
         static
-        std::tuple<>
+        auto
         value(Args&& ...)
         {
-          return {};
+          return std::make_tuple();
         }
       };
 
