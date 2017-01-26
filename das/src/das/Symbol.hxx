@@ -9,7 +9,8 @@
     : public ::das::SpecificSymbol<S>                           \
   {                                                             \
   public:                                                       \
-    using ::das::SpecificSymbol<S>::operator=;                  \
+    using Super = ::das::SpecificSymbol<S>;                     \
+    using Super::operator=;                                     \
                                                                 \
     /* Name */                                                  \
                                                                 \
