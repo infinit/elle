@@ -166,27 +166,17 @@ namespace elle
         fmt % "nullptr";
     }
 
-    inline
-    void
-    feed(boost::format& fmt)
-    {}
-
-    template <typename T, typename ... Rest>
-    auto
-    feed(boost::format& fmt, T&& value, Rest&& ... values)
-      -> std::enable_if_t<sizeof...(Rest) != 0>
-    {
-      feed(fmt, std::forward<T>(value));
-      feed(fmt, std::forward<Rest>(values)...);
-    }
-
     /// Create, feed and return a boost::format.
     template <typename F, typename ... T>
     boost::format
     format(F&& fmt, T&& ... values)
     {
       auto res = boost::format{fmt};
-      feed(res, std::forward<T>(values)...);
+      using swallow = int[];
+      (void) swallow
+        {
+          (feed(res, std::forward<T>(values)), 0)...
+        };
       return res;
     }
 
