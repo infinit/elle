@@ -1,27 +1,22 @@
-#ifndef ELLE_LOG_LOGGER_HH
-# define ELLE_LOG_LOGGER_HH
+#pragma once
 
-# include <memory>
-# include <mutex>
-# include <string>
-# include <unordered_map>
-# include <vector>
+#include <memory>
+#include <mutex>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
-# include <boost/noncopyable.hpp>
+#include <boost/noncopyable.hpp>
 
-# include <elle/attribute.hh>
-# include <elle/memory.hh>
-# include <elle/time.hh>
+#include <elle/attribute.hh>
+#include <elle/log/fwd.hh>
+#include <elle/memory.hh>
+#include <elle/time.hh>
 
 namespace elle
 {
   namespace log
   {
-    namespace detail
-    {
-      struct Send;
-    }
-
     class ELLE_API Indentation
     {
     public:
@@ -44,7 +39,7 @@ namespace elle
     class ELLE_API Indenter
     {
     public:
-      typedef std::function<std::unique_ptr<Indentation> ()> Factory;
+      using Factory = std::function<std::unique_ptr<Indentation> ()>;
       virtual
       std::unique_ptr<Indentation>
       indentation(Factory const& factory) = 0;
@@ -230,7 +225,3 @@ namespace elle
     operator << (std::ostream& stream, Logger::Level l);
   }
 }
-
-# include <elle/log/Logger.hxx>
-
-#endif

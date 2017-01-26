@@ -14,20 +14,21 @@ namespace elle
 {
   namespace log
   {
-    static
-    std::unique_ptr<Logger>&
-    _logger()
+    namespace
     {
-      static std::unique_ptr<Logger> logger;
-      return logger;
-    }
+      std::unique_ptr<Logger>&
+      _logger()
+      {
+        static std::unique_ptr<Logger> logger;
+        return logger;
+      }
 
-    static
-    std::mutex&
-    log_mutex()
-    {
-      static std::mutex mutex;
-      return mutex;
+      std::mutex&
+      log_mutex()
+      {
+        static std::mutex mutex;
+        return mutex;
+      }
     }
 
     Logger&
@@ -45,9 +46,9 @@ namespace elle
         }
         else
         {
-          std::string path = elle::os::getenv("ELLE_LOG_FILE", "");
+          auto path = elle::os::getenv("ELLE_LOG_FILE", "");
           bool append = !elle::os::getenv("ELLE_LOG_FILE_APPEND", "").empty();
-          if (path.empty() == false)
+          if (!path.empty())
           {
             static std::ofstream out{
               path,
@@ -124,12 +125,14 @@ namespace elle
         }
       }
 
-      static
-      bool&
-      _debug_formats()
+      namespace
       {
-        static bool res = elle::os::inenv("ELLE_LOG_CHECK_FORMATS");
-        return res;
+        bool&
+        _debug_formats()
+        {
+          static bool res = elle::os::inenv("ELLE_LOG_CHECK_FORMATS");
+          return res;
+        }
       }
 
       bool

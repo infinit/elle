@@ -1,5 +1,4 @@
-#ifndef ELLE_LOG_COMPOSITE_LOGGER_HH
-# define ELLE_LOG_COMPOSITE_LOGGER_HH
+#pragma once
 
 #include <elle/log/Logger.hh>
 
@@ -16,7 +15,6 @@ namespace elle
       ~CompositeLogger();
       ELLE_ATTRIBUTE_RX(std::vector<std::unique_ptr<Logger>>, loggers);
     protected:
-      virtual
       void
       _message(Level level,
                elle::log::Logger::Type type,
@@ -32,4 +30,3 @@ namespace elle
     };
   }
 }
-#endif
