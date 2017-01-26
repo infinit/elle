@@ -1,6 +1,6 @@
 #include <reactor/backend/backend.hh>
 
-#if defined(__clang__)
+#if defined(INFINIT_MACOSX)
 // libc++
 
 #include <reactor/libcxx-exceptions/cxa_exception.hpp>
