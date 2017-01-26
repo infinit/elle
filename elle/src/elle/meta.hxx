@@ -24,19 +24,13 @@ namespace elle
       struct filter_helper<List<Res...>, List<Head, Tail...>, P>
       {
         using type = typename filter_helper<
-          typename std::conditional<P<Head>::value,
+          std::conditional_t<P<Head>::value,
                                     List<Res...,
-                                         Head>, List<Res...>>::type,
+                                         Head>, List<Res...>>,
           List<Tail...>, P>::type;
       };
     }
 
-    template <typename ... Elts>
-    template <template <typename> class P>
-    struct List<Elts...>::filter
-    {
-      using type = typename filter_helper<List<>, List<Elts...>, P>::type;
-    };
 
     /*---------.
     | Index of |

@@ -25,7 +25,7 @@ namespace list
   namespace filter
   {
     using l = List<int, std::string, void, float*>;
-    using res = typename l::filter<std::is_scalar>::type;
+    using res = l::filter<std::is_scalar>;
     static_assert(std::is_same<res, List<int, float*>>::value,
                   "list::filter yielded the wrong type");
   }
