@@ -1,3 +1,5 @@
+#pragma once
+
 #include <ostream>
 #include <typeinfo>
 
@@ -43,7 +45,7 @@ namespace _elle_printf_details
 
 namespace elle
 {
-  namespace _details
+  namespace
   {
     template <typename T>
     std::enable_if_t<_elle_printf_details::is_streamable<T>(), void>
@@ -178,62 +180,51 @@ namespace elle
       feed(fmt, std::forward<Rest>(values)...);
     }
 
-    template<typename F, typename ... T>
+    /// Create, feed and return a boost::format.
+    template <typename F, typename ... T>
     boost::format
     format(F&& fmt, T&& ... values)
     {
-      boost::format format(fmt);
-      feed(format, std::forward<T>(values) ...);
-      return format;
+      auto res = boost::format{fmt};
+      feed(res, std::forward<T>(values)...);
+      return res;
     }
-  }
 
-  template<typename F, typename ... T>
-  std::string
-  sprintf(F&& fmt, T&& ... values)
-  {
-    try
+    template <typename F, typename ... T>
+    std::string
+    sprintf(F&& fmt, T&& ... values)
     {
-      auto format = _details::format(std::forward<F>(fmt),
-                                     std::forward<T>(values) ...);
-      return format.str();
+      try
+      {
+        auto f = format(std::forward<F>(fmt), std::forward<T>(values)...);
+        return f.str();
+      }
+      catch (boost::io::format_error const& e)
+      {
+        format_error(fmt, e);
+      }
     }
-    catch (boost::io::format_error const& e)
-    {
-      ELLE_LOG_COMPONENT("elle.printf");
-      // Don't use printf to handle printf fatal errors.
-      static auto const f = boost::format("format error with \"%s\": %s");
-      auto msg = (boost::format(f) % fmt % e.what()).str();
-      ELLE_ERR("%s", msg);
-      elle::err(msg);
-    }
-  }
 
-  template<typename F, typename ... T>
-  std::ostream&
-  fprintf(std::ostream& stream, F&& fmt, T&& ... values)
-  {
-    try
+    template <typename F, typename ... T>
+    std::ostream&
+    fprintf(std::ostream& stream, F&& fmt, T&& ... values)
     {
-      auto format = _details::format(std::forward<F>(fmt),
-                                     std::forward<T>(values) ...);
-      return stream << format;
+      try
+      {
+        auto f = format(std::forward<F>(fmt), std::forward<T>(values)...);
+        return stream << f;
+      }
+      catch (boost::io::format_error const& e)
+      {
+        format_error(fmt, e);
+      }
     }
-    catch (boost::io::format_error const& e)
-    {
-      ELLE_LOG_COMPONENT("elle.printf");
-      // Don't use printf to handle printf fatal errors.
-      std::stringstream ss;
-      ss << "format error with \"" << fmt << "\": " << e.what();
-      ELLE_ERR("%s", ss.str());
-      throw elle::Exception(ss.str());
-    }
-  }
 
-  template<typename F, typename ... T>
-  std::ostream&
-  printf(F&& fmt, T&& ... values)
-  {
-    return fprintf(std::cout, std::forward<F>(fmt), std::forward<T>(values) ...);
+    template <typename F, typename ... T>
+    std::ostream&
+    printf(F&& fmt, T&& ... values)
+    {
+      return fprintf(std::cout, std::forward<F>(fmt), std::forward<T>(values) ...);
+    }
   }
 }

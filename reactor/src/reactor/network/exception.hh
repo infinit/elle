@@ -34,6 +34,14 @@ namespace reactor
       ConnectionRefused();
     };
 
+    class PermissionDenied
+      : public Exception
+    {
+    public:
+      typedef Exception Super;
+      PermissionDenied(std::string const& message);
+    };
+
     class ConnectionClosed
       : public Exception
     {

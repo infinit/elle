@@ -18,6 +18,10 @@ namespace reactor
       : Super("connection refused")
     {}
 
+    PermissionDenied::PermissionDenied(std::string const& message)
+      : Super(message)
+    {}
+
     ConnectionClosed::ConnectionClosed()
       : Super("connection closed")
     {}

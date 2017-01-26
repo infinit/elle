@@ -7,8 +7,15 @@ namespace das
   class Symbol
   {};
 
+  /// Reduce symbol sizes.
   template <typename S>
-  class SpecificSymbol
+  class SS;
+
+  template <typename S>
+  using SpecificSymbol = SS<S>;
+
+  template <typename S>
+  class SS
     : public Symbol
   {
   public:

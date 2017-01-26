@@ -9,7 +9,8 @@
     : public ::das::SpecificSymbol<S>                           \
   {                                                             \
   public:                                                       \
-    using ::das::SpecificSymbol<S>::operator=;                  \
+    using Super = ::das::SpecificSymbol<S>;                     \
+    using Super::operator=;                                     \
                                                                 \
     /* Name */                                                  \
                                                                 \
@@ -22,11 +23,7 @@
                                                                 \
   public:                                                       \
     template <typename T>                                       \
-    struct                                                      \
-    attr_type                                                   \
-    {                                                           \
-      using type = decltype(std::declval<T>().CName);           \
-    };                                                          \
+    using attr_type = decltype(std::declval<T>().CName);        \
                                                                 \
     template <typename T>                                       \
     static constexpr                                            \
@@ -84,17 +81,13 @@
     }                                                           \
                                                                 \
     template <typename T, typename ... Args>                    \
-    struct method_type                                          \
-    {                                                           \
-      static_assert(method_has<T, Args...>(),                   \
-                    "no such method");                          \
-      using type = decltype(std::declval<T&>().CName(           \
-                              std::declval<Args>()...));        \
-    };                                                          \
+    using method_type                                           \
+      = decltype(std::declval<T&>()                             \
+                 .CName(std::declval<Args>()...));              \
                                                                 \
     template <typename T, typename ... Args>                    \
     static                                                      \
-    typename method_type<T, Args...>::type                      \
+    auto                                                        \
     method_call(T&& o, Args&& ... args)                         \
     {                                                           \
       return o.CName(std::forward<Args>(args)...);              \
@@ -126,7 +119,8 @@
     : public _Symbol_##Name<Symbol_##Name>                      \
   {                                                             \
   public:                                                       \
-    using _Symbol_##Name<Symbol_##Name>::operator =;            \
+    using Super = _Symbol_##Name<Symbol_##Name>;                \
+    using Super::operator =;                                    \
   };                                                            \
 
 #define DAS_SYMBOL_NAMED(Name, CName)                           \

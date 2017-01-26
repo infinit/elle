@@ -395,8 +395,7 @@ multiline()
 {
   std::stringstream output;
   elle::os::setenv("ELLE_LOG_LEVEL", "DUMP", 1);
-  elle::log::logger(
-    std::unique_ptr<elle::log::Logger>{new elle::log::TextLogger{output}});
+  elle::log::logger(std::make_unique<elle::log::TextLogger>(output));
   ELLE_LOG_COMPONENT("multiline");
   ELLE_TRACE("This message\nis\nsplitted\n\ninto\r\n5 lines\n\n\r\n\r\r");
   auto expected =
@@ -511,8 +510,7 @@ trim()
 {
   std::stringstream output;
   elle::os::setenv("ELLE_LOG_LEVEL", "DUMP", 1);
-  elle::log::logger(
-    std::unique_ptr<elle::log::Logger>{new elle::log::TextLogger{output}});
+  elle::log::logger(std::make_unique<elle::log::TextLogger>(output));
   ELLE_LOG_COMPONENT("trim");
   ELLE_TRACE("   \n\t\t\tThis message is trimmed !    \n\n\r\n\r\r\t ");
   BOOST_CHECK_EQUAL(output.str(), "[trim] This message is trimmed !\n");
@@ -525,8 +523,7 @@ error()
   ELLE_LOG_COMPONENT("error");
   {
     std::stringstream output;
-    elle::log::logger(
-      std::unique_ptr<elle::log::Logger>{new elle::log::TextLogger{output}});
+    elle::log::logger(std::make_unique<elle::log::TextLogger>(output));
     {
       // We are passing through already executed code with a different logger
       ELLE_LOG_COMPONENT("elle.printf");
@@ -539,16 +536,15 @@ error()
   {
     std::stringstream output;
     elle::log::detail::debug_formats(true);
-    elle::log::logger(
-      std::unique_ptr<elle::log::Logger>{new elle::log::TextLogger{output}});
+    elle::log::logger(std::make_unique<elle::log::TextLogger>(output));
     {
       // We are passing through already executed code with a different logger
       ELLE_LOG_COMPONENT("elle.printf");
       ELLE_LOG("force component creation");
     }
-    BOOST_CHECK_THROW(ELLE_LOG("invalid log", 42), elle::Error);
-    BOOST_CHECK_THROW(ELLE_LOG("invalid log %s"), elle::Error);
-    BOOST_CHECK_GT(output.str().size(), 0);
+    BOOST_CHECK_THROW(ELLE_LOG("invalid log", 42), elle::Exception);
+    BOOST_CHECK_THROW(ELLE_LOG("invalid log %s"), elle::Exception);
+    BOOST_CHECK(!output.str().empty());
     elle::log::detail::debug_formats(false);
   }
 }

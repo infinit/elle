@@ -1,9 +1,6 @@
-#ifndef ELLE_EXCEPTION_HXX
-# define ELLE_EXCEPTION_HXX
-
 namespace elle
 {
-  template< class T >
+  template <typename T>
   void
   throw_with_nested(T&& e)
   {
@@ -27,6 +24,3 @@ namespace elle
     return exception_string(err, std::current_exception());
   }
 }
-
-
-#endif

@@ -124,8 +124,7 @@ namespace das
       template <typename S>
       struct flatten
       {
-        using Method = FlattenCompose<
-          typename S::template attr_type<O>::type, M>;
+        using Method = FlattenCompose<typename S::template attr_type<O>, M>;
         using type = typename Method::type;
         static
         type

@@ -46,14 +46,8 @@ namespace das
                    List<>>
     {
       template <typename F>
-        struct result_of
-      {
-        using type =
-          std::result_of_t<F&(Remaining..., Applied...)>;
-      };
-      template <typename F>
         static
-        std::result_of_t<F&(Remaining..., Applied...)>
+        auto
         apply(DefaultStore&,
               F const& f,
               Applied&& ... applied,
@@ -78,19 +72,15 @@ namespace das
                    List<RHead, RTail...>,
                    List<Store...>>
     {
+      ELLE_LOG_COMPONENT("das.named");
       using next = Applier<DefaultStore,
                            List<Tail...>,
                            List<Applied..., typename RHead::Passing>,
                            List<Store..., RTail...>,
                            List<>>;
       template <typename F>
-        struct result_of
-      {
-        using type = typename next::template result_of<F>::type;
-      };
-      template <typename F>
         static
-        typename next::template result_of<F>::type
+        auto
         apply(DefaultStore& defaults,
               F const& f,
               Applied&& ... applied,
@@ -98,7 +88,6 @@ namespace das
               RTail&& ... remaining,
               Store&& ... store)
       {
-        ELLE_LOG_COMPONENT("das.named");
         ELLE_DUMP(
           "found named argument for %s: %s", RHead::name(), match.value);
         return next::apply(defaults,
@@ -131,13 +120,8 @@ namespace das
                            List<RTail...>,
                            List<Store..., RHead>>;
       template <typename F>
-        struct result_of
-      {
-        using type = typename next::template result_of<F>::type;
-      };
-      template <typename F>
         static
-        typename next::template result_of<F>::type
+        auto
         apply(DefaultStore& defaults,
               F const& f,
               Applied&& ... applied,
@@ -168,26 +152,21 @@ namespace das
                            List<StoreHead, StoreTail ...>,
                            false>
     {
+      ELLE_LOG_COMPONENT("das.named");
       using next = Applier<DefaultStore,
                            List<Tail...>,
                            List<Applied..., StoreHead&&>,
                            List<StoreTail...>,
                            List<>>;
       template <typename F>
-        struct result_of
-      {
-        using type = typename next::template result_of<F>::type;
-      };
-      template <typename F>
         static
-        typename next::template result_of<F>::type
+        auto
         apply(DefaultStore& defaults,
               F const& f,
               Applied&& ... applied,
               StoreHead&& store_head,
               StoreTail&& ... store_tail)
       {
-        ELLE_LOG_COMPONENT("das.named");
         ELLE_DUMP(
           "use positional argument for %s: %s", Head::name(), store_head);
         return next::apply(
@@ -214,6 +193,7 @@ namespace das
     {
       static_assert(DefaultStore::template default_for<Head>::has,
                     "missing argument");
+      ELLE_LOG_COMPONENT("das.named");
       using default_type =
         typename DefaultStore::template default_for<Head>::type;
       using next = Applier<DefaultStore,
@@ -222,19 +202,13 @@ namespace das
                            List<Store...>,
                            List<>>;
       template <typename F>
-        struct result_of
-      {
-        using type = typename next::template result_of<F>::type;
-      };
-      template <typename F>
         static
-        typename result_of<F>::type
+        auto
         apply(DefaultStore& defaults,
               F const& f,
               Applied ... applied,
               Store&& ... store)
       {
-        ELLE_LOG_COMPONENT("das.named");
         ELLE_DUMP(
           "use default value for %s: %s",
           Head::name(), defaults.default_type::value);
@@ -311,11 +285,7 @@ namespace das
     _make_formal(int);
 
     template <typename T>
-    struct make_formal
-    {
-      using type =
-        std::remove_reference_t<decltype(_make_formal<T>(42))>;
-    };
+    using make_formal = std::remove_reference_t<decltype(_make_formal<T>(42))>;
 
     template <typename T>
     struct is_effective
@@ -324,29 +294,38 @@ namespace das
         !std::is_same<decltype(_make_formal<T>(42)), T>::value;
     };
 
-    template <typename DefaultStore, typename ... Formal>
-    struct Prototype
-      : public elle::Printable::as<Prototype<DefaultStore, Formal...>>
+    template <typename ... Args>
+    struct DefaultStore
     {
+      using defaults_type = List<>;
+      template <typename T>
+      struct default_for
+      {
+        static constexpr bool has = false;
+        using type = void;
+      };
+    };
+
+    template <typename ... Formal>
+    struct Prototype
+      : public elle::Printable::as<Prototype<Formal...>>
+    {
+      ELLE_LOG_COMPONENT("das.named");
+      using DefaultStore = named::DefaultStore<Formal...>;
       DefaultStore defaults;
       Prototype(DefaultStore&& d)
         : defaults(std::move(d))
       {}
 
       template <typename F, typename ... Args>
-      typename Applier<DefaultStore,
-                       List<typename make_formal<Formal>::type...>,
-                       List<>,
-                       List<Args...>,
-                       List<>>::template result_of<F>::type
+      auto
         call(F const& f, Args&& ... args) const
       {
-        ELLE_LOG_COMPONENT("das.named");
         ELLE_TRACE_SCOPE("Prototype(%s): invoke %s%s",
                          this, f, std::tuple<Args const& ...>(args...));
         return Applier<
           DefaultStore,
-          List<typename make_formal<Formal>::type...>,
+          List<make_formal<std::remove_cv_reference_t<Formal>>...>,
           List<>,
           List<Args...>,
           List<>>::apply(
@@ -376,7 +355,7 @@ namespace das
       print(std::ostream& o) const
       {
         bool first = true;
-        elle::meta::List<Formal...>::
+        elle::meta::List<std::remove_cv_reference_t<Formal>...>::
           template map<print_prototype>::value(o, first);
       }
     };
@@ -388,18 +367,6 @@ namespace das
     {
       Empty(T const&)
       {}
-    };
-
-    template <typename ... Args>
-    struct DefaultStore
-    {
-      using defaults_type = List<>;
-      template <typename T>
-      struct default_for
-      {
-        static constexpr bool has = false;
-        using type = void;
-      };
     };
 
     template <bool effective, typename T, typename D>
@@ -444,12 +411,12 @@ namespace das
         struct default_for
       {
         static constexpr bool has =
-          std::is_same<T, typename make_formal<Head>::type>::value ?
+          std::is_same<T, make_formal<Head>>::value ?
           is_effective<Head>::value :
           DefaultStore<Tail...>::template default_for<T>::has;
         using type =
           std::conditional_t<
-            std::is_same<T, typename make_formal<Head>::type>::value,
+            std::is_same<T, make_formal<Head>>::value,
             SuperHead,
             typename DefaultStore<Tail...>::template default_for<T>::type
             >;
@@ -457,12 +424,10 @@ namespace das
     };
 
     template <typename ... Args>
-    Prototype<DefaultStore<Args...>,
-              std::remove_cv_reference_t<Args>...>
+    Prototype<Args...>
     prototype(Args&& ... args)
     {
-      return Prototype<DefaultStore<Args...>,
-                       std::remove_cv_reference_t<Args>...>
+      return Prototype<Args...>
         (DefaultStore<Args...>(std::forward<Args>(args)...));
     }
 
@@ -486,7 +451,7 @@ namespace das
       }
 
       ELLE_ATTRIBUTE_R(F, function);
-      ELLE_ATTRIBUTE_R((Prototype<DefaultStore<Args...>, Args...>), prototype);
+      ELLE_ATTRIBUTE_R((Prototype<Args...>), prototype);
 
       void
       print(std::ostream& out) const

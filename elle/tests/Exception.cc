@@ -1,3 +1,5 @@
+#include <boost/algorithm/string/predicate.hpp>
+
 #define ELLE_TEST_MODULE Exception
 #include <elle/test.hh>
 #include <elle/Exception.hh>
@@ -34,16 +36,17 @@ BOOST_AUTO_TEST_CASE(ExceptionBacktrace)
 
 BOOST_AUTO_TEST_CASE(err)
 {
-  #define CHECK_THROW(statement, Exception, message)                     \
-    try                                                                  \
-    {                                                                    \
-      BOOST_CHECK_THROW(statement, Exception);                           \
-      statement;                                                         \
-    }                                                                    \
-    catch (Exception const& exception)                                   \
-    {                                                                    \
-      BOOST_CHECK_EQUAL(std::string(exception.what()).find(message), 0); \
-    }
+  using boost::starts_with;
+#define CHECK_THROW(Statement, Exception, Message)      \
+  try                                                   \
+  {                                                     \
+    BOOST_CHECK_THROW(Statement, Exception);            \
+    Statement;                                          \
+  }                                                     \
+  catch (Exception const& e)                            \
+  {                                                     \
+    BOOST_CHECK(starts_with(e.what(), Message));        \
+  }
 
   CHECK_THROW(elle::err("foo"), elle::Error, "foo");
   CHECK_THROW(elle::err("foo %s", 3), elle::Error, "foo 3");

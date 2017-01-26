@@ -14,7 +14,7 @@ namespace das
     template <bool attr, typename A>
     struct FieldTypeHelper
     {
-      using type = typename A::template attr_type<T>::type;
+      using type = typename A::template attr_type<T>;
       static
       auto const&
       get(T const& o)

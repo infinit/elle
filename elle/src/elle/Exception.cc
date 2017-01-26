@@ -1,7 +1,7 @@
-# include <elle/Exception.hh>
+#include <elle/Exception.hh>
 
-# include <elle/assert.hh>
-# include <elle/serialization/Serializer.hh>
+#include <elle/assert.hh>
+#include <elle/serialization/Serializer.hh>
 
 namespace elle
 {
@@ -41,7 +41,7 @@ namespace elle
   Exception::serialize(elle::serialization::Serializer& s,
                        elle::Version const& version)
   {
-    std::string message = this->what();
+    auto message = std::string{this->what()};
     s.serialize("message", message);
   }
 
@@ -77,7 +77,7 @@ namespace elle
     }
     catch (std::exception const& e)
     {
-      return std::string(e.what());
+      return e.what();
     }
     catch (...)
     {

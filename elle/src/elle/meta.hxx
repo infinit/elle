@@ -1,8 +1,5 @@
-#ifndef ELLE_META_HXX
-# define ELLE_META_HXX
-
-# include <tuple>
-# include <type_traits>
+#include <tuple>
+#include <type_traits>
 
 namespace elle
 {
@@ -16,7 +13,7 @@ namespace elle
     template <template <typename ...> class T, typename ... Args>
     struct List<Elts...>::apply
     {
-      typedef T<Args..., Elts...> type;
+      using type = T<Args..., Elts...>;
     };
 
     /*-------.
@@ -28,7 +25,7 @@ namespace elle
       template <typename R, typename L, template <typename> class P>
       struct filter_helper
       {
-        typedef R type;
+        using type = R;
       };
 
       template <typename ... Res,
@@ -37,11 +34,11 @@ namespace elle
                 template <typename> class P>
       struct filter_helper<List<Res...>, List<Head, Tail...>, P>
       {
-        typedef typename filter_helper<
+        using type = typename filter_helper<
           typename std::conditional<P<Head>::value,
                                     List<Res...,
                                          Head>, List<Res...>>::type,
-          List<Tail...>, P>::type type;
+          List<Tail...>, P>::type;
       };
     }
 
@@ -49,7 +46,7 @@ namespace elle
     template <template <typename> class P>
     struct List<Elts...>::filter
     {
-      typedef typename filter_helper<List<>, List<Elts...>, P>::type type;
+      using type = typename filter_helper<List<>, List<Elts...>, P>::type;
     };
 
     /*---------.
@@ -233,7 +230,7 @@ namespace elle
     template <typename T>
     struct List<Elts...>::prepend
     {
-      typedef List<T, Elts...> type;
+      using type = List<T, Elts...>;
     };
 
     /*-----.
@@ -291,5 +288,3 @@ namespace elle
     };
   }
 }
-
-#endif
