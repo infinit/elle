@@ -14,7 +14,7 @@ namespace das
     template <typename Model, typename T, template <typename> class M>
     typename Model::Fields::template map<
       flatten_object<T, M>::template flatten>
-      ::type::template apply<std::tuple>::type
+      ::type::template apply<std::tuple>
     _flatten(typename M<T>::object_type o);
 
     template <typename T>
@@ -92,7 +92,7 @@ namespace das
       using type =
         typename Model::Fields::template map<
         flatten_object<T, M>::template flatten>
-        ::type::template apply<std::tuple>::type;
+        ::type::template apply<std::tuple>;
       static
       type
       value(typename M<T>::object_type o)
@@ -111,7 +111,7 @@ namespace das
     template <typename Model, typename T, template <typename> class M>
     typename Model::Fields::template map<
       flatten_object<T, M>::template flatten>
-      ::type::template apply<std::tuple>::type
+      ::type::template apply<std::tuple>
     _flatten(typename M<T>::object_type o)
     {
       return Model::Fields::template map<
@@ -140,7 +140,7 @@ namespace das
   template <typename Model, typename T>
   typename Model::Fields::template map<
     flatten_object<T, FlattenByValue>::template flatten>
-    ::type::template apply<std::tuple>::type
+    ::type::template apply<std::tuple>
   flatten(T const& o)
   {
     return _flatten<Model, T, FlattenByValue>(o);
@@ -159,7 +159,7 @@ namespace das
   template <typename Model, typename T>
   typename Model::Fields::template map<
     flatten_object<T, FlattenByRef>::template flatten>
-    ::type::template apply<std::tuple>::type
+    ::type::template apply<std::tuple>
   flatten_ref(T& o)
   {
     return _flatten<Model, T, FlattenByRef>(o);
@@ -177,7 +177,7 @@ namespace das
   template <typename Model, typename T>
   typename Model::Fields::template map<
     flatten_object<T, FlattenByConstRef>::template flatten>
-    ::type::template apply<std::tuple>::type
+    ::type::template apply<std::tuple>
   flatten_ref(T const& o)
   {
     return _flatten<Model, T, FlattenByConstRef>(o);
@@ -191,4 +191,3 @@ namespace das
     return flatten_ref<typename DefaultModel<T>::type, T>(o);
   }
 }
-

@@ -5,17 +5,6 @@ namespace elle
 {
   namespace meta
   {
-    /*------.
-    | Apply |
-    `------*/
-
-    template <typename ... Elts>
-    template <template <typename ...> class T, typename ... Args>
-    struct List<Elts...>::apply
-    {
-      using type = T<Args..., Elts...>;
-    };
-
     /*-------.
     | Filter |
     `-------*/
@@ -99,7 +88,7 @@ namespace elle
                 typename Args>
       static constexpr
       std::enable_if_exists_t<
-        decltype(Args::template apply<F, Head>::type::value),
+        decltype(Args::template apply<F, Head>::value),
         bool>
       map_runtime(int)
       {
@@ -111,7 +100,7 @@ namespace elle
                 typename Args>
       static constexpr
       std::enable_if_exists_t<
-        typename Args::template apply<F, Head>::type::type, bool>
+        typename Args::template apply<F, Head>::type, bool>
       map_runtime(...)
       {
         return false;
@@ -204,7 +193,7 @@ namespace elle
                 typename ... Args>
       struct map_value_helper<Res, F, List<Head, Tail...>, List<Args...>>
         : public map_value_apply<
-            typename Res::template apply<std::tuple>::type,
+            typename Res::template apply<std::tuple>,
             map_runtime<F, Head, List<Args...>>(0), F, List<Head, Tail...>, Args...>
       {};
     }

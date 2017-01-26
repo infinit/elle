@@ -12,8 +12,7 @@ namespace elle
     {
       /// T<Args ..., Elts...>
       template <template <typename ...> class T, typename ... Args>
-      struct
-      apply;
+      using apply = T<Args..., Elts...>;
 
       /// A list containing elements that match P
       template <template <typename> class P>
