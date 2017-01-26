@@ -220,6 +220,8 @@ namespace das
         /// Whether a default value was specified.
         static bool constexpr default_has = !std::is_same<Default, void>::value;
 
+        ELLE_LOG_COMPONENT("das.cli");
+
         /// A value not found on the CLI, built from its default
         /// value.
         Value(std::conditional_t<default_has, Default, int> const& d,
@@ -361,7 +363,6 @@ namespace das
         std::enable_if_t<!default_has, T>
         missing() const
         {
-          ELLE_LOG_COMPONENT("das.cli");
           ELLE_TRACE("raise missing error");
           throw MissingOption(this->_option);
         }
@@ -370,7 +371,6 @@ namespace das
         std::enable_if_t<default_has, T>
         missing() const
         {
-          ELLE_LOG_COMPONENT("das.cli");
           ELLE_TRACE("use default value: %s", this->_default);
           return this->_default;
         }
@@ -379,7 +379,6 @@ namespace das
         I
         convert() const
         {
-          ELLE_LOG_COMPONENT("das.cli");
           if (this->_values.empty())
           {
             if (this->_positional && !this->_args.empty())
@@ -400,7 +399,6 @@ namespace das
         operator I() const
         {
           static_assert(!std::is_same<std::decay_t<I>, bool>::value, "");
-          ELLE_LOG_COMPONENT("das.cli");
           ELLE_TRACE_SCOPE(
             "convert %s to %s", this->_option, elle::type_info<I>());
           auto res = this->convert<I>();
@@ -410,7 +408,6 @@ namespace das
 
         operator bool() const
         {
-          ELLE_LOG_COMPONENT("das.cli");
           ELLE_TRACE_SCOPE("convert %s to boolean", this->_option);
           bool res;
           if (this->_values.empty())
@@ -424,7 +421,6 @@ namespace das
         template <typename T>
         operator std::vector<T>() const
         {
-          ELLE_LOG_COMPONENT("das.cli");
           ELLE_TRACE_SCOPE(
             "convert %s to %s", this->_option, elle::type_info(std::vector<T>{}));
           if (this->_values.empty() && this->_positional)
@@ -442,7 +438,6 @@ namespace das
         template <typename I>
         operator elle::Defaulted<I>() const
         {
-          ELLE_LOG_COMPONENT("das.cli");
           ELLE_TRACE_SCOPE("convert %s to %s",
                            this->_option,
                            elle::type_info<elle::Defaulted<I>>());
@@ -494,6 +489,7 @@ namespace das
       template <>
       struct CLI<>
       {
+        ELLE_LOG_COMPONENT("das.cli");
         template <typename F,
                   typename D,
                   typename ... Formals,
@@ -507,7 +503,6 @@ namespace das
               Options const& opts,
               int&)
         {
-          ELLE_LOG_COMPONENT("das.cli");
           if (!args.empty())
             ELLE_TRACE("remaining positional arguments: %s", args);
           ELLE_TRACE("call %s%s", f, parsed)
@@ -518,6 +513,7 @@ namespace das
       template <typename Head, typename ... Tail>
       struct CLI<Head, Tail...>
       {
+        ELLE_LOG_COMPONENT("das.cli");
         template <typename F,
                   typename D,
                   typename ... Formals,
@@ -531,7 +527,6 @@ namespace das
               Options const& opts,
               int& counter)
         {
-          ELLE_LOG_COMPONENT("das.cli");
           using Formal = das::named::make_formal<Head>;
           bool flag = false;
           bool pos = false;

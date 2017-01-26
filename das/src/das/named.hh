@@ -72,6 +72,7 @@ namespace das
                    List<RHead, RTail...>,
                    List<Store...>>
     {
+      ELLE_LOG_COMPONENT("das.named");
       using next = Applier<DefaultStore,
                            List<Tail...>,
                            List<Applied..., typename RHead::Passing>,
@@ -87,7 +88,6 @@ namespace das
               RTail&& ... remaining,
               Store&& ... store)
       {
-        ELLE_LOG_COMPONENT("das.named");
         ELLE_DUMP(
           "found named argument for %s: %s", RHead::name(), match.value);
         return next::apply(defaults,
@@ -152,6 +152,7 @@ namespace das
                            List<StoreHead, StoreTail ...>,
                            false>
     {
+      ELLE_LOG_COMPONENT("das.named");
       using next = Applier<DefaultStore,
                            List<Tail...>,
                            List<Applied..., StoreHead&&>,
@@ -166,7 +167,6 @@ namespace das
               StoreHead&& store_head,
               StoreTail&& ... store_tail)
       {
-        ELLE_LOG_COMPONENT("das.named");
         ELLE_DUMP(
           "use positional argument for %s: %s", Head::name(), store_head);
         return next::apply(
@@ -193,6 +193,7 @@ namespace das
     {
       static_assert(DefaultStore::template default_for<Head>::has,
                     "missing argument");
+      ELLE_LOG_COMPONENT("das.named");
       using default_type =
         typename DefaultStore::template default_for<Head>::type;
       using next = Applier<DefaultStore,
@@ -208,7 +209,6 @@ namespace das
               Applied ... applied,
               Store&& ... store)
       {
-        ELLE_LOG_COMPONENT("das.named");
         ELLE_DUMP(
           "use default value for %s: %s",
           Head::name(), defaults.default_type::value);
@@ -298,6 +298,7 @@ namespace das
     struct Prototype
       : public elle::Printable::as<Prototype<DefaultStore, Formal...>>
     {
+      ELLE_LOG_COMPONENT("das.named");
       DefaultStore defaults;
       Prototype(DefaultStore&& d)
         : defaults(std::move(d))
@@ -307,7 +308,6 @@ namespace das
       auto
         call(F const& f, Args&& ... args) const
       {
-        ELLE_LOG_COMPONENT("das.named");
         ELLE_TRACE_SCOPE("Prototype(%s): invoke %s%s",
                          this, f, std::tuple<Args const& ...>(args...));
         return Applier<

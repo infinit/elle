@@ -16,11 +16,12 @@ namespace das
       : _object(o)
     {}
 
+    ELLE_LOG_COMPONENT("das.BoundMethod");
+
     template <typename ... Eff>
     auto
     operator ()(Eff&& ... eff)
     {
-      ELLE_LOG_COMPONENT("das.BoundMethod");
       ELLE_TRACE_SCOPE("call %s%s", this, std::tuple<Eff const& ...>(eff...));
       return S::method_call(this->_object, std::forward<Eff>(eff)...);
     }
@@ -29,7 +30,6 @@ namespace das
     auto
     operator ()(Eff&& ... eff) const
     {
-      ELLE_LOG_COMPONENT("das.BoundMethod");
       ELLE_TRACE_SCOPE("call %s%s", this, std::tuple<Eff const& ...>(eff...));
       return S::method_call(this->_object, std::forward<Eff>(eff)...);
     }
