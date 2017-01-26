@@ -16,6 +16,7 @@
 # include <syslog.h>
 #endif
 
+#include <elle/assert.hh>
 #include <elle/log/SysLogger.hh>
 #include <elle/printf.hh>
 
@@ -63,6 +64,7 @@ namespace elle
           case Logger::Type::warning:
             return LOG_WARNING;
         }
+        unreachable();
       }();
       auto msg = elle::sprintf("[%s] ", component);
       for (auto const& tag: tags)
