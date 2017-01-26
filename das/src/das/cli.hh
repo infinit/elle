@@ -491,12 +491,11 @@ namespace das
       {
         ELLE_LOG_COMPONENT("das.cli");
         template <typename F,
-                  typename D,
                   typename ... Formals,
                   typename ... Parsed>
         static
         auto
-        value(das::named::Prototype<D, Formals...> const& p,
+        value(das::named::Prototype<Formals...> const& p,
               F const& f,
               std::tuple<Parsed...> parsed,
               std::vector<std::string>& args,
@@ -515,12 +514,11 @@ namespace das
       {
         ELLE_LOG_COMPONENT("das.cli");
         template <typename F,
-                  typename D,
                   typename ... Formals,
                   typename ... Parsed>
         static
         auto
-        value(das::named::Prototype<D, Formals...> const& p,
+        value(das::named::Prototype<Formals...> const& p,
               F const& f,
               std::tuple<Parsed...> parsed,
               std::vector<std::string>& args,
@@ -604,10 +602,12 @@ namespace das
                 pos = it->second.positional;
             }
             static bool constexpr default_has =
-              D::template default_for<Formal>::has;
+              das::named::Prototype<Formals...>::DefaultStore::
+              template default_for<Formal>::has;
             using Default = std::conditional_t<
               default_has,
-              typename D::template default_for<Formal>::type,
+              typename das::named::Prototype<Formals...>::DefaultStore::
+                template default_for<Formal>::type,
               void>;
             auto res = elle::meta::static_if<default_has>(
               [&] (auto head, auto def)
@@ -655,21 +655,21 @@ namespace das
       };
     }
 
-    template <typename F, typename D, typename ... Formals>
+    template <typename F, typename ... Formals>
     auto
-    _call(das::named::Prototype<D, Formals...> const& p,
+    _call(das::named::Prototype<Formals...> const& p,
           F const& f,
           std::vector<std::string>& args,
           Options const& opts = Options())
     {
       int counter = sizeof ... (Formals);
-      return _details::CLI<Formals...>::value(
+      return _details::CLI<std::remove_cv_reference_t<Formals>...>::value(
         p, f, std::tuple<>(), args, opts, counter);
     }
 
-    template <typename F, typename D, typename ... Formals>
+    template <typename F, typename ... Formals>
     auto
-    call(das::named::Prototype<D, Formals...> const& p,
+    call(das::named::Prototype<Formals...> const& p,
          F const& f,
          std::vector<std::string>& args,
          Options const& opts = Options())
@@ -677,9 +677,9 @@ namespace das
       return _call(p, f, args, opts);
     }
 
-    template <typename F, typename D, typename ... Formals, typename ... Args>
+    template <typename F, typename ... Formals, typename ... Args>
     auto
-    call(das::named::Prototype<D, Formals...> const& p,
+    call(das::named::Prototype<Formals...> const& p,
          F const& f,
          std::vector<std::string> const& args,
          Options const& opts = Options())
@@ -760,14 +760,15 @@ namespace das
       }
     };
 
-    template <typename D, typename ... T>
+    template <typename ... T>
     void
-    help(named::Prototype<D, T...> const& f,
+    help(named::Prototype<T...> const& f,
          std::ostream& s,
          Options const& opts = Options())
     {
-      elle::meta::List<T...>::template map<help_map, D>::value(
-        s, opts, f.defaults);
+      elle::meta::List<T...>::template map<
+        help_map, typename named::Prototype<T...>::DefaultStore>::value(
+          s, opts, f.defaults);
     }
 
     template <typename F, typename ... T>

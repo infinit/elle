@@ -294,11 +294,24 @@ namespace das
         !std::is_same<decltype(_make_formal<T>(42)), T>::value;
     };
 
-    template <typename DefaultStore, typename ... Formal>
+    template <typename ... Args>
+    struct DefaultStore
+    {
+      using defaults_type = List<>;
+      template <typename T>
+      struct default_for
+      {
+        static constexpr bool has = false;
+        using type = void;
+      };
+    };
+
+    template <typename ... Formal>
     struct Prototype
-      : public elle::Printable::as<Prototype<DefaultStore, Formal...>>
+      : public elle::Printable::as<Prototype<Formal...>>
     {
       ELLE_LOG_COMPONENT("das.named");
+      using DefaultStore = named::DefaultStore<Formal...>;
       DefaultStore defaults;
       Prototype(DefaultStore&& d)
         : defaults(std::move(d))
@@ -312,7 +325,7 @@ namespace das
                          this, f, std::tuple<Args const& ...>(args...));
         return Applier<
           DefaultStore,
-          List<make_formal<Formal>...>,
+          List<make_formal<std::remove_cv_reference_t<Formal>>...>,
           List<>,
           List<Args...>,
           List<>>::apply(
@@ -342,7 +355,7 @@ namespace das
       print(std::ostream& o) const
       {
         bool first = true;
-        elle::meta::List<Formal...>::
+        elle::meta::List<std::remove_cv_reference_t<Formal>...>::
           template map<print_prototype>::value(o, first);
       }
     };
@@ -354,18 +367,6 @@ namespace das
     {
       Empty(T const&)
       {}
-    };
-
-    template <typename ... Args>
-    struct DefaultStore
-    {
-      using defaults_type = List<>;
-      template <typename T>
-      struct default_for
-      {
-        static constexpr bool has = false;
-        using type = void;
-      };
     };
 
     template <bool effective, typename T, typename D>
@@ -423,12 +424,10 @@ namespace das
     };
 
     template <typename ... Args>
-    Prototype<DefaultStore<Args...>,
-              std::remove_cv_reference_t<Args>...>
+    Prototype<Args...>
     prototype(Args&& ... args)
     {
-      return Prototype<DefaultStore<Args...>,
-                       std::remove_cv_reference_t<Args>...>
+      return Prototype<Args...>
         (DefaultStore<Args...>(std::forward<Args>(args)...));
     }
 
@@ -452,7 +451,7 @@ namespace das
       }
 
       ELLE_ATTRIBUTE_R(F, function);
-      ELLE_ATTRIBUTE_R((Prototype<DefaultStore<Args...>, Args...>), prototype);
+      ELLE_ATTRIBUTE_R((Prototype<Args...>), prototype);
 
       void
       print(std::ostream& out) const
