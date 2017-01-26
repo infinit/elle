@@ -79,29 +79,6 @@ namespace elle
 
       template <template <typename, typename ...> class F,
                 typename Head,
-                typename Args>
-      static constexpr
-      std::enable_if_exists_t<
-        decltype(Args::template apply<F, Head>::value),
-        bool>
-      map_runtime(int)
-      {
-        return true;
-      }
-
-      template <template <typename, typename ...> class F,
-                typename Head,
-                typename Args>
-      static constexpr
-      std::enable_if_exists_t<
-        typename Args::template apply<F, Head>::type, bool>
-      map_runtime(...)
-      {
-        return false;
-      }
-
-      template <template <typename, typename ...> class F,
-                typename Head,
                 typename ... Tail,
                 typename ... Args>
       struct map_helper<F, List<Head, Tail...>, List<Args...>>
@@ -113,9 +90,7 @@ namespace elle
           ::template prepend<typename F<Head, Args...>::type>::type>::type;
       };
 
-      template <typename Res,
-                bool runtime,
-                template <typename, typename ...> class F,
+      template <template <typename, typename ...> class F,
                 typename Elts,
                 typename ... Args>
       struct map_value_apply
@@ -123,83 +98,24 @@ namespace elle
 
       template <template <typename, typename ...> class F,
                 typename ... Elts,
-                typename ... ExtraArgs>
-      struct map_value_apply<std::tuple<>, true, F, List<Elts...>, ExtraArgs...>
-      {
-        template <typename ... Args>
-        static
-        auto
-        value(Args&& ...)
-        {
-          return std::make_tuple();
-        }
-      };
-
-      template <typename RHead,
-                typename ... RTail,
-                template <typename, typename ...> class F,
-                typename Head,
-                typename ... Tail,
-                typename ... ExtraArgs>
-      struct map_value_apply<std::tuple<RHead, RTail...>,
-                             true,
-                             F,
-                             List<Head, Tail...>,
-                             ExtraArgs...>
-      {
-        template <typename ... Args>
-        static
-        auto
-        value(Args&& ... args)
-        {
-          auto head = std::tuple<typename F<Head, ExtraArgs...>::type>(
-            F<Head, ExtraArgs...>::value(std::forward<Args>(args)...));
-          return std::tuple_cat(
-            std::move(head),
-            map_value_apply<std::tuple<RTail...>,
-                            true,
-                            F,
-                            List<Tail...>,
-                            ExtraArgs...>::value(
-              std::forward<Args>(args)...));
-        }
-      };
-
-      template <typename Res,
-                template <typename, typename ...> class F,
-                typename Elts,
-                typename ExtraArgs>
-      struct map_value_helper
-      {
-        template <typename ... Args>
-        static
-        auto
-        value(Args&& ...)
-        {
-          return std::make_tuple();
-        }
-      };
-
-      template <typename Res,
-                template <typename, typename ...> class F,
-                typename Head,
-                typename ... Tail,
                 typename ... Args>
-      struct map_value_helper<Res, F, List<Head, Tail...>, List<Args...>>
-        : public map_value_apply<
-            typename Res::template apply<std::tuple>,
-            map_runtime<F, Head, List<Args...>>(0), F, List<Head, Tail...>, Args...>
-      {};
+      struct map_value_apply<F, List<Elts...>, Args...>
+      {
+        template <typename ... RTArgs>
+        static
+        auto
+        value(RTArgs&& ... args)
+        {
+          return std::tuple<typename F<Elts, Args...>::type...>{
+            F<Elts, Args...>::value(std::forward<RTArgs>(args)...)...};
+        }
+      };
     }
 
     template <typename ... Elts>
     template <template <typename, typename ...> class F, typename ... Args>
     struct List<Elts...>::map
-      : public _details::map_value_helper<
-          typename _details::map_helper<F, List<Elts...>, List<Args...>>::type,
-          F,
-          List<Elts...>,
-          List<Args...>>
+      : public _details::map_value_apply<F, List<Elts...>, Args...>
     {
       using type = typename _details::map_helper<
         F, List<Elts...>, List<Args...>>::type;
