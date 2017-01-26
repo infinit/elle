@@ -1,9 +1,9 @@
-#ifndef ELLE_IO_STREAM_HH
-# define ELLE_IO_STREAM_HH
+#pragma once
 
-# include <iostream>
+#include <iostream>
 
-# include <elle/fwd.hh>
+#include <elle/compiler.hh>
+#include <elle/fwd.hh>
 
 namespace elle
 {
@@ -36,7 +36,7 @@ namespace elle
     : public std::streambuf
   {
   public:
-    typedef uint64_t Size;
+    using Size = uint64_t;
     StreamBuffer();
     virtual
     ~StreamBuffer();
@@ -80,7 +80,7 @@ namespace elle
     : public StreamBuffer
   {
   public:
-    typedef StreamBuffer::Size Size;
+    using Size = StreamBuffer::Size;
     PlainStreamBuffer();
     ~PlainStreamBuffer();
 
@@ -111,8 +111,8 @@ namespace elle
     : public StreamBuffer
   {
   public:
-    typedef StreamBuffer::Size Size;
-    typedef unsigned char Byte;
+    using Size = StreamBuffer::Size;
+    using Byte = unsigned char;
 
     DynamicStreamBuffer(Size size);
     ~DynamicStreamBuffer();
@@ -148,5 +148,3 @@ namespace std
   streamsize
   readsome(std::istream& i, char* s, streamsize n);
 }
-
-#endif
