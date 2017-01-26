@@ -5,8 +5,9 @@
 
 #include <boost/algorithm/string.hpp>
 
-#include <elle/log.hh>
 #include <elle/Error.hh>
+#include <elle/log.hh>
+#include <elle/make-vector.hh>
 
 ELLE_LOG_COMPONENT("elle.ldap");
 
@@ -62,7 +63,7 @@ namespace elle
 
     DC::DC(std::string const& v)
     {
-      std::vector<std::string> comps;
+      auto comps = std::vector<std::string>{};
       boost::algorithm::split(comps, v, boost::is_any_of("."));
       for (auto& s: comps)
         s = "dc=" + s;
@@ -79,7 +80,7 @@ namespace elle
                            std::string const& password)
       : _domain(Attr(domain))
     {
-      std::string url(url_);
+      auto url = url_;
       auto p = url.find("://");
       if (p == url.npos)
       {
@@ -138,11 +139,11 @@ namespace elle
                        Attr query,
                        std::vector<std::string> const& attrs)
     {
-      std::vector<char*> cattrs;
-      cattrs.resize(attrs.size() + 1);
-      for (int i = 0; i < signed(attrs.size()); ++i)
-        cattrs[i] = (char*)attrs[i].c_str();
-      cattrs[attrs.size()] = nullptr;
+      auto cattrs
+        = make_vector(attrs,
+                      // FIXME: We do write in the strings!
+                      [](auto const& a) { return (char*) a.c_str(); });
+      cattrs.emplace_back(nullptr);
       base = base / this->_domain;
       LDAPMessage* msg;
       if (query.value.empty())
@@ -155,9 +156,8 @@ namespace elle
                                  0, &msg);
       if (rc != LDAP_SUCCESS)
         elle::err("ldap_search: %s", ldap_err2string(rc));
-      Results res;
-      LDAPMessage* entry;
-      for (entry = ldap_first_entry(this->_ld, msg);
+      auto res = Results{};
+      for (LDAPMessage*entry = ldap_first_entry(this->_ld, msg);
            entry != NULL;
            entry = ldap_next_entry(this->_ld, entry))
       {
@@ -166,15 +166,14 @@ namespace elle
         char* dn = ldap_get_dn(this->_ld, entry);
         p["dn"].push_back(dn);
         ldap_memfree(dn);
-        const char* attr;
-        for( attr = ldap_first_attribute(this->_ld, entry, &ber);
+        for (const char* attr = ldap_first_attribute(this->_ld, entry, &ber);
              attr != NULL;
              attr = ldap_next_attribute(this->_ld, entry, ber))
         {
-          std::vector<std::string> vals;
+          auto vals = std::vector<std::string>{};
           berval ** bvals = ldap_get_values_len(_ld, entry, attr);
           if (bvals)
-            for (int i = 0; bvals[i] != NULL; ++i)
+            for (int i = 0; bvals[i]; ++i)
               vals.emplace_back(bvals[i]->bv_val,
                                 bvals[i]->bv_val + bvals[i]->bv_len);
           p[attr] = std::move(vals);
