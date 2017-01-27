@@ -875,9 +875,23 @@ namespace reactor
         return STATUS_SUCCESS;
       }
 
-            void dokan_run(void* arg)
+    }
+
+    class FileSystemImpl
+    {
+    public:
+      std::unique_ptr<std::thread> _thread;
+      std::unique_ptr<reactor::Thread> _rThread;
+      reactor::Barrier _barrier;
+      DOKAN_OPERATIONS* dokanOperations;
+      DOKAN_OPTIONS* dokanOptions;
+    };
+
+    namespace
+    {
+      void dokan_run(void* arg)
       {
-        FileSystem* fs = (FileSystem*)arg;
+        auto fs = (FileSystem*)arg;
         int status = DokanMain(fs->impl()->dokanOptions, fs->impl()->dokanOperations);
         fs->impl()->_barrier.open();
         switch(status)
@@ -909,16 +923,6 @@ namespace reactor
         }
       }
     }
-
-    class FileSystemImpl
-    {
-    public:
-      std::unique_ptr<std::thread> _thread;
-      std::unique_ptr<reactor::Thread> _rThread;
-      reactor::Barrier _barrier;
-      DOKAN_OPERATIONS* dokanOperations;
-      DOKAN_OPTIONS* dokanOptions;
-    };
 
     FileSystem::FileSystem(std::unique_ptr<Operations> op, bool full_tree)
       : _impl(new FileSystemImpl())
