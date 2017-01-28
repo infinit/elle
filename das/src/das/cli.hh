@@ -601,14 +601,11 @@ namespace das
               if (it != opts.end())
                 pos = it->second.positional;
             }
+            using DefaultStore =
+              typename das::named::Prototype<Formals...>::DefaultStore;
+            using Default = named::DefaultFor<true, Head>;
             static bool constexpr default_has =
-              das::named::Prototype<Formals...>::DefaultStore::
-              template default_for<Formal>::has;
-            using Default = std::conditional_t<
-              default_has,
-              typename das::named::Prototype<Formals...>::DefaultStore::
-                template default_for<Formal>::type,
-              void>;
+              std::is_base_of<Default, DefaultStore>::value;
             auto res = elle::meta::static_if<default_has>(
               [&] (auto head, auto def)
               {

@@ -20,22 +20,6 @@ namespace das
     `--------*/
 
     template <typename T>
-    static
-    constexpr std::enable_if_exists_t<typename T::Formal, bool>
-    is_named(int)
-    {
-      return std::is_base_of<das::Symbol, typename T::Formal>::value;
-    };
-
-    template <typename T>
-    static
-    constexpr bool
-    is_named(...)
-    {
-      return false;
-    };
-
-    template <typename T>
     T
     _make_formal(...);
 
@@ -46,12 +30,32 @@ namespace das
     template <typename T>
     using make_formal = std::remove_reference_t<decltype(_make_formal<T>(42))>;
 
+    template <typename Formal, typename Effective>
+    static
+    constexpr std::enable_if_exists_t<typename Effective::Formal, int>
+    lookup(int)
+    {
+      return std::is_same<make_formal<Formal>,
+                          typename Effective::Formal>::value ? 1 : 2;
+    };
+
+    template <typename Formal, typename Effective>
+    static
+    constexpr int
+    lookup(...)
+    {
+      return 0;
+    };
+
     template <typename T>
     struct is_effective
     {
       static constexpr bool value =
         !std::is_same<decltype(_make_formal<T>(42)), T>::value;
     };
+
+    template <bool effective, typename T>
+    struct DefaultFor;
 
     /*-----.
     | Find |
@@ -64,7 +68,7 @@ namespace das
               typename REffective>
     struct find;
 
-    template <bool named,
+    template <int lookup,
               int Index,
               int Current,
               typename Formal,
@@ -73,14 +77,14 @@ namespace das
     struct find_impl;
 
     // Recurse
-    template <bool named,
+    template <int Lookup,
               int Index,
               int Current,
               typename Formal,
               typename Effective,
               typename ... LEffectives,
               typename ... REffectives>
-    struct find_impl<named,
+    struct find_impl<Lookup,
                      Index,
                      Current,
                      Formal,
@@ -99,7 +103,7 @@ namespace das
               typename Effective,
               typename ... LEffectives,
               typename ... REffectives>
-    struct find_impl<false,
+    struct find_impl<0,
                      Current,
                      Current,
                      Formal,
@@ -120,13 +124,14 @@ namespace das
     // Named.
     template <int Index,
               int Current,
+              typename Formal,
               typename Effective,
               typename ... LEffectives,
               typename ... REffectives>
-    struct find_impl<true,
+    struct find_impl<1,
                      Index,
                      Current,
-                     typename Effective::Formal,
+                     Formal,
                      elle::meta::List<LEffectives...>,
                      elle::meta::List<Effective, REffectives...>>
     {
@@ -151,7 +156,7 @@ namespace das
                 Formal,
                 elle::meta::List<LEffectives...>,
                 elle::meta::List<Effective, REffectives...>>
-      : public find_impl<is_named<Effective>(0),
+      : public find_impl<lookup<Formal, Effective>(0),
                          Index,
                          Current,
                          Formal,
@@ -175,7 +180,7 @@ namespace das
       auto&
       get(Default& d, Effectives&& ...)
       {
-        using D = typename Default::template default_for<Formal>::type;
+        using D = DefaultFor<true, Formal>;
         return d.D::value;
       }
     };
@@ -184,74 +189,34 @@ namespace das
     | DefaultStore |
     `-------------*/
 
-    // The Tail remainder is there to uniquify
-    template <typename T, typename ... Tail>
-    struct
-    Empty
+    template <bool Effective, typename T>
+    struct DefaultFor
     {
-      Empty(T const&)
+      template <typename Formal>
+      DefaultFor(Formal const&)
       {}
     };
 
-    template <bool effective, typename T, typename D>
-    struct DefaultEffective
+    template <typename T>
+    struct DefaultFor<true, T>
+      : public T::Formal::
+          template Effective<typename T::Type, typename T::Type const&>
     {
-      using type = D;
-    };
-
-    template <typename T, typename D>
-    struct DefaultEffective<true, T, D>
-    {
-      using type =
-        typename T::Formal::
+      using Type = typename T::Type;
+      using Super = typename T::Formal::
         template Effective<typename T::Type, typename T::Type const&>;
+      using Super::Super;
     };
 
-    template <typename ... Args>
+    template <typename ... Formal>
     struct DefaultStore
-    //: public DefaultEffective<is_effective<Args>::value, std::decay_t<Args>, Empty<Args>>::type...
+      : public DefaultFor<is_effective<Formal>::value, Formal>...
     {
-      template <typename T>
-      struct default_for
-      {
-        static constexpr bool has = false;
-        using type = void;
-      };
-    };
-
-    template <typename Head, typename ... Tail>
-    struct DefaultStore<Head, Tail...>
-      : public DefaultStore<Tail...>
-      , public DefaultEffective<
-          is_effective<Head>::value,
-          std::decay_t<Head>,
-          Empty<Head, Tail ...>>::type
-    {
-      using SuperHead = typename DefaultEffective<
-        is_effective<Head>::value,
-        std::decay_t<Head>,
-        Empty<Head, Tail ...>>::type;
-
-      template <typename CHead, typename ... CTail>
-      DefaultStore(CHead&& head, CTail&& ... tail)
-        : DefaultStore<Tail...>(std::forward<CTail>(tail)...)
-        , SuperHead(std::forward<CHead>(head))
+      template <typename ... Args>
+      DefaultStore(Args&& ... args)
+        : DefaultFor<is_effective<Formal>::value, Formal>(
+          std::forward<Args>(args))...
       {}
-
-      template <typename T>
-        struct default_for
-      {
-        static constexpr bool has =
-          std::is_same<T, make_formal<Head>>::value ?
-          is_effective<Head>::value :
-          DefaultStore<Tail...>::template default_for<T>::has;
-        using type =
-          std::conditional_t<
-            std::is_same<T, make_formal<Head>>::value,
-            SuperHead,
-            typename DefaultStore<Tail...>::template default_for<T>::type
-            >;
-      };
     };
 
     /*----------.
@@ -283,7 +248,7 @@ namespace das
           return f(
             find<Index,
                  0,
-                 make_formal<std::remove_cv_reference_t<Formal>>,
+                 std::remove_cv_reference_t<Formal>,
                  elle::meta::List<>,
                  elle::meta::List<Args...>>::get(
                    defaults, std::forward<Args>(args)...)...);
