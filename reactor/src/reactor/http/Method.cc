@@ -16,10 +16,10 @@ namespace reactor
       from_string(std::string const& name)
       {
         if (name == "DELETE") return Method::DELETE;
-        if (name == "GET") return Method::GET;
-        if (name == "POST") return Method::POST;
-        if (name == "PUT") return Method::PUT;
-        elle::err("unknown method %s", name);
+        else if (name == "GET") return Method::GET;
+        else if (name == "POST") return Method::POST;
+        else if (name == "PUT") return Method::PUT;
+        else elle::err("unknown method %s", name);
       }
     }
 
@@ -30,21 +30,15 @@ namespace reactor
       switch (method)
       {
         case Method::DELETE:
-          output << "DELETE";
-          break;
+          return output << "DELETE";
         case Method::GET:
-          output << "GET";
-          break;
+          return output << "GET";
         case Method::POST:
-          output << "POST";
-          break;
+          return output << "POST";
         case Method::PUT:
-          output << "PUT";
-          break;
-        default:
-          elle::unreachable();
+          return output << "PUT";
       }
-      return output;
+      elle::unreachable();
     }
   }
 }

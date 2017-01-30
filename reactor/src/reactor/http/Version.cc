@@ -16,18 +16,13 @@ namespace reactor
       switch (version)
       {
         case Version::v10:
-          output << "HTTP/1.0";
-          break;
+          return output << "HTTP/1.0";
         case Version::v11:
-          output << "HTTP/1.1";
-          break;
+          return output << "HTTP/1.1";
         case Version::v20:
-          output << "HTTP/2.0";
-          break;
-        default:
-          elle::unreachable();
+          return output << "HTTP/2.0";
       }
-      return output;
+      elle::unreachable();
     }
 
     namespace version
@@ -36,10 +31,9 @@ namespace reactor
       from_string(std::string const& name)
       {
         if (name == "HTTP/1.0") return Version::v10;
-        if (name == "HTTP/1.1") return Version::v11;
-        if (name == "HTTP/2.0") return Version::v20;
-
-        throw elle::Exception(
+        else if (name == "HTTP/1.1") return Version::v11;
+        else if (name == "HTTP/2.0") return Version::v20;
+        else throw elle::Exception(
           elle::sprintf("unknown version %s", name));
       }
     }

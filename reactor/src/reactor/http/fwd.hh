@@ -1,5 +1,4 @@
-#ifndef REACTOR_HTTP_FWD_HH
-# define REACTOR_HTTP_FWD_HH
+#pragma once
 
 namespace reactor
 {
@@ -10,5 +9,3 @@ namespace reactor
     class Service;
   }
 }
-
-#endif

@@ -5,6 +5,7 @@
 
 #include <elle/Exception.hh>
 #include <elle/log.hh>
+#include <elle/printf.hh>
 
 #include <reactor/http/exceptions.hh>
 #include <reactor/http/RequestImpl.hh>
@@ -20,16 +21,17 @@ namespace reactor
     /*--------.
     | Helpers |
     `--------*/
-
-    template <typename Value>
-    static
-    void
-    setopt(CURL* handle, CURLoption option, Value parameter)
+    namespace
     {
-      auto res = curl_easy_setopt(handle, option, parameter);
-      if (res != CURLE_OK)
-        throw RequestError("unable to set request option: %s",
-                           curl_easy_strerror(res));
+      template <typename Value>
+      void
+      setopt(CURL* handle, CURLoption option, Value parameter)
+      {
+        auto res = curl_easy_setopt(handle, option, parameter);
+        if (res != CURLE_OK)
+          throw RequestError("unable to set request option: %s",
+                             curl_easy_strerror(res));
+      }
     }
 
     /*-----------.
@@ -39,7 +41,7 @@ namespace reactor
     std::ostream&
     operator << (std::ostream& output, Request::Progress const& progress)
     {
-      return output << elle::sprintf("(DL %s/%s  UL %s/%s)",
+      return elle::fprintf(output, "(DL %s/%s  UL %s/%s)",
         progress.download_current, progress.download_total,
         progress.upload_current, progress.upload_total);
     }
@@ -62,17 +64,17 @@ namespace reactor
       DurationOpt stall_timeout,
       Version version,
       bool keep_alive,
-      boost::optional<Configuration::Proxy> proxy):
-        _version(version),
-        _keep_alive(keep_alive),
-        _proxy(proxy),
-        _timeout(timeout),
-        _stall_timeout(stall_timeout),
-        _headers(),
+      boost::optional<Configuration::Proxy> proxy)
+      : _version(version)
+      , _keep_alive(keep_alive)
+      , _proxy(proxy)
+      , _timeout(timeout)
+      , _stall_timeout(stall_timeout)
+      , _headers()
         // XXX: not supported by wsgiref and <=nginx-1.2 ...
-        _chunked_transfers(false),
-        _expected_status(),
-        _ssl_verify_host(true)
+      , _chunked_transfers(false)
+      , _expected_status()
+      , _ssl_verify_host(true)
     {}
 
     Request::Configuration::~Configuration()
@@ -129,54 +131,50 @@ namespace reactor
     {
       if (!this->_handle)
         throw RequestError(url, "unable to initialize request");
-      // Weird clang macos bug, using 'this->_error' causes a SEGV for some offset of the _error in the class.
+      // Weird clang macos bug, using 'this->_error' causes a SEGV for
+      // some offset of the _error in the class.
       memset(&this->_error[0], 0, CURL_ERROR_SIZE);
       setopt(this->_handle, CURLOPT_ERRORBUFFER, this->_error);
       // Set version.
-      auto version = this->_conf.version() == Version::v11 ?
-        CURL_HTTP_VERSION_1_1 : CURL_HTTP_VERSION_1_0;
+      auto version = this->_conf.version() == Version::v11
+        ? CURL_HTTP_VERSION_1_1 : CURL_HTTP_VERSION_1_0;
       setopt(this->_handle, CURLOPT_HTTP_VERSION, version);
       // Set IPv4 only.
       setopt(this->_handle, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
       // Set proxy.
       using ProxyType = reactor::network::ProxyType;
-      if (this->_conf.proxy() &&
-          this->_conf.proxy().get().type() != ProxyType::None &&
-          !this->_conf.proxy().get().host().empty() &&
-          this->_conf.proxy().get().port() != 0)
+      if (this->_conf.proxy()
+          && this->_conf.proxy().get().type() != ProxyType::None
+          && !this->_conf.proxy().get().host().empty()
+          && this->_conf.proxy().get().port() != 0)
       {
         auto proxy = this->_conf.proxy().get();
         setopt(this->_handle, CURLOPT_PROXY, proxy.host().c_str());
         setopt(this->_handle, CURLOPT_PROXYPORT, proxy.port());
         // curl expects a long for the proxy type.
-        long proxy_type = 0;
-        switch (proxy.type())
-        {
-          case ProxyType::None:
-            ELLE_ERR("cannot set proxy with type None", *this);
-            elle::unreachable();
-          case ProxyType::HTTP:
-            proxy_type = CURLPROXY_HTTP;
-            break;
-          // HTTPS is still an HTTP proxy but on port 443.
-          case ProxyType::HTTPS:
-            proxy_type = CURLPROXY_HTTP;
-            break;
-          case ProxyType::SOCKS:
-            proxy_type = CURLPROXY_SOCKS5;
-            break;
-        }
+        long proxy_type = [&]{
+          switch (proxy.type())
+          {
+            case ProxyType::None:
+              ELLE_ERR("cannot set proxy with type None", *this);
+              elle::unreachable();
+            case ProxyType::HTTP:
+              return CURLPROXY_HTTP;
+            // HTTPS is still an HTTP proxy but on port 443.
+            case ProxyType::HTTPS:
+              return CURLPROXY_HTTP;
+            case ProxyType::SOCKS:
+              return CURLPROXY_SOCKS5;
+          }
+          elle::unreachable();
+        }();
         setopt(this->_handle, CURLOPT_PROXYTYPE, proxy_type);
-        if (proxy.username().length() > 0)
-        {
+        if (!proxy.username().empty())
           setopt(this->_handle,
                  CURLOPT_PROXYUSERNAME, proxy.username().c_str());
-        }
-        if (proxy.password().length() > 0)
-        {
+        if (!proxy.password().empty())
           setopt(this->_handle,
                  CURLOPT_PROXYPASSWORD, proxy.password().c_str());
-        }
         setopt(this->_handle, CURLOPT_PROXYAUTH, CURLAUTH_ANY);
       }
       // Set timeout.
@@ -185,8 +183,7 @@ namespace reactor
         std::max(timeout->total_seconds(), 1) : 0;
       setopt(this->_handle, CURLOPT_TIMEOUT, timeout_seconds);
       // Set stall timeout
-      auto const& stall_timeout = this->_conf.stall_timeout();
-      if (stall_timeout)
+      if (auto const& stall_timeout = this->_conf.stall_timeout())
       {
         // Timeout if bandwith is below 1 byte/second for given duration.
         // Note: CURL seems to wait for the test to fail some amount of
@@ -255,18 +252,17 @@ namespace reactor
     std::unordered_map<std::string, std::string>
     Request::Impl::cookies(CURL* handle)
     {
-      std::unordered_map<std::string, std::string> cookies;
-      CURLcode res;
+      auto cookies = std::unordered_map<std::string, std::string>{};
       struct curl_slist* cookies_list = nullptr;
-      res = curl_easy_getinfo(handle,
-                              CURLINFO_COOKIELIST,
-                              &cookies_list);
+      CURLcode res = curl_easy_getinfo(handle,
+                                       CURLINFO_COOKIELIST,
+                                       &cookies_list);
       if (res != CURLE_OK)
         throw elle::Exception(elle::sprintf("retrieval of cookies failed: %s",
                                             curl_easy_strerror(res)));
       for (curl_slist* it = cookies_list; it; it = it->next)
       {
-        std::vector<std::string> chunks;
+        auto chunks = std::vector<std::string>{};
         boost::algorithm::split(chunks, it->data,
                                 boost::algorithm::is_any_of("\t"));
         auto name = chunks[chunks.size() - 2];
@@ -287,7 +283,7 @@ namespace reactor
     Request::Impl::cookie_add(std::string const& name,
                               std::string const& value)
     {
-      static boost::format const fmt("Set-Cookie: %s=%s; path=/;");
+      static auto const fmt = boost::format("Set-Cookie: %s=%s; path=/;");
       auto line = str(boost::format(fmt) % name % value);
       auto res = curl_easy_setopt(this->_handle,
                                   CURLOPT_COOKIELIST, line.c_str());
@@ -352,11 +348,10 @@ namespace reactor
       auto separator =
         boost::algorithm::find_first(data, elle::ConstWeakBuffer(":"));
       if (separator.begin() != data.end())
-        this->_request->_headers.insert(
-          std::make_pair(
+        this->_request->_headers.emplace(
             std::string(data.begin(), separator.begin()),
             boost::algorithm::trim_copy(
-              std::string(separator.end(), data.end()))));
+              std::string(separator.end(), data.end())));
     }
 
     /*-------.
@@ -615,8 +610,8 @@ namespace reactor
 
     Request::Request(std::string const& url,
                      Method method,
-                     Configuration conf):
-      Request(url, method, std::move(conf), true)
+                     Configuration conf)
+      : Request(url, method, std::move(conf), true)
     {
       this->_impl->header_remove("Transfer-Encoding");
       if (conf.chunked_transfers())
@@ -626,8 +621,8 @@ namespace reactor
     Request::Request(std::string const& url,
                      Method method,
                      std::string const& content_type,
-                     Configuration conf):
-      Request(url, method, std::move(conf), true)
+                     Configuration conf)
+      : Request(url, method, std::move(conf), true)
     {
       this->_impl->header_add("Content-Type", content_type);
       // XXX: HTTP/1.0 expects a Content-Size, preventing streaming. Be safe for
@@ -642,13 +637,13 @@ namespace reactor
     }
 
     /// Move a Request.
-    Request::Request(Request&& source):
-      elle::IOStream(std::move(source)),
-      _method(source._method),
-      _url(source._url),
-      _impl(source._impl),
-      _query_string(source._query_string),
-      _status(source._status)
+    Request::Request(Request&& source)
+      : elle::IOStream(std::move(source))
+      , _method(source._method)
+      , _url(source._url)
+      , _impl(source._impl)
+      , _query_string(source._query_string)
+      , _status(source._status)
     {
       source._impl = nullptr;
       this->_impl->_request = this;
@@ -668,21 +663,17 @@ namespace reactor
       if (query_dict.empty())
         return;
       std::string res = "";
+      auto curl = [this](auto const& s)
+        {
+          char* cp = curl_easy_escape(this->_impl->_handle,
+                                      s.c_str(), s.size());
+          auto res = std::string{cp};
+          curl_free(cp);
+          return res;
+        };
       for (auto pair: query_dict)
-      {
-        char* c_string;
-        c_string = curl_easy_escape(this->_impl->_handle,
-                                    pair.first.c_str(),
-                                    pair.first.length());
-        std::string key(c_string);
-        curl_free(c_string);
-        c_string = curl_easy_escape(this->_impl->_handle,
-                                    pair.second.c_str(),
-                                    pair.second.length());
-        std::string value(c_string);
-        curl_free(c_string);
-        res += elle::sprintf("%s=%s&", key, value);
-      }
+        res += elle::sprintf("%s=%s&",
+                             curl(pair.first), curl(pair.second));
       this->_query_string = res.substr(0, res.length() - 1);
       this->_impl->_query_string = this->_query_string;
     }
@@ -867,9 +858,9 @@ namespace reactor
       elle::Buffer res;
       {
         elle::IOStream output(res.ostreambuf());
-        std::copy(std::istreambuf_iterator<char>(*this),
-                  std::istreambuf_iterator<char>(),
-                  std::ostreambuf_iterator<char>(output));
+        using IIterator = std::istreambuf_iterator<char>;
+        using OIterator = std::ostreambuf_iterator<char>;
+        std::copy(IIterator(*this), IIterator(), OIterator(output));
       }
       // We ran out of data so the request should be finished; this is just for
       // exceptions.

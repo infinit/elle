@@ -37,9 +37,8 @@ namespace reactor
             return "be removed";
           case CURL_POLL_NONE:
             return "nothing";
-          default:
-            elle::unreachable();
         }
+        elle::unreachable();
       }
     }
 
@@ -59,18 +58,15 @@ namespace reactor
       return _curl_global_ref_count;
     }
 
-    Service::Service(boost::asio::io_service& service):
-      boost::asio::io_service::service(service),
-      _curl(nullptr),
-      _requests(),
-      _timer(service)
+    Service::Service(boost::asio::io_service& service)
+      : boost::asio::io_service::service(service)
+      , _curl(nullptr)
+      , _requests()
+      , _timer(service)
     {
       if (curl_global_ref_count()++ == 0)
-      {
-        int code = curl_global_init(CURL_GLOBAL_DEFAULT);
-        if (code)
+        if (curl_global_init(CURL_GLOBAL_DEFAULT))
           throw std::bad_alloc();
-      }
       this->_curl = curl_multi_init();
       if (!this->_curl)
         throw std::bad_alloc();
