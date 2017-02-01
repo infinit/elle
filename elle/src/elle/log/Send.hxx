@@ -1,8 +1,5 @@
-#ifndef ELLE_LOG_SEND_HXX
-# define ELLE_LOG_SEND_HXX
-
-# include <elle/fwd.hh>
-# include <elle/printf.hh>
+#include <elle/fwd.hh>
+#include <elle/printf.hh>
 
 namespace elle
 {
@@ -74,5 +71,3 @@ namespace elle
     }
   }
 }
-
-#endif

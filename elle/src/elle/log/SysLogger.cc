@@ -16,6 +16,7 @@
 # include <syslog.h>
 #endif
 
+#include <elle/assert.hh>
 #include <elle/log/SysLogger.hh>
 #include <elle/printf.hh>
 
@@ -44,32 +45,28 @@ namespace elle
                         unsigned int,
                         std::string const&)
     {
-      int lvl = 0;
-      switch (type)
-      {
-        case Logger::Type::error:
-          lvl = LOG_ERR;
-          break;
-        case Logger::Type::info:
-          switch (level)
-          {
-            case Logger::Level::none:
-            case Logger::Level::log:
-              lvl = LOG_INFO;
-              break;
-            case Logger::Level::trace:
-            case Logger::Level::debug:
-            case Logger::Level::dump:
-              lvl = LOG_DEBUG;
-              break;
-          }
-          break;
-        case Logger::Type::warning:
-          lvl = LOG_WARNING;
-          break;
-      }
-      std::string msg;
-      msg += elle::sprintf("[%s] ", component);
+      int lvl = [&type,&level]{
+        switch (type)
+        {
+          case Logger::Type::error:
+            return LOG_ERR;
+          case Logger::Type::info:
+            switch (level)
+            {
+              case Logger::Level::none:
+              case Logger::Level::log:
+                return LOG_INFO;
+              case Logger::Level::trace:
+              case Logger::Level::debug:
+              case Logger::Level::dump:
+                return LOG_DEBUG;
+            }
+          case Logger::Type::warning:
+            return LOG_WARNING;
+        }
+        unreachable();
+      }();
+      auto msg = elle::sprintf("[%s] ", component);
       for (auto const& tag: tags)
         msg += elle::sprintf("[%s]", tag.second);
       msg += std::string(indentation * 2 + 1, ' ');

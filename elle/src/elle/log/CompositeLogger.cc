@@ -1,6 +1,5 @@
 #include <elle/log/CompositeLogger.hh>
 
-
 namespace elle
 {
   namespace log

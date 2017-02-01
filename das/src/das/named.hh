@@ -16,265 +16,8 @@ namespace das
     using List = elle::meta::List<Args...>;
 
     /*--------.
-    | Applier |
+    | Helpers |
     `--------*/
-
-    // Declaration
-    template <typename DefaultStore,
-              typename Formal,
-              typename Applied,
-              typename Remaining,
-              typename Store>
-    struct Applier;
-
-    template <typename DefaultStore,
-              typename Formal,
-              typename Applied,
-              typename Remaining,
-              typename Store,
-              bool effective>
-    struct NotFoundApplier;
-
-    // Done
-    template <typename DefaultStore,
-              typename ... Applied,
-              typename ... Remaining>
-    struct Applier<DefaultStore,
-                   List<>,
-                   List<Applied...>,
-                   List<Remaining...>,
-                   List<>>
-    {
-      template <typename F>
-        static
-        auto
-        apply(DefaultStore&,
-              F const& f,
-              Applied&& ... applied,
-              Remaining&& ... positional)
-      {
-        return f(std::forward<Remaining>(positional)...,
-                 std::forward<Applied>(applied)...);
-      }
-    };
-
-    // Match
-    template <typename DefaultStore,
-              typename ... Tail,
-              typename ... Applied,
-              typename RHead,
-              typename ... RTail,
-              typename ... Store
-              >
-    struct Applier<DefaultStore,
-                   List<typename RHead::Formal, Tail...>,
-                   List<Applied...>,
-                   List<RHead, RTail...>,
-                   List<Store...>>
-    {
-      ELLE_LOG_COMPONENT("das.named");
-      using next = Applier<DefaultStore,
-                           List<Tail...>,
-                           List<Applied..., typename RHead::Passing>,
-                           List<Store..., RTail...>,
-                           List<>>;
-      template <typename F>
-        static
-        auto
-        apply(DefaultStore& defaults,
-              F const& f,
-              Applied&& ... applied,
-              RHead&& match,
-              RTail&& ... remaining,
-              Store&& ... store)
-      {
-        ELLE_DUMP(
-          "found named argument for %s: %s", RHead::name(), match.value);
-        return next::apply(defaults,
-                           f,
-                           std::forward<Applied>(applied)...,
-                           std::forward<typename RHead::Type>(match.value),
-                           std::forward<Store>(store)...,
-                           std::forward<RTail>(remaining)...);
-      }
-    };
-
-    // Mismatch
-    template <typename DefaultStore,
-              typename Head,
-              typename ... Tail,
-              typename ... Applied,
-              typename RHead,
-              typename ... RTail,
-              typename ... Store
-              >
-    struct Applier<DefaultStore,
-                   List<Head, Tail...>,
-                   List<Applied...>,
-                   List<RHead, RTail...>,
-                   List<Store...>>
-    {
-      using next = Applier<DefaultStore,
-                           List<Head, Tail...>,
-                           List<Applied...>,
-                           List<RTail...>,
-                           List<Store..., RHead>>;
-      template <typename F>
-        static
-        auto
-        apply(DefaultStore& defaults,
-              F const& f,
-              Applied&& ... applied,
-              RHead&& mismatch,
-              RTail&& ... remaining,
-              Store&& ... store)
-      {
-        return next::apply(defaults,
-                           f,
-                           std::forward<Applied>(applied)...,
-                           std::forward<RTail>(remaining)...,
-                           std::forward<Store>(store)...,
-                           std::forward<RHead>(mismatch));
-      }
-    };
-
-    // Positional
-    template <typename DefaultStore,
-              typename Head,
-              typename ... Tail,
-              typename ... Applied,
-              typename StoreHead,
-              typename ... StoreTail>
-    struct NotFoundApplier<DefaultStore,
-                           List<Head, Tail...>,
-                           List<Applied...>,
-                           List<>,
-                           List<StoreHead, StoreTail ...>,
-                           false>
-    {
-      ELLE_LOG_COMPONENT("das.named");
-      using next = Applier<DefaultStore,
-                           List<Tail...>,
-                           List<Applied..., StoreHead&&>,
-                           List<StoreTail...>,
-                           List<>>;
-      template <typename F>
-        static
-        auto
-        apply(DefaultStore& defaults,
-              F const& f,
-              Applied&& ... applied,
-              StoreHead&& store_head,
-              StoreTail&& ... store_tail)
-      {
-        ELLE_DUMP(
-          "use positional argument for %s: %s", Head::name(), store_head);
-        return next::apply(
-          defaults,
-          f,
-          std::forward<Applied>(applied)...,
-          std::forward<StoreHead>(store_head),
-          std::forward<StoreTail>(store_tail)...);
-      }
-    };
-
-    // Default
-    template <typename DefaultStore,
-              typename Head,
-              typename ... Tail,
-              typename ... Applied,
-              typename ... Store>
-    struct NotFoundApplier<DefaultStore,
-                           List<Head, Tail...>,
-                           List<Applied...>,
-                           List<>,
-                           List<Store...>,
-                           true>
-    {
-      static_assert(DefaultStore::template default_for<Head>::has,
-                    "missing argument");
-      ELLE_LOG_COMPONENT("das.named");
-      using default_type =
-        typename DefaultStore::template default_for<Head>::type;
-      using next = Applier<DefaultStore,
-                           List<Tail...>,
-                           List<Applied..., typename default_type::Passing>,
-                           List<Store...>,
-                           List<>>;
-      template <typename F>
-        static
-        auto
-        apply(DefaultStore& defaults,
-              F const& f,
-              Applied ... applied,
-              Store&& ... store)
-      {
-        ELLE_DUMP(
-          "use default value for %s: %s",
-          Head::name(), defaults.default_type::value);
-        return next::apply(
-          defaults,
-          f,
-          std::forward<Applied>(applied)...,
-          std::forward<typename default_type::Passing>
-            (defaults.default_type::value),
-          std::forward<Store>(store)...);
-      }
-    };
-
-    template <typename T>
-    static
-    constexpr std::enable_if_exists_t<typename T::Formal, bool>
-    is_named(int)
-    {
-      return std::is_base_of<das::Symbol, typename T::Formal>::value;
-    };
-
-    template <typename T>
-    static
-    constexpr bool
-    is_named(...)
-    {
-      return false;
-    };
-
-    // Not found: bounce to positional or default value
-    template <typename DefaultStore,
-              typename FormalHead,
-              typename ... FormalTail,
-              typename Applied,
-              typename StoreHead,
-              typename ... StoreTail>
-    struct Applier<DefaultStore,
-                   List<FormalHead, FormalTail...>,
-                   Applied,
-                   List<>,
-                   List<StoreHead, StoreTail...>>
-      : public NotFoundApplier<DefaultStore,
-                               List<FormalHead, FormalTail...>,
-                               Applied,
-                               List<>,
-                               List<StoreHead, StoreTail...>,
-                               is_named<StoreHead>(42)>
-    {};
-
-    // Not found without any value left: bounce to default value
-    template <typename DefaultStore,
-              typename FormalHead,
-              typename ... FormalTail,
-              typename Applied>
-    struct Applier<DefaultStore,
-                   List<FormalHead, FormalTail...>,
-                   Applied,
-                   List<>,
-                   List<>>
-      : public NotFoundApplier<DefaultStore,
-                               List<FormalHead, FormalTail...>,
-                               Applied,
-                               List<>,
-                               List<>,
-                               true>
-    {};
 
     template <typename T>
     T
@@ -287,6 +30,23 @@ namespace das
     template <typename T>
     using make_formal = std::remove_reference_t<decltype(_make_formal<T>(42))>;
 
+    template <typename Formal, typename Effective>
+    static
+    constexpr std::enable_if_exists_t<typename Effective::Formal, int>
+    lookup(int)
+    {
+      return std::is_same<make_formal<Formal>,
+                          typename Effective::Formal>::value ? 1 : 2;
+    };
+
+    template <typename Formal, typename Effective>
+    static
+    constexpr int
+    lookup(...)
+    {
+      return 0;
+    };
+
     template <typename T>
     struct is_effective
     {
@@ -294,17 +54,174 @@ namespace das
         !std::is_same<decltype(_make_formal<T>(42)), T>::value;
     };
 
-    template <typename ... Args>
-    struct DefaultStore
+    template <bool effective, typename T>
+    struct DefaultFor;
+
+    /*-----.
+    | Find |
+    `-----*/
+
+    template <int Index,
+              int Current,
+              typename Formal,
+              typename LEffective,
+              typename REffective>
+    struct find;
+
+    template <int lookup,
+              int Index,
+              int Current,
+              typename Formal,
+              typename LEffective,
+              typename REffective>
+    struct find_impl;
+
+    // Recurse
+    template <int Lookup,
+              int Index,
+              int Current,
+              typename Formal,
+              typename Effective,
+              typename ... LEffectives,
+              typename ... REffectives>
+    struct find_impl<Lookup,
+                     Index,
+                     Current,
+                     Formal,
+                     elle::meta::List<LEffectives...>,
+                     elle::meta::List<Effective, REffectives...>>
+      : public find<Index,
+                    Current + 1,
+                    Formal,
+                    elle::meta::List<LEffectives..., Effective>,
+                    elle::meta::List<REffectives...>>
+    {};
+
+    // Positional
+    template <int Current,
+              typename Formal,
+              typename Effective,
+              typename ... LEffectives,
+              typename ... REffectives>
+    struct find_impl<0,
+                     Current,
+                     Current,
+                     Formal,
+                     elle::meta::List<LEffectives...>,
+                     elle::meta::List<Effective, REffectives...>>
     {
-      using defaults_type = List<>;
-      template <typename T>
-      struct default_for
+      using type = Effective;
+      template <typename Default>
+      static
+      auto
+      get(Default&, LEffectives&& ..., Effective&& e, REffectives&& ...)
+        -> decltype(std::forward<Effective>(e))
       {
-        static constexpr bool has = false;
-        using type = void;
-      };
+        return std::forward<Effective>(e);
+      }
     };
+
+    // Named.
+    template <int Index,
+              int Current,
+              typename Formal,
+              typename Effective,
+              typename ... LEffectives,
+              typename ... REffectives>
+    struct find_impl<1,
+                     Index,
+                     Current,
+                     Formal,
+                     elle::meta::List<LEffectives...>,
+                     elle::meta::List<Effective, REffectives...>>
+    {
+      template <typename Default>
+      static
+      typename Effective::Passing
+      get(Default&, LEffectives&& ..., Effective&& e, REffectives&& ...)
+      {
+        return std::forward<typename Effective::Passing>(e.value);
+      }
+    };
+
+    // Switch.
+    template <int Index,
+              int Current,
+              typename Formal,
+              typename Effective,
+              typename ... LEffectives,
+              typename ... REffectives>
+    struct find<Index,
+                Current,
+                Formal,
+                elle::meta::List<LEffectives...>,
+                elle::meta::List<Effective, REffectives...>>
+      : public find_impl<lookup<Formal, Effective>(0),
+                         Index,
+                         Current,
+                         Formal,
+                         elle::meta::List<LEffectives...>,
+                         elle::meta::List<Effective, REffectives...>>
+    {};
+
+    // Not found, use default.
+    template <int Index,
+              int Current,
+              typename Formal,
+              typename ... Effectives>
+    struct find<Index,
+                Current,
+                Formal,
+                elle::meta::List<Effectives...>,
+                elle::meta::List<>>
+    {
+      template <typename Default>
+      static
+      auto&
+      get(Default& d, Effectives&& ...)
+      {
+        using D = DefaultFor<true, Formal>;
+        return d.D::value;
+      }
+    };
+
+    /*-------------.
+    | DefaultStore |
+    `-------------*/
+
+    template <bool Effective, typename T>
+    struct DefaultFor
+    {
+      template <typename Formal>
+      DefaultFor(Formal const&)
+      {}
+    };
+
+    template <typename T>
+    struct DefaultFor<true, T>
+      : public T::Formal::
+          template Effective<typename T::Type, typename T::Type const&>
+    {
+      using Type = typename T::Type;
+      using Super = typename T::Formal::
+        template Effective<typename T::Type, typename T::Type const&>;
+      using Super::Super;
+    };
+
+    template <typename ... Formal>
+    struct DefaultStore
+      : public DefaultFor<is_effective<Formal>::value, Formal>...
+    {
+      template <typename ... Args>
+      DefaultStore(Args&& ... args)
+        : DefaultFor<is_effective<Formal>::value, Formal>(
+          std::forward<Args>(args))...
+      {}
+    };
+
+    /*----------.
+    | Prototype |
+    `----------*/
 
     template <typename ... Formal>
     struct Prototype
@@ -317,21 +234,33 @@ namespace das
         : defaults(std::move(d))
       {}
 
+      template <typename Sequence>
+      struct Call;
+
+      template <typename I, I ... Index>
+        struct Call<std::integer_sequence<I, Index ...>>
+      {
+        template <typename Default, typename F, typename ... Args>
+        static
+        auto
+        call(Default& defaults, F const& f, Args&& ... args)
+        {
+          return f(
+            find<Index,
+                 0,
+                 std::remove_cv_reference_t<Formal>,
+                 elle::meta::List<>,
+                 elle::meta::List<Args...>>::get(
+                   defaults, std::forward<Args>(args)...)...);
+        }
+      };
+
       template <typename F, typename ... Args>
       auto
-        call(F const& f, Args&& ... args) const
+      call(F const& f, Args&& ... args) const
       {
-        ELLE_TRACE_SCOPE("Prototype(%s): invoke %s%s",
-                         this, f, std::tuple<Args const& ...>(args...));
-        return Applier<
-          DefaultStore,
-          List<make_formal<std::remove_cv_reference_t<Formal>>...>,
-          List<>,
-          List<Args...>,
-          List<>>::apply(
-            // FIXME: keep defaults const
-            const_cast<DefaultStore&>(defaults),
-            f, std::forward<Args>(args)...);
+        return Call<std::make_index_sequence<sizeof ... (Formal)>>::call(
+          this->defaults, f, std::forward<Args>(args)...);
       }
 
       template <typename Arg>
@@ -360,69 +289,6 @@ namespace das
       }
     };
 
-    // The Tail remainder is there to uniquify
-    template <typename T, typename ... Tail>
-    struct
-    Empty
-    {
-      Empty(T const&)
-      {}
-    };
-
-    template <bool effective, typename T, typename D>
-    struct DefaultEffective
-    {
-      using type = D;
-    };
-
-    template <typename T, typename D>
-    struct DefaultEffective<true, T, D>
-    {
-      using type =
-        typename T::Formal::
-        template Effective<typename T::Type, typename T::Type const&>;
-    };
-
-    template <typename Head, typename ... Tail>
-    struct DefaultStore<Head, Tail...>
-      : public DefaultStore<Tail...>
-      , public DefaultEffective<
-          is_effective<Head>::value,
-          std::decay_t<Head>,
-          Empty<Head, Tail ...>>::type
-    {
-      using SuperHead = typename DefaultEffective<
-        is_effective<Head>::value,
-        std::decay_t<Head>,
-        Empty<Head, Tail ...>>::type;
-      using defaults_type = typename std::conditional_t<
-        is_effective<Head>::value,
-        typename DefaultStore<Tail...>::defaults_type::
-          template prepend<SuperHead>::type,
-        typename DefaultStore<Tail...>::defaults_type>;
-
-      template <typename CHead, typename ... CTail>
-      DefaultStore(CHead&& head, CTail&& ... tail)
-        : DefaultStore<Tail...>(std::forward<CTail>(tail)...)
-        , SuperHead(std::forward<CHead>(head))
-      {}
-
-      template <typename T>
-        struct default_for
-      {
-        static constexpr bool has =
-          std::is_same<T, make_formal<Head>>::value ?
-          is_effective<Head>::value :
-          DefaultStore<Tail...>::template default_for<T>::has;
-        using type =
-          std::conditional_t<
-            std::is_same<T, make_formal<Head>>::value,
-            SuperHead,
-            typename DefaultStore<Tail...>::template default_for<T>::type
-            >;
-      };
-    };
-
     template <typename ... Args>
     Prototype<Args...>
     prototype(Args&& ... args)
@@ -430,6 +296,10 @@ namespace das
       return Prototype<Args...>
         (DefaultStore<Args...>(std::forward<Args>(args)...));
     }
+
+    /*---------.
+    | Function |
+    `---------*/
 
     template <typename F, typename ... Args>
     class Function

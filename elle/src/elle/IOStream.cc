@@ -69,14 +69,13 @@ namespace elle
   {
     ELLE_TRACE_SCOPE("%s: underflow", *this);
     WeakBuffer b = read_buffer();
-    if (b.size() == 0)
-      {
-        setg(0, 0, 0);
-        return EOF;
-      }
-    setg(reinterpret_cast<char*>(b.mutable_contents()),
-         reinterpret_cast<char*>(b.mutable_contents()),
-         reinterpret_cast<char*>(b.mutable_contents() + b.size()));
+    if (b.empty())
+    {
+      setg(0, 0, 0);
+      return EOF;
+    }
+    auto cp = reinterpret_cast<char*>(b.mutable_contents());
+    setg(cp, cp, cp + b.size());
     return static_cast<unsigned char>(b.contents()[0]);
   }
 

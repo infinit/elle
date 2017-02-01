@@ -601,14 +601,11 @@ namespace das
               if (it != opts.end())
                 pos = it->second.positional;
             }
+            using DefaultStore =
+              typename das::named::Prototype<Formals...>::DefaultStore;
+            using Default = named::DefaultFor<true, Head>;
             static bool constexpr default_has =
-              das::named::Prototype<Formals...>::DefaultStore::
-              template default_for<Formal>::has;
-            using Default = std::conditional_t<
-              default_has,
-              typename das::named::Prototype<Formals...>::DefaultStore::
-                template default_for<Formal>::type,
-              void>;
+              std::is_base_of<Default, DefaultStore>::value;
             auto res = elle::meta::static_if<default_has>(
               [&] (auto head, auto def)
               {
@@ -707,21 +704,12 @@ namespace das
       return _call(f.prototype(), f.function(), copy, opts);
     }
 
-    inline
     void
     print_help(std::ostream& s,
                std::string const& name,
+               bool with_argument,
                char short_name = 0,
-               std::string const& help = {})
-    {
-      if (short_name)
-        elle::fprintf(s, "  -%s, ", short_name);
-      else
-        elle::fprintf(s, "      ");
-      elle::fprintf(s, "--%-15s", das::cli::option_name_from_c(name));
-      if (!help.empty())
-        elle::fprintf(s, "  %s", help);
-    }
+               std::string const& help = {});
 
     template <typename Symbol, typename Defaults>
     struct help_map
@@ -732,23 +720,39 @@ namespace das
       value(std::ostream& s, Options const& opts, Defaults const& defaults)
       {
         using Formal = das::named::make_formal<Symbol>;
+        // Whether has a default value.
+        constexpr auto has_default = Defaults::template default_for<Formal>::has;
+        // Whether expects an argument.
+        bool with_argument
+          = elle::meta::static_if<has_default>
+          ([&s] (auto const& defaults)
+           {
+             auto const& v = defaults.Symbol::ByConstRef::value;
+             return !std::is_same<decltype(v), bool const&>::value;
+           },
+           [] (auto const&)
+           {
+             return true;
+           })(defaults);
+        // Print the option's help string.
         auto opt = opts.find(Symbol::name());
         if (opt == opts.end())
           elle::meta::static_if<std::is_base_of<CLI_Symbol, Formal>::value>(
-            [&s] (auto formal) {
+            [&s, &with_argument] (auto formal) {
               using formal_t = typename decltype(formal)::type;
               print_help(s,
-                         formal_t::name(), formal_t::short_name(), formal_t::help());
+                         formal_t::name(), with_argument,
+                         formal_t::short_name(), formal_t::help());
             },
-            [&s] (auto formal) {
+            [&s, &with_argument] (auto formal) {
               using formal_t = typename decltype(formal)::type;
-              print_help(s, option_name_from_c(formal_t::name()));
+              print_help(s, option_name_from_c(formal_t::name()), with_argument);
             })(elle::meta::Identity<Formal>{});
         else
-          print_help(
-            s, Symbol::name(), opt->second.short_name, opt->second.help);
-        elle::meta::static_if<Defaults::template default_for<Formal>::has>
-          ([&s] (auto const& defaults)
+          print_help(s, Symbol::name(), with_argument,
+                     opt->second.short_name, opt->second.help);
+        elle::meta::static_if<has_default>
+          ([&s, &with_argument] (auto const& defaults)
            {
              auto const& v = defaults.Symbol::ByConstRef::value;
              if (!std::is_same<decltype(v), bool const&>::value

@@ -5,10 +5,9 @@
 
 #include <elle/compiler.hh>
 
-namespace elle
+namespace elle ELLE_API
 {
   /// Print the message and abort program execution.
-  ELLE_API
   ELLE_COMPILER_ATTRIBUTE_NORETURN
   void
   _abort(std::string const& msg,
@@ -16,15 +15,14 @@ namespace elle
          int line);
 
   /// Abort the program. Flags unreachable code.
-  ELLE_API
   ELLE_COMPILER_ATTRIBUTE_NORETURN
   void
   unreachable();
 }
 
-# include <elle/compiler.hh>
-# include <elle/printf.hh>
-# include <elle/types.hh>
+#include <elle/compiler.hh>
+#include <elle/printf.hh>
+#include <elle/types.hh>
 
 namespace elle
 {
@@ -48,40 +46,40 @@ namespace elle
   };
 }
 
-#  define ELLE_ABORT(...)                                               \
+#define ELLE_ABORT(...)                                               \
   ::elle::_abort(elle::sprintf(__VA_ARGS__), __FILE__, __LINE__)
 
 /// Enforce a condition is true (always present in the code)
 /// @see ELLE_ASSERT for debug only assertions.
-#  define ELLE_ENFORCE(_condition_)                                           \
+#define ELLE_ENFORCE(_condition_)                                           \
   ::elle::_elle_assert(_condition_, #_condition_, __FILE__, __LINE__)
 
-#  define ELLE_ENFORCE_EQ(A, B)                                               \
+#define ELLE_ENFORCE_EQ(A, B)                                               \
   ::elle::_assert_eq(A, B, #A, #B, __FILE__, __LINE__)
 
-#  define ELLE_ENFORCE_NEQ(A, B)                                              \
+#define ELLE_ENFORCE_NEQ(A, B)                                              \
   ::elle::_assert_neq(A, B, #A, #B, __FILE__, __LINE__)
 
-#  define ELLE_ENFORCE_GT(A, B)                                               \
+#define ELLE_ENFORCE_GT(A, B)                                               \
   ::elle::_assert_gt(A, B, #A, #B, __FILE__, __LINE__)
 
-#  define ELLE_ENFORCE_GTE(A, B)                                              \
+#define ELLE_ENFORCE_GTE(A, B)                                              \
   ::elle::_assert_gte(A, B, #A, #B, __FILE__, __LINE__)
 
-#  define ELLE_ENFORCE_LT(A, B)                                               \
+#define ELLE_ENFORCE_LT(A, B)                                               \
   ::elle::_assert_lt(A, B, #A, #B, __FILE__, __LINE__)
 
-#  define ELLE_ENFORCE_LTE(A, B)                                              \
+#define ELLE_ENFORCE_LTE(A, B)                                              \
   ::elle::_assert_lte(A, B, #A, #B, __FILE__, __LINE__)
 
-#  define ELLE_ENFORCE_CONTAINS(C, E)                                         \
+#define ELLE_ENFORCE_CONTAINS(C, E)                                         \
   ::elle::_assert_contains(C, E, #C, #E, __FILE__, __LINE__)
 
-#  define ELLE_ENFORCE_NCONTAINS(C, E)                                        \
+#define ELLE_ENFORCE_NCONTAINS(C, E)                                        \
   ::elle::_assert_ncontains(C, E, #C, #E, __FILE__, __LINE__)
 
 /// Use after the last catch close to enforce no other exception is caught
-# define ELLE_ENFORCE_NO_OTHER_EXCEPTION                                \
+#define ELLE_ENFORCE_NO_OTHER_EXCEPTION                                \
   catch(...)                                                            \
   {                                                                     \
     ::elle::_elle_assert(                                               \
@@ -90,38 +88,38 @@ namespace elle
       __FILE__, __LINE__);                                              \
   }
 
-# if defined(DEBUG) || !defined(NDEBUG)
+#if defined DEBUG || !defined NDEBUG
 /// Throw if the condition is unmet.
-#  define ELLE_ASSERT(_condition_) ELLE_ENFORCE(_condition_)
-#  define ELLE_ASSERT_EQ(A, B) ELLE_ENFORCE_EQ(A, B)
-#  define ELLE_ASSERT_NEQ(A, B) ELLE_ENFORCE_NEQ(A, B)
-#  define ELLE_ASSERT_GT(A, B) ELLE_ENFORCE_GT(A, B)
-#  define ELLE_ASSERT_GTE(A, B) ELLE_ENFORCE_GTE(A, B)
-#  define ELLE_ASSERT_LT(A, B) ELLE_ENFORCE_LT(A, B)
-#  define ELLE_ASSERT_LTE(A, B) ELLE_ENFORCE_LTE(A, B)
-#  define ELLE_ASSERT_CONTAINS(C, E) ELLE_ENFORCE_CONTAINS(C, E)
-#  define ELLE_ASSERT_NCONTAINS(C, E) ELLE_ENFORCE_NCONTAINS(C, E)
-#  define ELLE_ASSERT_NO_OTHER_EXCEPTION ELLE_ENFORCE_NO_OTHER_EXCEPTION
-# else
-#  define ELLE_ASSERT(_condition_) ((void) 0)
-#  define ELLE_ASSERT_EQ(A, B) ELLE_ASSERT(true)
-#  define ELLE_ASSERT_NEQ(A, B) ELLE_ASSERT(true)
-#  define ELLE_ASSERT_GT(A, B) ELLE_ASSERT(true)
-#  define ELLE_ASSERT_GTE(A, B) ELLE_ASSERT(true)
-#  define ELLE_ASSERT_LT(A, B) ELLE_ASSERT(true)
-#  define ELLE_ASSERT_LTE(A, B) ELLE_ASSERT(true)
-#  define ELLE_ASSERT_CONTAINS(C, E) ELLE_ASSERT(true)
-#  define ELLE_ASSERT_NCONTAINS(C, E) ELLE_ASSERT(true)
-#  define ELLE_ASSERT_NO_OTHER_EXCEPTION ELLE_ASSERT(true)
-# endif
+# define ELLE_ASSERT(_condition_) ELLE_ENFORCE(_condition_)
+# define ELLE_ASSERT_EQ(A, B) ELLE_ENFORCE_EQ(A, B)
+# define ELLE_ASSERT_NEQ(A, B) ELLE_ENFORCE_NEQ(A, B)
+# define ELLE_ASSERT_GT(A, B) ELLE_ENFORCE_GT(A, B)
+# define ELLE_ASSERT_GTE(A, B) ELLE_ENFORCE_GTE(A, B)
+# define ELLE_ASSERT_LT(A, B) ELLE_ENFORCE_LT(A, B)
+# define ELLE_ASSERT_LTE(A, B) ELLE_ENFORCE_LTE(A, B)
+# define ELLE_ASSERT_CONTAINS(C, E) ELLE_ENFORCE_CONTAINS(C, E)
+# define ELLE_ASSERT_NCONTAINS(C, E) ELLE_ENFORCE_NCONTAINS(C, E)
+# define ELLE_ASSERT_NO_OTHER_EXCEPTION ELLE_ENFORCE_NO_OTHER_EXCEPTION
+#else
+# define ELLE_ASSERT(_condition_) ((void) 0)
+# define ELLE_ASSERT_EQ(A, B) ELLE_ASSERT(true)
+# define ELLE_ASSERT_NEQ(A, B) ELLE_ASSERT(true)
+# define ELLE_ASSERT_GT(A, B) ELLE_ASSERT(true)
+# define ELLE_ASSERT_GTE(A, B) ELLE_ASSERT(true)
+# define ELLE_ASSERT_LT(A, B) ELLE_ASSERT(true)
+# define ELLE_ASSERT_LTE(A, B) ELLE_ASSERT(true)
+# define ELLE_ASSERT_CONTAINS(C, E) ELLE_ASSERT(true)
+# define ELLE_ASSERT_NCONTAINS(C, E) ELLE_ASSERT(true)
+# define ELLE_ASSERT_NO_OTHER_EXCEPTION ELLE_ASSERT(true)
+#endif
 
 /// Provide a way for generating code only if evolving in the DEBUG mode.
-# if defined(DEBUG) || !defined(NDEBUG)
-#  define ELLE_STATEMENT(...)                                           \
+#if defined(DEBUG) || !defined(NDEBUG)
+# define ELLE_STATEMENT(...)                                           \
   __VA_ARGS__
-# else
-#  define ELLE_STATEMENT(...)
-# endif
+#else
+# define ELLE_STATEMENT(...)
+#endif
 
 namespace elle
 {
@@ -150,23 +148,22 @@ namespace elle
                int line);
 
   // Generate a specialized assert function for operators.
-# define ELLE_ASSERT_OP_CHECK(_op_, _abbr_)                                   \
-  template <typename A, typename B>                                           \
-  inline                                                                      \
-  void _assert_ ## _abbr_(A&& a,                                              \
-                          B&& b,                                              \
-                          char const* a_str,                                  \
-                          char const* b_str,                                  \
-                          char const* file,                                   \
-                          int line)                                           \
-  {                                                                           \
-    if (not (std::forward<A>(a) _op_ std::forward<B>(b)))                     \
-      _elle_assert(false,                                                     \
-              elle::sprintf("%s " #_op_ " %s is false: (%s=%s, %s=%s)",       \
-                            a_str, b_str, a_str, a, b_str, b),                \
-              file,                                                           \
-              line);                                                          \
-  }                                                                           \
+#define ELLE_ASSERT_OP_CHECK(_op_, _abbr_)                              \
+  template <typename A, typename B>                                     \
+  void _assert_ ## _abbr_(A&& a,                                        \
+                          B&& b,                                        \
+                          char const* a_str,                            \
+                          char const* b_str,                            \
+                          char const* file,                             \
+                          int line)                                     \
+  {                                                                     \
+    if (not (std::forward<A>(a) _op_ std::forward<B>(b)))               \
+      _elle_assert(false,                                               \
+              elle::sprintf("%s " #_op_ " %s is false: (%s=%s, %s=%s)", \
+                            a_str, b_str, a_str, a, b_str, b),          \
+              file,                                                     \
+              line);                                                    \
+  }
 /**/
 
   // Dump assert functions for each operator.
@@ -179,7 +176,6 @@ namespace elle
 #undef ELLE_ASSERT_OP_CHECK
 
   template <typename C, typename E>
-  inline
   void _assert_contains(C const& container,
                          E const& element,
                         char const* c_str,
@@ -197,7 +193,6 @@ namespace elle
   }
 
   template <typename C, typename E>
-  inline
   void _assert_ncontains(C const& container,
                          E const& element,
                          char const* c_str,

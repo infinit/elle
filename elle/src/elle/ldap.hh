@@ -1,14 +1,13 @@
-#ifndef ELLE_LDAP_HH
-# define ELLE_LDAP_HH
+#pragma once
 
-# include <string>
-# include <vector>
-# include <unordered_map>
+#include <string>
+#include <vector>
+#include <unordered_map>
 
-# include <elle/attribute.hh>
+#include <elle/attribute.hh>
 
 struct ldap_ldap;
-typedef struct ldap_ldap LDAP;
+using LDAP = ldap_ldap;
 
 namespace elle
 {
@@ -25,9 +24,9 @@ namespace elle
     Attr
     operator / (Attr const& a, Attr const& b);
 
-    typedef std::vector<std::string> AttrValues;
-    typedef std::unordered_map<std::string, AttrValues> Result;
-    typedef std::vector<Result> Results;
+    using AttrValues = std::vector<std::string>;
+    using Result = std::unordered_map<std::string, AttrValues>;
+    using Results = std::vector<Result>;
 
     class LDAPClient
     {
@@ -71,5 +70,3 @@ namespace elle
     };
   }
 }
-
-#endif

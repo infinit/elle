@@ -1,5 +1,11 @@
+# -*- Python -*-
+
 import drake
 import os
+
+lib_static = None
+lib_dynamic = None
+library = None
 
 rule_build = None
 rule_check = None
@@ -19,6 +25,7 @@ def configure(cxx_toolkit,
 
   global rule_build, rule_check, rule_tests
   global config
+  global lib_static, lib_dynamic, library
 
   ## ----------------- ##
   ## C++ configuration ##
@@ -39,20 +46,22 @@ def configure(cxx_toolkit,
     'src/das/Symbol.hxx',
     'src/das/flatten.hh',
     'src/das/fwd.hh',
+    'src/das/cli.cc',
+    'src/das/cli.hh',
     'src/das/model.hh',
     'src/das/named.hh',
     'src/das/printer.hh',
     'src/das/serializer.hh',
     'src/das/serializer.hxx',
   )
-  das_dynamic = \
+  lib_dynamic = \
     drake.cxx.DynLib('lib/das', sources, cxx_toolkit, local_config)
-  das_static = \
+  lib_static = \
     drake.cxx.StaticLib('lib/das', sources, cxx_toolkit, local_config)
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
-    das = das_static
+    library = lib_static
   else:
-    das = das_dynamic
+    library = lib_dynamic
 
   ## ----- ##
   ## Tests ##
@@ -86,7 +95,7 @@ def configure(cxx_toolkit,
   ]:
     test = drake.cxx.Executable(
       'tests/%s' % name,
-      [drake.node('tests/%s.cc' % name), das, elle_library],
+      [drake.node('tests/%s.cc' % name), library, elle_library],
       cxx_toolkit,
       local_config_tests)
     rule_tests << test

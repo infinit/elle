@@ -1,7 +1,6 @@
-#ifndef ELLE_LOG_SYSLOGGER_HH
-# define ELLE_LOG_SYSLOGGER_HH
+#pragma once
 
-# include <elle/log/Logger.hh>
+#include <elle/log/Logger.hh>
 
 namespace elle
 {
@@ -14,7 +13,6 @@ namespace elle
                 std::string const& log_level = "",
                 bool universal_time = false);
     protected:
-      virtual
       void
       _message(Level level,
                elle::log::Logger::Type type,
@@ -25,9 +23,7 @@ namespace elle
                int indentation,
                std::string const& file,
                unsigned int line,
-               std::string const& function);
+               std::string const& function) override;
     };
   }
 }
-
-#endif

@@ -1,9 +1,8 @@
-#ifndef ELLE_LOG_SEND_HH
-# define ELLE_LOG_SEND_HH
+#pragma once
 
-# include <elle/compiler.hh>
-# include <elle/log/Logger.hh>
-# include <elle/memory.hh>
+#include <elle/compiler.hh>
+#include <elle/log/Logger.hh>
+#include <elle/memory.hh>
 
 namespace elle
 {
@@ -71,6 +70,4 @@ namespace elle
   }
 }
 
-# include <elle/log/Send.hxx>
-
-#endif
+#include <elle/log/Send.hxx>

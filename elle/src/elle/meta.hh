@@ -7,17 +7,22 @@ namespace elle
     struct Null
     {};
 
+    namespace
+    {
+      template <typename R, typename L, template <typename> class P>
+      struct filter_helper;
+    }
+
     template <typename ... Elts>
     struct List
     {
       /// T<Args ..., Elts...>
       template <template <typename ...> class T, typename ... Args>
-      struct
-      apply;
+      using apply = T<Args..., Elts...>;
 
       /// A list containing elements that match P
       template <template <typename> class P>
-      struct filter;
+      using filter = typename filter_helper<List<>, List<Elts...>, P>::type;
 
       /// The position of T in List
       template <typename T>

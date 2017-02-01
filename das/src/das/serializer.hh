@@ -93,7 +93,7 @@ namespace das
     /// Deserialize by constructor.
     template <typename O, typename M>
     std::enable_if_t<
-      M::Types::template apply<std::is_constructible, O>::type::value,
+      M::Types::template apply<std::is_constructible, O>::value,
       O>
     deserialize_switch(elle::serialization::SerializerIn& s)
     {
@@ -132,8 +132,8 @@ namespace das
     /// Deserialize via default construct and fields assignment.
     template <typename O, typename M>
     std::enable_if_t<
-      !M::Types::template apply<std::is_constructible, O>::type::value &&
-      M::Fields::template map<SetAttr<M>::template available>::type::template apply<elle::meta::All>::type::value,
+      !M::Types::template apply<std::is_constructible, O>::value &&
+      M::Fields::template map<SetAttr<M>::template available>::type::template apply<elle::meta::All>::value,
       O>
     deserialize_switch(elle::serialization::SerializerIn& s)
     {

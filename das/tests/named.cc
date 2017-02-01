@@ -81,6 +81,8 @@ return_value()
 
 DAS_SYMBOL(arg1);
 DAS_SYMBOL(arg2);
+DAS_SYMBOL(arg3);
+DAS_SYMBOL(arg4);
 
 struct Neither
 {
@@ -187,7 +189,7 @@ _positional_f(std::string& os, bool& ob, std::string is, bool ib)
   os = is + is;
   ob = !ib;
 }
-NAMED_FUNCTION(positional_f, _positional_f, arg1, arg2);
+NAMED_FUNCTION(positional_f, _positional_f, arg1, arg2, arg3, arg4);
 
 static
 void
@@ -195,7 +197,7 @@ positional()
 {
   std::string os;
   bool ob;
-  positional_f(os, ob, arg1 = "named", arg2 = true);
+  positional_f(os, ob, arg3 = "named", arg4 = true);
   BOOST_CHECK(os == "namednamed");
   BOOST_CHECK(!ob);
 }
