@@ -21,6 +21,12 @@ namespace std
 
   template <typename T>
   using remove_cv_reference_t = typename remove_cv_reference<T>::type;
+
+  template <typename T>
+  struct identity
+  {
+    using type = T;
+  };
 }
 
 // Local Variables:

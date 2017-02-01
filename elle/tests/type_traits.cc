@@ -52,6 +52,11 @@ static_assert(
   std::is_same<std::remove_cv_reference_t<int const&>, int>::value,
   "remove_cv_reference failed");
 
+// identity
+static_assert(
+  std::is_same<std::identity<Foo>::type, Foo>::value,
+  "identity failed");
+
 static
 void
 dummy()
