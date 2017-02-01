@@ -479,53 +479,23 @@ namespace das
                       v.option(), v.values(), v.set() ? "explicit" : "implicit");
         return out;
       }
-    }
 
-    namespace _details
-    {
-      template <typename ... Formals>
-      struct CLI;
-
-      template <>
-      struct CLI<>
+      template <typename Prototype, typename Formal>
+      struct parse_arg
       {
-        ELLE_LOG_COMPONENT("das.cli");
-        template <typename F,
-                  typename ... Formals,
-                  typename ... Parsed>
-        static
+        using Symbol = das::named::make_formal<Formal>;
+        using Default =
+          typename Prototype::DefaultStore::template default_for<Formal>;
+        using V = typename std::conditional_t<
+          Default::has, Default, std::identity<void>>::type;
+        static inline
         auto
-        value(das::named::Prototype<Formals...> const& p,
-              F const& f,
-              std::tuple<Parsed...> parsed,
-              std::vector<std::string>& args,
-              Options const& opts,
-              int&)
-        {
-          if (!args.empty())
-            ELLE_TRACE("remaining positional arguments: %s", args);
-          ELLE_TRACE("call %s%s", f, parsed)
-            return forward_tuple(f, std::move(parsed));
-        }
-      };
-
-      template <typename Head, typename ... Tail>
-      struct CLI<Head, Tail...>
-      {
-        ELLE_LOG_COMPONENT("das.cli");
-        template <typename F,
-                  typename ... Formals,
-                  typename ... Parsed>
-        static
-        auto
-        value(das::named::Prototype<Formals...> const& p,
-              F const& f,
-              std::tuple<Parsed...> parsed,
+        value(Prototype const& p,
               std::vector<std::string>& args,
               Options const& opts,
               int& counter)
         {
-          using Formal = das::named::make_formal<Head>;
+          ELLE_LOG_COMPONENT("das.cli");
           bool flag = false;
           bool pos = false;
           bool set = false;
@@ -535,119 +505,103 @@ namespace das
                 return is_option(arg);
               });
           };
-          auto v = [&] {
-            ELLE_TRACE_SCOPE("parsing option %s", Head::name());
-            for (auto it = next_option(args.begin()); it != args.end();
-                 it = next_option(it))
+          ELLE_TRACE_SCOPE("parsing option %s", Symbol::name());
+          ELLE_DUMP("remaining arguments: %s", args);
+          for (auto it = next_option(args.begin()); it != args.end();
+               it = next_option(it))
+          {
+            // There's a possible explicit argument after `=`.
+            auto const eq = it->find('=');
+            auto const option = it->substr(0, eq);
+            auto o = is_option(option, opts);
+            assert(o);
+            if (o.template is<Formal>(opts))
+            {
+              // This is the option we are looking for.
+              set = true;
+              auto argument_set = [&](auto const& arg) {
+                ELLE_DEBUG(
+                  "found \"%s\" on the command line with argument \"%s\"",
+                  option, arg);
+                if (flag)
+                  throw MixedOption(Symbol::name());
+                value.emplace_back(arg);
+              };
+              if (eq == it->npos)
               {
-                // There's a possible explicit argument after `=`.
-                auto const eq = it->find('=');
-                auto const option = it->substr(0, eq);
-                auto o = is_option(option, opts);
-                assert(o);
-                if (o.template is<Head>(opts))
+                // `--foo`: no `=`.
+                it = args.erase(it);
+                if (it != args.end() && !is_option(*it, opts))
                 {
-                  // This is the option we are looking for.
-                  set = true;
-                  auto argument_set = [&](auto const& arg) {
-                    ELLE_DEBUG(
-                      "found \"%s\" on the command line with argument \"%s\"",
-                      option, arg);
-                    if (flag)
-                      throw MixedOption(Head::name());
-                    value.emplace_back(arg);
-                  };
-                  if (eq == it->npos)
-                  {
-                    // `--foo`: no `=`.
-                    it = args.erase(it);
-                    if (it != args.end() && !is_option(*it, opts))
-                    {
-                      argument_set(*it);
-                      it = args.erase(it);
-                    }
-                    else
-                    {
-                      ELLE_DEBUG("found \"%s\" on the command line", *it);
-                      if (!value.empty())
-                        throw MixedOption(Head::name());
-                      if (flag)
-                        throw DuplicateOption(Head::name());
-                      flag = true;
-                    }
-                  }
-                  else
-                  {
-                    // `--foo=bar`: explicit argument.
-                    argument_set(it->substr(eq + 1));
-                    it = args.erase(it);
-                  }
+                  argument_set(*it);
+                  it = args.erase(it);
                 }
                 else
                 {
-                  // Skip option and potential argument
-                  ++it;
-                  if (it != args.end() && !is_option(*it, opts))
-                    ++it;
+                  ELLE_DEBUG("found \"%s\" on the command line", *it);
+                  if (!value.empty())
+                    throw MixedOption(Symbol::name());
+                  if (flag)
+                    throw DuplicateOption(Symbol::name());
+                  flag = true;
                 }
               }
-            elle::meta::static_if<std::is_base_of<CLI_Symbol, Formal>::value>(
-              [] (auto& pos, auto t)
+              else
               {
-                pos = decltype(t)::type::positional();
-              })(pos, elle::meta::Identity<Formal>());
-            {
-              auto it = opts.find(Head::name());
-              if (it != opts.end())
-                pos = it->second.positional;
+                // `--foo=bar`: explicit argument.
+                argument_set(it->substr(eq + 1));
+                it = args.erase(it);
+              }
             }
-            using DefaultStore =
-              typename das::named::Prototype<Formals...>::DefaultStore;
-            using Default = named::DefaultFor<true, Head>;
-            static bool constexpr default_has =
-              std::is_base_of<Default, DefaultStore>::value;
-            auto res = elle::meta::static_if<default_has>(
-              [&] (auto head, auto def)
+            else
+            {
+              // Skip option and potential argument
+              ++it;
+              if (it != args.end() && !is_option(*it, opts))
+                ++it;
+            }
+          }
+          elle::meta::static_if<std::is_base_of<CLI_Symbol, Symbol>::value>(
+            [] (auto& pos, auto t)
+            {
+              pos = decltype(t)::type::positional();
+            })(pos, elle::meta::Identity<Symbol>());
+          {
+            auto it = opts.find(Symbol::name());
+            if (it != opts.end())
+              pos = it->second.positional;
+          }
+          return elle::meta::static_if<Default::has>(
+            [&] (auto head, auto def)
+            {
+              using V = Value<typename Default::Type>;
+              if (flag)
+                return V(p.defaults.Default::value, Symbol::name(), pos, args,
+                         true, counter, set);
+              else
               {
-                using Default = typename decltype(def)::type;
-                using V = Value<typename Default::Type>;
-                if (flag)
-                  return V(p.defaults.Default::value, Head::name(), pos, args,
-                           true, counter, set);
-                else
-                {
-                  if (value.empty())
-                    ELLE_DEBUG(
-                      "no occurences, default value is %s",
-                      p.defaults.Default::value);
-                  return V(p.defaults.Default::value, Head::name(), pos, args,
-                           std::move(value), counter, set);
-                }
-              },
-              [&] (auto head, auto)
+                if (value.empty())
+                  ELLE_DEBUG(
+                    "no occurences, default value is %s",
+                    p.defaults.Default::value);
+                return V(p.defaults.Default::value, Symbol::name(), pos, args,
+                         std::move(value), counter, set);
+              }
+            },
+            [&] (auto head, auto)
+            {
+              using V = Value<void>;
+              if (flag)
+                return V(0, Symbol::name(), pos, args, true, counter, set);
+              else
               {
-                using V = Value<void>;
-                if (flag)
-                  return V(0, Head::name(), pos, args, true, counter, set);
-                else
-                {
-                  if (value.empty())
-                    ELLE_DEBUG("no occurences and no default value");
-                  return V(0, Head::name(), pos, args,
-                           std::move(value), counter, set);
-                }
-              })(elle::meta::Identity<Head>{},
-                 elle::meta::Identity<Default>{});
-            ELLE_DEBUG("return: %s", res);
-            return res;
-          }();
-          return CLI<Tail...>::value(
-            p,
-            f,
-            std::tuple_cat(std::move(parsed), std::make_tuple(std::move(v))),
-            args,
-            opts,
-            counter);
+                if (value.empty())
+                  ELLE_DEBUG("no occurences and no default value");
+                return V(0, Symbol::name(), pos, args,
+                         std::move(value), counter, set);
+              }
+            })(elle::meta::Identity<Formal>{},
+               elle::meta::Identity<Default>{});
         }
       };
     }
@@ -659,9 +613,17 @@ namespace das
           std::vector<std::string>& args,
           Options const& opts = Options())
     {
+      ELLE_LOG_COMPONENT("das.cli");
+      using Prototype = das::named::Prototype<Formals...>;
       int counter = sizeof ... (Formals);
-      return _details::CLI<std::remove_cv_reference_t<Formals>...>::value(
-        p, f, std::tuple<>(), args, opts, counter);
+      // Don't use make_tuple, order matters.
+      auto parsed = std::tuple<_details::Value<typename _details::parse_arg<Prototype, std::remove_cv_reference_t<Formals>>::V>...> {
+        _details::parse_arg<Prototype, std::remove_cv_reference_t<Formals>>::value(p, args, opts, counter)...};
+      if (!args.empty())
+        ELLE_TRACE("remaining positional arguments: %s", args);
+      ELLE_TRACE("call %s%s", f, parsed)
+        return forward_tuple(f, std::move(parsed));
+
     }
 
     template <typename F, typename ... Formals>
