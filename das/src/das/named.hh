@@ -222,6 +222,16 @@ namespace das
 
       template <typename T>
       using default_for = DefaultFor<is_effective<T>::value, T>;
+
+      template <typename ... Args>
+      auto
+      extend(Args&& ... args) const
+      {
+        return DefaultStore<Args ..., Formal ...>(
+          std::forward<Args>(args)...,
+          static_cast<DefaultFor<is_effective<Formal>::value, Formal> const&>(
+            *this)...);
+      }
     };
 
     /*----------.
@@ -238,6 +248,14 @@ namespace das
       Prototype(DefaultStore&& d)
         : defaults(std::move(d))
       {}
+
+      template <typename... NewArgs>
+      auto
+      extend(NewArgs&& ... args)
+      {
+        return Prototype<NewArgs..., Formal...>
+          (this->defaults.extend(std::forward<NewArgs>(args)...));
+      }
 
       template <typename Sequence>
       struct Call;
