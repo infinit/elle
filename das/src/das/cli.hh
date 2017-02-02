@@ -341,7 +341,15 @@ namespace das
         }
 
         template <typename T>
-        std::enable_if_t<!default_has, T>
+        std::enable_if_t<default_has, T>
+        missing() const
+        {
+          ELLE_TRACE("use default value: %s", this->_default);
+          return this->_default;
+        }
+
+        template <typename T>
+        std::enable_if_t<!default_has && !std::is_same<T, bool>::value, T>
         missing() const
         {
           ELLE_TRACE("raise missing error");
@@ -349,11 +357,10 @@ namespace das
         }
 
         template <typename T>
-        std::enable_if_t<default_has, T>
+        std::enable_if_t<!default_has && std::is_same<T, bool>::value, bool>
         missing() const
         {
-          ELLE_TRACE("use default value: %s", this->_default);
-          return this->_default;
+          return false;
         }
 
         template <typename I>

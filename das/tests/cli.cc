@@ -144,16 +144,25 @@ namespace conversions
   void
   boolean()
   {
-    auto const f = [] (int expected, bool enabled)
-      {
-        BOOST_CHECK_EQUAL(bool(expected), enabled);
-      };
-    auto const named = das::named::function(f, foo, bar = false);
-    das::cli::call(named, {"--foo", "0"});
-    das::cli::call(named, {"--foo", "1", "--bar"});
-    das::cli::call(named, {"--bar", "--foo", "1"});
-    das::cli::call(named, {"--foo", "1", "--bar", "true"});
-    das::cli::call(named, {"--foo", "0", "--bar", "false"});
+    {
+      auto const f = [] (int expected, bool enabled)
+        {
+          BOOST_CHECK_EQUAL(bool(expected), enabled);
+        };
+      auto const named = das::named::function(f, foo, bar = false);
+      das::cli::call(named, {"--foo", "0"});
+      das::cli::call(named, {"--foo", "1", "--bar"});
+      das::cli::call(named, {"--bar", "--foo", "1"});
+      das::cli::call(named, {"--foo", "1", "--bar", "true"});
+      das::cli::call(named, {"--foo", "0", "--bar", "false"});
+    }
+    {
+      auto const f = [] (bool b)
+        {
+          BOOST_CHECK(!b);
+        };
+      das::cli::call(das::named::function(f, foo), {});
+    }
   }
 
   static
