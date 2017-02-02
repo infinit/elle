@@ -388,38 +388,7 @@ class State:
     if v:
       print(res)
 
-  def migrate_build_tree(self):
-    """ Migrate cached build tree to new flattened layout if needed
-    """
-    if self.__opts.cache_id is None:
-      return # you're on your own
-    dirname = os.path.dirname(self.old_cache_dir)
-    expr = '^' + os.path.basename(self.old_cache_dir) + '-([0-9]+)$'
-    print('scanning %s for %s' % (dirname, expr))
-    try:
-      # move build trees at old location
-      for f in sh.ssh(self.cache_url, 'ls', dirname):
-        f = f[:-1] # \n
-        hit = re.match(expr, f)
-        if hit:
-          bid = hit.group(1)
-          target = self.cache_dir + '-' + bid
-          print('moving to %s from %s' % (target, os.path.join(dirname, f)))
-          sh.ssh(self.cache_url, 'test', '-e', target, '||',
-            'mv', os.path.join(dirname, f), target)
-      # create symlink if missing at new location
-      for l in sh.ssh(self.cache_url, 'readlink', self.old_cache_dir):
-        l = l[:-1].split('-')[-1]
-        sh.ssh(self.cache_url, 'test', '-e', self.cache_dir, '||',
-          'ln', '-sfn',
-          '%s-%s' % (os.path.basename(self.cache_dir), l),
-          self.cache_dir)
-    except sh.ErrorReturnCode as e:
-      print('Command failure: %s' % str(e))
-      pass
-
   def download_build_tree(self):
-    self.migrate_build_tree()
     try:
       sh.ssh(self.cache_url, 'test', '-e', self.cache_dir)
     except sh.ErrorReturnCode:
@@ -441,7 +410,6 @@ class State:
     }
 
   def upload_build_tree(self):
-    self.migrate_build_tree()
     d = self.cache_dir
     concurrent = self.__opts.cache_id is not None
     if concurrent:
