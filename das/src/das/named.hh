@@ -251,7 +251,7 @@ namespace das
 
       template <typename... NewArgs>
       auto
-      extend(NewArgs&& ... args)
+      extend(NewArgs&& ... args) const
       {
         return Prototype<NewArgs..., Formal...>
           (this->defaults.extend(std::forward<NewArgs>(args)...));
