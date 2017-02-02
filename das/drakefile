@@ -121,5 +121,5 @@ def configure(cxx_toolkit,
         drake.copy(boost.date_time_dynamic, 'lib', strip_prefix = True))
     rule_examples << drake.cxx.Executable(
       example,
-      [drake.node('%s.cc' % example), das, elle_library],
+      [drake.node('%s.cc' % example), library, elle_library],
       cxx_toolkit, config_examples)
