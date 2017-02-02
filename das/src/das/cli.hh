@@ -236,25 +236,6 @@ namespace das
           , _values(std::move(value))
           , _positional(positional)
           , _args(args)
-          , _flag(false)
-          , _remaining(remaining)
-          , _set(set)
-        {}
-
-        /// A value found on the CLI, taking its value from there.
-        Value(std::conditional_t<default_has, Default, int> const& d,
-              std::string option,
-              bool positional,
-              std::vector<std::string>& args,
-              bool flag,
-              int& remaining,
-              bool set)
-          : _default(d)
-          , _option(std::move(option))
-          , _values()
-          , _positional(positional)
-          , _args(args)
-          , _flag(flag)
           , _remaining(remaining)
           , _set(set)
         {}
@@ -398,22 +379,9 @@ namespace das
         template <typename I>
         operator I() const
         {
-          static_assert(!std::is_same<std::decay_t<I>, bool>::value, "");
           ELLE_TRACE_SCOPE(
             "convert %s to %s", this->_option, elle::type_info<I>());
           auto res = this->convert<I>();
-          this->_check_remaining();
-          return res;
-        }
-
-        operator bool() const
-        {
-          ELLE_TRACE_SCOPE("convert %s to boolean", this->_option);
-          bool res;
-          if (this->_values.empty())
-            res = this->_flag;
-          else
-            res = this->convert<bool>();
           this->_check_remaining();
           return res;
         }
@@ -465,7 +433,6 @@ namespace das
         ELLE_ATTRIBUTE_R(std::vector<std::string>, values, mutable);
         ELLE_ATTRIBUTE(bool, positional);
         ELLE_ATTRIBUTE(std::vector<std::string>&, args);
-        ELLE_ATTRIBUTE(bool, flag);
         ELLE_ATTRIBUTE(int&, remaining);
         /// Whether was explicit set on the command line.
         ELLE_ATTRIBUTE_R(bool, set);
@@ -577,7 +544,7 @@ namespace das
               using V = Value<typename Default::Type>;
               if (flag)
                 return V(p.defaults.Default::value, Symbol::name(), pos, args,
-                         true, counter, set);
+                         {"true"}, counter, set);
               else
               {
                 if (value.empty())
@@ -592,7 +559,7 @@ namespace das
             {
               using V = Value<void>;
               if (flag)
-                return V(0, Symbol::name(), pos, args, true, counter, set);
+                return V(0, Symbol::name(), pos, args, {"true"}, counter, set);
               else
               {
                 if (value.empty())
