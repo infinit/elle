@@ -634,12 +634,24 @@ namespace das
       return _call(f.prototype(), f.function(), copy, opts);
     }
 
+    inline
     void
     print_help(std::ostream& s,
                std::string const& name,
                bool with_argument,
                char short_name = 0,
-               std::string const& help = {});
+               std::string const& help = {})
+    {
+      if (short_name)
+        elle::fprintf(s, "  -%s, ", short_name);
+      else
+        elle::fprintf(s, "      ");
+      elle::fprintf(s, "--%-18s",
+                    das::cli::option_name_from_c(name)
+                    + (with_argument ? " arg" : ""));
+      if (!help.empty())
+        elle::fprintf(s, "  %s", help);
+    }
 
     template <typename Symbol, typename Defaults>
     struct help_map
