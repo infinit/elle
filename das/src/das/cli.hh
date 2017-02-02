@@ -541,6 +541,7 @@ namespace das
           return elle::meta::static_if<Default::has>(
             [&] (auto head, auto def)
             {
+              using Default = typename decltype(def)::type;
               using V = Value<typename Default::Type>;
               if (flag)
                 return V(p.defaults.Default::value, Symbol::name(), pos, args,
