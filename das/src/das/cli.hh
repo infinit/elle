@@ -660,7 +660,7 @@ namespace das
         elle::fprintf(s, "  %s", help);
     }
 
-    template <typename Symbol, typename Defaults>
+    template <typename Formal, typename Defaults>
     struct help_map
     {
       using type = bool;
@@ -668,7 +668,7 @@ namespace das
       bool
       value(std::ostream& s, Options const& opts, Defaults const& defaults)
       {
-        using Formal = das::named::make_formal<Symbol>;
+        using Symbol = das::named::make_formal<Formal>;
         // Whether has a default value.
         constexpr auto has_default = Defaults::template default_for<Formal>::has;
         // Whether expects an argument.
@@ -676,7 +676,7 @@ namespace das
           = elle::meta::static_if<has_default>
           ([&s] (auto const& defaults)
            {
-             auto const& v = defaults.Symbol::ByConstRef::value;
+             auto const& v = defaults.Formal::ByConstRef::value;
              return !std::is_same<decltype(v), bool const&>::value;
            },
            [] (auto const&)
@@ -686,7 +686,7 @@ namespace das
         // Print the option's help string.
         auto opt = opts.find(Symbol::name());
         if (opt == opts.end())
-          elle::meta::static_if<std::is_base_of<CLI_Symbol, Formal>::value>(
+          elle::meta::static_if<std::is_base_of<CLI_Symbol, Symbol>::value>(
             [&s, &with_argument] (auto formal) {
               using formal_t = typename decltype(formal)::type;
               print_help(s,
@@ -696,14 +696,14 @@ namespace das
             [&s, &with_argument] (auto formal) {
               using formal_t = typename decltype(formal)::type;
               print_help(s, option_name_from_c(formal_t::name()), with_argument);
-            })(elle::meta::Identity<Formal>{});
+            })(elle::meta::Identity<Symbol>{});
         else
           print_help(s, Symbol::name(), with_argument,
                      opt->second.short_name, opt->second.help);
         elle::meta::static_if<has_default>
           ([&s, &with_argument] (auto const& defaults)
            {
-             auto const& v = defaults.Symbol::ByConstRef::value;
+             auto const& v = defaults.Formal::ByConstRef::value;
              if (!std::is_same<decltype(v), bool const&>::value
                  && !std::is_same<decltype(v), boost::none_t const&>::value)
                elle::fprintf(s, " (default: %s)", v);
@@ -714,25 +714,40 @@ namespace das
     };
 
     template <typename ... T>
-    void
-    help(named::Prototype<T...> const& f,
-         std::ostream& s,
-         Options const& opts = Options())
+    class Help:
+      public elle::Printable::as<Help<T ...>>
     {
-      elle::meta::List<T...>::template map<
-        help_map, typename named::Prototype<T...>::DefaultStore>::value(
-          s, opts, f.defaults);
+    public:
+      Help(named::Prototype<T...> const& p,
+           Options const& opts = Options())
+        : _prototype(p)
+        , _options(opts)
+      {}
+
+      void
+      print(std::ostream& s) const
+      {
+        elle::meta::List<T...>::template map<
+          help_map, typename named::Prototype<T...>::DefaultStore>::value(
+            s, this->_options, this->_prototype.defaults);
+      }
+
+      ELLE_ATTRIBUTE(das::named::Prototype<T...> const&, prototype);
+      ELLE_ATTRIBUTE(Options, options);
+    };
+
+    template <typename ... T>
+    auto
+    help(named::Prototype<T...> const& p, Options const& opts = Options())
+    {
+      return Help<T...>(p, opts);
     }
 
-    template <typename F, typename ... T>
-    void
-    help(named::Function<F, T...> const& f,
-         std::ostream& s,
-         Options const& opts = Options())
+    template <typename ... T>
+    auto
+    help(named::Function<T...> const& f, Options const& opts = Options())
     {
-      elle::meta::List<T...>::
-        template map<help_map, named::DefaultStore<T...>>::value(
-          s, opts, f.prototype().defaults);
+      return help(f.prototype(), opts);
     }
   }
 }

@@ -348,6 +348,24 @@ serialization()
       das::cli::call(proto, f, {"--foo", "0.1.2"}), elle::Version(0, 1, 2));
 }
 
+static
+void
+help()
+{
+  BOOST_CHECK_EQUAL(
+    elle::sprintf("%s", das::cli::help(das::named::prototype(foo))),
+    "      --foo arg           \n");
+  BOOST_CHECK_EQUAL(
+    elle::sprintf("%s", das::cli::help(das::named::prototype(foo = 42))),
+    "      --foo arg            (default: 42)\n");
+  BOOST_CHECK_EQUAL(
+    elle::sprintf("%s", das::cli::help(das::named::prototype(foo = false))),
+    "      --foo               \n");
+  BOOST_CHECK_EQUAL(
+    elle::sprintf("%s", das::cli::help(das::named::prototype(foo = true))),
+    "      --foo               \n");
+}
+
 ELLE_TEST_SUITE()
 {
   auto& master = boost::unit_test::framework::master_test_suite();
@@ -380,4 +398,5 @@ ELLE_TEST_SUITE()
     suite->add(BOOST_TEST_CASE(run_time));
   }
   master.add(BOOST_TEST_CASE(serialization));
+  master.add(BOOST_TEST_CASE(help));
 }
