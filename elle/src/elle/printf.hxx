@@ -166,6 +166,15 @@ namespace elle
         fmt % "nullptr";
     }
 
+    template <typename R, typename ... Args>
+    void
+    feed(boost::format& fmt, R (*value)(Args...))
+    {
+      // FIXME: we could print more, but it would complexify this header quite a
+      // bit.
+      fmt % "<function>";
+    }
+
     /// Create, feed and return a boost::format.
     template <typename F, typename ... T>
     boost::format
