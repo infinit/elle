@@ -34,7 +34,7 @@ _test_represent(uint32_t const length)
       keypair.serialize(output);
     }
 
-    elle::printf("[representation 1] %s\n", stream.str());
+    elle::fprintf(std::cout, "[representation 1] %s\n", stream.str());
   }
 }
 

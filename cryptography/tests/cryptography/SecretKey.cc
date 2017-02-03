@@ -32,7 +32,7 @@ test_represent_n()
       key.serialize(output);
     }
 
-    elle::printf("[representation %s.1] %s\n", N, stream.str());
+    elle::fprintf(std::cout, "[representation %s.1] %s\n", N, stream.str());
   }
 
   // N.2)
@@ -45,7 +45,7 @@ test_represent_n()
       output.serialize("code", code);
     }
 
-    elle::printf("[representation %s.2] %s\n", N, stream.str());
+    elle::fprintf(std::cout, "[representation %s.2] %s\n", N, stream.str());
   }
 }
 

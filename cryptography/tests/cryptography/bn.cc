@@ -37,7 +37,7 @@ test_represent()
     }
 
     ::BN_free(&bn);
-    elle::printf("[representation 1] %s\n", stream.str());
+    elle::fprintf(std::cout, "[representation 1] %s\n", stream.str());
   }
 }
 
@@ -91,4 +91,3 @@ ELLE_TEST_SUITE()
 
   boost::unit_test::framework::master_test_suite().add(suite);
 }
-

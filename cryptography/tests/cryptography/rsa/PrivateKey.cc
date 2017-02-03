@@ -29,7 +29,7 @@ _test_represent()
       k.serialize(output);
     }
 
-    elle::printf("[representation 1] %s\n", stream.str());
+    elle::fprintf(std::cout, "[representation 1] %s\n", stream.str());
   }
 
   // 2)
@@ -42,7 +42,7 @@ _test_represent()
       output.serialize("code", code);
     }
 
-    elle::printf("[representation 2] %s\n", stream.str());
+    elle::fprintf(std::cout, "[representation 2] %s\n", stream.str());
   }
 }
 
