@@ -181,8 +181,7 @@ namespace das
       auto&
       get(Default& d, Effectives&& ...)
       {
-        using D = DefaultFor<true, Formal>;
-        return d.D::value;
+        return d.DefaultFor<true, Formal>::value;
       }
     };
 
