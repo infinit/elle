@@ -5,6 +5,7 @@
 
 #include <elle/Exception.hh>
 
+# include <iostream>
 # include <vector>
 # include <getopt.h>
 

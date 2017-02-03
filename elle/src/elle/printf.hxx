@@ -1,6 +1,6 @@
 #pragma once
 
-#include <iostream>
+#include <iosfwd>
 #include <typeinfo>
 
 #include <boost/format.hpp>
@@ -213,13 +213,6 @@ namespace elle
       {
         format_error(fmt, e);
       }
-    }
-
-    template <typename F, typename ... T>
-    std::ostream&
-    printf(F&& fmt, T&& ... values)
-    {
-      return fprintf(std::cout, std::forward<F>(fmt), std::forward<T>(values) ...);
     }
   }
 }
