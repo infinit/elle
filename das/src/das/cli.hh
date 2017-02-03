@@ -670,13 +670,13 @@ namespace das
       {
         using Symbol = das::named::make_formal<Formal>;
         // Whether has a default value.
-        constexpr auto has_default = Defaults::template default_for<Formal>::has;
+        using Default = typename Defaults::template default_for<Formal>;
         // Whether expects an argument.
         bool with_argument
-          = elle::meta::static_if<has_default>
+          = elle::meta::static_if<Default::has>
           ([&s] (auto const& defaults)
            {
-             auto const& v = defaults.Formal::ByConstRef::value;
+             auto const& v = defaults.Default::value;
              return !std::is_same<decltype(v), bool const&>::value;
            },
            [] (auto const&)
@@ -700,7 +700,7 @@ namespace das
         else
           print_help(s, Symbol::name(), with_argument,
                      opt->second.short_name, opt->second.help);
-        elle::meta::static_if<has_default>
+        elle::meta::static_if<Default::has>
           ([&s, &with_argument] (auto const& defaults)
            {
              auto const& v = defaults.Formal::ByConstRef::value;
