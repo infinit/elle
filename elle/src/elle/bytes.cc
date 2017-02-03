@@ -1,6 +1,7 @@
 #include <elle/bytes.hh>
 
 #include <elle/printf.hh>
+#include <elle/unreachable.hh>
 
 namespace elle
 {

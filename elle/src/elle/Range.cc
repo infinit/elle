@@ -1,4 +1,5 @@
 #include <elle/Range.hh>
+
 #include <elle/log.hh>
 
 ELLE_LOG_COMPONENT("elle.Range");

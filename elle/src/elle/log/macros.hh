@@ -8,6 +8,8 @@
 
 #else
 
+# include <elle/unreachable.hh>
+
 // It would be extremely useful to turn this const char* into a
 // std::string: since the rest of the API is based on std::string,
 // each time we invoke a Log feature, we pay the construction of a

@@ -1,6 +1,7 @@
 #include <ostream>
 
 #include <elle/assert.hh>
+#include <elle/err.hh>
 #include <elle/printf.hh>
 
 #include <reactor/http/Method.hh>
@@ -18,9 +19,7 @@ namespace reactor
         if (name == "GET") return Method::GET;
         if (name == "POST") return Method::POST;
         if (name == "PUT") return Method::PUT;
-
-        throw elle::Exception(
-          elle::sprintf("unknown method %s", name));
+        elle::err("unknown method %s", name);
       }
     }
 

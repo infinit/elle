@@ -1,8 +1,9 @@
+#include <cstring>
+#include <iosfwd>
+#include <stdexcept>
+
 #include <elle/BadAlloc.hh>
 #include <elle/assert.hh>
-
-#include <stdexcept>
-#include <iosfwd>
 
 namespace elle
 {

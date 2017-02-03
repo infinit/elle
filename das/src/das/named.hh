@@ -2,6 +2,7 @@
 
 #include <utility>
 
+#include <elle/Printable.hh>
 #include <elle/attribute.hh>
 #include <elle/log.hh>
 #include <elle/meta.hh>

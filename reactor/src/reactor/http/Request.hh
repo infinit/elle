@@ -2,6 +2,7 @@
 # define REACTOR_HTTP_REQUEST_HH
 
 # include <string>
+# include <unordered_map>
 
 # include <boost/asio.hpp>
 # include <boost/signals2.hpp>

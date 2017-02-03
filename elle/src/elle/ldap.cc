@@ -1,4 +1,5 @@
 #include <elle/ldap.hh>
+
 #define ldap ldap_ldap
 #include <ldap.h>
 #undef ldap

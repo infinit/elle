@@ -1,6 +1,8 @@
 #ifndef ELLE_FORMAT_BASE64URL_HXX
 # define ELLE_FORMAT_BASE64URL_HXX
 
+# include <elle/log.hh>
+
 namespace elle
 {
   namespace format

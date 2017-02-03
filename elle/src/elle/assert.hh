@@ -4,6 +4,9 @@
 #include <stdexcept>
 
 #include <elle/compiler.hh>
+#include <elle/printf.hh>
+#include <elle/types.hh>
+#include <elle/unreachable.hh>
 
 namespace elle ELLE_API
 {
@@ -13,16 +16,7 @@ namespace elle ELLE_API
   _abort(std::string const& msg,
          char const* file,
          int line);
-
-  /// Abort the program. Flags unreachable code.
-  ELLE_COMPILER_ATTRIBUTE_NORETURN
-  void
-  unreachable();
 }
-
-#include <elle/compiler.hh>
-#include <elle/printf.hh>
-#include <elle/types.hh>
 
 namespace elle
 {

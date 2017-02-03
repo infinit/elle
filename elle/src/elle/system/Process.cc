@@ -1,4 +1,10 @@
 #include <elle/system/Process.hh>
+
+#include <cerrno>
+
+#include <elle/assert.hh>
+#include <elle/err.hh>
+#include <elle/log.hh>
 #include <elle/system/unistd.hh>
 
 #ifndef INFINIT_WINDOWS
@@ -7,10 +13,6 @@
 #else
 # include <elle/windows.h>
 #endif
-
-#include <cerrno>
-
-#include <elle/log.hh>
 
 ELLE_LOG_COMPONENT("elle.system.Process");
 
@@ -70,8 +72,7 @@ namespace elle
         }
         while (waited == -1 && errno == EINTR);
         if (waited == -1)
-          throw elle::Exception(elle::sprintf("unable to wait process: %s",
-                                              strerror(errno)));
+          elle::err("unable to wait process: %s", strerror(errno));
         assert(waited == this->_pid);
         this->_done = true;
       }

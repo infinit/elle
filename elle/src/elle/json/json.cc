@@ -4,8 +4,10 @@
 
 #include <elle/Backtrace.hh>
 #include <elle/IOStream.hh>
+#include <elle/assert.hh>
 #include <elle/json/exceptions.hh>
 #include <elle/json/json.hh>
+#include <elle/log.hh>
 #include <elle/printf.hh>
 
 ELLE_LOG_COMPONENT("elle.json");

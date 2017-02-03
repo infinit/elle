@@ -17,6 +17,7 @@
 
 #include <elle/Exception.hh>
 #include <elle/Plugin.hh>
+#include <elle/assert.hh>
 #include <elle/log/Logger.hh>
 #include <elle/os/environ.hh>
 #include <elle/printf.hh>

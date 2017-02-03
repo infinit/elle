@@ -20,6 +20,7 @@
 # include <elle/Version.hh>
 # include <elle/attribute.hh>
 # include <elle/err.hh>
+# include <elle/log.hh>
 # include <elle/optional.hh>
 # include <elle/serialization/fwd.hh>
 # include <elle/sfinae.hh>
