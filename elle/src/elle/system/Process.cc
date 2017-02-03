@@ -110,10 +110,7 @@ namespace elle
         if (!::CreateProcess(executable.c_str(), strdup(command_line.c_str()),
                              NULL, NULL, true, 0, NULL, NULL,
                              &startup_info, &this->_process_info))
-        {
-          throw elle::Exception(elle::sprintf("unable to start %s: %s",
-                                              executable, ::GetLastError()));
-        }
+          elle::err("unable to start %s: %s", executable, ::GetLastError());
       }
 
       void
