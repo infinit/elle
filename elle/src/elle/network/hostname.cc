@@ -5,6 +5,7 @@
 
 #include <elle/err.hh>
 #include <elle/printf.hh>
+#include <elle/windows.h>
 
 namespace elle
 {
