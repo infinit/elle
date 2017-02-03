@@ -1,5 +1,3 @@
-#include <reactor/filesystem.hh>
-
 #define _FILE_OFFSET_BITS 64
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -9,6 +7,8 @@
 
 #include <elle/assert.hh>
 #include <elle/log.hh>
+
+#include <reactor/filesystem.hh>
 
 ELLE_LOG_COMPONENT("reactor.filesystem");
 
