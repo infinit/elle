@@ -1454,7 +1454,7 @@ class BaseNode(object, metaclass = _BaseNodeType):
         for sub_path in _OS.listdir(str(path)):
           _hash_file(hasher, _OS.path.join(str(path), str(sub_path)))
       elif _OS.path.islink(str(path)):
-        hasher.update(_OS.readlink(str(path)))
+        hasher.update(_OS.readlink(str(path)).encode('utf-8'))
       else:
         with open(str(path), 'rb') as f:
           while True:
