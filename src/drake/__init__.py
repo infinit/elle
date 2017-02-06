@@ -1293,6 +1293,31 @@ class BaseNode(object, metaclass = _BaseNodeType):
                                            self.uid))
     return True
 
+  def compilation_database(self):
+    """Print a representation of this node compilation."""
+    if self.builder is None:
+      return
+    if not re.match('.*\.o$', self.makefile_name()):
+      return
+    def to_string(s):
+      from pipes import quote
+      if isinstance(s, list):
+        s = ' '.join(s)
+      if not isinstance(s, str):
+        s = str(s)
+      return '"{}"'.format(re.sub(r'([\\"])', r'\\\1', s))
+    print('''\
+  {{
+    "file": {file},
+    "output": {output},
+    "directory": {directory},
+    "command": {command},
+  }},\
+'''.format(command=to_string(self.builder.command),
+           directory=to_string(_OS.getcwd()),
+           file=to_string("../../" + str(self.builder.source)),
+           output=to_string(self.makefile_name())))
+
   @classmethod
   def drake_type(self):
       """The qualified name of this type."""
@@ -2734,6 +2759,9 @@ def dot(node, *filters):
   node.dot(marks)
   print('}')
 
+def compilation_database(node):
+  node.compilation_database()
+
 _MODES = {}
 
 def command_add(name, action):
@@ -2798,6 +2826,15 @@ def _register_commands():
         for node in all_if_none(nodes):
             dot(node)
     command_add('dot', dot_cmd)
+
+    def compilation_database_cmd(nodes):
+      ''' See https://clang.llvm.org/docs/JSONCompilationDatabase.html.'''
+      print("[")
+      for node in sorted(all_if_none(nodes)):
+        compilation_database(node)
+      print("]")
+    command_add('compilation-database', compilation_database_cmd)
+
 
     def dot_show_cmd(nodes):
         if not len(nodes):
