@@ -3029,7 +3029,8 @@ class Copy(Builder):
     with WritePermissions(self.__target):
       try:
         shutil.copy2(str(self.__source.path()),
-                     str(self.__target.path()))
+                     str(self.__target.path()),
+                     follow_symlinks = False)
       except PermissionError as e:
         # Landing here means that we didn't have permission to do a copystat as
         # part of the copy2. Fallback to a straight copy with a log.
@@ -3040,7 +3041,8 @@ class Copy(Builder):
           drake.log.LogLevel.debug,
           'unable to copy2 %s, falling back to copy', str(self.__source.path()))
         shutil.copy(str(self.__source.path()),
-                    str(self.__target.path()))
+                    str(self.__target.path()),
+                    follow_symlinks = False)
 
     return True
 
