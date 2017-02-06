@@ -1,12 +1,11 @@
-#ifndef ELLE_SYSTEM_PROCESS_HH
-# define ELLE_SYSTEM_PROCESS_HH
+#pragma once
 
-# include <memory>
-# include <string>
-# include <vector>
+#include <memory>
+#include <string>
+#include <vector>
 
-# include <elle/attribute.hh>
-# include <elle/compiler.hh>
+#include <elle/attribute.hh>
+#include <elle/compiler.hh>
 
 namespace elle
 {
@@ -52,5 +51,3 @@ namespace elle
     };
   }
 }
-
-#endif
