@@ -9,65 +9,65 @@
 #include <string>
 #include <sstream>
 
-#include <boost/format.hpp>
-#include <boost/lexical_cast.hpp>
-#include <boost/foreach.hpp>
-
 #include <elle/Backtrace.hh>
+#include <elle/err.hh>
+#include <elle/printf.hh>
 #include <elle/utils.hh>
 
 namespace elle
 {
-#if !defined(INFINIT_MACOSX) && !defined(INFINIT_WINDOWS) && !defined(INFINIT_ANDROID)
-  static bool
-  extract(std::string& str, std::string& chunk, unsigned char until)
+  namespace
   {
-    size_t pos = str.find(until);
-    if (pos != std::string::npos)
+#if !defined INFINIT_MACOSX && !defined INFINIT_WINDOWS && !defined INFINIT_ANDROID
+    bool
+    extract(std::string& str, std::string& chunk, unsigned char until)
     {
-      chunk = str.substr(0, pos);
-      str = str.substr(pos + 1);
-      return true;
-    }
-    else
-      return false;
-  }
-
-  static bool
-  discard(std::string& str, unsigned char until)
-  {
-    std::string ignored;
-    return extract(str, ignored, until);
-  }
-#endif
-
-  static
-  bool
-  demangle(const std::string& sym, std::string& res, std::string& error)
-  {
-    size_t size;
-    int status;
-    char* demangled = abi::__cxa_demangle(sym.c_str(), 0, &size, &status);
-
-    switch (status)
-    {
-      case 0:
+      size_t pos = str.find(until);
+      if (pos == std::string::npos)
+        return false;
+      else
       {
-        res = demangled;
-        free(demangled);
+        chunk = str.substr(0, pos);
+        str = str.substr(pos + 1);
         return true;
       }
-      case -1:
-        error = "memory allocation failure";
-        return false;
-      case -2:
-        error = "not a valid name under the C++ ABI mangling rules";
-        return false;
-      case -3:
-        error = "invalid argument";
-        return false;
-      default:
-        std::abort();
+    }
+
+    bool
+    discard(std::string& str, unsigned char until)
+    {
+      std::string ignored;
+      return extract(str, ignored, until);
+    }
+#endif
+
+    bool
+    demangle_impl(const std::string& sym, std::string& res, std::string& error)
+    {
+      size_t size;
+      int status;
+      char* demangled = abi::__cxa_demangle(sym.c_str(), 0, &size, &status);
+
+      switch (status)
+      {
+        case 0:
+        {
+          res = demangled;
+          free(demangled);
+          return true;
+        }
+        case -1:
+          error = "memory allocation failure";
+          return false;
+        case -2:
+          error = "not a valid name under the C++ ABI mangling rules";
+          return false;
+        case -3:
+          error = "invalid argument";
+          return false;
+        default:
+          std::abort();
+      }
     }
   }
 
@@ -76,13 +76,11 @@ namespace elle
   {
     std::string error;
     std::string res;
-    if (!demangle(sym, res, error))
-      {
-        static boost::format model("%s: demangling failure: %s");
-        boost::format fmt(model);
-        throw std::runtime_error(str(fmt % sym % error));
-      }
-    return res;
+    if (demangle_impl(sym, res, error))
+      return res;
+    else
+      elle::err<std::runtime_error>("%s: demangling failure: %s",
+                                    sym, res);
   }
 
   Backtrace::Backtrace()
@@ -103,7 +101,7 @@ namespace elle
   {
     if (this->_resolved)
       return;
-#if defined(INFINIT_WINDOWS)
+#if defined INFINIT_WINDOWS
        /*
       auto initialize = []
         {
@@ -156,7 +154,7 @@ namespace elle
       if (!symbol_mangled.empty())
       {
         std::string error;
-        if (!demangle(symbol_mangled, frame.symbol, error))
+        if (!demangle_impl(symbol_mangled, frame.symbol, error))
           frame.symbol = symbol_mangled;
       }
       {
@@ -197,21 +195,22 @@ namespace elle
     while (!f.empty() && other != base.frames().rend()
            && (f.back().address == other->address
                || f.back().symbol == other->symbol))
-      {
-        f.pop_back();
-        ++other;
-      }
+    {
+      f.pop_back();
+      ++other;
+    }
   }
 
   std::ostream&
   operator<< (std::ostream& out, const StackFrame& frame)
   {
-    out << (boost::format("0x%0" + boost::lexical_cast<std::string>(2 * sizeof(void*)) + "x: ") % frame.address);
-
-    if (!frame.symbol.empty())
-      out << (boost::format("%s +0x%x") % frame.symbol % frame.offset);
-    else
+    // Two hex digits per byte.
+    auto width = std::to_string(2 * sizeof(void*));
+    elle::fprintf(out, "0x%0" + width + "x: ", frame.address);
+    if (frame.symbol.empty())
       out << "???";
+    else
+      elle::fprintf(out, "%s +0x%x", frame.symbol, frame.offset);
     return out;
   }
 
@@ -221,11 +220,9 @@ namespace elle
     unsigned i = 0;
     // Visual expects a float ... don't ask.
     const size_t width = std::log10(float(bt.frames().size())) + 1;
-    for (const Backtrace::Frame& f: bt.frames())
-      {
-        boost::format fmt("#%-" + boost::lexical_cast<std::string>(width) + "d %s\n");
-        out << (fmt % i++ % f);
-      }
+    for (const auto& f: bt.frames())
+      fprintf(out, "#%-" + std::to_string(width) + "d %s\n",
+              i++, f);
     return out;
   }
 

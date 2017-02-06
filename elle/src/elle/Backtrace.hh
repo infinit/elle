@@ -1,37 +1,35 @@
-#ifndef ELLE_BACKTRACE_HH
-# define ELLE_BACKTRACE_HH
+#pragma once
 
-# include <vector>
-# include <string>
+#include <vector>
+#include <string>
 
-# include <elle/compiler.hh>
+#include <elle/compiler.hh>
 
-namespace elle
+namespace elle ELLE_API
 {
-  struct ELLE_API StackFrame
+  struct StackFrame
   {
     std::string symbol;
     std::string symbol_mangled;
     std::string symbol_demangled;
-# if defined(INFINIT_WINDOWS)
+#if defined INFINIT_WINDOWS
     uint64_t address;
-# else
+#else
     int address;
-# endif
+#endif
     int offset;
     operator std::string() const;
   };
 
-  ELLE_API
   std::string
   demangle(const std::string& sym);
 
-  class ELLE_API Backtrace
+  class Backtrace
   {
   public:
     Backtrace();
     Backtrace(std::vector<StackFrame> const&);
-    typedef StackFrame Frame;
+    using Frame = StackFrame;
     static inline ELLE_COMPILER_ATTRIBUTE_ALWAYS_INLINE
     Backtrace
     current(unsigned skip = 0);
@@ -49,14 +47,11 @@ namespace elle
     unsigned _frame_count;
   };
 
-  ELLE_API
   std::ostream&
   operator<< (std::ostream& output, const StackFrame& frame);
-  ELLE_API
+
   std::ostream&
   operator<< (std::ostream& output, const Backtrace& bt);
 }
 
-# include <elle/Backtrace.hxx>
-
-#endif
+#include <elle/Backtrace.hxx>
