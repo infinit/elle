@@ -1453,6 +1453,8 @@ class BaseNode(object, metaclass = _BaseNodeType):
       if _OS.path.isdir(str(path)):
         for sub_path in _OS.listdir(str(path)):
           _hash_file(hasher, _OS.path.join(str(path), str(sub_path)))
+      elif _OS.path.islink(str(path)):
+        hasher.update(_OS.readlink(str(path)))
       else:
         with open(str(path), 'rb') as f:
           while True:
