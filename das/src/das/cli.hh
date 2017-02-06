@@ -70,7 +70,7 @@ namespace das
       OptionValueError(std::string option,
                        std::string value,
                        std::string message)
-        : Error(elle::sprintf("invalid value \"%s\" for option %s: %s",
+        : Error(elle::sprintf("invalid value \"%s\" for option --%s: %s",
                               value, option, message))
         , OptionError(option)
         , ValueError(value)
@@ -86,7 +86,7 @@ namespace das
     {                                                                   \
     public:                                                             \
       Name ## Option(std::string option)                                \
-        : Error(elle::sprintf(Description ": %s", option))              \
+        : Error(elle::sprintf(Description ": --%s", option))            \
         , OptionError(option)                                           \
       {}                                                                \
     }                                                                   \
@@ -152,6 +152,19 @@ namespace das
 
     namespace _details
     {
+      inline
+      std::string
+      strip_dashes(std::string const& a)
+      {
+        auto s = a.size();
+        if (s == 2 && a[0] == '-' && std::isalpha(a[1]))
+          return a.substr(1);
+        else if (2 < a.size() && a[0] == '-' && a[1] == '-')
+          return a.substr(2);
+        else
+          return a;
+      }
+
       class IsOption
       {
       public:
@@ -428,10 +441,11 @@ namespace das
         {
           if (!--this->_remaining && !this->_args.empty())
           {
-            if (is_option(*this->_args.begin()))
-              throw UnknownOption(*this->_args.begin());
+            auto const& arg = *this->_args.begin();
+            if (is_option(arg))
+              throw UnknownOption(strip_dashes(arg));
             else
-              throw UnrecognizedValue(*this->_args.begin());
+              throw UnrecognizedValue(arg);
           }
         }
 

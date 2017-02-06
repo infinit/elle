@@ -9,6 +9,20 @@ DAS_SYMBOL(bar);
 DAS_SYMBOL(baz);
 DAS_SYMBOL(quux);
 
+#define CHECK_THROW(Expression, Exception, Message)     \
+  do {                                                  \
+    BOOST_CHECK_THROW(Expression, Exception);           \
+    try                                                 \
+    {                                                   \
+      Expression;                                       \
+    }                                                   \
+    catch (Exception const& e)                          \
+    {                                                   \
+      BOOST_CHECK_EQUAL(elle::sprintf("%s", e),         \
+                        Message);                       \
+    }                                                   \
+  } while (false)
+
 static
 void
 basics()
@@ -29,18 +43,22 @@ basics()
   BOOST_CHECK_EQUAL(
     das::cli::call(proto, f, {"--foo=", "--baz="}),
     "");
-  BOOST_CHECK_THROW(
+  CHECK_THROW(
     das::cli::call(proto, f, {"--foo", "bar", "--baz", "x", "--bar", "quux"}),
-    das::cli::UnknownOption);
-  BOOST_CHECK_THROW(
+    das::cli::UnknownOption,
+    "unknown option: --bar");
+  CHECK_THROW(
     das::cli::call(proto, f, {"--foo", "bar", "garbage", "--baz", "quux"}),
-    das::cli::UnrecognizedValue);
-  BOOST_CHECK_THROW(
+    das::cli::UnrecognizedValue,
+    "extra unrecognized argument: garbage");
+  CHECK_THROW(
     das::cli::call(proto, f, {"--foo", "bar"}),
-    das::cli::MissingOption);
-  BOOST_CHECK_THROW(
+    das::cli::MissingOption,
+    "missing option: --baz");
+  CHECK_THROW(
     das::cli::call(proto, f, {"--foo", "bar", "--baz", "quux", "--foo", "foo"}),
-    das::cli::DuplicateOption);
+    das::cli::DuplicateOption,
+    "duplicate option: --foo");
 }
 
 namespace conversions
@@ -60,12 +78,14 @@ namespace conversions
       das::cli::call(proto, f, {"--foo", std::to_string(max)}), max);
     BOOST_CHECK_EQUAL(
       das::cli::call(proto, f, {"--foo", std::to_string(min)}), min);
-    BOOST_CHECK_THROW(
+    CHECK_THROW(
       das::cli::call(proto, f, {"--foo", too_big}),
-      das::cli::ValueError);
-    BOOST_CHECK_THROW(
+      das::cli::ValueError,
+      "invalid value \"" + too_big + "\" for option --foo: integer out of range");
+    CHECK_THROW(
       das::cli::call(proto, f, {"--foo", too_little}),
-      das::cli::ValueError);
+      das::cli::ValueError,
+      "invalid value \"" + too_little + "\" for option --foo: integer out of range");
   }
 
   template <typename I>
@@ -98,21 +118,24 @@ namespace conversions
       auto const proto = das::named::prototype(foo);
       {
         auto const f = [] (int i) {return i;};
-        BOOST_CHECK_THROW(
-          das::cli::call(proto, f, {"--foo", "lol"}), das::cli::ValueError);
+        CHECK_THROW(
+          das::cli::call(proto, f, {"--foo", "lol"}), das::cli::ValueError,
+          "invalid value \"lol\" for option --foo: invalid integer");
       }
       // Verify we check for trailing garbage.
       {
         auto const f = [] (unsigned i) {return i;};
-        BOOST_CHECK_THROW(
+        CHECK_THROW(
           das::cli::call(
-            proto, f, {"--foo", "007 james bond"}), das::cli::ValueError);
+            proto, f, {"--foo", "007 james bond"}), das::cli::ValueError,
+          "invalid value \"007 james bond\" for option --foo: invalid integer");
       }
       {
         auto const f = [] (signed i) {return i;};
-        BOOST_CHECK_THROW(
+        CHECK_THROW(
           das::cli::call(
-            proto, f, {"--foo", "-666numberofthebeast"}), das::cli::ValueError);
+            proto, f, {"--foo", "-666numberofthebeast"}), das::cli::ValueError,
+          "invalid value \"-666numberofthebeast\" for option --foo: invalid integer");
       }
     }
   }
@@ -206,9 +229,10 @@ dash()
   {
     BOOST_CHECK_EQUAL(
       das::cli::call(proto, f, {"--composite-option", "193"}), 193);
-    BOOST_CHECK_THROW(
+    CHECK_THROW(
       das::cli::call(proto, f, {"--composite_option", "193"}),
-      das::cli::UnknownOption);
+      das::cli::UnknownOption,
+      "unknown option: --composite_option");
   }
 }
 
@@ -290,9 +314,10 @@ namespace positional_ct
       auto const proto = das::named::prototype(bar);
       BOOST_CHECK_EQUAL(
         das::cli::call(proto, f, {"1", "2", "3"}), 6);
-      BOOST_CHECK_THROW(
+      CHECK_THROW(
         das::cli::call(proto, f, {"-b", "1", "2", "3"}),
-        das::cli::UnrecognizedValue);
+        das::cli::UnrecognizedValue,
+        "extra unrecognized argument: 2");
     }
   }
 }
@@ -331,9 +356,10 @@ namespace positional_rt
       auto const proto = das::named::prototype(bar);
       BOOST_CHECK_EQUAL(
         das::cli::call(proto, f, {"1", "2", "3"}, opts), 6);
-      BOOST_CHECK_THROW(
+      CHECK_THROW(
         das::cli::call(proto, f, {"-b", "1", "2", "3"}, opts),
-        das::cli::UnrecognizedValue);
+        das::cli::UnrecognizedValue,
+        "extra unrecognized argument: 2");
     }
   }
 }
