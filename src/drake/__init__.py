@@ -2977,7 +2977,7 @@ class Copy(Builder):
     else:
       return node
 
-  def __init__(self, source, to, post_process = None):
+  def __init__(self, source, to, post_process = None, follow_symlinks = True):
     """Create a copy builder.
 
     source -- Node to copy.
@@ -2986,6 +2986,7 @@ class Copy(Builder):
     self.__source = source
     self.__target = source.clone(drake.Path(to).canonize())
     self.__post_process = post_process
+    self.__follow_symlinks = follow_symlinks
     if self.__source is self.__target:
       return
     try:
@@ -3036,7 +3037,7 @@ class Copy(Builder):
       try:
         shutil.copy2(str(self.__source.path()),
                      str(self.__target.path()),
-                     follow_symlinks = False)
+                     follow_symlinks = self.__follow_symlinks)
       except OSError as e:
         if e.errno == 95 and _OS.path.lexists(target_path):
           # On symlinks on python 3.5, alpine version, copy and copy2 perform the copy,
@@ -3055,7 +3056,7 @@ class Copy(Builder):
           'unable to copy2 %s, falling back to copy', str(self.__source.path()))
         shutil.copy(str(self.__source.path()),
                     str(self.__target.path()),
-                    follow_symlinks = False)
+                    follow_symlinks = self.__follow_symlinks)
 
     return True
 
@@ -3097,7 +3098,7 @@ class Install(Copy):
       return cmd
 
 import collections
-def __copy(sources, to, strip_prefix, builder, post_process):
+def __copy(sources, to, strip_prefix, builder, post_process, follow_symlinks):
   with sched.logger.log(
       'drake.copy',
       drake.log.LogLevel.trace,
@@ -3123,13 +3124,13 @@ def __copy(sources, to, strip_prefix, builder, post_process):
     if multiple:
       res = []
       for node in sources:
-        res.append(__copy_stripped(node, to, strip_prefix, builder, post_process))
+        res.append(__copy_stripped(node, to, strip_prefix, builder, post_process, follow_symlinks))
       return res
     else:
-      return __copy_stripped(sources, to, strip_prefix, builder, post_process)
+      return __copy_stripped(sources, to, strip_prefix, builder, post_process, follow_symlinks)
 
 __copy_stripped_cache = {}
-def __copy_stripped(source, to, strip_prefix, builder, post_process):
+def __copy_stripped(source, to, strip_prefix, builder, post_process, follow_symlinks):
   key = (source, to, strip_prefix, builder)
   cache = __copy_stripped_cache.get(key)
   if cache is not None:
@@ -3151,10 +3152,10 @@ def __copy_stripped(source, to, strip_prefix, builder, post_process):
       if Copy._Copy__original(source) is res:
         __copy_stripped_cache[key] = res
         return res
-    res = builder(source, path, post_process).target()
+    res = builder(source, path, post_process, follow_symlinks).target()
     for dep in source.dependencies:
       if not dep.name_absolute().absolute():
-        node = __copy_stripped(dep, to, strip_prefix, builder, post_process)
+        node = __copy_stripped(dep, to, strip_prefix, builder, post_process, follow_symlinks)
         if node is not None:
           res.dependency_add(node)
     __copy_stripped_cache[key] = res
@@ -3164,7 +3165,8 @@ def copy(sources,
          to,
          strip_prefix = None,
          post_process = None,
-         builder = Copy):
+         builder = Copy,
+         follow_symlinks = True):
   """Convenience function to create Copy builders.
 
   When copying large file trees, iterating and creating Copy
@@ -3194,15 +3196,15 @@ def copy(sources,
   >>> targets
   [/tmp/.drake.copy.dest/.drake.copy.source/a, /tmp/.drake.copy.dest/.drake.copy.source/b]
   """
-  return __copy(sources, to, strip_prefix, builder, post_process)
+  return __copy(sources, to, strip_prefix, builder, post_process, follow_symlinks)
 
 
-def install(sources, to, strip_prefix = None, post_process = None):
+def install(sources, to, strip_prefix = None, post_process = None, follow_symlinks = True):
   """Convenience function to create Install builders.
 
   See documentation of copy.
   """
-  return __copy(sources, to, strip_prefix, Install, post_process)
+  return __copy(sources, to, strip_prefix, Install, post_process, follow_symlinks)
 
 
 class Rule(VirtualNode):
