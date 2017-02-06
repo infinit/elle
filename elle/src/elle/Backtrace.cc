@@ -3,6 +3,7 @@
 # include <dbghelp.h>
 #endif
 #include <cxxabi.h>
+#include <cmath>
 
 #include <cstdlib>
 #include <iomanip>
