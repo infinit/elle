@@ -3028,8 +3028,8 @@ class Copy(Builder):
   def _copy(self):
     with WritePermissions(self.__target):
       target_path = str(self.__target.path())
-      # shutil.copy and copy2 fail to overwrite a symlink
-      if _OS.path.islink(target_path):
+      # shutil.copy and copy2 fail to overwrite if source is a symlink
+      if _OS.path.islink(str(self.__source.path())) and _OS.path.lexists(target_path):
         _OS.remove(target_path)
       try:
         shutil.copy2(str(self.__source.path()),
