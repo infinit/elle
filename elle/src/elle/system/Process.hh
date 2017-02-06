@@ -17,8 +17,8 @@ namespace elle
     | Types |
     `------*/
     public:
-      typedef Process Self;
-      typedef std::vector<std::string> Arguments;
+      using Self = Process;
+      using Arguments = std::vector<std::string>;
 
     /*-------------.
     | Construction |
@@ -26,6 +26,8 @@ namespace elle
     public:
       // If set_uid is true, set real uid/gid to effective uid/gid before exec
       Process(Arguments args, bool set_uid = false);
+      Process(std::initializer_list<std::string> args,
+              bool set_uid = false);
       ~Process();
 
     /*-----------.

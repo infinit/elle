@@ -20,7 +20,6 @@ namespace elle
 {
   namespace system
   {
-
 #ifndef INFINIT_WINDOWS
     class Process::Impl
     {
@@ -139,6 +138,14 @@ namespace elle
 
     Process::Process(std::vector<std::string> args, bool set_uid)
       : _arguments(std::move(args))
+      , _set_uid(set_uid)
+      , _impl(new Process::Impl(*this))
+    {
+      ELLE_TRACE_SCOPE("%s: start", *this);
+    }
+
+    Process::Process(std::initializer_list<std::string> args, bool set_uid)
+      : _arguments(args)
       , _set_uid(set_uid)
       , _impl(new Process::Impl(*this))
     {
