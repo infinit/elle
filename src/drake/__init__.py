@@ -3027,10 +3027,21 @@ class Copy(Builder):
 
   def _copy(self):
     with WritePermissions(self.__target):
+      target_path = str(self.__target.path())
+      # shutil.copy and copy2 fail to overwrite a symlink
+      if _OS.path.islink(target_path):
+        _OS.remove(target_path)
       try:
         shutil.copy2(str(self.__source.path()),
                      str(self.__target.path()),
                      follow_symlinks = False)
+      except OSError as e:
+        if e.errno == 95 and _OS.path.lexists(target_path):
+          # On symlinks on python 3.5, alpine version, copy and copy2 perform the copy,
+          # but fail on subsequent chmod with this error
+          pass
+        else:
+          raise e
       except PermissionError as e:
         # Landing here means that we didn't have permission to do a copystat as
         # part of the copy2. Fallback to a straight copy with a log.
