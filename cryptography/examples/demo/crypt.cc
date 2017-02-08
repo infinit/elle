@@ -100,7 +100,7 @@ main(int argc, char* argv[])
   }
   catch (std::exception const& e)
   {
-    std::cerr << "fatal error: " << e.what() << std::endl;
+    std::cerr << "fatal error: " << e.what() << '\n';
     return 1;
   }
 }

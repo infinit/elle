@@ -40,9 +40,9 @@ struct Object
 };
 
 Object a;
-std::cout << a.value() << std::endl;
+std::cout << a.value() << '\n';
 a.done(true);
-std::cout << a.done() << std::endl;
+std::cout << a.done() << '\n';
 ```
 Full example [here](examples/samples/attributes.cc).
 

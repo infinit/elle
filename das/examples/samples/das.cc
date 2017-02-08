@@ -98,14 +98,12 @@ main()
       }
     }
   };
-  std::cout << "records representation: " << std::endl << r << std::endl
-            << std::endl;
+  std::cout << "records representation: \n" << r << "\n\n";
   std::stringstream stream;
   {
     elle::serialization::json::SerializerOut serializer(stream, false);
     das::serialize(r, serializer);
   }
-  std::cout << "records (in json): " << std::endl << stream.str() << std::endl;
-
+  std::cout << "records (in json): \n" << stream.str() << '\n';
   return 0;
 }
