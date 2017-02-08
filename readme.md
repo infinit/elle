@@ -5,7 +5,7 @@ Elle is a collection of libraries, written in modern C++ (C++14). It contains a 
 Elle is split into different smaller specialized libraries to provide elegant ways to approach [coroutine](https://en.wikipedia.org/wiki/Coroutine), networking, formatting, serialization, logging, [RPCs](https://en.wikipedia.org/wiki/Remote_procedure_call), etc.
 
 > *Notes:*
-> - Elle is under development, used and maintained by [Infinit](https://infinit.sh) as a set of core libraries. APIs, structures and concepts may change over time. You can use it as is but we don't guaranty any API backward compatibility.
+> - Elle is under development, used and maintained by [Infinit](https://infinit.sh) as a set of core libraries. APIs, structures and concepts may change over time. You can use it as is but we don't guarantee any API backward compatibility.
 > - Elle has a sub-library also called elle, which might change name in a near future.
 
 ## Example
@@ -41,7 +41,7 @@ As mentioned earlier, Elle is a set of libraries, designed to ease C++ developme
 - [elle](elle): Utilities including serialization, logs, buffer, formatting, ...
 - [reactor](reactor): An asynchronous framework using a coroutines scheduler
 - [cryptography](cryptography): Object-oriented cryptography wrapper around OpenSSL
-- [protocol](protocol): Network communication library (RPCs))
+- [protocol](protocol): Network communication library (RPCs)
 - [das](das): Model manipulator and generator
 - [athena](athena): Byzantine environment library
 - [aws](aws): *reactorified* AWS API wrapper
@@ -52,7 +52,7 @@ As mentioned earlier, Elle is a set of libraries, designed to ease C++ developme
 ### Requirements
 
 - [gcc](https://gcc.gnu.org) (>= 4.9.2) or [clang](http://clang.llvm.org) (>= 3.5.0) or [mingw](http://mingw.org) (>= 5.3.0).
-- [python3](https://www.python.org/download/releases/3.0) (>= 3.4.0)
+- [python3](https://www.python.org/download) (>= 3.4.0)
 
 ### Build system
 
@@ -77,14 +77,14 @@ cd elle/_build/linux64
 ./drake //build -j 2 # Build all libraries using 2 jobs.
 ```
 
-#### MacOSx
+#### macOS
 
 ```bash
 cd elle/_build/osx
 ./drake //build -j 2 # Build all libraries using 2 jobs.
 ```
 
-Because Elle has been designed to be modular, you can build specific parts of Elle by running `./drake //<module>/build`:
+Because Elle was designed to be modular, you can build specific parts of Elle by running `./drake //<module>/build`:
 
 ```bash
 ./drake //cryptography/build -j 2 # To build libcryptography and its dependencies.
@@ -92,7 +92,7 @@ Because Elle has been designed to be modular, you can build specific parts of El
 ./drake //protocol/build -j 2 # To build the libprotocol and its dependencies.
 ./drake //...
 ```
-It will result on `<module>/lib/lib<module>.so` and its dependencies on Linux, `<module>/lib/lib<module>.dylib` on MacOS, ...
+It will result on `<module>/lib/lib<module>.so` and its dependencies on Linux, `<module>/lib/lib<module>.dylib` on macOS, ...
 
 ### Dependencies
 

@@ -22,7 +22,7 @@ _See [Elle: How to compile](https://github.com/infinit/elle#how-to-compile)._
 DAS_SYMBOL(title);
 DAS_SYMBOL(artist);
 
-/// Declare a Record class with
+/// Declare a Record class with a title and an artist.
 struct Record
 {
   std::string title;

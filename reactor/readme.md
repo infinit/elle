@@ -1,12 +1,12 @@
 # Reactor
 
-The reactor is an asynchronous framework, built around a [coroutine](https://en.wikipedia.org/wiki/Coroutine) scheduler (using [boost::context](http://www.boost.org/doc/libs/1_62_0/libs/context/doc/html/context/overview.html) or [libcoroutine](https://github.com/stevedekorte/coroutine/tree/master) and benefiting from [boost::asio](http://www.boost.org/doc/libs/1_61_0/doc/html/boost_asio/overview.html)) providing cooperative multitasking on a single thread, enabling simple and safe imperative style concurrency.
+The reactor is an asynchronous framework, built around a [coroutine](https://en.wikipedia.org/wiki/Coroutine) scheduler (using [boost::context](http://www.boost.org/doc/libs/1_62_0/libs/context/doc/html/context/overview.html) or [libcoroutine](https://github.com/stevedekorte/coroutine/tree/master) and benefiting from [boost::asio](http://www.boost.org/doc/libs/1_61_0/doc/html/boost_asio/overview.html)) providing cooperative multitasking on a single system thread, enabling simple and safe imperative style concurrency.
 
 The reactor is part of the [Elle](https://github.com/infinit/elle) set of libraries.
 
 ## Motivation
 
-The reactor has been designed to suit the needs of I/O bound projects. In this situation, you can benefit of near maximum CPU potential, while other coroutines are waiting on I/O. Furthermore, program behavior is highly predictable compare to parallel programming: context switches trigger when a coroutine yield, synchronization tools give strong guaranties on coroutines execution order and no code is executed in parallel (unless you explicitly ask for it, and the reactor provides tools to make both worlds (single-threading and multi-threading) coexist).
+The reactor was designed to suit the needs of I/O bound projects. In this situation, you can benefit from near maximum CPU potential, while other coroutines are waiting on I/O. Furthermore, program behavior is highly predictable compared to parallel programming: context switches trigger when a coroutine yields, synchronization tools give strong guaranties on coroutines execution order and no code is executed in parallel (unless you explicitly ask for it, and the reactor provides tools to make both worlds (single-threading and multi-threading) coexist).
 
 ## Example
 

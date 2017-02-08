@@ -7,14 +7,14 @@ management and serialization, etc.
 
 ## Motivation
 
-C++ standard library lacks some of fundamental concepts, that's why the
-[Boost](http://www.boost.org) libraries exist and tends to fill this lack of
-functionality. Based on both, elle introduces new concepts and functionnalities
+The C++ standard library lacks some of fundamental concepts, that's why the
+[Boost](http://www.boost.org) libraries exist and tend to fill this lack of
+features. Based on both, elle introduces new concepts and functionnalities
 to makes developers life easier.
 
 elle includes many helpers such as:
 
-* [attributes](#attributes): Macros that automatically declares and implements
+* [attributes](#attributes): Macros that automatically declare and implement
 setters and getters
 * [buffers](#buffers): Abstract memory management
 * [serialization](#serialization): json & binary serializations supporting
@@ -44,14 +44,15 @@ std::cout << a.value() << '\n';
 a.done(true);
 std::cout << a.done() << '\n';
 ```
+
 Full example [here](examples/samples/attributes.cc).
 
 ### Buffers
 
 Buffers represent memory. There are 3 types of buffers:
-- elle::Buffer (that owns the memory)
-- elle::ConstWeakBuffer (A read-only, glorifiend C array pointer)
-- elle::WeakBuffer (Like ConstWeakBuffer, but mutable)
+- `elle::Buffer` (that owns the memory)
+- `elle::ConstWeakBuffer` (A read-only, glorifiend C array pointer)
+- `elle::WeakBuffer` (Like ConstWeakBuffer, but mutable)
 
 Each buffer has a stream API, can be iterated, supports indexing, comparison and
 hashing, direct memory access and can be converted to std::string.
@@ -71,23 +72,24 @@ std::cout << mslice.string() << '\n'; // in
 
 // Edit the memory.
 mslice[0] = 'o';
-std::cout << mslice.string() << std::endl; // in
+std::cout << mslice.string() << '\n'; // in
 
 // The original buffer benefits from the change done previously.
-std::cout << buffer[6] << std::endl; // o
-std::cout << buffer.string() << std::endl; // somethong interesting
+std::cout << buffer[6] << '\n'; // o
+std::cout << buffer.string() << '\n'; // somethong interesting
 ```
 Full example [here](examples/samples/buffer.cc).
 
 ### Serialization
 
 elle includes a serialization library designed to support modern C++, including
-smart pointers, inheritance and provide versionning, the less intrusive way
-possible. It supports naively most of the basic C++ objects, most elle objects
-and is easly extendable via a conversion API.
+smart pointers, inheritance and provide versioning, the less intrusive way
+possible. It supports natively most of the basic C++ objects, most elle objects
+and is easily extendable via a conversion API.
 
-The following example shows versionned class Record, whose evolved from at
-ersions *0.2.0* and *0.3.0*.
+The following example shows the versioned class `Record`, whose evolved at
+versions *0.2.0* and *0.3.0*.
+
 ```cpp
 struct Record
 {
@@ -95,8 +97,7 @@ struct Record
     : _name(name)
     , _id(elle::UUID::random())
     , _date(boost::posix_time::second_clock::universal_time())
-  {
-  }
+  {}
 
   // ...
 
@@ -133,8 +134,7 @@ struct HitCounter
 {
   HitCounter()
     : _hit(0)
-  {
-  }
+  {}
 
   void
   print(std::ostream& out) const override
@@ -172,7 +172,7 @@ ELLE_LOG_COMPONENT("component1");
 // [...]
 
 // Report if the log level is set to at least LOG (default).
-ELLE_LOG("Something super relevant with two parameters (%s) and (%s)",
+ELLE_LOG("Something super relevant with two parameters: %s and %s",
          42, elle::Buffer("buffer"));
 // Report if the log level is set to at least TRACE.
 ELLE_TRACE("Something relevant");
@@ -202,7 +202,7 @@ the environment.
 
 ```bash
 ./log # default: ELLE_LOG_LEVEL=LOG
-[component1] [main] Something super relevant with two parameters (42) and this one (buffer)
+[component1] [main] Something super relevant with two parameters: 42 and buffer
 [component2] [main] Something went terribly wrong.
 [component2] [main] Something went wrong.
 
