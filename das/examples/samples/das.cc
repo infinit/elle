@@ -81,7 +81,7 @@ DAS_SERIALIZE(DasRecords);
 int
 main()
 {
-  Records r{
+  auto r = Records{
     "Favorites",
     {
       {

@@ -23,14 +23,13 @@ API and follows the RAII idiom to lazily simplify initialization and cleanup.
 ```cpp
 // Sign/verify with DSA.
 {
-  std::string data("Data to sign...");
+  auto data = std::string("Data to sign...");
 
   // Generate a random dsa KeyPair.
-  infinit::cryptography::dsa::KeyPair keypair =
-    infinit::cryptography::dsa::keypair::generate(2048);
+  autp keypair = infinit::cryptography::dsa::keypair::generate(2048);
 
   // Create a signature for data (with k: the private key).
-  elle::Buffer signature = keypair.k().sign(data);
+  auto signature = keypair.k().sign(data);
 
   // Ensure verify the signature (with K: the public key).
   assert(keypair.K().verify(signature, data) == true));

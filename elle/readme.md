@@ -58,16 +58,16 @@ hashing, direct memory access and can be converted to std::string.
 
 ```cpp
 // Construct a Buffer.
-elle::Buffer buffer("something interesting");
-std::cout << buffer[3] << std::endl; // e
+auto buffer = elle::Buffer{"something interesting"};
+std::cout << buffer[3] << '\n'; // e
 
 // Construct a ConstWeakBuffer on a slice of the original buffer memory.
-elle::ConstWeakBuffer slice(buffer.contents() + 4, 2);
-std::cout << slice.string() << std::endl; // th
+auto slice = elle::ConstWeakBuffer(buffer.contents() + 4, 2);
+std::cout << slice.string() << '\n'; // th
 
 // Construct a WeakBuffer on another slice of the original buffer memory.
-elle::WeakBuffer mslice(buffer.contents() + 6, 2);
-std::cout << mslice.string() << std::endl; // in
+auto mslice = elle::WeakBuffer(buffer.contents() + 6, 2);
+std::cout << mslice.string() << '\n'; // in
 
 // Edit the memory.
 mslice[0] = 'o';
