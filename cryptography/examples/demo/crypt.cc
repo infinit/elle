@@ -67,13 +67,13 @@ key(bool verify)
 int
 main(int argc, char* argv[])
 {
+  if (argc != 3)
+  {
+    std::cerr << "Usage: " << argv[0] << " [--encipher|--decipher] message\n";
+    return 1;
+  }
   try
   {
-    if (argc != 3)
-    {
-      std::cerr << "Usage: " << argv[0] << " [--encipher|--decipher] message" << std::endl;
-      return 1;
-    }
     if (argv[1] == std::string{"--encipher"})
     {
       auto secret = key(true);
