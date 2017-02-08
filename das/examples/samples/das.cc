@@ -66,9 +66,8 @@ struct Records
 // that you can more than one model per class).
 DAS_SYMBOL(label);
 DAS_SYMBOL(records);
-using DasRecords = das::Model<Records,
-                              elle::meta::List<Symbol_label,
-                                               Symbol_records>>;
+using DasRecords = das::Model<Records, elle::meta::List<Symbol_label,
+                                                        Symbol_records>>;
 DAS_MODEL_DEFAULT(Records, DasRecords);
 
 // Make all class::Model printable.
