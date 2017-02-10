@@ -113,10 +113,10 @@ ELLE_TEST_SCHEDULED(run_version, (elle::Version, version))
   {
     exchange(
       bob, alice,
-      infinit::cryptography::random::generate<std::string>(size));
+      elle::cryptography::random::generate<std::string>(size));
     exchange(
       alice, bob,
-      infinit::cryptography::random::generate<std::string>(size));
+      elle::cryptography::random::generate<std::string>(size));
   }
 }
 

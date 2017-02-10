@@ -1,5 +1,5 @@
-#ifndef INFINIT_CRYPTOGRAPHY_HMAC_HXX
-# define INFINIT_CRYPTOGRAPHY_HMAC_HXX
+#ifndef ELLE_CRYPTOGRAPHY_HMAC_HXX
+# define ELLE_CRYPTOGRAPHY_HMAC_HXX
 
 # include <utility>
 
@@ -13,7 +13,7 @@
 # include <cryptography/raw.hh>
 # include <cryptography/finally.hh>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {

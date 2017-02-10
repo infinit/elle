@@ -1,5 +1,5 @@
-#ifndef INFINIT_CRYPTOGRAPHY_DELETER_HH
-# define INFINIT_CRYPTOGRAPHY_DELETER_HH
+#ifndef ELLE_CRYPTOGRAPHY_DELETER_HH
+# define ELLE_CRYPTOGRAPHY_DELETER_HH
 
 # include <openssl/bn.h>
 # include <openssl/evp.h>
@@ -7,7 +7,7 @@
 /// These deleters can be used with the types defined in types.hh so as
 /// to use smart pointers with such low-level structures.
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {

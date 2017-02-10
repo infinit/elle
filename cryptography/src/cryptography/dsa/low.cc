@@ -13,7 +13,7 @@
 #include <openssl/crypto.h>
 #include <openssl/err.h>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -41,7 +41,7 @@ namespace infinit
               elle::sprintf("unable to encode the DSA private key: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
-          INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_OPENSSL(buffer);
+          ELLE_CRYPTOGRAPHY_FINALLY_ACTION_FREE_OPENSSL(buffer);
 
           const unsigned char* _buffer = buffer;
 
@@ -53,12 +53,12 @@ namespace infinit
               elle::sprintf("unable to decode the DSA private key: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
-          INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_DSA(public_key);
+          ELLE_CRYPTOGRAPHY_FINALLY_ACTION_FREE_DSA(public_key);
 
-          INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(buffer);
+          ELLE_CRYPTOGRAPHY_FINALLY_ABORT(buffer);
           ::OPENSSL_free(buffer);
 
-          INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(public_key);
+          ELLE_CRYPTOGRAPHY_FINALLY_ABORT(public_key);
 
           return (public_key);
         }

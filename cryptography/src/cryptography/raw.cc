@@ -21,14 +21,14 @@
 
 #include <thread>
 
-#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
-ELLE_LOG_COMPONENT("infinit.cryptography.raw");
+#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+ELLE_LOG_COMPONENT("elle.cryptography.raw");
 #endif
 
 static const int max_block_size = 4096;
 static const int buffer_sizes[] = {
-  infinit::cryptography::constants::stream_block_size,
-  infinit::cryptography::constants::stream_block_size + max_block_size
+  elle::cryptography::constants::stream_block_size,
+  elle::cryptography::constants::stream_block_size + max_block_size
 };
 
 static
@@ -72,7 +72,7 @@ buffers()
 // ---------- Asymmetric ------------------------------------------------------
 //
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -430,7 +430,7 @@ namespace infinit
           return (buffer);
         }
 
-#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
+#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
         elle::Buffer
         rotate(::EVP_PKEY* key,
                elle::ConstWeakBuffer const& seed,
@@ -520,7 +520,7 @@ namespace infinit
 // ---------- Symmetric -------------------------------------------------------
 //
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -586,7 +586,7 @@ namespace infinit
 
           ::EVP_CIPHER_CTX_init(&context);
 
-          INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_CIPHER_CONTEXT(context);
+          ELLE_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_CIPHER_CONTEXT(context);
 
           // Initialise the ciphering process.
           if (::EVP_EncryptInit_ex(&context,
@@ -679,7 +679,7 @@ namespace infinit
               elle::sprintf("unable to clean the cipher context: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
-          INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
+          ELLE_CRYPTOGRAPHY_FINALLY_ABORT(context);
         }
 
         void
@@ -739,7 +739,7 @@ namespace infinit
 
           ::EVP_CIPHER_CTX_init(&context);
 
-          INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_CIPHER_CONTEXT(context);
+          ELLE_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_CIPHER_CONTEXT(context);
 
           // Initialise the ciphering process.
           if (::EVP_DecryptInit_ex(&context,
@@ -822,7 +822,7 @@ namespace infinit
               elle::sprintf("unable to clean the cipher context: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
-          INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
+          ELLE_CRYPTOGRAPHY_FINALLY_ABORT(context);
         }
       }
     }
@@ -833,7 +833,7 @@ namespace infinit
 // ---------- Hash ------------------------------------------------------------
 //
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -853,7 +853,7 @@ namespace infinit
 
         ::EVP_MD_CTX_init(&context);
 
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_DIGEST_CONTEXT(context);
+        ELLE_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_DIGEST_CONTEXT(context);
 
         // Initialise the digest.
         if (::EVP_DigestInit_ex(&context, oneway, nullptr) <= 0)
@@ -912,7 +912,7 @@ namespace infinit
             elle::sprintf("unable to clean the digest context: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
 
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
+        ELLE_CRYPTOGRAPHY_FINALLY_ABORT(context);
 
         return (digest);
       }
@@ -924,7 +924,7 @@ namespace infinit
 // ---------- HMAC ------------------------------------------------------------
 //
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -947,7 +947,7 @@ namespace infinit
 
           ::EVP_MD_CTX_init(&context);
 
-          INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_DIGEST_CONTEXT(context);
+          ELLE_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_DIGEST_CONTEXT(context);
 
           if (::EVP_DigestInit_ex(&context, oneway, NULL) <= 0)
             throw Error(
@@ -1019,7 +1019,7 @@ namespace infinit
               elle::sprintf("unable to clean the digest context: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
-          INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
+          ELLE_CRYPTOGRAPHY_FINALLY_ABORT(context);
 
           return (digest);
         }
@@ -1040,7 +1040,7 @@ namespace infinit
 
           ::EVP_MD_CTX_init(&context);
 
-          INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_DIGEST_CONTEXT(context);
+          ELLE_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_DIGEST_CONTEXT(context);
 
           if (::EVP_DigestInit_ex(&context, oneway, NULL) <= 0)
             throw Error(
@@ -1092,7 +1092,7 @@ namespace infinit
               elle::sprintf("unable to clean the digest context: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
-          INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
+          ELLE_CRYPTOGRAPHY_FINALLY_ABORT(context);
 
           return (true);
         }

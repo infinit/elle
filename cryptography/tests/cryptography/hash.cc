@@ -15,13 +15,13 @@ static std::string const _message(
 `----------*/
 
 template <uint32_t N,
-          infinit::cryptography::Oneway O>
+          elle::cryptography::Oneway O>
 void
 test_represent_n()
 {
   // N)
   {
-    elle::Buffer digest = infinit::cryptography::hash(_message, O);
+    elle::Buffer digest = elle::cryptography::hash(_message, O);
 
     std::stringstream stream;
     {
@@ -44,19 +44,19 @@ test_represent()
   // other tests.
 
   // MD5.
-  test_represent_n<1, infinit::cryptography::Oneway::md5>();
+  test_represent_n<1, elle::cryptography::Oneway::md5>();
   // SHA.
-  test_represent_n<2, infinit::cryptography::Oneway::sha>();
+  test_represent_n<2, elle::cryptography::Oneway::sha>();
   // SHA-1.
-  test_represent_n<3, infinit::cryptography::Oneway::sha1>();
+  test_represent_n<3, elle::cryptography::Oneway::sha1>();
   // SHA-224.
-  test_represent_n<4, infinit::cryptography::Oneway::sha224>();
+  test_represent_n<4, elle::cryptography::Oneway::sha224>();
   // SHA-256.
-  test_represent_n<5, infinit::cryptography::Oneway::sha256>();
+  test_represent_n<5, elle::cryptography::Oneway::sha256>();
   // SHA-384.
-  test_represent_n<6, infinit::cryptography::Oneway::sha384>();
+  test_represent_n<6, elle::cryptography::Oneway::sha384>();
   // SHA-512.
-  test_represent_n<7, infinit::cryptography::Oneway::sha512>();
+  test_represent_n<7, elle::cryptography::Oneway::sha512>();
 }
 
 /*--------.
@@ -68,14 +68,14 @@ void
 test_operate()
 {
   std::string data =
-    infinit::cryptography::random::generate<std::string>(123);
+    elle::cryptography::random::generate<std::string>(123);
 
   elle::Buffer digest1 =
-    infinit::cryptography::hash(data,
-                                infinit::cryptography::Oneway::sha1);
+    elle::cryptography::hash(data,
+                                elle::cryptography::Oneway::sha1);
   elle::Buffer digest2 =
-    infinit::cryptography::hash(data,
-                                infinit::cryptography::Oneway::sha1);
+    elle::cryptography::hash(data,
+                                elle::cryptography::Oneway::sha1);
 
   BOOST_CHECK_EQUAL(digest1, digest2);
 }
@@ -84,7 +84,7 @@ test_operate()
 | Serialize |
 `----------*/
 
-template <infinit::cryptography::Oneway O>
+template <elle::cryptography::Oneway O>
 void
 test_serialize_x(std::string const& R)
 {
@@ -93,7 +93,7 @@ test_serialize_x(std::string const& R)
   elle::Buffer digest;
   input.serialize("digest", digest);
 
-  elle::Buffer _digest = infinit::cryptography::hash(_message, O);
+  elle::Buffer _digest = elle::cryptography::hash(_message, O);
 
   BOOST_CHECK_EQUAL(digest, _digest);
 }
@@ -103,19 +103,19 @@ void
 test_serialize()
 {
   // MD5 based on [representation 1].
-  test_serialize_x<infinit::cryptography::Oneway::md5>(R"JSON({"digest":"lRs+RbdXhAcwwOIi63EJHw=="})JSON");
+  test_serialize_x<elle::cryptography::Oneway::md5>(R"JSON({"digest":"lRs+RbdXhAcwwOIi63EJHw=="})JSON");
   // SHA based on [representation 2].
-  test_serialize_x<infinit::cryptography::Oneway::sha>(R"JSON({"digest":"B34bV98RTfK7qXPQd3+zs3GBYKk="})JSON");
+  test_serialize_x<elle::cryptography::Oneway::sha>(R"JSON({"digest":"B34bV98RTfK7qXPQd3+zs3GBYKk="})JSON");
   // SHA-1 based on [representation 3].
-  test_serialize_x<infinit::cryptography::Oneway::sha1>(R"JSON({"digest":"LMHmhHUOH8N3mGo1HTRFd6vbmXk="})JSON");
+  test_serialize_x<elle::cryptography::Oneway::sha1>(R"JSON({"digest":"LMHmhHUOH8N3mGo1HTRFd6vbmXk="})JSON");
   // SHA-224 based on [representation 4].
-  test_serialize_x<infinit::cryptography::Oneway::sha224>(R"JSON({"digest":"5DwfnlGVKvLuciDUwR6fuzOS2DDyA4nCeDoZ/Q=="})JSON");
+  test_serialize_x<elle::cryptography::Oneway::sha224>(R"JSON({"digest":"5DwfnlGVKvLuciDUwR6fuzOS2DDyA4nCeDoZ/Q=="})JSON");
   // SHA-256 based on [representation 5].
-  test_serialize_x<infinit::cryptography::Oneway::sha256>(R"JSON({"digest":"Ooj0FMtgjoI7saciFCZ/Xg8eXJWFhzXn89mZide6oeI="})JSON");
+  test_serialize_x<elle::cryptography::Oneway::sha256>(R"JSON({"digest":"Ooj0FMtgjoI7saciFCZ/Xg8eXJWFhzXn89mZide6oeI="})JSON");
   // SHA-384 based on [representation 6].
-  test_serialize_x<infinit::cryptography::Oneway::sha384>(R"JSON({"digest":"rjLzR+ByZsSO+l+IeKrzH7Dre3XZmeK2/GSPW/TgTMBQ6VwzUDkgzjlqaKUOga/4"})JSON");
+  test_serialize_x<elle::cryptography::Oneway::sha384>(R"JSON({"digest":"rjLzR+ByZsSO+l+IeKrzH7Dre3XZmeK2/GSPW/TgTMBQ6VwzUDkgzjlqaKUOga/4"})JSON");
   // SHA-512 based on [representation 7].
-  test_serialize_x<infinit::cryptography::Oneway::sha512>(R"JSON({"digest":"i641WSGHk8ZjTReGfZSAaey8Ci1rbX+usbN7DLFM2hjjN1IlgJ2bDipopotlgY++PnN6dlN+Vd6MKIz3z1LUew=="})JSON");
+  test_serialize_x<elle::cryptography::Oneway::sha512>(R"JSON({"digest":"i641WSGHk8ZjTReGfZSAaey8Ci1rbX+usbN7DLFM2hjjN1IlgJ2bDipopotlgY++PnN6dlN+Vd6MKIz3z1LUew=="})JSON");
 }
 
 /*-----.

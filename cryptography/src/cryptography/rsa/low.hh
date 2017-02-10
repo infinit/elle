@@ -1,9 +1,9 @@
-#ifndef INFINIT_CRYPTOGRAPHY_RSA_LOW_HH
-# define INFINIT_CRYPTOGRAPHY_RSA_LOW_HH
+#ifndef ELLE_CRYPTOGRAPHY_RSA_LOW_HH
+# define ELLE_CRYPTOGRAPHY_RSA_LOW_HH
 
 # include <openssl/rsa.h>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {

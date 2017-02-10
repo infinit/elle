@@ -1,5 +1,5 @@
-#ifndef INFINIT_CRYPTOGRAPHY_DH_KEYPAIR_HH
-# define INFINIT_CRYPTOGRAPHY_DH_KEYPAIR_HH
+#ifndef ELLE_CRYPTOGRAPHY_DH_KEYPAIR_HH
+# define ELLE_CRYPTOGRAPHY_DH_KEYPAIR_HH
 
 //
 // ---------- Class -----------------------------------------------------------
@@ -18,7 +18,7 @@ ELLE_OPERATOR_RELATIONALS();
 
 # include <elle/types.hh>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -96,7 +96,7 @@ namespace infinit
 // ---------- Generator -------------------------------------------------------
 //
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {

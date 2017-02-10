@@ -1,5 +1,5 @@
-#ifndef INFINIT_CRYPTOGRAPHY_PEM_HH
-# define INFINIT_CRYPTOGRAPHY_PEM_HH
+#ifndef ELLE_CRYPTOGRAPHY_PEM_HH
+# define ELLE_CRYPTOGRAPHY_PEM_HH
 
 # include <openssl/evp.h>
 
@@ -9,7 +9,7 @@
 
 # include <cryptography/Cipher.hh>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {

@@ -454,9 +454,9 @@ _exchange(elle::Version const& version,
           bool checksum)
 {
   std::vector<elle::Buffer> packets={
-    infinit::cryptography::random::generate<elle::Buffer>(0),
-    infinit::cryptography::random::generate<elle::Buffer>(1),
-    infinit::cryptography::random::generate<elle::Buffer>(1000),
+    elle::cryptography::random::generate<elle::Buffer>(0),
+    elle::cryptography::random::generate<elle::Buffer>(1),
+    elle::cryptography::random::generate<elle::Buffer>(1000),
     // Crypto is quite slow generating large buffers
     std::string((2 << 18) + 11, 'y'),
     // // XXX: Make sure it's always bigger than the chunk size.
@@ -626,7 +626,7 @@ _interruption(elle::Version const& version,
       },
       [&] (infinit::protocol::Serializer& s)
       {
-        to_send = infinit::cryptography::random::generate<elle::Buffer>(
+        to_send = elle::cryptography::random::generate<elle::Buffer>(
           s.chunk_size() * number);
         try
         {

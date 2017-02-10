@@ -1,5 +1,5 @@
-#ifndef INFINIT_CRYPTOGRAPHY_DSA_PUBLICKEY_HH
-# define INFINIT_CRYPTOGRAPHY_DSA_PUBLICKEY_HH
+#ifndef ELLE_CRYPTOGRAPHY_DSA_PUBLICKEY_HH
+# define ELLE_CRYPTOGRAPHY_DSA_PUBLICKEY_HH
 
 # include <utility>
 
@@ -23,7 +23,7 @@ ELLE_OPERATOR_RELATIONALS();
 // ---------- Class -----------------------------------------------------------
 //
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {

@@ -11,7 +11,7 @@
 // ---------- Class -----------------------------------------------------------
 //
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -175,7 +175,7 @@ namespace infinit
 // ---------- Generator -------------------------------------------------------
 //
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {

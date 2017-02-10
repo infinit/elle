@@ -11,7 +11,7 @@
 #include <cryptography/cryptography.hh>
 #include <cryptography/pem.hh>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -32,11 +32,11 @@ namespace infinit
             throw Error(
               elle::sprintf("the key type is not RSA: %s", key->type));
 
-          INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(key);
+          ELLE_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(key);
 
           PublicKey K(key);
 
-          INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(key);
+          ELLE_CRYPTOGRAPHY_FINALLY_ABORT(key);
 
           return (K);
         }
@@ -52,11 +52,11 @@ namespace infinit
             throw Error(
               elle::sprintf("the key type is not RSA: %s", key->type));
 
-          INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(key);
+          ELLE_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(key);
 
           PrivateKey k(key);
 
-          INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(key);
+          ELLE_CRYPTOGRAPHY_FINALLY_ABORT(key);
 
           return (k);
         }

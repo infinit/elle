@@ -1,5 +1,5 @@
-#ifndef INFINIT_CRYPTOGRAPHY_DH_PUBLICKEY_HXX
-# define INFINIT_CRYPTOGRAPHY_DH_PUBLICKEY_HXX
+#ifndef ELLE_CRYPTOGRAPHY_DH_PUBLICKEY_HXX
+# define ELLE_CRYPTOGRAPHY_DH_PUBLICKEY_HXX
 
 //
 // ---------- Hash ------------------------------------------------------------
@@ -14,10 +14,10 @@
 namespace std
 {
   template <>
-  struct hash<infinit::cryptography::dh::PublicKey>
+  struct hash<elle::cryptography::dh::PublicKey>
   {
     size_t
-    operator ()(infinit::cryptography::dh::PublicKey const& value) const
+    operator ()(elle::cryptography::dh::PublicKey const& value) const
     {
       std::stringstream stream;
       {

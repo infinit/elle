@@ -205,7 +205,7 @@ namespace athena
             std::string("send acceptation"));
           if (conflicted)
           {
-            auto rn = infinit::cryptography::random::generate<uint8_t>(1, 8);
+            auto rn = elle::cryptography::random::generate<uint8_t>(1, 8);
             auto delay = 100_ms * rn * backoff;
             if (this->_conflict_backoff)
             {

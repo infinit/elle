@@ -8,7 +8,7 @@
 #include <cryptography/finally.hh>
 #include <cryptography/pem.hh>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -26,12 +26,12 @@ namespace infinit
         {
           ::EVP_PKEY* key = cryptography::pem::import_public(path);
 
-          INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(key);
+          ELLE_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(key);
 
           PublicKey K(key,
                       digest_algorithm);
 
-          INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(key);
+          ELLE_CRYPTOGRAPHY_FINALLY_ABORT(key);
 
           return (K);
         }
@@ -44,12 +44,12 @@ namespace infinit
           ::EVP_PKEY* key = cryptography::pem::import_private(path,
                                                               passphrase);
 
-          INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(key);
+          ELLE_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(key);
 
           PrivateKey k(key,
                        digest_algorithm);
 
-          INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(key);
+          ELLE_CRYPTOGRAPHY_FINALLY_ABORT(key);
 
           return (k);
         }

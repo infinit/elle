@@ -1,5 +1,5 @@
-#ifndef INFINIT_CRYPTOGRAPHY_HMAC_HH
-# define INFINIT_CRYPTOGRAPHY_HMAC_HH
+#ifndef ELLE_CRYPTOGRAPHY_HMAC_HH
+# define ELLE_CRYPTOGRAPHY_HMAC_HH
 
 # include <cryptography/fwd.hh>
 # include <cryptography/Oneway.hh>
@@ -10,7 +10,7 @@
 
 # include <iosfwd>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {

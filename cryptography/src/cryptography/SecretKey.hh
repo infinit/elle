@@ -1,5 +1,5 @@
-#ifndef INFINIT_CRYPTOGRAPHY_SECRETKEY_HH
-# define INFINIT_CRYPTOGRAPHY_SECRETKEY_HH
+#ifndef ELLE_CRYPTOGRAPHY_SECRETKEY_HH
+# define ELLE_CRYPTOGRAPHY_SECRETKEY_HH
 
 # include <utility>
 
@@ -20,7 +20,7 @@ ELLE_OPERATOR_RELATIONALS();
 // ---------- Class -----------------------------------------------------------
 //
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -133,7 +133,7 @@ namespace infinit
 // ---------- Generator -------------------------------------------------------
 //
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {

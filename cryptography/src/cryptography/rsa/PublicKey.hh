@@ -1,5 +1,5 @@
-#ifndef INFINIT_CRYPTOGRAPHY_RSA_PUBLICKEY_HH
-# define INFINIT_CRYPTOGRAPHY_RSA_PUBLICKEY_HH
+#ifndef ELLE_CRYPTOGRAPHY_RSA_PUBLICKEY_HH
+# define ELLE_CRYPTOGRAPHY_RSA_PUBLICKEY_HH
 
 # include <memory>
 # include <utility>
@@ -21,7 +21,7 @@ ELLE_OPERATOR_RELATIONALS();
 # include <cryptography/rsa/Padding.hh>
 # include <cryptography/rsa/defaults.hh>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -125,7 +125,7 @@ namespace infinit
                 Padding const padding = defaults::signature_padding,
                 Oneway const oneway = defaults::oneway) const;
 
-# if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
+# if defined(ELLE_CRYPTOGRAPHY_ROTATION)
         /*---------.
         | Rotation |
         `---------*/
@@ -188,7 +188,7 @@ namespace infinit
 // ---------- DER -------------------------------------------------------------
 //
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {

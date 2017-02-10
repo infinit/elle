@@ -5,7 +5,7 @@
 #include <cryptography/Error.hh>
 #include <cryptography/finally.hh>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -28,11 +28,11 @@ namespace infinit
               elle::sprintf("unable to encode DER for the DSA public key: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
-          INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_OPENSSL(_buffer);
+          ELLE_CRYPTOGRAPHY_FINALLY_ACTION_FREE_OPENSSL(_buffer);
 
           elle::Buffer buffer(_buffer, _size);
 
-          INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_buffer);
+          ELLE_CRYPTOGRAPHY_FINALLY_ABORT(_buffer);
           ::OPENSSL_free(_buffer);
 
           return (buffer);
@@ -64,11 +64,11 @@ namespace infinit
               elle::sprintf("unable to encode the DSA private key: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
-          INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_OPENSSL(_buffer);
+          ELLE_CRYPTOGRAPHY_FINALLY_ACTION_FREE_OPENSSL(_buffer);
 
           elle::Buffer buffer(_buffer, _size);
 
-          INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_buffer);
+          ELLE_CRYPTOGRAPHY_FINALLY_ABORT(_buffer);
           ::OPENSSL_free(_buffer);
 
           return (buffer);

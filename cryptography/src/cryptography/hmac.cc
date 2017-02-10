@@ -8,7 +8,7 @@
 #include <cryptography/finally.hh>
 #include <cryptography/Error.hh>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -54,13 +54,13 @@ namespace infinit
             elle::sprintf("unable to generate a MAC key: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
 
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(_key);
+        ELLE_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(_key);
 
         // Apply the HMAC function with the given key.
         elle::Buffer digest = raw::hmac::sign(_key, function, plain);
 
         ::EVP_PKEY_free(_key);
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_key);
+        ELLE_CRYPTOGRAPHY_FINALLY_ABORT(_key);
 
         return (digest);
       }

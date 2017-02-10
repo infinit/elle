@@ -11,13 +11,13 @@
 `---------*/
 
 static
-infinit::cryptography::dh::PrivateKey
+elle::cryptography::dh::PrivateKey
 _test_generate()
 {
-  infinit::cryptography::dh::KeyPair keypair =
-    infinit::cryptography::dh::keypair::generate();
+  elle::cryptography::dh::KeyPair keypair =
+    elle::cryptography::dh::keypair::generate();
 
-  infinit::cryptography::dh::PrivateKey k(keypair.k());
+  elle::cryptography::dh::PrivateKey k(keypair.k());
 
   return (k);
 }
@@ -37,15 +37,15 @@ static
 void
 test_construct()
 {
-  infinit::cryptography::dh::PrivateKey k1 = _test_generate();
+  elle::cryptography::dh::PrivateKey k1 = _test_generate();
 
   // PrivateKey copy.
-  infinit::cryptography::dh::PrivateKey k2(k1);
+  elle::cryptography::dh::PrivateKey k2(k1);
 
   BOOST_CHECK_EQUAL(k1, k2);
 
   // PrivateKey move.
-  infinit::cryptography::dh::PrivateKey k3(std::move(k1));
+  elle::cryptography::dh::PrivateKey k3(std::move(k1));
 
   BOOST_CHECK_EQUAL(k2, k3);
 }
@@ -58,8 +58,8 @@ static
 void
 test_compare()
 {
-  infinit::cryptography::dh::PrivateKey k1 = _test_generate();
-  infinit::cryptography::dh::PrivateKey k2 = _test_generate();
+  elle::cryptography::dh::PrivateKey k1 = _test_generate();
+  elle::cryptography::dh::PrivateKey k2 = _test_generate();
 
   // With high probabilituy, this should not be the case. Otherwise,
   // the random generator is probably broken.

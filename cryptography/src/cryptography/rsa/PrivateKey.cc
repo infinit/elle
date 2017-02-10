@@ -23,11 +23,11 @@
 #include <cryptography/rsa/low.hh>
 #include <cryptography/rsa/serialization.hh>
 
-#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
+#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
 # include <dopenssl/rsa.hh>
 #endif
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -124,11 +124,11 @@ namespace infinit
         // Duplicate the RSA structure.
         RSA* _rsa = low::RSA_dup(other._key->pkey.rsa);
 
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(_rsa);
+        ELLE_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(_rsa);
 
         this->_construct(_rsa);
 
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_rsa);
+        ELLE_CRYPTOGRAPHY_FINALLY_ABORT(_rsa);
 
         this->_check();
       }
@@ -270,7 +270,7 @@ namespace infinit
                   ::EVP_PKEY_bits(this->_key.get())));
       }
 
-#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
+#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
       /*---------.
       | Rotation |
       `---------*/
@@ -292,12 +292,12 @@ namespace infinit
                           "seed: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
 
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(rsa);
+        ELLE_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(rsa);
 
         // Construct the private key based on the given RSA structure.
         this->_construct(rsa);
 
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
+        ELLE_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
 
         this->_check();
       }
@@ -407,7 +407,7 @@ namespace infinit
 // ---------- DER -------------------------------------------------------------
 //
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {

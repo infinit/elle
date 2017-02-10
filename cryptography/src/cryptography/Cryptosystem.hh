@@ -1,11 +1,11 @@
-#ifndef INFINIT_CRYPTOGRAPHY_CRYPTOSYSTEM_HH
-# define INFINIT_CRYPTOGRAPHY_CRYPTOSYSTEM_HH
+#ifndef ELLE_CRYPTOGRAPHY_CRYPTOSYSTEM_HH
+# define ELLE_CRYPTOGRAPHY_CRYPTOSYSTEM_HH
 
 # include <iosfwd>
 
 # include <elle/serialization/Serializer.hh>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -41,14 +41,14 @@ namespace elle
   namespace serialization
   {
     template <>
-    struct Serialize<infinit::cryptography::Cryptosystem>
+    struct Serialize<elle::cryptography::Cryptosystem>
     {
       typedef uint8_t Type;
       static
       uint8_t
-      convert(infinit::cryptography::Cryptosystem const& value);
+      convert(elle::cryptography::Cryptosystem const& value);
       static
-      infinit::cryptography::Cryptosystem
+      elle::cryptography::Cryptosystem
       convert(uint8_t const& representation);
     };
   }

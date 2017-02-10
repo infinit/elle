@@ -1,5 +1,5 @@
-#ifndef INFINIT_CRYPTOGRAPHY_ENVELOPE_HH
-# define INFINIT_CRYPTOGRAPHY_ENVELOPE_HH
+#ifndef ELLE_CRYPTOGRAPHY_ENVELOPE_HH
+# define ELLE_CRYPTOGRAPHY_ENVELOPE_HH
 
 # include <cryptography/fwd.hh>
 # include <cryptography/Cipher.hh>
@@ -16,7 +16,7 @@
 // ---------- Asymmetric ------------------------------------------------------
 //
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {

@@ -26,9 +26,9 @@
 #include <cryptography/cryptography.hh>
 #include <cryptography/random.hh>
 
-ELLE_LOG_COMPONENT("infinit.cryptography.random");
+ELLE_LOG_COMPONENT("elle.cryptography.random");
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -54,7 +54,7 @@ namespace infinit
           /// starvation.
 
           static std::string const source =
-            elle::os::getenv("INFINIT_CRYPTOGRAPHY_RANDOM_SOURCE",
+            elle::os::getenv("ELLE_CRYPTOGRAPHY_RANDOM_SOURCE",
                              "/dev/urandom");
 
           std::ifstream random_source_file(source);
@@ -172,22 +172,21 @@ namespace infinit
         return _generate<bool>() % 2;
       }
 
-#define INFINIT_GENERATOR(Type)                         \
+#define ELLE_CRYPTOGRAPHY_RANDOM_GENERATOR(Type)        \
       template Type generate<Type>();                   \
       template Type generate<Type>(Type min, Type max)
 
-      INFINIT_GENERATOR(char);
-      INFINIT_GENERATOR(int8_t);
-      INFINIT_GENERATOR(int16_t);
-      INFINIT_GENERATOR(int32_t);
-      INFINIT_GENERATOR(int64_t);
-      INFINIT_GENERATOR(uint8_t);
-      INFINIT_GENERATOR(uint16_t);
-      INFINIT_GENERATOR(uint32_t);
-      INFINIT_GENERATOR(uint64_t);
-
-      INFINIT_GENERATOR(double);
-#undef INFINIT_GENERATOR
+      ELLE_CRYPTOGRAPHY_RANDOM_GENERATOR(char);
+      ELLE_CRYPTOGRAPHY_RANDOM_GENERATOR(int8_t);
+      ELLE_CRYPTOGRAPHY_RANDOM_GENERATOR(int16_t);
+      ELLE_CRYPTOGRAPHY_RANDOM_GENERATOR(int32_t);
+      ELLE_CRYPTOGRAPHY_RANDOM_GENERATOR(int64_t);
+      ELLE_CRYPTOGRAPHY_RANDOM_GENERATOR(uint8_t);
+      ELLE_CRYPTOGRAPHY_RANDOM_GENERATOR(uint16_t);
+      ELLE_CRYPTOGRAPHY_RANDOM_GENERATOR(uint32_t);
+      ELLE_CRYPTOGRAPHY_RANDOM_GENERATOR(uint64_t);
+      ELLE_CRYPTOGRAPHY_RANDOM_GENERATOR(double);
+#undef ELLE_CRYPTOGRAPHY_RANDOM_GENERATOR
 
       template <typename T>
       T

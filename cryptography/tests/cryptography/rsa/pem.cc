@@ -92,15 +92,15 @@ test_operate_import()
 
   // 1)
   BOOST_CHECK_THROW(
-    infinit::cryptography::rsa::pem::import_k(path_private_key.path(),
+    elle::cryptography::rsa::pem::import_k(path_private_key.path(),
                                               "wrong passphrase"),
-    infinit::cryptography::Error);
+    elle::cryptography::Error);
 
   // 2)
-  infinit::cryptography::rsa::PrivateKey k =
-    infinit::cryptography::rsa::pem::import_k(path_private_key.path(),
+  elle::cryptography::rsa::PrivateKey k =
+    elle::cryptography::rsa::pem::import_k(path_private_key.path(),
                                               passphrase);
-  infinit::cryptography::rsa::PublicKey K(k);
+  elle::cryptography::rsa::PublicKey K(k);
 
   // Encrypt and decrypt data to make sure the keys are valid.
   std::string const data("N'est pas Sancho qui veut!");
@@ -115,32 +115,32 @@ static
 void
 test_operate_export()
 {
-  infinit::cryptography::rsa::KeyPair keypair =
-    infinit::cryptography::rsa::keypair::generate(2048);
+  elle::cryptography::rsa::KeyPair keypair =
+    elle::cryptography::rsa::keypair::generate(2048);
 
   elle::filesystem::TemporaryFile path("path");
 
   std::string const passphrase = "Dave";
 
   // Export keypair.
-  infinit::cryptography::rsa::pem::export_keypair(
+  elle::cryptography::rsa::pem::export_keypair(
     keypair,
     path.path(),
     passphrase,
-    infinit::cryptography::Cipher::aes256,
-    infinit::cryptography::Mode::cbc);
+    elle::cryptography::Cipher::aes256,
+    elle::cryptography::Mode::cbc);
 
   // 1) Try to re-import with wrong passphrase 3) Re-import private key.
 
   // 1)
   BOOST_CHECK_THROW(
-    infinit::cryptography::rsa::pem::import_k(path.path(),
+    elle::cryptography::rsa::pem::import_k(path.path(),
                                               "wrong passphrase"),
-    infinit::cryptography::Error);
+    elle::cryptography::Error);
 
   // 2)
-  infinit::cryptography::rsa::PrivateKey k =
-    infinit::cryptography::rsa::pem::import_k(path.path(),
+  elle::cryptography::rsa::PrivateKey k =
+    elle::cryptography::rsa::pem::import_k(path.path(),
                                               passphrase);
 
   BOOST_CHECK_EQUAL(keypair.k(), k);
@@ -148,11 +148,11 @@ test_operate_export()
   // Try to import only the public part of the key from a private key file
   // which is encrypted.
   BOOST_CHECK_THROW(
-    infinit::cryptography::rsa::pem::import_K(path.path()),
-    infinit::cryptography::Error);
+    elle::cryptography::rsa::pem::import_K(path.path()),
+    elle::cryptography::Error);
 
   // Extract the public key from the private key.
-  infinit::cryptography::rsa::PublicKey K(k);
+  elle::cryptography::rsa::PublicKey K(k);
 
   BOOST_CHECK_EQUAL(keypair.K(), K);
 }

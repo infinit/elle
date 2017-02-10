@@ -25,12 +25,12 @@ operator <<(std::ostream& stream,
 
   // Transform the number in hexadecimal.
   if ((hexadecimal = ::BN_bn2hex(&bignum)) == nullptr)
-    throw infinit::cryptography::Error(
+    throw elle::cryptography::Error(
       elle::sprintf("unable to convert the big number into an hexadecimal "
                     "representation: %s",
                     ::ERR_error_string(ERR_get_error(), nullptr)));
 
-  INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_OPENSSL(hexadecimal);
+  ELLE_CRYPTOGRAPHY_FINALLY_ACTION_FREE_OPENSSL(hexadecimal);
 
   // Display the string, depending on its length.
   if (::strlen(hexadecimal) < length)
@@ -49,7 +49,7 @@ operator <<(std::ostream& stream,
            << string.substr(string.length() - (length / 2));
   }
 
-  INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(hexadecimal);
+  ELLE_CRYPTOGRAPHY_FINALLY_ABORT(hexadecimal);
 
   // Manually release the hexadecimal's memory.
   ::OPENSSL_free(hexadecimal);
@@ -85,11 +85,11 @@ namespace elle
       elle::Buffer representation(BN_num_bytes(value));
 
       if (representation.size() <= 0)
-        throw infinit::cryptography::Error(
+        throw elle::cryptography::Error(
           elle::sprintf("unable to save an empty big number"));
 
       if (::BN_bn2bin(value, representation.mutable_contents()) <= 0)
-        throw infinit::cryptography::Error(
+        throw elle::cryptography::Error(
           elle::sprintf("unable to serialize the big number: %s",
                         ::ERR_error_string(ERR_get_error(), nullptr)));
 
@@ -100,22 +100,22 @@ namespace elle
     Serialize<BIGNUM*>::convert(elle::Buffer const& representation)
     {
       if (representation.size() <= 0)
-        throw infinit::cryptography::Error(
+        throw elle::cryptography::Error(
           elle::sprintf("unable to load an empty big number"));
 
       ::BIGNUM* value = ::BN_new();
 
-      INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(value);
+      ELLE_CRYPTOGRAPHY_FINALLY_ACTION_FREE_BN(value);
 
       if (::BN_bin2bn(representation.contents(),
                       static_cast<int>(representation.size()),
                       value) == nullptr)
-        throw infinit::cryptography::Error(
+        throw elle::cryptography::Error(
           elle::sprintf("unable to convert the binary data into a big "
                         "number: %s",
                         ::ERR_error_string(ERR_get_error(), nullptr)));
 
-      INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(value);
+      ELLE_CRYPTOGRAPHY_FINALLY_ABORT(value);
 
       return (value);
     }

@@ -293,14 +293,14 @@ namespace aws
       RequestHeaders headers;
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
       headers["Content-MD5"] = elle::format::base64::encode(
-          infinit::cryptography::hash(
-            infinit::cryptography::Plain(payload),
-            infinit::cryptography::Oneway::md5).buffer()).string();
+          elle::cryptography::hash(
+            elle::cryptography::Plain(payload),
+            elle::cryptography::Oneway::md5).buffer()).string();
 #else
       auto hashed =
-        infinit::cryptography::hash(
+        elle::cryptography::hash(
           payload,
-          infinit::cryptography::Oneway::md5);
+          elle::cryptography::Oneway::md5);
       headers["Content-MD5"] = elle::format::base64::encode(hashed).string();
 #endif
 
@@ -525,16 +525,16 @@ namespace aws
   {
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
     std::string res = elle::format::hexadecimal::encode(
-      infinit::cryptography::hash(
-        infinit::cryptography::Plain(buffer),
-        infinit::cryptography::Oneway::md5).buffer()
+      elle::cryptography::hash(
+        elle::cryptography::Plain(buffer),
+        elle::cryptography::Oneway::md5).buffer()
     );
     return res;
 #else
     auto hashed =
-      infinit::cryptography::hash(
+      elle::cryptography::hash(
         buffer,
-        infinit::cryptography::Oneway::md5);
+        elle::cryptography::Oneway::md5);
     return (elle::format::hexadecimal::encode(hashed));
 #endif
   }
@@ -544,16 +544,16 @@ namespace aws
   {
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
     std::string res = elle::format::hexadecimal::encode(
-      infinit::cryptography::hash(
-        infinit::cryptography::Plain(buffer),
-        infinit::cryptography::Oneway::sha256).buffer()
+      elle::cryptography::hash(
+        elle::cryptography::Plain(buffer),
+        elle::cryptography::Oneway::sha256).buffer()
     );
     return res;
 #else
     auto hashed =
-      infinit::cryptography::hash(
+      elle::cryptography::hash(
         buffer,
-        infinit::cryptography::Oneway::sha256);
+        elle::cryptography::Oneway::sha256);
     return (elle::format::hexadecimal::encode(hashed));
 #endif
   }

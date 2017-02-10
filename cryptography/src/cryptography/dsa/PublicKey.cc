@@ -26,7 +26,7 @@
 // ---------- Class -----------------------------------------------------------
 //
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -75,13 +75,13 @@ namespace infinit
         ELLE_ASSERT_NEQ(_dsa->pub_key, nullptr);
         ELLE_ASSERT_EQ(_dsa->priv_key, nullptr);
 
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_DSA(_dsa);
+        ELLE_CRYPTOGRAPHY_FINALLY_ACTION_FREE_DSA(_dsa);
 
         // Construct the public key based on the given DSA structure whose
         // ownership is retained.
         this->_construct(_dsa);
 
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_dsa);
+        ELLE_CRYPTOGRAPHY_FINALLY_ABORT(_dsa);
 
         this->_check();
       }
@@ -134,11 +134,11 @@ namespace infinit
         // Duplicate the DSA structure.
         DSA* _dsa = low::DSA_dup(other._key->pkey.dsa);
 
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_DSA(_dsa);
+        ELLE_CRYPTOGRAPHY_FINALLY_ACTION_FREE_DSA(_dsa);
 
         this->_construct(_dsa);
 
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_dsa);
+        ELLE_CRYPTOGRAPHY_FINALLY_ABORT(_dsa);
 
         this->_check();
       }

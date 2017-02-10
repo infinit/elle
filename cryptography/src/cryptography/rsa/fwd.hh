@@ -1,7 +1,7 @@
-#ifndef INFINIT_CRYPTOGRAPHY_RSA_FWD_HH
-# define INFINIT_CRYPTOGRAPHY_RSA_FWD_HH
+#ifndef ELLE_CRYPTOGRAPHY_RSA_FWD_HH
+# define ELLE_CRYPTOGRAPHY_RSA_FWD_HH
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -10,7 +10,7 @@ namespace infinit
       class PrivateKey;
       class PublicKey;
       class KeyPair;
-# if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
+# if defined(ELLE_CRYPTOGRAPHY_ROTATION)
       class Seed;
 # endif
     }

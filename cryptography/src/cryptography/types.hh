@@ -1,5 +1,5 @@
-#ifndef INFINIT_CRYPTOGRAPHY_TYPES_HH
-# define INFINIT_CRYPTOGRAPHY_TYPES_HH
+#ifndef ELLE_CRYPTOGRAPHY_TYPES_HH
+# define ELLE_CRYPTOGRAPHY_TYPES_HH
 
 # include <memory>
 
@@ -8,7 +8,7 @@
 # include <openssl/bn.h>
 # include <openssl/evp.h>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {

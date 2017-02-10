@@ -1,11 +1,11 @@
-#ifndef INFINIT_CRYPTOGRAPHY_RSA_SERIALIZATION_HH
-# define INFINIT_CRYPTOGRAPHY_RSA_SERIALIZATION_HH
+#ifndef ELLE_CRYPTOGRAPHY_RSA_SERIALIZATION_HH
+# define ELLE_CRYPTOGRAPHY_RSA_SERIALIZATION_HH
 
 # include <openssl/rsa.h>
 
 # include <cryptography/serialization.hh>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {

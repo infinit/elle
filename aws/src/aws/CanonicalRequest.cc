@@ -38,17 +38,17 @@ namespace aws
   CanonicalRequest::sha256_hash() const
   {
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-    infinit::cryptography::Digest digest =
-      infinit::cryptography::hash(
-        infinit::cryptography::Plain(
+    elle::cryptography::Digest digest =
+      elle::cryptography::hash(
+        elle::cryptography::Plain(
           elle::ConstWeakBuffer(this->_canonical_request)),
-        infinit::cryptography::Oneway::sha256);
+        elle::cryptography::Oneway::sha256);
     return elle::format::hexadecimal::encode(digest.buffer());
 #else
     elle::Buffer digest =
-      infinit::cryptography::hash(
+      elle::cryptography::hash(
         elle::ConstWeakBuffer(this->_canonical_request),
-        infinit::cryptography::Oneway::sha256);
+        elle::cryptography::Oneway::sha256);
     return elle::format::hexadecimal::encode(digest);
 #endif
   }

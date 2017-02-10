@@ -18,7 +18,7 @@
 #include <cryptography/raw.hh>
 #include <cryptography/constants.hh>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -51,7 +51,7 @@ namespace infinit
         unsigned char* _secret =
           reinterpret_cast<unsigned char*>(
             ::OPENSSL_malloc(::EVP_PKEY_size(keys[0])));
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_OPENSSL(_secret);
+        ELLE_CRYPTOGRAPHY_FINALLY_ACTION_FREE_OPENSSL(_secret);
 
         unsigned char* secrets[1];
         secrets[0] = _secret;
@@ -61,14 +61,14 @@ namespace infinit
         unsigned char* iv =
           reinterpret_cast<unsigned char*>(
             ::OPENSSL_malloc(EVP_MAX_IV_LENGTH));
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_OPENSSL(iv);
+        ELLE_CRYPTOGRAPHY_FINALLY_ACTION_FREE_OPENSSL(iv);
 
         // Initialize the cipher context.
         ::EVP_CIPHER_CTX context;
 
         ::EVP_CIPHER_CTX_init(&context);
 
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_CIPHER_CONTEXT(context);
+        ELLE_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_CIPHER_CONTEXT(context);
 
         // Initialize the envelope seal operation. This operation generates
         // a secret key for the provided cipher, and then encrypts that key a
@@ -185,14 +185,14 @@ namespace infinit
           throw Error(
             elle::sprintf("unable to clean the cipher context: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
+        ELLE_CRYPTOGRAPHY_FINALLY_ABORT(context);
 
         // Release the memory associated with the secret and iv.
         ::OPENSSL_free(iv);
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(iv);
+        ELLE_CRYPTOGRAPHY_FINALLY_ABORT(iv);
 
         ::OPENSSL_free(_secret);
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_secret);
+        ELLE_CRYPTOGRAPHY_FINALLY_ABORT(_secret);
       }
 
       void
@@ -209,12 +209,12 @@ namespace infinit
         unsigned char* secret =
           reinterpret_cast<unsigned char*>(
             ::OPENSSL_malloc(::EVP_PKEY_size(key)));
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_OPENSSL(secret);
+        ELLE_CRYPTOGRAPHY_FINALLY_ACTION_FREE_OPENSSL(secret);
 
         unsigned char* iv =
           reinterpret_cast<unsigned char*>(
             ::OPENSSL_malloc(EVP_MAX_IV_LENGTH));
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_OPENSSL(iv);
+        ELLE_CRYPTOGRAPHY_FINALLY_ACTION_FREE_OPENSSL(iv);
 
         {
           // Read the secret.
@@ -239,7 +239,7 @@ namespace infinit
 
         ::EVP_CIPHER_CTX_init(&context);
 
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_CIPHER_CONTEXT(context);
+        ELLE_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_CIPHER_CONTEXT(context);
 
         // Initialize the envelope open operation.
         if (::EVP_OpenInit(&context,
@@ -316,14 +316,14 @@ namespace infinit
           throw Error(
             elle::sprintf("unable to clean the cipher context: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
+        ELLE_CRYPTOGRAPHY_FINALLY_ABORT(context);
 
         // Release the memory associated with the secret and iv.
         OPENSSL_free(iv);
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(iv);
+        ELLE_CRYPTOGRAPHY_FINALLY_ABORT(iv);
 
         OPENSSL_free(secret);
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(secret);
+        ELLE_CRYPTOGRAPHY_FINALLY_ABORT(secret);
       }
     }
   }

@@ -24,7 +24,7 @@
 // ---------- Class -----------------------------------------------------------
 //
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -42,13 +42,13 @@ namespace infinit
         // Extract the public key only.
         DH* _dh = low::DH_priv2pub(k.key().get()->pkey.dh);
 
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_DH(_dh);
+        ELLE_CRYPTOGRAPHY_FINALLY_ACTION_FREE_DH(_dh);
 
         // Construct the public key based on the given DH structure whose
         // ownership is retained.
         this->_construct(_dh);
 
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_dh);
+        ELLE_CRYPTOGRAPHY_FINALLY_ABORT(_dh);
 
         this->_check();
       }
@@ -96,11 +96,11 @@ namespace infinit
         // Duplicate the DH structure.
         DH* _dh = low::DH_dup(other._key->pkey.dh);
 
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_DH(_dh);
+        ELLE_CRYPTOGRAPHY_FINALLY_ACTION_FREE_DH(_dh);
 
         this->_construct(_dh);
 
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_dh);
+        ELLE_CRYPTOGRAPHY_FINALLY_ABORT(_dh);
 
         this->_check();
       }

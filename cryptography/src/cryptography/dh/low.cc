@@ -11,7 +11,7 @@
 #include <openssl/crypto.h>
 #include <openssl/err.h>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {

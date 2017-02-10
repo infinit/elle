@@ -1,5 +1,5 @@
-#ifndef INFINIT_CRYPTOGRAPHY_RSA_PADDING_HH
-# define INFINIT_CRYPTOGRAPHY_RSA_PADDING_HH
+#ifndef ELLE_CRYPTOGRAPHY_RSA_PADDING_HH
+# define ELLE_CRYPTOGRAPHY_RSA_PADDING_HH
 
 # include <elle/types.hh>
 # include <elle/serialization/Serializer.hh>
@@ -8,7 +8,7 @@
 
 # include <iosfwd>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -76,14 +76,14 @@ namespace elle
   namespace serialization
   {
     template <>
-    struct Serialize<infinit::cryptography::rsa::Padding>
+    struct Serialize<elle::cryptography::rsa::Padding>
     {
       typedef uint8_t Type;
       static
       uint8_t
-      convert(infinit::cryptography::rsa::Padding const& value);
+      convert(elle::cryptography::rsa::Padding const& value);
       static
-      infinit::cryptography::rsa::Padding
+      elle::cryptography::rsa::Padding
       convert(uint8_t const& representation);
     };
   }

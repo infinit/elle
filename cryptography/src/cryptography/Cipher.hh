@@ -1,11 +1,11 @@
-#ifndef INFINIT_CRYPTOGRAPHY_CIPHER_HH
-# define INFINIT_CRYPTOGRAPHY_CIPHER_HH
+#ifndef ELLE_CRYPTOGRAPHY_CIPHER_HH
+# define ELLE_CRYPTOGRAPHY_CIPHER_HH
 
 # include <elle/serialization/Serializer.hh>
 
 # include <openssl/evp.h>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -79,27 +79,27 @@ namespace elle
   {
     // Cipher
     template <>
-    struct Serialize<infinit::cryptography::Cipher>
+    struct Serialize<elle::cryptography::Cipher>
     {
       typedef uint8_t Type;
       static
       uint8_t
-      convert(infinit::cryptography::Cipher const& value);
+      convert(elle::cryptography::Cipher const& value);
       static
-      infinit::cryptography::Cipher
+      elle::cryptography::Cipher
       convert(uint8_t const& representation);
     };
 
     // Mode
     template <>
-    struct Serialize<infinit::cryptography::Mode>
+    struct Serialize<elle::cryptography::Mode>
     {
       typedef uint8_t Type;
       static
       uint8_t
-      convert(infinit::cryptography::Mode const& value);
+      convert(elle::cryptography::Mode const& value);
       static
-      infinit::cryptography::Mode
+      elle::cryptography::Mode
       convert(uint8_t const& representation);
     };
   }

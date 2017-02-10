@@ -96,16 +96,16 @@ _make_canonical_request()
 
   std::string content("Action=ListUsers&Version=2010-05-08");
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-  infinit::cryptography::Digest _digest =
-    infinit::cryptography::hash(
-      infinit::cryptography::Plain(elle::ConstWeakBuffer(content)),
-      infinit::cryptography::Oneway::sha256);
+  elle::cryptography::Digest _digest =
+    elle::cryptography::hash(
+      elle::cryptography::Plain(elle::ConstWeakBuffer(content)),
+      elle::cryptography::Oneway::sha256);
   elle::Buffer digest(_digest.buffer());
 #else
   elle::Buffer digest =
-    infinit::cryptography::hash(
+    elle::cryptography::hash(
       content,
-      infinit::cryptography::Oneway::sha256);
+      elle::cryptography::Oneway::sha256);
 #endif
 
   aws::CanonicalRequest request(

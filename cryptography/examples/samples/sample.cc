@@ -31,8 +31,8 @@ main()
     {
       std::string data("chang'daile!");
 
-      infinit::cryptography::rsa::KeyPair keypair =
-        infinit::cryptography::rsa::keypair::generate(2048);
+      elle::cryptography::rsa::KeyPair keypair =
+        elle::cryptography::rsa::keypair::generate(2048);
 
       elle::Buffer code = keypair.K().seal(data);
       elle::Buffer clear = keypair.k().open(code);
@@ -44,8 +44,8 @@ main()
     {
       std::string data("lap'ara'deuh michel!");
 
-      infinit::cryptography::dsa::KeyPair keypair =
-        infinit::cryptography::dsa::keypair::generate(1024);
+      elle::cryptography::dsa::KeyPair keypair =
+        elle::cryptography::dsa::keypair::generate(1024);
 
       elle::Buffer signature = keypair.k().sign(data);
 
@@ -64,13 +64,13 @@ main()
     std::string data("Answer to The Ultimate Question of Life, "
                      "the Universe, and Everything");
 
-    infinit::cryptography::SecretKey key =
-      infinit::cryptography::secretkey::generate(256);
+    elle::cryptography::SecretKey key =
+      elle::cryptography::secretkey::generate(256);
 
     elle::Buffer code = key.encipher(data,
-                                     infinit::cryptography::Cipher::aes128);
+                                     elle::cryptography::Cipher::aes128);
     elle::Buffer clear = key.decipher(code,
-                                      infinit::cryptography::Cipher::aes128);
+                                      elle::cryptography::Cipher::aes128);
 
     elle::fprintf(std::cout, "3) %s\n", clear.string());
   }
@@ -83,8 +83,8 @@ main()
     std::string data("mange mon fion");
 
     elle::Buffer digest =
-      infinit::cryptography::hash(data,
-                                  infinit::cryptography::Oneway::sha1);
+      elle::cryptography::hash(data,
+                                  elle::cryptography::Oneway::sha1);
 
     elle::fprintf(std::cout, "4) %s\n",
                   elle::format::hexadecimal::encode(digest));

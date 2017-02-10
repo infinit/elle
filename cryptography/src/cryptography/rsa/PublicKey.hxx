@@ -1,5 +1,5 @@
-#ifndef INFINIT_CRYPTOGRAPHY_RSA_PUBLICKEY_HXX
-# define INFINIT_CRYPTOGRAPHY_RSA_PUBLICKEY_HXX
+#ifndef ELLE_CRYPTOGRAPHY_RSA_PUBLICKEY_HXX
+# define ELLE_CRYPTOGRAPHY_RSA_PUBLICKEY_HXX
 
 //
 // ---------- class -----------------------------------------------------------
@@ -10,7 +10,7 @@
 # include <elle/serialization/json.hh>
 # include <elle/utility/Move.hh>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -51,7 +51,7 @@ namespace infinit
       PublicKey::_verify_data(elle::ConstWeakBuffer const& signature,
                               T const& o) const
       {
-        ELLE_LOG_COMPONENT("infinit.cryptography.rsa.PublicKey");
+        ELLE_LOG_COMPONENT("elle.cryptography.rsa.PublicKey");
         ELLE_TRACE_SCOPE("%s: verify %s", this, o);
         elle::IOStream input(signature.istreambuf());
         auto version =
@@ -86,10 +86,10 @@ namespace infinit
 namespace std
 {
   template <>
-  struct hash<infinit::cryptography::rsa::PublicKey>
+  struct hash<elle::cryptography::rsa::PublicKey>
   {
     size_t
-    operator ()(infinit::cryptography::rsa::PublicKey const& value) const
+    operator ()(elle::cryptography::rsa::PublicKey const& value) const
     {
       std::stringstream stream;
       {

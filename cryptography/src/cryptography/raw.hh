@@ -1,5 +1,5 @@
-#ifndef INFINIT_CRYPTOGRAPHY_RAW_HH
-# define INFINIT_CRYPTOGRAPHY_RAW_HH
+#ifndef ELLE_CRYPTOGRAPHY_RAW_HH
+# define ELLE_CRYPTOGRAPHY_RAW_HH
 
 # include <cryptography/fwd.hh>
 # include <cryptography/Cipher.hh>
@@ -16,7 +16,7 @@
 // ---------- Asymmetric ------------------------------------------------------
 //
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -71,7 +71,7 @@ namespace infinit
               ::EVP_PKEY* peer,
               std::function<void (::EVP_PKEY_CTX*)> prolog = nullptr,
               std::function<void (::EVP_PKEY_CTX*)> epilog = nullptr);
-#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
+#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
         /// Rotate the given seed with the key.
         elle::Buffer
         rotate(::EVP_PKEY* key,
@@ -94,7 +94,7 @@ namespace infinit
 // ---------- Symmetric -------------------------------------------------------
 //
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -131,7 +131,7 @@ namespace infinit
 // ---------- Hash ------------------------------------------------------------
 //
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -151,7 +151,7 @@ namespace infinit
 // ---------- HMAC ------------------------------------------------------------
 //
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {

@@ -1,11 +1,11 @@
-#ifndef INFINIT_CRYPTOGRAPHY_RSA_DEFAULTS_HH
-# define INFINIT_CRYPTOGRAPHY_RSA_DEFAULTS_HH
+#ifndef ELLE_CRYPTOGRAPHY_RSA_DEFAULTS_HH
+# define ELLE_CRYPTOGRAPHY_RSA_DEFAULTS_HH
 
 # include <cryptography/rsa/Padding.hh>
 # include <cryptography/Oneway.hh>
 # include <cryptography/Cipher.hh>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {

@@ -16,15 +16,15 @@ static
 void
 _test_represent()
 {
-  infinit::cryptography::dsa::KeyPair keypair =
-    infinit::cryptography::dsa::keypair::generate(2048);
+  elle::cryptography::dsa::KeyPair keypair =
+    elle::cryptography::dsa::keypair::generate(2048);
 
   // 1)
   {
     std::stringstream stream;
     {
       typename elle::serialization::json::SerializerOut output(stream);
-      infinit::cryptography::dsa::PublicKey K = keypair.K();
+      elle::cryptography::dsa::PublicKey K = keypair.K();
       K.serialize(output);
     }
 
@@ -63,13 +63,13 @@ test_represent()
 `---------*/
 
 static
-infinit::cryptography::dsa::PublicKey
+elle::cryptography::dsa::PublicKey
 _test_generate(uint32_t const length = 1024)
 {
-  infinit::cryptography::dsa::KeyPair keypair =
-    infinit::cryptography::dsa::keypair::generate(length);
+  elle::cryptography::dsa::KeyPair keypair =
+    elle::cryptography::dsa::keypair::generate(length);
 
-  infinit::cryptography::dsa::PublicKey K(keypair.K());
+  elle::cryptography::dsa::PublicKey K(keypair.K());
 
   return (K);
 }
@@ -89,15 +89,15 @@ static
 void
 test_construct()
 {
-  infinit::cryptography::dsa::PublicKey K1 = _test_generate(2048);
+  elle::cryptography::dsa::PublicKey K1 = _test_generate(2048);
 
   // PublicKey copy.
-  infinit::cryptography::dsa::PublicKey K2(K1);
+  elle::cryptography::dsa::PublicKey K2(K1);
 
   BOOST_CHECK_EQUAL(K1, K2);
 
   // PublicKey move.
-  infinit::cryptography::dsa::PublicKey K3(std::move(K1));
+  elle::cryptography::dsa::PublicKey K3(std::move(K1));
 
   BOOST_CHECK_EQUAL(K2, K3);
 }
@@ -115,7 +115,7 @@ test_operate()
 
   std::stringstream stream(representation);
   typename elle::serialization::json::SerializerIn input(stream);
-  infinit::cryptography::dsa::PublicKey K(input);
+  elle::cryptography::dsa::PublicKey K(input);
 
   // The following operations are based on hard-coded base64 string which
   // represent the data on which to operate, in their serialized form.
@@ -143,8 +143,8 @@ static
 void
 test_compare()
 {
-  infinit::cryptography::dsa::PublicKey K1 = _test_generate(1024);
-  infinit::cryptography::dsa::PublicKey K2 = _test_generate(1024);
+  elle::cryptography::dsa::PublicKey K1 = _test_generate(1024);
+  elle::cryptography::dsa::PublicKey K2 = _test_generate(1024);
 
   // With high probability, this should not be the case. Otherwise,
   // the random generator is probably broken.
@@ -162,7 +162,7 @@ test_serialize()
 {
   // Serialize/deserialize.
   {
-    infinit::cryptography::dsa::PublicKey K1 = _test_generate(2048);
+    elle::cryptography::dsa::PublicKey K1 = _test_generate(2048);
 
     std::stringstream stream;
     {
@@ -171,7 +171,7 @@ test_serialize()
     }
 
     typename elle::serialization::json::SerializerIn input(stream);
-    infinit::cryptography::dsa::PublicKey K2(input);
+    elle::cryptography::dsa::PublicKey K2(input);
 
     BOOST_CHECK_EQUAL(K1, K2);
   }
@@ -185,8 +185,8 @@ test_serialize()
       R"JSON({"digest algorithm":4,"dsa":"MIIDJQKCAQEAq+VVghywf5oodq7USwkzijdlzH53p+OUGfORgcYuiv5mTnDMgCpzQgXZtRGI5y1tmtQcnd1Kc4rokKl5kerQcu8z9h0EAefwIVM98USosBeziVowC25jOlkuM4F1QzDyMOmdN9Bc1EBKXaqxHGtRBKSpKhi5m/UV7xX3DgrHOcrqnyXw0THJ+YjamzKvI11oS22hJHksl9Gryxs6t78YJV9AaPKbgtcAM8vK0qmKAHXi0uZhLtwZelv2ukzGbJwSlJ2Zx7fHS1+fNvu+/iThBYTzkuInmZeaPpoVYFa7BOppqqL91DPE/HO3lW8l4mPw5l2X7c8TStCMDtPB3qb2kwKCAQEAto+zhq1jMPrUTW0SPaJGvcSeyDRCbu5FNdQIOxBEQSDI1XxZ/XboY9Q4+uaGxl3AfU90P8E5wDtlLv19hCc2cdoNHZ/kZh+Zi9Yhi1HM9RGN0SmAAvIYI5smoDej0sqKHp2e4yz0tzxD/stemxYQwIK54pXKg7o/pc1mOeFtlPbZEMPwU8t1raDOFvE595uBqspYG68Bj77icTgNHszaCTBCpXzcMLWj08HnmU5leFZ8aaEtPxeKEukYhRYpxBP7U3NKBVRgZ5dTv+9/2rLzgj73DUz8xTQRsWnXEPRbct6pN0WZMEjyigysonGsilKWsVfiExOYyLuxrsVbO6MPGwIVAPR6HJ/qfhGuFWeKv0rE4dCTljBFAoIBAFHiseJEDGA9mi+E/ShFXv0BEb5FiDwrP10n+fT/InBLDpxW17r0mf25p5oXoD7tLXlQbyZoM2qzApGtQLKiQCgpphsMny/BfalbxD0LtwrRt1zAVaZnTQAU6pFFqDJnZUdm7CRvf0SgCfAW0SYGOrodxkdFmL5mqKZLGxjsrTqcLQAn5uHaJOSBNAyewwc5/fsYvfWOyH9CgUqqJ3XrLN0lEguRn9DFl3b2OuwCBDKI8Hty8sO24u8HgJx/n/Ng1xzlIh+MaN62PaW5KjaYqZvKah+2LG9O3s9rlg2WFYKz9uUCToj6d5lzF9RtxKYJVjk8MWsi3AM0lemzedaRXx0="})JSON"
     };
 
-    infinit::cryptography::test::formats<
-      infinit::cryptography::dsa::PublicKey>(archives);
+    elle::cryptography::test::formats<
+      elle::cryptography::dsa::PublicKey>(archives);
   }
 }
 

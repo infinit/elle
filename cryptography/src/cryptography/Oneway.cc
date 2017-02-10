@@ -3,7 +3,7 @@
 
 #include <elle/log.hh>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -129,17 +129,17 @@ namespace elle
   namespace serialization
   {
     uint8_t
-    Serialize<infinit::cryptography::Oneway>::convert(
-      infinit::cryptography::Oneway const& value)
+    Serialize<elle::cryptography::Oneway>::convert(
+      elle::cryptography::Oneway const& value)
     {
       return (static_cast<uint8_t>(value));
     }
 
-    infinit::cryptography::Oneway
-    Serialize<infinit::cryptography::Oneway>::convert(
+    elle::cryptography::Oneway
+    Serialize<elle::cryptography::Oneway>::convert(
       uint8_t const& representation)
     {
-      return (static_cast<infinit::cryptography::Oneway>(representation));
+      return (static_cast<elle::cryptography::Oneway>(representation));
     }
   }
 }

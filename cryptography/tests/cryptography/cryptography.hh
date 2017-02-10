@@ -7,7 +7,7 @@
 
 # include <functional>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {

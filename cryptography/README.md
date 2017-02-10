@@ -44,10 +44,10 @@ library.
 The Cryptography library can be configured through the following environment
 variables:
 
-* **INFINIT_CRYPTOGRAPHY_RANDOM_SOURCE** defines the path to the source file
+* **ELLE_CRYPTOGRAPHY_RANDOM_SOURCE** defines the path to the source file
 from which data will be read in order to initialize the pseudo-random generator.
 The default value for this variable is: _/dev/random_.
-* **INFINIT_CRYPTOGRAPHY_ROTATION activates** the key rotation mechanism
+* **ELLE_CRYPTOGRAPHY_ROTATION activates** the key rotation mechanism
 allowing one to derive RSA keys from a seed in a deterministic way.
 
 ## Dependencies

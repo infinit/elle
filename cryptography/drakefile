@@ -103,7 +103,7 @@ def configure(openssl_config,
   config.lib_path('lib')
   config += openssl_config
   if enable_rotation:
-    config.define("INFINIT_CRYPTOGRAPHY_ROTATION")
+    config.define("ELLE_CRYPTOGRAPHY_ROTATION")
     config += dopenssl.config
 
   # Local Configuration

@@ -1,9 +1,9 @@
-#ifndef INFINIT_CRYPTOGRAPHY_RANDOM_HH
-# define INFINIT_CRYPTOGRAPHY_RANDOM_HH
+#ifndef ELLE_CRYPTOGRAPHY_RANDOM_HH
+# define ELLE_CRYPTOGRAPHY_RANDOM_HH
 
 # include <elle/types.hh>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {

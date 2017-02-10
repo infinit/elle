@@ -17,15 +17,15 @@ static
 void
 _test_represent()
 {
-  infinit::cryptography::rsa::KeyPair keypair =
-    infinit::cryptography::rsa::keypair::generate(1024);
+  elle::cryptography::rsa::KeyPair keypair =
+    elle::cryptography::rsa::keypair::generate(1024);
 
   // 1)
   {
     std::stringstream stream;
     {
       typename elle::serialization::json::SerializerOut output(stream);
-      infinit::cryptography::rsa::PrivateKey k = keypair.k();
+      elle::cryptography::rsa::PrivateKey k = keypair.k();
       k.serialize(output);
     }
 
@@ -64,13 +64,13 @@ test_represent()
 `---------*/
 
 static
-infinit::cryptography::rsa::PrivateKey
+elle::cryptography::rsa::PrivateKey
 _test_generate(uint32_t const length = 1024)
 {
-  infinit::cryptography::rsa::KeyPair keypair =
-    infinit::cryptography::rsa::keypair::generate(length);
+  elle::cryptography::rsa::KeyPair keypair =
+    elle::cryptography::rsa::keypair::generate(length);
 
-  infinit::cryptography::rsa::PrivateKey k(keypair.k());
+  elle::cryptography::rsa::PrivateKey k(keypair.k());
 
   return (k);
 }
@@ -90,15 +90,15 @@ static
 void
 test_construct()
 {
-  infinit::cryptography::rsa::PrivateKey k1 = _test_generate(2048);
+  elle::cryptography::rsa::PrivateKey k1 = _test_generate(2048);
 
   // PrivateKey copy.
-  infinit::cryptography::rsa::PrivateKey k2(k1);
+  elle::cryptography::rsa::PrivateKey k2(k1);
 
   BOOST_CHECK_EQUAL(k1, k2);
 
   // PrivateKey move.
-  infinit::cryptography::rsa::PrivateKey k3(std::move(k1));
+  elle::cryptography::rsa::PrivateKey k3(std::move(k1));
 
   BOOST_CHECK_EQUAL(k2, k3);
 }
@@ -116,7 +116,7 @@ test_operate()
 
   std::stringstream stream(representation);
   typename elle::serialization::json::SerializerIn input(stream);
-  infinit::cryptography::rsa::PrivateKey k(input);
+  elle::cryptography::rsa::PrivateKey k(input);
 
   // The following operations are based on hard-coded base64 string which
   // represent the data on which to operate, in their serialized form.
@@ -144,8 +144,8 @@ static
 void
 test_compare()
 {
-  infinit::cryptography::rsa::PrivateKey k1 = _test_generate(1024);
-  infinit::cryptography::rsa::PrivateKey k2 = _test_generate(1024);
+  elle::cryptography::rsa::PrivateKey k1 = _test_generate(1024);
+  elle::cryptography::rsa::PrivateKey k2 = _test_generate(1024);
 
   // With high probabilituy, this should not be the case. Otherwise,
   // the random generator is probably broken.
@@ -163,7 +163,7 @@ test_serialize()
 {
   // Serialize/deserialize.
   {
-    infinit::cryptography::rsa::PrivateKey k1 = _test_generate(2048);
+    elle::cryptography::rsa::PrivateKey k1 = _test_generate(2048);
 
     std::stringstream stream;
     {
@@ -172,7 +172,7 @@ test_serialize()
     }
 
     typename elle::serialization::json::SerializerIn input(stream);
-    infinit::cryptography::rsa::PrivateKey k2(input);
+    elle::cryptography::rsa::PrivateKey k2(input);
 
     BOOST_CHECK_EQUAL(k1, k2);
   }
@@ -186,8 +186,8 @@ test_serialize()
       R"JSON({"rsa":"MIICXgIBAAKBgQDzicS9Tn1LqDpFtUC/2tEQFjuVmafURevYoyZS8A/MQ8LCN3k5rvb81XT/ofMzANCeiPISy/YcaetNMpxDZdYYTtKXnX/BCfLdIe1L3ljfT7nbYjL/jhjv4957QGEG1L5NlJVeowW2IYplis2VSKEUAomm39MU77lLKVn5gnmQyQIDAQABAoGBAKZf5Av/5xEcqFKe9NEcx95ZkfMtub4G1ox1SOU4I1LEp/TOuP5zTUCFAxzwopihYeQsYlP9CvF2Ws2uWZqho5Q6e7CcEFKzeX3q9qKd5Vu6kA0l5mvtHSWZj7GWEJijXbbUqHI3l8ENMOENDtjvzZtPGM+qiSN0t/tzas9E5CVBAkEA+gE1QvuEKTH+AOa67Bj++EtkrbKtj7StaIN+xEmNK3NdOq2Fbo90Dc4cCRlxhTPXvIxjWm1Slx1jpQ15nl4JdQJBAPlg3KYIX4eCCSoCzmYX7vrNrdwd9nEnhUA/i6CDb5NBC7zUKZ7k88KH5hLM93gYtSr0X7PSaPQ04/PIvqboK4UCQQDBbcHZy2Qbw3Q1Gk+xcD2Fuj9xLPegYjhwzpx8HjQ9VArj5XGBczhlnfyPBcKRPuVCGpScWE04YiLAh0Z7w2IpAkEAl5zQCRFmIthoAeaa3W8Hl+ucHAsLXVgNpzX7CadfGkOdgzvp4fSITmiY9C0w9w7udiMEXCs8K9xMClatsoPMkQJAUI2bk+0A2VtwGssgYm8EmTAEvD0BlPL2pIMbV5Frr2O2XCh5DH7iOcvEYJYGfVX8nK/HJdQ9ltgf86rRrLY8jA=="})JSON"
       };
 
-    infinit::cryptography::test::formats<
-      infinit::cryptography::rsa::PrivateKey>(archives);
+    elle::cryptography::test::formats<
+      elle::cryptography::rsa::PrivateKey>(archives);
   }
 }
 

@@ -1,5 +1,5 @@
-#ifndef INFINIT_CRYPTOGRAPHY_RSA_PRIVATEKEY_HXX
-# define INFINIT_CRYPTOGRAPHY_RSA_PRIVATEKEY_HXX
+#ifndef ELLE_CRYPTOGRAPHY_RSA_PRIVATEKEY_HXX
+# define ELLE_CRYPTOGRAPHY_RSA_PRIVATEKEY_HXX
 
 //
 // ---------- Class -----------------------------------------------------------
@@ -8,7 +8,7 @@
 # include <elle/serialization/binary.hh>
 # include <elle/utility/Move.hh>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -53,7 +53,7 @@ namespace infinit
       std::function<elle::Buffer (PrivateKey const* self)>
       PrivateKey::_sign_async(T const& o, elle::Version const& version) const
       {
-        ELLE_LOG_COMPONENT("infinit.cryptography.rsa.PrivateKey");
+        ELLE_LOG_COMPONENT("elle.cryptography.rsa.PrivateKey");
         ELLE_TRACE_SCOPE("%s: sign %s", *this, o);
         return [serialized =
                   elle::serialization::binary::serialize(o, version, false),
@@ -86,10 +86,10 @@ namespace infinit
 namespace std
 {
   template <>
-  struct hash<infinit::cryptography::rsa::PrivateKey>
+  struct hash<elle::cryptography::rsa::PrivateKey>
   {
     size_t
-    operator ()(infinit::cryptography::rsa::PrivateKey const& value) const
+    operator ()(elle::cryptography::rsa::PrivateKey const& value) const
     {
       std::stringstream stream;
       {

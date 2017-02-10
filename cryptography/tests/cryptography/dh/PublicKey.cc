@@ -9,13 +9,13 @@
 `---------*/
 
 static
-infinit::cryptography::dh::PublicKey
+elle::cryptography::dh::PublicKey
 _test_generate()
 {
-  infinit::cryptography::dh::KeyPair keypair =
-    infinit::cryptography::dh::keypair::generate();
+  elle::cryptography::dh::KeyPair keypair =
+    elle::cryptography::dh::keypair::generate();
 
-  infinit::cryptography::dh::PublicKey K(keypair.K());
+  elle::cryptography::dh::PublicKey K(keypair.K());
 
   return (K);
 }
@@ -35,15 +35,15 @@ static
 void
 test_construct()
 {
-  infinit::cryptography::dh::PublicKey K1 = _test_generate();
+  elle::cryptography::dh::PublicKey K1 = _test_generate();
 
   // PublicKey copy.
-  infinit::cryptography::dh::PublicKey K2(K1);
+  elle::cryptography::dh::PublicKey K2(K1);
 
   BOOST_CHECK_EQUAL(K1, K2);
 
   // PublicKey move.
-  infinit::cryptography::dh::PublicKey K3(std::move(K1));
+  elle::cryptography::dh::PublicKey K3(std::move(K1));
 
   BOOST_CHECK_EQUAL(K2, K3);
 }
@@ -56,8 +56,8 @@ static
 void
 test_compare()
 {
-  infinit::cryptography::dh::PublicKey K1 = _test_generate();
-  infinit::cryptography::dh::PublicKey K2 = _test_generate();
+  elle::cryptography::dh::PublicKey K1 = _test_generate();
+  elle::cryptography::dh::PublicKey K2 = _test_generate();
 
   // With high probability, this should not be the case. Otherwise,
   // the random generator is probably broken.

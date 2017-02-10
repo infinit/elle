@@ -34,10 +34,10 @@ echo_mode(bool enable)
 }
 
 static
-infinit::cryptography::SecretKey
+elle::cryptography::SecretKey
 key(bool verify)
 {
-  using namespace infinit::cryptography;
+  using namespace elle::cryptography;
   std::array<std::string, 2> passphrases;
   {
     elle::SafeFinally restore_echo([] { echo_mode(true); });
@@ -88,7 +88,7 @@ main(int argc, char* argv[])
       {
         std::cout << secret.decipher(code) << std::endl;
       }
-      catch (infinit::cryptography::Error const&)
+      catch (elle::cryptography::Error const&)
       {
         elle::err("Invalid password");
       }

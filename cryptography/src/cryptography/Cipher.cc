@@ -3,7 +3,7 @@
 #include <cryptography/Cipher.hh>
 #include <cryptography/Error.hh>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -476,32 +476,32 @@ namespace elle
   {
     // Cipher
     uint8_t
-    Serialize<infinit::cryptography::Cipher>::convert(
-      infinit::cryptography::Cipher const& value)
+    Serialize<elle::cryptography::Cipher>::convert(
+      elle::cryptography::Cipher const& value)
     {
       return (static_cast<uint8_t>(value));
     }
 
-    infinit::cryptography::Cipher
-    Serialize<infinit::cryptography::Cipher>::convert(
+    elle::cryptography::Cipher
+    Serialize<elle::cryptography::Cipher>::convert(
       uint8_t const& representation)
     {
-      return (static_cast<infinit::cryptography::Cipher>(representation));
+      return (static_cast<elle::cryptography::Cipher>(representation));
     }
 
     // Mode
     uint8_t
-    Serialize<infinit::cryptography::Mode>::convert(
-      infinit::cryptography::Mode const& value)
+    Serialize<elle::cryptography::Mode>::convert(
+      elle::cryptography::Mode const& value)
     {
       return (static_cast<uint8_t>(value));
     }
 
-    infinit::cryptography::Mode
-    Serialize<infinit::cryptography::Mode>::convert(
+    elle::cryptography::Mode
+    Serialize<elle::cryptography::Mode>::convert(
       uint8_t const& representation)
     {
-      return (static_cast<infinit::cryptography::Mode>(representation));
+      return (static_cast<elle::cryptography::Mode>(representation));
     }
   }
 }

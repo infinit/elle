@@ -43,7 +43,7 @@ namespace infinit
       while (true)
       {
         ELLE_TRACE_SCOPE("%s: handshake to determine master", *this);
-        char mine = infinit::cryptography::random::generate<char>();
+        char mine = elle::cryptography::random::generate<char>();
         char his;
         {
           elle::Buffer p;

@@ -16,18 +16,18 @@ namespace aws
             elle::Buffer const& key)
   {
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-    infinit::cryptography::Digest res =
-      infinit::cryptography::hmac::sign(
-        infinit::cryptography::Plain(
+    elle::cryptography::Digest res =
+      elle::cryptography::hmac::sign(
+        elle::cryptography::Plain(
           elle::ConstWeakBuffer(message)),
         key,
-        infinit::cryptography::Oneway::sha256);
+        elle::cryptography::Oneway::sha256);
     return res.buffer();
 #else
-    return (infinit::cryptography::hmac::sign(
+    return (elle::cryptography::hmac::sign(
               message,
               key.string(),
-              infinit::cryptography::Oneway::sha256));
+              elle::cryptography::Oneway::sha256));
 #endif
   }
 

@@ -8,7 +8,7 @@
 #include <cryptography/finally.hh>
 #include <cryptography/cryptography.hh>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -69,11 +69,11 @@ namespace infinit
                                              nullptr)));
         }
 
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(key);
+        ELLE_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(key);
 
         ::fclose(fd);
 
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(key);
+        ELLE_CRYPTOGRAPHY_FINALLY_ABORT(key);
 
         return (key);
       }
@@ -110,11 +110,11 @@ namespace infinit
                                              nullptr)));
         }
 
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(key);
+        ELLE_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(key);
 
         ::fclose(fd);
 
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(key);
+        ELLE_CRYPTOGRAPHY_FINALLY_ABORT(key);
 
         return (key);
       }

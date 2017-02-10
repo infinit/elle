@@ -1,5 +1,5 @@
-#ifndef INFINIT_CRYPTOGRAPHY_ONEWAY_HH
-# define INFINIT_CRYPTOGRAPHY_ONEWAY_HH
+#ifndef ELLE_CRYPTOGRAPHY_ONEWAY_HH
+# define ELLE_CRYPTOGRAPHY_ONEWAY_HH
 
 # include <cryptography/fwd.hh>
 
@@ -10,7 +10,7 @@
 
 # include <iosfwd>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -63,14 +63,14 @@ namespace elle
   namespace serialization
   {
     template <>
-    struct Serialize<infinit::cryptography::Oneway>
+    struct Serialize<cryptography::Oneway>
     {
       typedef uint8_t Type;
       static
       uint8_t
-      convert(infinit::cryptography::Oneway const& value);
+      convert(elle::cryptography::Oneway const& value);
       static
-      infinit::cryptography::Oneway
+      elle::cryptography::Oneway
       convert(uint8_t const& representation);
     };
   }

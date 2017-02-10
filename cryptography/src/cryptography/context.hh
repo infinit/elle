@@ -1,11 +1,11 @@
-#ifndef INFINIT_CRYPTOGRAPHY_CONTEXT_HH
-# define INFINIT_CRYPTOGRAPHY_CONTEXT_HH
+#ifndef ELLE_CRYPTOGRAPHY_CONTEXT_HH
+# define ELLE_CRYPTOGRAPHY_CONTEXT_HH
 
 # include <openssl/evp.h>
 
 # include <iosfwd>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {

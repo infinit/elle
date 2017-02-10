@@ -1,5 +1,5 @@
-#ifndef INFINIT_CRYPTOGRAPHY_DH_ALL_HH
-# define INFINIT_CRYPTOGRAPHY_DH_ALL_HH
+#ifndef ELLE_CRYPTOGRAPHY_DH_ALL_HH
+# define ELLE_CRYPTOGRAPHY_DH_ALL_HH
 
 # include <cryptography/dh/KeyPair.hh>
 # include <cryptography/dh/PrivateKey.hh>

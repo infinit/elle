@@ -4,7 +4,7 @@
 #include <elle/Buffer.hh>
 #include <elle/log.hh>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {

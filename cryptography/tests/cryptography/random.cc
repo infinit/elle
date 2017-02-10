@@ -9,7 +9,7 @@
 // /usr/include/stdlib.h:321:17: note: previous declaration 'long int random()'
 // extern long int random (void) __THROW;
 //                 ^
-namespace icrand = infinit::cryptography::random;
+namespace icrand = elle::cryptography::random;
 
 /*--------.
 | Operate |

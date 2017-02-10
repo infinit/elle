@@ -1,7 +1,7 @@
-#ifndef INFINIT_CRYPTOGRAPHY_CONSTANTS_HH
-# define INFINIT_CRYPTOGRAPHY_CONSTANTS_HH
+#ifndef ELLE_CRYPTOGRAPHY_CONSTANTS_HH
+# define ELLE_CRYPTOGRAPHY_CONSTANTS_HH
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {

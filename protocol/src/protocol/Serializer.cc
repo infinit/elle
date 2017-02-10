@@ -297,18 +297,18 @@ namespace infinit
       ELLE_DUMP("compute checksum of '%x'", content);
 #if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
       auto _hash =
-        infinit::cryptography::hash(
-          infinit::cryptography::Plain(
+        elle::cryptography::hash(
+          elle::cryptography::Plain(
             elle::WeakBuffer(content.mutable_contents(),
                              content.size())),
-          infinit::cryptography::Oneway::sha1);
+          elle::cryptography::Oneway::sha1);
       auto hash(_hash.buffer());
 #else
       auto hash =
-        infinit::cryptography::hash(
+        elle::cryptography::hash(
           elle::ConstWeakBuffer(content.contents(),
                                 content.size()),
-          infinit::cryptography::Oneway::sha1);
+          elle::cryptography::Oneway::sha1);
 #endif
       ELLE_DUMP("checksum: '%x'", hash);
       return hash;

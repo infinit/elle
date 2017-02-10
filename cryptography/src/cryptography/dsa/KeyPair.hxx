@@ -1,5 +1,5 @@
-#ifndef INFINIT_CRYPTOGRAPHY_DSA_KEYPAIR_HXX
-# define INFINIT_CRYPTOGRAPHY_DSA_KEYPAIR_HXX
+#ifndef ELLE_CRYPTOGRAPHY_DSA_KEYPAIR_HXX
+# define ELLE_CRYPTOGRAPHY_DSA_KEYPAIR_HXX
 
 //
 // ---------- Hash ------------------------------------------------------------
@@ -8,12 +8,12 @@
 namespace std
 {
   template <>
-  struct hash<infinit::cryptography::dsa::KeyPair>
+  struct hash<elle::cryptography::dsa::KeyPair>
   {
     size_t
-    operator ()(infinit::cryptography::dsa::KeyPair const& value) const
+    operator ()(elle::cryptography::dsa::KeyPair const& value) const
     {
-      return (std::hash<infinit::cryptography::dsa::PublicKey>()(value.K()));
+      return (std::hash<elle::cryptography::dsa::PublicKey>()(value.K()));
     }
   };
 }

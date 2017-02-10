@@ -1,12 +1,12 @@
-#ifndef INFINIT_CRYPTOGRAPHY_RSA_DER_HH
-# define INFINIT_CRYPTOGRAPHY_RSA_DER_HH
+#ifndef ELLE_CRYPTOGRAPHY_RSA_DER_HH
+# define ELLE_CRYPTOGRAPHY_RSA_DER_HH
 
 # include <openssl/rsa.h>
 
 # include <elle/types.hh>
 # include <elle/Buffer.hh>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {

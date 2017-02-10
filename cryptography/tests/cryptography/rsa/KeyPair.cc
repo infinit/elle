@@ -13,7 +13,7 @@
 #include <elle/types.hh>
 #include <elle/serialization/json.hh>
 
-ELLE_LOG_COMPONENT("infinit.cryptography.test");
+ELLE_LOG_COMPONENT("elle.cryptography.test");
 
 /*----------.
 | Represent |
@@ -25,8 +25,8 @@ _test_represent(uint32_t const length)
 {
   // 1)
   {
-    infinit::cryptography::rsa::KeyPair keypair =
-      infinit::cryptography::rsa::keypair::generate(length);
+    elle::cryptography::rsa::KeyPair keypair =
+      elle::cryptography::rsa::keypair::generate(length);
 
     std::stringstream stream;
     {
@@ -56,11 +56,11 @@ represent()
 `---------*/
 
 static
-infinit::cryptography::rsa::KeyPair
+elle::cryptography::rsa::KeyPair
 _test_generate(uint32_t const length)
 {
-  infinit::cryptography::rsa::KeyPair keypair =
-    infinit::cryptography::rsa::keypair::generate(length);
+  elle::cryptography::rsa::KeyPair keypair =
+    elle::cryptography::rsa::keypair::generate(length);
 
   return (keypair);
 }
@@ -80,30 +80,30 @@ static
 void
 construct()
 {
-  infinit::cryptography::rsa::KeyPair keypair1 = _test_generate(2048);
+  elle::cryptography::rsa::KeyPair keypair1 = _test_generate(2048);
 
   // KeyPair copy.
-  infinit::cryptography::rsa::KeyPair keypair2(keypair1);
+  elle::cryptography::rsa::KeyPair keypair2(keypair1);
 
   BOOST_CHECK_EQUAL(keypair1, keypair2);
 
   // KeyPair move.
-  infinit::cryptography::rsa::KeyPair keypair3(std::move(keypair1));
+  elle::cryptography::rsa::KeyPair keypair3(std::move(keypair1));
 
   BOOST_CHECK_EQUAL(keypair2, keypair3);
 
   // Attributes copy.
-  infinit::cryptography::rsa::KeyPair keypair4(keypair2.K(), keypair2.k());
+  elle::cryptography::rsa::KeyPair keypair4(keypair2.K(), keypair2.k());
 
   BOOST_CHECK_EQUAL(keypair2, keypair3);
   BOOST_CHECK_EQUAL(keypair2, keypair4);
   BOOST_CHECK_EQUAL(keypair3, keypair4);
 
   // Attributes move.
-  infinit::cryptography::rsa::PublicKey K(keypair3.K());
-  infinit::cryptography::rsa::PrivateKey k(keypair3.k());
+  elle::cryptography::rsa::PublicKey K(keypair3.K());
+  elle::cryptography::rsa::PrivateKey k(keypair3.k());
 
-  infinit::cryptography::rsa::KeyPair keypair5(std::move(K), std::move(k));
+  elle::cryptography::rsa::KeyPair keypair5(std::move(K), std::move(k));
 
   BOOST_CHECK_EQUAL(keypair2, keypair3);
   BOOST_CHECK_EQUAL(keypair2, keypair4);
@@ -119,11 +119,11 @@ construct()
 
 static
 void
-_test_operate(infinit::cryptography::rsa::KeyPair const& keypair)
+_test_operate(elle::cryptography::rsa::KeyPair const& keypair)
 {
   // Public/private seal/open.
   {
-    auto input = infinit::cryptography::random::generate<elle::Buffer>(9128);
+    auto input = elle::cryptography::random::generate<elle::Buffer>(9128);
     elle::Buffer code = keypair.K().seal(input);
     elle::Buffer plain = keypair.k().open(code);
     std::string const output(plain.string());
@@ -142,7 +142,7 @@ _test_operate(infinit::cryptography::rsa::KeyPair const& keypair)
 
   // Sign/verify a plain text.
   {
-    auto input = infinit::cryptography::random::generate<elle::Buffer>(1493);
+    auto input = elle::cryptography::random::generate<elle::Buffer>(1493);
     elle::Buffer signature = keypair.k().sign(input);
     auto result =
       keypair.K().verify(signature, input);
@@ -155,7 +155,7 @@ static
 void
 operate()
 {
-  infinit::cryptography::rsa::KeyPair keypair = _test_generate(512);
+  elle::cryptography::rsa::KeyPair keypair = _test_generate(512);
 
   _test_operate(keypair);
 }
@@ -170,7 +170,7 @@ serialize()
 {
   // Serialize/deserialize.
   {
-    infinit::cryptography::rsa::KeyPair keypair1 = _test_generate(1024);
+    elle::cryptography::rsa::KeyPair keypair1 = _test_generate(1024);
 
     std::stringstream stream;
     {
@@ -179,7 +179,7 @@ serialize()
     }
 
     typename elle::serialization::json::SerializerIn input(stream);
-    infinit::cryptography::rsa::KeyPair keypair2(input);
+    elle::cryptography::rsa::KeyPair keypair2(input);
 
     BOOST_CHECK_EQUAL(keypair1, keypair2);
 
@@ -192,8 +192,8 @@ serialize()
     std::stringstream stream(representation);
     typename elle::serialization::json::SerializerIn input(stream);
 
-    BOOST_CHECK_THROW(infinit::cryptography::rsa::KeyPair keypair(input),
-                      infinit::cryptography::Error);
+    BOOST_CHECK_THROW(elle::cryptography::rsa::KeyPair keypair(input),
+                      elle::cryptography::Error);
   }
 
   // For every hard-coded strings [representation 1] in every format,
@@ -205,7 +205,7 @@ serialize()
       R"JSON({"private key":{".version":"0.0.0","rsa":"MIICXQIBAAKBgQDeiXQVuqQS02dwAXV3woFxqfl5NgXrE9TIv3IkDjL2DHCBU4VeXDvNVsgthJ0Cqcz5TOkO+bF5LANpeLAJ3+okB7mXmWsRJxwtFxYVZM1O85HRuqWJ1/0iucZhxI6ONHV0BDeAHqlQiSXfBOzORQc6nvcpYYtI2IOyK0CdpbZ4iwIDAQABAoGANewIfNtktksTXUh9Ni+jPe95y60Tcgq0HJCHD8WBA62v9SZPwrWGqBLHHoBrqyGJ0T6Zmk9WeY34pa3gugPPr8eFByugh2JMDSOG3erSQ6Wyc3Bzl2/ybVKONYlosiGLYrOXiuz0yvrruOlOt1QhDpjE0MyY7vpT1C2Y9D74vIECQQD50iRaO1yRoN6J1ZBCDaM5tP/I2P/kyTYUNu4kEqKxBEhzH5eevuXk8Pic29Dtvt7hnJ7uYS3Vbc32zfCwVirzAkEA5AqM5pc3srOstGS8kH82PMuFKYdJBb56sDUsUGyEC6vpKkUzGWQppYRpOij3ntpvLy0/f0JsNXdqLcmy5GayCQJAb+/F1BxnFOWE8TOdCMu9iFzeg2sf9a5mqdYXDFjBRxnJMLRGJp4YumVysC4aRnzQtzyLRfqLI+eoct7B6vEhGwJBANf2re4Ls/IHez30USg/cawtylTEDIHmHOcX1Hnt6zfqfQ1NL9GSLGbWeZldBvVoRPfW0FXDIBualfH7HPJ115ECQQCFYFKJb19q5kVElAEJaj/vj5RwAdNQKqfI0gWFIY3WGFz6WAEerAjQxzODlb55J+dZAUuqGd3y27WSViaY+AjM"},"public key":{".version":"0.0.0","rsa":"MIGJAoGBAN6JdBW6pBLTZ3ABdXfCgXGp+Xk2BesT1Mi/ciQOMvYMcIFThV5cO81WyC2EnQKpzPlM6Q75sXksA2l4sAnf6iQHuZeZaxEnHC0XFhVkzU7zkdG6pYnX/SK5xmHEjo40dXQEN4AeqVCJJd8E7M5FBzqe9ylhi0jYg7IrQJ2ltniLAgMBAAE="}})JSON"
       };
 
-    infinit::cryptography::test::formats<infinit::cryptography::rsa::KeyPair>(
+    elle::cryptography::test::formats<elle::cryptography::rsa::KeyPair>(
       archives, std::bind(_test_operate, std::placeholders::_1));
   }
 }
@@ -246,8 +246,8 @@ signing()
 {
   Signed s(1, 2);
   Signed s2(1, 3);
-  infinit::cryptography::rsa::KeyPair keys =
-    infinit::cryptography::rsa::keypair::generate(1024);
+  elle::cryptography::rsa::KeyPair keys =
+    elle::cryptography::rsa::keypair::generate(1024);
   ELLE_LOG("sign with legacy version")
   {
     auto signature = keys.k().sign(s, elle::Version(0, 0, 0));

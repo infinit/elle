@@ -1,9 +1,9 @@
-#ifndef INFINIT_CRYPTOGRAPHY_HOTP_HH
-# define INFINIT_CRYPTOGRAPHY_HOTP_HH
+#ifndef ELLE_CRYPTOGRAPHY_HOTP_HH
+# define ELLE_CRYPTOGRAPHY_HOTP_HH
 
 #include <elle/Buffer.hh>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {

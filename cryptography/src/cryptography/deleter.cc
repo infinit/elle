@@ -1,6 +1,6 @@
 #include <cryptography/deleter.hh>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {

@@ -1,5 +1,5 @@
-#ifndef INFINIT_CRYPTOGRAPHY_RSA_KEYPOOL_HH
-# define INFINIT_CRYPTOGRAPHY_RSA_KEYPOOL_HH
+#ifndef ELLE_CRYPTOGRAPHY_RSA_KEYPOOL_HH
+# define ELLE_CRYPTOGRAPHY_RSA_KEYPOOL_HH
 
 # include <condition_variable>
 # include <thread>
@@ -8,7 +8,7 @@
 # include <cryptography/rsa/KeyPair.hh>
 # include <elle/ProducerPool.hh>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {

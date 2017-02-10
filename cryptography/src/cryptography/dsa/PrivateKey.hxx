@@ -1,5 +1,5 @@
-#ifndef INFINIT_CRYPTOGRAPHY_DSA_PRIVATEKEY_HXX
-# define INFINIT_CRYPTOGRAPHY_DSA_PRIVATEKEY_HXX
+#ifndef ELLE_CRYPTOGRAPHY_DSA_PRIVATEKEY_HXX
+# define ELLE_CRYPTOGRAPHY_DSA_PRIVATEKEY_HXX
 
 //
 // ---------- Hash ------------------------------------------------------------
@@ -10,10 +10,10 @@
 namespace std
 {
   template <>
-  struct hash<infinit::cryptography::dsa::PrivateKey>
+  struct hash<elle::cryptography::dsa::PrivateKey>
   {
     size_t
-    operator ()(infinit::cryptography::dsa::PrivateKey const& value) const
+    operator ()(elle::cryptography::dsa::PrivateKey const& value) const
     {
       std::stringstream stream;
       {

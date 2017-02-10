@@ -10,7 +10,7 @@
 
 #include <cryptography/Error.hh>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -202,17 +202,17 @@ namespace elle
   namespace serialization
   {
     uint8_t
-    Serialize<infinit::cryptography::rsa::Padding>::convert(
-      infinit::cryptography::rsa::Padding const& value)
+    Serialize<elle::cryptography::rsa::Padding>::convert(
+      elle::cryptography::rsa::Padding const& value)
     {
       return (static_cast<uint8_t>(value));
     }
 
-    infinit::cryptography::rsa::Padding
-    Serialize<infinit::cryptography::rsa::Padding>::convert(
+    elle::cryptography::rsa::Padding
+    Serialize<elle::cryptography::rsa::Padding>::convert(
       uint8_t const& representation)
     {
-      return (static_cast<infinit::cryptography::rsa::Padding>(representation));
+      return (static_cast<elle::cryptography::rsa::Padding>(representation));
     }
   }
 }

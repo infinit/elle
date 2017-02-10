@@ -1,5 +1,5 @@
-#ifndef INFINIT_CRYPTOGRAPHY_ALL_HH
-# define INFINIT_CRYPTOGRAPHY_ALL_HH
+#ifndef ELLE_CRYPTOGRAPHY_ALL_HH
+# define ELLE_CRYPTOGRAPHY_ALL_HH
 
 # include <cryptography/Cipher.hh>
 # include <cryptography/Cryptosystem.hh>

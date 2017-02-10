@@ -1,7 +1,7 @@
-#ifndef INFINIT_CRYPTOGRAPHY_CRYPTOGRAPHY_HH
-# define INFINIT_CRYPTOGRAPHY_CRYPTOGRAPHY_HH
+#ifndef ELLE_CRYPTOGRAPHY_CRYPTOGRAPHY_HH
+# define ELLE_CRYPTOGRAPHY_CRYPTOGRAPHY_HH
 
-namespace infinit
+namespace elle
 {
   /// This namespace contains everything necessary for performing
   /// cryptographic operations.

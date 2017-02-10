@@ -2,7 +2,7 @@
 #include <cryptography/hash.hh>
 #include <cryptography/random.hh>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {

@@ -1,5 +1,5 @@
-#ifndef INFINIT_CRYPTOGRAPHY_RSA_PRIVATEKEY_HH
-# define INFINIT_CRYPTOGRAPHY_RSA_PRIVATEKEY_HH
+#ifndef ELLE_CRYPTOGRAPHY_RSA_PRIVATEKEY_HH
+# define ELLE_CRYPTOGRAPHY_RSA_PRIVATEKEY_HH
 
 # include <memory>
 # include <utility>
@@ -22,7 +22,7 @@ ELLE_OPERATOR_RELATIONALS();
 // ---------- Class -----------------------------------------------------------
 //
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -118,7 +118,7 @@ namespace infinit
         uint32_t
         length() const;
 
-# if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
+# if defined(ELLE_CRYPTOGRAPHY_ROTATION)
         /*---------.
         | Rotation |
         `---------*/
@@ -173,7 +173,7 @@ namespace infinit
 // ---------- DER -------------------------------------------------------------
 //
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {

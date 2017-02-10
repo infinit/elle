@@ -11,13 +11,13 @@
 #include <cryptography/random.hh>
 #include <cryptography/Error.hh>
 
-#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
+#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
 # include <dopenssl/rand.hh>
 
-ELLE_LOG_COMPONENT("infinit.cryptography.cryptography");
+ELLE_LOG_COMPONENT("elle.cryptography.cryptography");
 #endif
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -90,7 +90,7 @@ namespace infinit
         if (::RAND_status() == 0)
           random::setup();
 
-#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
+#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
         // Initialize the deterministic PNRG engine.
         if (::dRAND_init() != 1)
           throw Error(
@@ -106,7 +106,7 @@ namespace infinit
 
       ~Initializer()
       {
-#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
+#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
         // Clean the deterministic PNRG engine.
         if (::dRAND_clean() != 1)
         {

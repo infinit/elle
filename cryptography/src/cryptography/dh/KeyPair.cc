@@ -13,7 +13,7 @@
 #include <openssl/err.h>
 #include <openssl/evp.h>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -126,7 +126,7 @@ namespace infinit
 // ---------- Generator -------------------------------------------------------
 //
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -152,7 +152,7 @@ namespace infinit
               elle::sprintf("unable to allocate a parameters object: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
-          INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(parameters);
+          ELLE_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(parameters);
 
           if (::EVP_PKEY_assign_DH(parameters, ::DH_get_2048_256()) <= 0)
               throw Error(
@@ -168,7 +168,7 @@ namespace infinit
                               "context: %s",
                               ::ERR_error_string(ERR_get_error(), nullptr)));
 
-          INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY_CONTEXT(context);
+          ELLE_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY_CONTEXT(context);
 
           if (::EVP_PKEY_keygen_init(context) <= 0)
             throw Error(
@@ -184,7 +184,7 @@ namespace infinit
               elle::sprintf("unable to generate a keypair: %s",
                             ::ERR_error_string(ERR_get_error(), nullptr)));
 
-          INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(key);
+          ELLE_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(key);
 
           ELLE_ASSERT_NEQ(key, nullptr);
 
@@ -193,12 +193,12 @@ namespace infinit
           PrivateKey k(key);
           PublicKey K(k);
 
-          INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(key);
+          ELLE_CRYPTOGRAPHY_FINALLY_ABORT(key);
 
-          INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
+          ELLE_CRYPTOGRAPHY_FINALLY_ABORT(context);
           ::EVP_PKEY_CTX_free(context);
 
-          INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(parameters);
+          ELLE_CRYPTOGRAPHY_FINALLY_ABORT(parameters);
           ::EVP_PKEY_free(parameters);
 
           return (KeyPair(std::move(K), std::move(k)));

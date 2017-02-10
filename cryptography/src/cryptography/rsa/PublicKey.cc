@@ -29,17 +29,17 @@
 #include <cryptography/finally.hh>
 #include <cryptography/hash.hh>
 
-#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
+#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
 # include <dopenssl/rsa.hh>
 #endif
 
-ELLE_LOG_COMPONENT("infinit.cryptography.rsa.PublicKey");
+ELLE_LOG_COMPONENT("elle.cryptography.rsa.PublicKey");
 
 //
 // ---------- Class -----------------------------------------------------------
 //
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -263,7 +263,7 @@ namespace infinit
                   ::EVP_PKEY_bits(this->_key.get())));
       }
 
-#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
+#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
       /*---------.
       | Rotation |
       `---------*/
@@ -279,11 +279,11 @@ namespace infinit
                static_cast<unsigned char const*>(seed.buffer().contents()),
                seed.buffer().size())) == nullptr)
           _details::raise("unable to deduce the RSA key from the given seed");
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(rsa);
+        ELLE_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(rsa);
         // Extract the public key
         RSA* pub = low::RSA_priv2pub(rsa);
         ::RSA_free(rsa);
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
+        ELLE_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
         return pub;
       }
 
@@ -391,7 +391,7 @@ namespace infinit
 // ---------- DER -------------------------------------------------------------
 //
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {

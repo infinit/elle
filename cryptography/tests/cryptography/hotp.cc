@@ -4,7 +4,7 @@
 
 ELLE_LOG_COMPONENT("test");
 
-using namespace infinit::cryptography;
+using namespace elle::cryptography;
 static void test_basic()
 {
   HOTPServer server;

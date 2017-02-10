@@ -93,14 +93,14 @@ using das::operator <<;
 
 // Read your fake keypair from examples/example.key.
 static
-infinit::cryptography::rsa::KeyPair
+elle::cryptography::rsa::KeyPair
 key()
 {
   elle::AtomicFile f("examples/example.key");
   return f.read() << [&] (elle::AtomicFile::Read& read)
   {
     return elle::serialization::json::deserialize<
-      infinit::cryptography::rsa::KeyPair>(read.stream(), false);
+      elle::cryptography::rsa::KeyPair>(read.stream(), false);
   };
 }
 

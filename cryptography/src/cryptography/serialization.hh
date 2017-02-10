@@ -1,9 +1,9 @@
-#ifndef INFINIT_CRYPTOGRAPHY_SERIALIZATION_HH
-# define INFINIT_CRYPTOGRAPHY_SERIALIZATION_HH
+#ifndef ELLE_CRYPTOGRAPHY_SERIALIZATION_HH
+# define ELLE_CRYPTOGRAPHY_SERIALIZATION_HH
 
 # include <elle/serialization/Serializer.hh>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {

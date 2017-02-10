@@ -2,7 +2,7 @@
 
 #include <elle/serialization/Serializer.hh>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {

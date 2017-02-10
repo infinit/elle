@@ -16,7 +16,7 @@
 #include <cryptography/hash.hh>
 #include <cryptography/raw.hh>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -70,11 +70,11 @@ namespace infinit
         // Duplicate the DH structure.
         DH* _dh = low::DH_dup(other._key->pkey.dh);
 
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_DH(_dh);
+        ELLE_CRYPTOGRAPHY_FINALLY_ACTION_FREE_DH(_dh);
 
         this->_construct(_dh);
 
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_dh);
+        ELLE_CRYPTOGRAPHY_FINALLY_ABORT(_dh);
 
         this->_check();
       }

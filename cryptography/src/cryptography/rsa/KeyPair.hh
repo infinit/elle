@@ -1,5 +1,5 @@
-#ifndef INFINIT_CRYPTOGRAPHY_RSA_KEYPAIR_HH
-# define INFINIT_CRYPTOGRAPHY_RSA_KEYPAIR_HH
+#ifndef ELLE_CRYPTOGRAPHY_RSA_KEYPAIR_HH
+# define ELLE_CRYPTOGRAPHY_RSA_KEYPAIR_HH
 
 # include <iosfwd>
 
@@ -23,7 +23,7 @@ ELLE_OPERATOR_RELATIONALS();
 // ---------- Class -----------------------------------------------------------
 //
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -69,7 +69,7 @@ namespace infinit
         uint32_t
         length() const;
 
-# if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
+# if defined(ELLE_CRYPTOGRAPHY_ROTATION)
         /*---------.
         | Rotation |
         `---------*/
@@ -120,7 +120,7 @@ namespace infinit
 // ---------- Generator -------------------------------------------------------
 //
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {

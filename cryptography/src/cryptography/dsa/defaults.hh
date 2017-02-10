@@ -1,9 +1,9 @@
-#ifndef INFINIT_CRYPTOGRAPHY_DSA_DEFAULTS_HH
-# define INFINIT_CRYPTOGRAPHY_DSA_DEFAULTS_HH
+#ifndef ELLE_CRYPTOGRAPHY_DSA_DEFAULTS_HH
+# define ELLE_CRYPTOGRAPHY_DSA_DEFAULTS_HH
 
 # include <cryptography/Oneway.hh>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {

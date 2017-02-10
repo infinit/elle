@@ -17,7 +17,7 @@
 #include <cryptography/hash.hh>
 #include <cryptography/raw.hh>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -101,11 +101,11 @@ namespace infinit
         // Duplicate the DSA structure.
         DSA* _dsa = low::DSA_dup(other._key->pkey.dsa);
 
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_DSA(_dsa);
+        ELLE_CRYPTOGRAPHY_FINALLY_ACTION_FREE_DSA(_dsa);
 
         this->_construct(_dsa);
 
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(_dsa);
+        ELLE_CRYPTOGRAPHY_FINALLY_ABORT(_dsa);
 
         this->_check();
       }

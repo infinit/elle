@@ -5,7 +5,7 @@
 #include <cryptography/Cryptosystem.hh>
 #include <cryptography/Error.hh>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -58,17 +58,17 @@ namespace elle
   namespace serialization
   {
     uint8_t
-    Serialize<infinit::cryptography::Cryptosystem>::convert(
-      infinit::cryptography::Cryptosystem const& value)
+    Serialize<elle::cryptography::Cryptosystem>::convert(
+      elle::cryptography::Cryptosystem const& value)
     {
       return (static_cast<uint8_t>(value));
     }
 
-    infinit::cryptography::Cryptosystem
-    Serialize<infinit::cryptography::Cryptosystem>::convert(
+    elle::cryptography::Cryptosystem
+    Serialize<elle::cryptography::Cryptosystem>::convert(
       uint8_t const& representation)
     {
-      return (static_cast<infinit::cryptography::Cryptosystem>(representation));
+      return (static_cast<elle::cryptography::Cryptosystem>(representation));
     }
   }
 }

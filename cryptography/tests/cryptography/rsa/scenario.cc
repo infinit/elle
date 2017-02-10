@@ -1,4 +1,4 @@
-#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
+#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
 
 # include "scenario.hh"
 
@@ -36,47 +36,47 @@ void
 test_scenario()
 {
   // Create the keypair for the object's owner.
-  infinit::cryptography::rsa::KeyPair owner =
-    infinit::cryptography::rsa::keypair::generate(2048);
+  elle::cryptography::rsa::KeyPair owner =
+    elle::cryptography::rsa::keypair::generate(2048);
 
   // Create the object and store some information in it.
   std::string content0("When I'm sad, I stop being sad "
                        "and be awesome instead");
   test::Object object0(owner, content0);
-  infinit::cryptography::SecretKey key0 = object0.key(owner.k());
+  elle::cryptography::SecretKey key0 = object0.key(owner.k());
 
   // A user tries to access the content without the right key.
   {
-    infinit::cryptography::SecretKey key =
-      infinit::cryptography::secretkey::generate(256);
+    elle::cryptography::SecretKey key =
+      elle::cryptography::secretkey::generate(256);
 
     BOOST_CHECK_THROW(object0.read(key),
-                      infinit::cryptography::Error);
+                      elle::cryptography::Error);
   }
 
   // Create two users.
-  infinit::cryptography::rsa::KeyPair userX =
-    infinit::cryptography::rsa::keypair::generate(1024);
-  infinit::cryptography::rsa::KeyPair userY =
-    infinit::cryptography::rsa::keypair::generate(1024);
+  elle::cryptography::rsa::KeyPair userX =
+    elle::cryptography::rsa::keypair::generate(1024);
+  elle::cryptography::rsa::KeyPair userY =
+    elle::cryptography::rsa::keypair::generate(1024);
 
   // Create group A with user X as a member.
-  infinit::cryptography::rsa::KeyPair managerA =
-    infinit::cryptography::rsa::keypair::generate(2048);
+  elle::cryptography::rsa::KeyPair managerA =
+    elle::cryptography::rsa::keypair::generate(2048);
   test::Group groupA0(managerA.K());
-  infinit::cryptography::rsa::PrivateKey passA0_k =
+  elle::cryptography::rsa::PrivateKey passA0_k =
     groupA0.pass_k(managerA.k());
-  infinit::cryptography::rsa::Seed seedA0 = groupA0.seed(managerA.k());
+  elle::cryptography::rsa::Seed seedA0 = groupA0.seed(managerA.k());
   groupA0.members().add(userX.K(), passA0_k, seedA0);
   BOOST_CHECK_EQUAL(groupA0.members().size(), 1);
 
   // Create group B with user Y as a member
-  infinit::cryptography::rsa::KeyPair managerB =
-    infinit::cryptography::rsa::keypair::generate(2048);
+  elle::cryptography::rsa::KeyPair managerB =
+    elle::cryptography::rsa::keypair::generate(2048);
   test::Group groupB0(managerB.K());
-  infinit::cryptography::rsa::PrivateKey passB0_k =
+  elle::cryptography::rsa::PrivateKey passB0_k =
     groupB0.pass_k(managerB.k());
-  infinit::cryptography::rsa::Seed seedB0 = groupB0.seed(managerB.k());
+  elle::cryptography::rsa::Seed seedB0 = groupB0.seed(managerB.k());
   groupB0.members().add(userY.K(), passB0_k, seedB0);
   BOOST_CHECK_EQUAL(groupB0.members().size(), 1);
 
@@ -95,9 +95,9 @@ test_scenario()
   // Both users X and Y should have access to object 0's content. Let's
   // try with user Y.
   {
-    infinit::cryptography::rsa::PrivateKey _passB0_k =
+    elle::cryptography::rsa::PrivateKey _passB0_k =
       groupB0.members().pass_k(userY);
-    infinit::cryptography::SecretKey _key0 =
+    elle::cryptography::SecretKey _key0 =
       object0.acl().key(groupB0.address(), _passB0_k);
 
     BOOST_CHECK_EQUAL(key0, _key0);
@@ -111,15 +111,15 @@ test_scenario()
   BOOST_CHECK_EQUAL(groupA2.version(), 2);
   BOOST_CHECK_EQUAL(groupA2.members().size(), 1);
 
-  infinit::cryptography::rsa::PrivateKey passA2_k =
+  elle::cryptography::rsa::PrivateKey passA2_k =
     groupA2.pass_k(managerA.k());
-  infinit::cryptography::rsa::Seed seedA2 = groupA2.seed(managerA.k());
+  elle::cryptography::rsa::Seed seedA2 = groupA2.seed(managerA.k());
 
   // Update the object to version 1.
   std::string content1("If you don't have ability, "
                        "you wind up playing in a rock band");
   test::Object object1 = object0.write(owner.k(), content1);
-  infinit::cryptography::SecretKey key1 = object1.key(owner.k());
+  elle::cryptography::SecretKey key1 = object1.key(owner.k());
 
   // Update the object's ACL to reference the latest version of the
   // referenced groups.
@@ -138,13 +138,13 @@ test_scenario()
   // User Y, belonging to group B, cannot access object 1 though he can
   // still access object 0.
   {
-    infinit::cryptography::rsa::PrivateKey _passB0_k =
+    elle::cryptography::rsa::PrivateKey _passB0_k =
       groupB0.members().pass_k(userY);
 
     BOOST_CHECK_THROW(object1.acl().key(groupB0.address(), _passB0_k),
-                      infinit::cryptography::Error);
+                      elle::cryptography::Error);
 
-    infinit::cryptography::SecretKey _key0 =
+    elle::cryptography::SecretKey _key0 =
       object0.acl().key(groupB0.address(), _passB0_k);
 
     BOOST_CHECK_EQUAL(object0.read(_key0), content0);
@@ -152,9 +152,9 @@ test_scenario()
 
   // User X however can access object 1.
   {
-    infinit::cryptography::rsa::PrivateKey _passA2_k =
+    elle::cryptography::rsa::PrivateKey _passA2_k =
       groupA2.members().pass_k(userX);
-    infinit::cryptography::SecretKey _key1 =
+    elle::cryptography::SecretKey _key1 =
       object1.acl().key(groupA2.address(), _passA2_k);
 
     BOOST_CHECK_EQUAL(key1, _key1);
@@ -165,7 +165,7 @@ test_scenario()
   std::string content2("Have no fear of perfection, you'll "
                        "never reach it");
   test::Object object2 = object1.write(owner.k(), content2);
-  infinit::cryptography::SecretKey key2 = object2.key(owner.k());
+  elle::cryptography::SecretKey key2 = object2.key(owner.k());
 
   // Update the object's ACL to reference the latest version of the
   // referenced groups.
@@ -179,13 +179,13 @@ test_scenario()
   test::Group groupA4 = groupA3.rotate(managerA.k());
   test::Group groupA5 = groupA4.rotate(managerA.k());
 
-  infinit::cryptography::rsa::PrivateKey passA5_k =
+  elle::cryptography::rsa::PrivateKey passA5_k =
     groupA5.pass_k(managerA.k());
-  infinit::cryptography::rsa::Seed seedA5 = groupA5.seed(managerA.k());
+  elle::cryptography::rsa::Seed seedA5 = groupA5.seed(managerA.k());
 
   // Add user Z to group A.
-  infinit::cryptography::rsa::KeyPair userZ =
-    infinit::cryptography::rsa::keypair::generate(1024);
+  elle::cryptography::rsa::KeyPair userZ =
+    elle::cryptography::rsa::keypair::generate(1024);
   groupA5.members().add(userZ.K(), passA5_k, seedA5);
   BOOST_CHECK_EQUAL(groupA5.members().size(), 2);
 
@@ -199,15 +199,15 @@ test_scenario()
     groupA5.members().retrieve(userZ.K());
 
     BOOST_CHECK_THROW(groupA0.members().retrieve(userZ.K()),
-                      infinit::cryptography::Error);
+                      elle::cryptography::Error);
     BOOST_CHECK_THROW(groupA1.members().retrieve(userZ.K()),
-                      infinit::cryptography::Error);
+                      elle::cryptography::Error);
     BOOST_CHECK_THROW(groupA2.members().retrieve(userZ.K()),
-                      infinit::cryptography::Error);
+                      elle::cryptography::Error);
     BOOST_CHECK_THROW(groupA3.members().retrieve(userZ.K()),
-                      infinit::cryptography::Error);
+                      elle::cryptography::Error);
     BOOST_CHECK_THROW(groupA4.members().retrieve(userZ.K()),
-                      infinit::cryptography::Error);
+                      elle::cryptography::Error);
   }
 
   // Even though user Z does not have direct access to the
@@ -226,15 +226,15 @@ test_scenario()
     uint32_t derivations = groupA5.version() - entry->version();
     BOOST_CHECK_EQUAL(derivations, 3);
 
-    infinit::cryptography::rsa::Seed* seed =
-      new infinit::cryptography::rsa::Seed(groupA5.members().seed(userZ));
+    elle::cryptography::rsa::Seed* seed =
+      new elle::cryptography::rsa::Seed(groupA5.members().seed(userZ));
 
     for (uint32_t i = 0; i < derivations; i++)
     {
-      infinit::cryptography::rsa::Seed* _seed = seed;
+      elle::cryptography::rsa::Seed* _seed = seed;
 
       seed =
-        new infinit::cryptography::rsa::Seed(
+        new elle::cryptography::rsa::Seed(
           groupA5.manager_K().unrotate(*_seed));
 
       delete _seed;
@@ -242,12 +242,12 @@ test_scenario()
 
     BOOST_CHECK_EQUAL(*seed, seedA2);
 
-    infinit::cryptography::rsa::PrivateKey pass_k(*seed);
+    elle::cryptography::rsa::PrivateKey pass_k(*seed);
     BOOST_CHECK_EQUAL(pass_k, passA2_k);
 
     delete seed;
 
-    infinit::cryptography::SecretKey key =
+    elle::cryptography::SecretKey key =
       object1.acl().key(groupA5.address(), pass_k);
     BOOST_CHECK_EQUAL(key, key1);
 

@@ -1,9 +1,9 @@
-#ifndef INFINIT_CRYPTOGRAPHY_DH_LOW_HH
-# define INFINIT_CRYPTOGRAPHY_DH_LOW_HH
+#ifndef ELLE_CRYPTOGRAPHY_DH_LOW_HH
+# define ELLE_CRYPTOGRAPHY_DH_LOW_HH
 
 # include <openssl/dh.h>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {

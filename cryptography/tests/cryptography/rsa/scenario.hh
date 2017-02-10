@@ -1,4 +1,4 @@
-#if defined(INFINIT_CRYPTOGRAPHY_ROTATION)
+#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
 
 # ifndef SCENARIO_HH
 #  define SCENARIO_HH
@@ -30,7 +30,7 @@ namespace test
   {
 public:
   Entry(uint32_t version,
-        infinit::cryptography::rsa::PublicKey const& pass_K,
+        elle::cryptography::rsa::PublicKey const& pass_K,
         elle::Buffer const& key):
     _version(version),
     _pass_K(pass_K),
@@ -45,7 +45,7 @@ public:
 
   private:
     ELLE_ATTRIBUTE_R(uint32_t const, version);
-    ELLE_ATTRIBUTE_R(infinit::cryptography::rsa::PublicKey const, pass_K);
+    ELLE_ATTRIBUTE_R(elle::cryptography::rsa::PublicKey const, pass_K);
     ELLE_ATTRIBUTE_R(elle::Buffer const, key);
   };
 
@@ -68,10 +68,10 @@ public:
 
   public:
     void
-    grant(infinit::cryptography::rsa::PublicKey const& address,
+    grant(elle::cryptography::rsa::PublicKey const& address,
           uint32_t version,
-          infinit::cryptography::rsa::PublicKey const& pass_K,
-          infinit::cryptography::SecretKey const& key)
+          elle::cryptography::rsa::PublicKey const& pass_K,
+          elle::cryptography::SecretKey const& key)
     {
       elle::Buffer archive = elle::serialization::json::serialize(key);
 
@@ -82,19 +82,19 @@ public:
     }
 
     void
-    revoke(infinit::cryptography::rsa::PublicKey const& address)
+    revoke(elle::cryptography::rsa::PublicKey const& address)
     {
       if (this->_entries.erase(address) != 1)
-        throw infinit::cryptography::Error(
+        throw elle::cryptography::Error(
           elle::sprintf("unable to remove %s from the entries", address));
     }
 
     Entry*
-    retrieve(infinit::cryptography::rsa::PublicKey const& address)
+    retrieve(elle::cryptography::rsa::PublicKey const& address)
     {
       auto iterator = this->_entries.find(address);
       if (iterator == this->_entries.end())
-        throw infinit::cryptography::Error(
+        throw elle::cryptography::Error(
           elle::sprintf("unable to find the entry for %s", address));
 
       Entry* entry = iterator->second;
@@ -102,26 +102,26 @@ public:
       return (entry);
     }
 
-    infinit::cryptography::SecretKey
-    key(infinit::cryptography::rsa::PublicKey const& address,
-        infinit::cryptography::rsa::PrivateKey const& pass_k)
+    elle::cryptography::SecretKey
+    key(elle::cryptography::rsa::PublicKey const& address,
+        elle::cryptography::rsa::PrivateKey const& pass_k)
     {
       Entry* entry = this->retrieve(address);
 
       elle::Buffer archive = pass_k.open(entry->key());
 
-      infinit::cryptography::SecretKey _key =
+      elle::cryptography::SecretKey _key =
         elle::serialization::json::deserialize<
-      infinit::cryptography::SecretKey>(archive);
+      elle::cryptography::SecretKey>(archive);
 
       return (_key);
     }
 
     void
-    update(infinit::cryptography::SecretKey const& key,
-           infinit::cryptography::rsa::PublicKey const& address,
+    update(elle::cryptography::SecretKey const& key,
+           elle::cryptography::rsa::PublicKey const& address,
            uint32_t const version,
-           infinit::cryptography::rsa::PublicKey const& pass_K)
+           elle::cryptography::rsa::PublicKey const& pass_K)
     {
       elle::Buffer archive = elle::serialization::json::serialize(key);
 
@@ -142,7 +142,7 @@ public:
     }
 
     void
-    upgrade(infinit::cryptography::SecretKey const& key)
+    upgrade(elle::cryptography::SecretKey const& key)
     {
       for (auto iterator = this->_entries.begin();
            iterator != this->_entries.end();
@@ -164,7 +164,7 @@ public:
     }
 
   private:
-    std::unordered_map<infinit::cryptography::rsa::PublicKey, Entry*> _entries;
+    std::unordered_map<elle::cryptography::rsa::PublicKey, Entry*> _entries;
   };
 
 //
@@ -176,29 +176,29 @@ public:
   class Object
   {
   public:
-    Object(infinit::cryptography::rsa::KeyPair const& owner_keypair,
+    Object(elle::cryptography::rsa::KeyPair const& owner_keypair,
            std::string const& content):
       Object(owner_keypair.K(),
              content)
     {}
 
   private:
-    Object(infinit::cryptography::rsa::PublicKey const& owner_K,
+    Object(elle::cryptography::rsa::PublicKey const& owner_K,
            std::string const& content):
       Object(owner_K,
-             infinit::cryptography::secretkey::generate(256),
+             elle::cryptography::secretkey::generate(256),
              content)
     {}
 
-    Object(infinit::cryptography::rsa::PublicKey const& owner_K,
-           infinit::cryptography::SecretKey const& key,
+    Object(elle::cryptography::rsa::PublicKey const& owner_K,
+           elle::cryptography::SecretKey const& key,
            std::string const& content):
       Object(owner_K,
              elle::serialization::json::serialize(key),
              key.encipher(content))
     {}
 
-    Object(infinit::cryptography::rsa::PublicKey const& owner_K,
+    Object(elle::cryptography::rsa::PublicKey const& owner_K,
            elle::Buffer const& key,
            elle::Buffer const& content):
       _owner_K(owner_K),
@@ -207,7 +207,7 @@ public:
     {}
 
     Object(Object const& object,
-           infinit::cryptography::SecretKey const& key,
+           elle::cryptography::SecretKey const& key,
            std::string const& content):
       Object(object,
              elle::serialization::json::serialize(key),
@@ -225,12 +225,12 @@ public:
 
   public:
     Object
-    write(infinit::cryptography::rsa::PrivateKey const& owner_k,
+    write(elle::cryptography::rsa::PrivateKey const& owner_k,
           std::string const& content)
     {
-      infinit::cryptography::SecretKey __key = this->key(owner_k);
-      infinit::cryptography::SecretKey key =
-        infinit::cryptography::secretkey::generate(__key.length());
+      elle::cryptography::SecretKey __key = this->key(owner_k);
+      elle::cryptography::SecretKey key =
+        elle::cryptography::secretkey::generate(__key.length());
 
       Object object(*this, key, content);
 
@@ -240,25 +240,25 @@ public:
     }
 
     std::string
-    read(infinit::cryptography::SecretKey const& key) const
+    read(elle::cryptography::SecretKey const& key) const
     {
       return (key.decipher(this->_content).string());
     }
 
-    infinit::cryptography::SecretKey
-    key(infinit::cryptography::rsa::PrivateKey const& owner_k) const
+    elle::cryptography::SecretKey
+    key(elle::cryptography::rsa::PrivateKey const& owner_k) const
     {
       elle::Buffer archive = owner_k.open(this->_key);
 
-      infinit::cryptography::SecretKey __key =
+      elle::cryptography::SecretKey __key =
         elle::serialization::json::deserialize<
-      infinit::cryptography::SecretKey>(archive);
+      elle::cryptography::SecretKey>(archive);
 
       return (__key);
     }
 
   private:
-    ELLE_ATTRIBUTE_R(infinit::cryptography::rsa::PublicKey, owner_K);
+    ELLE_ATTRIBUTE_R(elle::cryptography::rsa::PublicKey, owner_K);
     ELLE_ATTRIBUTE(elle::Buffer, key);
     ELLE_ATTRIBUTE(elle::Buffer, content);
     ELLE_ATTRIBUTE_RX(ACL, acl);
@@ -299,9 +299,9 @@ public:
   {
   public:
     void
-    add(infinit::cryptography::rsa::PublicKey const& user_K,
-        infinit::cryptography::rsa::PrivateKey const& pass_k,
-        infinit::cryptography::rsa::Seed const& seed)
+    add(elle::cryptography::rsa::PublicKey const& user_K,
+        elle::cryptography::rsa::PrivateKey const& pass_k,
+        elle::cryptography::rsa::Seed const& seed)
     {
       elle::Buffer _pass_k =
         elle::serialization::json::serialize(pass_k);
@@ -314,19 +314,19 @@ public:
     }
 
     void
-    remove(infinit::cryptography::rsa::PublicKey const& user_K)
+    remove(elle::cryptography::rsa::PublicKey const& user_K)
     {
       if (this->_members.erase(user_K) != 1)
-        throw infinit::cryptography::Error(
+        throw elle::cryptography::Error(
           elle::sprintf("unable to remove %s from the members", user_K));
     }
 
     Member*
-    retrieve(infinit::cryptography::rsa::PublicKey const& user_K)
+    retrieve(elle::cryptography::rsa::PublicKey const& user_K)
     {
       auto iterator = this->_members.find(user_K);
       if (iterator == this->_members.end())
-        throw infinit::cryptography::Error(
+        throw elle::cryptography::Error(
           elle::sprintf("unable to find the member for %s", user_K));
 
       Member* member = iterator->second;
@@ -334,37 +334,37 @@ public:
       return (member);
     }
 
-    infinit::cryptography::rsa::PrivateKey
-    pass_k(infinit::cryptography::rsa::KeyPair const& user_keypair)
+    elle::cryptography::rsa::PrivateKey
+    pass_k(elle::cryptography::rsa::KeyPair const& user_keypair)
     {
       Member* member = this->retrieve(user_keypair.K());
 
       elle::Buffer archive = user_keypair.k().open(member->pass_k());
 
-      infinit::cryptography::rsa::PrivateKey _k =
+      elle::cryptography::rsa::PrivateKey _k =
         elle::serialization::json::deserialize<
-      infinit::cryptography::rsa::PrivateKey>(archive);
+      elle::cryptography::rsa::PrivateKey>(archive);
 
       return (_k);
     }
 
-    infinit::cryptography::rsa::Seed
-    seed(infinit::cryptography::rsa::KeyPair const& user_keypair)
+    elle::cryptography::rsa::Seed
+    seed(elle::cryptography::rsa::KeyPair const& user_keypair)
     {
       Member* member = this->retrieve(user_keypair.K());
 
       elle::Buffer archive = user_keypair.k().open(member->seed());
 
-      infinit::cryptography::rsa::Seed _seed =
+      elle::cryptography::rsa::Seed _seed =
         elle::serialization::json::deserialize<
-      infinit::cryptography::rsa::Seed>(archive);
+      elle::cryptography::rsa::Seed>(archive);
 
       return (_seed);
     }
 
     void
-    upgrade(infinit::cryptography::rsa::PrivateKey const& pass_k,
-            infinit::cryptography::rsa::Seed const& seed)
+    upgrade(elle::cryptography::rsa::PrivateKey const& pass_k,
+            elle::cryptography::rsa::Seed const& seed)
     {
       elle::Buffer _pass_k =
         elle::serialization::json::serialize(pass_k);
@@ -375,7 +375,7 @@ public:
            iterator != this->_members.end();
            ++iterator)
       {
-        infinit::cryptography::rsa::PublicKey user_K = iterator->first;
+        elle::cryptography::rsa::PublicKey user_K = iterator->first;
         Member*& member = iterator->second;
         Member* _member = member;
 
@@ -394,7 +394,7 @@ public:
     }
 
   private:
-    std::unordered_map<infinit::cryptography::rsa::PublicKey, Member*> _members;
+    std::unordered_map<elle::cryptography::rsa::PublicKey, Member*> _members;
   };
 
 //
@@ -406,39 +406,39 @@ public:
   class Group
   {
   public:
-    Group(infinit::cryptography::rsa::PublicKey const& manager_K):
-      Group(infinit::cryptography::rsa::keypair::generate(2048),
+    Group(elle::cryptography::rsa::PublicKey const& manager_K):
+      Group(elle::cryptography::rsa::keypair::generate(2048),
             manager_K)
     {}
 
   private:
-    Group(infinit::cryptography::rsa::KeyPair const& keypair,
-          infinit::cryptography::rsa::PublicKey const& manager_K):
+    Group(elle::cryptography::rsa::KeyPair const& keypair,
+          elle::cryptography::rsa::PublicKey const& manager_K):
       Group(keypair.K(),
             0,
             manager_K,
-            infinit::cryptography::rsa::seed::generate(keypair),
+            elle::cryptography::rsa::seed::generate(keypair),
             Members{})
     {}
 
-    Group(infinit::cryptography::rsa::PublicKey const& address,
+    Group(elle::cryptography::rsa::PublicKey const& address,
           uint32_t const version,
-          infinit::cryptography::rsa::PublicKey const& manager_K,
-          infinit::cryptography::rsa::Seed const& seed,
+          elle::cryptography::rsa::PublicKey const& manager_K,
+          elle::cryptography::rsa::Seed const& seed,
           Members const& members):
       Group(address,
             version,
             manager_K,
             seed,
-            infinit::cryptography::rsa::KeyPair(seed),
+            elle::cryptography::rsa::KeyPair(seed),
             members)
     {}
 
-    Group(infinit::cryptography::rsa::PublicKey const& address,
+    Group(elle::cryptography::rsa::PublicKey const& address,
           uint32_t const version,
-          infinit::cryptography::rsa::PublicKey const& manager_K,
-          infinit::cryptography::rsa::Seed const& seed,
-          infinit::cryptography::rsa::KeyPair const& pass,
+          elle::cryptography::rsa::PublicKey const& manager_K,
+          elle::cryptography::rsa::Seed const& seed,
+          elle::cryptography::rsa::KeyPair const& pass,
           Members const& members):
       Group(address,
             version,
@@ -449,11 +449,11 @@ public:
             members)
     {}
 
-    Group(infinit::cryptography::rsa::PublicKey const& address,
+    Group(elle::cryptography::rsa::PublicKey const& address,
           uint32_t const version,
-          infinit::cryptography::rsa::PublicKey const& manager_K,
+          elle::cryptography::rsa::PublicKey const& manager_K,
           elle::Buffer const& seed,
-          infinit::cryptography::rsa::PublicKey const& pass_K,
+          elle::cryptography::rsa::PublicKey const& pass_K,
           elle::Buffer const& pass_k,
           Members const& members):
       _address(address),
@@ -466,7 +466,7 @@ public:
     {}
 
     Group(Group const& group,
-          infinit::cryptography::rsa::Seed const& seed):
+          elle::cryptography::rsa::Seed const& seed):
       Group(group._address,
             group._version + 1,
             group._manager_K,
@@ -475,43 +475,43 @@ public:
     {}
 
   public:
-    infinit::cryptography::rsa::PrivateKey
-    pass_k(infinit::cryptography::rsa::PrivateKey const& manager_k) const
+    elle::cryptography::rsa::PrivateKey
+    pass_k(elle::cryptography::rsa::PrivateKey const& manager_k) const
     {
       elle::Buffer archive = manager_k.open(this->_pass_k);
 
-      infinit::cryptography::rsa::PrivateKey _key =
+      elle::cryptography::rsa::PrivateKey _key =
         elle::serialization::json::deserialize<
-      infinit::cryptography::rsa::PrivateKey>(archive);
+      elle::cryptography::rsa::PrivateKey>(archive);
 
       return (_key);
     }
 
-    infinit::cryptography::rsa::Seed
-    seed(infinit::cryptography::rsa::PrivateKey const& manager_k) const
+    elle::cryptography::rsa::Seed
+    seed(elle::cryptography::rsa::PrivateKey const& manager_k) const
     {
       elle::Buffer archive = manager_k.open(this->_seed);
 
-      infinit::cryptography::rsa::Seed __seed =
+      elle::cryptography::rsa::Seed __seed =
         elle::serialization::json::deserialize<
-      infinit::cryptography::rsa::Seed>(archive);
+      elle::cryptography::rsa::Seed>(archive);
 
       return (__seed);
     }
 
     Group
-    rotate(infinit::cryptography::rsa::PrivateKey const& manager_k)
+    rotate(elle::cryptography::rsa::PrivateKey const& manager_k)
     {
       elle::Buffer archive = manager_k.open(this->_seed);
-      infinit::cryptography::rsa::Seed __seed =
+      elle::cryptography::rsa::Seed __seed =
         elle::serialization::json::deserialize<
-      infinit::cryptography::rsa::Seed>(archive);
+      elle::cryptography::rsa::Seed>(archive);
 
-      infinit::cryptography::rsa::Seed _seed = manager_k.rotate(__seed);
+      elle::cryptography::rsa::Seed _seed = manager_k.rotate(__seed);
 
       Group group(*this, _seed);
 
-      infinit::cryptography::rsa::PrivateKey _pass_k = group.pass_k(manager_k);
+      elle::cryptography::rsa::PrivateKey _pass_k = group.pass_k(manager_k);
 
       group.members().upgrade(_pass_k, _seed);
 
@@ -519,11 +519,11 @@ public:
     }
 
   private:
-    ELLE_ATTRIBUTE_R(infinit::cryptography::rsa::PublicKey const, address);
+    ELLE_ATTRIBUTE_R(elle::cryptography::rsa::PublicKey const, address);
     ELLE_ATTRIBUTE_R(uint32_t, version);
-    ELLE_ATTRIBUTE_R(infinit::cryptography::rsa::PublicKey const, manager_K);
+    ELLE_ATTRIBUTE_R(elle::cryptography::rsa::PublicKey const, manager_K);
     ELLE_ATTRIBUTE(elle::Buffer, seed);
-    ELLE_ATTRIBUTE_R(infinit::cryptography::rsa::PublicKey, pass_K);
+    ELLE_ATTRIBUTE_R(elle::cryptography::rsa::PublicKey, pass_K);
     ELLE_ATTRIBUTE(elle::Buffer, pass_k);
     ELLE_ATTRIBUTE_RX(Members, members);
   };

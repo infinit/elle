@@ -1,5 +1,5 @@
-#ifndef INFINIT_CRYPTOGRAPHY_BN_HH
-# define INFINIT_CRYPTOGRAPHY_BN_HH
+#ifndef ELLE_CRYPTOGRAPHY_BN_HH
+# define ELLE_CRYPTOGRAPHY_BN_HH
 
 # include <openssl/bn.h>
 

@@ -9,7 +9,7 @@
 #include <cryptography/context.hh>
 #include <cryptography/finally.hh>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -25,7 +25,7 @@ namespace infinit
       {
         EVP_PKEY_CTX* context;
 
-        INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY_CONTEXT(context);
+        ELLE_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY_CONTEXT(context);
 
         if ((context = ::EVP_PKEY_CTX_new(key, nullptr)) == nullptr)
           throw Error(
@@ -37,7 +37,7 @@ namespace infinit
             elle::sprintf("unable to initialize the EVP_PKEY context: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
 
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
+        ELLE_CRYPTOGRAPHY_FINALLY_ABORT(context);
 
         return (context);
       }

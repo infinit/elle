@@ -1,5 +1,5 @@
-#ifndef INFINIT_CRYPTOGRAPHY_DSA_KEYPAIR_HH
-# define INFINIT_CRYPTOGRAPHY_DSA_KEYPAIR_HH
+#ifndef ELLE_CRYPTOGRAPHY_DSA_KEYPAIR_HH
+# define ELLE_CRYPTOGRAPHY_DSA_KEYPAIR_HH
 
 # include <iosfwd>
 # include <utility>
@@ -17,7 +17,7 @@
 
 ELLE_OPERATOR_RELATIONALS();
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {
@@ -104,7 +104,7 @@ namespace infinit
 // ---------- Generator -------------------------------------------------------
 //
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {

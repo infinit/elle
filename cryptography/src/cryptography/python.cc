@@ -9,7 +9,7 @@
 #include <cryptography/rsa/PublicKey.hh>
 
 using namespace boost::python;
-namespace crypto = infinit::cryptography;
+namespace crypto = elle::cryptography;
 
 #pragma GCC diagnostic ignored "-Wmissing-declarations"
 

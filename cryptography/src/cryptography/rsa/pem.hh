@@ -1,5 +1,5 @@
-#ifndef INFINIT_CRYPTOGRAPHY_RSA_PEM_HH
-# define INFINIT_CRYPTOGRAPHY_RSA_PEM_HH
+#ifndef ELLE_CRYPTOGRAPHY_RSA_PEM_HH
+# define ELLE_CRYPTOGRAPHY_RSA_PEM_HH
 
 # include <cryptography/rsa/Padding.hh>
 # include <cryptography/rsa/KeyPair.hh>
@@ -7,7 +7,7 @@
 
 # include <boost/filesystem.hpp>
 
-namespace infinit
+namespace elle
 {
   namespace cryptography
   {

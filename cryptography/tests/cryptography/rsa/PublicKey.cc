@@ -16,15 +16,15 @@ static
 void
 _test_represent()
 {
-  infinit::cryptography::rsa::KeyPair keypair =
-    infinit::cryptography::rsa::keypair::generate(2048);
+  elle::cryptography::rsa::KeyPair keypair =
+    elle::cryptography::rsa::keypair::generate(2048);
 
   // 1)
   {
     std::stringstream stream;
     {
       typename elle::serialization::json::SerializerOut output(stream);
-      infinit::cryptography::rsa::PublicKey K = keypair.K();
+      elle::cryptography::rsa::PublicKey K = keypair.K();
       K.serialize(output);
     }
 
@@ -63,13 +63,13 @@ test_represent()
 `---------*/
 
 static
-infinit::cryptography::rsa::PublicKey
+elle::cryptography::rsa::PublicKey
 _test_generate(uint32_t const length = 1024)
 {
-  infinit::cryptography::rsa::KeyPair keypair =
-    infinit::cryptography::rsa::keypair::generate(length);
+  elle::cryptography::rsa::KeyPair keypair =
+    elle::cryptography::rsa::keypair::generate(length);
 
-  infinit::cryptography::rsa::PublicKey K(keypair.K());
+  elle::cryptography::rsa::PublicKey K(keypair.K());
 
   return (K);
 }
@@ -89,15 +89,15 @@ static
 void
 test_construct()
 {
-  infinit::cryptography::rsa::PublicKey K1 = _test_generate(2048);
+  elle::cryptography::rsa::PublicKey K1 = _test_generate(2048);
 
   // PublicKey copy.
-  infinit::cryptography::rsa::PublicKey K2(K1);
+  elle::cryptography::rsa::PublicKey K2(K1);
 
   BOOST_CHECK_EQUAL(K1, K2);
 
   // PublicKey move.
-  infinit::cryptography::rsa::PublicKey K3(std::move(K1));
+  elle::cryptography::rsa::PublicKey K3(std::move(K1));
 
   BOOST_CHECK_EQUAL(K2, K3);
 }
@@ -115,7 +115,7 @@ test_operate()
 
   std::stringstream stream(representation);
   typename elle::serialization::json::SerializerIn input(stream);
-  infinit::cryptography::rsa::PublicKey K(input);
+  elle::cryptography::rsa::PublicKey K(input);
 
   // The following operations are based on hard-coded base64 string which
   // represent the data on which to operate, in their serialized form.
@@ -143,8 +143,8 @@ static
 void
 test_compare()
 {
-  infinit::cryptography::rsa::PublicKey K1 = _test_generate(1024);
-  infinit::cryptography::rsa::PublicKey K2 = _test_generate(1024);
+  elle::cryptography::rsa::PublicKey K1 = _test_generate(1024);
+  elle::cryptography::rsa::PublicKey K2 = _test_generate(1024);
 
   // With high probability, this should not be the case. Otherwise,
   // the random generator is probably broken.
@@ -162,7 +162,7 @@ test_serialize()
 {
   // Serialize/deserialize.
   {
-    infinit::cryptography::rsa::PublicKey K1 = _test_generate(2048);
+    elle::cryptography::rsa::PublicKey K1 = _test_generate(2048);
 
     std::stringstream stream;
     {
@@ -171,7 +171,7 @@ test_serialize()
     }
 
     typename elle::serialization::json::SerializerIn input(stream);
-    infinit::cryptography::rsa::PublicKey K2(input);
+    elle::cryptography::rsa::PublicKey K2(input);
 
     BOOST_CHECK_EQUAL(K1, K2);
   }
@@ -185,8 +185,8 @@ test_serialize()
       R"JSON({"rsa":"MIIBCgKCAQEAplfeEnFRCbdId8WiyP89bsoLSfE6kRDV4Vbu/gADaVv/sDitbLkOJGyzpIKP/yjmNqvj/m5mfKrHGqbe23c0g8qoTsR1tQN4xHfDm/1n05JyHL7f2Ij/JzaYR87aErYhAKuVM03YANLpV/ykXFBiLZ5NnY06v3aLWwKzJKSrmxB2t0tG0xnLQmvfxAFxhDH3+hUoXYXa9kTsJ0uuBBQfw2cyinRNs+nF7jerySK1RYe+5qmOfaeNlVZiD/kvXMgjGG3KL7kAw7xqhaRZrDDinTK+QwyDgCKUKIRir98QaTOAbveip4a5jkFljk58mCSO4QieM5q69pS79OXoZUOAJwIDAQAB"})JSON"
       };
 
-    infinit::cryptography::test::formats<
-      infinit::cryptography::rsa::PublicKey>(archives);
+    elle::cryptography::test::formats<
+      elle::cryptography::rsa::PublicKey>(archives);
   }
 }
 
