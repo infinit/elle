@@ -95,18 +95,8 @@ _make_canonical_request()
   query["X-Amz-SignedHeaders"] = signed_headers_str;
 
   std::string content("Action=ListUsers&Version=2010-05-08");
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-  elle::cryptography::Digest _digest =
-    elle::cryptography::hash(
-      elle::cryptography::Plain(elle::ConstWeakBuffer(content)),
-      elle::cryptography::Oneway::sha256);
-  elle::Buffer digest(_digest.buffer());
-#else
-  elle::Buffer digest =
-    elle::cryptography::hash(
-      content,
-      elle::cryptography::Oneway::sha256);
-#endif
+  auto digest = elle::cryptography::hash(content,
+                                         elle::cryptography::Oneway::sha256);
 
   aws::CanonicalRequest request(
     reactor::http::Method::POST,

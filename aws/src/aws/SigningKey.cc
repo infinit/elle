@@ -4,9 +4,6 @@
 #include <elle/printf.hh>
 
 #include <cryptography/hmac.hh>
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-# include <cryptography/_legacy/Digest.hh>
-#endif
 
 namespace aws
 {
@@ -15,20 +12,9 @@ namespace aws
   _aws_hmac(std::string const& message,
             elle::Buffer const& key)
   {
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-    elle::cryptography::Digest res =
-      elle::cryptography::hmac::sign(
-        elle::cryptography::Plain(
-          elle::ConstWeakBuffer(message)),
-        key,
-        elle::cryptography::Oneway::sha256);
-    return res.buffer();
-#else
-    return (elle::cryptography::hmac::sign(
-              message,
-              key.string(),
-              elle::cryptography::Oneway::sha256));
-#endif
+    return elle::cryptography::hmac::sign(message,
+                                          key.string(),
+                                          elle::cryptography::Oneway::sha256);
   }
 
   static

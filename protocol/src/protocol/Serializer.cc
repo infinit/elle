@@ -295,21 +295,10 @@ namespace elle
     compute_checksum(elle::Buffer const& content)
     {
       ELLE_DUMP("compute checksum of '%x'", content);
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-      auto _hash =
-        elle::cryptography::hash(
-          elle::cryptography::Plain(
-            elle::WeakBuffer(content.mutable_contents(),
-                             content.size())),
-          elle::cryptography::Oneway::sha1);
-      auto hash(_hash.buffer());
-#else
-      auto hash =
-        elle::cryptography::hash(
-          elle::ConstWeakBuffer(content.contents(),
-                                content.size()),
-          elle::cryptography::Oneway::sha1);
-#endif
+      auto hash = elle::cryptography::hash(
+        elle::ConstWeakBuffer(content.contents(),
+                              content.size()),
+        elle::cryptography::Oneway::sha1);
       ELLE_DUMP("checksum: '%x'", hash);
       return hash;
     }

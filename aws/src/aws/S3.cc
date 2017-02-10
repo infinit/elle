@@ -291,18 +291,11 @@ namespace aws
       elle::ConstWeakBuffer payload(xml);
       // build the request
       RequestHeaders headers;
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-      headers["Content-MD5"] = elle::format::base64::encode(
-          elle::cryptography::hash(
-            elle::cryptography::Plain(payload),
-            elle::cryptography::Oneway::md5).buffer()).string();
-#else
       auto hashed =
         elle::cryptography::hash(
           payload,
           elle::cryptography::Oneway::md5);
       headers["Content-MD5"] = elle::format::base64::encode(hashed).string();
-#endif
 
       RequestQuery query;
       query["delete"] = "";
@@ -523,39 +516,21 @@ namespace aws
   std::string
   S3::_md5_digest(elle::ConstWeakBuffer const& buffer)
   {
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-    std::string res = elle::format::hexadecimal::encode(
-      elle::cryptography::hash(
-        elle::cryptography::Plain(buffer),
-        elle::cryptography::Oneway::md5).buffer()
-    );
-    return res;
-#else
     auto hashed =
       elle::cryptography::hash(
         buffer,
         elle::cryptography::Oneway::md5);
-    return (elle::format::hexadecimal::encode(hashed));
-#endif
+    return elle::format::hexadecimal::encode(hashed);
   }
 
   std::string
   S3::_sha256_hexdigest(elle::ConstWeakBuffer const& buffer)
   {
-#if defined(INFINIT_CRYPTOGRAPHY_LEGACY)
-    std::string res = elle::format::hexadecimal::encode(
-      elle::cryptography::hash(
-        elle::cryptography::Plain(buffer),
-        elle::cryptography::Oneway::sha256).buffer()
-    );
-    return res;
-#else
     auto hashed =
       elle::cryptography::hash(
         buffer,
         elle::cryptography::Oneway::sha256);
-    return (elle::format::hexadecimal::encode(hashed));
-#endif
+    return elle::format::hexadecimal::encode(hashed);
   }
 
   std::string
