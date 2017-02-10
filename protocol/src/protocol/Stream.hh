@@ -1,5 +1,5 @@
-#ifndef INFINIT_PROTOCOL_STREAM_HH
-# define INFINIT_PROTOCOL_STREAM_HH
+#ifndef ELLE_PROTOCOL_STREAM_HH
+# define ELLE_PROTOCOL_STREAM_HH
 
 # include <iosfwd>
 
@@ -9,7 +9,7 @@
 
 # include <reactor/fwd.hh>
 
-namespace infinit
+namespace elle
 {
   namespace protocol
   {

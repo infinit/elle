@@ -1,5 +1,5 @@
-#ifndef INFINIT_PROTOCOL_PACKET_SERIALIZER_HH
-# define INFINIT_PROTOCOL_PACKET_SERIALIZER_HH
+#ifndef ELLE_PROTOCOL_PACKET_SERIALIZER_HH
+# define ELLE_PROTOCOL_PACKET_SERIALIZER_HH
 
 # include <iostream>
 
@@ -14,7 +14,7 @@
 #  undef EOF
 # endif
 
-namespace infinit
+namespace elle
 {
   namespace protocol
   {

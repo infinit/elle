@@ -13,7 +13,7 @@
 
 #include <elle/test.hh>
 
-ELLE_LOG_COMPONENT("infinit.protocol.test");
+ELLE_LOG_COMPONENT("elle.protocol.test");
 
 struct TestConfig
 {
@@ -26,11 +26,11 @@ static
 reactor::Thread* suicide_thread(nullptr);
 
 struct DummyRPC:
-  public infinit::protocol::RPC<elle::serialize::InputBinaryArchive,
+  public elle::protocol::RPC<elle::serialize::InputBinaryArchive,
                                 elle::serialize::OutputBinaryArchive>
 {
-  DummyRPC(infinit::protocol::ChanneledStream& channels)
-    : infinit::protocol::RPC<elle::serialize::InputBinaryArchive,
+  DummyRPC(elle::protocol::ChanneledStream& channels)
+    : elle::protocol::RPC<elle::serialize::InputBinaryArchive,
                              elle::serialize::OutputBinaryArchive>(channels)
     , answer("answer", *this)
     , square("square", *this)
@@ -84,8 +84,8 @@ public:
   {
     auto& sched = *reactor::Scheduler::scheduler();
     auto socket = this->_server.accept();
-    infinit::protocol::Serializer s(sched, *socket, _config.version, _config.checksum);
-    infinit::protocol::ChanneledStream channels(sched, s, _config.version);
+    elle::protocol::Serializer s(sched, *socket, _config.version, _config.checksum);
+    elle::protocol::ChanneledStream channels(sched, s, _config.version);
 
     DummyRPC rpc(channels);
     rpc.answer = [] { return 42; };
@@ -139,8 +139,8 @@ ELLE_TEST_SCHEDULED(rpc, (TestConfig, config))
 {
   RPCServer server(config);
   reactor::network::TCPSocket socket("127.0.0.1", server.port());
-  infinit::protocol::Serializer s(socket, config.version, config.checksum);
-  infinit::protocol::ChanneledStream channels(s, config.version);
+  elle::protocol::Serializer s(socket, config.version, config.checksum);
+  elle::protocol::ChanneledStream channels(s, config.version);
   DummyRPC rpc(channels);
   BOOST_CHECK_EQUAL(rpc.answer(), 42);
   BOOST_CHECK_EQUAL(rpc.square(8), 64);
@@ -160,8 +160,8 @@ ELLE_TEST_SCHEDULED(terminate, (TestConfig, config))
     [&]
     {
       reactor::network::TCPSocket socket("127.0.0.1", server.port());
-      infinit::protocol::Serializer s(socket, config.version, config.checksum);
-      infinit::protocol::ChanneledStream channels(s, config.version);
+      elle::protocol::Serializer s(socket, config.version, config.checksum);
+      elle::protocol::ChanneledStream channels(s, config.version);
       DummyRPC rpc(channels);
       suicide_thread = &thread;
       BOOST_CHECK_THROW(rpc.suicide(), std::runtime_error);
@@ -177,8 +177,8 @@ ELLE_TEST_SCHEDULED(parallel, (TestConfig, config))
 {
   RPCServer server(config);
   reactor::network::TCPSocket socket("127.0.0.1", server.port());
-  infinit::protocol::Serializer s(socket, config.version, config.checksum);
-  infinit::protocol::ChanneledStream channels(s, config.version);
+  elle::protocol::Serializer s(socket, config.version, config.checksum);
+  elle::protocol::ChanneledStream channels(s, config.version);
   DummyRPC rpc(channels);
   std::vector<reactor::Thread*> threads;
   std::list<int> inserted;
@@ -219,8 +219,8 @@ ELLE_TEST_SCHEDULED(disconnection, (TestConfig, config))
 {
   RPCServer server(config);
   reactor::network::TCPSocket socket("127.0.0.1", server.port());
-  infinit::protocol::Serializer s(socket, config.version, config.checksum);
-  infinit::protocol::ChanneledStream channels(s, config.version);
+  elle::protocol::Serializer s(socket, config.version, config.checksum);
+  elle::protocol::ChanneledStream channels(s, config.version);
   DummyRPC rpc(channels);
   reactor::Thread call_1("call 1",
                          [&]

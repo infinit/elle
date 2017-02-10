@@ -1,5 +1,5 @@
-#ifndef INFINIT_PROTOCOL_CHANNEL_HH
-# define INFINIT_PROTOCOL_CHANNEL_HH
+#ifndef ELLE_PROTOCOL_CHANNEL_HH
+# define ELLE_PROTOCOL_CHANNEL_HH
 
 # include <elle/Printable.hh>
 
@@ -8,7 +8,7 @@
 # include <protocol/Stream.hh>
 # include <protocol/fwd.hh>
 
-namespace infinit
+namespace elle
 {
   namespace protocol
   {

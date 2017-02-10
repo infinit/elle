@@ -21,9 +21,9 @@
 #include <protocol/Serializer.hh>
 #include <protocol/exceptions.hh>
 
-ELLE_LOG_COMPONENT("infinit.protocol.Serializer");
+ELLE_LOG_COMPONENT("elle.protocol.Serializer");
 
-namespace infinit
+namespace elle
 {
   namespace protocol
   {
@@ -372,10 +372,10 @@ namespace infinit
       if (this->_checksum)
       {
         ELLE_DEBUG("read checksum")
-          hash = infinit::protocol::read(this->_stream, {});
+          hash = elle::protocol::read(this->_stream, {});
       }
       ELLE_DEBUG("read actual data");
-      auto packet = infinit::protocol::read(this->_stream, {});
+      auto packet = elle::protocol::read(this->_stream, {});
       ELLE_DUMP("packet content: '%f'", packet);
       // Check checksums match.
       if (this->_checksum)
@@ -394,10 +394,10 @@ namespace infinit
         {
           auto hash = compute_checksum(packet);
           ELLE_DEBUG("send checksum %x", hash)
-            infinit::protocol::write(this->_stream, this->version(), hash);
+            elle::protocol::write(this->_stream, this->version(), hash);
         }
         ELLE_DEBUG("send actual data")
-          infinit::protocol::write(this->_stream, this->version(), packet);
+          elle::protocol::write(this->_stream, this->version(), packet);
         this->_stream.flush();
       };
     }
@@ -446,7 +446,7 @@ namespace infinit
     ignore_message(Serializer::Inner& stream, elle::Version const& version)
     {
       // Version 0.2.0 handle but ignore messages.
-      auto res = infinit::protocol::read(stream, version);
+      auto res = elle::protocol::read(stream, version);
       ELLE_WARN("%f was ignored", res);
     }
 
@@ -464,7 +464,7 @@ namespace infinit
       if (this->_checksum)
       {
         ELLE_DEBUG("read checksum")
-          hash = infinit::protocol::read(this->_stream, this->version(), {});
+          hash = elle::protocol::read(this->_stream, this->version(), {});
       }
       // Get the total size.
       uint32_t total_size(Serializer::Super::uint32_get(this->_stream,
@@ -476,7 +476,7 @@ namespace infinit
       {
         uint32_t size = std::min(total_size - offset, this->_chunk_size);
         ELLE_DEBUG("read chunk of size %s", size);
-        infinit::protocol::read(this->_stream, packet, size, offset);
+        elle::protocol::read(this->_stream, packet, size, offset);
         offset += size;
         ELLE_ASSERT_LTE(offset, total_size);
         if (offset >= total_size)
@@ -504,7 +504,7 @@ namespace infinit
           {
             auto to_send = std::min(this->_chunk_size, packet.size() - offset);
             ELLE_DEBUG("send actual data: %s", to_send)
-            infinit::protocol::write(
+            elle::protocol::write(
               this->_stream,
               this->version(), packet, false, offset, to_send);
             offset += to_send;
@@ -518,7 +518,7 @@ namespace infinit
             {
               auto hash = compute_checksum(packet);
               ELLE_DEBUG("send checksum %x", hash)
-                infinit::protocol::write(this->_stream, this->version(), hash);
+                elle::protocol::write(this->_stream, this->version(), hash);
             }
             // Send the size.
             {

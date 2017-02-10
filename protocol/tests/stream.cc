@@ -20,7 +20,7 @@
 #include <reactor/scheduler.hh>
 
 
-ELLE_LOG_COMPONENT("infinit.protocol.test");
+ELLE_LOG_COMPONENT("elle.protocol.test");
 
 static const std::vector<uint32_t> to_test = {
   std::numeric_limits<uint32_t>::min(),
@@ -37,9 +37,9 @@ _buffer(elle::Version const& version)
 {
   elle::Buffer x;
   for (auto i: to_test)
-    infinit::protocol::Stream::uint32_put(x, i, version);
+    elle::protocol::Stream::uint32_put(x, i, version);
   for (auto i: to_test)
-    BOOST_CHECK_EQUAL(infinit::protocol::Stream::uint32_get(x, version), i);
+    BOOST_CHECK_EQUAL(elle::protocol::Stream::uint32_get(x, version), i);
   BOOST_CHECK_EQUAL(x.size(), 0);
 }
 
@@ -57,29 +57,29 @@ _stream(elle::Version const& version)
   {
     elle::IOStream output(x.ostreambuf());
     for (auto i: to_test)
-      infinit::protocol::Stream::uint32_put(output, i, version);
+      elle::protocol::Stream::uint32_put(output, i, version);
   }
   // XXX.
   {
     elle::IOStream input(x.istreambuf());
     for (auto i: to_test)
-      BOOST_CHECK_EQUAL(infinit::protocol::Stream::uint32_get(input, version), i);
+      BOOST_CHECK_EQUAL(elle::protocol::Stream::uint32_get(input, version), i);
   }
   // XXX.
   {
     {
       elle::IOStream input(x.istreambuf());
       BOOST_CHECK_EQUAL(
-        infinit::protocol::Stream::uint32_get(input, version), to_test[0]);
+        elle::protocol::Stream::uint32_get(input, version), to_test[0]);
       BOOST_CHECK_EQUAL(
-        infinit::protocol::Stream::uint32_get(input, version), to_test[1]);
+        elle::protocol::Stream::uint32_get(input, version), to_test[1]);
     }
     {
       elle::IOStream input(x.istreambuf());
       BOOST_CHECK_EQUAL(
-        infinit::protocol::Stream::uint32_get(input, version), to_test[0]);
+        elle::protocol::Stream::uint32_get(input, version), to_test[0]);
       BOOST_CHECK_EQUAL(
-        infinit::protocol::Stream::uint32_get(input, version), to_test[1]);
+        elle::protocol::Stream::uint32_get(input, version), to_test[1]);
     }
   }
 }

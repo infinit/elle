@@ -1,5 +1,5 @@
-#ifndef INFINIT_PROTOCOL_CHANNELEDSTREAM_HH
-# define INFINIT_PROTOCOL_CHANNELEDSTREAM_HH
+#ifndef ELLE_PROTOCOL_CHANNELEDSTREAM_HH
+# define ELLE_PROTOCOL_CHANNELEDSTREAM_HH
 
 # include <unordered_map>
 
@@ -7,7 +7,7 @@
 # include <protocol/Stream.hh>
 # include <protocol/fwd.hh>
 
-namespace infinit
+namespace elle
 {
   namespace protocol
   {

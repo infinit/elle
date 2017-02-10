@@ -1,7 +1,7 @@
-#ifndef INFINIT_PROTOCOL_FWD_HH
-# define INFINIT_PROTOCOL_FWD_HH
+#ifndef ELLE_PROTOCOL_FWD_HH
+# define ELLE_PROTOCOL_FWD_HH
 
-namespace infinit
+namespace elle
 {
   namespace protocol
   {

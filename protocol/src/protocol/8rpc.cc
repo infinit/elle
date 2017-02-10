@@ -43,9 +43,9 @@ int rpc(std::string const& host, int port, int id,
     {
       reactor::Scheduler& sched(scheduler());
       reactor::network::TCPSocket socket(sched, host, port);
-      infinit::protocol::Serializer serializer(sched, socket);
-      infinit::protocol::ChanneledStream channels(sched, serializer);
-      typedef infinit::protocol::RPC<elle::serialize::InputBinaryArchive,
+      elle::protocol::Serializer serializer(sched, socket);
+      elle::protocol::ChanneledStream channels(sched, serializer);
+      typedef elle::protocol::RPC<elle::serialize::InputBinaryArchive,
                                      elle::serialize::OutputBinaryArchive>
         RPC;
       RPC rpcs(channels);

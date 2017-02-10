@@ -2,7 +2,7 @@
 
 #include <elle/Exception.hh>
 
-namespace infinit
+namespace elle
 {
   namespace protocol
   {

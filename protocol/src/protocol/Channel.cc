@@ -3,9 +3,9 @@
 #include <protocol/Channel.hh>
 #include <protocol/ChanneledStream.hh>
 
-ELLE_LOG_COMPONENT("infinit.protocol.Channel");
+ELLE_LOG_COMPONENT("elle.protocol.Channel");
 
-namespace infinit
+namespace elle
 {
   namespace protocol
   {

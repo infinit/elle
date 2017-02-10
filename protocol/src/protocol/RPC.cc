@@ -2,7 +2,7 @@
 
 #include <protocol/RPC.hh>
 
-namespace infinit
+namespace elle
 {
   namespace protocol
   {

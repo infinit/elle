@@ -1,5 +1,5 @@
-#ifndef INFINIT_PROTOCOL_RPC_HH
-# define INFINIT_PROTOCOL_RPC_HH
+#ifndef ELLE_PROTOCOL_RPC_HH
+# define ELLE_PROTOCOL_RPC_HH
 
 # include <ostream>
 # include <memory>
@@ -14,7 +14,7 @@
 
 # include <protocol/fwd.hh>
 
-namespace infinit
+namespace elle
 {
   namespace protocol
   {

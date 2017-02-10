@@ -18,7 +18,7 @@
 #include <elle/IOStream.hh>
 #include <elle/With.hh>
 
-ELLE_LOG_COMPONENT("infinit.protocol.test");
+ELLE_LOG_COMPONENT("elle.protocol.test");
 
 constexpr static elle::Buffer::Size buffer_size = 4096;
 
@@ -345,28 +345,28 @@ void
 dialog(elle::Version const& version,
        bool checksum,
        std::function<void (SocketProvider&)> const& conf,
-       std::function<void (infinit::protocol::Serializer&)> const& a,
-       std::function<void (infinit::protocol::Serializer&)> const& b,
+       std::function<void (elle::protocol::Serializer&)> const& a,
+       std::function<void (elle::protocol::Serializer&)> const& b,
        std::function<void (reactor::Thread&, reactor::Thread&,
                            SocketProvider&)> const& f = {})
 {
   SocketProvider sockets;
-  std::unique_ptr<infinit::protocol::Serializer> alice;
-  std::unique_ptr<infinit::protocol::Serializer> bob;
+  std::unique_ptr<elle::protocol::Serializer> alice;
+  std::unique_ptr<elle::protocol::Serializer> bob;
   elle::With<reactor::Scope>() << [&](reactor::Scope& scope)
   {
     scope.run_background(
       "setup alice's serializer",
       [&]
       {
-        alice.reset(new infinit::protocol::Serializer(
+        alice.reset(new elle::protocol::Serializer(
                       sockets.alice(), version, checksum));
       });
     scope.run_background(
       "setup bob's serializer",
       [&]
       {
-        bob.reset(new infinit::protocol::Serializer(
+        bob.reset(new elle::protocol::Serializer(
                     sockets.bob(), version, checksum));
       });
     scope.wait();
@@ -406,7 +406,7 @@ _exchange_packets(elle::Version const& version,
   dialog<SocketInstrumentation>(version,
          checksum,
          [] (SocketInstrumentation&) {},
-         [] (infinit::protocol::Serializer& s)
+         [] (elle::protocol::Serializer& s)
          {
            {
              elle::Buffer p("some data 42", strlen("some data 42"));
@@ -421,7 +421,7 @@ _exchange_packets(elle::Version const& version,
              BOOST_CHECK(!(p >> res));
            }
          },
-         [] (infinit::protocol::Serializer& s)
+         [] (elle::protocol::Serializer& s)
          {
            {
              elle::Buffer pp = s.read();
@@ -465,14 +465,14 @@ _exchange(elle::Version const& version,
   dialog<Connector>(version,
          checksum,
          [] (Connector&) {},
-         [&] (infinit::protocol::Serializer& s)
+         [&] (elle::protocol::Serializer& s)
          {
            for (auto const& buffer: packets)
              s.write(buffer);
            for (size_t i = 0; i < packets.size(); ++i)
              BOOST_CHECK_EQUAL(s.read(), packets.at(i));
          },
-         [&] (infinit::protocol::Serializer& s)
+         [&] (elle::protocol::Serializer& s)
          {
            for (size_t i = 0; i < packets.size(); ++i)
              BOOST_CHECK_EQUAL(s.read(), packets.at(i));
@@ -501,7 +501,7 @@ _connection_lost_reader(elle::Version const& version,
       sockets.bob_routed(0);
       sockets.alice_quota(96);
     },
-    [] (infinit::protocol::Serializer& s)
+    [] (elle::protocol::Serializer& s)
     {
       elle::Buffer pp;
       elle::IOStream p(pp.ostreambuf());
@@ -512,7 +512,7 @@ _connection_lost_reader(elle::Version const& version,
       p.flush();
       s.write(pp);
     },
-    [] (infinit::protocol::Serializer& s)
+    [] (elle::protocol::Serializer& s)
     {
       BOOST_CHECK_THROW(s.read(), reactor::network::ConnectionClosed);
     });
@@ -538,7 +538,7 @@ _connection_lost_sender(elle::Version const& version,
       sockets.bob_routed(0);
       sockets.alice_quota(4);
     },
-    [] (infinit::protocol::Serializer& s)
+    [] (elle::protocol::Serializer& s)
     {
       elle::Buffer p("data", 4);
       s.write(p);
@@ -557,7 +557,7 @@ _connection_lost_sender(elle::Version const& version,
       }
       BOOST_FAIL("ConnectionClosed exception was expected");
     },
-    [] (infinit::protocol::Serializer&)
+    [] (elle::protocol::Serializer&)
     {});
 }
 
@@ -581,7 +581,7 @@ _corruption(elle::Version const& version,
       sockets.bob_routed(0);
       sockets.alice_corrupt(1024);
     },
-    [] (infinit::protocol::Serializer& s)
+    [] (elle::protocol::Serializer& s)
     {
       elle::Buffer pp;
       elle::IOStream p(pp.ostreambuf());
@@ -592,10 +592,10 @@ _corruption(elle::Version const& version,
       p.flush();
       s.write(pp);
     },
-    [=] (infinit::protocol::Serializer& s)
+    [=] (elle::protocol::Serializer& s)
     {
       if (checksum)
-        BOOST_CHECK_THROW(s.read(), infinit::protocol::ChecksumError);
+        BOOST_CHECK_THROW(s.read(), elle::protocol::ChecksumError);
     });
 }
 
@@ -624,7 +624,7 @@ _interruption(elle::Version const& version,
       [] (Connector& sockets)
       {
       },
-      [&] (infinit::protocol::Serializer& s)
+      [&] (elle::protocol::Serializer& s)
       {
         to_send = elle::cryptography::random::generate<elle::Buffer>(
           s.chunk_size() * number);
@@ -641,7 +641,7 @@ _interruption(elle::Version const& version,
         ELLE_TRACE("write '%f'", to_send2)
           s.write(to_send2);
       },
-      [&] (infinit::protocol::Serializer& s)
+      [&] (elle::protocol::Serializer& s)
       {
         // Read.
         auto res = s.read();
@@ -712,7 +712,7 @@ _termination(elle::Version const& version,
     [] (SocketInstrumentation& sockets)
     {
     },
-    [&] (infinit::protocol::Serializer& s)
+    [&] (elle::protocol::Serializer& s)
     {
       t.reset(new reactor::Thread("reader", [&] {
           try
@@ -736,12 +736,12 @@ _termination(elle::Version const& version,
         BOOST_CHECK_EQUAL(buf.string(), "foobar");
       }
     },
-    [&] (infinit::protocol::Serializer& s)
+    [&] (elle::protocol::Serializer& s)
     {
       ELLE_TRACE("waitinng for thread")
         reactor::wait(tready);
       auto& backend = s.stream();
-      infinit::protocol::Stream::uint32_put(backend, 6, version);
+      elle::protocol::Stream::uint32_put(backend, 6, version);
       backend.write("foo", 3);
       backend.flush();
       reactor::sleep(valgrind(10_ms, 10));
@@ -749,7 +749,7 @@ _termination(elle::Version const& version,
         t->terminate();
       reactor::sleep(valgrind(10_ms, 10));
       backend.write("baz", 3);
-      infinit::protocol::Stream::uint32_put(backend, 6, version);
+      elle::protocol::Stream::uint32_put(backend, 6, version);
       backend.write("foobar", 6);
       backend.flush();
       ELLE_TRACE("writer done");
@@ -773,7 +773,7 @@ ELLE_TEST_SCHEDULED(eof)
   {
     std::stringstream output;
     {
-      infinit::protocol::Serializer s(output);
+      elle::protocol::Serializer s(output);
       elle::Buffer p(data);
       s.write(p);
     }
@@ -784,20 +784,20 @@ ELLE_TEST_SCHEDULED(eof)
   {
     std::stringstream input(packet);
     {
-      infinit::protocol::Serializer s(input);
-      BOOST_CHECK_THROW(s.read(), infinit::protocol::Serializer::EOF);
+      elle::protocol::Serializer s(input);
+      BOOST_CHECK_THROW(s.read(), elle::protocol::Serializer::EOF);
     }
   }
   {
     std::stringstream input;
-    infinit::protocol::Serializer s(input);
-    BOOST_CHECK_THROW(s.read(), infinit::protocol::Serializer::EOF);
+    elle::protocol::Serializer s(input);
+    BOOST_CHECK_THROW(s.read(), elle::protocol::Serializer::EOF);
   }
   {
    std::stringstream input(valid_packet);
-   infinit::protocol::Serializer s(input);
+   elle::protocol::Serializer s(input);
    BOOST_CHECK_NO_THROW(s.read());
-   BOOST_CHECK_THROW(s.read(), infinit::protocol::Serializer::EOF);
+   BOOST_CHECK_THROW(s.read(), elle::protocol::Serializer::EOF);
   }
 }
 
@@ -812,7 +812,7 @@ ELLE_TEST_SCHEDULED(message)
       [] (Connector&)
       {
       },
-      [&] (infinit::protocol::Serializer& s)
+      [&] (elle::protocol::Serializer& s)
       {
         chunk_size = s.chunk_size();
         auto buf = s.read();
@@ -821,7 +821,7 @@ ELLE_TEST_SCHEDULED(message)
         BOOST_CHECK_EQUAL(buf.size(), expected.size());
         BOOST_CHECK_EQUAL(buf, expected);
       },
-      [&] (infinit::protocol::Serializer& s)
+      [&] (elle::protocol::Serializer& s)
       {
       },
       [&] (reactor::Thread&, reactor::Thread&, Connector& connector)
@@ -838,7 +838,7 @@ ELLE_TEST_SCHEDULED(message)
         };
         // Send the size.
         {
-          infinit::protocol::Stream::uint32_put(
+          elle::protocol::Stream::uint32_put(
             connector._alice_buffer, size, version);
         }
         // Write first part.
@@ -849,7 +849,7 @@ ELLE_TEST_SCHEDULED(message)
           std::string message = "this should be ignored";
 
           connector._alice_buffer.append(&message_control, 1);
-          infinit::protocol::Stream::uint32_put(
+          elle::protocol::Stream::uint32_put(
             connector._alice_buffer, message.length(), version);
           // connector._alice_buffer.append(&size, 4);
           connector._alice_buffer.append(message.c_str(), message.length());
@@ -866,7 +866,7 @@ ELLE_TEST_SCHEDULED(interruption2)
 {
   // Check that terminating a Channel.read() call does not lose an unrelated
   // packet.
-  namespace ip = infinit::protocol;
+  namespace ip = elle::protocol;
 
   for (auto version: {elle::Version{0, 2, 0}, elle::Version{0, 3, 0}})
   {
@@ -877,7 +877,7 @@ ELLE_TEST_SCHEDULED(interruption2)
       [] (Connector&)
       {
       },
-      [&] (infinit::protocol::Serializer& s)
+      [&] (elle::protocol::Serializer& s)
       { // echo server, sending partial result until pinger_block is opened.
         ip::ChanneledStream stream(s);
         while (true)
@@ -888,14 +888,14 @@ ELLE_TEST_SCHEDULED(interruption2)
           // Forge a packet in `message`.
           elle::Buffer message;
           // 1. the channel id.
-          infinit::protocol::Stream::uint32_put(message, c.id(), version);
+          elle::protocol::Stream::uint32_put(message, c.id(), version);
           // 2. the content.
           {
             elle::IOStream m(message.ostreambuf());
             m.write((const char*)buf.contents(), buf.size());
           }
           // First send the size of `message`.
-          infinit::protocol::Stream::uint32_put(s.stream(), message.size(), version);
+          elle::protocol::Stream::uint32_put(s.stream(), message.size(), version);
           {
             // Send `message`, but lacking the end.
             s.stream().write((const char*)message.contents(), message.size() - 1);
@@ -910,7 +910,7 @@ ELLE_TEST_SCHEDULED(interruption2)
           ELLE_TRACE("packet transmited");
         }
       },
-      [&] (infinit::protocol::Serializer& s)
+      [&] (elle::protocol::Serializer& s)
       {
         ip::ChanneledStream stream(s);
         ip::Channel c(stream);

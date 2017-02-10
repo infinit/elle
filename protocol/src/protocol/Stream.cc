@@ -14,7 +14,7 @@
 
 #include <elle/serialization/binary.hh>
 
-namespace infinit
+namespace elle
 {
   namespace protocol
   {

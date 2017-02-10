@@ -19,9 +19,9 @@
 #include <protocol/Channel.hh>
 #include <protocol/ChanneledStream.hh>
 
-ELLE_LOG_COMPONENT("infinit.protocol.test");
+ELLE_LOG_COMPONENT("elle.protocol.test");
 
-using Serializer = infinit::protocol::Serializer;
+using Serializer = elle::protocol::Serializer;
 
 struct setup
 {
@@ -127,7 +127,7 @@ ELLE_TEST_SCHEDULED(kill_reader)
    * So if that thread terminates at that exact momemnt, there is no more
    * any reader on the stream.
   */
-  using namespace infinit::protocol;
+  using namespace elle::protocol;
   auto v = elle::Version(0,2,0);
   reactor::Barrier b;
   reactor::network::TCPServer srv;
@@ -154,7 +154,7 @@ ELLE_TEST_SCHEDULED(kill_reader)
   bool r1 = false, r2 = false, r3 = false;
   reactor::Thread::unique_ptr t1, t2, t3;
   t1.reset(new reactor::Thread("t1", [&] {
-      infinit::protocol::Channel c(cs1);
+      elle::protocol::Channel c(cs1);
       b.open();
       cid1 = c.id();
       try {
@@ -171,7 +171,7 @@ ELLE_TEST_SCHEDULED(kill_reader)
   b.close();
   //t1 is now the channel listener
   t2.reset(new reactor::Thread("t2", [&] {
-      infinit::protocol::Channel c(cs1);
+      elle::protocol::Channel c(cs1);
       b.open();
       cid2 = c.id();
       c.write(elle::Buffer("foo"));
@@ -182,7 +182,7 @@ ELLE_TEST_SCHEDULED(kill_reader)
   reactor::wait(b);
   b.close();
   t3.reset(new reactor::Thread("t3", [&] {
-      infinit::protocol::Channel c(cs1);
+      elle::protocol::Channel c(cs1);
       b.open();
       cid3 = c.id();
       c.read();
@@ -201,7 +201,7 @@ ELLE_TEST_SCHEDULED(kill_reader)
 
 ELLE_TEST_SCHEDULED(nonempty_queue)
 {
-  using namespace infinit::protocol;
+  using namespace elle::protocol;
   auto v = elle::Version(0,2,0);
   reactor::Barrier b1,b2;
   reactor::network::TCPServer srv;

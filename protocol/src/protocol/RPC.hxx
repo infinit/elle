@@ -1,5 +1,5 @@
-#ifndef INFINIT_PROTOCOL_RPC_HXX
-# define INFINIT_PROTOCOL_RPC_HXX
+#ifndef ELLE_PROTOCOL_RPC_HXX
+# define ELLE_PROTOCOL_RPC_HXX
 
 # include <type_traits>
 
@@ -17,7 +17,7 @@
 # include <protocol/ChanneledStream.hh>
 # include <protocol/exceptions.hh>
 
-namespace infinit
+namespace elle
 {
   namespace protocol
   {
@@ -163,7 +163,7 @@ namespace infinit
     RPC<IS, OS>::RemoteProcedure<R, Args...>::
     operator () (Args ... args)
     {
-      ELLE_LOG_COMPONENT("infinit.protocol.RPC");
+      ELLE_LOG_COMPONENT("elle.protocol.RPC");
 
       ELLE_TRACE_SCOPE("%s: call remote procedure: %s",
                        this->_owner, this->_name);
@@ -360,7 +360,7 @@ namespace infinit
                      T& output,
                      std::exception_ptr ex)
     {
-      ELLE_LOG_COMPONENT("infinit.protocol.RPC");
+      ELLE_LOG_COMPONENT("elle.protocol.RPC");
       bool res = false;
       try
       {
@@ -409,7 +409,7 @@ namespace infinit
     void
     RPC<IS, OS>::run(ExceptionHandler handler)
     {
-      ELLE_LOG_COMPONENT("infinit.protocol.RPC");
+      ELLE_LOG_COMPONENT("elle.protocol.RPC");
 
       using elle::sprintf;
       using elle::Exception;
@@ -478,7 +478,7 @@ namespace infinit
     void
     RPC<IS, OS>::parallel_run()
     {
-      ELLE_LOG_COMPONENT("infinit.protocol.RPC");
+      ELLE_LOG_COMPONENT("elle.protocol.RPC");
 
       using elle::sprintf;
       using elle::Exception;
@@ -493,7 +493,7 @@ namespace infinit
             ++i;
 
             auto call_procedure = [&, chan] {
-              ELLE_LOG_COMPONENT("infinit.protocol.RPC");
+              ELLE_LOG_COMPONENT("elle.protocol.RPC");
 
               elle::Buffer question(chan->read());
               elle::IOStream ins(question.istreambuf());
