@@ -244,7 +244,7 @@ namespace das
               std::vector<std::string> value,
               int& remaining,
               bool set)
-          : _default(d)
+          : _def(d)
           , _option(std::move(option))
           , _values(std::move(value))
           , _positional(positional)
@@ -252,8 +252,6 @@ namespace das
           , _remaining(remaining)
           , _set(set)
         {}
-
-        std::conditional_t<default_has, Default, int> const& _default;
 
         template <typename I>
         static
@@ -357,8 +355,8 @@ namespace das
         std::enable_if_t<default_has, T>
         missing() const
         {
-          ELLE_TRACE("use default value: %s", this->_default);
-          return this->_default;
+          ELLE_TRACE("use default value: %s", this->_def);
+          return this->_def;
         }
 
         template <typename T>
@@ -450,6 +448,8 @@ namespace das
         }
 
       private:
+        ELLE_ATTRIBUTE_R(
+          (std::conditional_t<default_has, Default, int> const&), def);
         ELLE_ATTRIBUTE_R(std::string, option);
         ELLE_ATTRIBUTE_R(std::vector<std::string>, values, mutable);
         ELLE_ATTRIBUTE(bool, positional);
@@ -463,22 +463,25 @@ namespace das
       std::ostream&
       operator <<(std::ostream& out, Value<Default> const& v)
       {
-        elle::fprintf(out, "Value(\"%s\", %s, %s)",
-                      v.option(), v.values(), v.set() ? "explicit" : "implicit");
+        elle::fprintf(
+          out, "Value(\"%s\", %s%s, %s)",
+          v.option(),
+          v.values(),
+          Value<Default>::default_has ?
+            elle::sprintf(", %s", v.def()) : std::string(""),
+          v.set() ? "explicit" : "implicit");
         return out;
       }
 
-      template <typename Prototype, typename Formal>
+      template <typename Default, typename Formal>
       struct parse_arg
       {
         using Symbol = das::named::make_formal<Formal>;
-        using Default =
-          typename Prototype::DefaultStore::template default_for<Formal>;
         using V = typename std::conditional_t<
           Default::has, Default, std::identity<void>>::type;
         static inline
         auto
-        value(Prototype const& p,
+        value(Default const& d,
               std::vector<std::string>& args,
               Options const& opts,
               int& counter)
@@ -560,24 +563,22 @@ namespace das
               pos = it->second.positional;
           }
           return elle::meta::static_if<Default::has>(
-            [&] (auto head, auto def)
+            [&] (auto const& d)
             {
-              using Default = typename decltype(def)::type;
-              using V = Value<typename Default::Type>;
+              using V = Value<
+                typename std::remove_cv_reference_t<decltype(d)>::type>;
               if (flag)
-                return V(p.defaults.Default::value, Symbol::name(), pos, args,
+                return V(d.value, Symbol::name(), pos, args,
                          {"true"}, counter, set);
               else
               {
                 if (value.empty())
-                  ELLE_DEBUG(
-                    "no occurences, default value is %s",
-                    p.defaults.Default::value);
-                return V(p.defaults.Default::value, Symbol::name(), pos, args,
+                  ELLE_DEBUG("no occurences, default value is %s", d.value);
+                return V(d.value, Symbol::name(), pos, args,
                          std::move(value), counter, set);
               }
             },
-            [&] (auto head, auto)
+            [&] (auto)
             {
               using V = Value<void>;
               if (flag)
@@ -589,8 +590,7 @@ namespace das
                 return V(0, Symbol::name(), pos, args,
                          std::move(value), counter, set);
               }
-            })(elle::meta::Identity<Formal>{},
-               elle::meta::Identity<Default>{});
+            })(d);
         }
       };
     }
@@ -603,11 +603,12 @@ namespace das
           Options const& opts = Options())
     {
       ELLE_LOG_COMPONENT("das.cli");
-      using Prototype = das::named::Prototype<Formals...>;
       int counter = sizeof ... (Formals);
       // Don't use make_tuple, order matters.
-      auto parsed = std::tuple<_details::Value<typename _details::parse_arg<Prototype, std::remove_cv_reference_t<Formals>>::V>...> {
-        _details::parse_arg<Prototype, std::remove_cv_reference_t<Formals>>::value(p, args, opts, counter)...};
+      auto parsed =
+        std::tuple<_details::Value<typename _details::parse_arg<typename named::DefaultStore<Formals...>::template default_for<std::remove_cv_reference_t<Formals>>, std::remove_cv_reference_t<Formals>>::V>...> {
+        _details::parse_arg<typename named::DefaultStore<Formals...>::template default_for<std::remove_cv_reference_t<Formals>>, std::remove_cv_reference_t<Formals>>::value(p.defaults, args, opts, counter)...
+        };
       if (!args.empty())
         ELLE_TRACE("remaining positional arguments: %s", args);
       ELLE_TRACE("call %s%s", f, parsed)
