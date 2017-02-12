@@ -226,6 +226,7 @@ namespace das
 
     namespace _details
     {
+      /// A value not found on the CLI
       template <typename Default = void>
       class Value
       {
@@ -235,8 +236,6 @@ namespace das
 
         ELLE_LOG_COMPONENT("das.cli");
 
-        /// A value not found on the CLI, built from its default
-        /// value.
         Value(std::conditional_t<default_has, Default, int> const& d,
               std::string option,
               bool positional,
@@ -247,11 +246,24 @@ namespace das
           : _def(d)
           , _option(std::move(option))
           , _values(std::move(value))
+          , _flag(false)
           , _positional(positional)
           , _args(args)
           , _remaining(remaining)
           , _set(set)
         {}
+
+        /// A value not found on the CLI.
+        Value(std::conditional_t<default_has, Default, int> const& d,
+              std::string option,
+              bool positional,
+              std::vector<std::string>& args,
+              int& remaining,
+              bool set)
+          : Value(d, std::move(option), positional, args, {}, remaining, set)
+        {
+          this->_flag = true;
+        }
 
         template <typename I>
         static
@@ -378,6 +390,8 @@ namespace das
         I
         convert() const
         {
+          if (this->_flag)
+            throw OptionValueError(this->_option, "true", "unexpected flag");
           if (this->_values.empty())
           {
             if (this->_positional && !this->_args.empty())
@@ -400,6 +414,16 @@ namespace das
           ELLE_TRACE_SCOPE(
             "convert %s to %s", this->_option, elle::type_info<I>());
           auto res = this->convert<I>();
+          this->_check_remaining();
+          return res;
+        }
+
+        operator bool() const
+        {
+          ELLE_TRACE_SCOPE("convert %s to boolean", this->_option);
+          if (this->_flag)
+            return true;
+          auto res = this->convert<bool>();
           this->_check_remaining();
           return res;
         }
@@ -452,6 +476,7 @@ namespace das
           (std::conditional_t<default_has, Default, int> const&), def);
         ELLE_ATTRIBUTE_R(std::string, option);
         ELLE_ATTRIBUTE_R(std::vector<std::string>, values, mutable);
+        ELLE_ATTRIBUTE_R(bool, flag);
         ELLE_ATTRIBUTE(bool, positional);
         ELLE_ATTRIBUTE(std::vector<std::string>&, args);
         ELLE_ATTRIBUTE(int&, remaining);
@@ -568,8 +593,7 @@ namespace das
               using V = Value<
                 typename std::remove_cv_reference_t<decltype(d)>::type>;
               if (flag)
-                return V(d.value, Symbol::name(), pos, args,
-                         {"true"}, counter, set);
+                return V(d.value, Symbol::name(), pos, args, counter, set);
               else
               {
                 if (value.empty())

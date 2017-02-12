@@ -218,6 +218,19 @@ defaults()
     das::cli::call(proto, f, {"--baz", "23", "--foo", "01"}), "0123");
 }
 
+static
+void
+flag()
+{
+  auto const f =
+    [] (std::string const& foo, int baz) { return foo + std::to_string(baz); };
+  auto const proto = das::named::prototype(foo, baz);
+  BOOST_CHECK_THROW(das::cli::call(proto, f, {"--foo", "--bar", "bar"}),
+                    das::cli::OptionValueError);
+  BOOST_CHECK_THROW(das::cli::call(proto, f, {"--foo", "foo", "--bar"}),
+                    das::cli::OptionValueError);
+}
+
 DAS_SYMBOL(composite_option);
 
 static
