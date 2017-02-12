@@ -675,29 +675,27 @@ namespace das
         elle::fprintf(s, "  %s", help);
     }
 
-    template <typename Formal, typename Defaults>
+    template <typename Formal, typename Default>
     struct help_map
     {
       using type = bool;
       static
       bool
-      value(std::ostream& s, Options const& opts, Defaults const& defaults)
+      value(std::ostream& s, Options const& opts, Default const& def)
       {
         using Symbol = das::named::make_formal<Formal>;
-        // Whether has a default value.
-        using Default = typename Defaults::template default_for<Formal>;
         // Whether expects an argument.
         bool with_argument
           = elle::meta::static_if<Default::has>
-          ([&s] (auto const& defaults)
+          ([&s] (auto const& def)
            {
-             auto const& v = defaults.Default::value;
+             auto const& v = def.value;
              return !std::is_same<decltype(v), bool const&>::value;
            },
            [] (auto const&)
            {
              return true;
-           })(defaults);
+           })(def);
         // Print the option's help string.
         auto opt = opts.find(Symbol::name());
         if (opt == opts.end())
@@ -716,13 +714,13 @@ namespace das
           print_help(s, Symbol::name(), with_argument,
                      opt->second.short_name, opt->second.help);
         elle::meta::static_if<Default::has>
-          ([&s, &with_argument] (auto const& defaults)
+          ([&s, &with_argument] (auto const& def)
            {
-             auto const& v = defaults.Default::value;
+             auto const& v = def.value;
              if (!std::is_same<decltype(v), bool const&>::value
                  && !std::is_same<decltype(v), boost::none_t const&>::value)
                elle::fprintf(s, " (default: %s)", v);
-           })(defaults);
+           })(def);
         elle::fprintf(s, "\n");
         return true;
       }
@@ -739,12 +737,16 @@ namespace das
         , _options(opts)
       {}
 
+      template <typename>
+      using make_bool = bool;
+
       void
       print(std::ostream& s) const
       {
-        elle::meta::List<T...>::template map<
-          help_map, typename named::Prototype<T...>::DefaultStore>::value(
-            s, this->_options, this->_prototype.defaults);
+        std::tuple<make_bool<T>...>{
+          help_map<T, typename named::Prototype<T...>::DefaultStore::template default_for<T>>::value(
+            s, this->_options, this->_prototype.defaults)...
+        };
       }
 
       ELLE_ATTRIBUTE(das::named::Prototype<T...> const&, prototype);
