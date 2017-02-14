@@ -394,11 +394,23 @@ namespace das
             throw OptionValueError(this->_option, "true", "unexpected flag");
           if (this->_values.empty())
           {
-            if (this->_positional && !this->_args.empty())
+            if (this->_positional)
             {
-              ELLE_TRACE("use next positional value: %s", *this->_args.begin());
-              this->_values.emplace_back(std::move(*this->_args.begin()));
-              this->_args.erase(this->_args.begin());
+              auto it = this->_args.begin();
+              while (it != this->_args.end() && is_option(*it))
+              {
+                ++it;
+                if (it != this->_args.end())
+                  ++it;
+              }
+              if (it != this->_args.end())
+              {
+                ELLE_TRACE("use next positional value: %s", *it);
+                this->_values.emplace_back(std::move(*it));
+                it = this->_args.erase(it);
+              }
+              else
+                return this->missing<I>();
             }
             else
               return this->missing<I>();
@@ -628,16 +640,7 @@ namespace das
     {
       ELLE_LOG_COMPONENT("das.cli");
       int counter = sizeof ... (Formals);
-      // Don't use make_tuple, order matters.
-      auto parsed =
-        std::tuple<_details::Value<typename _details::parse_arg<typename named::DefaultStore<Formals...>::template default_for<std::remove_cv_reference_t<Formals>>, std::remove_cv_reference_t<Formals>>::V>...> {
-        _details::parse_arg<typename named::DefaultStore<Formals...>::template default_for<std::remove_cv_reference_t<Formals>>, std::remove_cv_reference_t<Formals>>::value(p.defaults, args, opts, counter)...
-        };
-      if (!args.empty())
-        ELLE_TRACE("remaining positional arguments: %s", args);
-      ELLE_TRACE("call %s%s", f, parsed)
-        return forward_tuple(f, std::move(parsed));
-
+      return f(_details::parse_arg<typename named::DefaultStore<Formals...>::template default_for<std::remove_cv_reference_t<Formals>>, std::remove_cv_reference_t<Formals>>::value(p.defaults, args, opts, counter)...);
     }
 
     template <typename F, typename ... Formals>

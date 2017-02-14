@@ -298,6 +298,7 @@ namespace positional_ct
 {
   DAS_CLI_SYMBOL(foo, 'f', "", false);
   DAS_CLI_SYMBOL(bar, 'b', "", true);
+  DAS_CLI_SYMBOL(quux, 'q', "", true);
 
   static
   void
@@ -331,6 +332,18 @@ namespace positional_ct
         das::cli::call(proto, f, {"-b", "1", "2", "3"}),
         das::cli::UnrecognizedValue,
         "extra unrecognized argument: 2");
+    }
+    {
+      auto const f = das::named::function(
+        [] (int b, int q)
+        {
+          return b - q;
+        }, bar, quux);
+      BOOST_CHECK_EQUAL(
+        das::cli::call(f, {"-b", "1", "-q", "2"}), -1);
+      // Not handled yet.
+      // BOOST_CHECK_EQUAL(
+      //   das::cli::call(f, {"1", "2"}), -1);
     }
   }
 }
