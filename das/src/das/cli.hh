@@ -631,56 +631,70 @@ namespace das
       };
     }
 
-    template <typename F, typename ... Formals>
+    template <typename F, typename ... Formals, typename ... Raw>
     auto
     _call(das::named::Prototype<Formals...> const& p,
           F const& f,
           std::vector<std::string>& args,
-          Options const& opts = Options())
+          Options const& opts = Options(),
+          Raw&& ... raw)
     {
       ELLE_LOG_COMPONENT("das.cli");
       int counter = sizeof ... (Formals);
       return f(_details::parse_arg<typename named::DefaultStore<Formals...>::template default_for<std::remove_cv_reference_t<Formals>>, std::remove_cv_reference_t<Formals>>::value(p.defaults, args, opts, counter)...);
     }
 
-    template <typename F, typename ... Formals>
+    template <typename F,
+              typename ... Formals,
+              typename ... Raw>
     auto
     call(das::named::Prototype<Formals...> const& p,
          F const& f,
          std::vector<std::string>& args,
-         Options const& opts = Options())
+         Options const& opts = Options(),
+         Raw&& ... raw)
     {
-      return _call(p, f, args, opts);
+      return _call(p, f, args, opts, std::forward<Raw>(raw)...);
     }
 
-    template <typename F, typename ... Formals, typename ... Args>
+    template <typename F,
+              typename ... Formals,
+              typename ... Args,
+              typename ... Raw>
     auto
     call(das::named::Prototype<Formals...> const& p,
          F const& f,
          std::vector<std::string> const& args,
-         Options const& opts = Options())
+         Options const& opts = Options(),
+         Raw&& ... raw)
     {
       auto copy = args;
-      return _call(p, f, copy, opts);
+      return _call(p, f, copy, opts, std::forward<Raw>(raw)...);
     }
 
-    template <typename ... T>
+    template <typename ... T,
+              typename ... Raw>
     auto
     call(named::Function<T...> const& f,
          std::vector<std::string>& args,
-         Options const& opts = Options())
+         Options const& opts = Options(),
+         Raw&& ... raw)
     {
-      return _call(f.prototype(), f.function(), args, opts);
+      return _call(f.prototype(), f.function(), args, opts,
+                   std::forward<Raw>(raw)...);
     }
 
-    template <typename ... T>
+    template <typename ... T,
+              typename ... Raw>
     auto
     call(named::Function<T...> const& f,
          std::vector<std::string> const& args,
-         Options const& opts = Options())
+         Options const& opts = Options(),
+         Raw&& ... raw)
     {
       std::vector<std::string> copy = args;
-      return _call(f.prototype(), f.function(), copy, opts);
+      return _call(f.prototype(), f.function(), copy, opts,
+                   std::forward<Raw>(raw)...);
     }
 
     inline
