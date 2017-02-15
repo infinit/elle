@@ -58,7 +58,6 @@ namespace aws
 
   // Stay as close as possible to reference java implementation from amazon
   // http://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-header-based-auth.html
-  static
   std::string
   uri_encode(std::string const& input, bool encodeSlash)
   {
