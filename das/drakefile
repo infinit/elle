@@ -123,3 +123,4 @@ def configure(cxx_toolkit,
       example,
       [drake.node('%s.cc' % example), library, elle_library],
       cxx_toolkit, config_examples)
+  rule_build << rule_examples

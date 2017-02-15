@@ -1429,3 +1429,4 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
         elle.library, reactor.library, cryptography.library
       ],
       cxx_toolkit, example_config)
+  build << examples
