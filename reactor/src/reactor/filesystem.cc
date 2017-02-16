@@ -5,9 +5,10 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#include <reactor/filesystem.hh>
-
 #include <elle/assert.hh>
+#include <elle/log.hh>
+
+#include <reactor/filesystem.hh>
 
 ELLE_LOG_COMPONENT("reactor.filesystem");
 

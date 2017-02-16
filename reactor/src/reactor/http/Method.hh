@@ -1,7 +1,6 @@
-#ifndef REACTOR_HTTP_METHOD_HH
-# define REACTOR_HTTP_METHOD_HH
+#pragma once
 
-# include <iosfwd>
+#include <iosfwd>
 
 namespace reactor
 {
@@ -10,9 +9,9 @@ namespace reactor
     /// HTTP methods used to perform resquests.
     enum class Method
     {
-# ifdef DELETE
-#  undef DELETE
-# endif
+#ifdef DELETE
+# undef DELETE
+#endif
       DELETE,
       GET,
       POST,
@@ -31,5 +30,3 @@ namespace reactor
                 Method method);
   }
 }
-
-#endif

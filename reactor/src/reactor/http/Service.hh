@@ -1,13 +1,12 @@
-#ifndef REACTOR_HTTP_SERVICE_HH
-# define REACTOR_HTTP_SERVICE_HH
+#pragma once
 
-# include <unordered_map>
+#include <unordered_map>
 
-# include <boost/asio.hpp>
+#include <boost/asio.hpp>
 
-# include <elle/Printable.hh>
+#include <elle/Printable.hh>
 
-# include <reactor/http/Request.hh>
+#include <reactor/http/Request.hh>
 
 namespace reactor
 {
@@ -69,7 +68,7 @@ namespace reactor
         friend class Service;
         static std::unordered_map<int, std::weak_ptr<Socket> > _sockets;
       };
-      typedef std::shared_ptr<Socket> SocketPtr;
+      using SocketPtr = std::shared_ptr<Socket>;
       SocketPtr
       socket(int fd);
     private:
@@ -132,5 +131,3 @@ namespace reactor
     };
   }
 }
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef REACTOR_HTTP_URL_HH
-# define REACTOR_HTTP_URL_HH
+#pragma once
 
 #include <string>
 
@@ -11,5 +10,3 @@ namespace reactor
     std::string url_decode(std::string const& str);
   }
 }
-
-#endif

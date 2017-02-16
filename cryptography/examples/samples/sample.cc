@@ -37,7 +37,7 @@ main()
       elle::Buffer code = keypair.K().seal(data);
       elle::Buffer clear = keypair.k().open(code);
 
-      elle::printf("1) %s\n", clear.string());
+      elle::fprintf(std::cout, "1) %s\n", clear.string());
     }
 
     // Sign/verify with DSA.
@@ -50,9 +50,9 @@ main()
       elle::Buffer signature = keypair.k().sign(data);
 
       if (keypair.K().verify(signature, data) == true)
-        elle::printf("2) signature valid\n");
+        elle::fprintf(std::cout, "2) signature valid\n");
       else
-        elle::printf("2) signature invalid\n");
+        elle::fprintf(std::cout, "2) signature invalid\n");
     }
   }
 
@@ -72,7 +72,7 @@ main()
     elle::Buffer clear = key.decipher(code,
                                       infinit::cryptography::Cipher::aes128);
 
-    elle::printf("3) %s\n", clear.string());
+    elle::fprintf(std::cout, "3) %s\n", clear.string());
   }
 
   /*-----.
@@ -86,7 +86,8 @@ main()
       infinit::cryptography::hash(data,
                                   infinit::cryptography::Oneway::sha1);
 
-    elle::printf("4) %s\n", elle::format::hexadecimal::encode(digest));
+    elle::fprintf(std::cout, "4) %s\n",
+                  elle::format::hexadecimal::encode(digest));
   }
 
   return (0);

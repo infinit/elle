@@ -1,4 +1,5 @@
 #include <elle/bench.hh>
+
 #include <elle/log.hh>
 
 namespace elle

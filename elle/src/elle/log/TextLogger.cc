@@ -1,7 +1,7 @@
-#include <elle/Exception.hh>
 #include <elle/log/TextLogger.hh>
-#include <elle/os/environ.hh>
-#include <elle/printf.hh>
+
+#include <iostream>
+#include <unistd.h>
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
@@ -9,9 +9,10 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/lexical_cast.hpp>
 
-#include <iostream>
-
-#include <unistd.h>
+#include <elle/Exception.hh>
+#include <elle/assert.hh>
+#include <elle/os/environ.hh>
+#include <elle/printf.hh>
 
 namespace elle
 {

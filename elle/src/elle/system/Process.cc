@@ -1,4 +1,10 @@
 #include <elle/system/Process.hh>
+
+#include <cerrno>
+
+#include <elle/assert.hh>
+#include <elle/err.hh>
+#include <elle/log.hh>
 #include <elle/system/unistd.hh>
 
 #ifndef INFINIT_WINDOWS
@@ -8,17 +14,12 @@
 # include <elle/windows.h>
 #endif
 
-#include <cerrno>
-
-#include <elle/log.hh>
-
 ELLE_LOG_COMPONENT("elle.system.Process");
 
 namespace elle
 {
   namespace system
   {
-
 #ifndef INFINIT_WINDOWS
     class Process::Impl
     {
@@ -70,8 +71,7 @@ namespace elle
         }
         while (waited == -1 && errno == EINTR);
         if (waited == -1)
-          throw elle::Exception(elle::sprintf("unable to wait process: %s",
-                                              strerror(errno)));
+          elle::err("unable to wait process: %s", strerror(errno));
         assert(waited == this->_pid);
         this->_done = true;
       }
@@ -109,10 +109,7 @@ namespace elle
         if (!::CreateProcess(executable.c_str(), strdup(command_line.c_str()),
                              NULL, NULL, true, 0, NULL, NULL,
                              &startup_info, &this->_process_info))
-        {
-          throw elle::Exception(elle::sprintf("unable to start %s: %s",
-                                              executable, ::GetLastError()));
-        }
+          elle::err("unable to start %s: %s", executable, ::GetLastError());
       }
 
       void
@@ -141,6 +138,14 @@ namespace elle
 
     Process::Process(std::vector<std::string> args, bool set_uid)
       : _arguments(std::move(args))
+      , _set_uid(set_uid)
+      , _impl(new Process::Impl(*this))
+    {
+      ELLE_TRACE_SCOPE("%s: start", *this);
+    }
+
+    Process::Process(std::initializer_list<std::string> args, bool set_uid)
+      : _arguments(args)
       , _set_uid(set_uid)
       , _impl(new Process::Impl(*this))
     {

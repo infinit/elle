@@ -1,7 +1,6 @@
-#ifndef REACTOR_HTTP_VERSION_HH
-# define REACTOR_HTTP_VERSION_HH
+#pragma once
 
-# include <iosfwd>
+#include <iosfwd>
 
 namespace reactor
 {
@@ -25,5 +24,3 @@ namespace reactor
                 Version method);
   }
 }
-
-#endif

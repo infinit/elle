@@ -44,7 +44,7 @@ public:
     return this->id == other.id && this->name == other.name;
   }
 
-  typedef serialization serialization_tag;
+  using serialization_tag = serialization;
 };
 
 // DAS_MODEL_FIELD(Device, name);

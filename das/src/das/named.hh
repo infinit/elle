@@ -2,6 +2,7 @@
 
 #include <utility>
 
+#include <elle/Printable.hh>
 #include <elle/attribute.hh>
 #include <elle/log.hh>
 #include <elle/meta.hh>
@@ -180,8 +181,7 @@ namespace das
       auto&
       get(Default& d, Effectives&& ...)
       {
-        using D = DefaultFor<true, Formal>;
-        return d.D::value;
+        return d.DefaultFor<true, Formal>::value;
       }
     };
 
@@ -192,6 +192,7 @@ namespace das
     template <bool Effective, typename T>
     struct DefaultFor
     {
+      static constexpr bool has = false;
       template <typename Formal>
       DefaultFor(Formal const&)
       {}
@@ -202,7 +203,8 @@ namespace das
       : public T::Formal::
           template Effective<typename T::Type, typename T::Type const&>
     {
-      using Type = typename T::Type;
+      static constexpr bool has = true;
+      using type = typename T::Type;
       using Super = typename T::Formal::
         template Effective<typename T::Type, typename T::Type const&>;
       using Super::Super;
@@ -217,6 +219,19 @@ namespace das
         : DefaultFor<is_effective<Formal>::value, Formal>(
           std::forward<Args>(args))...
       {}
+
+      template <typename T>
+      using default_for = DefaultFor<is_effective<T>::value, T>;
+
+      template <typename ... Args>
+      auto
+      extend(Args&& ... args) const
+      {
+        return DefaultStore<Args ..., Formal ...>(
+          std::forward<Args>(args)...,
+          static_cast<DefaultFor<is_effective<Formal>::value, Formal> const&>(
+            *this)...);
+      }
     };
 
     /*----------.
@@ -233,6 +248,14 @@ namespace das
       Prototype(DefaultStore&& d)
         : defaults(std::move(d))
       {}
+
+      template <typename... NewArgs>
+      auto
+      extend(NewArgs&& ... args) const
+      {
+        return Prototype<NewArgs..., Formal...>
+          (this->defaults.extend(std::forward<NewArgs>(args)...));
+      }
 
       template <typename Sequence>
       struct Call;

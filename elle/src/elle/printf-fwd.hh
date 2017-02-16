@@ -15,12 +15,6 @@ namespace elle
 
   namespace
   {
-    /// Print on std::cout.
-    /// \return std::cout.
-    template <typename F, typename... T>
-    std::ostream&
-    printf(F&& fmt, T&&... values);
-
     /// Print on stream.
     template <typename F, typename... T>
     std::ostream&

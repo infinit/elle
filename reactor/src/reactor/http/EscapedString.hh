@@ -1,17 +1,16 @@
-#ifndef REACTOR_HTTP_ESCAPED_STRING_HH
-# define REACTOR_HTTP_ESCAPED_STRING_HH
+#pragma once
 
-# include <string>
+#include <string>
 
-# include <elle/attribute.hh>
-# include <elle/Printable.hh>
+#include <elle/attribute.hh>
+#include <elle/Printable.hh>
 
 namespace reactor
 {
   namespace http
   {
-    class EscapedString:
-      public elle::Printable
+    class EscapedString
+      : public elle::Printable
     {
       /*-------------.
       | Construction |
@@ -32,9 +31,6 @@ namespace reactor
       virtual
       void
       print(std::ostream& stream) const;
-
     };
   }
 }
-
-#endif

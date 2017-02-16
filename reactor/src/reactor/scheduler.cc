@@ -12,9 +12,9 @@
 
 #include <reactor/BackgroundOperation.hh>
 #include <reactor/backend/backend.hh>
-#if defined(REACTOR_CORO_BACKEND_IO)
+#if defined REACTOR_CORO_BACKEND_IO
 # include <reactor/backend/coro_io/backend.hh>
-#elif defined(REACTOR_CORO_BACKEND_BOOST_CONTEXT)
+#elif defined REACTOR_CORO_BACKEND_BOOST_CONTEXT
 # include <reactor/backend/boost_context/backend.hh>
 #endif
 #include <reactor/exception.hh>
@@ -23,7 +23,10 @@
 
 ELLE_LOG_COMPONENT("reactor.Scheduler");
 
-static auto const DBG = elle::os::inenv("REACTOR_SCHEDULER_DEBUG");
+namespace
+{
+  auto const DBG = elle::os::inenv("REACTOR_SCHEDULER_DEBUG");
+}
 
 namespace reactor
 {
@@ -88,20 +91,28 @@ namespace reactor
 
 #ifdef __clang__
 
-  static
-  std::unordered_map<std::thread::id, Scheduler*>&
-  _schedulers()
+  namespace
   {
-    static std::unordered_map<std::thread::id, Scheduler*> map;
-    return map;
-  }
+    auto&
+    _schedulers()
+    {
+      static std::unordered_map<std::thread::id, Scheduler*> map;
+      return map;
+    }
 
-  static
-  std::mutex&
-  _schedulers_mutex()
-  {
-    static std::mutex mutex;
-    return mutex;
+    std::mutex&
+    _schedulers_mutex()
+    {
+      static std::mutex mutex;
+      return mutex;
+    }
+
+    void
+    scheduler_set(Scheduler* v)
+    {
+      std::unique_lock<std::mutex> ulock(_schedulers_mutex());
+      _schedulers()[std::this_thread::get_id()] = v;
+    }
   }
 
   Scheduler*
@@ -111,22 +122,22 @@ namespace reactor
     return _schedulers()[std::this_thread::get_id()];
   }
 
-  static
-  void
-  scheduler(Scheduler* v)
-  {
-    std::unique_lock<std::mutex> ulock(_schedulers_mutex());
-    _schedulers()[std::this_thread::get_id()] = v;
-  }
-
 #else
 
-  static
-  Scheduler*&
-  _scheduler()
+  namespace
   {
-    static thread_local Scheduler* sched = nullptr;
-    return sched;
+    Scheduler*&
+    _scheduler()
+    {
+      static thread_local Scheduler* sched = nullptr;
+      return sched;
+    }
+
+    void
+    scheduler_set(Scheduler* v)
+    {
+      _scheduler() = v;
+    }
   }
 
   Scheduler*
@@ -135,12 +146,6 @@ namespace reactor
     return _scheduler();
   }
 
-  static
-  void
-  scheduler(Scheduler* v)
-  {
-    _scheduler() = v;
-  }
 
 #endif
 
@@ -197,12 +202,12 @@ namespace reactor
     PushScheduler(Scheduler* sched)
       : _previous(Scheduler::scheduler())
     {
-      reactor::scheduler(sched);
+      reactor::scheduler_set(sched);
     }
 
     ~PushScheduler()
     {
-      reactor::scheduler(this->_previous);
+      reactor::scheduler_set(this->_previous);
     }
 
     ELLE_ATTRIBUTE(Scheduler*, previous);
@@ -244,22 +249,24 @@ namespace reactor
     std::rethrow_exception(this->_eptr);
   }
 
-  static
-  std::ostream&
-  operator <<(std::ostream& output, Scheduler::Threads const& threads)
+  namespace
   {
-    bool first = true;
-    output << "[";
-    for (auto thread: threads)
+    std::ostream&
+    operator <<(std::ostream& output, Scheduler::Threads const& threads)
     {
-      if (first)
-        first = false;
-      else
-        output << ", ";
-      output << *thread;
+      bool first = true;
+      output << "[";
+      for (auto thread: threads)
+      {
+        if (first)
+          first = false;
+        else
+          output << ", ";
+        output << *thread;
+      }
+      output << "]";
+      return output;
     }
-    output << "]";
-    return output;
   }
 
   bool
@@ -400,9 +407,12 @@ namespace reactor
     thread.frozen()();
   }
 
-  static void
-  nothing()
-  {}
+  namespace
+  {
+    void
+    nothing()
+    {}
+  }
 
   void
   Scheduler::_thread_register(Thread& thread)
@@ -562,12 +572,15 @@ namespace reactor
     new Thread(*this, name, f, true);
   }
 
-  static void CallLaterHelper(Scheduler* sched,
-                              const std::function<void ()>& f,
-                              Duration delay)
+  namespace
   {
-    sched->current()->sleep(delay);
-    f();
+    void CallLaterHelper(Scheduler* sched,
+                         const std::function<void ()>& f,
+                         Duration delay)
+    {
+      sched->current()->sleep(delay);
+      f();
+    }
   }
 
   void
@@ -636,27 +649,26 @@ namespace reactor
   | Signals |
   `--------*/
 
-  static
-  void
-  signal_callback(reactor::Scheduler& sched,
-                  boost::asio::signal_set& set,
-                  std::function<void ()> const& handler,
-                  boost::system::error_code const& error,
-                  int)
-  {
-    if (error == boost::asio::error::operation_aborted)
-      return;
-    new reactor::Thread(sched, "signal handler", handler, true);
-    set.async_wait(std::bind(&signal_callback,
-                             std::ref(sched),
-                             std::ref(set),
-                             handler,
-                             std::placeholders::_1,
-                             std::placeholders::_2));
-  };
-
   namespace
   {
+    void
+    signal_callback(reactor::Scheduler& sched,
+                    boost::asio::signal_set& set,
+                    std::function<void ()> const& handler,
+                    boost::system::error_code const& error,
+                    int)
+    {
+      if (error == boost::asio::error::operation_aborted)
+        return;
+      new reactor::Thread(sched, "signal handler", handler, true);
+      set.async_wait(std::bind(&signal_callback,
+                               std::ref(sched),
+                               std::ref(set),
+                               handler,
+                               std::placeholders::_1,
+                               std::placeholders::_2));
+    }
+
     std::string signal_string(int const signal)
     {
 #ifdef INFINIT_WINDOWS
@@ -825,9 +837,9 @@ namespace reactor
 | Standdard library overrides |
 `----------------------------*/
 
-#if !defined(INFINIT_LINUX) && !defined(INFINIT_ANDROID)      \
-    && !defined(INFINIT_WINDOWS) && !defined(INFINIT_MACOSX)  \
-    && !defined(INFINIT_IOS)
+#if !defined INFINIT_LINUX && !defined INFINIT_ANDROID      \
+    && !defined INFINIT_WINDOWS && !defined INFINIT_MACOSX  \
+    && !defined INFINIT_IOS
 # error "Unsupported platform"
 #endif
 
@@ -844,27 +856,30 @@ namespace reactor
 #endif
 
 /* Override _cxa_get_globals from libc++/libstdc++
-* which uses TLS.
-* Add a per-scheduler-thread entry. Otherwise, std::current_exception leaks
-* between coroutines.
-*/
+ * which uses TLS.
+ * Add a per-scheduler-thread entry. Otherwise, std::current_exception leaks
+ * between coroutines.
+ */
 
-typedef std::unordered_map<std::thread::id,
-  std::unique_ptr<__cxxabiv1::__cxa_eh_globals>> CXAThreadMap;
+using CXAThreadMap = std::unordered_map<std::thread::id,
+  std::unique_ptr<__cxxabiv1::__cxa_eh_globals>>;
 
-static
-CXAThreadMap&
-cxa_thread_map()
+namespace
 {
-  static CXAThreadMap _cxa_thread_map;
-  return _cxa_thread_map;
+  CXAThreadMap&
+  cxa_thread_map()
+  {
+    static CXAThreadMap _cxa_thread_map;
+    return _cxa_thread_map;
+  }
 }
 
 namespace __cxxabiv1
 {
   extern "C"
   {
-    __cxa_eh_globals * __cxa_get_globals() THROW_SPEC
+    __cxa_eh_globals *
+    __cxa_get_globals() THROW_SPEC
     {
       // Always fetch the map to avoid static initialization fiascos.
       CXAThreadMap& map = cxa_thread_map();
@@ -888,7 +903,9 @@ namespace __cxxabiv1
       return ceg;
     }
 
-    __cxa_eh_globals * __cxa_get_globals_fast() THROW_SPEC {
+    __cxa_eh_globals *
+    __cxa_get_globals_fast() THROW_SPEC
+    {
       return __cxa_get_globals();
     }
   }

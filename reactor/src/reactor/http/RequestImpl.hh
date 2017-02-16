@@ -1,16 +1,15 @@
-#ifndef REACTOR_HTTP_REQUEST_REQUEST_IMPL_HH
-# define REACTOR_HTTP_REQUEST_REQUEST_IMPL_HH
+#pragma once
 
-# include <queue>
-# include <string>
+#include <queue>
+#include <string>
 
-# include <elle/Buffer.hh>
-# include <elle/memory.hh>
+#include <elle/Buffer.hh>
+#include <elle/memory.hh>
 
-# include <reactor/Barrier.hh>
-# include <reactor/http/fwd.hh>
-# include <reactor/http/Request.hh>
-# include <reactor/signal.hh>
+#include <reactor/Barrier.hh>
+#include <reactor/http/fwd.hh>
+#include <reactor/http/Request.hh>
+#include <reactor/signal.hh>
 
 namespace reactor
 {
@@ -170,5 +169,3 @@ namespace reactor
     };
   }
 }
-
-#endif

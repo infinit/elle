@@ -48,8 +48,8 @@ namespace reactor
 
   Thread::Thread(std::string const& name,
                  Action action,
-                 bool dispose):
-    Thread(reactor::scheduler(), name, std::move(action), dispose)
+                 bool dispose)
+    : Thread(reactor::scheduler(), name, std::move(action), dispose)
   {}
 
   ThreadPtr
@@ -65,7 +65,7 @@ namespace reactor
                        const std::string& name,
                        Action action)
   {
-    ThreadPtr res = std::make_shared<Thread>(
+    auto res = std::make_shared<Thread>(
       scheduler, name, std::move(action));
     res->_self = res;
     return res;
@@ -162,13 +162,12 @@ namespace reactor
   {
     try
     {
-      if (this->_exception)
+      if (auto e = this->_exception)
       {
         ELLE_TRACE("%s: wrapper: re-raise exception: %s",
-                   *this, elle::exception_string(this->_exception));
-        std::exception_ptr tmp = this->_exception;
+                   *this, elle::exception_string(e));
         this->_exception = std::exception_ptr{};
-        std::rethrow_exception(tmp);
+        std::rethrow_exception(e);
       }
       action();
     }

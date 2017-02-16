@@ -2,6 +2,7 @@
 
 #include <elle/log.hh>
 
+#include <reactor/network/exception.hh>
 #include <reactor/network/unix-domain-socket.hh>
 
 ELLE_LOG_COMPONENT("reactor.network.UnixDomainSocket");
@@ -38,9 +39,20 @@ namespace reactor
     void
     UnixDomainServer::listen(boost::filesystem::path const& path)
     {
-      this->listen(
-        boost::asio::local::stream_protocol::endpoint(path.string()));
-      this->_endpoint_path = path;
+      try
+      {
+        this->listen(
+          boost::asio::local::stream_protocol::endpoint(path.string()));
+        this->_endpoint_path = path;
+      }
+      catch (boost::system::system_error& e)
+      {
+        auto message =
+          elle::sprintf("unable to listen on %s: %s", path, e.what());
+        if (e.code() == boost::asio::error::name_too_long)
+          throw InvalidEndpoint(message);
+        throw Exception(message);
+      }
     }
 
     UnixDomainServer::EndPoint

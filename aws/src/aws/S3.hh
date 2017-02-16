@@ -224,6 +224,9 @@ namespace aws
       std::function<void(AWSException const&, bool will_retry)> ErrorCallback;
     ELLE_ATTRIBUTE_RW(ErrorCallback, on_error);
   };
+
+  std::string
+  uri_encode(std::string const& input, bool encodeSlash);
 }
 
 #endif

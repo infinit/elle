@@ -28,7 +28,7 @@ _test_represent()
       K.serialize(output);
     }
 
-    elle::printf("[representation 1] %s\n", stream.str());
+    elle::fprintf(std::cout, "[representation 1] %s\n", stream.str());
   }
 
   // 2)
@@ -41,7 +41,7 @@ _test_represent()
       output.serialize("signature", signature);
     }
 
-    elle::printf("[representation 2] %s\n", stream.str());
+    elle::fprintf(std::cout, "[representation 2] %s\n", stream.str());
   }
 }
 

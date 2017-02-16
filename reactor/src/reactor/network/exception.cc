@@ -22,6 +22,10 @@ namespace reactor
       : Super(message)
     {}
 
+    InvalidEndpoint::InvalidEndpoint(std::string const& message)
+      : Super(message)
+    {}
+
     ConnectionClosed::ConnectionClosed()
       : Super("connection closed")
     {}

@@ -1,6 +1,9 @@
 #include <elle/bytes.hh>
 
+#include <cmath>
+
 #include <elle/printf.hh>
+#include <elle/unreachable.hh>
 
 namespace elle
 {
@@ -20,7 +23,7 @@ namespace elle
     auto scale = si ? 1000. : 1024.;
     auto const& unit = si ? engineer : computer;
     for (uint64_t i = 0; i < size; ++i)
-      if (i == size - 1 || bytes / pow(scale, i+1) < 1)
+      if (i == size - 1 || bytes / std::pow(scale, i+1) < 1)
         return elle::sprintf("%.1f %s", bytes / pow(scale, i), unit[i]);
     elle::unreachable();
   }

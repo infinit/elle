@@ -1,15 +1,11 @@
 #pragma once
 
-#include <ostream>
+#include <iosfwd>
 #include <typeinfo>
 
 #include <boost/format.hpp>
 
-#include <elle/Backtrace.hh>
-#include <elle/Exception.hh>
 #include <elle/TypeInfo.hh>
-#include <elle/assert.hh>
-#include <elle/log.hh>
 
 // Work around Clang 3.5.0 bug where having this helper in the elle namespace
 // will find a << overload for elle::serialization::Serializer::SerializerIn
@@ -166,6 +162,15 @@ namespace elle
         fmt % "nullptr";
     }
 
+    template <typename R, typename ... Args>
+    void
+    feed(boost::format& fmt, R (*value)(Args...))
+    {
+      // FIXME: we could print more, but it would complexify this header quite a
+      // bit.
+      fmt % "<function>";
+    }
+
     /// Create, feed and return a boost::format.
     template <typename F, typename ... T>
     boost::format
@@ -208,13 +213,6 @@ namespace elle
       {
         format_error(fmt, e);
       }
-    }
-
-    template <typename F, typename ... T>
-    std::ostream&
-    printf(F&& fmt, T&& ... values)
-    {
-      return fprintf(std::cout, std::forward<F>(fmt), std::forward<T>(values) ...);
     }
   }
 }

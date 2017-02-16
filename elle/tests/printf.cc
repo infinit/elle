@@ -88,6 +88,18 @@ boolean()
   BOOST_CHECK_EQUAL(elle::sprintf("%s %s", true, false), "true false");
 }
 
+static
+void
+foo(int, float)
+{}
+
+static
+void
+function_pointer()
+{
+  BOOST_CHECK_EQUAL(elle::sprintf("%s", &foo), "<function>");
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -100,4 +112,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(too_many));
   suite.add(BOOST_TEST_CASE(no_param));
   suite.add(BOOST_TEST_CASE(boolean));
+  suite.add(BOOST_TEST_CASE(function_pointer));
 }

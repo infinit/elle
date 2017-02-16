@@ -1,21 +1,18 @@
-#ifndef ELLE_SYSTEM_SYSTEM_HH
-# define ELLE_SYSTEM_SYSTEM_HH
+#pragma once
 
-# include <boost/filesystem.hpp>
+#include <boost/filesystem.hpp>
 
-# include <elle/Buffer.hh>
-# include <elle/types.hh>
+#include <elle/Buffer.hh>
+#include <elle/types.hh>
 
-# include <elle/system/platform.hh>
+#include <elle/system/platform.hh>
 
 namespace elle
 {
-
   /// This namespace contains system-related stuff especially useful
   /// when it comes to portability.
   namespace system
   {
-
     /*-------------.
     | Enumerations |
     `-------------*/
@@ -80,9 +77,9 @@ namespace elle
       read(uint64_t file_offset, uint64_t size);
     private:
 #ifdef INFINIT_WINDOWS
-    typedef HANDLE NativeHandle;
+    using NativeHandle = HANDLE;
 #else
-    typedef int NativeHandle;
+     using NativeHandle = int;
 #endif
       NativeHandle _handle;
       static NativeHandle _invalid;
@@ -91,5 +88,3 @@ namespace elle
 
   }
 }
-
-#endif

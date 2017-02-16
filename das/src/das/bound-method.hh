@@ -43,7 +43,7 @@ namespace das
     ELLE_ATTRIBUTE_R(O&, object);
   };
 
-  template <typename O, typename S>
+  template <typename S, typename O>
   BoundMethod<O, S>
   bind_method(O& o)
   {
@@ -52,7 +52,7 @@ namespace das
 
   template <typename O, typename S>
   BoundMethod<O, S>
-  bind_method(O& o, S&)
+  bind_method(O& o, S const&)
   {
     return {o};
   }

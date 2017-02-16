@@ -1,9 +1,8 @@
-#ifndef REACTOR_HTTP_EXCEPTIONS_HH
-# define REACTOR_HTTP_EXCEPTIONS_HH
+#pragma once
 
-# include <elle/Error.hh>
+#include <elle/Error.hh>
 
-# include <reactor/duration.hh>
+#include <reactor/duration.hh>
 
 namespace reactor
 {
@@ -14,7 +13,7 @@ namespace reactor
       public elle::Error
     {
     public:
-      typedef elle::Error Super;
+      using Super = elle::Error;
       RequestError(std::string const& url,
                    std::string const& error);
     private:
@@ -27,7 +26,7 @@ namespace reactor
       public RequestError
     {
     public:
-      typedef RequestError Super;
+      using Super = RequestError;
       EmptyResponse(std::string const& url);
     };
 
@@ -36,7 +35,7 @@ namespace reactor
       public RequestError
     {
     public:
-      typedef RequestError Super;
+      using Super = RequestError;
       Timeout(std::string const& url,
               reactor::Duration const& timeout);
       ELLE_ATTRIBUTE_R(reactor::Duration, timeout);
@@ -47,10 +46,9 @@ namespace reactor
       public RequestError
     {
     public:
-      typedef RequestError Super;
+      using Super = RequestError;
       ResolutionFailure(std::string const& url);
     };
   }
 }
 
-#endif

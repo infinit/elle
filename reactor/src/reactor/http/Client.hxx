@@ -1,6 +1,3 @@
-#ifndef REACTOR_HTTP_CLIENT_HXX
-# define REACTOR_HTTP_CLIENT_HXX
-
 namespace reactor
 {
   namespace http
@@ -15,5 +12,3 @@ namespace reactor
     }
   }
 }
-
-#endif

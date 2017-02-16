@@ -10,6 +10,7 @@
 #endif
 
 #include <cstdlib>
+#include <cstring>
 
 #ifdef environ
 # undef environ

@@ -70,7 +70,7 @@ namespace das
       OptionValueError(std::string option,
                        std::string value,
                        std::string message)
-        : Error(elle::sprintf("invalid value \"%s\" for option %s: %s",
+        : Error(elle::sprintf("invalid value \"%s\" for option --%s: %s",
                               value, option, message))
         , OptionError(option)
         , ValueError(value)
@@ -86,7 +86,7 @@ namespace das
     {                                                                   \
     public:                                                             \
       Name ## Option(std::string option)                                \
-        : Error(elle::sprintf(Description ": %s", option))              \
+        : Error(elle::sprintf(Description ": --%s", option))            \
         , OptionError(option)                                           \
       {}                                                                \
     }                                                                   \
@@ -152,6 +152,19 @@ namespace das
 
     namespace _details
     {
+      inline
+      std::string
+      strip_dashes(std::string const& a)
+      {
+        auto s = a.size();
+        if (s == 2 && a[0] == '-' && std::isalpha(a[1]))
+          return a.substr(1);
+        else if (2 < a.size() && a[0] == '-' && a[1] == '-')
+          return a.substr(2);
+        else
+          return a;
+      }
+
       class IsOption
       {
       public:
@@ -213,6 +226,7 @@ namespace das
 
     namespace _details
     {
+      /// A value not found on the CLI
       template <typename Default = void>
       class Value
       {
@@ -222,8 +236,6 @@ namespace das
 
         ELLE_LOG_COMPONENT("das.cli");
 
-        /// A value not found on the CLI, built from its default
-        /// value.
         Value(std::conditional_t<default_has, Default, int> const& d,
               std::string option,
               bool positional,
@@ -231,35 +243,27 @@ namespace das
               std::vector<std::string> value,
               int& remaining,
               bool set)
-          : _default(d)
+          : _def(d)
           , _option(std::move(option))
           , _values(std::move(value))
+          , _flag(false)
           , _positional(positional)
           , _args(args)
-          , _flag(false)
           , _remaining(remaining)
           , _set(set)
         {}
 
-        /// A value found on the CLI, taking its value from there.
+        /// A value not found on the CLI.
         Value(std::conditional_t<default_has, Default, int> const& d,
               std::string option,
               bool positional,
               std::vector<std::string>& args,
-              bool flag,
               int& remaining,
               bool set)
-          : _default(d)
-          , _option(std::move(option))
-          , _values()
-          , _positional(positional)
-          , _args(args)
-          , _flag(flag)
-          , _remaining(remaining)
-          , _set(set)
-        {}
-
-        std::conditional_t<default_has, Default, int> const& _default;
+          : Value(d, std::move(option), positional, args, {}, remaining, set)
+        {
+          this->_flag = true;
+        }
 
         template <typename I>
         static
@@ -360,7 +364,15 @@ namespace das
         }
 
         template <typename T>
-        std::enable_if_t<!default_has, T>
+        std::enable_if_t<default_has, T>
+        missing() const
+        {
+          ELLE_TRACE("use default value: %s", this->_def);
+          return this->_def;
+        }
+
+        template <typename T>
+        std::enable_if_t<!default_has && !std::is_same<T, bool>::value, T>
         missing() const
         {
           ELLE_TRACE("raise missing error");
@@ -368,24 +380,37 @@ namespace das
         }
 
         template <typename T>
-        std::enable_if_t<default_has, T>
+        std::enable_if_t<!default_has && std::is_same<T, bool>::value, bool>
         missing() const
         {
-          ELLE_TRACE("use default value: %s", this->_default);
-          return this->_default;
+          return false;
         }
 
         template <typename I>
         I
         convert() const
         {
+          if (this->_flag)
+            throw OptionValueError(this->_option, "true", "unexpected flag");
           if (this->_values.empty())
           {
-            if (this->_positional && !this->_args.empty())
+            if (this->_positional)
             {
-              ELLE_TRACE("use next positional value: %s", *this->_args.begin());
-              this->_values.emplace_back(std::move(*this->_args.begin()));
-              this->_args.erase(this->_args.begin());
+              auto it = this->_args.begin();
+              while (it != this->_args.end() && is_option(*it))
+              {
+                ++it;
+                if (it != this->_args.end())
+                  ++it;
+              }
+              if (it != this->_args.end())
+              {
+                ELLE_TRACE("use next positional value: %s", *it);
+                this->_values.emplace_back(std::move(*it));
+                it = this->_args.erase(it);
+              }
+              else
+                return this->missing<I>();
             }
             else
               return this->missing<I>();
@@ -398,7 +423,6 @@ namespace das
         template <typename I>
         operator I() const
         {
-          static_assert(!std::is_same<std::decay_t<I>, bool>::value, "");
           ELLE_TRACE_SCOPE(
             "convert %s to %s", this->_option, elle::type_info<I>());
           auto res = this->convert<I>();
@@ -409,11 +433,9 @@ namespace das
         operator bool() const
         {
           ELLE_TRACE_SCOPE("convert %s to boolean", this->_option);
-          bool res;
-          if (this->_values.empty())
-            res = this->_flag;
-          else
-            res = this->convert<bool>();
+          if (this->_flag)
+            return true;
+          auto res = this->convert<bool>();
           this->_check_remaining();
           return res;
         }
@@ -453,19 +475,22 @@ namespace das
         {
           if (!--this->_remaining && !this->_args.empty())
           {
-            if (is_option(*this->_args.begin()))
-              throw UnknownOption(*this->_args.begin());
+            auto const& arg = *this->_args.begin();
+            if (is_option(arg))
+              throw UnknownOption(strip_dashes(arg));
             else
-              throw UnrecognizedValue(*this->_args.begin());
+              throw UnrecognizedValue(arg);
           }
         }
 
       private:
+        ELLE_ATTRIBUTE_R(
+          (std::conditional_t<default_has, Default, int> const&), def);
         ELLE_ATTRIBUTE_R(std::string, option);
         ELLE_ATTRIBUTE_R(std::vector<std::string>, values, mutable);
+        ELLE_ATTRIBUTE_R(bool, flag);
         ELLE_ATTRIBUTE(bool, positional);
         ELLE_ATTRIBUTE(std::vector<std::string>&, args);
-        ELLE_ATTRIBUTE(bool, flag);
         ELLE_ATTRIBUTE(int&, remaining);
         /// Whether was explicit set on the command line.
         ELLE_ATTRIBUTE_R(bool, set);
@@ -475,57 +500,30 @@ namespace das
       std::ostream&
       operator <<(std::ostream& out, Value<Default> const& v)
       {
-        elle::fprintf(out, "Value(\"%s\", %s, %s)",
-                      v.option(), v.values(), v.set() ? "explicit" : "implicit");
+        elle::fprintf(
+          out, "Value(\"%s\", %s%s, %s)",
+          v.option(),
+          v.values(),
+          Value<Default>::default_has ?
+            elle::sprintf(", %s", v.def()) : std::string(""),
+          v.set() ? "explicit" : "implicit");
         return out;
       }
-    }
 
-    namespace _details
-    {
-      template <typename ... Formals>
-      struct CLI;
-
-      template <>
-      struct CLI<>
+      template <typename Default, typename Formal>
+      struct parse_arg
       {
-        ELLE_LOG_COMPONENT("das.cli");
-        template <typename F,
-                  typename ... Formals,
-                  typename ... Parsed>
-        static
+        using Symbol = das::named::make_formal<Formal>;
+        using V = typename std::conditional_t<
+          Default::has, Default, std::identity<void>>::type;
+        static inline
         auto
-        value(das::named::Prototype<Formals...> const& p,
-              F const& f,
-              std::tuple<Parsed...> parsed,
-              std::vector<std::string>& args,
-              Options const& opts,
-              int&)
-        {
-          if (!args.empty())
-            ELLE_TRACE("remaining positional arguments: %s", args);
-          ELLE_TRACE("call %s%s", f, parsed)
-            return forward_tuple(f, std::move(parsed));
-        }
-      };
-
-      template <typename Head, typename ... Tail>
-      struct CLI<Head, Tail...>
-      {
-        ELLE_LOG_COMPONENT("das.cli");
-        template <typename F,
-                  typename ... Formals,
-                  typename ... Parsed>
-        static
-        auto
-        value(das::named::Prototype<Formals...> const& p,
-              F const& f,
-              std::tuple<Parsed...> parsed,
+        value(Default const& d,
               std::vector<std::string>& args,
               Options const& opts,
               int& counter)
         {
-          using Formal = das::named::make_formal<Head>;
+          ELLE_LOG_COMPONENT("das.cli");
           bool flag = false;
           bool pos = false;
           bool set = false;
@@ -535,209 +533,219 @@ namespace das
                 return is_option(arg);
               });
           };
-          auto v = [&] {
-            ELLE_TRACE_SCOPE("parsing option %s", Head::name());
-            for (auto it = next_option(args.begin()); it != args.end();
-                 it = next_option(it))
+          ELLE_TRACE_SCOPE("parsing option %s", Symbol::name());
+          ELLE_DUMP("remaining arguments: %s", args);
+          for (auto it = next_option(args.begin()); it != args.end();
+               it = next_option(it))
+          {
+            // There's a possible explicit argument after `=`.
+            auto const eq = it->find('=');
+            auto const option = it->substr(0, eq);
+            auto o = is_option(option, opts);
+            assert(o);
+            if (o.template is<Formal>(opts))
+            {
+              // This is the option we are looking for.
+              set = true;
+              auto argument_set = [&](auto const& arg) {
+                ELLE_DEBUG(
+                  "found \"%s\" on the command line with argument \"%s\"",
+                  option, arg);
+                if (flag)
+                  throw MixedOption(Symbol::name());
+                value.emplace_back(arg);
+              };
+              if (eq == it->npos)
               {
-                // There's a possible explicit argument after `=`.
-                auto const eq = it->find('=');
-                auto const option = it->substr(0, eq);
-                auto o = is_option(option, opts);
-                assert(o);
-                if (o.template is<Head>(opts))
+                // `--foo`: no `=`.
+                it = args.erase(it);
+                if (it != args.end() && !is_option(*it, opts))
                 {
-                  // This is the option we are looking for.
-                  set = true;
-                  auto argument_set = [&](auto const& arg) {
-                    ELLE_DEBUG(
-                      "found \"%s\" on the command line with argument \"%s\"",
-                      option, arg);
-                    if (flag)
-                      throw MixedOption(Head::name());
-                    value.emplace_back(arg);
-                  };
-                  if (eq == it->npos)
-                  {
-                    // `--foo`: no `=`.
-                    it = args.erase(it);
-                    if (it != args.end() && !is_option(*it, opts))
-                    {
-                      argument_set(*it);
-                      it = args.erase(it);
-                    }
-                    else
-                    {
-                      ELLE_DEBUG("found \"%s\" on the command line", *it);
-                      if (!value.empty())
-                        throw MixedOption(Head::name());
-                      if (flag)
-                        throw DuplicateOption(Head::name());
-                      flag = true;
-                    }
-                  }
-                  else
-                  {
-                    // `--foo=bar`: explicit argument.
-                    argument_set(it->substr(eq + 1));
-                    it = args.erase(it);
-                  }
+                  argument_set(*it);
+                  it = args.erase(it);
                 }
                 else
                 {
-                  // Skip option and potential argument
-                  ++it;
-                  if (it != args.end() && !is_option(*it, opts))
-                    ++it;
+                  ELLE_DEBUG("found \"%s\" on the command line", *it);
+                  if (!value.empty())
+                    throw MixedOption(Symbol::name());
+                  if (flag)
+                    throw DuplicateOption(Symbol::name());
+                  flag = true;
                 }
               }
-            elle::meta::static_if<std::is_base_of<CLI_Symbol, Formal>::value>(
-              [] (auto& pos, auto t)
+              else
               {
-                pos = decltype(t)::type::positional();
-              })(pos, elle::meta::Identity<Formal>());
-            {
-              auto it = opts.find(Head::name());
-              if (it != opts.end())
-                pos = it->second.positional;
+                // `--foo=bar`: explicit argument.
+                argument_set(it->substr(eq + 1));
+                it = args.erase(it);
+              }
             }
-            using DefaultStore =
-              typename das::named::Prototype<Formals...>::DefaultStore;
-            using Default = named::DefaultFor<true, Head>;
-            static bool constexpr default_has =
-              std::is_base_of<Default, DefaultStore>::value;
-            auto res = elle::meta::static_if<default_has>(
-              [&] (auto head, auto def)
+            else
+            {
+              // Skip option and potential argument
+              ++it;
+              if (it != args.end() && !is_option(*it, opts))
+                ++it;
+            }
+          }
+          elle::meta::static_if<std::is_base_of<CLI_Symbol, Symbol>::value>(
+            [] (auto& pos, auto t)
+            {
+              pos = decltype(t)::type::positional();
+            })(pos, elle::meta::Identity<Symbol>());
+          {
+            auto it = opts.find(Symbol::name());
+            if (it != opts.end())
+              pos = it->second.positional;
+          }
+          return elle::meta::static_if<Default::has>(
+            [&] (auto const& d)
+            {
+              using V = Value<
+                typename std::remove_cv_reference_t<decltype(d)>::type>;
+              if (flag)
+                return V(d.value, Symbol::name(), pos, args, counter, set);
+              else
               {
-                using Default = typename decltype(def)::type;
-                using V = Value<typename Default::Type>;
-                if (flag)
-                  return V(p.defaults.Default::value, Head::name(), pos, args,
-                           true, counter, set);
-                else
-                {
-                  if (value.empty())
-                    ELLE_DEBUG(
-                      "no occurences, default value is %s",
-                      p.defaults.Default::value);
-                  return V(p.defaults.Default::value, Head::name(), pos, args,
-                           std::move(value), counter, set);
-                }
-              },
-              [&] (auto head, auto)
+                if (value.empty())
+                  ELLE_DEBUG("no occurences, default value is %s", d.value);
+                return V(d.value, Symbol::name(), pos, args,
+                         std::move(value), counter, set);
+              }
+            },
+            [&] (auto)
+            {
+              using V = Value<void>;
+              if (flag)
+                return V(0, Symbol::name(), pos, args, {"true"}, counter, set);
+              else
               {
-                using V = Value<void>;
-                if (flag)
-                  return V(0, Head::name(), pos, args, true, counter, set);
-                else
-                {
-                  if (value.empty())
-                    ELLE_DEBUG("no occurences and no default value");
-                  return V(0, Head::name(), pos, args,
-                           std::move(value), counter, set);
-                }
-              })(elle::meta::Identity<Head>{},
-                 elle::meta::Identity<Default>{});
-            ELLE_DEBUG("return: %s", res);
-            return res;
-          }();
-          return CLI<Tail...>::value(
-            p,
-            f,
-            std::tuple_cat(std::move(parsed), std::make_tuple(std::move(v))),
-            args,
-            opts,
-            counter);
+                if (value.empty())
+                  ELLE_DEBUG("no occurences and no default value");
+                return V(0, Symbol::name(), pos, args,
+                         std::move(value), counter, set);
+              }
+            })(d);
         }
       };
     }
 
-    template <typename F, typename ... Formals>
+    template <typename F, typename ... Formals, typename ... Raw>
     auto
     _call(das::named::Prototype<Formals...> const& p,
           F const& f,
           std::vector<std::string>& args,
+          Raw&& ... raw,
           Options const& opts = Options())
     {
+      ELLE_LOG_COMPONENT("das.cli");
       int counter = sizeof ... (Formals);
-      return _details::CLI<std::remove_cv_reference_t<Formals>...>::value(
-        p, f, std::tuple<>(), args, opts, counter);
+      return f(
+        _details::parse_arg<
+          typename named::DefaultStore<Formals...>::
+            template default_for<std::remove_cv_reference_t<Formals>>,
+          std::remove_cv_reference_t<Formals>>::value(
+            p.defaults, args, opts, counter)..., std::forward<Raw>(raw)...);
     }
 
-    template <typename F, typename ... Formals>
+    template <typename F,
+              typename ... Formals,
+              typename ... Raw>
     auto
     call(das::named::Prototype<Formals...> const& p,
          F const& f,
          std::vector<std::string>& args,
+         Raw&& ... raw,
          Options const& opts = Options())
     {
-      return _call(p, f, args, opts);
+      return _call(p, f, args, std::forward<Raw>(raw)..., opts);
     }
 
-    template <typename F, typename ... Formals, typename ... Args>
+    template <typename F,
+              typename ... Formals,
+              typename ... Args,
+              typename ... Raw>
     auto
     call(das::named::Prototype<Formals...> const& p,
          F const& f,
          std::vector<std::string> const& args,
+         Raw&& ... raw,
          Options const& opts = Options())
     {
       auto copy = args;
-      return _call(p, f, copy, opts);
+      return _call(p, f, copy, std::forward<Raw>(raw)..., opts);
     }
 
-    template <typename ... T>
+    template <typename ... T,
+              typename ... Raw>
     auto
     call(named::Function<T...> const& f,
          std::vector<std::string>& args,
+         Raw&& ... raw,
          Options const& opts = Options())
     {
-      return _call(f.prototype(), f.function(), args, opts);
+      return _call(f.prototype(), f.function(), args,
+                   std::forward<Raw>(raw)..., opts);
     }
 
-    template <typename ... T>
+    template <typename ... T,
+              typename ... Raw>
     auto
     call(named::Function<T...> const& f,
          std::vector<std::string> const& args,
+         Raw&& ... raw,
          Options const& opts = Options())
     {
       std::vector<std::string> copy = args;
-      return _call(f.prototype(), f.function(), copy, opts);
+      return _call(f.prototype(), f.function(), copy,
+                   std::forward<Raw>(raw)..., opts);
     }
 
+    inline
     void
     print_help(std::ostream& s,
                std::string const& name,
                bool with_argument,
                char short_name = 0,
-               std::string const& help = {});
+               std::string const& help = {})
+    {
+      if (short_name)
+        elle::fprintf(s, "  -%s, ", short_name);
+      else
+        elle::fprintf(s, "      ");
+      elle::fprintf(s, "--%-18s",
+                    das::cli::option_name_from_c(name)
+                    + (with_argument ? " arg" : ""));
+      if (!help.empty())
+        elle::fprintf(s, "  %s", help);
+    }
 
-    template <typename Symbol, typename Defaults>
+    template <typename Formal, typename Default>
     struct help_map
     {
       using type = bool;
       static
       bool
-      value(std::ostream& s, Options const& opts, Defaults const& defaults)
+      value(std::ostream& s, Options const& opts, Default const& def)
       {
-        using Formal = das::named::make_formal<Symbol>;
-        // Whether has a default value.
-        constexpr auto has_default = Defaults::template default_for<Formal>::has;
+        using Symbol = das::named::make_formal<Formal>;
         // Whether expects an argument.
         bool with_argument
-          = elle::meta::static_if<has_default>
-          ([&s] (auto const& defaults)
+          = elle::meta::static_if<Default::has>
+          ([&s] (auto const& def)
            {
-             auto const& v = defaults.Symbol::ByConstRef::value;
+             auto const& v = def.value;
              return !std::is_same<decltype(v), bool const&>::value;
            },
            [] (auto const&)
            {
              return true;
-           })(defaults);
+           })(def);
         // Print the option's help string.
         auto opt = opts.find(Symbol::name());
         if (opt == opts.end())
-          elle::meta::static_if<std::is_base_of<CLI_Symbol, Formal>::value>(
+          elle::meta::static_if<std::is_base_of<CLI_Symbol, Symbol>::value>(
             [&s, &with_argument] (auto formal) {
               using formal_t = typename decltype(formal)::type;
               print_help(s,
@@ -747,43 +755,62 @@ namespace das
             [&s, &with_argument] (auto formal) {
               using formal_t = typename decltype(formal)::type;
               print_help(s, option_name_from_c(formal_t::name()), with_argument);
-            })(elle::meta::Identity<Formal>{});
+            })(elle::meta::Identity<Symbol>{});
         else
           print_help(s, Symbol::name(), with_argument,
                      opt->second.short_name, opt->second.help);
-        elle::meta::static_if<has_default>
-          ([&s, &with_argument] (auto const& defaults)
+        elle::meta::static_if<Default::has>
+          ([&s, &with_argument] (auto const& def)
            {
-             auto const& v = defaults.Symbol::ByConstRef::value;
+             auto const& v = def.value;
              if (!std::is_same<decltype(v), bool const&>::value
                  && !std::is_same<decltype(v), boost::none_t const&>::value)
                elle::fprintf(s, " (default: %s)", v);
-           })(defaults);
+           })(def);
         elle::fprintf(s, "\n");
         return true;
       }
     };
 
     template <typename ... T>
-    void
-    help(named::Prototype<T...> const& f,
-         std::ostream& s,
-         Options const& opts = Options())
+    class Help:
+      public elle::Printable::as<Help<T ...>>
     {
-      elle::meta::List<T...>::template map<
-        help_map, typename named::Prototype<T...>::DefaultStore>::value(
-          s, opts, f.defaults);
+    public:
+      Help(named::Prototype<T...> const& p,
+           Options const& opts = Options())
+        : _prototype(p)
+        , _options(opts)
+      {}
+
+      template <typename>
+      using make_bool = bool;
+
+      void
+      print(std::ostream& s) const
+      {
+        std::tuple<make_bool<T>...>{
+          help_map<T, typename named::Prototype<T...>::DefaultStore::template default_for<T>>::value(
+            s, this->_options, this->_prototype.defaults)...
+        };
+      }
+
+      ELLE_ATTRIBUTE(das::named::Prototype<T...> const&, prototype);
+      ELLE_ATTRIBUTE(Options, options);
+    };
+
+    template <typename ... T>
+    auto
+    help(named::Prototype<T...> const& p, Options const& opts = Options())
+    {
+      return Help<T...>(p, opts);
     }
 
-    template <typename F, typename ... T>
-    void
-    help(named::Function<F, T...> const& f,
-         std::ostream& s,
-         Options const& opts = Options())
+    template <typename ... T>
+    auto
+    help(named::Function<T...> const& f, Options const& opts = Options())
     {
-      elle::meta::List<T...>::
-        template map<help_map, named::DefaultStore<T...>>::value(
-          s, opts, f.prototype().defaults);
+      return help(f.prototype(), opts);
     }
   }
 }

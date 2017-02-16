@@ -28,7 +28,7 @@ test_represent_n(std::string const& key)
       output.serialize("digest", digest);
     }
 
-    elle::printf("[representation %s] %s\n", N, stream.str());
+    elle::fprintf(std::cout, "[representation %s] %s\n", N, stream.str());
   }
 }
 

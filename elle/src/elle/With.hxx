@@ -1,7 +1,8 @@
 #include <utility>
 
-#include <elle/log.hh>
+#include <elle/Exception.hh>
 #include <elle/assert.hh>
+#include <elle/log.hh>
 #include <elle/log.hh>
 
 namespace elle

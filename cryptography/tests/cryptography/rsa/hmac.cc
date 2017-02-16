@@ -30,7 +30,7 @@ test_represent_n(infinit::cryptography::rsa::PrivateKey const& k)
       output.serialize("digest", digest);
     }
 
-    elle::printf("[representation %s] %s\n", N, stream.str());
+    elle::fprintf(std::cout, "[representation %s] %s\n", N, stream.str());
   }
 }
 
@@ -54,7 +54,7 @@ test_represent()
     infinit::cryptography::rsa::PublicKey K = keypair.K();
     K.serialize(output);
   }
-  elle::printf("[representation 0] %s\n", stream.str());
+  elle::fprintf(std::cout, "[representation 0] %s\n", stream.str());
 
   // MD5.
   test_represent_n<1, infinit::cryptography::Oneway::md5>(keypair.k());

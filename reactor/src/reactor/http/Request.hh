@@ -1,22 +1,22 @@
-#ifndef REACTOR_HTTP_REQUEST_HH
-# define REACTOR_HTTP_REQUEST_HH
+#pragma once
 
-# include <string>
+#include <string>
+#include <unordered_map>
 
-# include <boost/asio.hpp>
-# include <boost/signals2.hpp>
+#include <boost/asio.hpp>
+#include <boost/signals2.hpp>
 
-# include <elle/Buffer.hh>
-# include <elle/IOStream.hh>
-# include <elle/Printable.hh>
-# include <elle/attribute.hh>
+#include <elle/Buffer.hh>
+#include <elle/IOStream.hh>
+#include <elle/Printable.hh>
+#include <elle/attribute.hh>
 
-# include <reactor/http/fwd.hh>
-# include <reactor/http/Method.hh>
-# include <reactor/http/StatusCode.hh>
-# include <reactor/http/Version.hh>
-# include <reactor/network/proxy.hh>
-# include <reactor/operation.hh>
+#include <reactor/http/fwd.hh>
+#include <reactor/http/Method.hh>
+#include <reactor/http/StatusCode.hh>
+#include <reactor/http/Version.hh>
+#include <reactor/network/proxy.hh>
+#include <reactor/operation.hh>
 
 namespace reactor
 {
@@ -97,7 +97,7 @@ namespace reactor
       | Cookies |
       `--------*/
       public:
-        typedef std::unordered_map<std::string, std::string> Cookies;
+        using Cookies = std::unordered_map<std::string, std::string>;
         ELLE_ATTRIBUTE_RWX(Cookies, cookies);
 
       public:
@@ -111,7 +111,7 @@ namespace reactor
         ELLE_ATTRIBUTE_RW(DurationOpt, timeout);
         /// Abort the request if both upload/download stall for given duration.
         ELLE_ATTRIBUTE_RW(DurationOpt, stall_timeout);
-        typedef std::unordered_map<std::string, std::string> Headers;
+        using Headers = std::unordered_map<std::string, std::string>;
         /// The additional HTTP headers to include in the request.
         ELLE_ATTRIBUTE_R(Headers, headers);
         /// Whether to used HTTP 1.1 chunked transfers.
@@ -206,7 +206,7 @@ namespace reactor
       ///
       /// This should be done after construction, before the request is actually
       /// run.
-      typedef std::unordered_map<std::string, std::string> QueryDict;
+      using QueryDict = std::unordered_map<std::string, std::string>;
       ELLE_ATTRIBUTE_r(std::string, query_string);
       void
       query_string(QueryDict const& query_dict);
@@ -322,5 +322,3 @@ namespace reactor
         Request::Configuration conf = Request::Configuration());
   }
 }
-
-#endif

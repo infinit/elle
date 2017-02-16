@@ -1,9 +1,8 @@
-#ifndef REACTOR_HTTP_CLIENT_HH
-# define REACTOR_HTTP_CLIENT_HH
+#pragma once
 
-# include <string>
+#include <string>
 
-# include <reactor/http/Request.hh>
+#include <reactor/http/Request.hh>
 
 namespace reactor
 {
@@ -60,6 +59,4 @@ namespace reactor
   }
 }
 
-# include <reactor/http/Client.hxx>
-
-#endif
+#include <reactor/http/Client.hxx>
