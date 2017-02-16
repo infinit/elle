@@ -49,4 +49,17 @@ namespace reactor
   }
 }
 
+# ifdef INFINIT_LINUX
+/// epoll adapters using async ios
+extern "C"
+int
+reactor_epoll_wait(int epfd, struct epoll_event *events,
+                   int maxevents, int timeout);
+extern "C"
+int
+reactor_epoll_pwait(int epfd, struct epoll_event *events,
+                    int maxevents, int timeout,
+                    const sigset_t *sigmask);
+# endif
+
 #endif
