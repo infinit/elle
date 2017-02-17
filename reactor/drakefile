@@ -22,8 +22,7 @@ rule_build = None
 rule_check = None
 rule_install = None
 rule_tests = None
-
-asio_udt_lib = None
+rule_examples = None
 
 with open(str(drake.path_source('../drake-utils.py')), 'r') as f:
   exec(f.read(), globals(), globals())
@@ -50,9 +49,8 @@ def configure(curl_config,
               codesign = False,
 ):
 
-  global asio_udt_lib
   global config, lib_static, lib_dynamic, library, cxx_lib
-  global rule_build, rule_install
+  global rule_build, rule_install, rule_examples
   global python_lib, dokan_lib
   global connectivity, fnetusermount_binaries
 
@@ -437,16 +435,6 @@ def configure(curl_config,
   # Build
   rule_build = drake.Rule('build')
 
-  # UDT
-  #asio_udt = drake.include('asio-udt', cxx_toolkit, cxx_config, boost = boost)
-  #asio_udt_lib = drake.copy(asio_udt.library, '', 'asio-udt')
-  #udt_lib = drake.copy(asio_udt.udt.library, '', 'asio-udt/udt')
-
-  # Asio-FS
-  # asio_fs = drake.include('asio-fs', cxx_toolkit, cxx_config, boost = boost)
-  # asio_fs_lib = drake.copy(asio_fs.library_dynamic, '', 'asio-fs')
-  # config += asio_fs.config
-
   sources = drake.nodes(
     'src/reactor/BackgroundOperation.hh',
     'src/reactor/BackgroundOperation.hxx',
@@ -556,16 +544,8 @@ def configure(curl_config,
     'src/reactor/waitable.hh',
     # 'src/reactor/backend/pthread/pthread.cc',
     # 'src/reactor/backend/pthread/pthread.hh',
-    # 'src/reactor/fs/File.cc',
-    # 'src/reactor/fs/File.hh',
     # 'src/reactor/network/nat.cc',
     # 'src/reactor/network/nat.hh',
-    # 'src/reactor/network/udt-rdv-server.cc',
-    # 'src/reactor/network/udt-rdv-server.hh',
-    # 'src/reactor/network/udt-server.cc',
-    # 'src/reactor/network/udt-server.hh',
-    # 'src/reactor/network/udt-socket.cc',
-    # 'src/reactor/network/udt-socket.hh',
     )
   sources += drake.nodes(
     'src/reactor/filesystem.hh',
@@ -813,8 +793,7 @@ def configure(curl_config,
     ('rdv-cat', [], None),
     ('rdv-utp-cat', [], None),
     ('utp-chat', [], None),
-    # 'reactor/file',
-    ]
+  ]
   if cxx_toolkit.os in [drake.os.linux, drake.os.macos]:
     tests.append(('fdstream', [], None))
     tests.append(('filesystem', [], None))
@@ -899,6 +878,23 @@ def configure(curl_config,
         )
       python_runner.reporting = drake.Runner.Reporting.on_failure
       rule_check << python_runner.status
+
+  ## -------- ##
+  ## Examples ##
+  ## -------- ##
+
+  cxx_config_examples = drake.cxx.Config(local_cxx_config)
+  rule_examples = drake.Rule('examples')
+  for example in [
+    'examples/demo/echo_server'
+  ]:
+    name = example
+    source = drake.nodes('%s.cc' % name)
+    rule_examples << drake.cxx.Executable(
+      name,
+      source + [library, elle_lib],
+      cxx_toolkit, cxx_config_examples)
+  rule_build << rule_examples
 
   ## ------- ##
   ## Install ##

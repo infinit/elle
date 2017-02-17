@@ -1,14 +1,6 @@
-[submodule "reactor/asio-udt"]
-	path = reactor/asio-udt
-	url = git@git.infinit.io:asio-udt
-        fetchRecurseSubmodules = false
 [submodule "drake"]
 	path = drake
 	url = git@git.infinit.io:drake
-        fetchRecurseSubmodules = false
-[submodule "reactor/asio-fs"]
-	path = reactor/asio-fs
-	url = git@git.infinit.io:asio-fs
         fetchRecurseSubmodules = false
 [submodule "elle/src/elle/json/json-spirit"]
 	path = elle/src/elle/json/json-spirit
@@ -16,11 +8,11 @@
         fetchRecurseSubmodules = false
 [submodule "reactor/miniupnp"]
 	path = reactor/miniupnp
-	url = git@git.infinit.io:miniupnp
+	url = https://github.com/infinit/miniupnp
         fetchRecurseSubmodules = false
 [submodule "reactor/libutp"]
 	path = reactor/libutp
-	url = git@git.infinit.io:libutp
+	url = https://github.com/infinit/libutp
         fetchRecurseSubmodules = false
 [submodule "reactor/osxfuse"]
 	path = reactor/osxfuse
@@ -28,7 +20,7 @@
         fetchRecurseSubmodules = false
 [submodule "reactor/dokany"]
 	path = reactor/dokany
-	url = git@git.infinit.io:dokan
+	url = https://github.com/infinit/dokan
         fetchRecurseSubmodules = false
 [submodule "cryptography/modules/dopenssl"]
 	path = cryptography/modules/dopenssl

@@ -14,13 +14,13 @@ int main(int argc, char** argv)
   int eport;
   if (argc < 3 || argc > 4 || argv[1][0] == '-')
   {
-    std::cerr << "Usage: " << argv[0] << " (tcp|udp) local_port [external_port_hint]" << std::endl;
+    std::cerr << "Usage: " << argv[0] << " (tcp|utp) local_port [external_port_hint]" << std::endl;
     exit(0);
   }
   reactor::Barrier signal;
   reactor::network::Protocol p = reactor::network::Protocol::tcp;
-  if (argv[1] == std::string("udp"))
-    p = reactor::network::Protocol::udt;
+  if (argv[1] == std::string("utp"))
+    p = reactor::network::Protocol::utp;
   lport = boost::lexical_cast<int>(argv[2]);
   if (argc > 3)
     eport = boost::lexical_cast<int>(argv[3]);

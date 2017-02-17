@@ -77,11 +77,7 @@ namespace elle
 namespace std
 {
   template <>
-#ifdef __clang__
   struct ELLE_API hash<elle::Version>
-#else
-  class ELLE_API hash<elle::Version>
-#endif
   {
   public:
     std::size_t

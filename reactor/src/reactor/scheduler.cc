@@ -843,7 +843,7 @@ namespace reactor
 # error "Unsupported platform"
 #endif
 
-#if defined __clang__
+#if defined(INFINIT_MACOSX)
 // libc++
 # include <reactor/libcxx-exceptions/cxa_exception.hpp>
 # define THROW_SPEC

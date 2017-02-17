@@ -13,6 +13,7 @@ rule_build = None
 rule_check = None
 rule_install = None
 rule_tests = None
+rule_examples = None
 
 def configure(cryptography,
               elle,

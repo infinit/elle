@@ -1,39 +1,67 @@
-Cryptography
-============
+# Cryptography
 
-The Cryptography library allows for performing a variety of cryptographic operations from key generation, encryption, decryption, signature, verification to higher-level mechanisms.
+The Cryptography library allows for performing a variety of cryptographic
+operations from key generation, encryption, decryption, signature, verification
+to higher-level mechanisms.
 
-Note that the Cryptography library is mostly buffer-oriented even though some operations are allowed on streams such a symmetric encryption, hashing and more.
+Note that the Cryptography library is mostly buffer-oriented even though some
+operations are allowed on streams such a symmetric encryption, hashing and more.
 
-Sources
--------
+> Cryptoraphy is part of the [Elle](https://github.com/infinit/elle) set of
+libraries.
 
-The Cryptography library is provided as part of the [**Elle**](http://open.infinit.io/elle) library which is currently unavailable to the public.
+## Motivation
 
-Examples
---------
+Cryptography is built on top of [OpenSSL](http://www.openssl.org) library which
+provides the fundamental cryptographic operations.
+Motivation behind Cryptography is to wrap OpenSSL (written in C), in order to
+ease integration in a C++ project. It provides an elegant and object-oriented
+API and follows the RAII idiom to lazily simplify initialization and cleanup.
 
-Please refer to the `sample.cc` file which contains several examples related to different cryptographic operations allowed by the library.
+## Examples
 
-Environment variables
----------------------
+```cpp
+// Sign/verify with DSA.
+{
+  auto data = std::string("Data to sign...");
 
-The Cryptography library can be configured through the following environment variables:
+  // Generate a random dsa KeyPair.
+  autp keypair = infinit::cryptography::dsa::keypair::generate(2048);
 
-  o INFINIT_CRYPTOGRAPHY_RANDOM_SOURCE defines the path to the source file from which data will be read in order to initialize the pseudo-random generator. The default value for this variable is: _/dev/random_.
-  o INFINIT_CRYPTOGRAPHY_ROTATION activates the key rotation mechanism allowing one to derive RSA keys from a seed in a deterministic way.
+  // Create a signature for data (with k: the private key).
+  auto signature = keypair.k().sign(data);
 
-Dependencies
-------------
+  // Ensure verify the signature (with K: the public key).
+  assert(keypair.K().verify(signature, data) == true));
+}
+```
+Please refer to the [sample.cc](examples/samples/sample.cc) file which contains
+several examples related to different cryptographic operations allowed by the
+library.
+
+## Environment variables
+
+The Cryptography library can be configured through the following environment
+variables:
+
+* **INFINIT_CRYPTOGRAPHY_RANDOM_SOURCE** defines the path to the source file
+from which data will be read in order to initialize the pseudo-random generator.
+The default value for this variable is: _/dev/random_.
+* **INFINIT_CRYPTOGRAPHY_ROTATION activates** the key rotation mechanism
+allowing one to derive RSA keys from a seed in a deterministic way.
+
+## Dependencies
 
 The Cryptography library relies upon the following libraries:
 
- * [**OpenSSL**](http://www.openssl.org) provides the fundamental cryptographic operations.
- * [**dOpenSSL**](http://open.infinit.io/dopenssl) allows for deterministic cryptographic operations.
- * [**Elle**](http://open.infinit.io/elle) offers a set of fundamental functionalities from buffer to memory management and serialization.
+ * [**OpenSSL**](http://www.openssl.org) provides the fundamental cryptographic
+ operations.
+ * [**dOpenSSL**](http://open.infinit.io/dopenssl) allows for deterministic
+ cryptographic operations.
+ * [**Elle**](http://open.infinit.io/elle) offers a set of fundamental
+ functionalities from buffer to memory management and serialization.
 
-Maintainers
------------
+## Maintainers
 
- * Website: http://open.infinit.io
- * Email: contact@open.infinit.io
+ * Website: https://infinit.sh/open-source
+ * Email: open+elle@infinit.sh

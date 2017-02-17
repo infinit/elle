@@ -87,14 +87,10 @@ namespace elle
   }
 }
 
-# ifdef __clang__
-#  pragma clang diagnostic push
-#  pragma clang diagnostic ignored "-Wmismatched-tags"
-# endif
 namespace std
 {
   template<>
-  class ELLE_API hash<elle::UUID>
+  struct ELLE_API hash<elle::UUID>
   {
   public:
     size_t operator()(elle::UUID const& uuid) const
@@ -103,8 +99,5 @@ namespace std
     }
   };
 }
-# ifdef __clang__
-#  pragma clang diagnostic pop
-# endif
 
 #endif

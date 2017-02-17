@@ -10,7 +10,7 @@ namespace reactor
     enum class Protocol
     {
       tcp,
-      udt,
+      utp
     };
 
     std::ostream&

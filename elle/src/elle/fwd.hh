@@ -9,7 +9,7 @@ namespace elle
   class WeakBuffer;
 }
 
-#include <elle/concept/fwd.hh>
+#include <elle/compiler.hh>
 #include <elle/format/fwd.hh>
 #include <elle/io/fwd.hh>
 #include <elle/network/fwd.hh>

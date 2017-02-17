@@ -6,7 +6,6 @@ import drake.valgrind
 import sys
 import os
 
-
 config = None
 lib_static = None
 lib_dynamic = None
@@ -18,6 +17,7 @@ rule_build = None
 rule_check = None
 rule_install = None
 rule_tests = None
+rule_examples = None
 
 python_plugin_datetime = None
 
@@ -45,7 +45,7 @@ def configure(zlib_lib,
 
   global config, lib_static, lib_dynamic, library, library_zlib
   global python
-  global rule_build, rule_check, rule_install, rule_tests
+  global rule_build, rule_check, rule_install, rule_tests, rule_examples
   global python_plugin_datetime
   global ldap
 
@@ -206,11 +206,6 @@ def configure(zlib_lib,
     'src/elle/bench.cc',
     'src/elle/bench.hh',
     'src/elle/compiler.hh',
-    'src/elle/concept/Fileable.hh',
-    'src/elle/concept/Fileable.hxx',
-    'src/elle/concept/Uniquable.hh',
-    'src/elle/concept/Uniquable.hxx',
-    'src/elle/concept/fwd.hh',
     'src/elle/string/algorithm.hh',
     'src/elle/string/algorithm.hxx',
     'src/elle/format/fwd.hh',
@@ -528,7 +523,9 @@ def configure(zlib_lib,
         cxx_toolkit,
         python_cxx_config)
 
-  # Tests
+  ## ----- ##
+  ## Tests ##
+  ## ----- ##
 
   rule_tests = drake.Rule('tests')
   rule_check = drake.TestSuite('check')
@@ -593,11 +590,12 @@ def configure(zlib_lib,
     ('system/process-fail.cc', process_helpers, True),
   ])
 
-  cxx_config_tests = cxx_config + config
-  cxx_config_tests.enable_debug_symbols()
+  cxx_config_exe = cxx_config + config
+  cxx_config_exe.enable_debug_symbols()
   if cxx_toolkit.os == drake.os.android:
-    cxx_config_tests.lib('stdc++')
-    cxx_config_tests.lib('atomic')
+    cxx_config_exe.lib('stdc++')
+    cxx_config_exe.lib('atomic')
+  cxx_config_tests = drake.cxx.Config(cxx_config_exe)
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
     cxx_config_tests += boost.config_test(static = True)
     cxx_config_tests += boost.config_timer(static = True)
@@ -638,6 +636,33 @@ def configure(zlib_lib,
       runner = drake.Runner(exe = test, env = env)
     runner.reporting = drake.Runner.Reporting.on_failure
     rule_check << runner.status
+
+  ## -------- ##
+  ## Examples ##
+  ## -------- ##
+
+  rule_examples = drake.Rule('examples')
+  examples = [
+    'examples/samples/attributes',
+    'examples/samples/buffer',
+    'examples/samples/serialization',
+    'examples/samples/printable',
+    'examples/samples/log',
+  ]
+  cxx_config_examples = cxx_config_tests
+  cxx_config_examples.enable_debug_symbols()
+  if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
+    cxx_config_examples += boost.config_date_time(static = True)
+  else:
+    cxx_config_examples.library_add(
+      drake.copy(boost.date_time_dynamic, 'lib', strip_prefix = True))
+  for example in examples:
+    config_examples = drake.cxx.Config(cxx_config_examples)
+    rule_examples << drake.cxx.Executable(
+      os.path.splitext(example)[0],
+      drake.nodes('%s.cc' % example) + [library, zlib_lib, libarchive_lib],
+      cxx_toolkit, config_examples)
+  rule_build << rule_examples
 
   ## ------- ##
   ## Install ##

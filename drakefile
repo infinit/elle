@@ -10,7 +10,6 @@ import sys
 from itertools import chain
 
 archs = None
-asio_udt = None
 athena = None
 aws = None
 boost = None
@@ -78,7 +77,6 @@ def configure(cxx_toolkit = None,
               codesign = False,
   ):
 
-  global asio_udt
   global athena
   global aws
   global config
@@ -1379,8 +1377,6 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
   config += reactor.config
   config += aws.config
 
-  asio_udt = reactor.asio_udt_lib
-
   submodules = [
     athena,
     aws,
@@ -1410,3 +1406,27 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
 
   install = drake.Rule('install')
   recurse(install, 'rule_install')
+
+  examples = drake.Rule('examples')
+  recurse(examples, 'rule_examples')
+
+  example_config = drake.cxx.Config(cxx_config)
+  example_config += das.config + elle.config + reactor.config + cryptography.config
+  if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
+    example_config += boost.config_system(static = True)
+  else:
+    example_config.library_add(
+      drake.copy(boost.system_dynamic, 'lib', strip_prefix = True))
+  examples = drake.Rule('examples')
+  for example in [
+    'examples/samples/http_get_signed_json',
+    'examples/samples/get_wikipedia'
+  ]:
+    examples << drake.cxx.Executable(
+      example,
+      [
+        drake.node('%s.cc' % example),
+        elle.library, reactor.library, cryptography.library
+      ],
+      cxx_toolkit, example_config)
+  build << examples

@@ -1,6 +1,7 @@
 # -*- Python -*-
 
 import drake
+import os
 
 lib_static = None
 lib_dynamic = None
@@ -10,6 +11,7 @@ rule_build = None
 rule_check = None
 rule_install = None
 rule_tests = None
+rule_examples = None
 
 config = None
 
@@ -99,3 +101,25 @@ def configure(cxx_toolkit,
     runner = drake.Runner(test)
     runner.reporting = drake.Runner.Reporting.on_failure
     rule_check << runner.status
+
+  ## -------- ##
+  ## Examples ##
+  ## -------- ##
+
+  rule_examples = drake.Rule('examples')
+  examples = [
+    'examples/samples/das',
+  ]
+  config_examples = local_config_tests
+  for example in examples:
+    config_examples = drake.cxx.Config(config_examples)
+    if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
+      config_examples += boost.config_date_time(static = True)
+    else:
+      config_examples.library_add(
+        drake.copy(boost.date_time_dynamic, 'lib', strip_prefix = True))
+    rule_examples << drake.cxx.Executable(
+      example,
+      [drake.node('%s.cc' % example), library, elle_library],
+      cxx_toolkit, config_examples)
+  rule_build << rule_examples
