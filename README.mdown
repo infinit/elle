@@ -2,6 +2,8 @@
 
 The well-formed build system.
 
+<img src="docs/static_files/drake_logotype@2x.png" alt="Logo - Drake" title="Drake logotype" width="300" style="max-width:300px;">
+
 ## About
 
 Drake is a build system written in Python3 that transforms a list of *source* nodes into a list of *target* nodes. Each target (or list of targets) is defined by a *builder* which takes a list of sources as its input. These targets can then be sources of other builders; resulting in a chain of dependencies. Drake resolves these chains to determine the build order and avoids rebuilding targets unnecessarily by hashing source and target files.
