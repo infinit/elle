@@ -100,7 +100,7 @@ Elle depends on a few libraries which are automatically downloaded and built for
 
 - [Boost](http://boost.org) (v1.60.0, _patched_)
 - [PatchELF](http://nixos.org/patchelf.html) (v0.9)
-- [zlib](http://www.zlib.net) (v1.2.8)
+- [zlib](http://www.zlib.net) (v1.2.11)
 - [OpenSSL](https://www.openssl.org) (v1.0.2g)
 - [curl](https://curl.haxx.se) (v7.48.0, patched)
 - [libarchive](http://www.libarchive.org) (v3.1.2, _patched_)
