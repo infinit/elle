@@ -108,7 +108,7 @@ Elle depends on a few libraries which are automatically downloaded and built for
 
 ## List of projects using Elle
 
-- [Infinit](https://github.com/infinit/fs)
+- [Infinit](https://github.com/infinit/infinit)
 
 ## Maintainers
 
