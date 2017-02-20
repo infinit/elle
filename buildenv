@@ -19,7 +19,7 @@ def json_converter(o):
   raise TypeError('%s is not JSON serializable' % o)
 
 def copy(f, t):
-  shutil.copytree(f, t)
+  shutil.copytree(f, t, symlinks = True)
 
 def mv(f, t):
   os.rename(f, t)
