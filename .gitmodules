@@ -1,6 +1,6 @@
 [submodule "drake"]
 	path = drake
-	url = git@git.infinit.io:drake
+	url = ../drake
         fetchRecurseSubmodules = false
 [submodule "elle/src/elle/json/json-spirit"]
 	path = elle/src/elle/json/json-spirit
