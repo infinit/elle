@@ -1348,7 +1348,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     valgrind_tests = valgrind_tests,
   )
   protocol = drake.include(
-    'protocol',
+    'src/elle/protocol',
     cxx_toolkit = cxx_toolkit,
     cxx_config = cxx_config,
     boost = boost,

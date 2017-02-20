@@ -14,10 +14,10 @@
 #include <reactor/semaphore.hh>
 #include <reactor/thread.hh>
 
-#include <protocol/Serializer.hh>
-#include <protocol/exceptions.hh>
-#include <protocol/Channel.hh>
-#include <protocol/ChanneledStream.hh>
+#include <elle/protocol/Serializer.hh>
+#include <elle/protocol/exceptions.hh>
+#include <elle/protocol/Channel.hh>
+#include <elle/protocol/ChanneledStream.hh>
 
 ELLE_LOG_COMPONENT("elle.protocol.test");
 

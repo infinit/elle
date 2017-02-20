@@ -4,10 +4,10 @@
 #include <elle/cast.hh>
 #include <elle/test.hh>
 
-#include <protocol/exceptions.hh>
-#include <protocol/Serializer.hh>
-#include <protocol/ChanneledStream.hh>
-#include <protocol/Channel.hh>
+#include <elle/protocol/exceptions.hh>
+#include <elle/protocol/Serializer.hh>
+#include <elle/protocol/ChanneledStream.hh>
+#include <elle/protocol/Channel.hh>
 
 #include <elle/cryptography/random.hh>
 

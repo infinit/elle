@@ -3,9 +3,9 @@
 
 # include <unordered_map>
 
-# include <protocol/Channel.hh>
-# include <protocol/Stream.hh>
-# include <protocol/fwd.hh>
+# include <elle/protocol/Channel.hh>
+# include <elle/protocol/Stream.hh>
+# include <elle/protocol/fwd.hh>
 
 namespace elle
 {

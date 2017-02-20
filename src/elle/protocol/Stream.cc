@@ -1,8 +1,8 @@
 #include <elle/log.hh>
 
-#include <protocol/Stream.hh>
-#include <protocol/Serializer.hh>
-#include <protocol/exceptions.hh>
+#include <elle/protocol/Stream.hh>
+#include <elle/protocol/Serializer.hh>
+#include <elle/protocol/exceptions.hh>
 
 #include <reactor/scheduler.hh>
 

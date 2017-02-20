@@ -1,6 +1,6 @@
 #include <reactor/exception.hh>
 
-#include <protocol/RPC.hh>
+#include <elle/protocol/RPC.hh>
 
 namespace elle
 {

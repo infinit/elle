@@ -5,9 +5,9 @@
 #include <reactor/network/tcp-socket.hh>
 #include <reactor/scheduler.hh>
 
-#include <protocol/ChanneledStream.hh>
-#include <protocol/RPC.hh>
-#include <protocol/Serializer.hh>
+#include <elle/protocol/ChanneledStream.hh>
+#include <elle/protocol/RPC.hh>
+#include <elle/protocol/Serializer.hh>
 
 reactor::Scheduler&
 scheduler()

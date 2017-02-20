@@ -18,8 +18,8 @@
 #include <reactor/network/socket.hh>
 #include <reactor/network/utp-socket.hh>
 
-#include <protocol/Serializer.hh>
-#include <protocol/exceptions.hh>
+#include <elle/protocol/Serializer.hh>
+#include <elle/protocol/exceptions.hh>
 
 ELLE_LOG_COMPONENT("elle.protocol.Serializer");
 

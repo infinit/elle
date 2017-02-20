@@ -1,4 +1,4 @@
-#include <protocol/exceptions.hh>
+#include <elle/protocol/exceptions.hh>
 
 namespace elle
 {

@@ -5,8 +5,8 @@
 
 # include <reactor/signal.hh>
 
-# include <protocol/Stream.hh>
-# include <protocol/fwd.hh>
+# include <elle/protocol/Stream.hh>
+# include <elle/protocol/fwd.hh>
 
 namespace elle
 {

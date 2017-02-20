@@ -8,7 +8,7 @@
 # include <elle/attribute.hh>
 # include <elle/compiler.hh>
 
-# include <protocol/Stream.hh>
+# include <elle/protocol/Stream.hh>
 
 # ifdef EOF
 #  undef EOF

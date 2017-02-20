@@ -7,8 +7,8 @@
 
 #include <elle/cryptography/random.hh>
 
-#include <protocol/Channel.hh>
-#include <protocol/ChanneledStream.hh>
+#include <elle/protocol/Channel.hh>
+#include <elle/protocol/ChanneledStream.hh>
 
 ELLE_LOG_COMPONENT("elle.protocol.Channel");
 

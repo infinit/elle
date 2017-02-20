@@ -12,7 +12,7 @@
 
 # include <reactor/thread.hh>
 
-# include <protocol/fwd.hh>
+# include <elle/protocol/fwd.hh>
 
 namespace elle
 {
@@ -183,6 +183,6 @@ namespace elle
   }
 }
 
-# include <protocol/RPC.hxx>
+# include <elle/protocol/RPC.hxx>
 
 #endif

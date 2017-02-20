@@ -30,7 +30,6 @@ def configure(cryptography,
   # Public C++ configuration
   global config
   config = drake.cxx.Config()
-  config.add_local_include_path('src')
   config.standard = drake.cxx.Config.cxx_14
 
   # Boost
@@ -64,29 +63,29 @@ def configure(cryptography,
   # local_cxx_config += boost.config_thread()
 
   sources = drake.nodes(
-    'src/protocol/ChanneledStream.hh',
-    'src/protocol/RPC.hxx',
-    'src/protocol/Stream.hh',
-    'src/protocol/Serializer.hh',
-    'src/protocol/Channel.cc',
-    'src/protocol/RPC.hh',
-    'src/protocol/ChanneledStream.cc',
-    'src/protocol/Stream.cc',
-    'src/protocol/Channel.hh',
-    'src/protocol/Serializer.cc',
-    'src/protocol/RPC.cc',
-    'src/protocol/exceptions.cc',
-    'src/protocol/exceptions.hh',
-    'src/protocol/fwd.hh',
+    'ChanneledStream.hh',
+    'RPC.hxx',
+    'Stream.hh',
+    'Serializer.hh',
+    'Channel.cc',
+    'RPC.hh',
+    'ChanneledStream.cc',
+    'Stream.cc',
+    'Channel.hh',
+    'Serializer.cc',
+    'RPC.cc',
+    'exceptions.cc',
+    'exceptions.hh',
+    'fwd.hh',
   )
   global lib_static, lib_dynamic, library
   from itertools import chain
   lib_static = drake.cxx.StaticLib(
-    'lib/protocol',
+    'lib/elle_protocol',
     chain(sources, (elle_library, reactor_library, cryptography_library)),
     cxx_toolkit, local_cxx_config)
   lib_dynamic = drake.cxx.DynLib(
-    'lib/protocol',
+    'lib/elle_protocol',
     chain(sources, (elle_library, reactor_library, cryptography_library)),
     cxx_toolkit, local_cxx_config)
 

@@ -13,9 +13,9 @@
 # include <reactor/scheduler.hh>
 # include <reactor/thread.hh>
 
-# include <protocol/Channel.hh>
-# include <protocol/ChanneledStream.hh>
-# include <protocol/exceptions.hh>
+# include <elle/protocol/Channel.hh>
+# include <elle/protocol/ChanneledStream.hh>
+# include <elle/protocol/exceptions.hh>
 
 namespace elle
 {
