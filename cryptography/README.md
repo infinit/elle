@@ -26,7 +26,7 @@ API and follows the RAII idiom to lazily simplify initialization and cleanup.
   auto data = std::string("Data to sign...");
 
   // Generate a random dsa KeyPair.
-  autp keypair = infinit::cryptography::dsa::keypair::generate(2048);
+  auto keypair = infinit::cryptography::dsa::keypair::generate(2048);
 
   // Create a signature for data (with k: the private key).
   auto signature = keypair.k().sign(data);
