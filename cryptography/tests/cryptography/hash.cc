@@ -118,6 +118,39 @@ test_serialize()
   test_serialize_x<infinit::cryptography::Oneway::sha512>(R"JSON({"digest":"i641WSGHk8ZjTReGfZSAaey8Ci1rbX+usbN7DLFM2hjjN1IlgJ2bDipopotlgY++PnN6dlN+Vd6MKIz3z1LUew=="})JSON");
 }
 
+/*-------.
+| Update |
+`-------*/
+
+template <infinit::cryptography::Oneway O>
+void
+test_update_x()
+{
+  std::string str = "123abcxyz";
+  elle::Buffer all(str);
+  auto all_digest = infinit::cryptography::hash(all, O);
+  std::vector<elle::Buffer> chunks;
+  for (int i = 0; unsigned(i) < str.size() / 3; i++)
+    chunks.emplace_back(elle::Buffer(str.data() + (i * 3), 3));
+  auto context = infinit::cryptography::hash_init(O);
+  for (auto const& b: chunks)
+    infinit::cryptography::hash_update(&context, b);
+  auto chunks_digest = infinit::cryptography::hash_finalize(&context);
+  BOOST_CHECK_EQUAL(all_digest, chunks_digest);
+}
+
+void
+test_update()
+{
+  test_update_x<infinit::cryptography::Oneway::md5>();
+  test_update_x<infinit::cryptography::Oneway::sha>();
+  test_update_x<infinit::cryptography::Oneway::sha1>();
+  test_update_x<infinit::cryptography::Oneway::sha224>();
+  test_update_x<infinit::cryptography::Oneway::sha256>();
+  test_update_x<infinit::cryptography::Oneway::sha384>();
+  test_update_x<infinit::cryptography::Oneway::sha512>();
+}
+
 /*-----.
 | Main |
 `-----*/
@@ -129,6 +162,7 @@ ELLE_TEST_SUITE()
   suite->add(BOOST_TEST_CASE(test_represent));
   suite->add(BOOST_TEST_CASE(test_operate));
   suite->add(BOOST_TEST_CASE(test_serialize));
+  suite->add(BOOST_TEST_CASE(test_update));
 
   boost::unit_test::framework::master_test_suite().add(suite);
 }
