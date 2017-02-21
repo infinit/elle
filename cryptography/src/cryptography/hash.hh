@@ -25,6 +25,15 @@ namespace infinit
     elle::Buffer
     hash(std::istream& plain,
          Oneway const oneway);
+    /// Initialize a hash manually.
+    ::EVP_MD_CTX
+    hash_init(Oneway const oneway);
+    /// Update a manual hash with data.
+    void
+    hash_update(::EVP_MD_CTX* context, elle::Buffer const& buffer);
+    /// Finalize a manual hash.
+    elle::Buffer
+    hash_finalize(::EVP_MD_CTX* context);
   }
 }
 
