@@ -139,6 +139,7 @@ test_update_x()
   BOOST_CHECK_EQUAL(all_digest, chunks_digest);
 }
 
+static
 void
 test_update()
 {
