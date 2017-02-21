@@ -8,7 +8,7 @@
 
 #include <elle/AtomicFile.hh>
 
-#include <cryptography/rsa/KeyPair.hh>
+#include <elle/cryptography/rsa/KeyPair.hh>
 
 #include <reactor/http/Request.hh>
 #include <reactor/http/exceptions.hh>

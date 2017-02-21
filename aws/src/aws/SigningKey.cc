@@ -1,9 +1,8 @@
 #include <aws/SigningKey.hh>
 
+#include <elle/cryptography/hmac.hh>
 #include <elle/format/hexadecimal.hh>
 #include <elle/printf.hh>
-
-#include <cryptography/hmac.hh>
 
 namespace aws
 {

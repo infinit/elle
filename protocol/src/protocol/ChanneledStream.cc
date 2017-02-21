@@ -5,7 +5,7 @@
 #include <reactor/scheduler.hh>
 #include <reactor/thread.hh>
 
-#include <cryptography/random.hh>
+#include <elle/cryptography/random.hh>
 
 #include <protocol/Channel.hh>
 #include <protocol/ChanneledStream.hh>

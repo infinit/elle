@@ -16,7 +16,7 @@
 #include <reactor/scheduler.hh>
 #include <reactor/thread.hh>
 
-#include <cryptography/hash.hh>
+#include <elle/cryptography/hash.hh>
 
 ELLE_LOG_COMPONENT("aws.test");
 

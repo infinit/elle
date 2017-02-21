@@ -3,7 +3,7 @@
 
 # include <elle/With.hh>
 
-# include <cryptography/random.hh>
+# include <elle/cryptography/random.hh>
 
 # include <reactor/Scope.hh>
 # include <reactor/for-each.hh>

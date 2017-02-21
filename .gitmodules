@@ -22,6 +22,6 @@
 	path = reactor/dokany
 	url = https://github.com/infinit/dokan
         fetchRecurseSubmodules = false
-[submodule "cryptography/modules/dopenssl"]
-	path = cryptography/modules/dopenssl
+[submodule "src/elle/cryptography/modules/dopenssl"]
+	path = src/elle/cryptography/modules/dopenssl
 	url = https://github.com/infinit/dopenssl

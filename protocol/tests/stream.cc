@@ -9,7 +9,7 @@
 #include <protocol/ChanneledStream.hh>
 #include <protocol/Channel.hh>
 
-#include <cryptography/random.hh>
+#include <elle/cryptography/random.hh>
 
 #include <reactor/asio.hh>
 #include <reactor/Barrier.hh>

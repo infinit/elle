@@ -3,10 +3,9 @@
 #include <algorithm>
 
 #include <elle/format/hexadecimal.hh>
+#include <elle/cryptography/hash.hh>
 
 #include <reactor/http/EscapedString.hh>
-
-#include <cryptography/hash.hh>
 
 ELLE_LOG_COMPONENT("aws.CanonicalRequest");
 

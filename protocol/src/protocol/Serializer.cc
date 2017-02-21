@@ -7,7 +7,7 @@
 #include <elle/Buffer.hh>
 #include <elle/log.hh>
 
-#include <cryptography/hash.hh>
+#include <elle/cryptography/hash.hh>
 
 #include <elle/serialization/binary.hh>
 #include <elle/serialization/json.hh>

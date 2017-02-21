@@ -3,7 +3,7 @@
 #include <elle/cast.hh>
 #include <elle/test.hh>
 
-#include <cryptography/random.hh>
+#include <elle/cryptography/random.hh>
 
 #include <reactor/Scope.hh>
 #include <reactor/asio.hh>

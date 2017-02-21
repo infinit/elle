@@ -16,7 +16,7 @@
 #include <reactor/http/Request.hh>
 #include <reactor/scheduler.hh>
 
-#include <cryptography/hash.hh>
+#include <elle/cryptography/hash.hh>
 
 #include <aws/SigningKey.hh>
 #include <aws/Keys.hh>

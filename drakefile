@@ -1240,6 +1240,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
   elif cxx_toolkit.os is drake.os.ios:
     config.define('INFINIT_IOS')
     cxx_config.define('INFINIT_IOS')
+  cxx_config.add_local_include_path('src')
   cxx_config.export_dynamic = True
   cxx_config.warnings.parentheses = False
   cxx_config.warnings.empty_body = False
@@ -1273,7 +1274,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     openssl_lib_ssl = openssl_lib_ssl,
   )
   cryptography = drake.include(
-    'cryptography',
+    'src/elle/cryptography',
     cxx_toolkit = cxx_toolkit,
     cxx_config = cxx_config,
     openssl_config = openssl_config,
