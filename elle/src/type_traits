@@ -27,6 +27,64 @@ namespace std
   {
     using type = T;
   };
+
+  /// Extract the signature of a (monomophic) lambda.
+  ///
+  /// http://stackoverflow.com/a/12283159/1353549.
+  template <typename T>
+  struct remove_class
+  {};
+  template <typename C, typename R, typename... A>
+  struct remove_class<R(C::*)(A...)>
+  {
+    using type = R(A...);
+  };
+  template <typename C, typename R, typename... A>
+  struct remove_class<R(C::*)(A...) const>
+  {
+    using type = R(A...);
+  };
+  template <typename C, typename R, typename... A>
+  struct remove_class<R(C::*)(A...) volatile>
+  {
+    using type = R(A...);
+  };
+  template <typename C, typename R, typename... A>
+  struct remove_class<R(C::*)(A...) const volatile>
+  {
+    using type = R(A...);
+  };
+
+  /// From a member function, extract the same signature, but without
+  /// the class.
+  template <typename T>
+  using remove_class_t = typename remove_class<T>::type;
+
+
+  template<typename T>
+  struct get_signature_impl
+  {
+    using type = remove_class_t<decltype(&std::remove_reference_t<T>::operator())>;
+  };
+
+  template<typename R, typename... A>
+  struct get_signature_impl<R(A...)>
+  {
+    using type = R(A...);
+  };
+  template<typename R, typename... A>
+  struct get_signature_impl<R(&)(A...)>
+  {
+    using type = R(A...);
+  };
+  template<typename R, typename... A>
+  struct get_signature_impl<R(*)(A...)>
+  {
+    using type = R(A...);
+  };
+
+  template<typename T>
+  using get_signature = typename get_signature_impl<T>::type;
 }
 
 // Local Variables:
