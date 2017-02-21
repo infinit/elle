@@ -1287,9 +1287,9 @@ class BaseNode(object, metaclass = _BaseNodeType):
       return True
     marks[self] = None
     print('  node_%s [label="%s"]' % (self.uid, self.__name))
-    if self._builder is not None:
-      if self._builder.dot(marks):
-        print('  builder_%s -> node_%s' % (self._builder.uid,
+    if self.builder is not None:
+      if self.builder.dot(marks):
+        print('  builder_%s -> node_%s' % (self.builder.uid,
                                            self.uid))
     return True
 
@@ -1329,13 +1329,13 @@ class BaseNode(object, metaclass = _BaseNodeType):
         self.polish()
 
   def _build(self):
-    if self._builder is not None:
-      self._builder.run()
+    if self.builder is not None:
+      self.builder.run()
 
 
   @property
   def build_status(self):
-    return self._builder.build_status
+    return self.builder.build_status
 
   def polish(self):
       """A hook called when a node has been built.
@@ -1358,8 +1358,8 @@ class BaseNode(object, metaclass = _BaseNodeType):
 
   def clean(self):
       """Clean recursively for this node sources."""
-      if self._builder is not None:
-          self._builder.clean()
+      if self.builder is not None:
+          self.builder.clean()
 
   def missing(self):
       """Whether this node is missing and must be built.
@@ -1377,7 +1377,7 @@ class BaseNode(object, metaclass = _BaseNodeType):
   def makefile(self, marks = None):
     """Print a Makefile for this node."""
     from pipes import quote
-    if self._builder is None:
+    if self.builder is None:
       return
     if marks is None:
       marks = set()
@@ -1388,7 +1388,7 @@ class BaseNode(object, metaclass = _BaseNodeType):
     print('%s: %s' % (self.makefile_name(),
                       ' '.join(map(lambda n: n.makefile_name(),
                                    self.dependencies))))
-    cmd = self._builder.command
+    cmd = self.builder.command
     if cmd is not None:
       if isinstance(self, Node):
         print('\t@mkdir -p %s' % self.path().dirname())
@@ -1531,7 +1531,7 @@ class Node(BaseNode):
         """Clean this node's file if it is generated, and recursively
         its sources recursively."""
         BaseNode.clean(self)
-        if self._builder is not None and self.path().exists():
+        if self.builder is not None and self.path().exists():
             print('Deleting %s' % self)
             _OS.remove(str(self.path()))
 
@@ -1553,7 +1553,7 @@ class Node(BaseNode):
       if name.absolute() or name.virtual:
         self.__path = name
         self.__path_absolute = name
-      elif self._builder is None:
+      elif self.builder is None:
         self.__path = drake.path_source() / name
       else:
         self.__path = name
@@ -1609,11 +1609,11 @@ class Node(BaseNode):
     super().build()
 
   def _build(self):
-    if self._builder is None:
+    if self.builder is None:
       if self.missing():
         raise NoBuilder(self)
     else:
-      self._builder.run()
+      self.builder.run()
 
   def __repr__(self):
         """Filesystem path to the node file, as a string."""
@@ -1746,7 +1746,7 @@ class Builder:
       self.__builder = builder
 
     def __str__(self):
-      return '%s failed' % self.__builder
+      return '%s failed' % self.builder
 
     @property
     def builder(self):
@@ -3902,7 +3902,7 @@ class TestSuite(Rule):
       else:
         failures.append(dep)
         self.__failures += 1
-    self._builder.output('%s: %s / %s tests passed.' %
+    self.builder.output('%s: %s / %s tests passed.' %
                         (self, self.success, self.total))
 
   def __str__(self):
