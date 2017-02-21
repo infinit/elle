@@ -143,6 +143,17 @@ namespace infinit
            std::istream& plain,
            std::function<void (::EVP_MD_CTX*)> prolog = nullptr,
            std::function<void (::EVP_MD_CTX*)> epilog = nullptr);
+      /// Initialize a hash manually.
+      ::EVP_MD_CTX
+      hash_init(::EVP_MD const* oneway,
+                std::function<void (::EVP_MD_CTX*)> prolog = nullptr);
+      /// Update a manual hash with data.
+      void
+      hash_update(::EVP_MD_CTX* context, elle::Buffer const& buffer);
+      /// Finalize a manual hash.
+      elle::Buffer
+      hash_finalize(::EVP_MD_CTX* context,
+                    std::function<void (::EVP_MD_CTX*)> epilog = nullptr);
     }
   }
 }

@@ -845,24 +845,9 @@ namespace infinit
            std::function<void (::EVP_MD_CTX*)> prolog,
            std::function<void (::EVP_MD_CTX*)> epilog)
       {
-        // Make sure the cryptographic system is set up.
-        cryptography::require();
-
-        // Initialise the context.
-        ::EVP_MD_CTX context;
-
-        ::EVP_MD_CTX_init(&context);
+        auto context = hash_init(oneway, prolog);
 
         INFINIT_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_DIGEST_CONTEXT(context);
-
-        // Initialise the digest.
-        if (::EVP_DigestInit_ex(&context, oneway, nullptr) <= 0)
-          throw Error(
-            elle::sprintf("unable to initialize the digest process: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
-
-        if (prolog)
-          prolog(&context);
 
         // Hash the plain's stream.
         unsigned char* _input = buffers().first;
@@ -877,25 +862,66 @@ namespace infinit
               elle::sprintf("unable to read the plain's input stream: %s",
                             plain.rdstate()));
 
-          // Update the digest context.
-          if (::EVP_DigestUpdate(&context,
-                                 _input,
-                                 plain.gcount()) <= 0)
-            throw Error(
-              elle::sprintf("unable to apply the digest function: %s",
-                            ::ERR_error_string(ERR_get_error(), nullptr)));
+          hash_update(&context, elle::Buffer(_input, plain.gcount()));
         }
 
+        auto digest = hash_finalize(&context, epilog);
+
+        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
+
+        return digest;
+      }
+
+      ::EVP_MD_CTX
+      hash_init(::EVP_MD const* oneway,
+                std::function<void (::EVP_MD_CTX*)> prolog)
+      {
+        // Make sure the cryptographic system is set up.
+        cryptography::require();
+
+        // Initialise the context.
+        ::EVP_MD_CTX context;
+
+        ::EVP_MD_CTX_init(&context);
+
+        // Initialise the digest.
+        if (::EVP_DigestInit_ex(&context, oneway, nullptr) <= 0)
+          throw Error(
+            elle::sprintf("unable to initialize the digest process: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
+
+        if (prolog)
+          prolog(&context);
+
+        return context;
+      }
+
+      void
+      hash_update(::EVP_MD_CTX* context, elle::Buffer const& buffer)
+      {
+        // Update the digest context.
+        if (::EVP_DigestUpdate(context,
+                               buffer.contents(),
+                               buffer.size()) <= 0)
+          throw Error(
+            elle::sprintf("unable to apply the digest function: %s",
+                          ::ERR_error_string(ERR_get_error(), nullptr)));
+      }
+
+      elle::Buffer
+      hash_finalize(::EVP_MD_CTX* context,
+                    std::function<void (::EVP_MD_CTX*)> epilog)
+      {
         // Allocate the output digest.
-        elle::Buffer digest(EVP_MD_size(oneway));
+        elle::Buffer digest(EVP_MAX_MD_SIZE);
 
         if (epilog)
-          epilog(&context);
+          epilog(context);
 
         // Finalize the digest.
         unsigned int size(0);
 
-        if (::EVP_DigestFinal_ex(&context,
+        if (::EVP_DigestFinal_ex(context,
                                  digest.mutable_contents(),
                                  &size) <= 0)
           throw Error(
@@ -907,14 +933,12 @@ namespace infinit
         digest.shrink_to_fit();
 
         // Clean the context.
-        if (::EVP_MD_CTX_cleanup(&context) <= 0)
+        if (::EVP_MD_CTX_cleanup(context) <= 0)
           throw Error(
             elle::sprintf("unable to clean the digest context: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
 
-        INFINIT_CRYPTOGRAPHY_FINALLY_ABORT(context);
-
-        return (digest);
+        return digest;
       }
     }
   }
