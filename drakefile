@@ -1336,7 +1336,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     valgrind_tests = valgrind_tests,
   )
   dropbox = drake.include(
-    'dropbox',
+    'src/elle/service/dropbox',
     cxx_toolkit = cxx_toolkit,
     cxx_config = cxx_config,
     elle = elle,
@@ -1360,7 +1360,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     valgrind_tests = valgrind_tests,
   )
   aws = drake.include(
-    'aws',
+    'src/elle/service/aws',
     cxx_toolkit = cxx_toolkit,
     cxx_config = cxx_config,
     boost = boost,
