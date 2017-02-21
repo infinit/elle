@@ -1370,12 +1370,9 @@ class BaseNode(object, metaclass = _BaseNodeType):
       return False
 
   def makefile_name(self):
-      if isinstance(self, Node):
-          return str(self.path())
-      else:
-          res = Path(self.name())
-          res.virtual = False
-          return str(res)
+    path = self.path() if isinstance(self, Node)  \
+           else Path(self.name(), virtual = False)
+    return str(path)
 
   def makefile(self, marks = None):
     """Print a Makefile for this node."""
