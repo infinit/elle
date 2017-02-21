@@ -1323,7 +1323,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     codesign = codesign,
   )
   athena = drake.include(
-    'athena',
+    'src/elle/athena',
     cxx_toolkit = cxx_toolkit,
     cxx_config = cxx_config,
     elle = elle,

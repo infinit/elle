@@ -6,12 +6,12 @@
 #include <reactor/scheduler.hh>
 #include <reactor/signal.hh>
 
-#include <athena/paxos/Client.hh>
-#include <athena/paxos/Server.hh>
+#include <elle/athena/paxos/Client.hh>
+#include <elle/athena/paxos/Server.hh>
 
-ELLE_LOG_COMPONENT("athena.paxos.test");
+ELLE_LOG_COMPONENT("elle.athena.paxos.test");
 
-namespace paxos = athena::paxos;
+namespace paxos = elle::athena::paxos;
 
 namespace std
 {
@@ -171,8 +171,8 @@ ELLE_TEST_SCHEDULED(one_of_three)
   peers.emplace_back(std::make_unique<UnavailablePeer<int, int, int>>(12));
   peers.emplace_back(std::make_unique<UnavailablePeer<int, int, int>>(13));
   paxos::Client<int, int, int> client(1, std::move(peers));
-  BOOST_CHECK_THROW(client.choose(42), athena::paxos::TooFewPeers);
-  BOOST_CHECK_THROW(client.get(), athena::paxos::TooFewPeers);
+  BOOST_CHECK_THROW(client.choose(42), elle::athena::paxos::TooFewPeers);
+  BOOST_CHECK_THROW(client.get(), elle::athena::paxos::TooFewPeers);
 }
 
 ELLE_TEST_SCHEDULED(already_chosen)
@@ -790,7 +790,7 @@ namespace quorum_divergence
     //   +---------+---------+---------+
     ELLE_LOG("choose quorum {11,12} for version 2 on server 11 only")
       BOOST_CHECK_THROW(client_1_only.choose(2, Client::Quorum{11, 12}),
-                        athena::paxos::TooFewPeers);
+                        elle::athena::paxos::TooFewPeers);
     //        11        12        13
     //   +---------+---------+---------+
     // 2 | {11,12} |         |         |
@@ -888,7 +888,7 @@ ELLE_TEST_SCHEDULED(partial_state)
     BOOST_CHECK(!make_client({true, true, false}).choose(1, 1));
   ELLE_LOG("propose 2 for version 2 on {11}")
     BOOST_CHECK_THROW(make_client({true, false, false}).choose(2, 2),
-                      athena::paxos::TooFewPeers);
+                      elle::athena::paxos::TooFewPeers);
   //        11        12        13
   //   +---------+---------+---------+
   // 2 |         |         |         |

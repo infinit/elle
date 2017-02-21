@@ -30,9 +30,7 @@ def configure(cxx_toolkit,
   ## C++ configuration ##
   ## ----------------- ##
 
-  config = \
-    elle.config + das.config + reactor.config + cryptography.config
-  config.add_local_include_path('src')
+  config = elle.config + das.config + reactor.config + cryptography.config
   local_config = drake.cxx.Config(config) + cxx_config
 
   ## ------- ##
@@ -59,18 +57,18 @@ def configure(cxx_toolkit,
     local_config.library_add(
       drake.copy(boost.system_dynamic, 'lib', strip_prefix = True))
   sources = drake.nodes(
-    'src/athena/paxos/Client.cc',
-    'src/athena/paxos/Client.hh',
-    'src/athena/paxos/Client.hxx',
-    'src/athena/paxos/Server.hh',
-    'src/athena/paxos/Server.hxx',
+    'paxos/Client.cc',
+    'paxos/Client.hh',
+    'paxos/Client.hxx',
+    'paxos/Server.hh',
+    'paxos/Server.hxx',
   )
   lib_dynamic = drake.cxx.DynLib(
-    'lib/athena',
+    'lib/elle_athena',
     sources + [elle_lib, reactor_lib, cryptography_lib],
     cxx_toolkit, local_config)
   lib_static = drake.cxx.StaticLib(
-    'lib/athena',
+    'lib/elle_athena',
     sources + [elle_lib, reactor_lib, cryptography_lib],
     cxx_toolkit, local_config)
   rule_build = drake.Rule('build')
