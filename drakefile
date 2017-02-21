@@ -1291,7 +1291,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     build_python_module = cryptography_python and not windows,
   )
   das = drake.include(
-    'das',
+    'src/elle/das',
     cxx_toolkit = cxx_toolkit,
     cxx_config = cxx_config,
     elle = elle,

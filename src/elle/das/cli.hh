@@ -15,7 +15,7 @@
 #include <elle/make-vector.hh>
 #include <elle/serialization/json.hh>
 
-#include <das/named.hh>
+#include <elle/das/named.hh>
 
 namespace das
 {

@@ -7,7 +7,7 @@
 #include <elle/log.hh>
 #include <elle/meta.hh>
 
-#include <das/Symbol.hh>
+#include <elle/das/Symbol.hh>
 
 namespace das
 {

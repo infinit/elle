@@ -1,6 +1,6 @@
 # include <string>
 
-# include <das/named.hh>
+# include <elle/das/named.hh>
 # include <elle/test.hh>
 
 #define NAMED_FUNCTION(Name, F, ...)                                    \

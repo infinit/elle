@@ -2,7 +2,7 @@
 
 #include <elle/test.hh>
 
-#include <das/Symbol.hh>
+#include <elle/das/Symbol.hh>
 
 namespace symbols
 {

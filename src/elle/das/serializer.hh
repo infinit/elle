@@ -5,7 +5,7 @@
 #include <elle/serialization/SerializerIn.hh>
 #include <elle/serialization/SerializerOut.hh>
 
-#include <das/model.hh>
+#include <elle/das/model.hh>
 
 namespace das
 {
@@ -189,4 +189,4 @@ namespace das
     }                                                           \
   }                                                             \
 
-#include <das/serializer.hxx>
+#include <elle/das/serializer.hxx>

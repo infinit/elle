@@ -5,10 +5,10 @@
 #include <elle/meta.hh>
 #include <elle/test.hh>
 
-#include <das/Symbol.hh>
-#include <das/flatten.hh>
-#include <das/model.hh>
-#include <das/printer.hh>
+#include <elle/das/Symbol.hh>
+#include <elle/das/flatten.hh>
+#include <elle/das/model.hh>
+#include <elle/das/printer.hh>
 
 DAS_SYMBOL(name);
 DAS_SYMBOL(model);

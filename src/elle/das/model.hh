@@ -3,7 +3,7 @@
 #include <elle/attribute.hh>
 #include <elle/meta.hh>
 
-#include <das/fwd.hh>
+#include <elle/das/fwd.hh>
 
 namespace das
 {

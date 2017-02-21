@@ -2,8 +2,8 @@
 
 #include <elle/test.hh>
 
-#include <das/flatten.hh>
-#include <das/Symbol.hh>
+#include <elle/das/flatten.hh>
+#include <elle/das/Symbol.hh>
 
 DAS_SYMBOL(device);
 DAS_SYMBOL(id);

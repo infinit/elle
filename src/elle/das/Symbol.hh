@@ -67,4 +67,4 @@ namespace das
   };
 }
 
-#include <das/Symbol.hxx>
+#include <elle/das/Symbol.hxx>

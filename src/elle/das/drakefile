@@ -33,7 +33,6 @@ def configure(cxx_toolkit,
 
   rule_build = drake.Rule('build')
   config = drake.cxx.Config(elle.config)
-  config.add_local_include_path('src')
   local_config = drake.cxx.Config(config) + cxx_config
   local_config.warnings.parentheses = False
 
@@ -42,21 +41,21 @@ def configure(cxx_toolkit,
   ## ------ ##
 
   sources = drake.nodes(
-    'src/das/Symbol.hh',
-    'src/das/Symbol.hxx',
-    'src/das/flatten.hh',
-    'src/das/fwd.hh',
-    'src/das/cli.hh',
-    'src/das/model.hh',
-    'src/das/named.hh',
-    'src/das/printer.hh',
-    'src/das/serializer.hh',
-    'src/das/serializer.hxx',
+    'Symbol.hh',
+    'Symbol.hxx',
+    'flatten.hh',
+    'fwd.hh',
+    'cli.hh',
+    'model.hh',
+    'named.hh',
+    'printer.hh',
+    'serializer.hh',
+    'serializer.hxx',
   )
   lib_dynamic = \
-    drake.cxx.DynLib('lib/das', sources, cxx_toolkit, local_config)
+    drake.cxx.DynLib('lib/elle_das', sources, cxx_toolkit, local_config)
   lib_static = \
-    drake.cxx.StaticLib('lib/das', sources, cxx_toolkit, local_config)
+    drake.cxx.StaticLib('lib/elle_das', sources, cxx_toolkit, local_config)
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
     library = lib_static
   else:
@@ -85,12 +84,12 @@ def configure(cxx_toolkit,
   rule_check = drake.TestSuite('check')
   elle_library = drake.copy(elle.library, 'lib', strip_prefix = True)
   for name in [
-      'cli',
-      'flatten',
-      'named',
-      'printer',
-      'serialize',
-      'symbol',
+    'cli',
+    'flatten',
+    'named',
+    'printer',
+    'serialize',
+    'symbol',
   ]:
     test = drake.cxx.Executable(
       'tests/%s' % name,

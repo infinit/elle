@@ -1,7 +1,7 @@
 #pragma once
 
 #include <elle/printf.hh>
-#include <das/model.hh>
+#include <elle/das/model.hh>
 
 namespace das
 {

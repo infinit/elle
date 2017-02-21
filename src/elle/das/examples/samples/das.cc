@@ -3,10 +3,10 @@
 #include <elle/UUID.hh>
 #include <elle/serialization/json.hh>
 
-#include <das/model.hh>
-#include <das/serializer.hh>
-#include <das/printer.hh>
-#include <das/Symbol.hh>
+#include <elle/das/model.hh>
+#include <elle/das/serializer.hh>
+#include <elle/das/printer.hh>
+#include <elle/das/Symbol.hh>
 
 /*
   This file shows:

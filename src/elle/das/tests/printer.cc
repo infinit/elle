@@ -2,9 +2,9 @@
 
 #include <elle/test.hh>
 
-#include <das/model.hh>
-#include <das/printer.hh>
-#include <das/Symbol.hh>
+#include <elle/das/model.hh>
+#include <elle/das/printer.hh>
+#include <elle/das/Symbol.hh>
 
 DAS_SYMBOL(foo);
 DAS_SYMBOL(bar);

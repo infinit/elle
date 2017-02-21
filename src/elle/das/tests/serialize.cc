@@ -5,9 +5,9 @@
 #include <elle/serialization/json.hh>
 #include <elle/test.hh>
 
-#include <das/printer.hh>
-#include <das/serializer.hh>
-#include <das/Symbol.hh>
+#include <elle/das/printer.hh>
+#include <elle/das/serializer.hh>
+#include <elle/das/Symbol.hh>
 
 ELLE_LOG_COMPONENT("das.serializer.test");
 
