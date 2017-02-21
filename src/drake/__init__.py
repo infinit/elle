@@ -1,4 +1,4 @@
-# Copyright (C) 2009-2016, Quentin "mefyl" Hocquet
+# Copyright (C) 2009-2017, Quentin "mefyl" Hocquet
 #
 # This software is provided "as is" without warranty of any kind,
 # either expressed or implied, including but not limited to the
@@ -1278,20 +1278,20 @@ class BaseNode(object, metaclass = _BaseNodeType):
     return self.__name.without_prefix(drake.Drake.current.prefix)
 
   def name_absolute(self):
-      """Node name, relative to the root of the source directory."""
-      return self.__name
+    """Node name, relative to the root of the source directory."""
+    return self.__name
 
   def dot(self, marks):
-      """Print a dot representation of this nodes build graph."""
-      if self in marks:
-          return True
-      marks[self] = None
-      print('  node_%s [label="%s"]' % (self.uid, self.__name))
-      if self._builder is not None:
-          if self._builder.dot(marks):
-              print('  builder_%s -> node_%s' % (self._builder.uid,
-                                                 self.uid))
+    """Print a dot representation of this node build graph."""
+    if self in marks:
       return True
+    marks[self] = None
+    print('  node_%s [label="%s"]' % (self.uid, self.__name))
+    if self._builder is not None:
+      if self._builder.dot(marks):
+        print('  builder_%s -> node_%s' % (self._builder.uid,
+                                           self.uid))
+    return True
 
   @classmethod
   def drake_type(self):
@@ -2323,9 +2323,9 @@ class ShellCommand(Builder):
                  stdout = None):
         """Create a builder that runs command.
 
-        sources -- List of source nodes, or source source node if
+        sources -- List of source nodes, or source node if
                    there's only one.
-        targets -- List of target nodes, or target target node if
+        targets -- List of target nodes, or target node if
                    there's only one.
         command -- The shell command to run.
         pretty  -- Optional pretty printing.
@@ -2729,27 +2729,26 @@ def _raw_include(path, *args, **kwargs):
   return res
 
 def dot(node, *filters):
-
-    # FIXME: coro!
-    node.build()
-    marks = {}
-    print('digraph')
-    print('{')
-    node.dot(marks)
-    print('}')
+  # FIXME: coro!
+  node.build()
+  marks = {}
+  print('digraph')
+  print('{')
+  node.dot(marks)
+  print('}')
 
 _MODES = {}
 
 def command_add(name, action):
-    """Register a new command available from the command line.
+  """Register a new command available from the command line.
 
-    name   -- The name of the command.
-    action -- The function called by the command.
+  name   -- The name of the command.
+  action -- The function called by the command.
 
-    Using --name node_list on the command line will call action with
-    the node list as argument.
-    """
-    _MODES[name] = action
+  Using --name node_list on the command line will call action with
+  the node list as argument.
+  """
+  _MODES[name] = action
 
 
 class CWDPrinter:
