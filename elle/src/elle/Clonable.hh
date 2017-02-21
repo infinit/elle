@@ -1,7 +1,6 @@
-#ifndef ELLE_CLONABLE_HH
-# define ELLE_CLONABLE_HH
+#pragma once
 
-# include <memory>
+#include <memory>
 
 namespace elle
 {
@@ -13,11 +12,11 @@ namespace elle
     std::unique_ptr<Cloned>
     clone() const = 0;
   protected:
-    typedef Cloned _elle_Cloned;
+    using _elle_Cloned = Cloned;
   };
 }
 
-# define ELLE_CLONABLE()                                                \
+#define ELLE_CLONABLE()                                                 \
   virtual                                                               \
   std::unique_ptr<typename Self::_elle_Cloned>                          \
   clone() const override                                                \
@@ -25,5 +24,3 @@ namespace elle
     return                                                              \
       std::unique_ptr<typename Self::_elle_Cloned>(new Self(*this));    \
   }                                                                     \
-
-#endif
