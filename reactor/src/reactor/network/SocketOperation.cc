@@ -138,6 +138,8 @@ int
 reactor_epoll_wait(int epfd, struct epoll_event *events,
                   int maxevents, int timeout)
 {
+  if (!reactor::Scheduler::scheduler())
+    return epoll_wait(epfd, events, maxevents, timeout);
   ELLE_DEBUG("epoll_wait %s %s", epfd, timeout);
   int res = epoll_wait(epfd, events, maxevents, 0);
   if (res || !timeout)
