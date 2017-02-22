@@ -6,19 +6,19 @@
 	path = src/elle/json/modules/json-spirit
 	url = https://github.com/infinitdotio/json-spirit
         fetchRecurseSubmodules = false
-[submodule "reactor/miniupnp"]
+[submodule "src/elle/reactor/miniupnp"]
 	path = src/elle/reactor/modules/miniupnp
 	url = https://github.com/infinit/miniupnp
         fetchRecurseSubmodules = false
-[submodule "reactor/libutp"]
+[submodule "src/elle/reactor/libutp"]
 	path = src/elle/reactor/modules/libutp
 	url = https://github.com/infinit/libutp
         fetchRecurseSubmodules = false
-[submodule "reactor/osxfuse"]
+[submodule "src/elle/reactor/osxfuse"]
 	path = src/elle/reactor/modules/osxfuse
 	url = https://github.com/osxfuse/osxfuse
         fetchRecurseSubmodules = false
-[submodule "reactor/dokany"]
+[submodule "src/elle/reactor/dokany"]
 	path = src/elle/reactor/modules/dokany
 	url = https://github.com/infinit/dokan
         fetchRecurseSubmodules = false

@@ -8,6 +8,7 @@ namespace elle
   class Clonable
   {
   public:
+    virtual
     std::unique_ptr<Cloned>
     clone() const = 0;
   protected:
