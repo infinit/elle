@@ -1,11 +1,12 @@
 #pragma once
 
-#include <utp.h>
+#include <elle/reactor/network/utp-socket.hh>
 
 #include <elle/reactor/Barrier.hh>
 #include <elle/reactor/MultiLockBarrier.hh>
 #include <elle/reactor/mutex.hh>
-#include <elle/reactor/network/utp-socket.hh>
+
+#include <utp.h>
 
 namespace elle
 {

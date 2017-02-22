@@ -1,11 +1,13 @@
 #pragma once
 
+#include <elle/reactor/network/socket.hh>
+#include <elle/reactor/network/resolve.hh>
+#include <elle/reactor/network/tcp-socket.hh>
+
+// Do not include asio first, this will result on errors on mingw (at least),
+// related to WinSock.h already included.
 #include <boost/asio.hpp>
 #include <boost/asio/ssl.hpp>
-
-#include <elle/reactor/network/resolve.hh>
-#include <elle/reactor/network/socket.hh>
-#include <elle/reactor/network/tcp-socket.hh>
 
 namespace elle
 {

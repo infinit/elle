@@ -1,4 +1,4 @@
-#include <utp.h>
+#include <elle/reactor/network/utp-socket-impl.hh>
 
 #include <elle/err.hh>
 #include <elle/finally.hh>
@@ -8,9 +8,11 @@
 #include <elle/reactor/network/exception.hh>
 #include <elle/reactor/network/fwd.hh>
 #include <elle/reactor/network/utp-server-impl.hh>
-#include <elle/reactor/network/utp-socket-impl.hh>
 #include <elle/reactor/scheduler.hh>
 #include <elle/reactor/thread.hh>
+
+#include <utp.h>
+
 
 ELLE_LOG_COMPONENT("elle.reactor.network.UTPSocket");
 
