@@ -906,4 +906,4 @@ def configure(curl_config,
     rule_install << drake.install(lib_static, prefix)
     rule_install << drake.install(
       list(filter(lambda n: isinstance(n, drake.cxx.Header), sources)),
-      prefix / 'include', 'src')
+      prefix / 'include' / 'elle' / 'reactor')

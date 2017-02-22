@@ -121,3 +121,16 @@ def configure(cxx_toolkit,
       [drake.node('%s.cc' % example), library, elle_library],
       cxx_toolkit, config_examples)
   rule_build << rule_examples
+
+  ## ------- ##
+  ## Install ##
+  ## ------- ##
+
+  if prefix is not False:
+    rule_install = drake.Rule('install')
+    if cxx_toolkit.os not in [drake.os.windows, drake.os.ios]:
+      rule_install << drake.install(lib_dynamic, prefix)
+    rule_install << drake.install(lib_static, prefix)
+    rule_install << drake.install(
+      list(filter(lambda n: isinstance(n, drake.cxx.Header), sources)),
+      prefix / 'include' / 'elle' / 'das')

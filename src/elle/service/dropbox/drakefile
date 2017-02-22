@@ -50,3 +50,17 @@ def configure(cxx_toolkit,
   rule_build = drake.Rule('build')
   rule_build << lib_dynamic
   rule_build << lib_static
+
+  ## ------- ##
+  ## Install ##
+  ## ------- ##
+
+  if prefix is not False:
+    global rule_install
+    rule_install = drake.Rule('install')
+    if cxx_toolkit.os not in [drake.os.windows, drake.os.ios]:
+      rule_install << drake.install(lib_dynamic, prefix)
+    rule_install << drake.install(lib_static, prefix)
+    rule_install << drake.install(
+      (node for node in sources if isinstance(node, drake.cxx.Header)),
+      prefix / 'include' / 'elle' / 'service' / 'dropbox')

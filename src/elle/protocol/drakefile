@@ -176,4 +176,4 @@ def configure(cryptography,
     rule_install << drake.install(lib_static, prefix)
     rule_install << drake.install(
       (node for node in sources if isinstance(node, drake.cxx.Header)),
-      prefix / 'include', 'src')
+      prefix / 'include' / 'elle' / 'protocol')
