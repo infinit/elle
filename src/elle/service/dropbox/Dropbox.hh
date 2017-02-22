@@ -231,18 +231,18 @@ namespace elle
   namespace serialization
   {
     template <>
-    struct Serialize<services::dropbox::AccountInfo>
-      : public das::Serializer<services::dropbox::AccountInfo>
+    struct Serialize<service::dropbox::AccountInfo>
+      : public das::Serializer<service::dropbox::AccountInfo>
     {};
 
     template <>
-    struct Serialize<services::dropbox::Metadata::Content>
-      : public das::Serializer<services::dropbox::Metadata::Content>
+    struct Serialize<service::dropbox::Metadata::Content>
+      : public das::Serializer<service::dropbox::Metadata::Content>
     {};
 
     template <>
-    struct Serialize<services::dropbox::Metadata>
-      : public das::Serializer<services::dropbox::Metadata>
+    struct Serialize<service::dropbox::Metadata>
+      : public das::Serializer<service::dropbox::Metadata>
     {};
   }
 }

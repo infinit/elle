@@ -38,13 +38,13 @@ def configure(cxx_toolkit,
 
   elle_lib = drake.copy(elle.lib_dynamic, 'lib', strip_prefix = True)
   sources = drake.nodes(
-    'src/dropbox/Dropbox.cc',
-    'src/dropbox/Dropbox.hh',
+    'Dropbox.cc',
+    'Dropbox.hh',
   )
-  lib_dynamic = drake.cxx.DynLib('lib/dropbox',
+  lib_dynamic = drake.cxx.DynLib('lib/elle_dropbox',
                                  sources + [elle_lib],
                                  cxx_toolkit, local_config)
-  lib_static = drake.cxx.StaticLib('lib/dropbox',
+  lib_static = drake.cxx.StaticLib('lib/elle_dropbox',
                                    sources,
                                    cxx_toolkit, local_config)
   rule_build = drake.Rule('build')
