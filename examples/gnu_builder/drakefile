@@ -131,7 +131,7 @@ def configure(cxx_toolkit = None,
     zlib_configure_call = zlib_configure
     zlib_makefile = None
     if cxx_toolkit.os is drake.os.macos:
-      zlib_lib = drake.cxx.DynLib('zlib/lib/libz.1.2.8.dylib')
+      zlib_lib = drake.cxx.DynLib('zlib/lib/libz.%s.dylib' % zlib_version)
     elif cxx_toolkit.os is drake.os.linux:
       zlib_lib = drake.cxx.DynLib('zlib/lib/libz.so.1')
   zlib_prefix_absolute = drake.path_build(zlib_prefix, absolute = True)
