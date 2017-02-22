@@ -850,7 +850,7 @@ def configure(curl_config,
         valgrind = valgrind,
         env = env,
         stdin = stdin,
-        valgrind_args = ['--suppressions=%s' % (drake.path_source('../valgrind.suppr'))
+        valgrind_args = ['--suppressions=%s' % (drake.path_source('../../../valgrind.suppr'))
         ])
     else:
       runner = drake.Runner(exe = test, env = env,stdin = stdin)

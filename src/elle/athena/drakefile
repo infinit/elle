@@ -111,7 +111,7 @@ def configure(cxx_toolkit,
       runner = drake.valgrind.ValgrindRunner(
         exe = test,
         valgrind_args = [
-          '--suppressions=%s' % drake.path_source('../valgrind.suppr'),
+          '--suppressions=%s' % drake.path_source('../../../valgrind.suppr'),
         ],
       )
     else:

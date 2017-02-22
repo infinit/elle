@@ -152,7 +152,7 @@ def configure(cryptography,
       runner = drake.valgrind.ValgrindRunner(
         exe = test,
         valgrind = valgrind,
-        valgrind_args = ['--suppressions=%s' % (drake.path_source('../valgrind.suppr'))]
+        valgrind_args = ['--suppressions=%s' % (drake.path_source('../../../../valgrind.suppr'))]
         )
     else:
       runner = drake.Runner(exe = test)
