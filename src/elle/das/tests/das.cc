@@ -13,10 +13,10 @@ struct serialization
 };
 elle::Version serialization::version(0, 0, 0);
 
-DAS_SYMBOL(id);
-DAS_SYMBOL(name);
-DAS_SYMBOL(model);
-DAS_SYMBOL(device);
+ELLE_DAS_SYMBOL(id);
+ELLE_DAS_SYMBOL(name);
+ELLE_DAS_SYMBOL(model);
+ELLE_DAS_SYMBOL(device);
 
 class Device
 {
@@ -51,10 +51,10 @@ public:
 // DAS_MODEL_FIELD(Device, model);
 // DAS_MODEL_FIELD(Device, id);
 
-// using das::operator <<;
+// using elle::das::operator <<;
 
 using DasDevice =
-  das::Model<
+  elle::das::Model<
     Device,
     elle::meta::List<Symbol_id, Symbol_name, Symbol_model>>;
 
@@ -79,7 +79,7 @@ public:
 };
 
 using DasUser =
-  das::Model<
+  elle::das::Model<
     User,
     elle::meta::List<Symbol_name, Symbol_device>>;
 

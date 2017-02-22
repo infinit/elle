@@ -11,14 +11,14 @@
 #include <elle/serialization/json.hh>
 
 // Declare symbols used by das.
-DAS_SYMBOL(array);
-DAS_SYMBOL(dict);
-DAS_SYMBOL(foo);
-DAS_SYMBOL(f);
-DAS_SYMBOL(i);
-DAS_SYMBOL(encrypted_payload);
-DAS_SYMBOL(body);
-DAS_SYMBOL(signature);
+ELLE_DAS_SYMBOL(array);
+ELLE_DAS_SYMBOL(dict);
+ELLE_DAS_SYMBOL(foo);
+ELLE_DAS_SYMBOL(f);
+ELLE_DAS_SYMBOL(i);
+ELLE_DAS_SYMBOL(encrypted_payload);
+ELLE_DAS_SYMBOL(body);
+ELLE_DAS_SYMBOL(signature);
 
 // Create an example data that look like that:
 // {
@@ -39,7 +39,7 @@ struct Body
   elle::Buffer encrypted_payload;
 
   // Generate a model for the class Body.
-  using Model = das::Model<Body, elle::meta::List<Symbol_array,
+  using Model = elle::das::Model<Body, elle::meta::List<Symbol_array,
                                                   Symbol_dict,
                                                   Symbol_f,
                                                   Symbol_i,
@@ -67,13 +67,13 @@ struct Signed
     {
       elle::IOStream output(res.ostreambuf());
       elle::serialization::binary::SerializerOut serializer(output, false);
-      das::serialize(body, serializer);
+      elle::das::serialize(body, serializer);
     }
     return res;
   }
 
   // Generate a Model the templated class Signed<T>.
-  using Model = das::Model<Signed<T>, elle::meta::List<Symbol_body,
+  using Model = elle::das::Model<Signed<T>, elle::meta::List<Symbol_body,
                                                        Symbol_signature
                                                        >>;
 };
@@ -81,11 +81,11 @@ struct Signed
 using Example = Signed<Body>;
 
 // Declare both Body and Example serializable.
-DAS_SERIALIZE(Body);
-DAS_SERIALIZE(Example);
+ELLE_DAS_SERIALIZE(Body);
+ELLE_DAS_SERIALIZE(Example);
 
-// Declare all das::Model printable.
-using das::operator <<;
+// Declare all elle::das::Model printable.
+using elle::das::operator <<;
 
 // Read your fake keypair from examples/example.key.
 static

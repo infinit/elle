@@ -1,8 +1,11 @@
 #pragma once
 
-namespace das
+namespace elle
 {
-  template <typename T>
-  struct Das
-  {};
+  namespace das
+  {
+    template <typename T>
+    struct Das
+    {};
+  }
 }

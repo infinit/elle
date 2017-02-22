@@ -5,9 +5,9 @@
 #include <elle/das/flatten.hh>
 #include <elle/das/Symbol.hh>
 
-DAS_SYMBOL(device);
-DAS_SYMBOL(id);
-DAS_SYMBOL(name);
+ELLE_DAS_SYMBOL(device);
+ELLE_DAS_SYMBOL(id);
+ELLE_DAS_SYMBOL(name);
 
 struct Device
 {
@@ -19,7 +19,8 @@ struct Device
   int id;
   std::string name;
 
-  using Model = das::Model<Device, elle::meta::List<Symbol_id, Symbol_name>>;
+  using Model = elle::das::Model<Device, elle::meta::List<Symbol_id,
+                                                          Symbol_name>>;
 };
 
 static
@@ -27,7 +28,7 @@ void
 value()
 {
   Device d(42, "towel");
-  auto flat = das::flatten(d);
+  auto flat = elle::das::flatten(d);
   BOOST_CHECK_EQUAL(
     flat,
     std::make_tuple(42, "towel"));
@@ -38,7 +39,7 @@ void
 ref()
 {
   Device d(42, "towel");
-  auto flat = das::flatten_ref(d);
+  auto flat = elle::das::flatten_ref(d);
   BOOST_CHECK_EQUAL(std::get<0>(flat), 42);
   BOOST_CHECK_EQUAL(std::get<1>(flat), "towel");
   std::get<0>(flat) = 51;
@@ -52,7 +53,7 @@ void
 cref()
 {
   Device d(42, "towel");
-  auto flat = das::flatten_ref(static_cast<Device const&>(d));
+  auto flat = elle::das::flatten_ref(static_cast<Device const&>(d));
   BOOST_CHECK_EQUAL(std::get<0>(flat), 42);
   BOOST_CHECK_EQUAL(std::get<1>(flat), "towel");
   d.id = 51;
@@ -69,7 +70,8 @@ struct User
   std::string name;
   Device device;
 
-  using Model = das::Model<User, elle::meta::List<Symbol_name, Symbol_device>>;
+  using Model = elle::das::Model<User, elle::meta::List<Symbol_name,
+                                                        Symbol_device>>;
 };
 
 static
@@ -77,7 +79,7 @@ void
 composite()
 {
   User u("Doug", Device(42, "towel"));
-  auto flat = das::flatten_ref(u);
+  auto flat = elle::das::flatten_ref(u);
   BOOST_CHECK_EQUAL(std::get<0>(flat), "Doug");
   BOOST_CHECK_EQUAL(std::get<0>(std::get<1>(flat)), 42);
   BOOST_CHECK_EQUAL(std::get<1>(std::get<1>(flat)), "towel");

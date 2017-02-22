@@ -1,15 +1,15 @@
 #include <type_traits>
 
-#define DAS_SYMBOL(Name) DAS_SYMBOL_NAMED(Name, Name)
-#define DAS_SYMBOL_TYPE(Name) DAS_SYMBOL_TYPE_NAMED(Name, Name)
+#define ELLE_DAS_SYMBOL(Name) ELLE_DAS_SYMBOL_NAMED(Name, Name)
+#define ELLE_DAS_SYMBOL_TYPE(Name) ELLE_DAS_SYMBOL_TYPE_NAMED(Name, Name)
 
-#define DAS_SYMBOL_TYPE_NAMED_(Name, CName)                     \
+#define ELLE_DAS_SYMBOL_TYPE_NAMED_(Name, CName)                \
   template <typename S>                                         \
   class _Symbol_##Name                                          \
-    : public ::das::SpecificSymbol<S>                           \
+    : public ::elle::das::SpecificSymbol<S>                     \
   {                                                             \
   public:                                                       \
-    using Super = ::das::SpecificSymbol<S>;                     \
+    using Super = ::elle::das::SpecificSymbol<S>;               \
     using Super::operator=;                                     \
                                                                 \
     /* Name */                                                  \
@@ -113,8 +113,8 @@
     }                                                           \
   };                                                            \
 
-#define DAS_SYMBOL_TYPE_NAMED(Name, CName)                      \
-  DAS_SYMBOL_TYPE_NAMED_(Name, CName);                          \
+#define ELLE_DAS_SYMBOL_TYPE_NAMED(Name, CName)                 \
+  ELLE_DAS_SYMBOL_TYPE_NAMED_(Name, CName);                     \
   class Symbol_##Name                                           \
     : public _Symbol_##Name<Symbol_##Name>                      \
   {                                                             \
@@ -123,7 +123,7 @@
     using Super::operator =;                                    \
   };                                                            \
 
-#define DAS_SYMBOL_NAMED(Name, CName)                           \
-  DAS_SYMBOL_TYPE_NAMED(Name, CName);                           \
+#define ELLE_DAS_SYMBOL_NAMED(Name, CName)                      \
+  ELLE_DAS_SYMBOL_TYPE_NAMED(Name, CName);                      \
   __attribute__((unused))                                       \
   constexpr static Symbol_##Name CName = {};

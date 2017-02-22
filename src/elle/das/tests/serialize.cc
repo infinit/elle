@@ -11,11 +11,11 @@
 
 ELLE_LOG_COMPONENT("das.serializer.test");
 
-DAS_SYMBOL(device);
-DAS_SYMBOL(id);
-DAS_SYMBOL(name);
+ELLE_DAS_SYMBOL(device);
+ELLE_DAS_SYMBOL(id);
+ELLE_DAS_SYMBOL(name);
 
-using das::operator <<;
+using elle::das::operator <<;
 
 struct DevicePOD
 {
@@ -28,7 +28,8 @@ struct DevicePOD
   int id;
   std::string name;
 
-  using Model = das::Model<DevicePOD, elle::meta::List<Symbol_id, Symbol_name>>;
+  using Model = elle::das::Model<DevicePOD, elle::meta::List<Symbol_id,
+                                                             Symbol_name>>;
 };
 
 struct NopeString
@@ -65,7 +66,8 @@ struct Device
   int id;
   NopeString name;
 
-  using Model = das::Model<Device, elle::meta::List<Symbol_id, Symbol_name>>;
+  using Model = elle::das::Model<Device, elle::meta::List<Symbol_id,
+                                                          Symbol_name>>;
 };
 
 struct User
@@ -84,7 +86,8 @@ struct User
     return this->name == rhs.name && this->device == rhs.device;
   }
 
-  using Model = das::Model<User, elle::meta::List<Symbol_name, Symbol_device>>;
+  using Model = elle::das::Model<User, elle::meta::List<Symbol_name,
+                                                        Symbol_device>>;
 };
 
 namespace elle
@@ -139,8 +142,8 @@ void
 composite()
 {
   User u("Doug", {Device(42, "arthur"), Device(51, "ford")});
-  using Model = das::Model<User, elle::meta::List<Symbol_name>>;
-  using S = das::Serializer<User, Model>;
+  using Model = elle::das::Model<User, elle::meta::List<Symbol_name>>;
+  using S = elle::das::Serializer<User, Model>;
   ELLE_LOG("serialize with default model")
   {
     std::stringstream ss;

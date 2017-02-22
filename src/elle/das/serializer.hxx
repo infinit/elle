@@ -1,10 +1,12 @@
-namespace das
+namespace elle
 {
-  template <typename O, typename M>
-  O
-  Serializer<O, M>::deserialize(elle::serialization::SerializerIn& s)
+  namespace das
   {
-    return _details::deserialize_switch<O, M>(s);
+    template <typename O, typename M>
+    O
+    Serializer<O, M>::deserialize(elle::serialization::SerializerIn& s)
+    {
+      return _details::deserialize_switch<O, M>(s);
+    }
   }
 }
-

@@ -6,10 +6,10 @@
 
 namespace symbols
 {
-  DAS_SYMBOL(foo);
-  DAS_SYMBOL(bar);
-  DAS_SYMBOL(baz);
-  DAS_SYMBOL(quux);
+  ELLE_DAS_SYMBOL(foo);
+  ELLE_DAS_SYMBOL(bar);
+  ELLE_DAS_SYMBOL(baz);
+  ELLE_DAS_SYMBOL(quux);
 }
 
 struct S

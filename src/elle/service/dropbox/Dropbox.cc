@@ -37,8 +37,8 @@ struct ComparePath
   }
 };
 
-DAS_SERIALIZE(elle::service::dropbox::Longpoll);
-DAS_SERIALIZE(elle::service::dropbox::Delta);
+ELLE_DAS_SERIALIZE(elle::service::dropbox::Longpoll);
+ELLE_DAS_SERIALIZE(elle::service::dropbox::Delta);
 
 namespace elle
 {

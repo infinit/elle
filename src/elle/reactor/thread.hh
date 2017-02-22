@@ -20,8 +20,8 @@ namespace elle
   {
     typedef std::shared_ptr<Thread> ThreadPtr;
 
-    DAS_SYMBOL(dispose);
-    DAS_SYMBOL(managed);
+    ELLE_DAS_SYMBOL(dispose);
+    ELLE_DAS_SYMBOL(managed);
 
     class Thread:
       public Waitable

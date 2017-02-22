@@ -7,10 +7,10 @@
 #include <elle/attribute.hh>
 #include <elle/optional.hh>
 
-#include <das/Symbol.hh>
-#include <das/model.hh>
-#include <das/printer.hh>
-#include <das/serializer.hh>
+#include <elle/das/Symbol.hh>
+#include <elle/das/model.hh>
+#include <elle/das/printer.hh>
+#include <elle/das/serializer.hh>
 
 #include <elle/reactor/http/Request.hh>
 
@@ -22,22 +22,22 @@ namespace elle
     {
       namespace symbols
       {
-        DAS_SYMBOL(backoff);
-        DAS_SYMBOL(bytes);
-        DAS_SYMBOL(changes);
-        DAS_SYMBOL(client_mtime);
-        DAS_SYMBOL(contents);
-        DAS_SYMBOL(cursor);
-        DAS_SYMBOL(display_name);
-        DAS_SYMBOL(entries);
-        DAS_SYMBOL(has_more);
-        DAS_SYMBOL(is_deleted);
-        DAS_SYMBOL(is_dir);
-        DAS_SYMBOL(modified);
-        DAS_SYMBOL(path);
-        DAS_SYMBOL(read_only);
-        DAS_SYMBOL(reset);
-        DAS_SYMBOL(uid);
+        ELLE_DAS_SYMBOL(backoff);
+        ELLE_DAS_SYMBOL(bytes);
+        ELLE_DAS_SYMBOL(changes);
+        ELLE_DAS_SYMBOL(client_mtime);
+        ELLE_DAS_SYMBOL(contents);
+        ELLE_DAS_SYMBOL(cursor);
+        ELLE_DAS_SYMBOL(display_name);
+        ELLE_DAS_SYMBOL(entries);
+        ELLE_DAS_SYMBOL(has_more);
+        ELLE_DAS_SYMBOL(is_deleted);
+        ELLE_DAS_SYMBOL(is_dir);
+        ELLE_DAS_SYMBOL(modified);
+        ELLE_DAS_SYMBOL(path);
+        ELLE_DAS_SYMBOL(read_only);
+        ELLE_DAS_SYMBOL(reset);
+        ELLE_DAS_SYMBOL(uid);
       }
 
       struct Error
@@ -62,10 +62,10 @@ namespace elle
       {
         int uid;
         std::string display_name;
-        using Model = das::Model<AccountInfo,
-                                 elle::meta::List<
-                                   symbols::Symbol_uid,
-                                   symbols::Symbol_display_name>>;
+        using Model = elle::das::Model<AccountInfo,
+                                       elle::meta::List<
+                                         symbols::Symbol_uid,
+                                         symbols::Symbol_display_name>>;
 
       };
 
@@ -86,7 +86,7 @@ namespace elle
           int64_t bytes;
           boost::optional<std::string> client_mtime;
           boost::optional<std::string> modified;
-          using Model = das::Model<
+          using Model = elle::das::Model<
             Content,
             decltype(elle::meta::list(symbols::path,
                                       symbols::is_dir,
@@ -96,7 +96,7 @@ namespace elle
         };
         boost::optional<std::vector<Content>> contents;
 
-        using Model = das::Model<
+        using Model = elle::das::Model<
           Metadata,
           decltype(elle::meta::list(symbols::is_dir,
                                     symbols::path,
@@ -111,7 +111,7 @@ namespace elle
       {
         bool changes;
         boost::optional<int> backoff;
-        using Model = das::Model<
+        using Model = elle::das::Model<
           Longpoll,
           decltype(elle::meta::list(symbols::changes,
                                     symbols::backoff))>;
@@ -123,7 +123,7 @@ namespace elle
         std::string cursor;
         bool has_more;
         std::unordered_map<std::string, boost::optional<Metadata>> entries;
-        using Model = das::Model<
+        using Model = elle::das::Model<
           Delta,
           decltype(elle::meta::list(symbols::reset,
                                     symbols::cursor,
@@ -224,7 +224,7 @@ namespace elle
         ELLE_ATTRIBUTE(std::unique_ptr<Cache>, cache);
       };
 
-      using das::operator <<;
+      using elle::das::operator <<;
     }
   }
 

@@ -6,10 +6,10 @@
 #include <elle/das/printer.hh>
 #include <elle/das/Symbol.hh>
 
-DAS_SYMBOL(foo);
-DAS_SYMBOL(bar);
+ELLE_DAS_SYMBOL(foo);
+ELLE_DAS_SYMBOL(bar);
 
-using das::operator <<;
+using elle::das::operator <<;
 
 struct NoModel
 {
@@ -28,7 +28,7 @@ struct BuiltinModel
 {
   int foo, bar;
   using Model =
-    das::Model<BuiltinModel, elle::meta::List<Symbol_foo, Symbol_bar>>;
+    elle::das::Model<BuiltinModel, elle::meta::List<Symbol_foo, Symbol_bar>>;
 };
 
 void
@@ -43,9 +43,9 @@ struct ExternalModel
   int foo, bar;
 };
 
-DAS_MODEL_DEFAULT(
+ELLE_DAS_MODEL_DEFAULT(
   ExternalModel,
-  (das::Model<ExternalModel, elle::meta::List<Symbol_foo, Symbol_bar>>));
+  (elle::das::Model<ExternalModel, elle::meta::List<Symbol_foo, Symbol_bar>>));
 
 void
 external_model()

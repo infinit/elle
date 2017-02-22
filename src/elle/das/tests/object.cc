@@ -10,9 +10,9 @@
 #include <elle/das/model.hh>
 #include <elle/das/printer.hh>
 
-DAS_SYMBOL(name);
-DAS_SYMBOL(model);
-DAS_SYMBOL(id);
+ELLE_DAS_SYMBOL(name);
+ELLE_DAS_SYMBOL(model);
+ELLE_DAS_SYMBOL(id);
 
 namespace das
 {
@@ -121,7 +121,7 @@ public:
   }
 };
 
-typedef das::Model<
+typedef elle::das::Model<
   Device, elle::meta::List<Symbol_name, Symbol_model, Symbol_id>> DasDevice;
 
 namespace das
@@ -138,7 +138,7 @@ static
 void
 printer()
 {
-  using das::operator <<;
+  using elle::das::operator <<;
   Device d("name", boost::none, elle::UUID());
   std::stringstream s;
   s << d;

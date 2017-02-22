@@ -7,10 +7,10 @@
   template <typename ... Args>                                          \
   auto                                                                  \
   Name(Args&& ... args) ->                                              \
-    decltype(das::named::prototype(__VA_ARGS__).call(                   \
+    decltype(elle::das::named::prototype(__VA_ARGS__).call(                   \
                F, std::forward<Args>(args)...))                         \
   {                                                                     \
-    return das::named::prototype(__VA_ARGS__).call(                     \
+    return elle::das::named::prototype(__VA_ARGS__).call(                     \
       F, std::forward<Args>(args)...);                                  \
   }                                                                     \
 
@@ -18,8 +18,8 @@
 | Basic |
 `------*/
 
-DAS_SYMBOL(versioned);
-DAS_SYMBOL(name);
+ELLE_DAS_SYMBOL(versioned);
+ELLE_DAS_SYMBOL(name);
 
 static
 void
@@ -34,7 +34,7 @@ static
 void
 basic_f(Args&& ... args)
 {
-  das::named::prototype(name, versioned).
+  elle::das::named::prototype(name, versioned).
     call(_basic_f, std::forward<Args>(args)...);
 }
 
@@ -79,10 +79,10 @@ return_value()
 | Forwarding |
 `-----------*/
 
-DAS_SYMBOL(arg1);
-DAS_SYMBOL(arg2);
-DAS_SYMBOL(arg3);
-DAS_SYMBOL(arg4);
+ELLE_DAS_SYMBOL(arg1);
+ELLE_DAS_SYMBOL(arg2);
+ELLE_DAS_SYMBOL(arg3);
+ELLE_DAS_SYMBOL(arg4);
 
 struct Neither
 {
@@ -161,7 +161,8 @@ forwarding()
   {
     Neither neither;
     auto f =
-      das::named::function(_forwarding_ref, arg1 = neither, arg2 = neither);
+      elle::das::named::function(_forwarding_ref,
+                                 arg1 = neither, arg2 = neither);
     f();
     f(arg1 = neither);
     f(arg2 = neither);
@@ -169,8 +170,8 @@ forwarding()
   }
   {
     Movable movable_def;
-    auto f = das::named::function([] (Movable m) { return m.moved; },
-                                  arg1 = std::move(movable_def));
+    auto f = elle::das::named::function([] (Movable m) { return m.moved; },
+                                        arg1 = std::move(movable_def));
     BOOST_CHECK(movable_def.moved);
     BOOST_CHECK(!f());
     Movable movable;
@@ -207,8 +208,8 @@ positional()
 | Default value |
 `--------------*/
 
-DAS_SYMBOL(out1);
-DAS_SYMBOL(out2);
+ELLE_DAS_SYMBOL(out1);
+ELLE_DAS_SYMBOL(out2);
 
 static
 void
