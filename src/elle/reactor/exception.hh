@@ -9,7 +9,8 @@ namespace elle
 {
   namespace reactor
   {
-    class Exception: public elle::Exception
+    class Exception
+      : public elle::Exception
     {
     public:
       Exception(const std::string& message);
@@ -20,7 +21,7 @@ namespace elle
       : public elle::Error
     {
     public:
-      typedef elle::Error Super;
+      using Super = elle::Error;
       Timeout(reactor::Duration const& delay);
       ELLE_ATTRIBUTE_R(reactor::Duration, delay);
     };

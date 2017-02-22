@@ -9,7 +9,7 @@ namespace elle
     namespace backend
     {
       /// An action run by a thread.
-      typedef std::function<void ()> Action;
+      using Action = std::function<void ()>;
       class Backend;
       class Thread;
     }

@@ -12,7 +12,7 @@ namespace elle
     /// this type is an alias of a string which is used to
     /// uniquely represent objects in string forms.
     ///
-    typedef String              Unique;
+    using Unique = String;
 
   }
 }

@@ -7,24 +7,34 @@ namespace elle
 {
   namespace reactor
   {
-    class Operation: public Waitable
+    class Operation
+      : public Waitable
     {
     public:
-      typedef Operation Self;
-      typedef Waitable Super;
+      using Self = elle::reactor::Operation;
+      using Super = elle::reactor::Waitable;
       Operation();
       Operation(Scheduler& scheduler);
-      Scheduler& scheduler();
-      bool run(DurationOpt timeout = DurationOpt());
-      void start();
+      Scheduler&
+      scheduler();
+      bool
+      run(DurationOpt timeout = DurationOpt());
+      void
+      start();
 
       ELLE_ATTRIBUTE_R(bool, running);
 
     protected:
-      void abort();
-      void done();
-      virtual void _abort() = 0;
-      virtual void _start() = 0;
+      void
+      abort();
+      void
+      done();
+      virtual
+      void
+      _abort() = 0;
+      virtual
+      void
+      _start() = 0;
 
     private:
       Scheduler& _sched;

@@ -180,7 +180,7 @@ namespace elle
         /// Move a Request.
         Request(Request&& source);
         /// Dispose of a request.
-        ~Request();
+        ~Request() override;
         /// The HTTP method of this Request.
         ELLE_ATTRIBUTE_R(Method, method);
         /// The URL queried by this Request.
@@ -233,7 +233,6 @@ namespace elle
         void
         _complete(int code);
         /// Wait for the request to be done.
-        virtual
         bool
         _wait(Thread* thread, Waker const& waker) override;
 
@@ -298,7 +297,6 @@ namespace elle
       `----------*/
       public:
         /// Pretty print the request.
-        virtual
         void
         print(std::ostream& stream) const override;
       };

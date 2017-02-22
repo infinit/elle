@@ -98,7 +98,7 @@ _make_canonical_request()
                                          elle::cryptography::Oneway::sha256);
 
   elle::service::aws::CanonicalRequest request(
-    reactor::http::Method::POST,
+    elle::reactor::http::Method::POST,
     "/",
     query,
     headers,

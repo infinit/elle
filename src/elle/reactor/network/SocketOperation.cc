@@ -19,7 +19,7 @@ namespace elle
       template <typename AsioSocket>
       SocketOperation<AsioSocket>::SocketOperation(
         AsioSocket& socket):
-        Operation(*reactor::Scheduler::scheduler()),
+        Operation(*elle::reactor::Scheduler::scheduler()),
         _socket(socket),
         _canceled(false)
       {}
@@ -37,7 +37,7 @@ namespace elle
         // carry on. I know of no case were we "were not actually able to
         // cancel the operation".
         (void) ec;
-        reactor::wait(*this);
+        elle::reactor::wait(*this);
       }
 
       template <typename AsioSocket>
@@ -115,11 +115,36 @@ namespace elle
 
 #ifdef INFINIT_LINUX
 
+namespace elle
+{
+  namespace reactor
+  {
+    namespace network
+    {
+      static
+        std::unordered_map<elle::reactor::Thread*, std::function<void()>>
+        _epoll_interrupt_callback;
+
+      void
+      epoll_interrupt_callback(std::function<void()> cb,
+                               elle::reactor::Thread* thread)
+      {
+        if (!cb)
+          _epoll_interrupt_callback.erase(thread);
+        else
+          _epoll_interrupt_callback[thread] = cb;
+      }
+    }
+  }
+}
+
 extern "C"
 int
 reactor_epoll_wait(int epfd, struct epoll_event *events,
                   int maxevents, int timeout)
 {
+  if (!elle::reactor::Scheduler::scheduler())
+    return epoll_wait(epfd, events, maxevents, timeout);
   ELLE_DEBUG("epoll_wait %s %s", epfd, timeout);
   int res = epoll_wait(epfd, events, maxevents, 0);
   if (res || !timeout)
@@ -161,8 +186,37 @@ reactor_epoll_wait(int epfd, struct epoll_event *events,
       else
         b.open();
   });
-  ELLE_DUMP("wait b");
-  elle::reactor::wait(b);
+  try
+  {
+    elle::reactor::wait(b);
+  }
+  catch (...)
+  {
+    ELLE_TRACE("epoll wrapper interrupted by %s", elle::exception_string());
+    try
+    {
+      if (socket_running)
+        s.cancel();
+      elle::With<elle::reactor::Thread::NonInterruptible>()
+        << [&](elle::reactor::Thread::NonInterruptible&) {
+        elle::reactor::wait(b);
+      };
+    }
+    catch (...)
+    {
+      ELLE_ERR("reactor_epoll_wait threw again: %s", elle::exception_string());
+    }
+    auto it = elle::reactor::network::_epoll_interrupt_callback.find(
+      elle::reactor::scheduler().current());
+    if (it != elle::reactor::network::_epoll_interrupt_callback.end())
+    {
+      it->second();
+      errno = EINTR;
+      return -1;
+    }
+    else
+      throw;
+  }
   ELLE_DUMP("returned: %s", rv);
   if (rv)
     return epoll_wait(epfd, events, maxevents, 0);

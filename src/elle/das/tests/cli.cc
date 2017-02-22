@@ -223,8 +223,8 @@ void
 flag()
 {
   auto const f =
-    [] (std::string const& foo, int baz) { return foo + std::to_string(baz); };
-  auto const proto = das::named::prototype(foo, baz);
+    [] (std::string const& foo, int bar) { return foo + std::to_string(bar); };
+  auto const proto = das::named::prototype(foo, bar);
   BOOST_CHECK_THROW(das::cli::call(proto, f, {"--foo", "--bar", "bar"}),
                     das::cli::OptionValueError);
   BOOST_CHECK_THROW(das::cli::call(proto, f, {"--foo", "foo", "--bar"}),
@@ -432,6 +432,7 @@ ELLE_TEST_SUITE()
     conversions->add(BOOST_TEST_CASE(multiple_integers));
   }
   master.add(BOOST_TEST_CASE(defaults));
+  master.add(BOOST_TEST_CASE(flag));
   {
     auto suite = BOOST_TEST_SUITE("short_options");
     master.add(suite);

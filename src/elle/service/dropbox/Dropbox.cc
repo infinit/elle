@@ -1,13 +1,12 @@
-#include <elle/Range.hh>
+#include <elle/IntRange.hh>
 #include <elle/log.hh>
-#include <elle/serialization/json.hh>
-#include <elle/service/dropbox/Dropbox.hh>
-
+#include <elle/reactor/Barrier.hh>
+#include <elle/reactor/Scope.hh>
 #include <elle/reactor/http/url.hh>
 #include <elle/reactor/scheduler.hh>
 #include <elle/reactor/thread.hh>
-#include <elle/reactor/Barrier.hh>
-#include <elle/reactor/Scope.hh>
+#include <elle/serialization/json.hh>
+#include <elle/service/dropbox/Dropbox.hh>
 
 ELLE_LOG_COMPONENT("elle.services.dropbox.Dropbox");
 
@@ -85,14 +84,12 @@ namespace elle
                          [this] { this->_poll(); })
         {}
 
-        virtual
-        ~LongPollCache()
+        ~LongPollCache() override
         {
           // FIXME: Add a thread mode that terminates upon destruction.
           this->_poll_thread.terminate_now();
         }
 
-        virtual
         boost::optional<Metadata>
         metadata(boost::filesystem::path const& path) override
         {
@@ -114,7 +111,6 @@ namespace elle
           }
         }
 
-        virtual
         void
         metadata_update(boost::filesystem::path const&,
                         Metadata value) override
@@ -181,7 +177,6 @@ namespace elle
           }
         }
 
-        virtual
         void
         metadata_delete(boost::filesystem::path const& path) override
         {
@@ -291,7 +286,7 @@ namespace elle
         void
         sync(int offset, int size)
         {
-          elle::Range range(offset, size);
+          elle::IntRange range(offset, size);
           if (range.end() > signed(this->_contents.size()))
             range.end(this->_contents.size());
           ELLE_DEBUG_SCOPE("%s: sync %s", *this, range);
@@ -309,7 +304,7 @@ namespace elle
                 "preemptive cache",
                 [this, next]
                 {
-                  elle::Range next_range(next, this->_dropbox.block_size());
+                  elle::IntRange next_range(next, this->_dropbox.block_size());
                   if (next_range.end() > signed(this->_contents.size()))
                     next_range.end(this->_contents.size());
                   if (!this->_ranges_fetching.contains(next_range))
@@ -321,7 +316,7 @@ namespace elle
         }
 
         void
-        _sync(elle::Range range)
+        _sync(elle::IntRange range)
         {
           if (this->_ranges_fetching.contains(range))
           {
@@ -349,7 +344,7 @@ namespace elle
         }
 
         void
-        _get(elle::Range range)
+        _get(elle::IntRange range)
         {
           if (range.end() > signed(this->_contents.size()))
             range.end(this->_contents.size());
@@ -367,15 +362,15 @@ namespace elle
           }
           memcpy(this->_contents.mutable_contents() + range.start(),
                  data.contents(), data.size());
-          this->_ranges_fetched += elle::Range(range.start(), data.size());
+          this->_ranges_fetched += elle::IntRange(range.start(), data.size());
         }
 
         ELLE_ATTRIBUTE(Dropbox&, dropbox);
         ELLE_ATTRIBUTE(boost::filesystem::path, path);
         ELLE_ATTRIBUTE(elle::Buffer, contents);
-        ELLE_ATTRIBUTE(elle::Ranges, ranges_read);
-        ELLE_ATTRIBUTE(elle::Ranges, ranges_fetching);
-        ELLE_ATTRIBUTE(elle::Ranges, ranges_fetched);
+        ELLE_ATTRIBUTE(elle::IntRanges, ranges_read);
+        ELLE_ATTRIBUTE(elle::IntRanges, ranges_fetching);
+        ELLE_ATTRIBUTE(elle::IntRanges, ranges_fetched);
         friend class Dropbox;
       };
 

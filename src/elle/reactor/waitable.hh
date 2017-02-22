@@ -27,19 +27,19 @@ namespace elle
     `---------*/
     public:
       /// Self
-      typedef Waitable Self;
+      using Self = Waitable;
       /// Wake callback.
-      typedef std::function<void (Thread*)> Waker;
+      using Waker = std::function<void (Thread*)>;
       /// Waited thread and its wake callback.
-      typedef std::pair<Thread*, Waker> Handler;
+      using Handler = std::pair<Thread*, Waker>;
       /// Collection of threads waiting this
-      typedef boost::multi_index_container<
+      using Waiters = boost::multi_index_container<
         Handler,
         boost::multi_index::indexed_by<
           boost::multi_index::sequenced<>,
           boost::multi_index::hashed_unique<
             boost::multi_index::member<Handler, Thread*, &Handler::first>>>
-        > Waiters;
+        >;
 
     /*-------------.
     | Construction |

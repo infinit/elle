@@ -240,7 +240,7 @@ namespace xorfs
     write(elle::ConstWeakBuffer buffer, size_t size, off_t offset) override
     {
       lseek(_fd, offset, SEEK_SET);
-      for (int i = 0; i < buffer.size(); ++i)
+      for (uint64_t i = 0; i < buffer.size(); ++i)
         const_cast<elle::Byte&>(buffer.contents()[i]) ^= 0xFF;
       return ::write(_fd, buffer.contents(), size);
     }

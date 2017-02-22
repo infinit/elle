@@ -317,8 +317,8 @@ namespace elle
       std::enable_if_t<is_pair<T>::value, T>
       deserialize(SerializerIn& self, int)
       {
-        typedef typename T::first_type T1;
-        typedef typename T::second_type T2;
+        using T1 = typename T::first_type;
+        using T2 = typename T::second_type;
         int i = 0;
         boost::optional<T1> first;
         boost::optional<T2> second;
@@ -530,7 +530,7 @@ namespace elle
         {
           ELLE_LOG_COMPONENT("elle.serialization.Serializer");
           ELLE_DUMP("API: wrapper");
-          typedef typename Serialize<T>::Wrapper Wrapper;
+          using Wrapper = typename Serialize<T>::Wrapper;
           Wrapper wrapper(v);
           Serializer::serialize_switch<Wrapper>(s, wrapper);
         }
@@ -957,8 +957,8 @@ namespace elle
       ELLE_LOG_COMPONENT("elle.serialization.Serializer");
       ELLE_TRACE_SCOPE("%s: serialize associative container%s",
                        this, _details::current_name(*this));
-      typedef typename C::key_type K;
-      typedef typename C::mapped_type V;
+      using K = typename C::key_type;
+      using V = typename C::mapped_type;
       if (this->out())
       {
         this->_serialize_array(
@@ -1254,7 +1254,7 @@ namespace elle
     template <>
     struct ELLE_API ExceptionMaker<elle::Exception>
     {
-      typedef ExceptionMaker<elle::Exception> Self;
+      using Self = ExceptionMaker<elle::Exception>;
 
       template <typename U>
       static
@@ -1429,25 +1429,25 @@ namespace elle
       template <typename T>
       struct serialization_tag
       {
-        typedef typename T::serialization_tag type;
+        using type = typename T::serialization_tag;
       };
 
       template <typename T>
       struct serialization_tag<std::unique_ptr<T>>
       {
-        typedef typename T::serialization_tag type;
+        using type = typename T::serialization_tag;
       };
 
       template <typename T>
       struct serialization_tag<T const*>
       {
-        typedef typename T::serialization_tag type;
+        using type = typename T::serialization_tag;
       };
 
       template <typename T>
       struct serialization_tag<T*>
       {
-        typedef typename T::serialization_tag type;
+        using type = typename T::serialization_tag;
       };
 
       template <typename T>
@@ -1730,7 +1730,7 @@ namespace elle
     template <typename T, bool has>
     struct _forward_serialization_tag
     {
-      typedef typename T::serialization_tag serialization_tag;
+      using serialization_tag = typename T::serialization_tag;
     };
 
     template <typename T>

@@ -52,12 +52,13 @@ namespace elle
       `--------*/
     public:
       /// Open this, letting current and future threads go past it.
-      void open();
+      void
+      open();
       /// Close this, stopping future threads waiting it.
-      void close();
+      void
+      close();
     protected:
       /// Stop the thread if and only if this is closed.
-      virtual
       bool
       _wait(Thread* thread, Waker const&) override;
 
@@ -103,7 +104,6 @@ namespace elle
       `----------*/
     public:
       /// Pretty print this.
-      virtual
       void
       print(std::ostream& stream) const override;
     };

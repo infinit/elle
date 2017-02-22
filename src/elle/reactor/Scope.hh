@@ -17,8 +17,8 @@ namespace elle
     /// join the group of managed threads.  If an exception escapes from a
     /// thread, all other threads are killed and waiting the Scope will re-throw
     /// the exception.
-    class Scope:
-      public reactor::Waitable
+    class Scope
+      : public reactor::Waitable
     {
     /*-------------.
     | Construction |
@@ -72,7 +72,6 @@ namespace elle
     | Printable |
     `----------*/
     public:
-      virtual
       void
       print(std::ostream& stream) const override;
     };

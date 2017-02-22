@@ -26,7 +26,7 @@ namespace elle
   public:
     IOStream(std::streambuf* buffer);
     IOStream(IOStream&& buffer);
-    ~IOStream();
+    ~IOStream() override;
 
   protected:
     std::streambuf* _buffer;
@@ -38,8 +38,8 @@ namespace elle
   public:
     using Size = uint64_t;
     StreamBuffer();
-    virtual
-    ~StreamBuffer();
+
+    ~StreamBuffer() override;
 
   /// API to override.
   protected:
@@ -62,17 +62,17 @@ namespace elle
 
   /// std::streambuf interface.
   protected:
-    virtual
-    int
-    underflow();
 
-    virtual
     int
-    overflow(int c);
+    underflow() override;
 
-    virtual
+
     int
-    sync();
+    overflow(int c) override;
+
+
+    int
+    sync() override;
   };
 
   /// Simple implementation of a streambuf with local buffers.
@@ -82,24 +82,24 @@ namespace elle
   public:
     using Size = StreamBuffer::Size;
     PlainStreamBuffer();
-    ~PlainStreamBuffer();
+    ~PlainStreamBuffer() override;
 
   protected:
     friend class IOStream;
     virtual Size read (char* buffer, Size size) = 0;
     virtual void write(char* buffer, Size size) = 0;
 
-    virtual
-    WeakBuffer
-    write_buffer();
 
-    virtual
     WeakBuffer
-    read_buffer();
+    write_buffer() override;
 
-    virtual
+
+    WeakBuffer
+    read_buffer() override;
+
+
     void
-    flush(Size size);
+    flush(Size size) override;
 
   private:
     static const int _bufsize = (1 << 12); // == 4096 bytes.
@@ -115,24 +115,24 @@ namespace elle
     using Byte = unsigned char;
 
     DynamicStreamBuffer(Size size);
-    ~DynamicStreamBuffer();
+    ~DynamicStreamBuffer() override;
 
   protected:
     friend class IOStream;
     virtual Size read(char *buffer, Size size) = 0;
     virtual void write(char *buffer, Size size) = 0;
 
-    virtual
-    WeakBuffer
-    read_buffer();
 
-    virtual
     WeakBuffer
-    write_buffer();
+    read_buffer() override;
 
-    virtual
+
+    WeakBuffer
+    write_buffer() override;
+
+
     void
-    flush(Size size);
+    flush(Size size) override;
 
   private:
     Size const _bufsize;

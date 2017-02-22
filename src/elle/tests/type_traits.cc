@@ -57,15 +57,23 @@ static_assert(
   std::is_same<std::identity<Foo>::type, Foo>::value,
   "identity failed");
 
-static
-void
-dummy()
+namespace
 {
-  BOOST_CHECK(true);
+  void get_signature()
+  {
+    // get_signature.
+    auto my_strlen = [](const char*) { return 42; };
+    static_assert(
+      std::is_same<std::get_signature<decltype(my_strlen)>,
+                   auto (const char*) -> int>::value,
+      "get_signature failed");
+    BOOST_CHECK_EQUAL(my_strlen("42"), 42);
+  }
 }
+
 
 ELLE_TEST_SUITE()
 {
   auto& master = boost::unit_test::framework::master_test_suite();
-  master.add(BOOST_TEST_CASE(dummy));
+  master.add(BOOST_TEST_CASE(get_signature));
 }

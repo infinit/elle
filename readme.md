@@ -1,6 +1,8 @@
 # Elle, *the coroutine-based asynchronous C++ development framework.*
 
-Elle is a library, written in modern C++ (C++14). It contains a rich set of highly reusable concepts, algorithms, API wrappers, ...
+<img src="docs/static_files/elle_logotype@2x.png" alt="Logo - Elle" title="Elle logotype" width="300" style="max-width:300px;">
+
+Elle is a collection of libraries, written in modern C++ (C++14). It contains a rich set of highly reusable concepts, algorithms, API wrappers, ...
 
 Elle is split into different specialized sub-libraries to provide elegant ways to approach asynchronism (using [coroutines](https://en.wikipedia.org/wiki/Coroutine)), networking, formatting, serialization, logging, [RPCs](https://en.wikipedia.org/wiki/Remote_procedure_call), etc.
 
@@ -106,7 +108,7 @@ Elle depends on a few libraries which are automatically downloaded and built for
 
 - [Boost](http://boost.org) (v1.60.0, _patched_)
 - [PatchELF](http://nixos.org/patchelf.html) (v0.9)
-- [zlib](http://www.zlib.net) (v1.2.8)
+- [zlib](http://www.zlib.net) (v1.2.11)
 - [OpenSSL](https://www.openssl.org) (v1.0.2g)
 - [curl](https://curl.haxx.se) (v7.48.0, patched)
 - [libarchive](http://www.libarchive.org) (v3.1.2, _patched_)
@@ -114,7 +116,7 @@ Elle depends on a few libraries which are automatically downloaded and built for
 
 ## List of projects using Elle
 
-- [Infinit](https://github.com/infinit/fs)
+- [Infinit](https://github.com/infinit/infinit)
 
 ## Maintainers
 

@@ -23,7 +23,7 @@ namespace elle ELLE_API
   public:
     Exception(std::string const& message, int skip = 0);
     Exception(elle::Backtrace const& bt, std::string const& message);
-    ~Exception() noexcept (true);
+    ~Exception() noexcept (true) override;
     void
     inner_exception(std::exception_ptr exception);
 
@@ -33,10 +33,10 @@ namespace elle ELLE_API
   public:
     using serialization_tag = elle::serialization_tag;
     Exception(elle::serialization::SerializerIn& input);
-    virtual
+
     void
     serialize(elle::serialization::Serializer& s,
-              elle::Version const& version);
+              elle::Version const& version) override;
 
   private:
     template <class T>

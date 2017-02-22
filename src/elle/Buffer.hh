@@ -41,7 +41,7 @@ namespace elle
   `------*/
   public:
     /// Size of a Buffer.
-    typedef uint64_t Size;
+    using Size = uint64_t;
     /// Data owned by a Buffer:
     typedef std::unique_ptr<Byte, detail::MallocDeleter> ContentPtr;
     /// Content owned by a Buffer: data and size.
@@ -166,8 +166,8 @@ namespace elle
   | Iterable |
   `---------*/
   public:
-    typedef Byte* iterator;
-    typedef Byte const* const_iterator;
+    using iterator = Byte *;
+    using const_iterator = const Byte *;
     const Byte*
     begin() const;
     const Byte*
@@ -302,7 +302,7 @@ namespace elle
   | Iterable |
   `---------*/
   public:
-    typedef Byte const* const_iterator;
+    using const_iterator = const Byte *;
     const Byte*
     begin() const;
     const Byte*
@@ -381,7 +381,7 @@ namespace elle
   | Iterable |
   `---------*/
   public:
-    typedef Byte* iterator;
+    using iterator = Byte *;
     Byte*
     begin();
     Byte*

@@ -1,97 +1,97 @@
-#include <elle/Range.hh>
+#include <elle/IntRange.hh>
 
 #include <elle/log.hh>
 
-ELLE_LOG_COMPONENT("elle.Range");
+ELLE_LOG_COMPONENT("elle.IntRange");
 
 namespace elle
 {
-  Range::Range(int start, int size)
+  IntRange::IntRange(int start, int size)
     : _start(start)
     , _end(start + size)
   {}
 
   bool
-  Range::operator <(Range const& rhs) const
+  IntRange::operator <(IntRange const& rhs) const
   {
     return this->start() < rhs.start() ||
            this->start() == rhs.start() && this->end() < rhs.end();
   }
 
   int
-  Range::size() const
+  IntRange::size() const
   {
     return this->_end - this->_start;
   }
 
   void
-  Range::size(int size)
+  IntRange::size(int size)
   {
     this->_end = this->_start + size;
   }
 
   bool
-  Range::empty() const
+  IntRange::empty() const
   {
     return this->end() <= this->start();
   }
 
   bool
-  Range::contains(Range const& other) const
+  IntRange::contains(IntRange const& other) const
   {
     return this->start() <= other.start() && this->end() >= other.end();
   }
 
   bool
-  Range::contains(int pos) const
+  IntRange::contains(int pos) const
   {
     return pos >= this->start() && pos < this->end();
   }
 
   bool
-  Range::overlaps(Range const& other) const
+  IntRange::overlaps(IntRange const& other) const
   {
     return this->contains(other.start()) || this->contains(other.end());
   }
 
-  Ranges
-  Range::operator -(Range const& rhs) const
+  IntRanges
+  IntRange::operator -(IntRange const& rhs) const
   {
     // Disjoint
     if (!rhs.overlaps(*this))
       return *this;
     // Superset
     if (rhs.contains(*this))
-      return Ranges();
+      return IntRanges();
     // Prefix
     if (rhs.start() <= this->start())
-      return Range(rhs.end(), this->end());
+      return IntRange(rhs.end(), this->end());
     // Suffix
     if (rhs.end() >= this->end())
-      return Range(this->start(), rhs.end());
+      return IntRange(this->start(), rhs.end());
     // Right in the middle
-    return Ranges
-      ({Range(this->start(), rhs.start()), Range(rhs.end(), this->end())});
+    return IntRanges
+      ({IntRange(this->start(), rhs.start()), IntRange(rhs.end(), this->end())});
   }
 
   std::ostream&
-  operator <<(std::ostream& output, Range const& range)
+  operator <<(std::ostream& output, IntRange const& range)
   {
     elle::fprintf(output, "(%s, %s)", range.start(), range.size());
     return output;
   }
 
   /*-------.
-  | Ranges |
+  | IntRanges |
   `-------*/
 
-  Ranges::Ranges()
+  IntRanges::IntRanges()
     : _ranges()
   {}
 
   static inline
   void
-  emplace(std::set<Range>& set, Range range)
+  emplace(std::set<IntRange>& set, IntRange range)
   {
 #if GCC_VERSION_LTE(4, 7)
     set.insert(std::move(range));
@@ -103,37 +103,37 @@ namespace elle
   template <typename ... Args>
   static inline
   void
-  emplace(std::set<Range>& set, Args&& ... args)
+  emplace(std::set<IntRange>& set, Args&& ... args)
   {
 #if GCC_VERSION_LTE(4, 7)
-    set.insert(Range(std::forward<Args>(args)...));
+    set.insert(IntRange(std::forward<Args>(args)...));
 #else
     set.emplace(std::forward<Args>(args)...);
 #endif
   }
 
-  Ranges::Ranges(Range range)
+  IntRanges::IntRanges(IntRange range)
     : _ranges()
   {
     emplace(this->_ranges, std::move(range));
   }
 
-  Ranges::Ranges(std::vector<Range> const& ranges)
+  IntRanges::IntRanges(std::vector<IntRange> const& ranges)
     : _ranges()
   {
     for (auto const& range: ranges)
       emplace(this->_ranges, std::move(range));
   }
 
-  Ranges&
-  Ranges::operator += (Range range)
+  IntRanges&
+  IntRanges::operator += (IntRange range)
   {
     this->complete(range);
     return *this;
   }
 
   int
-  Ranges::next_free(int position) const
+  IntRanges::next_free(int position) const
   {
     for (auto const& chunk: this->_ranges)
       if (chunk.end() >= position)
@@ -145,7 +145,7 @@ namespace elle
   }
 
   bool
-  Ranges::contains(Range range) const
+  IntRanges::contains(IntRange range) const
   {
     for (auto const& chunk: this->_ranges)
     {
@@ -157,12 +157,12 @@ namespace elle
     return false;
   }
 
-  Ranges
-  Ranges::complete(Range range)
+  IntRanges
+  IntRanges::complete(IntRange range)
   {
     ELLE_TRACE_SCOPE("%s: complete with %s", *this, range);
-    Ranges res;
-    boost::optional<Range> previous;
+    IntRanges res;
+    boost::optional<IntRange> previous;
     for (auto current: this->_ranges)
     {
       ELLE_DUMP_SCOPE("%s: consider %s", *this, current);
@@ -211,7 +211,7 @@ namespace elle
   }
 
   std::ostream&
-  operator <<(std::ostream& output, Ranges const& ranges)
+  operator <<(std::ostream& output, IntRanges const& ranges)
   {
     output << "[";
     bool first = true;

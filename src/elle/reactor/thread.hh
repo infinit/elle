@@ -101,11 +101,13 @@ namespace elle
       | Tracking |
       `---------*/
       public:
-        typedef boost::signals2::signal<void ()> Tracker;
+        using Tracker = boost::signals2::signal<void ()>;
         // signal invoked when Thread object is being destroyed
-        Tracker& destructed();
+        Tracker&
+        destructed();
         // signal invoked when Thread is released by scheduler
-        Tracker& released();
+        Tracker&
+        released();
       private:
         Tracker _destructed;
         Tracker _released;
@@ -126,7 +128,7 @@ namespace elle
               frozen,
             };
         };
-        typedef state::State State;
+        using State = state::State;
         /// Current state.
         State state() const;
         /// Whether our state is 'done'.
@@ -156,7 +158,7 @@ namespace elle
     | Exceptions |
     `-----------*/
     public:
-      typedef std::function<void ()> Injection;
+      using Injection = std::function<void ()>;
       void
       inject(const Injection& injection);
       template <typename Exception, typename... Args>
@@ -295,8 +297,8 @@ namespace elle
     | Typedefs |
     `---------*/
     public:
-      typedef VThread<R> Self;
-      typedef std::function<R ()> Action;
+      using Self = VThread<R>;
+      using Action = std::function<R ()>;
 
       /*-------------.
       | Construction |
@@ -310,7 +312,8 @@ namespace elle
       | Result |
       `-------*/
       public:
-        const R& result() const;
+        const R&
+        result() const;
       private:
         R _result;
     };

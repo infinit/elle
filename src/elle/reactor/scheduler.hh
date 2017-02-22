@@ -123,7 +123,8 @@ namespace elle
     | Printable |
     `----------*/
     public:
-      void print(std::ostream& s) const;
+      void
+      print(std::ostream& s) const override;
 
     /*----------.
     | Shortcuts |

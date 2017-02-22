@@ -30,5 +30,24 @@ namespace elle
 
       return (raw::hash(function, plain));
     }
+
+    ::EVP_MD_CTX
+    hash_init(Oneway const oneway)
+    {
+      ::EVP_MD const* function = oneway::resolve(oneway);
+      return raw::hash_init(function);
+    }
+
+    void
+    hash_update(::EVP_MD_CTX* context, elle::Buffer const& buffer)
+    {
+      raw::hash_update(context, buffer);
+    }
+
+    elle::Buffer
+    hash_finalize(::EVP_MD_CTX* context)
+    {
+      return raw::hash_finalize(context);
+    }
   }
 }

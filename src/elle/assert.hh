@@ -34,9 +34,9 @@ namespace elle
                 char const* file,
                 Size line) throw();
 
-    virtual
+
     const char*
-    what() const throw();
+    what() const throw() override;
   };
 }
 

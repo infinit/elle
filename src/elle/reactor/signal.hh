@@ -10,20 +10,21 @@ namespace elle
       : public Waitable
     {
     public:
-      typedef Signal Self;
-      typedef Waitable Super;
+      using Self = elle::reactor::Signal;
+      using Super = elle::reactor::Waitable;
       Signal(const std::string& name = std::string());
       virtual
       ~Signal();
       Signal(Signal&&) = default;
-      bool signal();
-      bool signal_one();
+      bool
+      signal();
+      bool
+      signal_one();
 
       /*----------.
       | Printable |
       `----------*/
     public:
-      virtual
       void
       print(std::ostream& stream) const override;
     };
@@ -33,12 +34,15 @@ namespace elle
       : public Waitable
     {
     public:
-      typedef Signal Self;
-      typedef Waitable Super;
+      using Self = elle::reactor::Signal;
+      using Super = elle::reactor::Waitable;
       VSignal(std::string const& name = std::string());
-      bool Emit(V const& val);
-      bool EmitOne(V const& val);
-      V const& Value() const;
+      bool
+      Emit(V const& val);
+      bool
+      EmitOne(V const& val);
+      V const&
+      Value() const;
     private:
       V _value;
     };
