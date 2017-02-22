@@ -145,7 +145,9 @@ extract(elle::archive::Format fmt,
         case elle::archive::Format::tar_gzip:
         {
           elle::system::Process p({
-              (cd.previous() / elle::os::getenv("BUILD_DIR") / "../libarchive/bin/bsdtar" EXTENSION).string(),
+              (cd.previous() /
+               elle::os::getenv("BUILD_DIR")
+               / "../../libarchive/bin/bsdtar" EXTENSION).string(),
               "-x", "-f", path.string()});
           BOOST_CHECK_EQUAL(p.wait(), 0);
           break;
@@ -154,8 +156,10 @@ extract(elle::archive::Format fmt,
         case elle::archive::Format::zip_uncompressed:
         {
           elle::system::Process p({
-              (cd.previous() / elle::os::getenv("BUILD_DIR") / "../libarchive/bin/bsdcpio" EXTENSION).string(),
-              "--extract", "--make-directories", "-I", path.string()});
+              (cd.previous() /
+               elle::os::getenv("BUILD_DIR") /
+               "../../libarchive/bin/bsdcpio" EXTENSION).string(),
+                "--extract", "--make-directories", "-I", path.string()});
           BOOST_CHECK_EQUAL(p.wait(), 0);
           break;
         }
@@ -224,7 +228,8 @@ archive(elle::archive::Format fmt)
         {
           ++count;
           auto path = *it;
-          if (path == elle::sprintf("./%s", ROOT) || path == elle::sprintf("./%s/%s", ROOT, SUB))
+          if (path == elle::sprintf("./%s", ROOT) ||
+              path == elle::sprintf("./%s/%s", ROOT, SUB))
             continue;
           else if (path == elle::sprintf("./%s/1", ROOT))
           {

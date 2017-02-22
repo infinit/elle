@@ -22,7 +22,7 @@ rule_examples = None
 python_plugin_datetime = None
 
 # XXX
-with open(str(drake.path_source('../drake-utils.py')), 'r') as f:
+with open(str(drake.path_source('../../drake-utils.py')), 'r') as f:
   exec(f.read(), globals(), globals())
 
 def configure(zlib_lib,
@@ -86,7 +86,7 @@ def configure(zlib_lib,
                                       'lib', strip_prefix = True))
 
   # JSON spirit
-  cxx_config.add_local_include_path('src/elle/json/json-spirit/include')
+  cxx_config.add_local_include_path('json/modules/json-spirit/include')
   cxx_config.define('JSON_SPIRIT_WVALUE_DISABLED')
 
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios]:
@@ -94,7 +94,6 @@ def configure(zlib_lib,
 
   config = drake.cxx.Config()
   config.standard = drake.cxx.Config.cxx_14
-  config.add_local_include_path('src')
   config.lib_path('lib')
   config.define('BOOST_PP_VARIADICS')
   config.define('BOOST_FILESYSTEM_NO_DEPRECATED', '1')
@@ -138,7 +137,7 @@ def configure(zlib_lib,
       'minor': minor,
       'subminor': subminor,
   }):
-    drake.node('src/elle/serialization.cc.tmpl')
+    drake.node('serialization.cc.tmpl')
 
   cxx_config_libs = drake.cxx.Config(cxx_config)
   cxx_config_libs.visibility_hidden = not symbol_visibility
@@ -146,165 +145,152 @@ def configure(zlib_lib,
     cxx_config.define('ELLE_DISABLE_VISIBILITY')
 
   sources = drake.nodes(
-    'src/elle/bytes.hh',
-    'src/elle/bytes.cc',
-    'src/elle/chrono.cc',
-    'src/elle/chrono.hh',
-    'src/elle/chrono.hxx',
-    'src/elle/err.cc',
-    'src/elle/err.hh',
-    'src/elle/finally.cc',
-    'src/elle/finally.hh',
-    'src/elle/factory.hh',
-    'src/elle/factory.hxx',
-    'src/elle/filesystem.cc',
-    'src/elle/filesystem.hh',
-    'src/elle/filesystem.hxx',
-    'src/elle/filesystem/TemporaryDirectory.cc',
-    'src/elle/filesystem/TemporaryDirectory.hh',
-    'src/elle/filesystem/TemporaryFile.cc',
-    'src/elle/filesystem/TemporaryFile.hh',
-    'src/elle/filesystem/path.cc',
-    'src/elle/filesystem/path.hh',
-    'src/elle/AtomicFile.cc',
-    'src/elle/AtomicFile.hh',
-    'src/elle/Backtrace.cc',
-    'src/elle/Backtrace.hh',
-    'src/elle/BadAlloc.cc',
-    'src/elle/BadAlloc.hh',
-    'src/elle/Buffer.cc',
-    'src/elle/Buffer.hh',
-    'src/elle/Duration.cc',
-    'src/elle/Duration.hh',
-    'src/elle/Error.cc',
-    'src/elle/Error.hh',
-    'src/elle/Exception.cc',
-    'src/elle/Exception.hh',
-    'src/elle/Exit.cc',
-    'src/elle/Exit.hh',
-    'src/elle/IOStream.cc',
-    'src/elle/IOStream.hh',
-    'src/elle/Lazy.hh',
-    'src/elle/Lazy.hxx',
-    'src/elle/Option.hh',
-    'src/elle/Option.hxx',
-    'src/elle/Plugin.cc',
-    'src/elle/Plugin.hh',
-    'src/elle/Plugin.hxx',
-    'src/elle/Printable.cc',
-    'src/elle/Printable.hh',
-    'src/elle/Range.cc',
-    'src/elle/Range.hh',
-    'src/elle/TypeInfo.cc',
-    'src/elle/TypeInfo.hh',
-    'src/elle/TypeInfo.hxx',
-    'src/elle/UUID.cc',
-    'src/elle/UUID.hh',
-    'src/elle/Version.cc',
-    'src/elle/assert.cc',
-    'src/elle/assert.hh',
-    'src/elle/bench.cc',
-    'src/elle/bench.hh',
-    'src/elle/compiler.hh',
-    'src/elle/string/algorithm.hh',
-    'src/elle/string/algorithm.hxx',
-    'src/elle/format/fwd.hh',
-    'src/elle/format/hexadecimal.cc',
-    'src/elle/format/hexadecimal.hh',
-    'src/elle/format/base64.cc',
-    'src/elle/format/base64.hh',
-    'src/elle/format/base64url.cc',
-    'src/elle/format/base64url.hh',
-    'src/elle/format/base64url.hxx',
-    'src/elle/format/gzip.cc',
-    'src/elle/format/gzip.hh',
-    'src/elle/fwd.hh',
-    'src/elle/io/Console.cc',
-    'src/elle/io/Console.hh',
-    'src/elle/io/Dumpable.cc',
-    'src/elle/io/Dumpable.hh',
-    'src/elle/io/Pattern.cc',
-    'src/elle/io/Pattern.hh',
-    'src/elle/io/Unique.hh',
-    'src/elle/io/fwd.hh',
-    'src/elle/log.hh',
-    'src/elle/log/CompositeLogger.cc',
-    'src/elle/log/CompositeLogger.hh',
-    'src/elle/log/Logger.cc',
-    'src/elle/log/Logger.hh',
-    'src/elle/log/Send.cc',
-    'src/elle/log/Send.hh',
-    'src/elle/log/Send.hxx',
-    'src/elle/log/SysLogger.cc',
-    'src/elle/log/SysLogger.hh',
-    'src/elle/log/TextLogger.cc',
-    'src/elle/log/TextLogger.hh',
-    'src/elle/meta.hh',
-    'src/elle/named.hh',
-    'src/elle/network/Interface.cc',
-    'src/elle/network/Interface.hh',
-    'src/elle/network/Interface.hxx',
-    'src/elle/network/fwd.hh',
-    'src/elle/network/hostname.cc',
-    'src/elle/network/hostname.hh',
-    'src/elle/os.hh',
-    'src/elle/os/environ.hh',
-    'src/elle/os/environ.cc',
-    'src/elle/os/exceptions.cc',
-    'src/elle/os/exceptions.hh',
-    'src/elle/os/file.hh',
-    'src/elle/os/file.cc',
-    'src/elle/os/locale.hh',
-    'src/elle/os/locale.cc',
-    'src/elle/print.cc',
-    'src/elle/print.hh',
-    'src/elle/printf.cc',
-    'src/elle/printf.hh',
-    'src/elle/printf.hxx',
-    'src/elle/ProducerPool.hh',
-    'src/elle/ProducerPool.hxx',
-    'src/elle/serialization.cc',
-    'src/elle/serialization.hh',
-    'src/elle/sfinae.hh',
-    'src/elle/system/PIDFile.cc',
-    'src/elle/system/PIDFile.hh',
-    'src/elle/system/getpid.cc',
-    'src/elle/system/getpid.hh',
-    'src/elle/system/home_directory.hh',
-    'src/elle/system/platform.hh',
-    'src/elle/system/self-path.cc',
-    'src/elle/system/self-path.hh',
-    'src/elle/system/signal.cc',
-    'src/elle/system/signal.hh',
-    'src/elle/system/unistd.hh',
-    'src/elle/system/unistd.cc',
-    'src/elle/system/user_paths.hh',
-    'src/elle/time.hh',
-    'src/elle/types.hh',
-    'src/elle/utils.hh',
+    'bytes.hh',
+    'bytes.cc',
+    'chrono.cc',
+    'chrono.hh',
+    'chrono.hxx',
+    'err.cc',
+    'err.hh',
+    'finally.cc',
+    'finally.hh',
+    'factory.hh',
+    'factory.hxx',
+    'filesystem.cc',
+    'filesystem.hh',
+    'filesystem.hxx',
+    'filesystem/TemporaryDirectory.cc',
+    'filesystem/TemporaryDirectory.hh',
+    'filesystem/TemporaryFile.cc',
+    'filesystem/TemporaryFile.hh',
+    'filesystem/path.cc',
+    'filesystem/path.hh',
+    'AtomicFile.cc',
+    'AtomicFile.hh',
+    'Backtrace.cc',
+    'Backtrace.hh',
+    'BadAlloc.cc',
+    'BadAlloc.hh',
+    'Buffer.cc',
+    'Buffer.hh',
+    'Duration.cc',
+    'Duration.hh',
+    'Error.cc',
+    'Error.hh',
+    'Exception.cc',
+    'Exception.hh',
+    'Exit.cc',
+    'Exit.hh',
+    'IOStream.cc',
+    'IOStream.hh',
+    'Lazy.hh',
+    'Lazy.hxx',
+    'Option.hh',
+    'Option.hxx',
+    'Plugin.cc',
+    'Plugin.hh',
+    'Plugin.hxx',
+    'Printable.cc',
+    'Printable.hh',
+    'Range.cc',
+    'Range.hh',
+    'TypeInfo.cc',
+    'TypeInfo.hh',
+    'TypeInfo.hxx',
+    'UUID.cc',
+    'UUID.hh',
+    'Version.cc',
+    'assert.cc',
+    'assert.hh',
+    'bench.cc',
+    'bench.hh',
+    'compiler.hh',
+    'string/algorithm.hh',
+    'string/algorithm.hxx',
+    'format/fwd.hh',
+    'format/hexadecimal.cc',
+    'format/hexadecimal.hh',
+    'format/base64.cc',
+    'format/base64.hh',
+    'format/base64url.cc',
+    'format/base64url.hh',
+    'format/base64url.hxx',
+    'format/gzip.cc',
+    'format/gzip.hh',
+    'fwd.hh',
+    'io/Console.cc',
+    'io/Console.hh',
+    'io/Dumpable.cc',
+    'io/Dumpable.hh',
+    'io/Pattern.cc',
+    'io/Pattern.hh',
+    'io/Unique.hh',
+    'io/fwd.hh',
+    'log.hh',
+    'log/CompositeLogger.cc',
+    'log/CompositeLogger.hh',
+    'log/Logger.cc',
+    'log/Logger.hh',
+    'log/Send.cc',
+    'log/Send.hh',
+    'log/Send.hxx',
+    'log/SysLogger.cc',
+    'log/SysLogger.hh',
+    'log/TextLogger.cc',
+    'log/TextLogger.hh',
+    'meta.hh',
+    'named.hh',
+    'network/Interface.cc',
+    'network/Interface.hh',
+    'network/Interface.hxx',
+    'network/fwd.hh',
+    'network/hostname.cc',
+    'network/hostname.hh',
+    'os.hh',
+    'os/environ.hh',
+    'os/environ.cc',
+    'os/exceptions.cc',
+    'os/exceptions.hh',
+    'os/file.hh',
+    'os/file.cc',
+    'os/locale.hh',
+    'os/locale.cc',
+    'print.cc',
+    'print.hh',
+    'printf.cc',
+    'printf.hh',
+    'printf.hxx',
+    'ProducerPool.hh',
+    'ProducerPool.hxx',
+    'serialization.cc',
+    'serialization.hh',
+    'sfinae.hh',
+    'system/PIDFile.cc',
+    'system/PIDFile.hh',
+    'system/getpid.cc',
+    'system/getpid.hh',
+    'system/home_directory.hh',
+    'system/platform.hh',
+    'system/self-path.cc',
+    'system/self-path.hh',
+    'system/signal.cc',
+    'system/signal.hh',
+    'system/unistd.hh',
+    'system/unistd.cc',
+    'system/user_paths.hh',
+    'time.hh',
+    'types.hh',
+    'utils.hh',
     )
-  sources += [drake.cxx.Header(h) for h in [
-    'src/chrono',
-    'src/deque',
-    'src/list',
-    'src/map',
-    'src/memory',
-    'src/set',
-    'src/stdlib.h',
-    'src/type_traits',
-    'src/unordered_map',
-    'src/unordered_set',
-    'src/utility',
-    'src/vector',
-  ]]
+
   if cxx_toolkit.os not in [drake.os.windows, drake.os.ios]:
-    sources.append(drake.node('src/elle/utility/Unicode-unix.cc'))
+    sources.append(drake.node('utility/Unicode-unix.cc'))
   if ldap_libs:
     sources += drake.nodes(
-      'src/elle/ldap.hh',
-      'src/elle/ldap.cc',
+      'ldap.hh',
+      'ldap.cc',
     )
-  version = drake.node('src/elle/elle.hh')
+  version = drake.node('elle.hh')
   CxxVersionGenerator(output = version, git = git,
                       prefix = 'ELLE')
   sources.append(version)
@@ -312,133 +298,124 @@ def configure(zlib_lib,
   # Platform specific.
   if cxx_toolkit is not drake.os.ios:
     sources += drake.nodes(
-      'src/elle/system/username.cc',
-      'src/elle/system/username.hh',
+      'system/username.cc',
+      'system/username.hh',
     )
   if cxx_toolkit.os not in [drake.os.macos, drake.os.ios] or cxx_toolkit.kind == drake.cxx.GccToolkit.Kind.gcc:
     sources += drake.nodes(
-      'src/elle/system/platform.cc',
-      'src/elle/system/user_paths.cc',
+      'system/platform.cc',
+      'system/user_paths.cc',
     )
   elif cxx_toolkit.kind == drake.cxx.GccToolkit.Kind.clang:
     sources += drake.nodes(
-      'src/elle/system/platform.mm',
-      'src/elle/system/user_paths.mm',
+      'system/platform.mm',
+      'system/user_paths.mm',
     )
 
   if cxx_toolkit.os is drake.os.android:
     sources += drake.nodes(
-      'src/elle/network/ifaddrs_android.c',
+      'network/ifaddrs_android.c',
     )
   # JSON Spirit
   sources += drake.nodes(
-    'src/elle/json/json-spirit/include/json_spirit/json_spirit.h',
-    'src/elle/json/json-spirit/include/json_spirit/parse_error.h',
-    'src/elle/json/json-spirit/include/json_spirit/path_error.h',
-    'src/elle/json/json-spirit/include/json_spirit/platform.h',
-    'src/elle/json/json-spirit/include/json_spirit/reader.h',
-    'src/elle/json/json-spirit/include/json_spirit/reader_template.h',
-    'src/elle/json/json-spirit/include/json_spirit/stream_reader.h',
-    'src/elle/json/json-spirit/include/json_spirit/value.h',
-    'src/elle/json/json-spirit/include/json_spirit/writer.h',
-    'src/elle/json/json-spirit/include/json_spirit/writer_options.h',
-    'src/elle/json/json-spirit/include/json_spirit/writer_template.h',
-    'src/elle/json/json-spirit/src/reader.cpp',
-    'src/elle/json/json-spirit/src/value.cpp',
-    'src/elle/json/json-spirit/src/writer.cpp',
+    'json/modules/json-spirit/include/json_spirit/json_spirit.h',
+    'json/modules/json-spirit/include/json_spirit/parse_error.h',
+    'json/modules/json-spirit/include/json_spirit/path_error.h',
+    'json/modules/json-spirit/include/json_spirit/platform.h',
+    'json/modules/json-spirit/include/json_spirit/reader.h',
+    'json/modules/json-spirit/include/json_spirit/reader_template.h',
+    'json/modules/json-spirit/include/json_spirit/stream_reader.h',
+    'json/modules/json-spirit/include/json_spirit/value.h',
+    'json/modules/json-spirit/include/json_spirit/writer.h',
+    'json/modules/json-spirit/include/json_spirit/writer_options.h',
+    'json/modules/json-spirit/include/json_spirit/writer_template.h',
+    'json/modules/json-spirit/src/reader.cpp',
+    'json/modules/json-spirit/src/value.cpp',
+    'json/modules/json-spirit/src/writer.cpp',
   )
 
   # JSON Wrapper
   sources += drake.nodes(
-    'src/elle/json/exceptions.cc',
-    'src/elle/json/exceptions.hh',
-    'src/elle/json/json.cc',
-    'src/elle/json/json.hh',
+    'json/exceptions.cc',
+    'json/exceptions.hh',
+    'json/json.cc',
+    'json/json.hh',
   )
 
   sources += drake.nodes(
-    'src/elle/system/platform.hh',
-    'src/elle/system/Process.cc',
-    'src/elle/system/Process.hh',
-    'src/elle/system/system.cc',
-    'src/elle/system/system.hh',
+    'system/platform.hh',
+    'system/Process.cc',
+    'system/Process.hh',
+    'system/system.cc',
+    'system/system.hh',
   )
 
   if cxx_toolkit.os is drake.os.windows:
     # Windows specific implementation.
     sources += drake.nodes(
-      'src/elle/system/Windows/version.hh',
-      'src/elle/system/Windows/version.cc',
+      'system/Windows/version.hh',
+      'system/Windows/version.cc',
     )
 
   sources += drake.nodes(
-    'src/elle/utility/Duration.cc',
-    'src/elle/utility/Duration.hh',
-    'src/elle/utility/Duration.hxx',
-    'src/elle/utility/Parser.cc',
-    'src/elle/utility/Parser.hh',
-    'src/elle/utility/Parser.hxx',
-    'src/elle/utility/Product.hh',
-    'src/elle/utility/URI.hh',
-    'src/elle/utility/Unicode.hh',
-    'src/elle/utility/Utility.hh',
-    'src/elle/utility/fwd.hh',
+    'utility/Duration.cc',
+    'utility/Duration.hh',
+    'utility/Duration.hxx',
+    'utility/Parser.cc',
+    'utility/Parser.hh',
+    'utility/Parser.hxx',
+    'utility/Product.hh',
+    'utility/URI.hh',
+    'utility/Unicode.hh',
+    'utility/Utility.hh',
+    'utility/fwd.hh',
    )
 
   sources += drake.nodes(
-    'src/elle/serialization/Error.cc',
-    'src/elle/serialization/Error.hh',
-    'src/elle/serialization/Serializer.cc',
-    'src/elle/serialization/Serializer.hh',
-    'src/elle/serialization/Serializer.hxx',
-    'src/elle/serialization/SerializerIn.cc',
-    'src/elle/serialization/SerializerIn.hh',
-    'src/elle/serialization/SerializerOut.cc',
-    'src/elle/serialization/SerializerOut.hh',
-    'src/elle/serialization/SerializerOut.hxx',
-    'src/elle/serialization/fwd.hh',
-    'src/elle/serialization/json.hh',
-    'src/elle/serialization/json/FieldError.cc',
-    'src/elle/serialization/json/FieldError.hh',
-    'src/elle/serialization/json/MissingKey.cc',
-    'src/elle/serialization/json/MissingKey.hh',
-    'src/elle/serialization/json/Overflow.cc',
-    'src/elle/serialization/json/Overflow.hh',
-    'src/elle/serialization/json/SerializerIn.cc',
-    'src/elle/serialization/json/SerializerIn.hh',
-    'src/elle/serialization/json/SerializerOut.cc',
-    'src/elle/serialization/json/SerializerOut.hh',
-    'src/elle/serialization/json/TypeError.cc',
-    'src/elle/serialization/json/TypeError.hh',
-    'src/elle/serialization/binary/SerializerIn.hh',
-    'src/elle/serialization/binary/SerializerIn.cc',
-    'src/elle/serialization/binary/SerializerOut.hh',
-    'src/elle/serialization/binary/SerializerOut.cc',
-    'src/elle/serialization/binary.hh',
-  )
-
-  sources += drake.nodes(
-    'src/map',
-    'src/set',
-    'src/unordered_map',
-    'src/unordered_set',
-    'src/vector',
-    type = drake.cxx.Header,
+    'serialization/Error.cc',
+    'serialization/Error.hh',
+    'serialization/Serializer.cc',
+    'serialization/Serializer.hh',
+    'serialization/Serializer.hxx',
+    'serialization/SerializerIn.cc',
+    'serialization/SerializerIn.hh',
+    'serialization/SerializerOut.cc',
+    'serialization/SerializerOut.hh',
+    'serialization/SerializerOut.hxx',
+    'serialization/fwd.hh',
+    'serialization/json.hh',
+    'serialization/json/FieldError.cc',
+    'serialization/json/FieldError.hh',
+    'serialization/json/MissingKey.cc',
+    'serialization/json/MissingKey.hh',
+    'serialization/json/Overflow.cc',
+    'serialization/json/Overflow.hh',
+    'serialization/json/SerializerIn.cc',
+    'serialization/json/SerializerIn.hh',
+    'serialization/json/SerializerOut.cc',
+    'serialization/json/SerializerOut.hh',
+    'serialization/json/TypeError.cc',
+    'serialization/json/TypeError.hh',
+    'serialization/binary/SerializerIn.hh',
+    'serialization/binary/SerializerIn.cc',
+    'serialization/binary/SerializerOut.hh',
+    'serialization/binary/SerializerOut.cc',
+    'serialization/binary.hh',
   )
 
   # Python binding helpers.
   if python3 is not None:
     sources += drake.nodes(
-      'src/elle/python/containers.hh',
-      'src/elle/python/containers.hxx',
-      'src/elle/python/converter-plugin.hh',
-      'src/elle/python/gil.hh'
+      'python/containers.hh',
+      'python/containers.hxx',
+      'python/converter-plugin.hh',
+      'python/gil.hh'
     )
 
   if cxx_toolkit.os is drake.os.windows:
     sources += drake.nodes(
-      'src/elle/windows/string_conversion.hh',
-      'src/elle/windows/string_conversion.cc',
+      'windows/string_conversion.hh',
+      'windows/string_conversion.cc',
     )
 
   # Archive
@@ -448,19 +425,19 @@ def configure(zlib_lib,
       'tar',
       'zip',
   ):
-    sources.append(drake.node('src/elle/archive/%s.hh' % f))
+    sources.append(drake.node('archive/%s.hh' % f))
     sources.append(
-      drake.cxx.Object(drake.node('src/elle/archive/%s.cc' % f),
+      drake.cxx.Object(drake.node('archive/%s.cc' % f),
                        cxx_toolkit, cxx_archive_config))
 
   lib_static = drake.cxx.StaticLib(
-    'lib/elle',
+    'lib/elle_core',
     sources + [zlib_lib, libarchive_lib],
     cxx_toolkit,
     cxx_config_libs,
   )
   lib_dynamic = drake.cxx.DynLib(
-    'lib/elle',
+    'lib/elle_core',
     sources + [zlib_lib, libarchive_lib] + (ldap_libs and (ldap_libs + openssl_libs) or []),
     cxx_toolkit,
     cxx_config_libs,
@@ -495,7 +472,7 @@ def configure(zlib_lib,
       python_cxx_config.framework_add('CoreServices')
     python_cxx_config += python3
     python_cxx_config.lib_path_runtime('../..')
-    python_lib_sources = [drake.node('src/elle/log/python.cc')]
+    python_lib_sources = [drake.node('log/python.cc')]
     python_cxx_config += boost_python
     python_log_lib = drake.cxx.Module(
       'lib/python/elle/_log',
@@ -504,8 +481,8 @@ def configure(zlib_lib,
     python.append(python_log_lib)
 
     python_sources = drake.nodes(
-      'src/elle/log.py',
-      'src/elle/__init__.py',
+      'log.py',
+      '__init__.py',
       )
     python += drake.copy(python_sources, 'lib/python', 'src')
     python_rule << python
@@ -513,13 +490,13 @@ def configure(zlib_lib,
     if cxx_toolkit.os is drake.os.windows:
       python_plugin_datetime = drake.cxx.StaticLib(
         'lib/python-datetime-bindings',
-        drake.nodes('src/elle/python/datetime-converter.cc'),
+        drake.nodes('python/datetime-converter.cc'),
         cxx_toolkit,
         python_cxx_config)
     else:
       python_plugin_datetime = drake.cxx.Module(
         'lib/python-datetime-bindings',
-        drake.nodes('src/elle/python/datetime-converter.cc'),
+        drake.nodes('python/datetime-converter.cc'),
         cxx_toolkit,
         python_cxx_config)
 

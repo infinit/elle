@@ -3,7 +3,7 @@
 	url = git@git.infinit.io:drake
         fetchRecurseSubmodules = false
 [submodule "elle/src/elle/json/json-spirit"]
-	path = elle/src/elle/json/json-spirit
+	path = src/elle/json/modules/json-spirit
 	url = https://github.com/infinitdotio/json-spirit
         fetchRecurseSubmodules = false
 [submodule "reactor/miniupnp"]

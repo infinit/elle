@@ -1251,12 +1251,31 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
   cxx_config.warnings.return_type = Warnings.Error
   cxx_config.warnings.delete_virtual_dtor = Warnings.Error
 
+  # XXX.
+  sources = drake.nodes(
+    'src/chrono',
+    'src/deque',
+    'src/list',
+    'src/map',
+    'src/map',
+    'src/memory',
+    'src/set',
+    'src/set',
+    'src/stdlib.h',
+    'src/type_traits',
+    'src/unordered_map',
+    'src/unordered_set',
+    'src/utility',
+    'src/vector',
+    type = drake.cxx.Header
+  )
+
   ## -------------- ##
   ## Subdirectories ##
   ## -------------- ##
 
   elle = drake.include(
-    'elle',
+    'src/elle',
     cxx_toolkit = cxx_toolkit,
     cxx_config = cxx_config,
     zlib_config = zlib_config,
