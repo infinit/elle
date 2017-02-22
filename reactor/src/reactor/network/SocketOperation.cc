@@ -113,6 +113,26 @@ namespace reactor
 
 #ifdef INFINIT_LINUX
 
+namespace reactor
+{
+  namespace network
+  {
+    static
+    std::unordered_map<reactor::Thread*, std::function<void()>>
+    _epoll_interrupt_callback;
+
+    void
+    epoll_interrupt_callback(std::function<void()> cb,
+                                     reactor::Thread* thread)
+    {
+      if (!cb)
+        _epoll_interrupt_callback.erase(thread);
+      else
+        _epoll_interrupt_callback[thread] = cb;
+    }
+  }
+}
+
 extern "C"
 int
 reactor_epoll_wait(int epfd, struct epoll_event *events,
@@ -159,8 +179,37 @@ reactor_epoll_wait(int epfd, struct epoll_event *events,
       else
         b.open();
   });
-  ELLE_DUMP("wait b");
-  reactor::wait(b);
+  try
+  {
+    reactor::wait(b);
+  }
+  catch (...)
+  {
+    ELLE_TRACE("epoll wrapper interrupted by %s", elle::exception_string());
+    try
+    {
+      if (socket_running)
+        s.cancel();
+      elle::With<reactor::Thread::NonInterruptible>()
+        << [&](reactor::Thread::NonInterruptible&) {
+        reactor::wait(b);
+      };
+    }
+    catch (...)
+    {
+      ELLE_ERR("reactor_epoll_wait threw again: %s", elle::exception_string());
+    }
+    auto it = reactor::network::_epoll_interrupt_callback.find(
+      reactor::scheduler().current());
+    if (it != reactor::network::_epoll_interrupt_callback.end())
+    {
+      it->second();
+      errno = EINTR;
+      return -1;
+    }
+    else
+      throw;
+  }
   ELLE_DUMP("returned: %s", rv);
   if (rv)
     return epoll_wait(epfd, events, maxevents, 0);
