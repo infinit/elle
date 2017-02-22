@@ -411,7 +411,7 @@ unique_ptr()
     std::unique_ptr<int, std::function<void (int*)>> p(
       new int(42), [] (int* p) { delete p; });
     std::stringstream ss;
-    elle::serialization::serialize<void, Format>(p, ss);
+    elle::serialization::serialize<Format>(p, ss);
     typename Format::SerializerIn input(ss);
     input.serialize_forward(p);
   }
@@ -470,7 +470,7 @@ unordered_map()
     Map map;
     map.emplace(0, 1);
     map.emplace(2, 3);
-    auto ser = elle::serialization::serialize<void, Format>(map);
+    auto ser = elle::serialization::serialize<Format>(map);
     auto deser = elle::serialization::deserialize<Format, Map>(ser);
   }
 }
@@ -1186,7 +1186,7 @@ namespace versioning
     {
       Owner o(42, {1, 2});
       auto buffer =
-        elle::serialization::serialize<void, Format>(o, Version(0, 1, 0));
+        elle::serialization::serialize<Format>(o, Version(0, 1, 0));
       ELLE_LOG("serialized: %s", buffer);
       auto v = elle::serialization::deserialize<Format, Owner>(buffer);
       BOOST_CHECK_EQUAL(v.i(), 42);
@@ -1196,7 +1196,7 @@ namespace versioning
     ELLE_LOG("test old -> old serialization unversioned")
     {
       Owner o(42, {1, 2});
-      auto buffer = elle::serialization::serialize<void, Format>(
+      auto buffer = elle::serialization::serialize<Format>(
         o, Version(0, 1, 0), false);
       ELLE_LOG("serialized: %s", buffer);
       auto v = elle::serialization::deserialize<Format, Owner>(
@@ -1208,7 +1208,7 @@ namespace versioning
     ELLE_LOG("test new -> new serialization versioned")
     {
       Owner o(42, {1, 2});
-      auto buffer = elle::serialization::serialize<void, Format>(
+      auto buffer = elle::serialization::serialize<Format>(
         o, Version(0, 2, 0));
       ELLE_LOG("serialized: %s", buffer);
       auto v = elle::serialization::deserialize<Format, Owner>(buffer);
@@ -1219,7 +1219,7 @@ namespace versioning
     ELLE_LOG("test new -> new serialization unversioned")
     {
       Owner o(42, {1, 2});
-      auto buffer = elle::serialization::serialize<void, Format>(
+      auto buffer = elle::serialization::serialize<Format>(
         o, Version(0, 2, 0), false);
       ELLE_LOG("serialized: %s", buffer);
       auto v = elle::serialization::deserialize<Format, Owner>(

@@ -1580,8 +1580,8 @@ namespace elle
     }
 
     // Stream, named
-    template <typename Serializer,
-              typename Serialization,
+    template <typename Serialization,
+              typename Serializer = void,
               typename T,
               typename ... Args>
     void
@@ -1615,8 +1615,8 @@ namespace elle
     };
 
     // Stream, anonymous
-    template <typename Serializer,
-              typename Serialization,
+    template <typename Serialization,
+              typename Serializer = void,
               typename T,
               typename ... Args>
     std::enable_if_t<FirstArgIsNot<elle::Version, Args...>::value, void>
@@ -1630,8 +1630,8 @@ namespace elle
     }
 
     // Stream, anonymous, Version
-    template <typename Serializer,
-              typename Serialization,
+    template <typename Serialization,
+              typename Serializer = void,
               typename T,
               typename ... Args>
     void
@@ -1648,8 +1648,8 @@ namespace elle
     }
 
     // Stream, anonymous, Version
-    template <typename Serializer,
-              typename Serialization,
+    template <typename Serialization,
+              typename Serializer = void,
               typename T,
               typename ... Args>
     void
@@ -1672,8 +1672,8 @@ namespace elle
     }
 
     // Buffer, named
-    template <typename Serializer,
-              typename Serialization,
+    template <typename Serialization,
+              typename Serializer = void,
               typename T,
               typename ... Args>
     std::enable_if_t<FirstArgIsNot<std::ostream, Args...>::value, elle::Buffer>
@@ -1684,7 +1684,7 @@ namespace elle
       elle::Buffer res;
       {
         elle::IOStream s(res.ostreambuf());
-        serialize<Serializer, Serialization, T>(
+        serialize<Serialization, Serializer, T>(
           o, name, s, std::forward<Args>(args)...);
       }
       return res;
@@ -1692,32 +1692,29 @@ namespace elle
 
     // Prevent literal string from being converted to boolean and triggerring
     // the nameless overload.
-    template <typename Serializer,
-              typename Serialization,
+    template <typename Serialization,
+              typename Serializer = void,
               typename T,
               typename ... Args>
     std::enable_if_t<FirstArgIsNot<std::ostream, Args...>::value, elle::Buffer>
-    serialize(T const& o,
-              char const* name,
-              Args&& ... args)
+    serialize(T const& o, char const* name, Args&& ... args)
     {
-      return serialize<Serializer, Serialization, T>(
+      return serialize<Serialization, Serializer, T>(
         o, std::string(name), std::forward<Args>(args)...);
     }
 
     // Buffer, anonymous
-    template <typename Serializer,
-              typename Serialization,
+    template <typename Serialization,
+              typename Serializer = void,
               typename T,
               typename ... Args>
     std::enable_if_t<FirstArgIsNot<std::ostream, Args...>::value, elle::Buffer>
-    serialize(T const& o,
-              Args&& ... args)
+    serialize(T const& o, Args&& ... args)
     {
       elle::Buffer res;
       {
         elle::IOStream s(res.ostreambuf());
-        serialize<Serializer, Serialization, T>(
+        serialize<Serialization, Serializer, T>(
           o, s, std::forward<Args>(args)...);
       }
       return res;

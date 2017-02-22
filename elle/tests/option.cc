@@ -235,7 +235,7 @@ _serialization_inplace()
     Opt o{Checker<1>()};
     BOOST_CHECK_EQUAL(Checker<1>::count, 1);
     auto data =
-      elle::serialization::serialize<void, Format>(Opt{Checker<0>()}, false);
+      elle::serialization::serialize<Format>(Opt{Checker<0>()}, false);
     BOOST_CHECK_EQUAL(Checker<0>::count, 0);
     elle::IOStream s(data.istreambuf());
     typename Format::SerializerIn input(s, false);
@@ -259,14 +259,14 @@ _serialization()
       Opt i(42);
       BOOST_CHECK_EQUAL(
         (elle::serialization::deserialize<Format, Opt>(
-          elle::serialization::serialize<void, Format>(i))).template get<int>(),
+          elle::serialization::serialize<Format>(i))).template get<int>(),
         42);
     }
     {
       Opt s(std::string("quarante deux"));
       BOOST_CHECK_EQUAL(
         (elle::serialization::deserialize<Format, Opt>(
-          elle::serialization::serialize<void, Format>(s))).
+          elle::serialization::serialize<Format>(s))).
         template get<std::string>(),
         "quarante deux");
     }
