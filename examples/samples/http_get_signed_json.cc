@@ -1,18 +1,14 @@
-#include <das/model.hh>
-#include <das/serializer.hh>
-#include <das/printer.hh>
-#include <das/Symbol.hh>
-
-#include <elle/serialization/json.hh>
-#include <elle/serialization/binary.hh>
-
 #include <elle/AtomicFile.hh>
-
 #include <elle/cryptography/rsa/KeyPair.hh>
-
+#include <elle/das/Symbol.hh>
+#include <elle/das/model.hh>
+#include <elle/das/printer.hh>
+#include <elle/das/serializer.hh>
 #include <elle/reactor/http/Request.hh>
 #include <elle/reactor/http/exceptions.hh>
 #include <elle/reactor/scheduler.hh>
+#include <elle/serialization/binary.hh>
+#include <elle/serialization/json.hh>
 
 // Declare symbols used by das.
 DAS_SYMBOL(array);
@@ -115,8 +111,8 @@ get()
     "/d7764d2b26814af3bfff17c707dc4f33a93f7e8c"
     "/example.json";
   std::cout << "1. GET example.json at " << url << std::endl;
-  reactor::http::Request r(url);
-  reactor::wait(r);
+  elle::reactor::http::Request r(url);
+  elle::reactor::wait(r);
   std::cout << "2. Deserialize response" << std::endl;
   return elle::serialization::json::deserialize<Example>(r);
 }
@@ -128,8 +124,8 @@ get()
 int
 main()
 {
-  reactor::Scheduler sched;
-  reactor::Thread t(
+  elle::reactor::Scheduler sched;
+  elle::reactor::Thread t(
     sched, "main",
     []
     {
@@ -150,12 +146,12 @@ main()
         auto secret = key().k().decrypt(payload).string();
         // std::cout << "> " << secret << std::endl;
       }
-      catch (reactor::http::ResolutionFailure const& e)
+      catch (elle::reactor::http::ResolutionFailure const& e)
       {
         std::cerr << "Unable to resolve " << e.url() << std::endl;
         throw;
       }
-      catch (reactor::http::RequestError const& e)
+      catch (elle::reactor::http::RequestError const& e)
       {
         std::cerr << "Unable to get " << e.url() << std::endl;
         throw;
