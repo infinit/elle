@@ -17,10 +17,9 @@ namespace elle
 }
 
 #define ELLE_CLONABLE()                                                 \
-  virtual                                                               \
   std::unique_ptr<typename Self::_elle_Cloned>                          \
   clone() const override                                                \
   {                                                                     \
     return                                                              \
       std::unique_ptr<typename Self::_elle_Cloned>(new Self(*this));    \
-  }                                                                     \
+  }
