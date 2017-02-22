@@ -5,6 +5,8 @@ namespace elle
   class Buffer;
   class ConstWeakBuffer;
   class Error;
+  class IntRange;
+  class IntRanges;
   class Version;
   class WeakBuffer;
 }
