@@ -103,7 +103,7 @@ def configure(cxx_toolkit = None,
   drake.HTTPDownload(
     url = zlib_url,
     dest = zlib_tarball,
-    fingerprint = '44d667c142d7cda120332623eab69f40',
+    fingerprint = '1c9f62f0778697a09d36121ead88e08e',
   )
 
   # Extract the tarball.
