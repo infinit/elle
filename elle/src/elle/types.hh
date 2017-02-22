@@ -18,29 +18,29 @@
 
 namespace elle
 {
-    typedef int8_t                        Integer8;
-    typedef int16_t                       Integer16;
-    typedef int32_t                       Integer32;
-    typedef int64_t                       Integer64;
+    using Integer8 = int8_t;
+    using Integer16 = int16_t;
+    using Integer32 = int32_t;
+    using Integer64 = int64_t;
 
-    typedef uint8_t                       Natural8;
-    typedef uint16_t                      Natural16;
-    typedef uint32_t                      Natural32;
-    typedef uint64_t                      Natural64;
+    using Natural8 = uint8_t;
+    using Natural16 = uint16_t;
+    using Natural32 = uint32_t;
+    using Natural64 = uint64_t;
 
-    typedef void                          Void;
-    typedef bool                          Bool;
-    typedef bool                          Boolean;
-    typedef char                          Char;
-    typedef char                          Character;
-    typedef Natural8                      Byte;
-    typedef double                        Real;
+    using Void = void;
+    using Bool = bool;
+    using Boolean = bool;
+    using Char = char;
+    using Character = char;
+    using Byte = Natural8;
+    using Real = double;
 
-    typedef std::basic_string<Character>  String;
+    using String = std::basic_string<Character>;
 
-    typedef Natural64 Size;
-    typedef Natural64 Index;
-    typedef Natural64 Offset;
+    using Size = Natural64;
+    using Index = Natural64;
+    using Offset = Natural64;
 
     ///
     /// this enumeration represents a return status.

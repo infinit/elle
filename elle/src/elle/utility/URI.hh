@@ -11,7 +11,7 @@ namespace elle
     ///
     /// this type defines a URI - Unifofmr Resource Identifier.
     ///
-    typedef String              URI;
+    using URI = String;
 
   }
 }

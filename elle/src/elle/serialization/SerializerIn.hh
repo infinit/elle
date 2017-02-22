@@ -19,8 +19,8 @@ namespace elle
     | Types |
     `------*/
     public:
-      typedef SerializerIn Self;
-      typedef Serializer Super;
+      using Self = elle::serialization::SerializerIn;
+      using Super = elle::serialization::Serializer;
 
     /*-------------.
     | Construction |

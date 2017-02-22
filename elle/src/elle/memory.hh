@@ -19,7 +19,7 @@ namespace elle
   | Types |
   `------*/
   public:
-    typedef generic_unique_ptr<T> Self;
+    using Self = generic_unique_ptr<T>;
     typedef std::unique_ptr<T, std::function<void (T*)>> Super;
 
   /*-------------.

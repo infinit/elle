@@ -30,7 +30,7 @@ namespace elle
   public:
     // printable
     void
-    print(std::ostream& stream) const;
+    print(std::ostream& stream) const override;
 
     /*----------.
     | Operators |

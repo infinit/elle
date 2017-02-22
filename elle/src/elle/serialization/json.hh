@@ -11,8 +11,8 @@ namespace elle
     class Json
     {
     public:
-      typedef json::SerializerIn SerializerIn;
-      typedef json::SerializerOut SerializerOut;
+      using SerializerIn = json::SerializerIn;
+      using SerializerOut = json::SerializerOut;
     };
 
     namespace json

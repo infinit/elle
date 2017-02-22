@@ -13,7 +13,7 @@ namespace elle
 {
   class ELLE_API SafeFinally
   {
-    typedef std::function<void()> Action;
+    using Action = std::function<void ()>;
   /*-------------.
   | Construction |
   `-------------*/
