@@ -119,8 +119,9 @@ def configure(cxx_toolkit = None,
     valgrind = None
   set_valgrind(valgrind)
   config = drake.cxx.Config()
-
+  config.add_local_include_path('src')
   cxx_config = drake.cxx.Config(cxx_config)
+  cxx_config.add_local_include_path('src')
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
   if cxx_toolkit.os in [drake.os.macos] and cxx_toolkit.kind == drake.cxx.GccToolkit.Kind.clang:
     cxx_config.use_local_libcxx = True
@@ -1240,7 +1241,6 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
   elif cxx_toolkit.os is drake.os.ios:
     config.define('INFINIT_IOS')
     cxx_config.define('INFINIT_IOS')
-  cxx_config.add_local_include_path('src')
   cxx_config.export_dynamic = True
   cxx_config.warnings.parentheses = False
   cxx_config.warnings.empty_body = False
