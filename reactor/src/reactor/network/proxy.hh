@@ -33,7 +33,7 @@ namespace reactor
       public elle::Printable
     {
     public:
-      typedef Proxy Self;
+      using Self = reactor::network::Proxy;
 
     public:
       Proxy(ProxyType type,
@@ -54,7 +54,7 @@ namespace reactor
       ELLE_ATTRIBUTE_R(std::string, password);
 
     public:
-      virtual
+
       void
       print(std::ostream& stream) const override;
     };

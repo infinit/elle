@@ -20,7 +20,7 @@ namespace reactor
     : public elle::Error
   {
   public:
-    typedef elle::Error Super;
+    using Super = elle::Error;
     Timeout(reactor::Duration const& delay);
     ELLE_ATTRIBUTE_R(reactor::Duration, delay);
   };

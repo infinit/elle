@@ -28,9 +28,9 @@ namespace reactor
   `---------*/
   public:
     /// Self
-    typedef Waitable Self;
+    using Self = reactor::Waitable;
     /// Wake callback.
-    typedef std::function<void (Thread*)> Waker;
+    using Waker = std::function<void (Thread *)>;
     /// Waited thread and its wake callback.
     typedef std::pair<Thread*, Waker> Handler;
     /// Collection of threads waiting this
@@ -139,7 +139,7 @@ namespace reactor
   | Printable |
   `----------*/
   public:
-    virtual
+
     void
     print(std::ostream& stream) const override;
   };

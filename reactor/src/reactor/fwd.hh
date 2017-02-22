@@ -24,8 +24,8 @@ namespace reactor
   class VThread;
   class Waitable;
 
-  typedef std::vector<Signal*> Signals;
-  typedef std::vector<Waitable*> Waitables;
+  using Signals = std::vector<Signal *>;
+  using Waitables = std::vector<Waitable *>;
 }
 
 #endif

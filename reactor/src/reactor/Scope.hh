@@ -72,7 +72,7 @@ namespace reactor
   | Printable |
   `----------*/
   public:
-    virtual
+
     void
     print(std::ostream& stream) const override;
   };

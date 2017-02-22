@@ -9,8 +9,8 @@ namespace reactor
     : public Waitable
   {
   public:
-    typedef Signal Self;
-    typedef Waitable Super;
+    using Self = reactor::Signal;
+    using Super = reactor::Waitable;
     Signal(const std::string& name = std::string());
     virtual
     ~Signal();
@@ -22,7 +22,7 @@ namespace reactor
   | Printable |
   `----------*/
   public:
-    virtual
+
     void
     print(std::ostream& stream) const override;
   };
@@ -32,8 +32,8 @@ namespace reactor
     : public Waitable
   {
     public:
-      typedef Signal Self;
-      typedef Waitable Super;
+      using Self = reactor::Signal;
+      using Super = reactor::Waitable;
       VSignal(std::string const& name = std::string());
       bool Emit(V const& val);
       bool EmitOne(V const& val);

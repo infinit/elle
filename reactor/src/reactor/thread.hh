@@ -18,7 +18,7 @@
 
 namespace reactor
 {
-  typedef std::shared_ptr<Thread> ThreadPtr;
+  using ThreadPtr = std::shared_ptr<Thread>;
 
   DAS_SYMBOL(dispose);
   DAS_SYMBOL(managed);
@@ -101,7 +101,7 @@ namespace reactor
     | Tracking |
     `---------*/
     public:
-      typedef boost::signals2::signal<void ()> Tracker;
+      using Tracker = boost::signals2::signal<void ()>;
       // signal invoked when Thread object is being destroyed
       Tracker& destructed();
       // signal invoked when Thread is released by scheduler
@@ -126,7 +126,7 @@ namespace reactor
             frozen,
           };
       };
-      typedef state::State State;
+      using State = state::State;
       /// Current state.
       State state() const;
       /// Whether our state is 'done'.
@@ -156,7 +156,7 @@ namespace reactor
   | Exceptions |
   `-----------*/
   public:
-    typedef std::function<void ()> Injection;
+    using Injection = std::function<void ()>;
     void
     inject(const Injection& injection);
     template <typename Exception, typename... Args>
@@ -295,8 +295,8 @@ namespace reactor
   | Typedefs |
   `---------*/
   public:
-    typedef VThread<R> Self;
-    typedef std::function<R ()> Action;
+    using Self = VThread<R>;
+    using Action = std::function<R ()>;
 
     /*-------------.
     | Construction |

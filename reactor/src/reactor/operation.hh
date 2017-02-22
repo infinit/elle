@@ -9,8 +9,8 @@ namespace reactor
   class Operation: public Waitable
   {
   public:
-    typedef Operation Self;
-    typedef Waitable Super;
+    using Self = reactor::Operation;
+    using Super = reactor::Waitable;
     Operation();
     Operation(Scheduler& scheduler);
     Scheduler& scheduler();
