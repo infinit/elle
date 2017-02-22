@@ -7,7 +7,7 @@
 #include <elle/Printable.hh>
 #include <elle/service/aws/Keys.hh>
 
-#include <reactor/http/Request.hh>
+#include <elle/reactor/http/Request.hh>
 
 namespace elle
 {
@@ -24,7 +24,7 @@ namespace elle
       public:
         /// http://docs.aws.amazon.com/general/latest/gr/sigv4-create-canonical-request.html
         CanonicalRequest(
-          reactor::http::Method http_method,
+          elle::reactor::http::Method http_method,
           std::string const& canonical_uri,
           RequestQuery const& query,
           RequestHeaders const& headers,

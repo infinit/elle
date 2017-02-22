@@ -10,9 +10,9 @@
 
 #include <elle/cryptography/rsa/KeyPair.hh>
 
-#include <reactor/http/Request.hh>
-#include <reactor/http/exceptions.hh>
-#include <reactor/scheduler.hh>
+#include <elle/reactor/http/Request.hh>
+#include <elle/reactor/http/exceptions.hh>
+#include <elle/reactor/scheduler.hh>
 
 // Declare symbols used by das.
 DAS_SYMBOL(array);

@@ -7,19 +7,19 @@
 	url = https://github.com/infinitdotio/json-spirit
         fetchRecurseSubmodules = false
 [submodule "reactor/miniupnp"]
-	path = reactor/miniupnp
+	path = src/elle/reactor/modules/miniupnp
 	url = https://github.com/infinit/miniupnp
         fetchRecurseSubmodules = false
 [submodule "reactor/libutp"]
-	path = reactor/libutp
+	path = src/elle/reactor/modules/libutp
 	url = https://github.com/infinit/libutp
         fetchRecurseSubmodules = false
 [submodule "reactor/osxfuse"]
-	path = reactor/osxfuse
+	path = src/elle/reactor/modules/osxfuse
 	url = https://github.com/osxfuse/osxfuse
         fetchRecurseSubmodules = false
 [submodule "reactor/dokany"]
-	path = reactor/dokany
+	path = src/elle/reactor/modules/dokany
 	url = https://github.com/infinit/dokan
         fetchRecurseSubmodules = false
 [submodule "src/elle/cryptography/modules/dopenssl"]

@@ -12,7 +12,7 @@
 #include <das/printer.hh>
 #include <das/serializer.hh>
 
-#include <reactor/http/Request.hh>
+#include <elle/reactor/http/Request.hh>
 
 namespace elle
 {
@@ -181,36 +181,36 @@ namespace elle
         longpoll_delta(std::string cursor);
 
       private:
-        reactor::http::Request
+        elle::reactor::http::Request
         _request(std::string url,
-                 reactor::http::Method method = reactor::http::Method::GET,
-                 reactor::http::Request::QueryDict query =
-                   reactor::http::Request::QueryDict(),
-                 reactor::http::Request::Configuration =
-                   reactor::http::Request::Configuration(),
+                 elle::reactor::http::Method method = elle::reactor::http::Method::GET,
+                 elle::reactor::http::Request::QueryDict query =
+                   elle::reactor::http::Request::QueryDict(),
+                 elle::reactor::http::Request::Configuration =
+                   elle::reactor::http::Request::Configuration(),
                  elle::ConstWeakBuffer const& payload = {},
                  std::string const& op = "",
-                 std::vector<reactor::http::StatusCode> expected_codes =
+                 std::vector<elle::reactor::http::StatusCode> expected_codes =
                    {} /* OK is automaticalyl added*/
                  ) const;
 
-        reactor::http::Request
+        elle::reactor::http::Request
         _fileop(boost::filesystem::path const& path,
                 std::string const& op,
-                std::vector<reactor::http::StatusCode> expected_codes = {},
+                std::vector<elle::reactor::http::StatusCode> expected_codes = {},
                 std::string const& path_arg = "path",
-                reactor::http::Request::QueryDict query =
-                reactor::http::Request::QueryDict());
+                elle::reactor::http::Request::QueryDict query =
+                elle::reactor::http::Request::QueryDict());
 
         void
-        _check_status(std::string const& op, reactor::http::Request& r) const;
+        _check_status(std::string const& op, elle::reactor::http::Request& r) const;
 
         void
         _check_path(boost::filesystem::path const& path) const;
 
         elle::Buffer
         _get(boost::filesystem::path const& path,
-             reactor::http::Request::Configuration conf) const;
+             elle::reactor::http::Request::Configuration conf) const;
 
         bool
         _ignored(boost::filesystem::path const& path) const;

@@ -13,11 +13,11 @@
 #include <elle/service/aws/S3.hh>
 #include <elle/service/aws/SigningKey.hh>
 
-#include <reactor/network/exception.hh>
-#include <reactor/http/exceptions.hh>
-#include <reactor/http/EscapedString.hh>
-#include <reactor/http/Request.hh>
-#include <reactor/scheduler.hh>
+#include <elle/reactor/network/exception.hh>
+#include <elle/reactor/http/exceptions.hh>
+#include <elle/reactor/http/EscapedString.hh>
+#include <elle/reactor/http/Request.hh>
+#include <elle/reactor/scheduler.hh>
 
 ELLE_LOG_COMPONENT("elle.services.aws.S3");
 
@@ -88,7 +88,7 @@ namespace elle
       }
 
       static
-      reactor::Duration
+      elle::reactor::Duration
       delay(int attempt)
       {
         if (attempt > 8)
@@ -114,7 +114,7 @@ namespace elle
 
       static std::string query_parameters(RequestQuery const& query)
       {
-        using reactor::http::EscapedString;
+        using elle::reactor::http::EscapedString;
         if (query.empty())
           return "";
         std::string res = "?";
@@ -168,7 +168,7 @@ namespace elle
         auto request = _build_send_request(
           RequestKind::data, url,
           elle::sprintf("put_object(%s)", query),
-          reactor::http::Method::PUT,
+          elle::reactor::http::Method::PUT,
           query, headers,
           "binary/octet-stream",
           object,
@@ -196,7 +196,7 @@ namespace elle
             elle::sprintf("%s/%s", this->_credentials.folder(), marker);
         }
         auto request = this->_build_send_request(
-          RequestKind::data, "/", "list", reactor::http::Method::GET, query);
+          RequestKind::data, "/", "list", elle::reactor::http::Method::GET, query);
         return this->_parse_list_xml(*request);
        }
 
@@ -244,7 +244,7 @@ namespace elle
         auto request =
           this->_build_send_request(RequestKind::data, url,
                                     elle::sprintf("get_object(%s)", headers),
-                                    reactor::http::Method::GET,
+                                    elle::reactor::http::Method::GET,
                                     RequestQuery(),
                                     headers);
         auto response = request->response();
@@ -305,7 +305,7 @@ namespace elle
           this->_build_send_request(RequestKind::control,
                                     "/",
                                     "delete_folder",
-                                    reactor::http::Method::POST,
+                                    elle::reactor::http::Method::POST,
                                     query,
                                     headers,
                                     "text/xml",
@@ -327,7 +327,7 @@ namespace elle
         this->_build_send_request(RequestKind::control,
                                   url,
                                   "delete",
-                                  reactor::http::Method::DELETE,
+                                  elle::reactor::http::Method::DELETE,
                                   query);
       }
 
@@ -366,7 +366,7 @@ namespace elle
           RequestKind::control,
           url,
           "multipart_initialize",
-          reactor::http::Method::POST,
+          elle::reactor::http::Method::POST,
           query,
           headers,
           mime_type);
@@ -425,7 +425,7 @@ namespace elle
             RequestKind::control,
             url,
             "multipart_finalize",
-            reactor::http::Method::POST,
+            elle::reactor::http::Method::POST,
             query,
             RequestHeaders(),
             "text/xml",
@@ -480,7 +480,7 @@ namespace elle
           auto request = this->_build_send_request(RequestKind::data,
                                                    url,
                                                    "multipart_list",
-                                                   reactor::http::Method::GET,
+                                                   elle::reactor::http::Method::GET,
                                                    query);
 
           using boost::property_tree::ptree;
@@ -596,7 +596,7 @@ namespace elle
         return res;
       }
 
-      reactor::http::Request::Configuration
+      elle::reactor::http::Request::Configuration
       S3::_initialize_request(RequestKind kind,
                               RequestTime request_time,
                               CanonicalRequest const& canonical_request,
@@ -639,15 +639,15 @@ namespace elle
         headers["Authorization"] = auth_str;
 
         // Set either total or stall timeout based on request kind.
-        reactor::DurationOpt total_timeout, stall_timeout;
+        elle::reactor::DurationOpt total_timeout, stall_timeout;
         if (kind == RequestKind::control)
           total_timeout = timeout;
         else
           stall_timeout = timeout;
 
-        reactor::http::Request::Configuration cfg(total_timeout,
+        elle::reactor::http::Request::Configuration cfg(total_timeout,
                                                   stall_timeout,
-                                                  reactor::http::Version::v11);
+                                                  elle::reactor::http::Version::v11);
         // Add headers to request.
         for (auto header: headers)
           cfg.header_add(header.first, header.second);
@@ -659,7 +659,7 @@ namespace elle
        */
       inline
       std::string
-      handle_temporary_redirect(reactor::http::Request& request)
+      handle_temporary_redirect(elle::reactor::http::Request& request)
       {
         // The "Location" header contains the complete URL which means we would
         // need to parse it to get the hostname which is used for signing.
@@ -675,11 +675,11 @@ namespace elle
        */
       inline
       void
-      check_request_status(reactor::http::Request& request,
+      check_request_status(elle::reactor::http::Request& request,
                            std::string const& url,
                            bool& fatal)
       {
-        typedef reactor::http::StatusCode StatusCode;
+        typedef elle::reactor::http::StatusCode StatusCode;
         auto status = request.status();
         fatal = false; // if true, exception is not known to be recoverable
 
@@ -716,12 +716,12 @@ namespace elle
 
             throw RequestError(payload.str(), status, code);
           }
-          case reactor::http::StatusCode::Not_Found:
+          case elle::reactor::http::StatusCode::Not_Found:
             fatal = true;
             throw aws::FileNotFound(
               elle::sprintf("error on %s: object not found",
                             url));
-          case reactor::http::StatusCode::Forbidden:
+          case elle::reactor::http::StatusCode::Forbidden:
           {
             // Consider a RequestTimeTooSkewed error as a "credentials expired",
             // Refetching will recompute the time skew.
@@ -740,7 +740,7 @@ namespace elle
             ELLE_TRACE("S3: Forbidden with payload: %s", payload.str());
             throw CredentialsNotValid(payload.str(), status, code);
           }
-          case reactor::http::StatusCode::Temporary_Redirect:
+          case elle::reactor::http::StatusCode::Temporary_Redirect:
           {
             std::string host = handle_temporary_redirect(request);
             if (host.empty())
@@ -752,9 +752,9 @@ namespace elle
             ELLE_TRACE("S3: temporary redirect to host: %s", host);
             throw TemporaryRedirect(request.response().string(), host, status);
           }
-          case reactor::http::StatusCode::OK:
-          case reactor::http::StatusCode::No_Content:
-          case reactor::http::StatusCode::Partial_Content:
+          case elle::reactor::http::StatusCode::OK:
+          case elle::reactor::http::StatusCode::No_Content:
+          case elle::reactor::http::StatusCode::Partial_Content:
             break;
           default:
             fatal = true;
@@ -764,7 +764,7 @@ namespace elle
       }
 
       void
-      S3::_check_request_status(reactor::http::Request& request,
+      S3::_check_request_status(elle::reactor::http::Request& request,
                                 std::string const& url)
       {
         bool fatal;
@@ -792,12 +792,12 @@ namespace elle
                <<    " remote_folder=" << this->_credentials.folder();
       }
 
-      std::unique_ptr<reactor::http::Request>
+      std::unique_ptr<elle::reactor::http::Request>
       S3::_build_send_request(
         RequestKind kind,
         std::string const& uri,
         std::string const& operation,
-        reactor::http::Method method,
+        elle::reactor::http::Method method,
         RequestQuery const& query,
         RequestHeaders const& extra_headers,
         std::string const& content_type,
@@ -857,7 +857,7 @@ namespace elle
             method, uri_encode(canonical_uri, false), query, headers,
             this->_signed_headers(headers), this->_sha256_hexdigest(payload)
           );
-          reactor::http::Request::Configuration cfg(this->_initialize_request(
+          elle::reactor::http::Request::Configuration cfg(this->_initialize_request(
             kind, request_time, canonical_request, headers, timeout));
           std::string full_url = elle::sprintf(
             "%s%s%s",
@@ -868,15 +868,15 @@ namespace elle
           ELLE_DEBUG("full url: %s", full_url);
           for (auto const& h: headers)
             ELLE_DUMP("header %s: %s", h.first, h.second);
-          std::unique_ptr<reactor::http::Request> request;
+          std::unique_ptr<elle::reactor::http::Request> request;
           try
           {
             request =
-              std::make_unique<reactor::http::Request>(full_url, method, cfg);
+              std::make_unique<elle::reactor::http::Request>(full_url, method, cfg);
             if (progress_callback)
             {
               request->progress_changed().connect(
-                [&progress_callback] (reactor::http::Request::Progress const& p)
+                [&progress_callback] (elle::reactor::http::Request::Progress const& p)
                 {
                   progress_callback.get()(p.upload_current);
                 });
@@ -886,9 +886,9 @@ namespace elle
               request->write(reinterpret_cast<char const*>(payload.contents()),
                 payload.size());
             }
-            reactor::wait(*request);
+            elle::reactor::wait(*request);
           }
-          catch (reactor::network::Exception const& e)
+          catch (elle::reactor::network::Exception const& e)
           {
             ++attempt;
             // we have nothing better to do, so keep retrying
@@ -904,11 +904,11 @@ namespace elle
             }
             else
             {
-              reactor::sleep(delay(attempt));
+              elle::reactor::sleep(delay(attempt));
               continue;
             }
           }
-          catch (reactor::http::RequestError const& e)
+          catch (elle::reactor::http::RequestError const& e)
           {
             ++attempt;
             // we have nothing better to do, so keep retrying
@@ -924,7 +924,7 @@ namespace elle
             }
             else
             {
-              reactor::sleep(delay(attempt));
+              elle::reactor::sleep(delay(attempt));
               continue;
             }
           }
@@ -963,7 +963,7 @@ namespace elle
               throw aws_exception;
             else
             {
-              reactor::sleep(delay(attempt));
+              elle::reactor::sleep(delay(attempt));
               continue;
             }
           }

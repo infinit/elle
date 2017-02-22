@@ -3,9 +3,9 @@
 #include <elle/With.hh>
 #include <elle/cryptography/random.hh>
 
-#include <reactor/Scope.hh>
-#include <reactor/for-each.hh>
-#include <reactor/scheduler.hh>
+#include <elle/reactor/Scope.hh>
+#include <elle/reactor/for-each.hh>
+#include <elle/reactor/scheduler.hh>
 
 namespace elle
 {
@@ -126,7 +126,7 @@ namespace elle
           ELLE_DEBUG("%s: send proposal: %s", *this, proposal)
           {
             int reached = 0;
-            reactor::for_each_parallel(
+            elle::reactor::for_each_parallel(
               this->_peers,
               [&] (std::unique_ptr<Peer> const& peer) -> void
               {
@@ -173,7 +173,7 @@ namespace elle
           {
             int reached = 0;
             bool conflicted = false;
-            reactor::for_each_parallel(
+            elle::reactor::for_each_parallel(
               this->_peers,
               [&] (std::unique_ptr<Peer> const& peer) -> void
               {
@@ -192,7 +192,7 @@ namespace elle
                     version = minimum.version;
                     this->_round = minimum.round;
                     conflicted = true;
-                    reactor::break_parallel();
+                    elle::reactor::break_parallel();
                   }
                   ++reached;
                 }
@@ -210,7 +210,7 @@ namespace elle
               if (this->_conflict_backoff)
               {
                 ELLE_TRACE("%s: conflicted proposal, retry in %s", this, delay);
-                reactor::sleep(delay);
+                elle::reactor::sleep(delay);
               }
               else
                 ELLE_TRACE("%s: conflicted proposal, retry", this);
@@ -224,7 +224,7 @@ namespace elle
           ELLE_DEBUG("%s: send confirmation", *this)
           {
             auto reached = 0;
-            reactor::for_each_parallel(
+            elle::reactor::for_each_parallel(
               this->_peers,
               [&] (std::unique_ptr<Peer> const& peer) -> void
               {
@@ -268,7 +268,7 @@ namespace elle
         ELLE_DUMP("quorum: %s", q);
         auto reached = 0;
         boost::optional<typename Client<T, Version, CId>::Accepted> res;
-        reactor::for_each_parallel(
+        elle::reactor::for_each_parallel(
           this->_peers,
           [&] (std::unique_ptr<Peer> const& peer) -> void
           {

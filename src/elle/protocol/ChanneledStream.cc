@@ -2,8 +2,8 @@
 
 #include <elle/log.hh>
 
-#include <reactor/scheduler.hh>
-#include <reactor/thread.hh>
+#include <elle/reactor/scheduler.hh>
+#include <elle/reactor/thread.hh>
 
 #include <elle/cryptography/random.hh>
 
@@ -20,7 +20,7 @@ namespace elle
     | Construction |
     `-------------*/
 
-    ChanneledStream::ChanneledStream(reactor::Scheduler& scheduler,
+    ChanneledStream::ChanneledStream(elle::reactor::Scheduler& scheduler,
                                      Stream& backend)
       : Super(scheduler)
       , _master(this->_handshake(backend))
@@ -34,7 +34,7 @@ namespace elle
     {}
 
     ChanneledStream::ChanneledStream(Stream& backend)
-      : ChanneledStream(*reactor::Scheduler::scheduler(), backend)
+      : ChanneledStream(*elle::reactor::Scheduler::scheduler(), backend)
     {}
 
     bool
@@ -106,7 +106,7 @@ namespace elle
     {
       ELLE_TRACE_SCOPE("%s: read packet on channel %s", *this, channel->_id);
       int requested_channel = channel->_id;
-      reactor::Thread* current = scheduler().current();
+      elle::reactor::Thread* current = scheduler().current();
       while (true)
         {
           if (!channel->_packets.empty())
@@ -136,7 +136,7 @@ namespace elle
         bool goon = true;
         while (goon)
         {
-          elle::With<reactor::Thread::NonInterruptible>() << [&]
+          elle::With<elle::reactor::Thread::NonInterruptible>() << [&]
           {
             this->_reading = true;
             elle::Buffer p(this->_backend.read());
@@ -214,7 +214,7 @@ namespace elle
           else
           {
             ELLE_DEBUG("%s: reader already present, waiting.", *this);
-            reactor::Thread* current = scheduler().current();
+            elle::reactor::Thread* current = scheduler().current();
             current->wait(this->_channel_available);
           }
         }

@@ -23,7 +23,7 @@ namespace elle
 
       RequestError::RequestError(
         std::string const& message,
-        boost::optional<reactor::http::StatusCode> http_status,
+        boost::optional<elle::reactor::http::StatusCode> http_status,
         boost::optional<std::string> const& error_code)
         : elle::Exception(message)
         , _http_status(http_status)
@@ -32,7 +32,7 @@ namespace elle
 
       TransientError::TransientError(
         std::string const& message,
-        boost::optional<reactor::http::StatusCode> http_status,
+        boost::optional<elle::reactor::http::StatusCode> http_status,
         boost::optional<std::string> const& error_code
         )
       : RequestError(message, http_status, error_code)
@@ -40,7 +40,7 @@ namespace elle
 
       CredentialsExpired::CredentialsExpired(
           std::string const& message,
-          boost::optional<reactor::http::StatusCode> http_status,
+          boost::optional<elle::reactor::http::StatusCode> http_status,
           boost::optional<std::string> const& error_code
           )
         : RequestError(message, http_status, error_code)
@@ -48,7 +48,7 @@ namespace elle
 
       CredentialsNotValid::CredentialsNotValid(
           std::string const& message,
-          boost::optional<reactor::http::StatusCode> http_status,
+          boost::optional<elle::reactor::http::StatusCode> http_status,
           boost::optional<std::string> const& error_code
           )
         : RequestError(message, http_status, error_code)
@@ -56,7 +56,7 @@ namespace elle
 
       CorruptedData::CorruptedData(
           std::string const& message,
-          boost::optional<reactor::http::StatusCode> http_status,
+          boost::optional<elle::reactor::http::StatusCode> http_status,
           boost::optional<std::string> const& error_code
           )
         : RequestError(message, http_status, error_code)
@@ -64,7 +64,7 @@ namespace elle
 
       FileNotFound::FileNotFound(
           std::string const& message,
-          boost::optional<reactor::http::StatusCode> http_status,
+          boost::optional<elle::reactor::http::StatusCode> http_status,
           boost::optional<std::string> const& error_code
           )
         : RequestError(message, http_status, error_code)
@@ -73,7 +73,7 @@ namespace elle
       TemporaryRedirect::TemporaryRedirect(
           std::string const& message,
           std::string const& redirect_host,
-          boost::optional<reactor::http::StatusCode> http_status,
+          boost::optional<elle::reactor::http::StatusCode> http_status,
           boost::optional<std::string> const& error_code)
         : RequestError(message, http_status, error_code)
         , _redirect_host(redirect_host)

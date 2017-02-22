@@ -1,4 +1,4 @@
-#include <reactor/exception.hh>
+#include <elle/reactor/exception.hh>
 
 #include <elle/protocol/RPC.hh>
 

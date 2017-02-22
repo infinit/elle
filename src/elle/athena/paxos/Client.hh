@@ -3,7 +3,7 @@
 #include <elle/Printable.hh>
 #include <elle/athena/paxos/Server.hh>
 #include <elle/attribute.hh>
-#include <reactor/Barrier.hh>
+#include <elle/reactor/Barrier.hh>
 
 namespace elle
 {

@@ -7,7 +7,7 @@
 # include <elle/Printable.hh>
 # include <elle/Version.hh>
 
-# include <reactor/fwd.hh>
+# include <elle/reactor/fwd.hh>
 
 namespace elle
 {
@@ -19,7 +19,7 @@ namespace elle
     | Construction |
     `-------------*/
     public:
-      Stream(reactor::Scheduler& scheduler);
+      Stream(elle::reactor::Scheduler& scheduler);
       Stream();
       virtual
       ~Stream();
@@ -27,7 +27,7 @@ namespace elle
     /*-----------.
     | Properties |
     `-----------*/
-      ELLE_ATTRIBUTE_R(reactor::Scheduler&, scheduler);
+      ELLE_ATTRIBUTE_R(elle::reactor::Scheduler&, scheduler);
       /// The protocol is versioned.
       ///
       /// Expose the version of the backend.

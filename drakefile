@@ -1301,7 +1301,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     valgrind_tests = valgrind_tests,
   )
   reactor = drake.include(
-    'reactor',
+    'src/elle/reactor',
     zlib_config = zlib_config,
     zlib_lib = zlib_lib,
     curl_config = curl_config,

@@ -141,14 +141,14 @@ _test_suite()                                           \
 # ifdef INFINIT_WINDOWS
 #  define ELLE_TEST_HANDLE_SIGALRM(Sched, Name)
 # else
-#  define ELLE_TEST_HANDLE_SIGALRM(Sched, Name)                       \
-  Sched.signal_handle(SIGALRM,                                        \
-                      []                                              \
-                      {                                               \
-                        ELLE_ERR("test %s timeout: SIGALRM", #Name);  \
-                        if (auto s = reactor::Scheduler::scheduler()) \
-                          s->dump_state();                            \
-                        throw elle::Error("test timeout");            \
+#  define ELLE_TEST_HANDLE_SIGALRM(Sched, Name)                             \
+  Sched.signal_handle(SIGALRM,                                              \
+                      []                                                    \
+                      {                                                     \
+                        ELLE_ERR("test %s timeout: SIGALRM", #Name);        \
+                        if (auto s = elle::reactor::Scheduler::scheduler()) \
+                          s->dump_state();                                  \
+                        throw elle::Error("test timeout");                  \
                       });
 # endif
 
@@ -162,9 +162,9 @@ static                                                                \
 void                                                                  \
 Name(ELLE_TEST_PROTOTYPE(Args))                                       \
 {                                                                     \
-  reactor::Scheduler sched;                                           \
+  elle::reactor::Scheduler sched;                                     \
   ELLE_TEST_HANDLE_SIGALRM(sched, Name);                              \
-  reactor::Thread main(                                               \
+  elle::reactor::Thread main(                                         \
     sched, "main",                                                    \
     [&]                                                               \
     {                                                                 \
@@ -199,8 +199,8 @@ static                                                                \
 void                                                                  \
 Name()                                                                \
 {                                                                     \
-  reactor::Scheduler sched;                                           \
-  reactor::Thread main(                                               \
+  elle::reactor::Scheduler sched;                                           \
+  elle::reactor::Thread main(                                               \
     sched, "main",                                                    \
     [&]                                                               \
     {                                                                 \

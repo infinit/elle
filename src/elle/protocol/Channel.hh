@@ -3,7 +3,7 @@
 
 # include <elle/Printable.hh>
 
-# include <reactor/signal.hh>
+# include <elle/reactor/signal.hh>
 
 # include <elle/protocol/Stream.hh>
 # include <elle/protocol/fwd.hh>
@@ -68,7 +68,7 @@ namespace elle
       ELLE_ATTRIBUTE(ChanneledStream&, backend);
       ELLE_ATTRIBUTE_R(Id, id);
       ELLE_ATTRIBUTE(std::list<elle::Buffer>, packets);
-      ELLE_ATTRIBUTE(reactor::Signal, available);
+      ELLE_ATTRIBUTE(elle::reactor::Signal, available);
     };
   }
 }

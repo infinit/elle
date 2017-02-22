@@ -4,7 +4,7 @@
 #include <elle/format/hexadecimal.hh>
 #include <elle/service/aws/CanonicalRequest.hh>
 
-#include <reactor/http/EscapedString.hh>
+#include <elle/reactor/http/EscapedString.hh>
 
 ELLE_LOG_COMPONENT("elle.services.aws.CanonicalRequest");
 
@@ -15,7 +15,7 @@ namespace elle
     namespace aws
     {
       CanonicalRequest::CanonicalRequest(
-        reactor::http::Method http_method,
+        elle::reactor::http::Method http_method,
         std::string const& canonical_uri,
         RequestQuery const& query,
         RequestHeaders const& headers,
@@ -51,7 +51,7 @@ namespace elle
           return "";
 
         std::string res;
-        using reactor::http::EscapedString;
+        using elle::reactor::http::EscapedString;
         for (auto const& parameter: query)
         {
           res.append(elle::sprintf("%s=%s&", EscapedString(parameter.first),

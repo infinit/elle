@@ -2,9 +2,9 @@
 #include <elle/serialization/json.hh>
 #include <elle/test.hh>
 
-#include <reactor/Barrier.hh>
-#include <reactor/scheduler.hh>
-#include <reactor/signal.hh>
+#include <elle/reactor/Barrier.hh>
+#include <elle/reactor/scheduler.hh>
+#include <elle/reactor/signal.hh>
 
 #include <elle/athena/paxos/Client.hh>
 #include <elle/athena/paxos/Server.hh>
@@ -233,7 +233,7 @@ public:
     if (fail)
       throw paxos::Unavailable();
     this->propose_signal.signal();
-    reactor::wait(this->propose_barrier);
+    elle::reactor::wait(this->propose_barrier);
     return Peer<T, Version, ServerId>::propose(q, p);
   }
 
@@ -246,7 +246,7 @@ public:
     if (fail)
       throw paxos::Unavailable();
     this->accept_signal.signal();
-    reactor::wait(this->accept_barrier);
+    elle::reactor::wait(this->accept_barrier);
     return Peer<T, Version, ServerId>::accept(q, p, value);
   }
 
@@ -258,13 +258,13 @@ public:
     if (fail)
       throw paxos::Unavailable();
     this->confirm_signal.signal();
-    reactor::wait(this->confirm_barrier);
+    elle::reactor::wait(this->confirm_barrier);
     return Peer<T, Version, ServerId>::confirm(q, p);
   }
 
   bool fail;
-  reactor::Barrier propose_barrier, accept_barrier, confirm_barrier;
-  reactor::Signal propose_signal, accept_signal, confirm_signal;
+  elle::reactor::Barrier propose_barrier, accept_barrier, confirm_barrier;
+  elle::reactor::Signal propose_signal, accept_signal, confirm_signal;
 };
 
 ELLE_TEST_SCHEDULED(concurrent)
@@ -290,20 +290,20 @@ ELLE_TEST_SCHEDULED(concurrent)
   peer_1_2->propose_barrier.open();
   peer_1_2->accept_barrier.open();
   peer_1_3->propose_barrier.open();
-  reactor::Thread::unique_ptr t1(
-    new reactor::Thread(
+  elle::reactor::Thread::unique_ptr t1(
+    new elle::reactor::Thread(
       "1",
       [&]
       {
         auto chosen = client_1.choose(42);
         BOOST_CHECK_EQUAL(chosen->value.get<int>(), 42);
       }));
-  reactor::wait(
-    reactor::Waitables({&peer_1_2->accept_signal, &peer_1_3->accept_signal}));
+  elle::reactor::wait(
+    elle::reactor::Waitables({&peer_1_2->accept_signal, &peer_1_3->accept_signal}));
   auto chosen = client_2.choose(43);
   BOOST_CHECK_EQUAL(chosen->value.get<int>(), 42);
   peer_1_3->accept_barrier.open();
-  reactor::wait(*t1);
+  elle::reactor::wait(*t1);
 }
 
 ELLE_TEST_SCHEDULED(conflict)
@@ -330,20 +330,20 @@ ELLE_TEST_SCHEDULED(conflict)
   client_2.conflict_backoff(false);
   peer_1_2->propose_barrier.open();
   peer_1_3->propose_barrier.open();
-  reactor::Thread::unique_ptr t1(
-    new reactor::Thread(
+  elle::reactor::Thread::unique_ptr t1(
+    new elle::reactor::Thread(
       "1",
       [&]
       {
         auto chosen = client_1.choose(43);
         BOOST_CHECK_EQUAL(chosen->value.get<int>(), 42);
       }));
-  reactor::wait(
-    reactor::Waitables({&peer_1_2->accept_signal, &peer_1_3->accept_signal}));
+  elle::reactor::wait(
+    elle::reactor::Waitables({&peer_1_2->accept_signal, &peer_1_3->accept_signal}));
   BOOST_CHECK(!client_2.choose(42));
   peer_1_2->accept_barrier.open();
   peer_1_3->accept_barrier.open();
-  reactor::wait(*t1);
+  elle::reactor::wait(*t1);
 }
 
 // Check a newer version overrides a previous result
@@ -407,15 +407,15 @@ ELLE_TEST_SCHEDULED(versions_partial)
   // 1 |    1    |    1    |    1    | -> 1
   //   |  1:1:2  |  1:1:2  |  1:1:2  |
   //   +---------+---------+---------+
-  reactor::Thread::unique_ptr t(
-    new reactor::Thread("client_1",
+  elle::reactor::Thread::unique_ptr t(
+    new elle::reactor::Thread("client_1",
                         [&]
                         {
                           auto chosen = client_1.choose(2, 2);
                           BOOST_CHECK(chosen);
                           BOOST_CHECK_EQUAL(chosen->value.get<int>(), 2);
                         }));
-  reactor::wait(peer_1_1->accept_signal);
+  elle::reactor::wait(peer_1_1->accept_signal);
   //        11        12        13
   //   +---------+---------+---------+
   // 2 |    2    |         |         | -> ?
@@ -445,7 +445,7 @@ ELLE_TEST_SCHEDULED(versions_partial)
   //   +---------+---------+---------+
   peer_1_2->accept_barrier.open();
   peer_1_3->accept_barrier.open();
-  reactor::wait(*t);
+  elle::reactor::wait(*t);
   //        11        12        13
   //   +---------+---------+---------+
   // 2 |    2    |    2    |    2    | -> 2
@@ -505,7 +505,7 @@ ELLE_TEST_SCHEDULED(propose_before_current_proposal_acceptation)
   // Block acceptance of the seccond proposal.
   peer_2_3->accept_barrier.close();
   // Actions.
-  elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+  elle::With<elle::reactor::Scope>() << [&] (elle::reactor::Scope& scope)
   {
     scope.run_background("client_1 choose",
                          [&]
@@ -516,7 +516,7 @@ ELLE_TEST_SCHEDULED(propose_before_current_proposal_acceptation)
     scope.run_background("client_2 fetch & choose new version",
                          [&]
                          {
-                           reactor::wait(peer_1_3->confirm_signal);
+                           elle::reactor::wait(peer_1_3->confirm_signal);
                            // Client 2 choose 2:1.
                            auto v = client_2.get();
                            BOOST_CHECK(v);
@@ -526,13 +526,13 @@ ELLE_TEST_SCHEDULED(propose_before_current_proposal_acceptation)
     scope.run_background("confirm",
                          [&]
                          {
-                           reactor::wait(peer_1_3->confirm_signal);
-                           reactor::wait(peer_2_3->propose_signal);
+                           elle::reactor::wait(peer_1_3->confirm_signal);
+                           elle::reactor::wait(peer_2_3->propose_signal);
                            peer_1_3->confirm_barrier.open();
                            // XXX: Find a better way.
-                           reactor::yield();
-                           reactor::yield();
-                           reactor::yield();
+                           elle::reactor::yield();
+                           elle::reactor::yield();
+                           elle::reactor::yield();
                            peer_2_3->accept_barrier.open();
                          });
     scope.wait();
@@ -741,8 +741,8 @@ public:
   }
 
   bool fail;
-  reactor::Barrier propose_barrier, accept_barrier;
-  reactor::Signal propose_signal, accept_signal;
+  elle::reactor::Barrier propose_barrier, accept_barrier;
+  elle::reactor::Signal propose_signal, accept_signal;
 };
 
 namespace quorum_divergence
@@ -938,7 +938,7 @@ ELLE_TEST_SCHEDULED(non_partial_state)
   p2->propose_barrier.open();
   auto c2 = make_client(std::unique_ptr<Peer<int, int, int>>(p2));
   c1.choose(0, 0);
-  elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+  elle::With<elle::reactor::Scope>() << [&] (elle::reactor::Scope& scope)
   {
     scope.run_background(
       "client_1",
@@ -955,12 +955,12 @@ ELLE_TEST_SCHEDULED(non_partial_state)
       "client_2",
       [&]
       {
-        reactor::wait(p1->confirm_signal);
+        elle::reactor::wait(p1->confirm_signal);
         BOOST_CHECK_EQUAL(c2.choose(1, 2)->value.get<int>(), 1);
       });
-    reactor::wait(p2->accept_signal);
+    elle::reactor::wait(p2->accept_signal);
     p1->confirm_barrier.open();
-    reactor::wait(scope);
+    elle::reactor::wait(scope);
   };
 }
 

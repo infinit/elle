@@ -184,7 +184,7 @@ namespace elle
         std::vector<std::pair<std::string, FileSize>>
         _parse_list_xml(std::istream& stream);
 
-        reactor::http::Request::Configuration
+        elle::reactor::http::Request::Configuration
         _initialize_request(RequestKind kind,
                             RequestTime request_time,
                             CanonicalRequest const& canonical_request,
@@ -195,17 +195,17 @@ namespace elle
         /// ELLE_WARN the request response in case of error
         /// Dumps it if dump_response is true, which eats the stream content.
         void
-        _check_request_status(reactor::http::Request& request,
+        _check_request_status(elle::reactor::http::Request& request,
                               std::string const& operation);
 
         /// Build and emit request, retries in case of credentials expiry kind
         /// is used to switch between global duration timeout and stall timeout.
-        std::unique_ptr<reactor::http::Request>
+        std::unique_ptr<elle::reactor::http::Request>
         _build_send_request(
           RequestKind kind,
           std::string const& url,
           std::string const& operation, // Used by exception message/log only.
-          reactor::http::Method method,
+          elle::reactor::http::Method method,
           RequestQuery const& query = RequestQuery(),
           RequestHeaders const& extra_headers = RequestHeaders(),
           std::string const& content_type = "application/json",

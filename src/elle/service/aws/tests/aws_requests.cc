@@ -13,8 +13,8 @@
 #include <elle/service/aws/SigningKey.hh>
 #include <elle/service/aws/StringToSign.hh>
 
-#include <reactor/scheduler.hh>
-#include <reactor/thread.hh>
+#include <elle/reactor/scheduler.hh>
+#include <elle/reactor/thread.hh>
 
 
 ELLE_LOG_COMPONENT("elle.services.aws.test");

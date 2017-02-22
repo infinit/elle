@@ -4,7 +4,7 @@
 #include <elle/protocol/Serializer.hh>
 #include <elle/protocol/exceptions.hh>
 
-#include <reactor/scheduler.hh>
+#include <elle/reactor/scheduler.hh>
 
 #ifdef INFINIT_WINDOWS
 # include <winsock2.h>
@@ -24,12 +24,12 @@ namespace elle
     | Construction |
     `-------------*/
 
-    Stream::Stream(reactor::Scheduler& scheduler)
+    Stream::Stream(elle::reactor::Scheduler& scheduler)
       : _scheduler(scheduler)
     {}
 
     Stream::Stream()
-      : Stream(*reactor::Scheduler::scheduler())
+      : Stream(*elle::reactor::Scheduler::scheduler())
     {}
 
     Stream::~Stream()

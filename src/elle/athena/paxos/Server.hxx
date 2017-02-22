@@ -6,7 +6,7 @@
 #include <elle/With.hh>
 #include <elle/serialization/Serializer.hh>
 
-#include <reactor/Scope.hh>
+#include <elle/reactor/Scope.hh>
 
 namespace elle
 {

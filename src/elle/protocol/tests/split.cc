@@ -5,14 +5,14 @@
 
 #include <elle/cryptography/random.hh>
 
-#include <reactor/Scope.hh>
-#include <reactor/asio.hh>
-#include <reactor/network/exception.hh>
-#include <reactor/network/tcp-server.hh>
-#include <reactor/network/tcp-socket.hh>
-#include <reactor/scheduler.hh>
-#include <reactor/semaphore.hh>
-#include <reactor/thread.hh>
+#include <elle/reactor/Scope.hh>
+#include <elle/reactor/asio.hh>
+#include <elle/reactor/network/exception.hh>
+#include <elle/reactor/network/tcp-server.hh>
+#include <elle/reactor/network/tcp-socket.hh>
+#include <elle/reactor/scheduler.hh>
+#include <elle/reactor/semaphore.hh>
+#include <elle/reactor/thread.hh>
 
 #include <elle/protocol/Serializer.hh>
 #include <elle/protocol/exceptions.hh>
@@ -28,16 +28,16 @@ struct setup
   setup(elle::Version const& version,
         bool checksum = true)
   {
-    reactor::network::TCPServer c;
-    reactor::Barrier listening;
+    elle::reactor::network::TCPServer c;
+    elle::reactor::Barrier listening;
     int port = 0;
-    elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+    elle::With<elle::reactor::Scope>() << [&] (elle::reactor::Scope& scope)
     {
       scope.run_background(
         "bob",
         [&]
         {
-          reactor::network::TCPServer server;
+          elle::reactor::network::TCPServer server;
           server.listen(0);
           port = server.port();
           listening.open();
@@ -48,18 +48,18 @@ struct setup
         "alice",
         [&]
         {
-          reactor::wait(listening);
+          elle::reactor::wait(listening);
           this->_alice.reset(
-            new reactor::network::TCPSocket("127.0.0.1", port));
+            new elle::reactor::network::TCPSocket("127.0.0.1", port));
           this->alice.reset(new Serializer(*this->_alice, version, checksum));
         });
-      reactor::wait(scope);
+      elle::reactor::wait(scope);
     };
   }
 
 public:
-  std::unique_ptr<reactor::network::Socket> _alice;
-  std::unique_ptr<reactor::network::Socket> _bob;
+  std::unique_ptr<elle::reactor::network::Socket> _alice;
+  std::unique_ptr<elle::reactor::network::Socket> _bob;
 public:
   std::unique_ptr<Serializer> bob;
   std::unique_ptr<Serializer> alice;
@@ -81,7 +81,7 @@ exchange(Serializer& sender,
   // Different thread.
   {
     elle::Buffer output;
-    elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+    elle::With<elle::reactor::Scope>() << [&] (elle::reactor::Scope& scope)
     {
       scope.run_background(
         "sender",
@@ -95,7 +95,7 @@ exchange(Serializer& sender,
         {
           output = recipient.read();
         });
-      reactor::wait(scope);
+      elle::reactor::wait(scope);
     };
     ELLE_ASSERT_EQ(output.size(), input.size());
     ELLE_ASSERT_EQ(input, output);
@@ -129,31 +129,31 @@ ELLE_TEST_SCHEDULED(kill_reader)
   */
   using namespace elle::protocol;
   auto v = elle::Version(0,2,0);
-  reactor::Barrier b;
-  reactor::network::TCPServer srv;
+  elle::reactor::Barrier b;
+  elle::reactor::network::TCPServer srv;
   srv.listen(0);
-  std::unique_ptr<reactor::network::TCPSocket> s2;
+  std::unique_ptr<elle::reactor::network::TCPSocket> s2;
   std::unique_ptr<Serializer> ser2p;
   std::unique_ptr<ChanneledStream> cs2p;
-  new reactor::Thread("accept", [&] {
+  new elle::reactor::Thread("accept", [&] {
       s2 = srv.accept();
       ser2p.reset(new Serializer(*s2, v, false));
       cs2p.reset(new ChanneledStream(*ser2p));
   }, true);
 
-  reactor::network::TCPSocket s1("127.0.0.1",
+  elle::reactor::network::TCPSocket s1("127.0.0.1",
                                  srv.local_endpoint().port());
   Serializer ser1(s1, v, false);
   ChanneledStream cs1(ser1);
   while (!cs2p)
-    reactor::sleep(50_ms);
+    elle::reactor::sleep(50_ms);
   ChanneledStream& cs2 = *cs2p;
 
   // FIXME: unused.
   int cid1, cid2, cid3;
   bool r1 = false, r2 = false, r3 = false;
-  reactor::Thread::unique_ptr t1, t2, t3;
-  t1.reset(new reactor::Thread("t1", [&] {
+  elle::reactor::Thread::unique_ptr t1, t2, t3;
+  t1.reset(new elle::reactor::Thread("t1", [&] {
       elle::protocol::Channel c(cs1);
       b.open();
       cid1 = c.id();
@@ -167,10 +167,10 @@ ELLE_TEST_SCHEDULED(kill_reader)
       }
       r1 = true;
   }));
-  reactor::wait(b);
+  elle::reactor::wait(b);
   b.close();
   //t1 is now the channel listener
-  t2.reset(new reactor::Thread("t2", [&] {
+  t2.reset(new elle::reactor::Thread("t2", [&] {
       elle::protocol::Channel c(cs1);
       b.open();
       cid2 = c.id();
@@ -179,23 +179,23 @@ ELLE_TEST_SCHEDULED(kill_reader)
       r2 = true;
   }));
   // t2 is waiting
-  reactor::wait(b);
+  elle::reactor::wait(b);
   b.close();
-  t3.reset(new reactor::Thread("t3", [&] {
+  t3.reset(new elle::reactor::Thread("t3", [&] {
       elle::protocol::Channel c(cs1);
       b.open();
       cid3 = c.id();
       c.read();
       r3 = true;
   }));
-  reactor::wait(b);
+  elle::reactor::wait(b);
   // t1 will kill t3, but it also works when killing from outside
   t1->terminate_now();
   // ensure t2 took over reading
   Channel c = cs2.accept();
   c.write(elle::Buffer("foo"));
   while (!r2)
-    reactor::sleep(100_ms);
+    elle::reactor::sleep(100_ms);
   BOOST_CHECK(r2);
 }
 
@@ -203,27 +203,27 @@ ELLE_TEST_SCHEDULED(nonempty_queue)
 {
   using namespace elle::protocol;
   auto v = elle::Version(0,2,0);
-  reactor::Barrier b1,b2;
-  reactor::network::TCPServer srv;
+  elle::reactor::Barrier b1,b2;
+  elle::reactor::network::TCPServer srv;
   srv.listen(0);
-  std::unique_ptr<reactor::network::TCPSocket> s2;
+  std::unique_ptr<elle::reactor::network::TCPSocket> s2;
   std::unique_ptr<Serializer> ser2p;
   std::unique_ptr<ChanneledStream> cs2p;
-  new reactor::Thread("accept", [&] {
+  new elle::reactor::Thread("accept", [&] {
       s2 = srv.accept();
       ser2p.reset(new Serializer(*s2, v, false));
       cs2p.reset(new ChanneledStream(*ser2p));
   }, true);
 
-  reactor::network::TCPSocket s1("127.0.0.1",
+  elle::reactor::network::TCPSocket s1("127.0.0.1",
                                  srv.local_endpoint().port());
   Serializer ser1(s1, v, false);
   ChanneledStream cs1(ser1);
   while (!cs2p)
-    reactor::sleep(50_ms);
+    elle::reactor::sleep(50_ms);
   ChanneledStream& cs2 = *cs2p;
   // force a reader on cs1
-  reactor::Thread::unique_ptr reader(new reactor::Thread("reader",
+  elle::reactor::Thread::unique_ptr reader(new elle::reactor::Thread("reader",
     [&]
     {
       Channel r(cs1);
@@ -233,15 +233,15 @@ ELLE_TEST_SCHEDULED(nonempty_queue)
 
   // accept first
   {
-    new reactor::Thread("new_chan", [&] {
+    new elle::reactor::Thread("new_chan", [&] {
         b1.open();
         cs1.accept().read();
         b2.open();
     }, true);
-    reactor::wait(b1);
+    elle::reactor::wait(b1);
     auto chan = Channel(cs2);
     chan.write(elle::Buffer("foo"));
-    BOOST_CHECK(reactor::wait(b2, 1_sec));
+    BOOST_CHECK(elle::reactor::wait(b2, 1_sec));
   }
   //write first
   {
@@ -249,12 +249,12 @@ ELLE_TEST_SCHEDULED(nonempty_queue)
     b2.close();
     auto chan = Channel(cs2);
     chan.write(elle::Buffer("bar"));
-    new reactor::Thread("new_chan", [&] {
+    new elle::reactor::Thread("new_chan", [&] {
         b1.open();
         cs1.accept().read();
         b2.open();
     }, true);
-    BOOST_CHECK(reactor::wait(b2, 1_sec));
+    BOOST_CHECK(elle::reactor::wait(b2, 1_sec));
   }
 }
 

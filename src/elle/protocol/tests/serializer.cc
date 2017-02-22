@@ -5,13 +5,13 @@
 
 #include <elle/cryptography/random.hh>
 
-#include <reactor/asio.hh>
-#include <reactor/Barrier.hh>
-#include <reactor/Scope.hh>
-#include <reactor/network/exception.hh>
-#include <reactor/network/tcp-server.hh>
-#include <reactor/network/tcp-socket.hh>
-#include <reactor/scheduler.hh>
+#include <elle/reactor/asio.hh>
+#include <elle/reactor/Barrier.hh>
+#include <elle/reactor/Scope.hh>
+#include <elle/reactor/network/exception.hh>
+#include <elle/reactor/network/tcp-server.hh>
+#include <elle/reactor/network/tcp-socket.hh>
+#include <elle/reactor/scheduler.hh>
 
 #include <elle/test.hh>
 #include <elle/cast.hh>
@@ -59,7 +59,7 @@ struct Focket // Fake socket.
                  (void*) &this->_in, this->_in, this->_in.size());
       do
       {
-        reactor::yield();
+        elle::reactor::yield();
         auto size_ = std::min(this->_in.size(), buffer_size);
         ELLE_DEBUG("size: %s", size_);
         if (size_ == 0)
@@ -82,7 +82,7 @@ struct Focket // Fake socket.
       ELLE_TRACE("write %s: %f (%s)",
                  (void*) &this->_out, this->_out, this->_out.size());
       if (this->_yield_during_writing)
-        reactor::yield();
+        elle::reactor::yield();
     }
 
   protected:
@@ -184,7 +184,7 @@ public:
 
 public:
   SocketInstrumentation()
-    : _router(*reactor::Scheduler::scheduler(), "router",
+    : _router(*elle::reactor::Scheduler::scheduler(), "router",
               std::bind(&SocketInstrumentation::_route, this))
     , alice_conf(new Conf)
     , bob_conf(new Conf)
@@ -194,11 +194,11 @@ public:
     this->_a_server.listen();
     this->_b_server.listen();
     this->_alice.reset(
-      new reactor::network::TCPSocket("127.0.0.1", this->_a_server.port()));
+      new elle::reactor::network::TCPSocket("127.0.0.1", this->_a_server.port()));
     this->_bob.reset(
-      new reactor::network::TCPSocket("127.0.0.1", this->_b_server.port()));
-    reactor::yield();
-    reactor::yield();
+      new elle::reactor::network::TCPSocket("127.0.0.1", this->_b_server.port()));
+    elle::reactor::yield();
+    elle::reactor::yield();
   }
 
   ~SocketInstrumentation()
@@ -206,13 +206,13 @@ public:
     this->_router.terminate_now();
   }
 
-  reactor::network::TCPSocket&
+  elle::reactor::network::TCPSocket&
   alice()
   {
     return *this->_alice;
   }
 
-  reactor::network::TCPSocket&
+  elle::reactor::network::TCPSocket&
   bob()
   {
     return *this->_bob;
@@ -241,13 +241,13 @@ private:
   void
   _route()
   {
-    std::unique_ptr<reactor::network::Socket> a(this->_a_server.accept());
-    std::unique_ptr<reactor::network::Socket> b(this->_b_server.accept());
+    std::unique_ptr<elle::reactor::network::Socket> a(this->_a_server.accept());
+    std::unique_ptr<elle::reactor::network::Socket> b(this->_b_server.accept());
 
-    elle::With<reactor::Scope>() << [&](reactor::Scope& scope)
+    elle::With<elle::reactor::Scope>() << [&](elle::reactor::Scope& scope)
     {
-      auto route = [&] (reactor::network::Socket* sender,
-                        reactor::network::Socket* recipient,
+      auto route = [&] (elle::reactor::network::Socket* sender,
+                        elle::reactor::network::Socket* recipient,
                         int64_t& routed,
                         Conf& conf)
         {
@@ -284,7 +284,7 @@ private:
               recipient->write(elle::ConstWeakBuffer(buffer, size));
             }
           }
-          catch (reactor::network::ConnectionClosed const&)
+          catch (elle::reactor::network::ConnectionClosed const&)
           {}
           sender->close();
           recipient->close();
@@ -301,11 +301,11 @@ private:
     };
   }
 
-  reactor::network::TCPServer _a_server;
-  reactor::network::TCPServer _b_server;
-  std::unique_ptr<reactor::network::TCPSocket> _alice;
-  std::unique_ptr<reactor::network::TCPSocket> _bob;
-  reactor::Thread _router;
+  elle::reactor::network::TCPServer _a_server;
+  elle::reactor::network::TCPServer _b_server;
+  std::unique_ptr<elle::reactor::network::TCPSocket> _alice;
+  std::unique_ptr<elle::reactor::network::TCPSocket> _bob;
+  elle::reactor::Thread _router;
 
 public:
   struct Conf
@@ -347,13 +347,13 @@ dialog(elle::Version const& version,
        std::function<void (SocketProvider&)> const& conf,
        std::function<void (elle::protocol::Serializer&)> const& a,
        std::function<void (elle::protocol::Serializer&)> const& b,
-       std::function<void (reactor::Thread&, reactor::Thread&,
+       std::function<void (elle::reactor::Thread&, elle::reactor::Thread&,
                            SocketProvider&)> const& f = {})
 {
   SocketProvider sockets;
   std::unique_ptr<elle::protocol::Serializer> alice;
   std::unique_ptr<elle::protocol::Serializer> bob;
-  elle::With<reactor::Scope>() << [&](reactor::Scope& scope)
+  elle::With<elle::reactor::Scope>() << [&](elle::reactor::Scope& scope)
   {
     scope.run_background(
       "setup alice's serializer",
@@ -372,7 +372,7 @@ dialog(elle::Version const& version,
     scope.wait();
   };
   conf(sockets);
-  elle::With<reactor::Scope>() << [&](reactor::Scope& scope)
+  elle::With<elle::reactor::Scope>() << [&](elle::reactor::Scope& scope)
   {
     auto& _alice = scope.run_background(
       "alice",
@@ -514,7 +514,7 @@ _connection_lost_reader(elle::Version const& version,
     },
     [] (elle::protocol::Serializer& s)
     {
-      BOOST_CHECK_THROW(s.read(), reactor::network::ConnectionClosed);
+      BOOST_CHECK_THROW(s.read(), elle::reactor::network::ConnectionClosed);
     });
 }
 
@@ -547,11 +547,11 @@ _connection_lost_sender(elle::Version const& version,
       {
         while (true)
         {
-          reactor::sleep(valgrind(10_ms, 10));
+          elle::reactor::sleep(valgrind(10_ms, 10));
           s.write(p);
         }
       }
-      catch (reactor::network::ConnectionClosed const&)
+      catch (elle::reactor::network::ConnectionClosed const&)
       {
         return;
       }
@@ -613,9 +613,9 @@ _interruption(elle::Version const& version,
   // (and unique) block. This one should go through.
   for (auto number: std::vector<int>({30, 10, 1}))
   {
-    reactor::Barrier interrupted("interrupted");
-    reactor::Barrier terminated("terminated");
-    reactor::Barrier received("received");
+    elle::reactor::Barrier interrupted("interrupted");
+    elle::reactor::Barrier terminated("terminated");
+    elle::reactor::Barrier received("received");
     elle::Buffer to_send;
     elle::Buffer to_send2 = elle::Buffer{std::string("ok")};
     dialog<Connector>(
@@ -633,7 +633,7 @@ _interruption(elle::Version const& version,
           ELLE_TRACE("write '%f'", to_send)
             s.write(to_send);
         }
-        catch (reactor::Terminate const&)
+        catch (elle::reactor::Terminate const&)
         {
           ELLE_LOG("terminated!!")
             terminated.open();
@@ -655,17 +655,17 @@ _interruption(elle::Version const& version,
         }
         BOOST_CHECK_EQUAL(res, to_send2);
       },
-      [&] (reactor::Thread& alice,
-           reactor::Thread& bob,
+      [&] (elle::reactor::Thread& alice,
+           elle::reactor::Thread& bob,
            Connector& sockets)
       {
         // Wait for buffer to send to be filled.
         while (to_send.size() == 0)
-          reactor::yield();
+          elle::reactor::yield();
         do
         {
           // Wait for the sending process to begin.
-          reactor::yield();
+          elle::reactor::yield();
           ELLE_DEBUG("bytes_written: %s", sockets.alice().bytes_written());
           if (sockets.alice().bytes_written() > (to_send.size() / 5))
           {
@@ -704,8 +704,8 @@ void
 _termination(elle::Version const& version,
             bool checksum)
 {
-  reactor::Thread::unique_ptr t;
-  reactor::Barrier tready;
+  elle::reactor::Thread::unique_ptr t;
+  elle::reactor::Barrier tready;
   dialog<SocketInstrumentation>(
     version,
     checksum,
@@ -714,7 +714,7 @@ _termination(elle::Version const& version,
     },
     [&] (elle::protocol::Serializer& s)
     {
-      t.reset(new reactor::Thread("reader", [&] {
+      t.reset(new elle::reactor::Thread("reader", [&] {
           try
           {
             ELLE_TRACE("read from thread");
@@ -722,13 +722,13 @@ _termination(elle::Version const& version,
             s.read();
             BOOST_CHECK(false);
           }
-          catch (reactor::Terminate const& t)
+          catch (elle::reactor::Terminate const& t)
           {
             ELLE_TRACE("terminating first reader");
             throw;
           }
       }));
-      reactor::wait(*t);
+      elle::reactor::wait(*t);
       ELLE_TRACE("second read")
       {
         auto buf = s.read();
@@ -739,15 +739,15 @@ _termination(elle::Version const& version,
     [&] (elle::protocol::Serializer& s)
     {
       ELLE_TRACE("waitinng for thread")
-        reactor::wait(tready);
+        elle::reactor::wait(tready);
       auto& backend = s.stream();
       elle::protocol::Stream::uint32_put(backend, 6, version);
       backend.write("foo", 3);
       backend.flush();
-      reactor::sleep(valgrind(10_ms, 10));
+      elle::reactor::sleep(valgrind(10_ms, 10));
       ELLE_TRACE("killing thread")
         t->terminate();
-      reactor::sleep(valgrind(10_ms, 10));
+      elle::reactor::sleep(valgrind(10_ms, 10));
       backend.write("baz", 3);
       elle::protocol::Stream::uint32_put(backend, 6, version);
       backend.write("foobar", 6);
@@ -824,12 +824,12 @@ ELLE_TEST_SCHEDULED(message)
       [&] (elle::protocol::Serializer& s)
       {
       },
-      [&] (reactor::Thread&, reactor::Thread&, Connector& connector)
+      [&] (elle::reactor::Thread&, elle::reactor::Thread&, Connector& connector)
       {
         // XXX: This could be better... Once we have the version that send
         // messages, re-write that test.
         while (chunk_size == 0)
-          reactor::yield();
+          elle::reactor::yield();
         auto size = 2 * chunk_size;
         auto chunk = elle::Buffer{std::string(chunk_size, 'y')};
         auto keep_going = [&] () {
@@ -870,7 +870,7 @@ ELLE_TEST_SCHEDULED(interruption2)
 
   for (auto version: {elle::Version{0, 2, 0}, elle::Version{0, 3, 0}})
   {
-    reactor::Barrier pinger_block;
+    elle::reactor::Barrier pinger_block;
     dialog<Connector>(
       version,
       false,
@@ -901,7 +901,7 @@ ELLE_TEST_SCHEDULED(interruption2)
             s.stream().write((const char*)message.contents(), message.size() - 1);
           }
           ELLE_TRACE("partial write, wait for signal");
-          reactor::wait(pinger_block);
+          elle::reactor::wait(pinger_block);
           ELLE_TRACE("finish write");
           pinger_block.close();
           // Finish sending `message`.
@@ -915,9 +915,9 @@ ELLE_TEST_SCHEDULED(interruption2)
         ip::ChanneledStream stream(s);
         ip::Channel c(stream);
         c.write(elle::Buffer("foo"));
-        reactor::Barrier b;
+        elle::reactor::Barrier b;
         b.close();
-        reactor::Thread t("c2read", [&] {
+        elle::reactor::Thread t("c2read", [&] {
             ip::Channel c2(stream);
             ELLE_TRACE("open b and read");
             b.open();
@@ -941,7 +941,7 @@ ELLE_TEST_SCHEDULED(interruption2)
         ip::Channel c3(stream);
         c3.write(elle::Buffer("baz"));
         while (pinger_block.opened())
-          reactor::yield();
+          elle::reactor::yield();
         pinger_block.open();
         ELLE_TRACE("read c3");
         buf = c3.read();
@@ -949,7 +949,7 @@ ELLE_TEST_SCHEDULED(interruption2)
 
         // check killing reader thread before any data is read
         b.close();
-        reactor::Thread t2("read nothing", [&] {
+        elle::reactor::Thread t2("read nothing", [&] {
             ip::Channel c2(stream);
             ELLE_TRACE("open b and read");
             b.open();
@@ -963,15 +963,15 @@ ELLE_TEST_SCHEDULED(interruption2)
         ip::Channel c4(stream);
         c4.write(elle::Buffer("maz"));
         while (pinger_block.opened())
-          reactor::yield();
+          elle::reactor::yield();
         pinger_block.open();
         ELLE_TRACE("read c4");
         buf = c4.read();
         BOOST_CHECK_EQUAL(buf.string(), "maz");
       },
-      [&] (reactor::Thread& t1, reactor::Thread& t2, Connector& connector)
+      [&] (elle::reactor::Thread& t1, elle::reactor::Thread& t2, Connector& connector)
       {
-        reactor::wait(t2);
+        elle::reactor::wait(t2);
         t1.terminate_now();
       });
   }

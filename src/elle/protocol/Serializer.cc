@@ -12,11 +12,11 @@
 #include <elle/serialization/binary.hh>
 #include <elle/serialization/json.hh>
 
-#include <reactor/scheduler.hh>
-#include <reactor/exception.hh>
-#include <reactor/Barrier.hh>
-#include <reactor/network/socket.hh>
-#include <reactor/network/utp-socket.hh>
+#include <elle/reactor/scheduler.hh>
+#include <elle/reactor/exception.hh>
+#include <elle/reactor/Barrier.hh>
+#include <elle/reactor/network/socket.hh>
+#include <elle/reactor/network/utp-socket.hh>
 
 #include <elle/protocol/Serializer.hh>
 #include <elle/protocol/exceptions.hh>
@@ -58,7 +58,7 @@ namespace elle
         {
           try
           {
-            reactor::Lock lock(this->_lock_read);
+            elle::reactor::Lock lock(this->_lock_read);
             elle::IOStreamClear clearer(this->_stream);
             return this->_read();
           }
@@ -77,7 +77,7 @@ namespace elle
       void
       write(elle::Buffer const& packet)
       {
-        reactor::Lock lock(this->_lock_write);
+        elle::reactor::Lock lock(this->_lock_write);
         elle::IOStreamClear clearer(this->_stream);
         this->_write(packet);
       }
@@ -91,8 +91,8 @@ namespace elle
       ELLE_ATTRIBUTE(elle::Buffer::Size, chunk_size, protected);
       ELLE_ATTRIBUTE(bool, checksum, protected);
       ELLE_ATTRIBUTE_R(elle::Version, version);
-      ELLE_ATTRIBUTE(reactor::Mutex, lock_write, protected);
-      ELLE_ATTRIBUTE(reactor::Mutex, lock_read, protected);
+      ELLE_ATTRIBUTE(elle::reactor::Mutex, lock_write, protected);
+      ELLE_ATTRIBUTE(elle::reactor::Mutex, lock_read, protected);
     };
 
     struct Version010Impl
@@ -148,10 +148,10 @@ namespace elle
     Serializer::Serializer(std::iostream& stream,
                            elle::Version const& version,
                            bool checksum)
-      : Serializer(*reactor::Scheduler::scheduler(), stream, version, checksum)
+      : Serializer(*elle::reactor::Scheduler::scheduler(), stream, version, checksum)
     {}
 
-    Serializer::Serializer(reactor::Scheduler& scheduler,
+    Serializer::Serializer(elle::reactor::Scheduler& scheduler,
                            std::iostream& stream,
                            elle::Version const& version,
                            bool checksum)
@@ -352,7 +352,7 @@ namespace elle
     Version010Impl::_read()
     {
       // Make sure the stream isn't terminated.
-      if (elle::With<reactor::Thread::Interruptible>() << [&]
+      if (elle::With<elle::reactor::Thread::Interruptible>() << [&]
          {
            return this->_stream.peek();
          } == std::iostream::traits_type::eof())
@@ -377,7 +377,7 @@ namespace elle
     {
       // The write must not be interrupted, otherwise it will break
       // the serialization protocol.
-      elle::With<reactor::Thread::NonInterruptible>() << [&]
+      elle::With<elle::reactor::Thread::NonInterruptible>() << [&]
       {
         if (this->_checksum)
         {
@@ -444,7 +444,7 @@ namespace elle
     {
       ELLE_TRACE_SCOPE("%s: read packet", this);
       // Make sure the stream isn't terminated.
-      if (elle::With<reactor::Thread::Interruptible>() << [&]
+      if (elle::With<elle::reactor::Thread::Interruptible>() << [&]
          {
            return this->_stream.peek();
          } == std::iostream::traits_type::eof())
@@ -500,7 +500,7 @@ namespace elle
             this->_stream.flush();
           };
         {
-          elle::With<reactor::Thread::NonInterruptible>() << [&]
+          elle::With<elle::reactor::Thread::NonInterruptible>() << [&]
           {
             if (this->_checksum)
             // Compute the hash and send it first.
@@ -522,14 +522,14 @@ namespace elle
         while (offset < packet.size())
         {
           ELLE_DEBUG("writing control: o=%s, size=%s", offset, packet.size());
-          elle::With<reactor::Thread::NonInterruptible>() << [&]
+          elle::With<elle::reactor::Thread::NonInterruptible>() << [&]
           {
             write_control(this->_stream, Control::keep_going);
             send();
           };
         }
       }
-      catch (reactor::Terminate const&)
+      catch (elle::reactor::Terminate const&)
       {
         if (offset < packet.size())
         {

@@ -3,11 +3,11 @@
 #include <elle/serialization/json.hh>
 #include <elle/service/dropbox/Dropbox.hh>
 
-#include <reactor/http/url.hh>
-#include <reactor/scheduler.hh>
-#include <reactor/thread.hh>
-#include <reactor/Barrier.hh>
-#include <reactor/Scope.hh>
+#include <elle/reactor/http/url.hh>
+#include <elle/reactor/scheduler.hh>
+#include <elle/reactor/thread.hh>
+#include <elle/reactor/Barrier.hh>
+#include <elle/reactor/Scope.hh>
 
 ELLE_LOG_COMPONENT("elle.services.dropbox.Dropbox");
 
@@ -239,7 +239,7 @@ namespace elle
             {
               auto delay = boost::posix_time::seconds(longpoll.backoff.get());
               ELLE_DEBUG("%s: longpoll backoff of %s", *this, delay);
-              reactor::sleep(delay);
+              elle::reactor::sleep(delay);
             }
           }
         }
@@ -270,11 +270,11 @@ namespace elle
 
         ELLE_ATTRIBUTE(Dropbox&, dropbox);
         ELLE_ATTRIBUTE(bool, full);
-        ELLE_ATTRIBUTE_RX(reactor::Barrier, initialized);
+        ELLE_ATTRIBUTE_RX(elle::reactor::Barrier, initialized);
         ELLE_ATTRIBUTE((std::unordered_map<boost::filesystem::path, Metadata,
                         HashPath, ComparePath>),
                        metadata);
-        ELLE_ATTRIBUTE(reactor::Thread, poll_thread);
+        ELLE_ATTRIBUTE(elle::reactor::Thread, poll_thread);
         ELLE_ATTRIBUTE(std::string, cursor);
       };
 
@@ -305,7 +305,7 @@ namespace elle
             if (look_ahead < this->_dropbox.block_size())
             {
               ELLE_TRACE("%s: look ahead is %s, cache more", *this, look_ahead);
-              new reactor::Thread(
+              new elle::reactor::Thread(
                 "preemptive cache",
                 [this, next]
                 {
@@ -332,7 +332,7 @@ namespace elle
                         *this, this->_ranges_fetching);
               do
               {
-                reactor::sleep(100_ms);
+                elle::reactor::sleep(100_ms);
               }
               while (!this->_ranges_fetched.contains(range));
               ELLE_DEBUG("%s: done waiting", *this);
@@ -355,7 +355,7 @@ namespace elle
             range.end(this->_contents.size());
           ELLE_TRACE_SCOPE("%s: download %s", *this, range);
           this->_ranges_fetching += range;
-          reactor::http::Request::Configuration conf;
+          elle::reactor::http::Request::Configuration conf;
           conf.header_add(
             "Range",
             elle::sprintf("bytes=%s-%s", range.start(), range.end() - 1));
@@ -401,7 +401,7 @@ namespace elle
         , _block_size(block_size)
         , _cache(new LongPollCache(*this))
       {
-        reactor::wait(
+        elle::reactor::wait(
           static_cast<LongPollCache*>(this->_cache.get())->initialized());
       }
 
@@ -433,7 +433,7 @@ namespace elle
         for (auto const& chunk: path)
         {
           res += "/";
-          res += reactor::http::url_encode(chunk.string());
+          res += elle::reactor::http::url_encode(chunk.string());
         }
         return res;
       }
@@ -455,10 +455,10 @@ namespace elle
         this->_check_path(path);
         auto r = this->_request(
           str(boost::format(url_fmt) % this->escape_path(path)),
-          reactor::http::Method::GET,
-          reactor::http::Request::QueryDict(), {}, {}, "metadata",
-          {reactor::http::StatusCode::Not_Found});
-        if (r.status() == reactor::http::StatusCode::OK)
+          elle::reactor::http::Method::GET,
+          elle::reactor::http::Request::QueryDict(), {}, {}, "metadata",
+          {elle::reactor::http::StatusCode::Not_Found});
+        if (r.status() == elle::reactor::http::StatusCode::OK)
         {
           // FIXME: deserialize json with helper everywhere
           elle::serialization::json::SerializerIn s(r, false);
@@ -472,7 +472,7 @@ namespace elle
           this->_cache->metadata_update(path, res);
           return res;
         }
-        else if (r.status() == reactor::http::StatusCode::Not_Found)
+        else if (r.status() == elle::reactor::http::StatusCode::Not_Found)
         {
           ELLE_TRACE("%s: file not found", *this);
           throw NoSuchFile(path);
@@ -487,7 +487,7 @@ namespace elle
       elle::Buffer
       Dropbox::get(boost::filesystem::path const& path) const
       {
-        return this->_get(path, reactor::http::Request::Configuration());
+        return this->_get(path, elle::reactor::http::Request::Configuration());
       }
 
       elle::Buffer
@@ -508,7 +508,7 @@ namespace elle
 
       elle::Buffer
       Dropbox::_get(boost::filesystem::path const& path,
-                    reactor::http::Request::Configuration conf) const
+                    elle::reactor::http::Request::Configuration conf) const
       {
         ELLE_TRACE_SCOPE("%s: fetch file %s", *this, path.string());
         static boost::format url_fmt
@@ -516,21 +516,21 @@ namespace elle
         this->_check_path(path);
         auto r = this->_request(
           str(boost::format(url_fmt) % this->escape_path(path)),
-          reactor::http::Method::GET,
-          reactor::http::Request::QueryDict(),
+          elle::reactor::http::Method::GET,
+          elle::reactor::http::Request::QueryDict(),
           std::move(conf),
           {}, "get",
-          {reactor::http::StatusCode::Partial_Content,
-              reactor::http::StatusCode::Not_Found});
+          {elle::reactor::http::StatusCode::Partial_Content,
+              elle::reactor::http::StatusCode::Not_Found});
 
-        if (r.status() == reactor::http::StatusCode::OK ||
-            r.status() == reactor::http::StatusCode::Partial_Content)
+        if (r.status() == elle::reactor::http::StatusCode::OK ||
+            r.status() == elle::reactor::http::StatusCode::Partial_Content)
         {
           auto res = r.response();
           ELLE_DEBUG("%s: got %s bytes", *this, res.size());
           return res;
         }
-        else if (r.status() == reactor::http::StatusCode::Not_Found)
+        else if (r.status() == elle::reactor::http::StatusCode::Not_Found)
         {
           ELLE_TRACE("%s: file not found", *this);
           throw NoSuchFile(path);
@@ -554,7 +554,7 @@ namespace elle
         if (this->_ignored(path))
           return false;
         this->_check_path(path);
-        reactor::http::Request::QueryDict query;
+        elle::reactor::http::Request::QueryDict query;
         if (!overwrite)
         {
           query["overwrite"] = "false";
@@ -562,11 +562,11 @@ namespace elle
         }
         auto r = this->_request(
           str(boost::format(url_fmt) % this->escape_path(path)),
-          reactor::http::Method::PUT,
+          elle::reactor::http::Method::PUT,
           std::move(query), {}, content, "write",
-          {reactor::http::StatusCode::Conflict});
+          {elle::reactor::http::StatusCode::Conflict});
 
-        if (r.status() == reactor::http::StatusCode::OK)
+        if (r.status() == elle::reactor::http::StatusCode::OK)
         {
           elle::serialization::json::SerializerIn s(r, false);
           auto metadata = s.deserialize<Metadata>();
@@ -574,7 +574,7 @@ namespace elle
           this->_cache->metadata_update(path, metadata);
           return true;
         }
-        else if (r.status() == reactor::http::StatusCode::Conflict)
+        else if (r.status() == elle::reactor::http::StatusCode::Conflict)
         {
           return false;
         }
@@ -602,8 +602,8 @@ namespace elle
       Dropbox::delete_(boost::filesystem::path const& path)
       {
         auto r = this->_fileop(path, "delete",
-                               {reactor::http::StatusCode::Not_Found});
-        if (r.status() == reactor::http::StatusCode::Not_Found)
+                               {elle::reactor::http::StatusCode::Not_Found});
+        if (r.status() == elle::reactor::http::StatusCode::Not_Found)
         {
           ELLE_TRACE("%s: file not found", *this);
           throw NoSuchFile(path);
@@ -622,12 +622,12 @@ namespace elle
                     boost::filesystem::path const& to)
       {
         ELLE_TRACE_SCOPE("%s: move %s to %s", *this, from, to);
-        reactor::http::Request::QueryDict query;
+        elle::reactor::http::Request::QueryDict query;
         query["to_path"] = to.string();
         auto r = this->_fileop(from, "move",
-                               { reactor::http::StatusCode::Forbidden},
+                               { elle::reactor::http::StatusCode::Forbidden},
                                "from_path", std::move(query));
-        if (r.status() == reactor::http::StatusCode::Forbidden)
+        if (r.status() == elle::reactor::http::StatusCode::Forbidden)
           throw DestinationExists(to);
         this->_check_status("move", r);
         {
@@ -645,11 +645,11 @@ namespace elle
         ELLE_TRACE_SCOPE(
           "%s: get delta from %s",
           *this, cursor.empty() ? std::string("scratch") : cursor);
-        reactor::http::Request::QueryDict query;
+        elle::reactor::http::Request::QueryDict query;
         if (!cursor.empty())
           query["cursor"] = cursor;
         auto r = this->_request("https://api.dropbox.com/1/delta",
-                                reactor::http::Method::POST,
+                                elle::reactor::http::Method::POST,
                                 std::move(query),
                                 {}, {}, "delta");
         this->_check_status("fetching delta", r);
@@ -663,8 +663,8 @@ namespace elle
       Dropbox::delta_latest_cursor()
       {
         auto r = this->_request("https://api.dropbox.com/1/delta/latest_cursor",
-                                reactor::http::Method::POST,
-                                reactor::http::Request::QueryDict(),
+                                elle::reactor::http::Method::POST,
+                                elle::reactor::http::Request::QueryDict(),
                                 {}, {}, "delta_latest_cursor");
         this->_check_status("fetching latest cursor", r);
         {
@@ -676,12 +676,12 @@ namespace elle
       Longpoll
       Dropbox::longpoll_delta(std::string cursor)
       {
-        reactor::http::Request::QueryDict query;
+        elle::reactor::http::Request::QueryDict query;
         ELLE_ASSERT(!cursor.empty());
         query["cursor"] = cursor;
         auto r = this->_request(
           "https://api-notify.dropbox.com/1/longpoll_delta",
-          reactor::http::Method::GET,
+          elle::reactor::http::Method::GET,
           std::move(query),
           {}, {}, "longpoll_delta");
         this->_check_status("longpolling delta", r);
@@ -692,7 +692,7 @@ namespace elle
       }
 
       static
-      reactor::Duration
+      elle::reactor::Duration
       delay(int attempt)
       {
         if (attempt > 8)
@@ -701,22 +701,22 @@ namespace elle
         return boost::posix_time::milliseconds(factor * 100);
       }
 
-      reactor::http::Request
+      elle::reactor::http::Request
       Dropbox::_request(
         std::string url,
-        reactor::http::Method method,
-        reactor::http::Request::QueryDict query,
-        reactor::http::Request::Configuration conf,
+        elle::reactor::http::Method method,
+        elle::reactor::http::Request::QueryDict query,
+        elle::reactor::http::Request::Configuration conf,
         elle::ConstWeakBuffer const& payload,
         std::string const& op,
-        std::vector<reactor::http::StatusCode> expected_codes) const
+        std::vector<elle::reactor::http::StatusCode> expected_codes) const
       {
-        expected_codes.push_back(reactor::http::StatusCode::OK);
-        conf.timeout(reactor::DurationOpt()); // Disable timeout
+        expected_codes.push_back(elle::reactor::http::StatusCode::OK);
+        conf.timeout(elle::reactor::DurationOpt()); // Disable timeout
         int attempt = 0;
         while (true)
         {
-          reactor::http::Request r(url, method, conf);
+          elle::reactor::http::Request r(url, method, conf);
           ELLE_TRACE_SCOPE("%s: request: %s", *this, r);
           for (auto const& entry: query)
             ELLE_DUMP("%s: %s = \"%s\"", *this, entry.first, entry.second);
@@ -734,16 +734,16 @@ namespace elle
           ELLE_WARN("Unexpected dropbox HTTP status on %s: %s, attempt %s",
                     op, r.status(), attempt+1);
           ++attempt;
-          reactor::sleep(delay(attempt));
+          elle::reactor::sleep(delay(attempt));
         }
       }
 
-      reactor::http::Request
+      elle::reactor::http::Request
       Dropbox::_fileop(boost::filesystem::path const& path,
                        std::string const& op,
-                       std::vector<reactor::http::StatusCode> expected_codes,
+                       std::vector<elle::reactor::http::StatusCode> expected_codes,
                        std::string const& path_arg,
-                       reactor::http::Request::QueryDict query)
+                       elle::reactor::http::Request::QueryDict query)
       {
         ELLE_TRACE_SCOPE("%s: %s: %s", *this, op, path.string());
         static boost::format url_fmt("https://api.dropbox.com/1/fileops/%s");
@@ -751,16 +751,16 @@ namespace elle
         query[path_arg] = path.string();
         auto r =
           this->_request(str(boost::format(url_fmt) % op),
-                         reactor::http::Method::POST, std::move(query),
+                         elle::reactor::http::Method::POST, std::move(query),
                          {}, {}, op, expected_codes);
         return r;
       }
 
       void
       Dropbox::_check_status(std::string const& op,
-                             reactor::http::Request& r) const
+                             elle::reactor::http::Request& r) const
       {
-        if (r.status() != reactor::http::StatusCode::OK)
+        if (r.status() != elle::reactor::http::StatusCode::OK)
         {
           ELLE_ERR("unknown dropbox HTTP status on %s: %s", op, r.status());
           ELLE_ERR("body: %s", r.response());

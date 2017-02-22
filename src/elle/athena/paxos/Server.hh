@@ -12,7 +12,7 @@
 #include <elle/Printable.hh>
 #include <elle/serialization/Serializer.hh>
 
-#include <reactor/Barrier.hh>
+#include <elle/reactor/Barrier.hh>
 
 namespace elle
 {

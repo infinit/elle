@@ -3,7 +3,7 @@
 
 # include <iostream>
 
-# include <reactor/mutex.hh>
+# include <elle/reactor/mutex.hh>
 
 # include <elle/attribute.hh>
 # include <elle/compiler.hh>
@@ -42,7 +42,7 @@ namespace elle
                  elle::Version const& version = elle::Version(0, 1, 0),
                  bool checksum = true);
 
-      Serializer(reactor::Scheduler& scheduler,
+      Serializer(elle::reactor::Scheduler& scheduler,
                  std::iostream& stream,
                  elle::Version const& version  = elle::Version(0, 1, 0),
                  bool checksum = true);

@@ -10,7 +10,7 @@
 
 # include <elle/Printable.hh>
 
-# include <reactor/thread.hh>
+# include <elle/reactor/thread.hh>
 
 # include <elle/protocol/fwd.hh>
 

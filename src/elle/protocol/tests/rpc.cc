@@ -2,14 +2,14 @@
 #include <elle/protocol/RPC.hh>
 #include <elle/protocol/Serializer.hh>
 
-#include <reactor/asio.hh>
-#include <reactor/network/exception.hh>
-#include <reactor/network/tcp-server.hh>
-#include <reactor/network/tcp-socket.hh>
-#include <reactor/scheduler.hh>
-#include <reactor/scheduler.hh>
-#include <reactor/semaphore.hh>
-#include <reactor/thread.hh>
+#include <elle/reactor/asio.hh>
+#include <elle/reactor/network/exception.hh>
+#include <elle/reactor/network/tcp-server.hh>
+#include <elle/reactor/network/tcp-socket.hh>
+#include <elle/reactor/scheduler.hh>
+#include <elle/reactor/scheduler.hh>
+#include <elle/reactor/semaphore.hh>
+#include <elle/reactor/thread.hh>
 
 #include <elle/test.hh>
 
@@ -23,7 +23,7 @@ struct TestConfig
 };
 
 static
-reactor::Thread* suicide_thread(nullptr);
+elle::reactor::Thread* suicide_thread(nullptr);
 
 struct DummyRPC:
   public elle::protocol::RPC<elle::serialize::InputBinaryArchive,
@@ -82,7 +82,7 @@ public:
   void
   _run()
   {
-    auto& sched = *reactor::Scheduler::scheduler();
+    auto& sched = *elle::reactor::Scheduler::scheduler();
     auto socket = this->_server.accept();
     elle::protocol::Serializer s(sched, *socket, _config.version, _config.checksum);
     elle::protocol::ChanneledStream channels(sched, s, _config.version);
@@ -97,22 +97,22 @@ public:
       {
         suicide_thread->terminate();
         suicide_thread = nullptr;
-        reactor::yield();
-        reactor::yield();
-        reactor::yield();
-        reactor::yield();
-        reactor::yield();
-        reactor::yield();
+        elle::reactor::yield();
+        elle::reactor::yield();
+        elle::reactor::yield();
+        elle::reactor::yield();
+        elle::reactor::yield();
+        elle::reactor::yield();
         BOOST_CHECK(false);
       };
     rpc.count =
       [this]
       {
         ++this->_counter;
-        reactor::wait(this->_count_barrier);
+        elle::reactor::wait(this->_count_barrier);
         return this->_counter;
       };
-    rpc.wait = [this] { ++this->_counter; reactor::sleep(); };
+    rpc.wait = [this] { ++this->_counter; elle::reactor::sleep(); };
     try
     {
       if (this->_config.sync)
@@ -120,15 +120,15 @@ public:
       else
         rpc.parallel_run();
     }
-    catch (reactor::network::ConnectionClosed&)
+    catch (elle::reactor::network::ConnectionClosed&)
     {}
   }
 
   ELLE_ATTRIBUTE_R(TestConfig, config);
   ELLE_ATTRIBUTE_R(int, counter);
-  ELLE_ATTRIBUTE_RX(reactor::Barrier, count_barrier)
-  ELLE_ATTRIBUTE(reactor::network::TCPServer, server);
-  ELLE_ATTRIBUTE(reactor::Thread, thread);
+  ELLE_ATTRIBUTE_RX(elle::reactor::Barrier, count_barrier)
+  ELLE_ATTRIBUTE(elle::reactor::network::TCPServer, server);
+  ELLE_ATTRIBUTE(elle::reactor::Thread, thread);
 };
 
 /*------.
@@ -138,7 +138,7 @@ public:
 ELLE_TEST_SCHEDULED(rpc, (TestConfig, config))
 {
   RPCServer server(config);
-  reactor::network::TCPSocket socket("127.0.0.1", server.port());
+  elle::reactor::network::TCPSocket socket("127.0.0.1", server.port());
   elle::protocol::Serializer s(socket, config.version, config.checksum);
   elle::protocol::ChanneledStream channels(s, config.version);
   DummyRPC rpc(channels);
@@ -155,18 +155,18 @@ ELLE_TEST_SCHEDULED(rpc, (TestConfig, config))
 ELLE_TEST_SCHEDULED(terminate, (TestConfig, config))
 {
   RPCServer server(config);
-  reactor::Thread thread(
+  elle::reactor::Thread thread(
     "judge dread",
     [&]
     {
-      reactor::network::TCPSocket socket("127.0.0.1", server.port());
+      elle::reactor::network::TCPSocket socket("127.0.0.1", server.port());
       elle::protocol::Serializer s(socket, config.version, config.checksum);
       elle::protocol::ChanneledStream channels(s, config.version);
       DummyRPC rpc(channels);
       suicide_thread = &thread;
       BOOST_CHECK_THROW(rpc.suicide(), std::runtime_error);
     });
-  reactor::wait(thread);
+  elle::reactor::wait(thread);
 }
 
 /*---------.
@@ -176,13 +176,13 @@ ELLE_TEST_SCHEDULED(terminate, (TestConfig, config))
 ELLE_TEST_SCHEDULED(parallel, (TestConfig, config))
 {
   RPCServer server(config);
-  reactor::network::TCPSocket socket("127.0.0.1", server.port());
+  elle::reactor::network::TCPSocket socket("127.0.0.1", server.port());
   elle::protocol::Serializer s(socket, config.version, config.checksum);
   elle::protocol::ChanneledStream channels(s, config.version);
   DummyRPC rpc(channels);
-  std::vector<reactor::Thread*> threads;
+  std::vector<elle::reactor::Thread*> threads;
   std::list<int> inserted;
-  elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+  elle::With<elle::reactor::Scope>() << [&] (elle::reactor::Scope& scope)
   {
     for (int i = 1; i <= 3; ++i)
     {
@@ -202,11 +202,11 @@ ELLE_TEST_SCHEDULED(parallel, (TestConfig, config))
     if (!config.sync)
       do
       {
-        reactor::yield();
+        elle::reactor::yield();
       }
       while (server.counter() != 3);
     server.count_barrier().open();
-    reactor::wait(scope);
+    elle::reactor::wait(scope);
   };
   BOOST_CHECK(inserted.empty());
 }
@@ -218,27 +218,27 @@ ELLE_TEST_SCHEDULED(parallel, (TestConfig, config))
 ELLE_TEST_SCHEDULED(disconnection, (TestConfig, config))
 {
   RPCServer server(config);
-  reactor::network::TCPSocket socket("127.0.0.1", server.port());
+  elle::reactor::network::TCPSocket socket("127.0.0.1", server.port());
   elle::protocol::Serializer s(socket, config.version, config.checksum);
   elle::protocol::ChanneledStream channels(s, config.version);
   DummyRPC rpc(channels);
-  reactor::Thread call_1("call 1",
+  elle::reactor::Thread call_1("call 1",
                          [&]
                          {
                            BOOST_CHECK_THROW(rpc.wait(), std::runtime_error);
                          });
-  reactor::Thread call_2("call 2",
+  elle::reactor::Thread call_2("call 2",
                          [&]
                          {
                            BOOST_CHECK_THROW(rpc.wait(), std::runtime_error);
                          });
   do
   {
-    reactor::yield();
+    elle::reactor::yield();
   }
   while (server.counter() < (config.sync ? 1 : 2));
   server.terminate();
-  reactor::wait({call_1, call_2});
+  elle::reactor::wait({call_1, call_2});
 }
 
 /*-----------.

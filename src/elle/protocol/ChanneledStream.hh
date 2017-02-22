@@ -26,7 +26,7 @@ namespace elle
     | Construction |
     `-------------*/
     public:
-      ChanneledStream(reactor::Scheduler& scheduler, Stream& backend);
+      ChanneledStream(elle::reactor::Scheduler& scheduler, Stream& backend);
       ChanneledStream(Stream& backend);
 
     /*--------.
@@ -98,7 +98,7 @@ namespace elle
       ELLE_ATTRIBUTE(Stream&, backend);
       ELLE_ATTRIBUTE(Channels, channels);
       ELLE_ATTRIBUTE(std::list<Channel>, channels_new);
-      ELLE_ATTRIBUTE(reactor::Signal, channel_available);
+      ELLE_ATTRIBUTE(elle::reactor::Signal, channel_available);
       ELLE_ATTRIBUTE(Channel, default);
     };
   }

@@ -4,7 +4,7 @@
 
 #include <elle/Exception.hh>
 
-#include <reactor/http/StatusCode.hh>
+#include <elle/reactor/http/StatusCode.hh>
 
 namespace elle
 {
@@ -21,10 +21,10 @@ namespace elle
       {
       public:
         RequestError(std::string const& message,
-                     boost::optional<reactor::http::StatusCode> http_status = {},
+                     boost::optional<elle::reactor::http::StatusCode> http_status = {},
                      boost::optional<std::string> const& error_code = {});
         ~RequestError() noexcept(true) {}
-        ELLE_ATTRIBUTE_R(boost::optional<reactor::http::StatusCode>, http_status);
+        ELLE_ATTRIBUTE_R(boost::optional<elle::reactor::http::StatusCode>, http_status);
         // AWS ErrorCode if available.
         ELLE_ATTRIBUTE_R(boost::optional<std::string>, error_code);
       };
@@ -36,7 +36,7 @@ namespace elle
       public:
         CredentialsExpired(
           std::string const& message,
-          boost::optional<reactor::http::StatusCode> http_status = {},
+          boost::optional<elle::reactor::http::StatusCode> http_status = {},
           boost::optional<std::string> const& error_code = {});
       };
 
@@ -47,7 +47,7 @@ namespace elle
       public:
         TransientError(
           std::string const& message,
-          boost::optional<reactor::http::StatusCode> http_status = {},
+          boost::optional<elle::reactor::http::StatusCode> http_status = {},
           boost::optional<std::string> const& error_code = {});
       };
 
@@ -58,7 +58,7 @@ namespace elle
       public:
         CredentialsNotValid(
           std::string const& message,
-          boost::optional<reactor::http::StatusCode> http_status = {},
+          boost::optional<elle::reactor::http::StatusCode> http_status = {},
           boost::optional<std::string> const& error_code = {});
       };
 
@@ -69,7 +69,7 @@ namespace elle
       public:
         CorruptedData(
           std::string const& message,
-          boost::optional<reactor::http::StatusCode> http_status = {},
+          boost::optional<elle::reactor::http::StatusCode> http_status = {},
           boost::optional<std::string> const& error_code = {});
       };
 
@@ -80,7 +80,7 @@ namespace elle
       public:
         FileNotFound(
           std::string const& message,
-          boost::optional<reactor::http::StatusCode> http_status = {},
+          boost::optional<elle::reactor::http::StatusCode> http_status = {},
           boost::optional<std::string> const& error_code = {});
       };
 
@@ -93,7 +93,7 @@ namespace elle
         TemporaryRedirect(
           std::string const& message,
           std::string const& redirect_host,
-          boost::optional<reactor::http::StatusCode> http_status = {},
+          boost::optional<elle::reactor::http::StatusCode> http_status = {},
           boost::optional<std::string> const& error_code = {});
 
       private:
@@ -102,7 +102,7 @@ namespace elle
 
       /** Error when trying to perform an AWS high-level operation.
       * May contain an inner exception of type aws::RequestError, or
-      * reactor::http::RequestError.
+      * elle::reactor::http::RequestError.
       */
       class AWSException:
         public elle::Exception

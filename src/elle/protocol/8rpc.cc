@@ -2,17 +2,17 @@
 
 #include <boost/lexical_cast.hpp>
 
-#include <reactor/network/tcp-socket.hh>
-#include <reactor/scheduler.hh>
+#include <elle/reactor/network/tcp-socket.hh>
+#include <elle/reactor/scheduler.hh>
 
 #include <elle/protocol/ChanneledStream.hh>
 #include <elle/protocol/RPC.hh>
 #include <elle/protocol/Serializer.hh>
 
-reactor::Scheduler&
+elle::reactor::Scheduler&
 scheduler()
 {
-  static reactor::Scheduler scheduler;
+  static elle::reactor::Scheduler scheduler;
   return scheduler;
 }
 
@@ -41,8 +41,8 @@ int rpc(std::string const& host, int port, int id,
 {
   try
     {
-      reactor::Scheduler& sched(scheduler());
-      reactor::network::TCPSocket socket(sched, host, port);
+      elle::reactor::Scheduler& sched(scheduler());
+      elle::reactor::network::TCPSocket socket(sched, host, port);
       elle::protocol::Serializer serializer(sched, socket);
       elle::protocol::ChanneledStream channels(sched, serializer);
       typedef elle::protocol::RPC<elle::serialize::InputBinaryArchive,
@@ -65,7 +65,7 @@ int main(int argc, char** argv)
   self = argv[0];
   try
     {
-      reactor::Scheduler& sched(scheduler());
+      elle::reactor::Scheduler& sched(scheduler());
 
       if (argc < 4)
         return 1;
@@ -76,7 +76,7 @@ int main(int argc, char** argv)
       std::vector<std::string> args;
       for (int i = 4; i < argc; ++i)
         args.push_back(argv[i]);
-      reactor::VThread<int> main(sched, "8rpc", std::bind(&rpc, host, port,
+      elle::reactor::VThread<int> main(sched, "8rpc", std::bind(&rpc, host, port,
                                                           id, args));
       sched.run();
       return main.result();

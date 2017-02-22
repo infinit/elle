@@ -8,10 +8,10 @@
 # include <elle/printf.hh>
 # include <elle/memory.hh>
 
-# include <reactor/network/exception.hh>
-# include <reactor/Scope.hh>
-# include <reactor/scheduler.hh>
-# include <reactor/thread.hh>
+# include <elle/reactor/network/exception.hh>
+# include <elle/reactor/Scope.hh>
+# include <elle/reactor/scheduler.hh>
+# include <elle/reactor/thread.hh>
 
 # include <elle/protocol/Channel.hh>
 # include <elle/protocol/ChanneledStream.hh>
@@ -449,7 +449,7 @@ namespace elle
               ELLE_TRACE("%s: procedure %s succeeded", *this, name);
             }
           }
-          catch (reactor::Terminate const&)
+          catch (elle::reactor::Terminate const&)
           {
             ELLE_TRACE("%s: terminating as requested", *this);
             throw;
@@ -462,7 +462,7 @@ namespace elle
           c.write(answer);
         }
       }
-      catch (reactor::network::ConnectionClosed const& e)
+      catch (elle::reactor::network::ConnectionClosed const& e)
       {
         ELLE_TRACE("%s: end of RPCs: connection closed", *this);
         return;
@@ -484,7 +484,7 @@ namespace elle
       using elle::Exception;
       try
       {
-        elle::With<reactor::Scope>("RPC // run") << [&] (reactor::Scope& scope)
+        elle::With<elle::reactor::Scope>("RPC // run") << [&] (elle::reactor::Scope& scope)
         {
           int i = 0;
           while (true)
@@ -538,7 +538,7 @@ namespace elle
                   output << frame.offset;
                 }
               }
-              catch (reactor::Terminate const&)
+              catch (elle::reactor::Terminate const&)
               {
                 ELLE_TRACE("%s: terminating as requested", *this);
                 throw;
@@ -564,7 +564,7 @@ namespace elle
           }
         };
       }
-      catch (reactor::network::ConnectionClosed const& e)
+      catch (elle::reactor::network::ConnectionClosed const& e)
       {
         ELLE_TRACE("%s: end of RPCs: connection closed", *this);
         return;

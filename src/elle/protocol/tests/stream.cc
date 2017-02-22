@@ -11,13 +11,13 @@
 
 #include <elle/cryptography/random.hh>
 
-#include <reactor/asio.hh>
-#include <reactor/Barrier.hh>
-#include <reactor/Scope.hh>
-#include <reactor/network/exception.hh>
-#include <reactor/network/tcp-server.hh>
-#include <reactor/network/tcp-socket.hh>
-#include <reactor/scheduler.hh>
+#include <elle/reactor/asio.hh>
+#include <elle/reactor/Barrier.hh>
+#include <elle/reactor/Scope.hh>
+#include <elle/reactor/network/exception.hh>
+#include <elle/reactor/network/tcp-server.hh>
+#include <elle/reactor/network/tcp-socket.hh>
+#include <elle/reactor/scheduler.hh>
 
 
 ELLE_LOG_COMPONENT("elle.protocol.test");
