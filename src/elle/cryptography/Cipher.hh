@@ -81,7 +81,7 @@ namespace elle
     template <>
     struct Serialize<elle::cryptography::Cipher>
     {
-      typedef uint8_t Type;
+      using Type = uint8_t;
       static
       uint8_t
       convert(elle::cryptography::Cipher const& value);
@@ -94,7 +94,7 @@ namespace elle
     template <>
     struct Serialize<elle::cryptography::Mode>
     {
-      typedef uint8_t Type;
+      using Type = uint8_t;
       static
       uint8_t
       convert(elle::cryptography::Mode const& value);

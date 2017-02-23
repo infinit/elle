@@ -78,7 +78,7 @@ namespace elle
     template <>
     struct Serialize<elle::cryptography::rsa::Padding>
     {
-      typedef uint8_t Type;
+      using Type = uint8_t;
       static
       uint8_t
       convert(elle::cryptography::rsa::Padding const& value);

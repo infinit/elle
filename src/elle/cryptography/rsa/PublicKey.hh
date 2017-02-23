@@ -164,7 +164,7 @@ namespace elle
         PublicKey(elle::serialization::SerializerIn& serializer);
         void
         serialize(elle::serialization::Serializer& serializer);
-        typedef elle::serialization_tag serialization_tag;
+        using serialization_tag = elle::serialization_tag;
 
         /*-----------.
         | Attributes |
