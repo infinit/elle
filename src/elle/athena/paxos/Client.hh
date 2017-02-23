@@ -88,7 +88,7 @@ namespace elle
          *  \return the value that was chosen if not the one we submitted
          */
         boost::optional<Accepted>
-        choose(typename elle::_detail::attribute_r_type<Version>::type version,
+        choose(elle::_detail::attribute_r_t<Version> version,
                elle::Option<T, Quorum> const& value);
         /** Get the latest chosen value.
          */

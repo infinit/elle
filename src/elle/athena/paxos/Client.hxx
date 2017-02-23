@@ -108,7 +108,7 @@ namespace elle
       template <typename T, typename Version, typename ClientId>
       boost::optional<typename Client<T, Version, ClientId>::Accepted>
       Client<T, Version, ClientId>::choose(
-        typename elle::_detail::attribute_r_type<Version>::type version,
+        elle::_detail::attribute_r_t<Version> version,
         elle::Option<T, Quorum> const& value)
       {
         ELLE_LOG_COMPONENT("athena.paxos.Client");
