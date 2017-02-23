@@ -119,8 +119,9 @@ def configure(cxx_toolkit = None,
     valgrind = None
   set_valgrind(valgrind)
   config = drake.cxx.Config()
-
+  config.add_local_include_path('src')
   cxx_config = drake.cxx.Config(cxx_config)
+  cxx_config.add_local_include_path('src')
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
   if cxx_toolkit.os in [drake.os.macos] and cxx_toolkit.kind == drake.cxx.GccToolkit.Kind.clang:
     cxx_config.use_local_libcxx = True
@@ -1250,12 +1251,31 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
   cxx_config.warnings.return_type = Warnings.Error
   cxx_config.warnings.delete_virtual_dtor = Warnings.Error
 
+  # XXX.
+  sources = drake.nodes(
+    'src/chrono',
+    'src/deque',
+    'src/list',
+    'src/map',
+    'src/map',
+    'src/memory',
+    'src/set',
+    'src/set',
+    'src/stdlib.h',
+    'src/type_traits',
+    'src/unordered_map',
+    'src/unordered_set',
+    'src/utility',
+    'src/vector',
+    type = drake.cxx.Header
+  )
+
   ## -------------- ##
   ## Subdirectories ##
   ## -------------- ##
 
   elle = drake.include(
-    'elle',
+    'src/elle',
     cxx_toolkit = cxx_toolkit,
     cxx_config = cxx_config,
     zlib_config = zlib_config,
@@ -1273,7 +1293,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     openssl_lib_ssl = openssl_lib_ssl,
   )
   cryptography = drake.include(
-    'cryptography',
+    'src/elle/cryptography',
     cxx_toolkit = cxx_toolkit,
     cxx_config = cxx_config,
     openssl_config = openssl_config,
@@ -1290,7 +1310,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     build_python_module = cryptography_python and not windows,
   )
   das = drake.include(
-    'das',
+    'src/elle/das',
     cxx_toolkit = cxx_toolkit,
     cxx_config = cxx_config,
     elle = elle,
@@ -1300,7 +1320,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     valgrind_tests = valgrind_tests,
   )
   reactor = drake.include(
-    'reactor',
+    'src/elle/reactor',
     zlib_config = zlib_config,
     zlib_lib = zlib_lib,
     curl_config = curl_config,
@@ -1322,7 +1342,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     codesign = codesign,
   )
   athena = drake.include(
-    'athena',
+    'src/elle/athena',
     cxx_toolkit = cxx_toolkit,
     cxx_config = cxx_config,
     elle = elle,
@@ -1335,7 +1355,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     valgrind_tests = valgrind_tests,
   )
   dropbox = drake.include(
-    'dropbox',
+    'src/elle/service/dropbox',
     cxx_toolkit = cxx_toolkit,
     cxx_config = cxx_config,
     elle = elle,
@@ -1347,7 +1367,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     valgrind_tests = valgrind_tests,
   )
   protocol = drake.include(
-    'protocol',
+    'src/elle/protocol',
     cxx_toolkit = cxx_toolkit,
     cxx_config = cxx_config,
     boost = boost,
@@ -1359,7 +1379,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     valgrind_tests = valgrind_tests,
   )
   aws = drake.include(
-    'aws',
+    'src/elle/service/aws',
     cxx_toolkit = cxx_toolkit,
     cxx_config = cxx_config,
     boost = boost,

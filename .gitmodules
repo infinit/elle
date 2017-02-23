@@ -1,27 +1,28 @@
 [submodule "drake"]
 	path = drake
 	url = ../drake
-        fetchRecurseSubmodules = false
-[submodule "elle/src/elle/json/json-spirit"]
-	path = elle/src/elle/json/json-spirit
+	fetchRecurseSubmodules = false
+[submodule "src/elle/json/modules/json-spirit"]
+	path = src/elle/json/modules/json-spirit
 	url = https://github.com/infinitdotio/json-spirit
-        fetchRecurseSubmodules = false
-[submodule "reactor/miniupnp"]
-	path = reactor/miniupnp
+	fetchRecurseSubmodules = false
+[submodule "src/elle/reactor/modules/miniupnp"]
+	path = src/elle/reactor/modules/miniupnp
 	url = https://github.com/infinit/miniupnp
-        fetchRecurseSubmodules = false
-[submodule "reactor/libutp"]
-	path = reactor/libutp
+	fetchRecurseSubmodules = false
+[submodule "src/elle/reactor/modules/libutp"]
+	path = src/elle/reactor/modules/libutp
 	url = https://github.com/infinit/libutp
-        fetchRecurseSubmodules = false
-[submodule "reactor/osxfuse"]
-	path = reactor/osxfuse
+	fetchRecurseSubmodules = false
+[submodule "src/elle/reactor/modules/osxfuse"]
+	path = src/elle/reactor/modules/osxfuse
 	url = https://github.com/osxfuse/osxfuse
-        fetchRecurseSubmodules = false
-[submodule "reactor/dokany"]
-	path = reactor/dokany
+	fetchRecurseSubmodules = false
+[submodule "src/elle/reactor/modules/dokany"]
+	path = src/elle/reactor/modules/dokany
 	url = https://github.com/infinit/dokan
-        fetchRecurseSubmodules = false
-[submodule "cryptography/modules/dopenssl"]
-	path = cryptography/modules/dopenssl
+	fetchRecurseSubmodules = false
+[submodule "src/elle/cryptography/modules/dopenssl"]
+	path = src/elle/cryptography/modules/dopenssl
 	url = https://github.com/infinit/dopenssl
+	fetchRecurseSubmodules = false

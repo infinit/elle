@@ -1,0 +1,136 @@
+# -*- Python -*-
+
+import drake
+import os
+
+lib_static = None
+lib_dynamic = None
+library = None
+
+rule_build = None
+rule_check = None
+rule_install = None
+rule_tests = None
+rule_examples = None
+
+config = None
+
+def configure(cxx_toolkit,
+              cxx_config,
+              elle,
+              boost,
+              prefix = '/usr',
+              valgrind = None,
+              valgrind_tests = True):
+
+  global rule_build, rule_check, rule_tests
+  global config
+  global lib_static, lib_dynamic, library
+
+  ## ----------------- ##
+  ## C++ configuration ##
+  ## ----------------- ##
+
+  rule_build = drake.Rule('build')
+  config = drake.cxx.Config(elle.config)
+  local_config = drake.cxx.Config(config) + cxx_config
+  local_config.warnings.parentheses = False
+
+  ## ------ ##
+  ## Libdas ##
+  ## ------ ##
+
+  sources = drake.nodes(
+    'Symbol.hh',
+    'Symbol.hxx',
+    'flatten.hh',
+    'fwd.hh',
+    'cli.hh',
+    'model.hh',
+    'named.hh',
+    'printer.hh',
+    'serializer.hh',
+    'serializer.hxx',
+  )
+  lib_dynamic = \
+    drake.cxx.DynLib('lib/elle_das', sources, cxx_toolkit, local_config)
+  lib_static = \
+    drake.cxx.StaticLib('lib/elle_das', sources, cxx_toolkit, local_config)
+  if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
+    library = lib_static
+  else:
+    library = lib_dynamic
+
+  ## ----- ##
+  ## Tests ##
+  ## ----- ##
+
+  local_config_tests = drake.cxx.Config(local_config)
+  if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
+    local_config_tests += boost.config_test(static = True)
+    local_config_tests += boost.config_timer(static = True)
+  else:
+    local_config_tests += boost.config_test(link = False)
+    local_config_tests.library_add(
+      drake.copy(boost.test_dynamic, 'lib', strip_prefix = True))
+    local_config_tests += boost.config_timer(link = False)
+    local_config_tests.library_add(
+      drake.copy(boost.timer_dynamic, 'lib', strip_prefix = True))
+  local_config_tests.lib_path_runtime('../lib')
+  if cxx_toolkit.os is drake.os.android:
+    local_config_tests.lib('stdc++')
+    local_config_tests.lib('atomic')
+  rule_tests = drake.Rule('tests')
+  rule_check = drake.TestSuite('check')
+  elle_library = drake.copy(elle.library, 'lib', strip_prefix = True)
+  for name in [
+    'cli',
+    'flatten',
+    'named',
+    'printer',
+    'serialize',
+    'symbol',
+  ]:
+    test = drake.cxx.Executable(
+      'tests/%s' % name,
+      [drake.node('tests/%s.cc' % name), library, elle_library],
+      cxx_toolkit,
+      local_config_tests)
+    rule_tests << test
+    runner = drake.Runner(test)
+    runner.reporting = drake.Runner.Reporting.on_failure
+    rule_check << runner.status
+
+  ## -------- ##
+  ## Examples ##
+  ## -------- ##
+
+  rule_examples = drake.Rule('examples')
+  examples = [
+    'examples/samples/das',
+  ]
+  config_examples = drake.cxx.Config(local_config_tests)
+  for example in examples:
+    if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
+      config_examples += boost.config_date_time(static = True)
+    else:
+      config_examples.library_add(
+        drake.copy(boost.date_time_dynamic, 'lib', strip_prefix = True))
+    rule_examples << drake.cxx.Executable(
+      example,
+      [drake.node('%s.cc' % example), library, elle_library],
+      cxx_toolkit, config_examples)
+  rule_build << rule_examples
+
+  ## ------- ##
+  ## Install ##
+  ## ------- ##
+
+  if prefix is not False:
+    rule_install = drake.Rule('install')
+    if cxx_toolkit.os not in [drake.os.windows, drake.os.ios]:
+      rule_install << drake.install(lib_dynamic, prefix)
+    rule_install << drake.install(lib_static, prefix)
+    rule_install << drake.install(
+      list(filter(lambda n: isinstance(n, drake.cxx.Header), sources)),
+      prefix / 'include' / 'elle' / 'das')

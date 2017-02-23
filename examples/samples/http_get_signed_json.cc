@@ -1,28 +1,24 @@
-#include <das/model.hh>
-#include <das/serializer.hh>
-#include <das/printer.hh>
-#include <das/Symbol.hh>
-
-#include <elle/serialization/json.hh>
-#include <elle/serialization/binary.hh>
-
 #include <elle/AtomicFile.hh>
-
-#include <cryptography/rsa/KeyPair.hh>
-
-#include <reactor/http/Request.hh>
-#include <reactor/http/exceptions.hh>
-#include <reactor/scheduler.hh>
+#include <elle/cryptography/rsa/KeyPair.hh>
+#include <elle/das/Symbol.hh>
+#include <elle/das/model.hh>
+#include <elle/das/printer.hh>
+#include <elle/das/serializer.hh>
+#include <elle/reactor/http/Request.hh>
+#include <elle/reactor/http/exceptions.hh>
+#include <elle/reactor/scheduler.hh>
+#include <elle/serialization/binary.hh>
+#include <elle/serialization/json.hh>
 
 // Declare symbols used by das.
-DAS_SYMBOL(array);
-DAS_SYMBOL(dict);
-DAS_SYMBOL(foo);
-DAS_SYMBOL(f);
-DAS_SYMBOL(i);
-DAS_SYMBOL(encrypted_payload);
-DAS_SYMBOL(body);
-DAS_SYMBOL(signature);
+ELLE_DAS_SYMBOL(array);
+ELLE_DAS_SYMBOL(dict);
+ELLE_DAS_SYMBOL(foo);
+ELLE_DAS_SYMBOL(f);
+ELLE_DAS_SYMBOL(i);
+ELLE_DAS_SYMBOL(encrypted_payload);
+ELLE_DAS_SYMBOL(body);
+ELLE_DAS_SYMBOL(signature);
 
 // Create an example data that look like that:
 // {
@@ -43,7 +39,7 @@ struct Body
   elle::Buffer encrypted_payload;
 
   // Generate a model for the class Body.
-  using Model = das::Model<Body, elle::meta::List<Symbol_array,
+  using Model = elle::das::Model<Body, elle::meta::List<Symbol_array,
                                                   Symbol_dict,
                                                   Symbol_f,
                                                   Symbol_i,
@@ -71,13 +67,13 @@ struct Signed
     {
       elle::IOStream output(res.ostreambuf());
       elle::serialization::binary::SerializerOut serializer(output, false);
-      das::serialize(body, serializer);
+      elle::das::serialize(body, serializer);
     }
     return res;
   }
 
   // Generate a Model the templated class Signed<T>.
-  using Model = das::Model<Signed<T>, elle::meta::List<Symbol_body,
+  using Model = elle::das::Model<Signed<T>, elle::meta::List<Symbol_body,
                                                        Symbol_signature
                                                        >>;
 };
@@ -85,22 +81,22 @@ struct Signed
 using Example = Signed<Body>;
 
 // Declare both Body and Example serializable.
-DAS_SERIALIZE(Body);
-DAS_SERIALIZE(Example);
+ELLE_DAS_SERIALIZE(Body);
+ELLE_DAS_SERIALIZE(Example);
 
-// Declare all das::Model printable.
-using das::operator <<;
+// Declare all elle::das::Model printable.
+using elle::das::operator <<;
 
 // Read your fake keypair from examples/example.key.
 static
-infinit::cryptography::rsa::KeyPair
+elle::cryptography::rsa::KeyPair
 key()
 {
   elle::AtomicFile f("examples/example.key");
   return f.read() << [&] (elle::AtomicFile::Read& read)
   {
     return elle::serialization::json::deserialize<
-      infinit::cryptography::rsa::KeyPair>(read.stream(), false);
+      elle::cryptography::rsa::KeyPair>(read.stream(), false);
   };
 }
 
@@ -115,8 +111,8 @@ get()
     "/d7764d2b26814af3bfff17c707dc4f33a93f7e8c"
     "/example.json";
   std::cout << "1. GET example.json at " << url << std::endl;
-  reactor::http::Request r(url);
-  reactor::wait(r);
+  elle::reactor::http::Request r(url);
+  elle::reactor::wait(r);
   std::cout << "2. Deserialize response" << std::endl;
   return elle::serialization::json::deserialize<Example>(r);
 }
@@ -128,8 +124,8 @@ get()
 int
 main()
 {
-  reactor::Scheduler sched;
-  reactor::Thread t(
+  elle::reactor::Scheduler sched;
+  elle::reactor::Thread t(
     sched, "main",
     []
     {
@@ -150,12 +146,12 @@ main()
         auto secret = key().k().decrypt(payload).string();
         // std::cout << "> " << secret << std::endl;
       }
-      catch (reactor::http::ResolutionFailure const& e)
+      catch (elle::reactor::http::ResolutionFailure const& e)
       {
         std::cerr << "Unable to resolve " << e.url() << std::endl;
         throw;
       }
-      catch (reactor::http::RequestError const& e)
+      catch (elle::reactor::http::RequestError const& e)
       {
         std::cerr << "Unable to get " << e.url() << std::endl;
         throw;
