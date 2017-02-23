@@ -50,8 +50,8 @@ namespace elle
   | Types |
   `------*/
   public:
-    typedef InvalidUUID Self;
-    typedef Error Super;
+    using Self = elle::InvalidUUID;
+    using Super = elle::Error;
 
   /*-------------.
   | Construction |
@@ -76,7 +76,7 @@ namespace elle
     template <>
     struct ELLE_API Serialize<UUID>
     {
-      typedef std::string Type;
+      using Type = std::string;
       static
       std::string
       convert(UUID& uuid);

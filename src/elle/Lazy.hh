@@ -18,11 +18,11 @@ namespace elle
   `------*/
   public:
     /// Encapsulated value type.
-    typedef T Value;
+    using Value = T;
     /// Self type.
-    typedef Lazy<Value> Self;
+    using Self = Lazy<Value>;
     /// Function type to generate our value.
-    typedef std::function<Value ()> Lambda;
+    using Lambda = std::function<Value ()>;
 
   /*-------------.
   | Construction |
