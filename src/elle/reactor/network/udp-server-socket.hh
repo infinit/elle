@@ -17,8 +17,8 @@ namespace elle
         | Typedefs |
         `---------*/
         public:
-          typedef Socket Super;
-          typedef boost::asio::ip::udp::endpoint EndPoint;
+          using Super = Socket;
+          using EndPoint = boost::asio::ip::udp::endpoint;
 
         /*-------------.
         | Construction |

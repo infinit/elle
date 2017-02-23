@@ -14,7 +14,7 @@ namespace elle
         : public elle::Error
       {
       public:
-        typedef elle::Error Super;
+        using Super = elle::Error;
         Exception(std::string const& message);
       };
 
@@ -22,7 +22,7 @@ namespace elle
         : public Exception
       {
       public:
-        typedef Exception Super;
+        using Super = Exception;
         SocketClosed();
       };
 
@@ -30,7 +30,7 @@ namespace elle
         : public Exception
       {
       public:
-        typedef Exception Super;
+        using Super = Exception;
         ConnectionRefused();
       };
 
@@ -38,7 +38,7 @@ namespace elle
         : public Exception
       {
       public:
-        typedef Exception Super;
+        using Super = Exception;
         PermissionDenied(std::string const& message);
       };
 
@@ -46,7 +46,7 @@ namespace elle
         : public Exception
       {
       public:
-        typedef Exception Super;
+        using Super = Exception;
         InvalidEndpoint(std::string const& message);
       };
 
@@ -54,7 +54,7 @@ namespace elle
         : public Exception
       {
       public:
-        typedef Exception Super;
+        using Super = Exception;
         ConnectionClosed();
         ConnectionClosed(std::string const& message);
       };
@@ -63,7 +63,7 @@ namespace elle
         : public ConnectionClosed
       {
       public:
-        typedef ConnectionClosed Super;
+        using Super = ConnectionClosed;
         SSLShortRead();
       };
 
@@ -71,7 +71,7 @@ namespace elle
         : public Exception
       {
       public:
-        typedef Exception Super;
+        using Super = Exception;
         ResolutionError(std::string const& host,
                         std::string const& message);
 
@@ -83,7 +83,7 @@ namespace elle
         : public Exception
       {
       public:
-        typedef Exception Super;
+        using Super = Exception;
         SSLCertificateError(std::string const& message);
       };
 
@@ -91,7 +91,7 @@ namespace elle
         : public Exception
       {
       public:
-        typedef Exception Super;
+        using Super = Exception;
         SSLHandshakeError(std::string const& message);
       };
 
@@ -99,7 +99,7 @@ namespace elle
         : public Exception
       {
       public:
-        typedef Exception Super;
+        using Super = Exception;
         TimeOut();
       };
     }

@@ -215,7 +215,7 @@ namespace elle
         public DataOperation<boost::asio::ip::tcp::socket>
       {
       public:
-        typedef DataOperation<boost::asio::ip::tcp::socket> Super;
+        using Super = DataOperation<boost::asio::ip::tcp::socket>;
 
         SSLShutdown(SSLSocket& socket)
           : Super(socket.socket()->next_layer())

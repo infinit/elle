@@ -17,9 +17,9 @@ namespace elle
                              boost::asio::local::stream_protocol::acceptor>
       {
       public:
-        typedef ProtoServer<boost::asio::local::stream_protocol::socket,
-                            boost::asio::local::stream_protocol::endpoint,
-                            boost::asio::local::stream_protocol::acceptor> Super;
+        using Super = ProtoServer<boost::asio::local::stream_protocol::socket,
+                                  boost::asio::local::stream_protocol::endpoint,
+                                  boost::asio::local::stream_protocol::acceptor>;
         UnixDomainServer();
         ~UnixDomainServer();
         std::unique_ptr<UnixDomainSocket>

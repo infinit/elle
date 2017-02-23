@@ -17,8 +17,8 @@ namespace elle
       class Resolution: public Operation
       {
       public:
-        typedef typename Protocol::resolver Resolver;
-        typedef typename Protocol::resolver::endpoint_type EndPoint;
+        using Resolver = typename Protocol::resolver;
+        using EndPoint = typename Protocol::resolver::endpoint_type;
         Resolution(const std::string& hostname, const std::string& service,
                    bool ipv4_only):
           Operation(*reactor::Scheduler::scheduler()),

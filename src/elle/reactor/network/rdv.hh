@@ -44,7 +44,7 @@ namespace elle
           boost::optional<Endpoint> source_endpoint;
           boost::optional<Endpoint> target_endpoint;
           boost::optional<std::string>  target_address;
-          typedef elle::serialization_tag serialization_tag;
+          using serialization_tag = elle::serialization_tag;
         };
       }
     }
@@ -55,7 +55,7 @@ namespace elle
     template<typename T>
     struct SerializeEndpoint
     {
-      typedef elle::Buffer Type;
+      using Type = elle::Buffer;
       static Type convert(T& ep)
       {
         Type res;

@@ -193,9 +193,9 @@ namespace elle
       `---------*/
       public:
         /// Self type.
-        typedef StreamSocket<AsioSocket, EndPoint> Self;
+        using Self = StreamSocket<AsioSocket, EndPoint>;
         /// Super type.
-        typedef PlainSocket<AsioSocket, EndPoint> Super;
+        using Super = PlainSocket<AsioSocket, EndPoint>;
 
       /*-------------.
       | Construction |

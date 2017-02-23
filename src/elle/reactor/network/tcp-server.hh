@@ -17,9 +17,9 @@ namespace elle
       | Construction |
       `-------------*/
       public:
-        typedef ProtoServer<boost::asio::ip::tcp::socket,
-                            boost::asio::ip::tcp::endpoint,
-                            boost::asio::ip::tcp::acceptor> Super;
+        using Super = ProtoServer<boost::asio::ip::tcp::socket,
+                                  boost::asio::ip::tcp::endpoint,
+                                  boost::asio::ip::tcp::acceptor>;
         TCPServer(bool no_delay = false);
         virtual
         ~TCPServer();

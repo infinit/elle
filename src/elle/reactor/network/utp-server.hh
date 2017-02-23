@@ -29,7 +29,7 @@ namespace elle
       | Networking |
       `-----------*/
       public:
-        typedef boost::asio::ip::udp::endpoint EndPoint;
+        using EndPoint = boost::asio::ip::udp::endpoint;
         void
         listen(int port, bool ipv6 = false);
         void

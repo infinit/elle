@@ -18,7 +18,7 @@ namespace elle
       class SSLCertificate
       {
       public:
-        typedef boost::asio::ssl::context::method SSLCertificateMethod;
+        using SSLCertificateMethod = boost::asio::ssl::context::method;
 
         SSLCertificate(SSLCertificateMethod meth =
                          boost::asio::ssl::context::tlsv1_client);
@@ -37,9 +37,8 @@ namespace elle
         ELLE_ATTRIBUTE_RX(boost::asio::ssl::context, context);
       };
 
-      typedef boost::asio::ssl::stream<boost::asio::ip::tcp::socket>
-        SSLStream;
-      typedef boost::asio::ip::tcp::socket::endpoint_type SSLEndPointType;
+      using SSLStream = boost::asio::ssl::stream<boost::asio::ip::tcp::socket>;
+      using SSLEndPointType = boost::asio::ip::tcp::socket::endpoint_type;
 
       class SSLCertificateOwner
       {
@@ -58,9 +57,9 @@ namespace elle
         public StreamSocket <SSLStream, SSLEndPointType>
       {
       public:
-        typedef StreamSocket<SSLStream, SSLEndPointType> Super;
-        typedef SSLSocket Self;
-        typedef boost::asio::ip::tcp::endpoint SSLEndPoint;
+        using Super = StreamSocket<SSLStream, SSLEndPointType>;
+        using Self = SSLSocket;
+        using SSLEndPoint = boost::asio::ip::tcp::endpoint;
 
       public:
         /// Create a client socket.

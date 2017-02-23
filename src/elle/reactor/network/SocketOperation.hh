@@ -39,7 +39,7 @@ namespace elle
         : public SocketOperation<AsioSocket>
       {
       public:
-        typedef SocketOperation<AsioSocket> Super;
+        using Super = SocketOperation<AsioSocket>;
         DataOperation(AsioSocket& socket);
 
       protected:

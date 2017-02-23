@@ -20,7 +20,7 @@ namespace elle
       | Types |
       `------*/
       public:
-        typedef Server Self;
+        using Self = Server;
 
       /*-------------.
       | Construction |
@@ -55,9 +55,9 @@ namespace elle
       | Types |
       `------*/
       public:
-        typedef AsioSocket_ AsioSocket;
-        typedef Acceptor_ Acceptor;
-        typedef EndPoint_ EndPoint;
+        using AsioSocket = AsioSocket_;
+        using Acceptor = Acceptor_;
+        using EndPoint = EndPoint_;
 
       /*----------.
       | Accepting |

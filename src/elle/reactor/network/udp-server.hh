@@ -22,7 +22,7 @@ namespace elle
       class UDPServer: public Server, public ProtoServer<UDPSocket>
       {
         public:
-          typedef Server Super;
+          using Super = Server;
           UDPServer(Scheduler& sched);
           ~UDPServer();
 
@@ -51,11 +51,11 @@ namespace elle
                                std::size_t bytes_transferred);
           char _buffer[512];
           EndPoint _peer;
-          typedef std::unordered_map<EndPoint, UDPServerSocket*,
-                                       HashEndpoint> Clients;
+          using Clients = std::unordered_map<EndPoint, UDPServerSocket*,
+                                       HashEndpoint>;
           Clients _clients;
           Signal _accept;
-          typedef std::vector<UDPServerSocket*> Sockets;
+          using Sockets = std::vector<UDPServerSocket*>;
           Sockets _accepted;
 
         /*---------.

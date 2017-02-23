@@ -17,8 +17,8 @@ namespace elle
         | Typedefs |
         `---------*/
         public:
-          typedef PlainSocket<boost::asio::ip::udp::socket> Super;
-          typedef boost::asio::ip::udp::resolver AsioResolver;
+          using Super = PlainSocket<boost::asio::ip::udp::socket>;
+          using AsioResolver = boost::asio::ip::udp::resolver;
 
         /*-------------.
         | Construction |

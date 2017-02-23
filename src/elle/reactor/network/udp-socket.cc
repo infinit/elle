@@ -85,9 +85,9 @@ namespace elle
       class UDPRead: public SocketOperation<boost::asio::ip::udp::socket>
       {
         public:
-          typedef boost::asio::ip::udp::socket AsioSocket;
-          typedef boost::asio::ip::udp::endpoint EndPoint;
-          typedef SocketOperation<AsioSocket> Super;
+          using AsioSocket = boost::asio::ip::udp::socket;
+          using EndPoint = boost::asio::ip::udp::endpoint;
+          using Super = SocketOperation<AsioSocket>;
           UDPRead(Scheduler& scheduler,
                   PlainSocket<AsioSocket>* socket,
                   elle::WeakBuffer& buffer):
@@ -159,9 +159,9 @@ namespace elle
       class UDPRecvFrom: public DataOperation<boost::asio::ip::udp::socket>
       {
         public:
-          typedef boost::asio::ip::udp::socket AsioSocket;
-          typedef boost::asio::ip::udp::endpoint EndPoint;
-          typedef DataOperation<AsioSocket> Super;
+          using AsioSocket = boost::asio::ip::udp::socket;
+          using EndPoint = boost::asio::ip::udp::endpoint;
+          using Super = DataOperation<AsioSocket>;
           UDPRecvFrom(Scheduler& scheduler,
                       PlainSocket<AsioSocket>* socket,
                       elle::WeakBuffer& buffer,
@@ -246,9 +246,9 @@ namespace elle
       class UDPWrite: public DataOperation<boost::asio::ip::udp::socket>
       {
         public:
-          typedef boost::asio::ip::udp::socket AsioSocket;
-          typedef boost::asio::ip::udp::endpoint EndPoint;
-          typedef DataOperation<AsioSocket> Super;
+          using AsioSocket = boost::asio::ip::udp::socket;
+          using EndPoint = boost::asio::ip::udp::endpoint;
+          using Super = DataOperation<AsioSocket>;
           UDPWrite(Scheduler& scheduler,
                    PlainSocket<AsioSocket>* socket,
                    elle::ConstWeakBuffer& buffer):
@@ -286,9 +286,9 @@ namespace elle
       class UDPSendTo: public DataOperation<boost::asio::ip::udp::socket>
       {
         public:
-          typedef boost::asio::ip::udp::socket AsioSocket;
-          typedef boost::asio::ip::udp::endpoint EndPoint;
-          typedef DataOperation<AsioSocket> Super;
+          using AsioSocket = boost::asio::ip::udp::socket;
+          using EndPoint = boost::asio::ip::udp::endpoint;
+          using Super = DataOperation<AsioSocket>;
           UDPSendTo(Scheduler& scheduler,
                     PlainSocket<AsioSocket>* socket,
                     elle::ConstWeakBuffer& buffer,

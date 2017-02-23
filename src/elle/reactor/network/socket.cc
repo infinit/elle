@@ -23,8 +23,8 @@ namespace elle
       template <typename Socket_>
       struct SocketSpecialization
       {
-        typedef Socket_ Socket;
-        typedef Socket_ Stream;
+        using Socket = Socket_;
+        using Stream = Socket_;
 
         static
         Socket&
@@ -38,8 +38,8 @@ namespace elle
       struct SocketSpecialization<
         boost::asio::ssl::stream<boost::asio::ip::tcp::socket>>
       {
-        typedef boost::asio::ip::tcp::socket Socket;
-        typedef boost::asio::ssl::stream<Socket> Stream;
+        using Socket = boost::asio::ip::tcp::socket;
+        using Stream = boost::asio::ssl::stream<Socket>;
 
         static
         Socket&
@@ -241,8 +241,8 @@ namespace elle
         public SocketOperation<AsioSocket>
       {
       public:
-        typedef typename AsioSocket::endpoint_type EndPoint;
-        typedef SocketOperation<AsioSocket> Super;
+        using EndPoint = typename AsioSocket::endpoint_type;
+        using Super = SocketOperation<AsioSocket>;
         Connection(AsioSocket& socket,
                    const EndPoint& endpoint):
           Super(socket),
@@ -276,7 +276,7 @@ namespace elle
                                                   DurationOpt timeout)
       {
         ELLE_TRACE_SCOPE("%s: connect to %s", *this, peer);
-        typedef SocketSpecialization<AsioSocket> Spe;
+        using Spe = SocketSpecialization<AsioSocket>;
         try
         {
           Connection<typename Spe::Socket> connection(
@@ -297,7 +297,7 @@ namespace elle
       PlainSocket<AsioSocket, EndPoint>::close()
       {
         ELLE_TRACE_SCOPE("%s: close", *this);
-        typedef SocketSpecialization<AsioSocket> Spe;
+        using Spe = SocketSpecialization<AsioSocket>;
         auto& socket = Spe::socket(*this->socket());
         boost::system::error_code e;
         socket.cancel(e);
@@ -311,7 +311,7 @@ namespace elle
       PlainSocket<AsioSocket, EndPoint>::_disconnect()
       {
         ELLE_TRACE_SCOPE("%s: disconnect", *this);
-        typedef SocketSpecialization<AsioSocket> Spe;
+        using Spe = SocketSpecialization<AsioSocket>;
         if (this->_socket)
         {
           boost::system::error_code error;
@@ -386,7 +386,7 @@ namespace elle
       EndPoint
       PlainSocket<AsioSocket, EndPoint>::local_endpoint() const
       {
-        typedef SocketSpecialization<AsioSocket> Spe;
+        using Spe = SocketSpecialization<AsioSocket>;
         boost::system::error_code erc;
         auto res = Spe::socket(*this->_socket).local_endpoint(erc);
         if (erc)
@@ -435,8 +435,8 @@ namespace elle
         : public DataOperation<typename SocketSpecialization<AsioSocket>::Socket>
       {
       public:
-        typedef typename SocketSpecialization<AsioSocket>::Socket Socket;
-        typedef DataOperation<Socket> Super;
+        using Socket = typename SocketSpecialization<AsioSocket>::Socket;
+        using Super = DataOperation<Socket>;
         Read(PlainSocket& plain,
              AsioSocket& socket,
              elle::WeakBuffer& buffer,
@@ -580,10 +580,10 @@ namespace elle
         public DataOperation<typename SocketSpecialization<AsioSocket>::Socket>
       {
       public:
-        typedef typename SocketSpecialization<AsioSocket>::Socket Socket;
-        typedef ReadUntil<PlainSocket, AsioSocket> Self;
-        typedef SocketSpecialization<AsioSocket> Spe;
-        typedef DataOperation<Socket> Super;
+        using Socket = typename SocketSpecialization<AsioSocket>::Socket;
+        using Self = ReadUntil<PlainSocket, AsioSocket>;
+        using Spe = SocketSpecialization<AsioSocket>;
+        using Super = DataOperation<Socket>;
         ReadUntil(PlainSocket& plain,
                   AsioSocket& socket,
                   boost::asio::streambuf& buffer,
@@ -673,9 +673,9 @@ namespace elle
         public DataOperation<typename SocketSpecialization<AsioSocket>::Socket>
       {
       public:
-        typedef typename SocketSpecialization<AsioSocket>::Socket Socket;
-        typedef DataOperation<Socket> Super;
-        typedef SocketSpecialization<AsioSocket> Spe;
+        using Socket = typename SocketSpecialization<AsioSocket>::Socket;
+        using Super = DataOperation<Socket>;
+        using Spe = SocketSpecialization<AsioSocket>;
         Write(PlainSocket& plain,
               AsioSocket& socket,
               elle::ConstWeakBuffer buffer):

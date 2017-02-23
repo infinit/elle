@@ -28,7 +28,7 @@ namespace elle
 # endif
         };
 
-        typedef void (StatusCallback) (NetworkStatus);
+        using StatusCallback = auto (NetworkStatus) -> void;
 
       public:
         /// Leaving the host empty tests zero address.
