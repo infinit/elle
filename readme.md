@@ -77,7 +77,7 @@ sudo pip3 install elle/drake/requirements.txt # Install Drake dependencies.
 
 Change directory to `elle/_build/<architecture>` where you can find a generic Drake [configuration script](https://github.com/infinit/drake#basic-structures-of-a-drakefile-and-a-drake-script).
 
-#### Linux
+#### GNU/Linux
 
 
 ```bash
@@ -100,7 +100,7 @@ Because Elle was designed to be modular, you can build specific parts of Elle by
 ./drake //protocol/build -j 2 # To build the libprotocol and its dependencies.
 ./drake //...
 ```
-It will result on `<module>/lib/lib<module>.so` and its dependencies on Linux, `<module>/lib/lib<module>.dylib` on macOS, ...
+It will result on `<module>/lib/lib<module>.so` and its dependencies on GNU/Linux, `<module>/lib/lib<module>.dylib` on macOS, ...
 
 ### Dependencies
 
