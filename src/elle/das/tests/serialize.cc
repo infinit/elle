@@ -11,9 +11,12 @@
 
 ELLE_LOG_COMPONENT("das.serializer.test");
 
-ELLE_DAS_SYMBOL(device);
-ELLE_DAS_SYMBOL(id);
-ELLE_DAS_SYMBOL(name);
+namespace symbol
+{
+  ELLE_DAS_SYMBOL(device);
+  ELLE_DAS_SYMBOL(id);
+  ELLE_DAS_SYMBOL(name);
+}
 
 using elle::das::operator <<;
 
@@ -28,22 +31,25 @@ struct DevicePOD
   int id;
   std::string name;
 
-  using Model = elle::das::Model<DevicePOD, elle::meta::List<Symbol_id,
-                                                             Symbol_name>>;
+  using Model
+    = elle::das::Model<DevicePOD,
+                       decltype(elle::meta::list(symbol::id,
+                                                 symbol::name))>;
 };
 
 struct NopeString
   : public std::string
 {
+  using Super = std::string;
   NopeString()
   {}
 
   NopeString(std::string const& s)
-    : std::string(s)
+    : Super{s}
   {}
 
   NopeString(char const* s)
-    : std::string(s)
+    : Super{s}
   {}
 
   NopeString
@@ -66,14 +72,15 @@ struct Device
   int id;
   NopeString name;
 
-  using Model = elle::das::Model<Device, elle::meta::List<Symbol_id,
-                                                          Symbol_name>>;
+  using Model = elle::das::Model<Device,
+                                 decltype(elle::meta::list(symbol::id,
+                                                           symbol::name))>;
 };
 
 struct User
 {
   User(std::string name, std::vector<Device> d = {})
-    : name(name)
+    : name(std::move(name))
     , device(std::move(d))
   {}
 
@@ -86,54 +93,36 @@ struct User
     return this->name == rhs.name && this->device == rhs.device;
   }
 
-  using Model = elle::das::Model<User, elle::meta::List<Symbol_name,
-                                                        Symbol_device>>;
+  using Model = elle::das::Model<User,
+                                 decltype(elle::meta::list(symbol::name,
+                                                           symbol::device))>;
 };
 
-namespace elle
-{
-  namespace serialization
-  {
-    template <>
-    struct Serialize<DevicePOD>
-      : public das::Serializer<DevicePOD>
-    {};
-
-    template <>
-    struct Serialize<Device>
-      : public das::Serializer<Device>
-    {};
-
-    template <>
-    struct Serialize<User>
-      : public das::Serializer<User>
-    {};
-  }
-}
+ELLE_DAS_SERIALIZE(DevicePOD);
+ELLE_DAS_SERIALIZE(Device);
+ELLE_DAS_SERIALIZE(User);
 
 static
 void
 simple()
 {
+  using elle::serialization::json::serialize;
+  using elle::serialization::json::deserialize;
   ELLE_LOG("POD serialization");
   {
-    DevicePOD d;
-    d.id = 42;
-    d.name = "towel";
+    auto const d = DevicePOD{42, "towel"};
     std::stringstream ss;
-    elle::serialization::json::serialize(d, ss);
+    serialize(d, ss);
     ELLE_LOG("serialized: \"%s\"", ss.str());
-    BOOST_CHECK_EQUAL(
-      elle::serialization::json::deserialize<DevicePOD>(ss), d);
+    BOOST_CHECK_EQUAL(deserialize<DevicePOD>(ss), d);
   }
   ELLE_LOG("Object serialization");
   {
-    Device d(42, "towel");
+    auto const d = Device{42, "towel"};
     std::stringstream ss;
-    elle::serialization::json::serialize(d, ss);
+    serialize(d, ss);
     ELLE_LOG("serialized: \"%s\"", ss.str());
-    BOOST_CHECK_EQUAL(
-      elle::serialization::json::deserialize<Device>(ss), d);
+    BOOST_CHECK_EQUAL(deserialize<Device>(ss), d);
   }
 }
 
@@ -141,22 +130,24 @@ static
 void
 composite()
 {
-  User u("Doug", {Device(42, "arthur"), Device(51, "ford")});
-  using Model = elle::das::Model<User, elle::meta::List<Symbol_name>>;
+  using elle::serialization::json::serialize;
+  using elle::serialization::json::deserialize;
+
+  auto const u = User("Doug", {Device(42, "arthur"), Device(51, "ford")});
+  using Model = elle::das::Model<User,
+                                 decltype(elle::meta::list(symbol::name))>;
   using S = elle::das::Serializer<User, Model>;
   ELLE_LOG("serialize with default model")
   {
     std::stringstream ss;
-    elle::serialization::json::serialize(u, ss);
-    BOOST_CHECK_EQUAL(
-      elle::serialization::json::deserialize<User>(ss), u);
+    serialize(u, ss);
+    BOOST_CHECK_EQUAL(deserialize<User>(ss), u);
   }
   ELLE_LOG("serialize with custom model")
   {
     std::stringstream ss;
-    elle::serialization::json::serialize<S>(u, ss);
-    BOOST_CHECK_EQUAL(
-      (elle::serialization::json::deserialize<User, S>(ss)), User("Doug"));
+    serialize<S>(u, ss);
+    BOOST_CHECK_EQUAL((deserialize<User, S>(ss)), User("Doug"));
   }
 }
 

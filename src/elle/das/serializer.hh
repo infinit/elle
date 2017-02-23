@@ -186,8 +186,8 @@ namespace elle
     namespace serialization                                     \
     {                                                           \
       template <>                                               \
-        struct Serialize<Class>                                 \
-          : public elle::das::Serializer<Class, ## __VA_ARGS__> \
+      struct Serialize<Class>                                   \
+        : public elle::das::Serializer<Class, ## __VA_ARGS__>   \
       {};                                                       \
     }                                                           \
   }
