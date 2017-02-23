@@ -34,7 +34,7 @@ class Peer
   : public paxos::Client<T, Version, ServerId>::Peer
 {
 public:
-  typedef paxos::Client<T, Version, ServerId> Client;
+  using Client = paxos::Client<T, Version, ServerId>;
 
   Peer(ServerId id,
        paxos::Server<T, Version, ServerId>& paxos)
@@ -42,7 +42,7 @@ public:
     , _paxos(paxos)
   {}
 
-  virtual
+
   boost::optional<typename Client::Accepted>
   propose(
     typename paxos::Server<T, Version, ServerId>::Quorum const& q,
@@ -51,7 +51,7 @@ public:
     return this->_paxos.propose(q, p);
   }
 
-  virtual
+
   typename Client::Proposal
   accept(
     typename paxos::Server<T, Version, ServerId>::Quorum const& q,
@@ -61,7 +61,7 @@ public:
     return this->_paxos.accept(q, p, value);
   }
 
-  virtual
+
   void
   confirm(
     typename paxos::Server<T, Version, ServerId>::Quorum const& q,
@@ -70,7 +70,7 @@ public:
     return this->_paxos.confirm(q, p);
   }
 
-  virtual
+
   boost::optional<typename Client::Accepted>
   get(
     typename paxos::Server<T, Version, ServerId>::Quorum const& q) override
@@ -86,7 +86,7 @@ ELLE_TEST_SCHEDULED(all_is_well)
   paxos::Server<int, int, int> server_1(11, {11, 12, 13});
   paxos::Server<int, int, int> server_2(12, {11, 12, 13});
   paxos::Server<int, int, int> server_3(13, {11, 12, 13});
-  typedef paxos::Client<int, int, int>::Peers Peers;
+  using Peers = paxos::Client<int, int, int>::Peers;
   auto peers = Peers{};
   peers.emplace_back(std::make_unique<Peer<int, int, int>>(11, server_1));
   peers.emplace_back(std::make_unique<Peer<int, int, int>>(12, server_2));
@@ -115,7 +115,7 @@ public:
     : paxos::Client<T, Version, ServerId>::Peer(std::move(id))
   {}
 
-  virtual
+
   boost::optional<typename Client::Accepted>
   propose(typename Client::Quorum const& q,
           typename Client::Proposal const& p) override
@@ -123,7 +123,7 @@ public:
     throw paxos::Unavailable();
   }
 
-  virtual
+
   typename Client::Proposal
   accept(typename Client::Quorum const& q,
          typename Client::Proposal const& p,
@@ -132,7 +132,7 @@ public:
     throw paxos::Unavailable();
   }
 
-  virtual
+
   void
   confirm(typename Client::Quorum const& q,
           typename Client::Proposal const& p) override
@@ -140,7 +140,7 @@ public:
     throw paxos::Unavailable();
   }
 
-  virtual
+
   boost::optional<typename Client::Accepted>
   get(typename Client::Quorum const& q) override
   {
@@ -221,10 +221,10 @@ public:
     }
   }
 
-  ~InstrumentedPeer() noexcept(true)
+  ~InstrumentedPeer() noexcept(true) override
   {}
 
-  virtual
+
   boost::optional<typename Client::Accepted>
   propose(
     typename Client::Quorum const& q,
@@ -237,7 +237,7 @@ public:
     return Peer<T, Version, ServerId>::propose(q, p);
   }
 
-  virtual
+
   typename Client::Proposal
   accept(typename Client::Quorum const& q,
          typename Client::Proposal const& p,
@@ -250,7 +250,7 @@ public:
     return Peer<T, Version, ServerId>::accept(q, p, value);
   }
 
-  virtual
+
   void
   confirm(typename Client::Quorum const& q,
           typename Client::Proposal const& p) override
@@ -482,7 +482,7 @@ ELLE_TEST_SCHEDULED(propose_before_current_proposal_acceptation)
   typedef paxos::Server<int, int, int> Server;
   typedef paxos::Client<int, int, int> Client;
   typedef Peer<int, int, int> Peer;
-  typedef Client::Peers Peers;
+  using Peers = Client::Peers;
   Server server_1(11, {11, 12, 13});
   Server server_2(12, {11, 12, 13});
   Server server_3(13, {11, 12, 13});
@@ -543,7 +543,7 @@ ELLE_TEST_SCHEDULED(elect_extend)
 {
   typedef paxos::Server<int, int, int> Server;
   typedef paxos::Client<int, int, int> Client;
-  typedef Client::Peers Peers;
+  using Peers = Client::Peers;
   Server server_1(11, {11});
   Server server_2(12, {11, 12});
   auto peers = Peers{};
@@ -614,7 +614,7 @@ ELLE_TEST_SCHEDULED(elect_shrink)
   typedef paxos::Server<int, int, int> Server;
   typedef paxos::Client<int, int, int> Client;
   typedef Peer<int, int, int> Peer;
-  typedef Client::Peers Peers;
+  using Peers = Client::Peers;
   Server server_1(11, {11, 12});
   Server server_2(12, {11, 12});
   auto peers = Peers{};
@@ -639,7 +639,7 @@ ELLE_TEST_SCHEDULED(evict_down_lag_behind)
   typedef paxos::Server<int, int, int> Server;
   typedef paxos::Client<int, int, int> Client;
   typedef Peer<int, int, int> Peer;
-  typedef Client::Peers Peers;
+  using Peers = Client::Peers;
   Server server_1(11, {11, 12, 13});
   Server server_2(12, {11, 12, 13});
   Server server_3(13, {11, 12, 13});
@@ -731,7 +731,7 @@ public:
     : Peer<T, Version, ServerId>(id, paxos)
   {}
 
-  virtual
+
   typename Client::Proposal
   accept(typename Client::Quorum const& q,
          typename Client::Proposal const& p,
@@ -751,7 +751,7 @@ namespace quorum_divergence
   {
     typedef paxos::Server<int, int, int> Server;
     typedef paxos::Client<int, int, int> Client;
-    typedef Client::Peers Peers;
+    using Peers = Client::Peers;
     Server server_1(11, {11, 12, 13});
     Server server_2(12, {11, 12, 13});
     Server server_3(13, {11, 12, 13});
@@ -821,7 +821,7 @@ ELLE_TEST_SCHEDULED(serialization)
   typedef paxos::Server<int, int, int> Server;
   typedef paxos::Client<int, int, int> Client;
   typedef Peer<int, int, int> Peer;
-  typedef Client::Peers Peers;
+  using Peers = Client::Peers;
   elle::Buffer s1;
   elle::Buffer s2;
   ELLE_LOG("choose and serialize")
@@ -859,7 +859,7 @@ ELLE_TEST_SCHEDULED(partial_state)
   typedef paxos::Server<int, int, int> Server;
   typedef paxos::Client<int, int, int> Client;
   typedef Peer<int, int, int> Peer;
-  typedef Client::Peers Peers;
+  using Peers = Client::Peers;
   std::vector<Server> servers
   {
     {11, {11, 12, 13}},
@@ -919,7 +919,7 @@ ELLE_TEST_SCHEDULED(non_partial_state)
 {
   typedef paxos::Server<int, int, int> Server;
   typedef paxos::Client<int, int, int> Client;
-  typedef Client::Peers Peers;
+  using Peers = Client::Peers;
   Server server(11, {11});
   auto make_client = [&] (std::unique_ptr<Peer<int, int, int>> p)
     {

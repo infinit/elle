@@ -59,7 +59,7 @@ namespace elle
           void
           print(std::ostream& output) const override;
         };
-        typedef std::vector<std::unique_ptr<Peer>> Peers;
+      using Peers = std::vector<std::unique_ptr<Peer> >;
 
       /*-------------.
       | Construction |

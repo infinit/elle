@@ -31,8 +31,8 @@ namespace elle
       | Types |
       `------*/
       public:
-        typedef Server<T, Version, ClientId, ServerId> Self;
-        typedef std::unordered_set<ServerId> Quorum;
+      using Self = Server;
+      using Quorum = std::unordered_set<ServerId>;
 
       /*---------.
       | Proposal |
@@ -51,7 +51,7 @@ namespace elle
           operator <(Proposal const& rhs) const;
           void
           serialize(elle::serialization::Serializer& s);
-          typedef elle::serialization_tag serialization_tag;
+        using serialization_tag = elle::serialization_tag;
           friend
           std::ostream&
           operator <<(std::ostream& output,
@@ -76,7 +76,7 @@ namespace elle
           bool confirmed;
           void
           serialize(elle::serialization::Serializer& s, elle::Version const& v);
-          typedef elle::serialization_tag serialization_tag;
+        using serialization_tag = elle::serialization_tag;
           friend
           std::ostream&
           operator <<(std::ostream& output, Accepted const& accepted)
@@ -94,11 +94,11 @@ namespace elle
           : public elle::Error
         {
         public:
-          typedef elle::Error Super;
+        using Super = elle::Error;
           WrongQuorum(Quorum expected, Quorum effective);
           WrongQuorum(elle::serialization::SerializerIn& input,
                       elle::Version const& version);
-          virtual
+
           void
           serialize(elle::serialization::Serializer& s,
                     elle::Version const& version) override;
@@ -121,11 +121,11 @@ namespace elle
           : public elle::Error
         {
         public:
-          typedef elle::Error Super;
+        using Super = elle::Error;
           PartialState(Proposal p);
           PartialState(elle::serialization::SerializerIn& input,
                        elle::Version const& version);
-          virtual
+
           void
           serialize(elle::serialization::Serializer& s,
                     elle::Version const& version) override;
@@ -180,7 +180,7 @@ namespace elle
                        elle::Version const& v);
           void
           serialize(elle::serialization::Serializer& s, elle::Version const& v);
-          typedef elle::serialization_tag serialization_tag;
+        using serialization_tag = elle::serialization_tag;
         };
         ELLE_ATTRIBUTE(boost::optional<VersionState>, state);
       private:
@@ -194,7 +194,7 @@ namespace elle
         Server(elle::serialization::SerializerIn& s, elle::Version const& v);
         void
         serialize(elle::serialization::Serializer& s, elle::Version const& v);
-        typedef elle::serialization_tag serialization_tag;
+      using serialization_tag = elle::serialization_tag;
 
       /*----------.
       | Printable |
