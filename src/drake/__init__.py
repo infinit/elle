@@ -3071,13 +3071,6 @@ class Copy(Builder):
         shutil.copy2(str(self.__source.path()),
                      str(self.__target.path()),
                      follow_symlinks = self.__follow_symlinks)
-      except OSError as e:
-        if e.errno == 95 and _OS.path.lexists(target_path):
-          # On symlinks on python 3.5, alpine version, copy and copy2 perform the copy,
-          # but fail on subsequent chmod with this error
-          pass
-        else:
-          raise e
       except PermissionError as e:
         # Landing here means that we didn't have permission to do a copystat as
         # part of the copy2. Fallback to a straight copy with a log.
@@ -3090,6 +3083,13 @@ class Copy(Builder):
         shutil.copy(str(self.__source.path()),
                     str(self.__target.path()),
                     follow_symlinks = self.__follow_symlinks)
+      except OSError as e:
+        if e.errno == 95 and _OS.path.lexists(target_path):
+          # On symlinks on python 3.5, alpine version, copy and copy2 perform the copy,
+          # but fail on subsequent chmod with this error
+          pass
+        else:
+          raise e
 
     return True
 
