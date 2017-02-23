@@ -1,9 +1,14 @@
 ---
+BasedOnStyle: LLVM
+
 AlwaysBreakAfterReturnType:                     All
 AlwaysBreakTemplateDeclarations:                true
+BreakBeforeBinaryOperators: All
 BreakBeforeBraces:                              Allman
 BreakConstructorInitializersBeforeComma:        true
-Language:                                       Cpp
 NamespaceIndentation:                           All
 PenaltyReturnTypeOnItsOwnLine:                  0
 PointerAlignment:                               Left
+ContinuationIndentWidth: 2
+ConstructorInitializerIndentWidth: 2
+AlignAfterOpenBracket: AlwaysBreak

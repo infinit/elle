@@ -15,19 +15,19 @@ namespace elle
       class Client
         : public elle::Printable
       {
-      /*------.
-      | Types |
-      `------*/
+        /*------.
+        | Types |
+        `------*/
       public:
-      using Self = Client;
-      using Server = paxos::Server<T, Version, ClientId>;
-      using Accepted = typename Server::Accepted;
-      using Proposal = typename Server::Proposal;
-      using Quorum = typename Server::Quorum;
+        using Self = Client;
+        using Server = paxos::Server<T, Version, ClientId>;
+        using Accepted = typename Server::Accepted;
+        using Proposal = typename Server::Proposal;
+        using Quorum = typename Server::Quorum;
 
-      /*-----.
-      | Peer |
-      `-----*/
+        /*-----.
+        | Peer |
+        `-----*/
       public:
         class Peer
           : public elle::Printable
@@ -50,18 +50,18 @@ namespace elle
           boost::optional<Accepted>
           get(Quorum const& q) = 0;
           ELLE_ATTRIBUTE_R(ClientId, id);
-        /*----------.
-        | Printable |
-        `----------*/
+          /*----------.
+          | Printable |
+          `----------*/
         public:
           void
           print(std::ostream& output) const override;
         };
-      using Peers = std::vector<std::unique_ptr<Peer> >;
+        using Peers = std::vector<std::unique_ptr<Peer>>;
 
-      /*-------------.
-      | Construction |
-      `-------------*/
+        /*-------------.
+        | Construction |
+        `-------------*/
       public:
         Client(ClientId id, Peers peers);
         void
@@ -71,9 +71,9 @@ namespace elle
         ELLE_ATTRIBUTE_RX(Peers, peers);
         ELLE_ATTRIBUTE_RW(bool, conflict_backoff);
 
-      /*----------.
-      | Consensus |
-      `----------*/
+        /*----------.
+        | Consensus |
+        `----------*/
       public:
         /** Submit \a value as the chosen value.
          *
@@ -97,6 +97,7 @@ namespace elle
         std::pair<boost::optional<T>, Quorum>
         get_quorum();
         ELLE_ATTRIBUTE(int, round);
+
       private:
         /** Check a majority of members where reached.
          *
@@ -109,9 +110,9 @@ namespace elle
                          int reached,
                          bool reading = false) const;
 
-      /*----------.
-      | Printable |
-      `----------*/
+        /*----------.
+        | Printable |
+        `----------*/
       public:
         void
         print(std::ostream& output) const override;

@@ -1,7 +1,7 @@
 #pragma once
 
-#include <boost/multi_index_container.hpp>
 #include <boost/multi_index/mem_fun.hpp>
+#include <boost/multi_index_container.hpp>
 
 #include <elle/With.hh>
 #include <elle/serialization/Serializer.hh>
@@ -41,9 +41,8 @@ namespace elle
       Server<T, Version, ClientId, ServerId>::Proposal::operator ==(
         Proposal const& rhs) const
       {
-        return this->version == rhs.version &&
-          this->round == rhs.round &&
-          this->sender == rhs.sender;
+        return this->version == rhs.version && this->round == rhs.round
+               && this->sender == rhs.sender;
       }
 
       template <
@@ -112,7 +111,8 @@ namespace elle
         }
         else if (serializer.out())
         {
-          auto& s = static_cast<elle::serialization::SerializerOut&>(serializer);
+          auto& s
+            = static_cast<elle::serialization::SerializerOut&>(serializer);
           if (this->value.template is<T>())
             s.serialize("value", this->value.template get<T>());
           else
@@ -148,7 +148,7 @@ namespace elle
         this->_serialize(input, v);
       }
 
-      template < typename T, typename Version, typename CId, typename SId>
+      template <typename T, typename Version, typename CId, typename SId>
       void
       Server<T, Version, CId, SId>::WrongQuorum::serialize(
         elle::serialization::Serializer& s, elle::Version const& version)
@@ -198,7 +198,7 @@ namespace elle
         this->_serialize(input, v);
       }
 
-      template < typename T, typename Version, typename CId, typename SId>
+      template <typename T, typename Version, typename CId, typename SId>
       void
       Server<T, Version, CId, SId>::PartialState::serialize(
         elle::serialization::Serializer& s, elle::Version const& version)
@@ -265,13 +265,13 @@ namespace elle
             expected = self._state->accepted->value.template get<Quorum>();
           if (q != expected)
           {
-            ELLE_TRACE("quorum is wrong: %f instead of %f",
-                       q, expected);
+            ELLE_TRACE("quorum is wrong: %f instead of %f", q, expected);
             throw WrongQuorum(expected, std::move(q));
           }
         }
 
-        /// Check we don't skip any version and the previous version was confirmed
+        /// Check we don't skip any version and the previous version was
+        /// confirmed
         /// before starting a new one.
         static
         bool
@@ -466,11 +466,10 @@ namespace elle
             this->_state->accepted->confirmed &&
             this->_state->accepted->value.template is<T>())
           return this->_state->accepted;
+        else if (this->_value)
+          return Accepted(this->_state->proposal, *this->_value, true);
         else
-          if (this->_value)
-            return Accepted(this->_state->proposal, *this->_value, true);
-          else
-            return {};
+          return {};
       }
 
       template <typename T, typename Version, typename CId, typename SId>

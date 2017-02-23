@@ -2,14 +2,14 @@
 
 #include <unordered_set>
 
-#include <boost/multi_index_container.hpp>
-#include <boost/multi_index/ordered_index.hpp>
 #include <boost/multi_index/member.hpp>
+#include <boost/multi_index/ordered_index.hpp>
+#include <boost/multi_index_container.hpp>
 
-#include <elle/attribute.hh>
 #include <elle/Error.hh>
 #include <elle/Option.hh>
 #include <elle/Printable.hh>
+#include <elle/attribute.hh>
 #include <elle/serialization/Serializer.hh>
 
 #include <elle/reactor/Barrier.hh>
@@ -27,16 +27,16 @@ namespace elle
       class Server
         : public elle::Printable
       {
-      /*------.
-      | Types |
-      `------*/
+        /*------.
+        | Types |
+        `------*/
       public:
-      using Self = Server;
-      using Quorum = std::unordered_set<ServerId>;
+        using Self = Server;
+        using Quorum = std::unordered_set<ServerId>;
 
-      /*---------.
-      | Proposal |
-      `---------*/
+        /*---------.
+        | Proposal |
+        `---------*/
       public:
         struct Proposal
         {
@@ -51,7 +51,7 @@ namespace elle
           operator <(Proposal const& rhs) const;
           void
           serialize(elle::serialization::Serializer& s);
-        using serialization_tag = elle::serialization_tag;
+          using serialization_tag = elle::serialization_tag;
           friend
           std::ostream&
           operator <<(std::ostream& output,
@@ -62,9 +62,9 @@ namespace elle
           }
         };
 
-      /*---------.
-      | Accepted |
-      `---------*/
+        /*---------.
+        | Accepted |
+        `---------*/
       public:
         struct Accepted
         {
@@ -76,7 +76,7 @@ namespace elle
           bool confirmed;
           void
           serialize(elle::serialization::Serializer& s, elle::Version const& v);
-        using serialization_tag = elle::serialization_tag;
+          using serialization_tag = elle::serialization_tag;
           friend
           std::ostream&
           operator <<(std::ostream& output, Accepted const& accepted)
@@ -86,15 +86,15 @@ namespace elle
           }
         };
 
-      /*------------.
-      | WrongQuorum |
-      `------------*/
+        /*------------.
+        | WrongQuorum |
+        `------------*/
       public:
         class WrongQuorum
           : public elle::Error
         {
         public:
-        using Super = elle::Error;
+          using Super = elle::Error;
           WrongQuorum(Quorum expected, Quorum effective);
           WrongQuorum(elle::serialization::SerializerIn& input,
                       elle::Version const& version);
@@ -113,15 +113,15 @@ namespace elle
         static const elle::serialization::Hierarchy<elle::Exception>::
         Register<WrongQuorum> _register_wrong_quorum_serialization;
 
-      /*-------------.
-      | PartialState |
-      `-------------*/
+        /*-------------.
+        | PartialState |
+        `-------------*/
       public:
         class PartialState
           : public elle::Error
         {
         public:
-        using Super = elle::Error;
+          using Super = elle::Error;
           PartialState(Proposal p);
           PartialState(elle::serialization::SerializerIn& input,
                        elle::Version const& version);
@@ -139,9 +139,9 @@ namespace elle
         static const elle::serialization::Hierarchy<elle::Exception>::
         Register<PartialState> _register_partial_state_serialization;
 
-      /*-------------.
-      | Construction |
-      `-------------*/
+        /*-------------.
+        | Construction |
+        `-------------*/
       public:
         Server(ServerId id, Quorum quorum,
                elle::Version version = elle::serialization_tag::version);
@@ -151,9 +151,9 @@ namespace elle
         ELLE_ATTRIBUTE_R(elle::Version, version);
         ELLE_ATTRIBUTE_R(bool, partial);
 
-      /*----------.
-      | Consensus |
-      `----------*/
+        /*----------.
+        | Consensus |
+        `----------*/
       public:
         boost::optional<Accepted>
         propose(Quorum q, Proposal p);
@@ -183,22 +183,23 @@ namespace elle
         using serialization_tag = elle::serialization_tag;
         };
         ELLE_ATTRIBUTE(boost::optional<VersionState>, state);
+
       private:
         struct _Details;
         friend struct _Details;
 
-      /*--------------.
-      | Serialization |
-      `--------------*/
+        /*--------------.
+        | Serialization |
+        `--------------*/
       public:
         Server(elle::serialization::SerializerIn& s, elle::Version const& v);
         void
         serialize(elle::serialization::Serializer& s, elle::Version const& v);
-      using serialization_tag = elle::serialization_tag;
+        using serialization_tag = elle::serialization_tag;
 
-      /*----------.
-      | Printable |
-      `----------*/
+        /*----------.
+        | Printable |
+        `----------*/
       public:
         void
         print(std::ostream& output) const override;

@@ -283,13 +283,12 @@ namespace elle
             }
             catch (Unavailable const& e)
             {
-              ELLE_TRACE("%s: peer %s unavailable: %s",
-                         *this, peer, e.what());
+              ELLE_TRACE("%s: peer %s unavailable: %s", *this, peer, e.what());
             }
           },
           std::string("get quorum"));
         this->_check_headcount(q, reached, true);
-      using Res = std::pair<boost::optional<T>, Quorum>;
+        using Res = std::pair<boost::optional<T>, Quorum>;
         if (res)
           return Res(res->value.template get<T>(), q);
         else
