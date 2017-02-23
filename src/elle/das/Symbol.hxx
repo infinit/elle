@@ -80,6 +80,10 @@
       return S::template _method_has<T, Args...>(0);            \
     }                                                           \
                                                                 \
+    template <typename T>                                       \
+    using method_signature =                                    \
+      typename std::remove_class<decltype(&T::CName)>::type;    \
+                                                                \
     template <typename T, typename ... Args>                    \
     using method_type                                           \
       = decltype(std::declval<T&>()                             \
