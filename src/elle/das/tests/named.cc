@@ -103,44 +103,53 @@ struct Movable
   Movable()
     : copied(false)
     , moved(false)
+    , by_copy(false)
+    , by_move(false)
+    , dont_copy(false)
   {}
 
   Movable(Movable const& m)
-    : copied(true)
+    : copied(false)
     , moved(false)
+    , by_copy(true)
+    , by_move(false)
+    , dont_copy(m.dont_copy)
   {
+    BOOST_CHECK(!m.dont_copy);
     m.copied = true;
   }
 
   Movable(Movable&& m)
     : copied(false)
-    , moved(true)
+    , moved(false)
+    , by_copy(false)
+    , by_move(true)
+    , dont_copy(m.dont_copy)
   {
+    BOOST_CHECK(!m.moved);
     m.moved = true;
   }
 
-  mutable bool copied, moved;
+  mutable bool copied, moved, by_copy, by_move;
+  bool dont_copy;
 };
-
-static
-void
-_forwarding_ref(Neither& arg1, Neither const& arg2)
-{
-  arg1.mutate();
-  arg2.observe();
-}
-NAMED_FUNCTION(forwarding_ref, _forwarding_ref, arg1, arg2);
-
-static
-void
-_forwarding_value(Movable)
-{}
-NAMED_FUNCTION(forwarding_value, _forwarding_value, arg1);
 
 static
 void
 forwarding()
 {
+  auto const forwarding_ref = elle::das::named::function(
+    [] (Neither& arg1, Neither const& arg2)
+    {
+      arg1.mutate();
+      arg2.observe();
+    },
+    arg1,
+    arg2);
+  auto const forwarding_value = elle::das::named::function(
+    [] (Movable)
+    {},
+    arg1);
   {
     Neither neither;
     forwarding_ref(arg1 = neither, arg2 = neither);
@@ -161,8 +170,14 @@ forwarding()
   {
     Neither neither;
     auto f =
-      elle::das::named::function(_forwarding_ref,
-                                 arg1 = neither, arg2 = neither);
+      elle::das::named::function(
+        [] (Neither& arg1, Neither const& arg2)
+        {
+          arg1.mutate();
+          arg2.observe();
+        },
+        arg1 = neither,
+        arg2 = neither);
     f();
     f(arg1 = neither);
     f(arg2 = neither);
@@ -170,12 +185,17 @@ forwarding()
   }
   {
     Movable movable_def;
-    auto f = elle::das::named::function([] (Movable m) { return m.moved; },
+    auto f = elle::das::named::function([] (Movable m) {},
                                         arg1 = std::move(movable_def));
+    std::cerr << elle::type_info(f) << std::endl;
     BOOST_CHECK(movable_def.moved);
-    BOOST_CHECK(!f());
+    f();
+    f();
     Movable movable;
-    BOOST_CHECK(f(std::move(movable)));
+    movable.dont_copy = true;
+    f(std::move(movable));
+    BOOST_CHECK(!movable.copied);
+    BOOST_CHECK(movable.moved);
   }
 }
 

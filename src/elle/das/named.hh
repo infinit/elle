@@ -326,11 +326,12 @@ namespace elle
       | Function |
       `---------*/
 
-      template <typename F, typename ... Args>
+      template <typename P, typename ... Args>
       class Function
-        : public Printable::as<Function<F, Args...>>
+        : public Printable::as<Function<P, Args...>>
       {
       public:
+        using F = std::function<P>;
         template <typename ... CArgs>
         Function(F f, CArgs&& ... args)
           : _function(std::move(f))
@@ -351,18 +352,18 @@ namespace elle
         void
         print(std::ostream& out) const
         {
-          // elle::fprintf(out, "%s[%s]", this->_function, this->_prototype);
           elle::fprintf(
             out, "%s[%s]", this->_function, this->_prototype);
         }
       };
 
       template <typename F, typename ... Args>
-      Function<F, std::remove_cv_reference_t<Args>...>
+      Function<std::get_signature<F>, std::remove_cv_reference_t<Args>...>
       function(F f, Args&& ... args)
       {
-        return Function<F, std::remove_cv_reference_t<Args>...>(
-          std::move(f), std::forward<Args>(args)...);
+        return Function<
+          std::get_signature<F>, std::remove_cv_reference_t<Args>...>(
+            std::move(f), std::forward<Args>(args)...);
       }
     }
   }

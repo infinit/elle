@@ -10,9 +10,13 @@ namespace elle
 {
   namespace das
   {
-    template <typename O, typename S>
-    struct BoundMethod
-      : public Printable::as<BoundMethod<O, S>>
+    template <typename O, typename S,
+              typename P = typename S::template method_signature<O>>
+    struct BoundMethod;
+
+    template <typename O, typename S, typename R, typename ... Args>
+    struct BoundMethod<O, S, R (Args...)>
+      : public Printable::as<BoundMethod<O, S, R (Args...)>>
     {
       BoundMethod(O& o)
         : _object(o)
@@ -20,20 +24,12 @@ namespace elle
 
       ELLE_LOG_COMPONENT("elle.das.BoundMethod");
 
-      template <typename ... Eff>
-        auto
-        operator ()(Eff&& ... eff)
+      auto
+      operator ()(Args ... args) const
       {
-        ELLE_TRACE_SCOPE("call %s%s", this, std::tuple<Eff const& ...>(eff...));
-        return S::method_call(this->_object, std::forward<Eff>(eff)...);
-      }
-
-      template <typename ... Eff>
-        auto
-        operator ()(Eff&& ... eff) const
-      {
-        ELLE_TRACE_SCOPE("call %s%s", this, std::tuple<Eff const& ...>(eff...));
-        return S::method_call(this->_object, std::forward<Eff>(eff)...);
+        ELLE_TRACE_SCOPE(
+          "call %s%s", this, std::tuple<Args const&...>(args...));
+        return S::method_call(this->_object, std::forward<Args>(args)...);
       }
 
       void
