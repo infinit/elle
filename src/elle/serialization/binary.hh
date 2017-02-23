@@ -11,8 +11,8 @@ namespace elle
     class Binary
     {
     public:
-      typedef binary::SerializerIn SerializerIn;
-      typedef binary::SerializerOut SerializerOut;
+      using SerializerIn = binary::SerializerIn;
+      using SerializerOut = binary::SerializerOut;
     };
 
     namespace binary

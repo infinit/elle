@@ -56,7 +56,7 @@ namespace elle
   | Serialization |
   `--------------*/
   public:
-    typedef elle::serialization_tag serialization_tag;
+    using serialization_tag = elle::serialization_tag;
     Option(serialization::SerializerIn& s);
     void
     serialize(serialization::Serializer& s);

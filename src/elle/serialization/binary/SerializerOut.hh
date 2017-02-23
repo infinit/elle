@@ -19,8 +19,8 @@ namespace elle
       | Types |
       `------*/
       public:
-        typedef SerializerOut Self;
-        typedef serialization::SerializerOut Super;
+        using Self = elle::serialization::binary::SerializerOut;
+        using Super = serialization::SerializerOut;
 
       /*-------------.
       | Construction |
@@ -39,70 +39,50 @@ namespace elle
       | Serialization |
       `--------------*/
       protected:
-        virtual
         void
         _size(int size) override;
-        virtual
         bool
         _text() const override;
-        virtual
         void
         _serialize_array(int size,
                          std::function<void ()> const& f) override;
-        virtual
         void
         _serialize_dict_key(std::string const& name,
                             std::function<void ()> const& f) override;
-        virtual
         void
         _serialize(int64_t& v) override;
-        virtual
         void
         _serialize(uint64_t& v) override;
-        virtual
         void
         _serialize(int32_t& v) override;
-        virtual
         void
         _serialize(uint32_t& v) override;
-        virtual
         void
         _serialize(int16_t& v) override;
-        virtual
         void
         _serialize(uint16_t& v) override;
-        virtual
         void
         _serialize(int8_t& v) override;
-        virtual
         void
         _serialize(uint8_t& v) override;
-        virtual
         void
         _serialize(double& v) override;
-        virtual
         void
         _serialize(bool& v) override;
-        virtual
         void
         _serialize(std::string& v) override;
-        virtual
         void
         _serialize(elle::Buffer& v) override;
-        virtual
         void
         _serialize(boost::posix_time::ptime& v) override;
-        virtual
         void
         _serialize_time_duration(std::int64_t& ticks,
                                  std::int64_t& num,
                                  std::int64_t& denom) override;
-        virtual
         void
         _serialize_named_option(std::string const& name,
                                 bool filled,
                                 std::function<void ()> const& f) override;
-        virtual
         void
         _serialize_option(bool filled,
                           std::function<void ()> const& f) override;

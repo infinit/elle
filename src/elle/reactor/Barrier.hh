@@ -82,7 +82,7 @@ namespace elle
       {
       public:
         InvertedBarrier(Barrier& barrier);
-        virtual bool _wait(Thread* thread, Waker const& waker);
+        bool _wait(Thread* thread, Waker const& waker) override;
         operator bool() const;
       private:
         friend class Barrier;

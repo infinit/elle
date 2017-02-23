@@ -18,7 +18,7 @@ namespace elle
 {
   namespace reactor
   {
-    typedef std::shared_ptr<Thread> ThreadPtr;
+    using ThreadPtr = std::shared_ptr<Thread>;
 
     ELLE_DAS_SYMBOL(dispose);
     ELLE_DAS_SYMBOL(managed);
