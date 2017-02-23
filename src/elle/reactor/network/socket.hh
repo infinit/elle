@@ -41,8 +41,7 @@ namespace elle
         /// Create an unbound socket.
         Socket();
         /// Destroy a socket.
-        virtual
-        ~Socket();
+        ~Socket() override;
         /** Create a socket for the given protocol.
          *  @param protocol The transport protocl to use.
          */
@@ -112,13 +111,13 @@ namespace elle
       `---------*/
       public:
         /// Self type.
-        typedef PlainSocket<AsioSocket_, EndPoint_> Self;
+        using Self = PlainSocket<AsioSocket_, EndPoint_>;
         /// Super type.
-        typedef Socket Super;
+        using Super = elle::reactor::network::Socket;
         /// Underlying asio socket type.
-        typedef AsioSocket_ AsioSocket;
+        using AsioSocket = AsioSocket_;
         /// End point type for the asio socket type.
-        typedef EndPoint_ EndPoint;
+        using EndPoint = EndPoint_;
 
       /*-------------.
       | Construction |
@@ -136,14 +135,12 @@ namespace elle
         /// Move socket
         PlainSocket(Self&& src);
         /// Destroy a socket.
-        virtual
-        ~PlainSocket();
+        ~PlainSocket() override;
 
       /*-----------.
       | Connection |
       `-----------*/
       public:
-        virtual
         void
         close() override;
       private:
@@ -168,7 +165,6 @@ namespace elle
       | Pretty printing |
       `----------------*/
       public:
-        virtual
         void
         print(std::ostream& s) const override;
 
@@ -222,20 +218,17 @@ namespace elle
           : Super(std::move(socket))
         {}
 
-        virtual
-        ~StreamSocket();
+        ~StreamSocket() override;
 
       /*-----.
       | Read |
       `-----*/
       public:
         using Super::read;
-        virtual
         void
         read(elle::WeakBuffer buffer, DurationOpt timeout = DurationOpt(),
              int* bytes_read = nullptr) override;
         using Super::read_some;
-        virtual
         Size
         read_some(elle::WeakBuffer buffer, DurationOpt timeout = DurationOpt(),
                   int* bytes_read = nullptr) override;
@@ -256,7 +249,6 @@ namespace elle
       | Write |
       `------*/
       public:
-        virtual
         void
         write(elle::ConstWeakBuffer buffer) override;
       protected:

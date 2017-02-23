@@ -57,7 +57,6 @@ namespace elle
         | Printable |
         `----------*/
       protected:
-        virtual
         void
         print(std::ostream& stream) const override;
 

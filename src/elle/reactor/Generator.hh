@@ -12,7 +12,7 @@ namespace elle
     template <typename T>
     struct yielder
     {
-      typedef std::function<void (T elt)> type;
+      using type = std::function<void (T)>;
     };
 
     template <typename T>
@@ -33,7 +33,7 @@ namespace elle
     | Construction |
     `-------------*/
     public:
-      typedef typename yielder<T>::type yielder;
+      using yielder = typename yielder<T>::type;
       Generator(std::function<void (yielder const&)> const& driver);
       Generator(Generator&&b);
       ~Generator();

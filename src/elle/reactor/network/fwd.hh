@@ -31,9 +31,9 @@ namespace elle
       class UnixDomainSocket;
 # endif
       /// A byte travelling on the network.
-      typedef unsigned char Byte;
+      using Byte = unsigned char;
       /// A number of bytes.
-      typedef unsigned int Size;
+      using Size = unsigned int;
 
     }
   }

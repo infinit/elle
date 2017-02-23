@@ -31,8 +31,7 @@ namespace elle
         TCPSocket(boost::asio::ip::tcp::endpoint const& endpoint,
                   DurationOpt timeout = DurationOpt());
         TCPSocket(TCPSocket&& src);
-        virtual
-        ~TCPSocket();
+        ~TCPSocket() override;
       private:
         friend class TCPServer;
         TCPSocket(std::unique_ptr<AsioSocket> socket,

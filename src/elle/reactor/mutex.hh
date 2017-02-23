@@ -15,10 +15,10 @@ namespace elle
       ~Mutex();
       Mutex(Mutex&&) = default;
       bool locked() const;
-      virtual bool release() override;
-      virtual bool acquire() override;
+      bool release() override;
+      bool acquire() override;
     protected:
-      virtual bool _wait(Thread* thread, Waker const& waker) override;
+      bool _wait(Thread* thread, Waker const& waker) override;
 
     private:
       bool _locked;
