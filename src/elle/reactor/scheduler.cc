@@ -249,26 +249,6 @@ namespace elle
       std::rethrow_exception(this->_eptr);
     }
 
-    namespace
-    {
-      std::ostream&
-      operator <<(std::ostream& output, Scheduler::Threads const& threads)
-      {
-        bool first = true;
-        output << "[";
-        for (auto thread: threads)
-        {
-          if (first)
-            first = false;
-          else
-            output << ", ";
-          output << *thread;
-        }
-        output << "]";
-        return output;
-      }
-    }
-
     bool
     Scheduler::step()
     {
