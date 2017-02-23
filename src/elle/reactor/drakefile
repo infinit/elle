@@ -307,7 +307,7 @@ def configure(curl_config,
       'fuse/include/fuse/fuse_lowlevel_compat.h',
       'fuse/include/fuse/fuse_lowlevel.h',
       'fuse/include/fuse/fuse_opt.h'
-      )
+    )
     if cxx_toolkit.os is drake.os.linux:
       fuse_version = '2.9.4'
       fuse_version_us = fuse_version.replace(".", "_")
@@ -745,6 +745,7 @@ def configure(curl_config,
   ## ----- ##
   ## Bins  ##
   ## ----- ##
+
   binaries_config = [
     'connectivity-server',
     'connectivity',
@@ -781,10 +782,11 @@ def configure(curl_config,
   ## ----- ##
   ## Tests ##
   ## ----- ##
-
   global rule_check, rule_tests
-  rule_check = drake.TestSuite('check')
   rule_tests = drake.Rule('tests')
+  rule_check = drake.TestSuite('check')
+  elle_tests_path = drake.Path('../../../tests')
+  tests_path = elle_tests_path / 'elle/reactor'
 
   # (bin, libs, stdin)
   tests = [
@@ -809,36 +811,42 @@ def configure(curl_config,
     tests.append(('filesystem_git', [], None))
 
   cxx_config_tests = drake.cxx.Config(local_cxx_config)
-
-  cxx_config_tests.add_local_include_path('tests')
-  cxx_config_tests += boost.config_filesystem(static = (cxx_toolkit.os in [drake.os.macos, drake.os.ios, drake.os.android]) or None)
-  if cxx_toolkit.os in [drake.os.macos]:
-    pass # cxx_config_tests.use_local_libcxx = True
+  cxx_config_tests.add_local_include_path(elle_tests_path)
+  test_libs = [elle_lib, library]
+  cxx_config_tests += boost.config_test(
+    static = not boost.prefer_shared or None,
+    link = not boost.prefer_shared)
+  cxx_config_tests += boost.config_timer(
+    static = not boost.prefer_shared or None,
+    link = not boost.prefer_shared)
+  use_boost_filesystem_static_library = not boost.prefer_shared or \
+                                        cxx_toolkit.os is drake.os.macos
+  cxx_config_tests += boost.config_filesystem(
+    static = use_boost_filesystem_static_library or None,
+    link = use_boost_filesystem_static_library)
+  if boost.prefer_shared:
+    _libs = [boost.timer_dynamic, boost.test_dynamic]
+    if not use_boost_filesystem_static_library:
+      _libs += [boost.filesystem_dynamic]
+    test_libs += list(map(lambda x: drake.copy(x, 'lib', strip_prefix = True),
+                          _libs + test_libs))
   if cxx_toolkit.os == drake.os.android:
     cxx_config_tests.lib('stdc++')
     cxx_config_tests.lib('atomic')
-  if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
-    cxx_config_tests += boost.config_test(static = True)
-    cxx_config_tests += boost.config_timer(static = True)
-  else:
-    cxx_config_tests += boost.config_test(link = False)
-    cxx_config_tests.library_add(
-      drake.copy(boost.test_dynamic, 'lib', strip_prefix = True))
-    cxx_config_tests += boost.config_timer(link = False)
-    cxx_config_tests.library_add(
-      drake.copy(boost.timer_dynamic, 'lib', strip_prefix = True))
-
+  cxx_config_tests.lib_path_runtime(
+    drake.Path('../../..') / library.path().dirname()
+  )
   for test_name, libraries, stdin in tests:
-    tests_config = drake.cxx.Config(cxx_config_tests)
-    tests_config.lib_path_runtime('%s../lib' % ('../' * test_name.count('/')))
-    test_sources = drake.nodes('tests/%s.cc' % test_name) + [
-      library, elle_lib
-      ] + libraries
+    import copy
+    local_test_libs = copy.copy(test_libs) + \
+        list(map(lambda x: drake.copy(x, 'lib', strip_prefix = True),
+                 libraries))
+    test_sources = drake.nodes('%s/%s.cc' % (tests_path, test_name))
     if cxx_toolkit.os == drake.os.macos:
-      test_sources += cxx_libs
-    test = drake.cxx.Executable('tests/%s' % test_name,
-                                test_sources,
-                                cxx_toolkit, tests_config)
+      local_test_libs += cxx_libs
+    test = drake.cxx.Executable('%s/%s' % (tests_path, test_name),
+                                test_sources + local_test_libs,
+                                cxx_toolkit, cxx_config_tests)
     rule_tests << test
     if test_name in ['filesystem_git', 'filesystem_bind', 'rdv-cat','rdv-utp-cat', 'utp-chat']:
       continue
@@ -868,22 +876,22 @@ def configure(curl_config,
 
   if python3 is not None and cxx_toolkit.os is not drake.os.windows:
     python_tests = (
-      'tests/python',
+      'python',
       )
     with drake.templating.Context(content = {
         'python_interpreter': str(python3.python_interpreter),
     }):
       for test in python_tests:
-        drake.node('%s.tmpl' % python_tests)
+        drake.node('%s/%s.tmpl' % (tests_path, test))
     for test in python_tests:
-      test = drake.node(test)
+      test = drake.node('%s/%s' % (tests_path, test))
       test.dependency_add(python_lib)
       python_runner = drake.Runner(
         exe = test,
         env = {
           'PYTHONPATH': str(drake.path_build('lib/python')),
         },
-        )
+      )
       python_runner.reporting = drake.Runner.Reporting.on_failure
       rule_check << python_runner.status
 

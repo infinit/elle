@@ -270,9 +270,35 @@ def configure(openssl_config,
   else:
     library = lib_static
 
+  ## ----------- ##
+  ## Executables ##
+  ## ----------- ##
+
+  exe_cxx_config = drake.cxx.Config(cxx_config)
+  if cxx_toolkit.os == drake.os.android:
+    exe_cxx_config.lib('stdc++')
+    exe_cxx_config.lib('atomic')
+  exe_cxx_config += config
+  exe_cxx_config += boost.config()
+  exe_cxx_config += boost_timer
+  exe_cxx_config += boost_thread
+  exe_cxx_config += boost_filesystem
+  exe_cxx_config += openssl_config
+  exe_cxx_config += elle.config
+
   ## ----- ##
   ## Tests ##
   ## ----- ##
+
+  global rule_check, rule_tests
+  rule_check = drake.TestSuite('check')
+  rule_tests = drake.Rule('tests')
+  if enable_rotation:
+    rule_check << dopenssl.rule_check
+  if enable_rotation:
+    rule_tests << dopenssl.rule_tests
+  elle_tests_path = drake.Path('../../../tests')
+  tests_path = elle_tests_path / 'elle/cryptography'
 
   tests = [
     "SecretKey.cc",
@@ -300,44 +326,35 @@ def configure(openssl_config,
       "rsa/scenario.cc",
     ]
 
-  exe_cxx_config = drake.cxx.Config(cxx_config)
-
-  if cxx_toolkit.os == drake.os.android:
-    exe_cxx_config.lib('stdc++')
-    exe_cxx_config.lib('atomic')
-  exe_cxx_config += config
-  exe_cxx_config += boost.config()
-  exe_cxx_config += boost_timer
-  exe_cxx_config += boost_thread
-  exe_cxx_config += boost_filesystem
-  exe_cxx_config += openssl_config
-  exe_cxx_config += elle.config
-
-  tests_cxx_config = drake.cxx.Config(exe_cxx_config)
-  tests_cxx_config += boost_test
-
-  global rule_check, rule_tests
-  rule_check = drake.TestSuite('check')
+  config_tests = drake.cxx.Config(exe_cxx_config)
+  config_tests.add_local_include_path(elle_tests_path)
+  config_tests += boost.config_test(
+    static = not boost.prefer_shared or None,
+    link = not boost.prefer_shared)
+  use_boost_filesystem_static_library = not boost.prefer_shared or \
+                                        cxx_toolkit.os is drake.os.macos
+  test_libs = [library, elle_library]
+  test_libs += openssl_libs
+  # XXX: Link only with tests that actually need dopenssl.
   if enable_rotation:
-    rule_check << dopenssl.rule_check
-
-  rule_tests = drake.Rule('tests')
-  if enable_rotation:
-    rule_tests << dopenssl.rule_tests
-
+    test_libs += [dopenssl_library]
+  if boost.prefer_shared:
+    _libs = [boost.test_dynamic]
+    if not use_boost_filesystem_static_library:
+      _libs += [boost.filesystem_dynamic]
+    test_libs += list(map(lambda x: drake.copy(x, 'lib', strip_prefix = True),
+                          _libs + test_libs))
   for test in tests:
-    config_test = drake.cxx.Config(tests_cxx_config)
-    config_test.lib_path_runtime('%s../../lib' % ('../' * test.count('/')))
-    path = drake.Path('tests/cryptography/%s' % test)
-    bin_path = drake.Path('tests/cryptography/%s' % os.path.splitext(test)[0])
+    config_test_local = drake.cxx.Config(config_tests)
+    config_test_local.lib_path_runtime(
+      drake.Path('../' * test.count('/')) / '../../..' / library.path().dirname()
+    )
+    path = drake.Path(tests_path / test)
+    bin_path = path.without_last_extension()
     bin = drake.cxx.Executable(
       bin_path,
-      [
-        drake.node(path),
-        library,
-        elle_library,
-      ] + openssl_libs,
-      cxx_toolkit, config_test)
+      [drake.node(path)] + test_libs,
+      cxx_toolkit, config_test_local)
     rule_tests << bin
     if valgrind_tests:
       runner = drake.valgrind.ValgrindRunner(exe = bin,
@@ -347,7 +364,7 @@ def configure(openssl_config,
     runner.reporting = drake.Runner.Reporting.on_failure
     rule_check << runner.status
   if python is not None and build_python_module:
-    python_test = drake.node('tests/python')
+    python_test = drake.node('%s/python' % tests_path)
     python_test.dependency_add(python_module)
     python_runner = drake.Runner(
       exe = python_test,
