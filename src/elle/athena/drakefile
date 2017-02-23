@@ -99,7 +99,7 @@ def configure(cxx_toolkit,
   local_config_tests.lib_path_runtime('../lib')
   rule_tests = drake.Rule('tests')
   rule_check = drake.TestSuite('check')
-  for name in ('paxos',):
+  for name in ('lamport-age', 'paxos',):
     test = drake.cxx.Executable(
       'tests/%s' % name,
       [drake.node('tests/%s.cc' % name),
