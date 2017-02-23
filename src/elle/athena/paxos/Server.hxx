@@ -563,14 +563,14 @@ namespace elle
         s.serialize("quorum", this->_quorum);
         if (v >= elle::Version(0, 1, 0))
           s.serialize("value", this->_value);
-        typedef boost::multi_index::multi_index_container<
+      using VersionsState = boost::multi_index::multi_index_container<
           VersionState,
           boost::multi_index::indexed_by<
             boost::multi_index::ordered_unique<
               boost::multi_index::const_mem_fun<
                 VersionState, Version, &VersionState::version>>
             >
-          > VersionsState;
+        >;
         if (s.out())
         {
           VersionsState states;

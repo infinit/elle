@@ -19,11 +19,11 @@ namespace elle
       | Types |
       `------*/
       public:
-        typedef Client<T, Version, ClientId> Self;
-        typedef paxos::Server<T, Version, ClientId> Server;
-        typedef typename paxos::Server<T, Version, ClientId>::Accepted Accepted;
-        typedef typename paxos::Server<T, Version, ClientId>::Proposal Proposal;
-        typedef typename paxos::Server<T, Version, ClientId>::Quorum Quorum;
+      using Self = Client;
+      using Server = paxos::Server<T, Version, ClientId>;
+      using Accepted = typename Server::Accepted;
+      using Proposal = typename Server::Proposal;
+      using Quorum = typename Server::Quorum;
 
       /*-----.
       | Peer |
@@ -33,8 +33,6 @@ namespace elle
           : public elle::Printable
         {
         public:
-          typedef typename paxos::Server<T, Version, ClientId>::Proposal Proposal;
-          typedef typename paxos::Server<T, Version, ClientId>::Accepted Accepted;
           Peer(ClientId id);
           virtual
           ~Peer() = default;

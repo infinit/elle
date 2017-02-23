@@ -289,7 +289,7 @@ namespace elle
           },
           std::string("get quorum"));
         this->_check_headcount(q, reached, true);
-        typedef std::pair<boost::optional<T>, Quorum> Res;
+      using Res = std::pair<boost::optional<T>, Quorum>;
         if (res)
           return Res(res->value.template get<T>(), q);
         else

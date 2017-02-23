@@ -109,7 +109,7 @@ class UnavailablePeer
   : public paxos::Client<T, Version, ServerId>::Peer
 {
 public:
-  typedef paxos::Client<T, Version, ServerId> Client;
+  using Client = paxos::Client<T, Version, ServerId>;
 
   UnavailablePeer(ServerId id)
     : paxos::Client<T, Version, ServerId>::Peer(std::move(id))
@@ -152,7 +152,7 @@ ELLE_TEST_SCHEDULED(two_of_three)
 {
   paxos::Server<int, int, int> server_1(11, {11, 12, 13});
   paxos::Server<int, int, int> server_2(12, {11, 12, 13});
-  typedef paxos::Client<int, int, int>::Peers Peers;
+  using Peers = paxos::Client<int, int, int>::Peers;
   auto peers = Peers{};
   peers.emplace_back(std::make_unique<Peer<int, int, int>>(11, server_1));
   peers.emplace_back(std::make_unique<Peer<int, int, int>>(12, server_2));
@@ -165,7 +165,7 @@ ELLE_TEST_SCHEDULED(two_of_three)
 ELLE_TEST_SCHEDULED(one_of_three)
 {
   paxos::Server<int, int, int> server_1(11, {11, 12, 13});
-  typedef paxos::Client<int, int, int>::Peers Peers;
+  using Peers = paxos::Client<int, int, int>::Peers;
   auto peers = Peers{};
   peers.emplace_back(std::make_unique<Peer<int, int, int>>(11, server_1));
   peers.emplace_back(std::make_unique<UnavailablePeer<int, int, int>>(12));
@@ -180,7 +180,7 @@ ELLE_TEST_SCHEDULED(already_chosen)
   paxos::Server<int, int, int> server_1(11, {11, 12, 13});
   paxos::Server<int, int, int> server_2(12, {11, 12, 13});
   paxos::Server<int, int, int> server_3(13, {11, 12, 13});
-  typedef paxos::Client<int, int, int>::Peers Peers;
+  using Peers = paxos::Client<int, int, int>::Peers;
   auto peers_1 = Peers{};
   peers_1.emplace_back(std::make_unique<Peer<int, int, int>>(11, server_1));
   peers_1.emplace_back(std::make_unique<Peer<int, int, int>>(12, server_2));
@@ -203,7 +203,7 @@ class InstrumentedPeer
   : public Peer<T, Version, ServerId>
 {
 public:
-  typedef paxos::Client<T, Version, ServerId> Client;
+  using Client = paxos::Client<T, Version, ServerId>;
 
   InstrumentedPeer(ServerId id, paxos::Server<T, Version, ServerId>& paxos,
                    bool go_through = false)
@@ -274,7 +274,7 @@ ELLE_TEST_SCHEDULED(concurrent)
   paxos::Server<int, int, int> server_3(13, {11, 12, 13});
   auto peer_1_2 = new InstrumentedPeer<int, int, int>(12, server_2);
   auto peer_1_3 = new InstrumentedPeer<int, int, int>(13, server_3);
-  typedef paxos::Client<int, int, int>::Peers Peers;
+  using Peers = paxos::Client<int, int, int>::Peers;
   auto peers_1 = Peers{};
   peers_1.emplace_back(std::make_unique<Peer<int, int, int>>(11, server_1));
   peers_1.emplace_back(std::unique_ptr<paxos::Client<int, int, int>::Peer>(peer_1_2));
@@ -313,7 +313,7 @@ ELLE_TEST_SCHEDULED(conflict)
   paxos::Server<int, int, int> server_3(13, {11, 12, 13});
   auto peer_1_2 = new InstrumentedPeer<int, int, int>(12, server_2);
   auto peer_1_3 = new InstrumentedPeer<int, int, int>(13, server_3);
-  typedef paxos::Client<int, int, int>::Peers Peers;
+  using Peers = paxos::Client<int, int, int>::Peers;
   auto peers_1 = Peers{};
   peers_1.emplace_back(std::make_unique<Peer<int, int, int>>(11, server_1));
   peers_1.emplace_back(
@@ -352,7 +352,7 @@ ELLE_TEST_SCHEDULED(versions)
   paxos::Server<int, int, int> server_1(11, {11, 12, 13});
   paxos::Server<int, int, int> server_2(12, {11, 12, 13});
   paxos::Server<int, int, int> server_3(13, {11, 12, 13});
-  typedef paxos::Client<int, int, int>::Peers Peers;
+  using Peers = paxos::Client<int, int, int>::Peers;
   auto peers_1 = Peers{};
   peers_1.emplace_back(std::make_unique<Peer<int, int, int>>(11, server_1));
   peers_1.emplace_back(std::make_unique<Peer<int, int, int>>(12, server_2));
@@ -375,7 +375,7 @@ ELLE_TEST_SCHEDULED(versions_partial)
   paxos::Server<int, int, int> server_1(11, {11, 12, 13});
   paxos::Server<int, int, int> server_2(12, {11, 12, 13});
   paxos::Server<int, int, int> server_3(13, {11, 12, 13});
-  typedef paxos::Client<int, int, int>::Peers Peers;
+  using Peers = paxos::Client<int, int, int>::Peers;
   auto peers_1 = Peers{};
   auto peer_1_1 = new InstrumentedPeer<int, int, int>(11, server_1);
   peers_1.emplace_back(
@@ -462,7 +462,7 @@ ELLE_TEST_SCHEDULED(versions_aborted)
   paxos::Server<int, int, int> server_1(11, {11, 12, 13});
   paxos::Server<int, int, int> server_2(12, {11, 12, 13});
   paxos::Server<int, int, int> server_3(13, {11, 12, 13});
-  typedef paxos::Client<int, int, int>::Peers Peers;
+  using Peers = paxos::Client<int, int, int>::Peers;
   auto peers_1 = Peers{};
   peers_1.emplace_back(std::make_unique<Peer<int, int, int>>(11, server_1));
   peers_1.emplace_back(std::make_unique<UnavailablePeer<int, int, int>>(12));
@@ -479,9 +479,9 @@ ELLE_TEST_SCHEDULED(versions_aborted)
 
 ELLE_TEST_SCHEDULED(propose_before_current_proposal_acceptation)
 {
-  typedef paxos::Server<int, int, int> Server;
-  typedef paxos::Client<int, int, int> Client;
-  typedef Peer<int, int, int> Peer;
+  using Server = paxos::Server<int, int, int>;
+  using Client = paxos::Client<int, int, int>;
+  using Peer = Peer<int, int, int>;
   using Peers = Client::Peers;
   Server server_1(11, {11, 12, 13});
   Server server_2(12, {11, 12, 13});
@@ -541,8 +541,8 @@ ELLE_TEST_SCHEDULED(propose_before_current_proposal_acceptation)
 
 ELLE_TEST_SCHEDULED(elect_extend)
 {
-  typedef paxos::Server<int, int, int> Server;
-  typedef paxos::Client<int, int, int> Client;
+  using Server = paxos::Server<int, int, int>;
+  using Client = paxos::Client<int, int, int>;
   using Peers = Client::Peers;
   Server server_1(11, {11});
   Server server_2(12, {11, 12});
@@ -611,9 +611,9 @@ ELLE_TEST_SCHEDULED(elect_extend)
 
 ELLE_TEST_SCHEDULED(elect_shrink)
 {
-  typedef paxos::Server<int, int, int> Server;
-  typedef paxos::Client<int, int, int> Client;
-  typedef Peer<int, int, int> Peer;
+  using Server = paxos::Server<int, int, int>;
+  using Client = paxos::Client<int, int, int>;
+  using Peer = Peer<int, int, int>;
   using Peers = Client::Peers;
   Server server_1(11, {11, 12});
   Server server_2(12, {11, 12});
@@ -636,9 +636,9 @@ ELLE_TEST_SCHEDULED(elect_shrink)
 
 ELLE_TEST_SCHEDULED(evict_down_lag_behind)
 {
-  typedef paxos::Server<int, int, int> Server;
-  typedef paxos::Client<int, int, int> Client;
-  typedef Peer<int, int, int> Peer;
+  using Server = paxos::Server<int, int, int>;
+  using Client = paxos::Client<int, int, int>;
+  using Peer = Peer<int, int, int>;
   using Peers = Client::Peers;
   Server server_1(11, {11, 12, 13});
   Server server_2(12, {11, 12, 13});
@@ -724,8 +724,8 @@ class ProposeOnlyPeer
   : public Peer<T, Version, ServerId>
 {
 public:
-  typedef paxos::Client<T, Version, ServerId> Client;
-  typedef Peer<T, Version, ServerId> Super;
+  using Client = paxos::Client<T, Version, ServerId>;
+  using Super = Peer<T, Version, ServerId>;
 
   ProposeOnlyPeer(ServerId id, paxos::Server<T, Version, ServerId>& paxos)
     : Peer<T, Version, ServerId>(id, paxos)
@@ -749,8 +749,8 @@ namespace quorum_divergence
 {
   ELLE_TEST_SCHEDULED(one_of_three_thinks_quorum_changed)
   {
-    typedef paxos::Server<int, int, int> Server;
-    typedef paxos::Client<int, int, int> Client;
+    using Server = paxos::Server<int, int, int>;
+    using Client = paxos::Client<int, int, int>;
     using Peers = Client::Peers;
     Server server_1(11, {11, 12, 13});
     Server server_2(12, {11, 12, 13});
@@ -818,9 +818,9 @@ namespace quorum_divergence
 // not-accepted rounds.
 ELLE_TEST_SCHEDULED(serialization)
 {
-  typedef paxos::Server<int, int, int> Server;
-  typedef paxos::Client<int, int, int> Client;
-  typedef Peer<int, int, int> Peer;
+  using Server = paxos::Server<int, int, int>;
+  using Client = paxos::Client<int, int, int>;
+  using Peer = Peer<int, int, int>;
   using Peers = Client::Peers;
   elle::Buffer s1;
   elle::Buffer s2;
@@ -856,9 +856,9 @@ ELLE_TEST_SCHEDULED(serialization)
 
 ELLE_TEST_SCHEDULED(partial_state)
 {
-  typedef paxos::Server<int, int, int> Server;
-  typedef paxos::Client<int, int, int> Client;
-  typedef Peer<int, int, int> Peer;
+  using Server = paxos::Server<int, int, int>;
+  using Client = paxos::Client<int, int, int>;
+  using Peer = Peer<int, int, int>;
   using Peers = Client::Peers;
   std::vector<Server> servers
   {
@@ -917,8 +917,8 @@ ELLE_TEST_SCHEDULED(partial_state)
 
 ELLE_TEST_SCHEDULED(non_partial_state)
 {
-  typedef paxos::Server<int, int, int> Server;
-  typedef paxos::Client<int, int, int> Client;
+  using Server = paxos::Server<int, int, int>;
+  using Client = paxos::Client<int, int, int>;
   using Peers = Client::Peers;
   Server server(11, {11});
   auto make_client = [&] (std::unique_ptr<Peer<int, int, int>> p)
