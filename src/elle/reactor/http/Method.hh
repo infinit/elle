@@ -16,6 +16,7 @@ namespace elle
 #endif
         DELETE,
         GET,
+        HEAD,
         POST,
         PUT,
       };

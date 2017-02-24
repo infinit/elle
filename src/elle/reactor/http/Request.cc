@@ -205,6 +205,9 @@ namespace elle
         case Method::GET:
           setopt(this->_handle, CURLOPT_HTTPGET, 1);
           break;
+        case Method::HEAD:
+          setopt(this->_handle, CURLOPT_CUSTOMREQUEST, "HEAD");
+          break;
         case Method::POST:
           setopt(this->_handle, CURLOPT_POST, 1);
           break;

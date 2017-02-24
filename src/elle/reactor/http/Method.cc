@@ -18,6 +18,7 @@ namespace elle
         {
           if (name == "DELETE") return Method::DELETE;
           else if (name == "GET") return Method::GET;
+          else if (name == "HEAD") return Method::HEAD;
           else if (name == "POST") return Method::POST;
           else if (name == "PUT") return Method::PUT;
           else elle::err("unknown method %s", name);
@@ -34,6 +35,8 @@ namespace elle
             return output << "DELETE";
           case Method::GET:
             return output << "GET";
+          case Method::HEAD:
+            return output << "HEAD";
           case Method::POST:
             return output << "POST";
           case Method::PUT:
