@@ -65,7 +65,7 @@ Elle uses [Drake](https://github.com/infinit/drake) and has it as a submodule.
 First you need to install drakes requirements.
 
 ```bash
-sudo pip3 install elle/drake/requirements.txt # Install Drake dependencies.
+sudo pip3 install -r elle/drake/requirements.txt # Install Drake dependencies.
 ```
 > *Note:* If you don't want Drake dependencies to be installed on your system, you should consider using [virtualenv](https://virtualenv.pypa.io/en/stable/installation).
 
