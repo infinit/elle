@@ -115,13 +115,13 @@ namespace elle
 
       template <typename T>
       std::enable_if_t<!has_version_tag<T>(), elle::Version>
-      version_tag(boost::optional<Serializer::Versions> const& versions)
+      version_tag(boost::optional<Serializer::Versions> const&)
       {
         ELLE_LOG_COMPONENT("elle.serialization.Serializer");
         ELLE_WARN("no serialization version tag for %s", elle::type_info<T>());
         ELLE_ABORT("no serialization version tag for %s", elle::type_info<T>());
-        throw elle::Error(elle::sprintf("no serialization version tag for %s",
-                                        elle::type_info<T>()));
+        elle::err<Error>("no serialization version tag for %s",
+                         elle::type_info<T>());
       }
 
       // option_reset: reset boost::optional, smart pointers and raw pointers
