@@ -36,7 +36,7 @@ namespace elle
   | Operators |
   `----------*/
 
-  elle::Boolean
+  bool
   Version::operator ==(Version const& other) const
   {
     return ((this->_major == other._major)
@@ -44,7 +44,7 @@ namespace elle
             && (this->_subminor == other._subminor));
   }
 
-  elle::Boolean
+  bool
   Version::operator <(Version const& other) const
   {
     if (this->_major != other._major)
@@ -54,7 +54,7 @@ namespace elle
     return this->_subminor < other._subminor;
   }
 
-  elle::Boolean
+  bool
   Version::operator >(Version const& other) const
   {
     return !((*this == other) || (*this < other));

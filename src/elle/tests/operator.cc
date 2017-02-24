@@ -20,12 +20,12 @@ namespace test
       delete this->_string;
     }
 
-    elle::Boolean
+    bool
     operator <(Operator const& other) const
     {
       return (*this->_string < *other._string);
     }
-    elle::Boolean
+    bool
     operator ==(Operator const& other) const
     {
       return (*this->_string == *other._string);

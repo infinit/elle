@@ -1,10 +1,9 @@
-#ifndef ELLE_UTILITY_DURATION_HH
-# define ELLE_UTILITY_DURATION_HH
+#pragma once
 
-# include <elle/types.hh>
-# include <elle/operator.hh>
+#include <elle/types.hh>
+#include <elle/operator.hh>
 
-# include <utility>
+#include <utility>
 ELLE_OPERATOR_RELATIONALS();
 
 namespace elle
@@ -47,10 +46,10 @@ namespace elle
 
       ELLE_OPERATOR_NO_ASSIGNMENT(Duration);
 
-      Boolean           operator==(const Duration&) const;
+      bool operator==(const Duration&) const;
 
       // dumpable
-      Status            Dump(const Natural32 = 0) const;
+      Status Dump(const Natural32 = 0) const;
 
       //
       // attributes
@@ -63,5 +62,3 @@ namespace elle
 }
 
 #include <elle/utility/Duration.hxx>
-
-#endif

@@ -1,8 +1,7 @@
-#ifndef ELLE_IO_PATTERN_HH
-# define ELLE_IO_PATTERN_HH
+#pragma once
 
-# include <elle/types.hh>
-# include <elle/operator.hh>
+#include <elle/types.hh>
+#include <elle/operator.hh>
 
 namespace elle
 {
@@ -28,7 +27,7 @@ namespace elle
       //
       // methods
       //
-      Status            Create(const String&);
+      Status Create(const String&);
 
       //
       // interfaces
@@ -36,18 +35,15 @@ namespace elle
 
       ELLE_OPERATOR_NO_ASSIGNMENT(Pattern);
 
-      Boolean           operator==(const Pattern&) const;
+      bool operator==(const Pattern&) const;
 
       // dumpable
-      Status            Dump(const Natural32 = 0) const;
+      Status Dump(const Natural32 = 0) const;
 
       //
       // attributes
       //
-      String            string;
+      String string;
     };
-
   }
 }
-
-#endif

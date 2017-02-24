@@ -35,11 +35,11 @@ namespace elle
     /*----------.
     | Operators |
     `----------*/
-    elle::Boolean
+    bool
     operator ==(Version const&) const;
-    elle::Boolean
+    bool
     operator <(Version const&) const;
-    elle::Boolean
+    bool
     operator >(Version const&) const;
     ELLE_OPERATOR_NEQ(Version);
     ELLE_OPERATOR_LTE(Version);

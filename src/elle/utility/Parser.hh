@@ -49,7 +49,7 @@ namespace elle
         {
           TypeUnknown = 0,
           TypeNull,
-          TypeBoolean,
+          Typebool,
           TypeCharacter,
           TypeReal,
           TypeInteger8,
@@ -149,15 +149,15 @@ namespace elle
 
       Status            Example(const String&);
 
-      Boolean           Locate(const String&,
+      bool Locate(const String&,
                                Option*&);
-      Boolean           Locate(const Character&,
+      bool Locate(const Character&,
                                Option*&);
 
       Status            Parse();
 
-      Boolean           Test(const String&);
-      Boolean           Argument(const String&);
+      bool Test(const String&);
+      bool Argument(const String&);
 
       template <typename T>
       Status            Value(const String&,
@@ -170,7 +170,7 @@ namespace elle
       //
       // behaviours
       //
-      template <typename T, Boolean C>
+      template <typename T, bool C>
       struct            Behaviour
       {
         static Status   Value(Parser&,

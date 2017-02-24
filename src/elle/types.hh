@@ -28,8 +28,6 @@ namespace elle
   using Natural64 = uint64_t;
 
   using Void = void;
-  using Bool = bool;
-  using Boolean = bool;
   using Char = char;
   using Character = char;
   using Byte = Natural8;

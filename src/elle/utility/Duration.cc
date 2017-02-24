@@ -38,7 +38,7 @@ namespace elle
     ///
     /// this operator compares two objects.
     ///
-    Boolean             Duration::operator==(const Duration&    element) const
+    bool Duration::operator==(const Duration&    element) const
     {
       // compare the attributes.
       if ((this->unit != element.unit) ||

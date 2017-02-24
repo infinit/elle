@@ -27,7 +27,7 @@ namespace elle
     ///
     /// this method creates a pattern.
     ///
-    Status              Pattern::Create(const String&           string)
+    Status Pattern::Create(const String&           string)
     {
       // assign the string.
       this->string = string;
@@ -38,7 +38,7 @@ namespace elle
     ///
     /// this method check if two objects match.
     ///
-    Boolean             Pattern::operator==(const Pattern&      element) const
+    bool Pattern::operator==(const Pattern&      element) const
     {
       // check the address as this may actually be the same object.
       if (this == &element)

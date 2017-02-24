@@ -180,7 +180,7 @@ namespace elle
     /// this method returns true and sets the pointer if the given
     /// named option has been located.
     ///
-    Boolean             Parser::Locate(const String&            name,
+    bool Parser::Locate(const String&            name,
                                        Parser::Option*&         option)
     {
       Natural32         i;
@@ -205,7 +205,7 @@ namespace elle
     /// this method returns true and sets the pointer if the given
     /// character option has been located.
     ///
-    Boolean             Parser::Locate(const Character&         character,
+    bool Parser::Locate(const Character&         character,
                                        Parser::Option*&         option)
     {
       Natural32         i;
@@ -405,7 +405,7 @@ namespace elle
     /// this method returns true if the given option has been provided
     /// on the command line.
     ///
-    Boolean             Parser::Test(const String&              name)
+    bool Parser::Test(const String&              name)
     {
       Parser::Option*   option;
 
@@ -424,7 +424,7 @@ namespace elle
     /// this method returns true if the given option has been provided
     /// with an argument.
     ///
-    Boolean             Parser::Argument(const String&          name)
+    bool Parser::Argument(const String&          name)
     {
       Parser::Option*   option;
 
