@@ -32,11 +32,11 @@ namespace elle
   public:
     AssertError(char const* condition,
                 char const* file,
-                Size line) throw();
+                Size line) noexcept;
 
 
     const char*
-    what() const throw() override;
+    what() const noexcept override;
   };
 }
 

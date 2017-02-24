@@ -1,7 +1,6 @@
 namespace elle
 {
   template <typename T>
-  inline
   T const&
   _elle_assert(T const& predicate,
                std::string const& message,
@@ -12,7 +11,6 @@ namespace elle
   }
 
   template <typename T>
-  inline
   T&
   _elle_assert(T& predicate,
                std::string const& message,

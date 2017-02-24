@@ -37,7 +37,7 @@ namespace elle
 
   AssertError::AssertError(char const* condition,
                            char const* file,
-                           Size line) throw()
+                           Size line) noexcept
   {
     try
     {
@@ -56,7 +56,7 @@ namespace elle
   }
 
   const char*
-  AssertError::what() const throw()
+  AssertError::what() const noexcept
   {
     if (_what.size())
       return _what.c_str();
