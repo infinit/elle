@@ -38,7 +38,7 @@ public:
   void serialize(elle::serialization::Serializer&)
   {}
 
-  typedef elle::serialization_tag serialization_tag;
+  using serialization_tag = elle::serialization_tag;
 };
 
 class OutPlace
@@ -51,7 +51,7 @@ public:
   void serialize(elle::serialization::Serializer&)
   {}
 
-  typedef elle::serialization_tag serialization_tag;
+  using serialization_tag = elle::serialization_tag;
 };
 
 namespace std
@@ -138,7 +138,7 @@ public:
     s.serialize("y", this->_y);
   }
 
-  typedef elle::serialization_tag serialization_tag;
+  using serialization_tag = elle::serialization_tag;
 
   ELLE_ATTRIBUTE_R(int, x);
   ELLE_ATTRIBUTE_R(int, y);
@@ -170,27 +170,27 @@ object()
   }
 }
 
-class Line
+class Segment
 {
 public:
-  Line()
+  Segment()
     : _start()
     , _end()
   {}
 
-  Line(Point start, Point end)
+  Segment(Point start, Point end)
     : _start(start)
     , _end(end)
   {}
 
-  Line(elle::serialization::Serializer& s)
-    : Line()
+  Segment(elle::serialization::Serializer& s)
+    : Segment()
   {
     this->serialize(s);
   }
 
   bool
-  operator ==(Line const& other) const
+  operator ==(Segment const& other) const
   {
     return this->start() == other.start() && this->end() == other.end();
   }
@@ -202,7 +202,7 @@ public:
     s.serialize("end", this->_end);
   }
 
-  typedef elle::serialization_tag serialization_tag;
+  using serialization_tag = elle::serialization_tag;
 
   ELLE_ATTRIBUTE_R(Point, start);
   ELLE_ATTRIBUTE_R(Point, end);
@@ -210,9 +210,9 @@ public:
 
 static
 std::ostream&
-operator << (std::ostream& out, Line const& l)
+operator << (std::ostream& out, Segment const& l)
 {
-  out << "Line(" << l.start() << ", " << l.end() << ")";
+  out << "Segment(" << l.start() << ", " << l.end() << ")";
   return out;
 }
 
@@ -224,13 +224,13 @@ object_composite()
   std::stringstream stream;
   {
     typename Format::SerializerOut output(stream);
-    Line l(Point(42, 51), Point(69, 86));
+    Segment l(Point(42, 51), Point(69, 86));
     l.serialize(output);
   }
   {
     typename Format::SerializerIn input(stream);
-    Line l(input);
-    BOOST_CHECK_EQUAL(l, Line(Point(42, 51), Point(69, 86)));
+    Segment l(input);
+    BOOST_CHECK_EQUAL(l, Segment(Point(42, 51), Point(69, 86)));
   }
 }
 
@@ -466,7 +466,7 @@ unordered_map()
     }
   }
   {
-    typedef std::unordered_map<InPlace, InPlace> Map;
+    using Map = std::unordered_map<InPlace, InPlace>;
     Map map;
     map.emplace(0, 1);
     map.emplace(2, 3);
@@ -700,7 +700,7 @@ public:
     return this->_i;
   }
 
-  typedef elle::serialization_tag serialization_tag;
+  using serialization_tag = elle::serialization_tag;
 
   ELLE_ATTRIBUTE_R(int, i);
 };
@@ -735,7 +735,7 @@ public:
     return this->_i;
   }
 
-  typedef elle::serialization_tag serialization_tag;
+  using serialization_tag = elle::serialization_tag;
 
   ELLE_ATTRIBUTE_R(int, i);
 };
@@ -957,7 +957,7 @@ namespace versioning
     class Versioned
     {
     public:
-      typedef serialization serialization_tag;
+      using serialization_tag = serialization;
 
       Versioned(int old, int addition)
         : _old(old)
@@ -1135,7 +1135,7 @@ namespace versioning
   class Owner
   {
   public:
-    typedef serialization serialization_tag;
+    using serialization_tag = serialization;
 
     Owner(int i, lib::Versioned const& v)
       : _i(i)
@@ -1527,7 +1527,7 @@ public:
     s.serialize("msg", this->_msg);
   }
 
-  typedef elle::serialization_tag serialization_tag;
+  using serialization_tag = elle::serialization_tag;
 
   ELLE_ATTRIBUTE_R(std::string, msg);
   ELLE_ATTRIBUTE_R(std::string, ctx);
@@ -1651,7 +1651,7 @@ namespace elle
     template <>
     struct Serialize<Convertable>
     {
-      typedef int64_t Type;
+      using Type = int64_t;
 
       static
       int64_t
@@ -1672,7 +1672,7 @@ namespace elle
     template <>
     struct Serialize<PConvertable*>
     {
-      typedef int64_t Type;
+      using Type = int64_t;
 
       static
       int64_t
