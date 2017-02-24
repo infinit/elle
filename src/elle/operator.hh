@@ -4,11 +4,13 @@
 
 /// Make it even easier than the following macro-functions to define
 /// comparison operators. In order to provide the six operators (==,
-/// !=, <, <=, > and >=), one must only manually write the operators
-/// < and == before calling this macro-function in the global namespace.
+/// !=, <, <=, > and >=), one must only manually write the operators <
+/// and == before calling this macro, preferrably in a namespace.
 ///
 /// Note that the <utility> must ABSOLUTELY be included prior to calling
 /// this macro-function.
+///
+/// Note that because it is so global, it is evil.
 #define ELLE_OPERATOR_RELATIONALS()             \
   using namespace std::rel_ops;
 
@@ -17,17 +19,16 @@
 /// of a copy constructor which may therefore need to be implemented
 /// should the class contain pointers for example.
 ///
-/// !WARNING! This macro-function should never be used unless one
-///           knows exactly what he/she is doing.
+/// !WARNING! Don't use this unless you know exactly what you're doing.
 #define ELLE_OPERATOR_ASSIGNMENT(_type_)                                \
   public:                                                               \
   _type_&                                                               \
-  operator =(_type_ const& other)                                       \
+  operator =(_type_ const& that)                                        \
   {                                                                     \
-    if (this != &other)                                                 \
-    {                                                                   \                                                                        \
-        this->~_type_();                                                \
-      new (this) _type_(other);                                         \
+    if (this != &that)                                                  \
+    {                                                                   \
+      this->~_type_();                                                  \
+      new (this) _type_(that);                                          \
     }                                                                   \
     return *this;                                                       \
   }
@@ -52,13 +53,13 @@
 #endif
 
 /// Generate the operator ==() method. Note that this method relies on
-/// the operator !=().
+/// the operator <().
 #define ELLE_OPERATOR_EQ(_type_)                                        \
   public:                                                               \
   bool                                                                  \
-  operator ==(_type_ const& other) const                                \
+  operator ==(_type_ const& that) const                                 \
   {                                                                     \
-    return !this->operator !=(other);                                   \
+    return !(*this < that || that < *this);                             \
   }
 
 /// Generate the operator !=() method. Note that this method relies on
@@ -66,19 +67,19 @@
 #define ELLE_OPERATOR_NEQ(_type_)                                       \
   public:                                                               \
   bool                                                                  \
-  operator !=(_type_ const& other) const                                \
+  operator !=(_type_ const& that) const                                 \
   {                                                                     \
-    return !this->operator ==(other);                                   \
+    return !(*this == that);                                            \
   }
 
 /// Generate the operator >() method. Note that this method relies on
-/// the operator <=().
+/// the operator <().
 #define ELLE_OPERATOR_GT(_type_)                                        \
   public:                                                               \
   bool                                                                  \
-  operator >(_type_ const& other) const                                 \
+  operator >(_type_ const& that) const                                  \
   {                                                                     \
-    return !this->operator <=(other);                                   \
+    return that < *this;                                                \
   }
 
 /// Generate the operator >=() method. Note that this method relies on
@@ -86,9 +87,9 @@
 #define ELLE_OPERATOR_GTE(_type_)                                       \
   public:                                                               \
   bool                                                                  \
-  operator >=(_type_ const& other) const                                \
+  operator >=(_type_ const& that) const                                 \
   {                                                                     \
-    return !this->operator <(other);                                    \
+    return !(*this < that);                                             \
   }
 
 /// Generate the operator <() method. Note that this method relies on
@@ -96,17 +97,17 @@
 #define ELLE_OPERATOR_LT(_type_)                                        \
   public:                                                               \
   bool                                                                  \
-  operator <(_type_ const& other) const                                 \
+  operator <(_type_ const& that) const                                  \
   {                                                                     \
-    return !this->operator >=(other);                                   \
+    return !(*this >= that);                                            \
   }
 
 /// Generate the operator <=() method. Note that this method relies on
-/// the operator >().
+/// the operator <().
 #define ELLE_OPERATOR_LTE(_type_)                                       \
   public:                                                               \
   bool                                                                  \
-  operator <=(_type_ const& other) const                                \
+  operator <=(_type_ const& that) const                                 \
   {                                                                     \
-    return !this->operator >(other);                                    \
+    return !(that < *this);                                             \
   }
