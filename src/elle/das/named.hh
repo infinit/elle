@@ -31,7 +31,20 @@ namespace elle
       _make_formal(int);
 
       template <typename T>
-      using make_formal = std::remove_reference_t<decltype(_make_formal<T>(42))>;
+      using make_formal =
+        std::remove_reference_t<decltype(_make_formal<T>(42))>;
+
+      template <typename T>
+      T
+      _make_symbol(...);
+
+      template <typename T>
+      typename T::Symbol
+      _make_symbol(int);
+
+      template <typename T>
+      using make_symbol =
+        std::remove_reference_t<decltype(_make_symbol<T>(42))>;
 
       template <typename Formal, typename Effective>
       static
@@ -220,7 +233,9 @@ namespace elle
         DefaultStore(Args&& ... args)
           : DefaultFor<is_effective<Formal>::value, Formal>(
             std::forward<Args>(args))...
-        {}
+        {
+          static_assert(sizeof ... (Formal) == sizeof ... (Args), "LOLEUH2");
+        }
 
         template <typename T>
         using default_for = DefaultFor<is_effective<T>::value, T>;
@@ -326,17 +341,32 @@ namespace elle
       | Function |
       `---------*/
 
-      template <typename P, typename ... Args>
-      class Function
-        : public Printable::as<Function<P, Args...>>
+      template <typename Signature>
+      class Function;
+
+      namespace
+      {
+        template <typename T>
+        struct get_type
+        {
+          using type = typename T::Type;
+        };
+      }
+
+      template <typename R, typename ... Args>
+      class Function<R (Args...)>
+        : public Printable::as<Function<R (Args...)>>
       {
       public:
-        using F = std::function<P>;
+        using F = std::function<R (typename get_type<Args>::type ...)>;
         template <typename ... CArgs>
         Function(F f, CArgs&& ... args)
           : _function(std::move(f))
-          , _prototype(DefaultStore<Args...>(std::forward<CArgs>(args)...))
-        {}
+          , _prototype(DefaultStore<make_symbol<Args>...>(
+                         std::forward<CArgs>(args)...))
+        {
+          static_assert(sizeof ... (Args) == sizeof ... (args), "LOLEUH");
+        }
 
         template <typename ... Effective>
         auto
@@ -347,7 +377,8 @@ namespace elle
         }
 
         ELLE_ATTRIBUTE_R(F, function);
-        ELLE_ATTRIBUTE_R((Prototype<Args...>), prototype);
+        ELLE_ATTRIBUTE_R(
+          (Prototype<make_symbol<Args> ...>), prototype);
 
         void
         print(std::ostream& out) const
@@ -357,13 +388,37 @@ namespace elle
         }
       };
 
+      namespace
+      {
+        template <typename T, typename Named>
+        typename Named::template Formal<T>
+        make_signature_arg(...);
+
+        template <typename T, typename Named>
+        typename Named::template rebind<T, T>
+        make_signature_arg(int);
+
+        template <typename S, typename ... Named>
+        struct make_signature;
+
+        template <typename R, typename ... Args, typename ... Named>
+        struct make_signature<R (Args...), Named...>
+        {
+          using type = R (decltype(make_signature_arg<Args, Named>(0)) ...);
+        };
+      }
+
       template <typename F, typename ... Args>
-      Function<std::get_signature<F>, std::remove_cv_reference_t<Args>...>
+      Function<
+        typename make_signature<std::get_signature<F>,
+                                std::remove_cv_reference_t<Args>...>::type>
       function(F f, Args&& ... args)
       {
         return Function<
-          std::get_signature<F>, std::remove_cv_reference_t<Args>...>(
-            std::move(f), std::forward<Args>(args)...);
+          typename make_signature<
+            std::get_signature<F>,
+            std::remove_cv_reference_t<Args>...>::type>(
+              std::move(f), std::forward<Args>(args)...);
       }
     }
   }

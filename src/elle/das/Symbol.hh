@@ -21,6 +21,13 @@ namespace elle
       : public Symbol
     {
     public:
+      template <typename T>
+      struct Formal
+      {
+        using Type = T;
+        using Symbol = S;
+      };
+
       /** A valued symbol
        *
        *  @param E The value type.
@@ -33,6 +40,9 @@ namespace elle
         using Formal = S;
         using Passing = P;
         Type value;
+
+        template <typename ER, typename PR>
+        using rebind = Effective<ER, PR>;
 
         template <typename OE, typename OP>
         Effective(Effective<OE, OP>&& e)
