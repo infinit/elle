@@ -139,5 +139,5 @@ def configure(cxx_toolkit,
       rule_install << drake.install(lib_dynamic, prefix)
     rule_install << drake.install(lib_static, prefix)
     rule_install << drake.install(
-      list(filter(lambda n: isinstance(n, drake.cxx.Header), sources)),
+      (node for node in sources if isinstance(node, drake.cxx.Header)),
       prefix / 'include' / 'elle' / 'athena')

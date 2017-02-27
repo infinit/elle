@@ -464,6 +464,7 @@ def configure(curl_config,
     'TimeoutGuard.cc',
     'TimeoutGuard.hh',
     'asio.hh',
+    'duration.hh',
     'exception.cc',
     'exception.hh',
     'fsm/CatchTransition.cc',
@@ -497,8 +498,8 @@ def configure(curl_config,
     'network/fingerprinted-socket.cc',
     'network/fingerprinted-socket.hh',
     'network/fwd.hh',
-    'network/http-server.hh',
     'network/http-server.cc',
+    'network/http-server.hh',
     'network/proxy.cc',
     'network/proxy.hh',
     'network/rdv-socket.cc',
@@ -523,22 +524,24 @@ def configure(curl_config,
     'network/udp-socket.hh',
     'network/upnp.cc',
     'network/upnp.hh',
+    'network/utp-server-impl.hh',
     'network/utp-server.cc',
     'network/utp-server.hh',
-    'network/utp-server-impl.hh',
+    'network/utp-socket-impl.hh',
     'network/utp-socket.cc',
     'network/utp-socket.hh',
-    'network/utp-socket-impl.hh',
     'operation.cc',
     'operation.hh',
     'rw-mutex.cc',
     'rw-mutex.hh',
     'scheduler.cc',
     'scheduler.hh',
+    'scheduler.hxx',
     'semaphore.cc',
     'semaphore.hh',
     'signal.cc',
     'signal.hh',
+    'signal.hxx',
     'signals.hh',
     'sleep.cc',
     'sleep.hh',
@@ -546,18 +549,16 @@ def configure(curl_config,
     'storage.hh',
     'thread.cc',
     'thread.hh',
+    'thread.hxx',
     'timer.cc',
     'timer.hh',
     'waitable.cc',
     'waitable.hh',
-    # 'backend/pthread/pthread.cc',
-    # 'backend/pthread/pthread.hh',
-    # 'network/nat.cc',
-    # 'network/nat.hh',
-    )
+    'waitable.hxx',
+  )
   sources += drake.nodes(
-    'filesystem.hh',
     'filesystem.cc',
+    'filesystem.hh',
     'filesystem_journal.cc',
   )
   if cxx_toolkit.os in [drake.os.linux, drake.os.macos]:
@@ -577,8 +578,8 @@ def configure(curl_config,
   else:
     dokan = drake.include('modules/dokany', cxx_toolkit, cxx_config)
     sources += drake.nodes(
+      'filesystem_dokanx.cc',
       'fuse.hh',
-      'filesystem_dokanx.cc'
       )
     local_cxx_config += dokan.config
     dokan_lib = dokan.lib_dynamic
@@ -596,16 +597,17 @@ def configure(curl_config,
     'http/Service.hh',
     'http/StatusCode.cc',
     'http/StatusCode.hh',
-    'http/url.hh',
-    'http/url.cc',
     'http/Version.cc',
     'http/Version.hh',
     'http/exceptions.cc',
     'http/exceptions.hh',
+    'http/fwd.hh',
+    'http/url.cc',
+    'http/url.hh',
   )
   connectivity_sources = drake.nodes(
-    'connectivity/connectivity.hh',
     'connectivity/connectivity.cc',
+    'connectivity/connectivity.hh',
   )
   sources += connectivity_sources
 
@@ -617,15 +619,18 @@ def configure(curl_config,
 
   lib_cxx_config = drake.cxx.Config(local_cxx_config)
 
+  backend_sources = drake.nodes(
+    'backend/backend.cc',
+    'backend/backend.hh',
+    'backend/fwd.hh',
+  )
   backend_lib = drake.cxx.StaticLib(
     'lib/reactor/backend',
-    drake.nodes(
-      'backend/backend.cc',
-      'backend/backend.hh',
-    ),
+    backend_sources,
     cxx_toolkit,
     lib_cxx_config,
   )
+  sources += backend_sources
 
   if backend == Backends.io:
     libcoroutine_sources = drake.nodes(
@@ -754,10 +759,9 @@ def configure(curl_config,
   cxx_config_bin = drake.cxx.Config(local_cxx_config)
   cxx_config_bin.lib_path_runtime('../lib')
   for name in binaries_config:
-    sources = drake.nodes('bin/%s.cc' % name)
     bin = drake.cxx.Executable(
       'bin/%s' % name,
-        sources + [
+        drake.nodes('bin/%s.cc' % name) + [
         library,
         elle_lib,
       ],
@@ -770,10 +774,9 @@ def configure(curl_config,
   if cxx_toolkit.os is drake.os.linux:
     fnetusermount_binaries = []
     for name in ['fnetusermount-client', 'fnetusermount-server']:
-      sources = drake.nodes('bin/%s.cc' % name)
       bin = drake.cxx.Executable(
         'bin/%s' % name,
-        sources,
+        drake.nodes('bin/%s.cc' % name),
         cxx_toolkit,
         cxx_config_bin)
       rule_build << bin
@@ -922,5 +925,5 @@ def configure(curl_config,
       rule_install << drake.install(lib_dynamic, prefix)
     rule_install << drake.install(lib_static, prefix)
     rule_install << drake.install(
-      list(filter(lambda n: isinstance(n, drake.cxx.Header), sources)),
+      (node for node in sources if isinstance(node, drake.cxx.Header)),
       prefix / 'include' / 'elle' / 'reactor')
