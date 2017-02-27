@@ -1,8 +1,8 @@
 #include <elle/network/Interface.hh>
-#include <elle/utility/Suffixes.hh>
 #include <elle/Exception.hh>
 #include <elle/printf.hh>
 
+#include <bitset>
 #include <iomanip>
 #include <iostream>
 #include <map>
@@ -118,7 +118,6 @@ namespace elle
       bool
       check_ipv4_autoip(struct sockaddr* sock)
       {
-        using namespace elle::suffix;
         // 169.254.0.0
         static const auto autoip_addr    = 10101001111111100000000000000000_bits;
         // 255.255.0.0

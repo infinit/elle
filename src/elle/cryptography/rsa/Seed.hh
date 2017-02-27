@@ -4,9 +4,6 @@
 #  define ELLE_CRYPTOGRAPHY_RSA_SEED_HH
 
 #  include <elle/cryptography/fwd.hh>
-#  include <elle/cryptography/types.hh>
-
-#  include <elle/types.hh>
 #  include <elle/attribute.hh>
 #  include <elle/operator.hh>
 #  include <elle/Buffer.hh>

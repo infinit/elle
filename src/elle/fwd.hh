@@ -13,7 +13,5 @@ namespace elle
 
 #include <elle/compiler.hh>
 #include <elle/format/fwd.hh>
-#include <elle/io/fwd.hh>
 #include <elle/network/fwd.hh>
 #include <elle/serialization/fwd.hh>
-#include <elle/utility/fwd.hh>

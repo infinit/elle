@@ -1,7 +1,6 @@
 #ifndef CRYPTOGRAPHY_HH
 # define CRYPTOGRAPHY_HH
 
-# include <elle/types.hh>
 # include <elle/test.hh>
 # include <elle/serialization/json.hh>
 

@@ -1,6 +1,7 @@
 #include <elle/Buffer.hh>
 
 #include <algorithm> // std::count_if
+#include <bitset>
 #include <iomanip>
 #include <iostream>
 #include <locale> // std::isprint
@@ -10,7 +11,6 @@
 #include <elle/assert.hh>
 #include <elle/finally.hh>
 #include <elle/format/hexadecimal.hh>
-#include <elle/io/Dumpable.hh>
 #include <elle/log.hh>
 
 ELLE_LOG_COMPONENT("elle.Buffer");
@@ -249,25 +249,25 @@ namespace elle
     return res;
   }
 
-  const Byte*
+  Buffer::const_iterator
   Buffer::begin() const
   {
     return const_cast<Buffer*>(this)->begin();
   }
 
-  const Byte*
+  Buffer::const_iterator
   Buffer::end() const
   {
     return const_cast<Buffer*>(this)->end();
   }
 
-  Byte*
+  Buffer::iterator
   Buffer::begin()
   {
     return this->mutable_contents();
   }
 
-  Byte*
+  Buffer::iterator
   Buffer::end()
   {
     return this->mutable_contents() + this->size();
@@ -276,15 +276,14 @@ namespace elle
   void
   Buffer::dump(const uint32_t margin) const
   {
-    uint32_t space = 78 - margin - io::Dumpable::Shift.length();
-    String alignment(margin, ' ');
-    uint32_t i;
-    uint32_t j;
+    auto const Shift = std::string(' ', 2);
+    uint32_t space = 78 - margin - Shift.length();
+    std::string alignment(margin, ' ');
 
     auto saver = boost::io::ios_all_saver(std::cout);
     std::cout << alignment
               << "[Buffer] "
-              << "address(" << static_cast<Void*>(this->_contents) << ") "
+              << "address(" << static_cast<void const*>(this->_contents) << ") "
               << "size(" << std::dec << this->_size << ") "
               << "capacity(" << std::dec << this->_capacity << ")"
               << '\n';
@@ -296,31 +295,32 @@ namespace elle
     std::cout.fill('0');
 
     // display the region.
-    for (i = 0; i < this->_size / space; i++)
-      {
-        std::cout << alignment << io::Dumpable::Shift;
+    auto i = 0u;
+    for (; i < this->_size / space; i++)
+    {
+      std::cout << alignment << Shift;
 
-        for (j = 0; j < space; j++)
-          std::cout << std::nouppercase
-                    << std::hex
-                    << std::setw(2)
-                    << (int)this->_contents[i * space + j];
+      for (auto j = 0u; j < space; j++)
+        std::cout << std::nouppercase
+                  << std::hex
+                  << std::setw(2)
+                  << (int)this->_contents[i * space + j];
 
-        std::cout << '\n';
-      }
+      std::cout << '\n';
+    }
 
     if (this->_size % space)
-      {
-        std::cout << alignment << io::Dumpable::Shift;
+    {
+      std::cout << alignment << Shift;
 
-        for (Buffer::Size j = 0; j < (this->_size % space); j++)
-          std::cout << std::nouppercase
-                    << std::hex
-                    << std::setw(2)
-                    << (int)this->_contents[i * space + j];
+      for (auto j = 0u; j < (this->_size % space); j++)
+        std::cout << std::nouppercase
+                  << std::hex
+                  << std::setw(2)
+                  << (int)this->_contents[i * space + j];
 
-        std::cout << std::endl;
-      }
+      std::cout << std::endl;
+    }
   }
 
   Buffer::Size
@@ -381,14 +381,14 @@ namespace elle
   }
 
   /// Get byte at position \a i.
-  Byte&
+  Buffer::Byte&
   Buffer::operator [](unsigned i)
   {
     ELLE_ASSERT_LT(i, this->_size);
     return this->_contents[i];
   }
 
-  Byte
+  Buffer::Byte
   Buffer::operator [](unsigned i) const
   {
     return const_cast<Buffer*>(this)->operator [](i);
@@ -442,11 +442,11 @@ namespace elle
   /*-----------.
   | WeakBuffer |
   `-----------*/
-  Byte&
+  Buffer::Byte&
   WeakBuffer::operator[] (unsigned i)
   {
     ELLE_ASSERT_LT(i, this->size());
-    return const_cast<Byte&>(this->contents()[i]);
+    return const_cast<Buffer::Byte&>(this->contents()[i]);
   }
 
   std::streambuf*
@@ -467,14 +467,12 @@ namespace elle
     return new InputStreamBuffer<elle::WeakBuffer>(*this);
   }
 
-
   void
   ConstWeakBuffer::dump(const uint32_t margin) const
   {
-    uint32_t         space = 78 - margin - io::Dumpable::Shift.length();
-    String            alignment(margin, ' ');
-    uint32_t         i;
-    uint32_t         j;
+    auto const Shift = std::string(' ', 2);
+    uint32_t space = 78 - margin - Shift.length();
+    std::string alignment(margin, ' ');
 
     std::cout << alignment
               << "[Buffer] "
@@ -489,34 +487,35 @@ namespace elle
     std::cout.fill('0');
 
     // display the region.
-    for (i = 0; i < (this->_size / space); i++)
-      {
-        std::cout << alignment << io::Dumpable::Shift;
+    auto i = 0u;
+    for (; i < (this->_size / space); i++)
+    {
+      std::cout << alignment << Shift;
 
-        for (j = 0; j < space; j++)
-          std::cout << std::nouppercase
-                    << std::hex
-                    << std::setw(2)
-                    << (int)this->_contents[i * space + j];
+      for (auto j = 0u; j < space; j++)
+        std::cout << std::nouppercase
+                  << std::hex
+                  << std::setw(2)
+                  << (int)this->_contents[i * space + j];
 
-        std::cout << std::endl;
-      }
+      std::cout << std::endl;
+    }
 
     if ((this->_size % space) != 0)
-      {
-        std::cout << alignment << io::Dumpable::Shift;
+    {
+      std::cout << alignment << Shift;
 
-        for (Buffer::Size j = 0; j < (this->_size % space); j++)
-          std::cout << std::nouppercase
-                    << std::hex
-                    << std::setw(2)
-                    << (int)this->_contents[i * space + j];
+      for (auto j = 0u; j < (this->_size % space); j++)
+        std::cout << std::nouppercase
+                  << std::hex
+                  << std::setw(2)
+                  << (int)this->_contents[i * space + j];
 
-        std::cout << std::endl;
-      }
+      std::cout << std::endl;
+    }
   }
 
-  Byte
+  Buffer::Byte
   ConstWeakBuffer::operator[] (unsigned i) const
   {
     ELLE_ASSERT_LT(i, this->_size);
@@ -585,25 +584,25 @@ namespace elle
   | Iterable |
   `---------*/
 
-  Byte*
+  Buffer::iterator
   WeakBuffer::begin()
   {
-    return const_cast<Byte*>(this->ConstWeakBuffer::begin());
+    return const_cast<Buffer::Byte*>(this->ConstWeakBuffer::begin());
   }
 
-  const Byte*
+  Buffer::const_iterator
   ConstWeakBuffer::begin() const
   {
     return this->contents();
   }
 
-  Byte*
+  Buffer::iterator
   WeakBuffer::end()
   {
-    return const_cast<Byte*>(this->ConstWeakBuffer::end());
+    return const_cast<Buffer::Byte*>(this->ConstWeakBuffer::end());
   }
 
-  const Byte*
+  Buffer::const_iterator
   ConstWeakBuffer::end() const
   {
     return this->contents() + this->size();

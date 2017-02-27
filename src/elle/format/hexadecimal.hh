@@ -21,17 +21,17 @@ namespace elle
       ELLE_API
       void
       encode(ConstWeakBuffer buffer,
-             String& hexadecimal_string);
+             std::string& hexadecimal_string);
       /// Convert any hexadecimal string to a buffer.
       ELLE_API
       Buffer
-      decode(String const& hexadecimal_string);
+      decode(std::string const& hexadecimal_string);
       /// Convert any hexadecimal to a decoded binary data.
       ///
       /// This version appends the result to the given buffer.
       ELLE_API
       void
-      decode(String const& hexadecimal_string,
+      decode(std::string const& hexadecimal_string,
              Buffer& binary_data);
     }
   }

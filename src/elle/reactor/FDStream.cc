@@ -1,4 +1,5 @@
 #include <elle/assert.hh>
+#include <elle/Buffer.hh>
 #include <elle/reactor/FDStream.hh>
 #include <elle/reactor/scheduler.hh>
 
@@ -15,7 +16,7 @@ namespace elle
     elle::PlainStreamBuffer::Size
     FDStream::StreamBuffer::read(char* buffer, elle::PlainStreamBuffer::Size size)
     {
-      elle::Size read = 0;
+      Buffer::Size read = 0;
       boost::system::error_code error;
       reactor::Barrier done("read done");
       this->_stream.async_read_some(

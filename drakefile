@@ -1253,6 +1253,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
 
   # XXX.
   sources = drake.nodes(
+    'src/bitset',
     'src/chrono',
     'src/deque',
     'src/list',

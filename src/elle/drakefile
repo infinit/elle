@@ -230,14 +230,6 @@ def configure(zlib_lib,
     'format/hexadecimal.cc',
     'format/hexadecimal.hh',
     'fwd.hh',
-    'io/Console.cc',
-    'io/Console.hh',
-    'io/Dumpable.cc',
-    'io/Dumpable.hh',
-    'io/Pattern.cc',
-    'io/Pattern.hh',
-    'io/Unique.hh',
-    'io/fwd.hh',
     'log.hh',
     'log/CompositeLogger.cc',
     'log/CompositeLogger.hh',
@@ -290,12 +282,9 @@ def configure(zlib_lib,
     'system/unistd.hh',
     'system/user_paths.hh',
     'time.hh',
-    'types.hh',
     'utils.hh',
     )
 
-  if cxx_toolkit.os not in [drake.os.windows, drake.os.ios]:
-    sources.append(drake.node('utility/Unicode-unix.cc'))
   if ldap_libs:
     sources += drake.nodes(
       'ldap.hh',
@@ -367,20 +356,6 @@ def configure(zlib_lib,
       'system/Windows/version.hh',
       'system/Windows/version.cc',
     )
-
-  sources += drake.nodes(
-    'utility/Duration.cc',
-    'utility/Duration.hh',
-    'utility/Duration.hxx',
-    'utility/Parser.cc',
-    'utility/Parser.hh',
-    'utility/Parser.hxx',
-    'utility/Product.hh',
-    'utility/URI.hh',
-    'utility/Unicode.hh',
-    'utility/Utility.hh',
-    'utility/fwd.hh',
-   )
 
   sources += drake.nodes(
     'serialization/Error.cc',

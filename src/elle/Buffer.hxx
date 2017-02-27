@@ -39,7 +39,7 @@ namespace elle
   inline
   ConstWeakBuffer::ConstWeakBuffer(const void* data, Size size)
     : _size(size)
-    , _contents(static_cast<Byte*>(const_cast<void*>(data)))
+    , _contents(static_cast<Buffer::Byte*>(const_cast<void*>(data)))
   {}
 
   inline
@@ -114,14 +114,14 @@ namespace elle
   {}
 
   inline
-  Byte*
+  Buffer::Byte*
   WeakBuffer::mutable_contents() const
   {
-    return const_cast<Byte*>(this->contents());
+    return const_cast<Buffer::Byte*>(this->contents());
   }
 
   inline
-  Byte*
+  Buffer::Byte*
   Buffer::mutable_contents() const
   {
     return this->_contents;

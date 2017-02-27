@@ -5,7 +5,6 @@
 
 # include <utility>
 
-# include <elle/types.hh>
 # include <elle/serialization.hh>
 # include <elle/serialization/Serializer.hh>
 

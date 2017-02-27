@@ -8,7 +8,6 @@
 // 4) 76b4075f7b0aab59942335e4497b42ecfa9e3e0f
 // $>
 
-# include <elle/types.hh>
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
 # include <elle/format/hexadecimal.hh>

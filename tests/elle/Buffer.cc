@@ -30,7 +30,7 @@ static
 void
 test_ctor_raw(size_t size)
 {
-  elle::Byte* raw = new elle::Byte[size];
+  auto* raw = new elle::Buffer::Byte[size];
   for (unsigned i = 0; i < size; ++i)
     raw[i] = 0xaa;
   elle::Buffer b(raw, size);
@@ -63,7 +63,7 @@ static
 void
 test_ctor_weak_raw()
 {
-  elle::Byte ptr[42];
+  elle::Buffer::Byte ptr[42];
   elle::WeakBuffer b(ptr, 42);
   BOOST_CHECK_EQUAL(b.contents(), ptr);
   BOOST_CHECK_EQUAL(b.mutable_contents(), ptr);
@@ -85,7 +85,7 @@ static
 void
 test_ctor_weak_copy_move()
 {
-  elle::Byte* raw = new elle::Byte[7];
+  elle::Buffer::Byte* raw = new elle::Buffer::Byte[7];
   elle::WeakBuffer wb1(raw, 7);;
   elle::WeakBuffer wb2(wb1);
   BOOST_CHECK_EQUAL(wb2.contents(), wb1.contents());
@@ -94,7 +94,7 @@ test_ctor_weak_copy_move()
   elle::WeakBuffer wb3(std::move(wb2));
   BOOST_CHECK_EQUAL(wb3.contents(), raw);
   BOOST_CHECK_EQUAL(wb3.size(), 7);
-  BOOST_CHECK_EQUAL(wb2.contents(), (elle::Byte*)(nullptr));
+  BOOST_CHECK_EQUAL(wb2.contents(), (elle::Buffer::Byte*)(nullptr));
   BOOST_CHECK_EQUAL(wb2.size(), 0);
 
   delete[] raw;
@@ -112,7 +112,7 @@ mkbuf<elle::Buffer>(size_t size)
   elle::Buffer buffer(size);
 
   for (size_t i = 0; i < size; ++i)
-    buffer.mutable_contents()[i] = ((elle::Byte) i);
+    buffer.mutable_contents()[i] = ((elle::Buffer::Byte) i);
 
   return buffer;
 }
@@ -121,16 +121,16 @@ template <>
 elle::WeakBuffer
 mkbuf<elle::WeakBuffer>(size_t size)
 {
-  elle::Byte* raw = new elle::Byte[size];
+  auto* raw = new elle::Buffer::Byte[size];
   elle::WeakBuffer buffer(raw, size);
 
   for (size_t i = 0; i < size; ++i)
-    buffer.mutable_contents()[i] = ((elle::Byte) i);
+    buffer.mutable_contents()[i] = ((elle::Buffer::Byte) i);
 
   return buffer;
 }
 
-template <typename Buffer, void (*Delete) (elle::Byte*)>
+template <typename Buffer, void (*Delete) (elle::Buffer::Byte*)>
 static
 void
 test_cmp()
@@ -228,14 +228,14 @@ test_assign()
 
 static
 void
-delete_noop(elle::Byte*)
+delete_noop(elle::Buffer::Byte*)
 {}
 
 static
 void
-delete_array(elle::Byte* p)
+delete_array(elle::Buffer::Byte* p)
 {
-  delete [] p;
+  delete[] p;
 }
 
 namespace print

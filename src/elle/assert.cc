@@ -37,7 +37,7 @@ namespace elle
 
   AssertError::AssertError(char const* condition,
                            char const* file,
-                           Size line) noexcept
+                           uint64_t line) noexcept
   {
     try
     {

@@ -8,7 +8,6 @@
 #include <elle/os/environ.hh>
 #include <elle/printf.hh>
 #include <elle/system/getpid.hh>
-#include <elle/types.hh>
 
 namespace elle
 {

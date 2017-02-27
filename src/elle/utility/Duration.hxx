@@ -1,4 +1,0 @@
-#ifndef  ELLE_UTILITY_DURATION_HXX
-# define ELLE_UTILITY_DURATION_HXX
-
-#endif

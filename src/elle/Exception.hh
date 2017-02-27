@@ -8,7 +8,6 @@
 #include <elle/compiler.hh>
 #include <elle/serialization.hh>
 #include <elle/serialization/fwd.hh>
-#include <elle/types.hh>
 
 namespace elle ELLE_API
 {

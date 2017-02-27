@@ -1,8 +1,6 @@
 #ifndef ELLE_CRYPTOGRAPHY_RANDOM_HH
 # define ELLE_CRYPTOGRAPHY_RANDOM_HH
 
-# include <elle/types.hh>
-
 namespace elle
 {
   namespace cryptography

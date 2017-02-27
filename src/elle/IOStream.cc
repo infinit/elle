@@ -87,7 +87,7 @@ namespace elle
     WeakBuffer b = write_buffer();
     setp(reinterpret_cast<char*>(b.mutable_contents()),
          reinterpret_cast<char*>(b.mutable_contents() + b.size()));
-    b.mutable_contents()[0] = static_cast<Byte>(c);
+    b.mutable_contents()[0] = static_cast<Buffer::Byte>(c);
     pbump(1);
     // Success is indicated by "A value different from EOF".
     return EOF + 1;

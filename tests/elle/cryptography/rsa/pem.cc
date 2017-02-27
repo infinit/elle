@@ -11,7 +11,6 @@
 #include <elle/cryptography/Error.hh>
 
 #include <elle/printf.hh>
-#include <elle/types.hh>
 #include <elle/Error.hh>
 #include <elle/filesystem/TemporaryFile.hh>
 

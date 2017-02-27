@@ -3,7 +3,6 @@
 #include <elle/reactor/Channel.hh>
 #include <elle/reactor/network/server.hh>
 #include <elle/reactor/network/ssl-socket.hh>
-#include <elle/utility/Duration.hh>
 
 namespace elle
 {

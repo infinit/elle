@@ -16,8 +16,6 @@ ELLE_OPERATOR_RELATIONALS();
 
 # include <iosfwd>
 
-# include <elle/types.hh>
-
 namespace elle
 {
   namespace cryptography

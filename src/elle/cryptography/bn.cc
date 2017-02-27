@@ -6,7 +6,6 @@
 #include <iostream>
 #include <cstring>
 
-#include <elle/types.hh>
 #include <elle/Buffer.hh>
 
 #include <elle/cryptography/finally.hh>

@@ -240,7 +240,7 @@ namespace elle
       {
         ELLE_ASSERT_GTE(msg.size(), lines[0].size());
         auto indent = std::string(msg.size() - lines[0].size(), ' ');
-        for (elle::Size i = 1; i < lines.size(); i++)
+        for (auto i = 1u; i < lines.size(); i++)
           _output << indent << lines[i] << std::endl;
       }
       if (!color_code.empty())

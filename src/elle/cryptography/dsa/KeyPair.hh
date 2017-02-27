@@ -4,7 +4,6 @@
 # include <iosfwd>
 # include <utility>
 
-# include <elle/types.hh>
 # include <elle/serialization/Serializer.hh>
 # include <elle/serialization.hh>
 

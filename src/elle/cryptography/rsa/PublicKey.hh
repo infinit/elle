@@ -6,7 +6,6 @@
 
 # include <openssl/evp.h>
 
-# include <elle/types.hh>
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
 # include <elle/serialization.hh>

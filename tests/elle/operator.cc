@@ -1,4 +1,3 @@
-#include <elle/types.hh>
 #include <elle/assert.hh>
 #include <elle/operator.hh>
 #include <elle/Exception.hh>
@@ -11,8 +10,8 @@ namespace test
   class Operator
   {
   public:
-    Operator(elle::String const& string):
-      _string(new elle::String(string))
+    Operator(std::string const& string):
+      _string(new std::string(string))
     {
     }
     ~Operator()
@@ -32,7 +31,7 @@ namespace test
     }
 
   private:
-    elle::String* _string;
+    std::string* _string;
   };
 }
 

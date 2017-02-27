@@ -3,8 +3,6 @@
 #include <boost/filesystem.hpp>
 
 #include <elle/Buffer.hh>
-#include <elle/types.hh>
-
 #include <elle/system/platform.hh>
 
 namespace elle
@@ -36,7 +34,7 @@ namespace elle
 
     namespace path
     {
-      static Character const separator('/');
+      static char const separator('/');
     };
     /// Read a part of a file, from file_offset to either size bytes or EOF
     Buffer

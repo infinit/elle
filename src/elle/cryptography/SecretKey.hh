@@ -8,7 +8,6 @@
 # include <elle/fwd.hh>
 # include <elle/operator.hh>
 # include <elle/serialization.hh>
-# include <elle/types.hh>
 
 ELLE_OPERATOR_RELATIONALS();
 

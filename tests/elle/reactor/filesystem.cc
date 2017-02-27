@@ -241,7 +241,7 @@ namespace xorfs
     {
       lseek(_fd, offset, SEEK_SET);
       for (uint64_t i = 0; i < buffer.size(); ++i)
-        const_cast<elle::Byte&>(buffer.contents()[i]) ^= 0xFF;
+        const_cast<elle::Buffer::Byte&>(buffer.contents()[i]) ^= 0xFF;
       return ::write(_fd, buffer.contents(), size);
     }
   };

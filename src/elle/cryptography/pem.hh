@@ -5,8 +5,6 @@
 
 # include <boost/filesystem.hpp>
 
-# include <elle/types.hh>
-
 # include <elle/cryptography/Cipher.hh>
 
 namespace elle

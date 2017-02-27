@@ -8,7 +8,6 @@
 # include <elle/cryptography/Cipher.hh>
 # include <elle/cryptography/dh/fwd.hh>
 
-# include <elle/types.hh>
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
 

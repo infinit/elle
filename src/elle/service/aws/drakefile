@@ -121,13 +121,13 @@ def configure(cryptography,
     static = not boost.prefer_shared or None,
     link = not boost.prefer_shared)
   cxx_config_tests += boost.config_timer(
-    static = not boost.prefer_shared or None,,
+    static = not boost.prefer_shared or None,
     link = not boost.prefer_shared)
   cxx_config_tests += boost.config_system(
-    static = not boost.prefer_shared or None,,
+    static = not boost.prefer_shared or None,
     link = not boost.prefer_shared)
   cxx_config_tests += boost.config_thread(
-    static = not boost.prefer_shared or None,,
+    static = not boost.prefer_shared or None,
     link = not boost.prefer_shared)
   if boost.prefer_shared:
     test_libs += [

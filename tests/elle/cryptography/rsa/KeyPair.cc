@@ -10,7 +10,6 @@
 #include <elle/cryptography/random.hh>
 
 #include <elle/printf.hh>
-#include <elle/types.hh>
 #include <elle/serialization/json.hh>
 
 ELLE_LOG_COMPONENT("elle.cryptography.test");

@@ -1,10 +1,12 @@
 #ifndef ELLE_VERSION_HH
 # define ELLE_VERSION_HH
 
+# include <cstdint>
+# include <functional>
+
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
 # include <elle/serialization/fwd.hh>
-# include <elle/types.hh>
 # include <elle/Printable.hh>
 
 namespace elle

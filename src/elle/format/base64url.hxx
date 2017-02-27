@@ -28,7 +28,7 @@ namespace elle
 
       template <>
       inline
-      elle::String
+      std::string
       encode(ConstWeakBuffer input)
       {
         ELLE_LOG_COMPONENT("elle.format.base64url")
@@ -61,7 +61,7 @@ namespace elle
       template <>
       inline
       Buffer
-      decode(elle::String const& input)
+      decode(std::string const& input)
       {
         ConstWeakBuffer buffer(input.c_str(), input.size());
         return decode(buffer);

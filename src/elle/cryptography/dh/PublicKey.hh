@@ -7,7 +7,6 @@
 # include <elle/cryptography/Oneway.hh>
 # include <elle/cryptography/Cipher.hh>
 
-# include <elle/types.hh>
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
 

@@ -1,7 +1,6 @@
 #ifndef ELLE_FORMAT_BASE64_HH
 # define ELLE_FORMAT_BASE64_HH
 
-# include <elle/types.hh>
 # include <elle/Buffer.hh>
 
 namespace elle
