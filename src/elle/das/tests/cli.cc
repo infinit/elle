@@ -226,6 +226,19 @@ defaults()
 
 static
 void
+defaulted()
+{
+  auto const f = elle::das::named::function(
+    [] (elle::Defaulted<bool> b) { return std::make_pair(bool(b), b.get()); },
+    foo = elle::defaulted(false));
+  BOOST_CHECK_EQUAL(
+    elle::das::cli::call(f, {}), std::make_pair(false, false));
+  BOOST_CHECK_EQUAL(
+    elle::das::cli::call(f, {"--foo"}), std::make_pair(true, true));
+}
+
+static
+void
 flag()
 {
   auto const f =
@@ -442,6 +455,7 @@ ELLE_TEST_SUITE()
     conversions->add(BOOST_TEST_CASE(multiple_integers));
   }
   master.add(BOOST_TEST_CASE(defaults));
+  master.add(BOOST_TEST_CASE(defaulted));
   master.add(BOOST_TEST_CASE(flag));
   {
     auto suite = BOOST_TEST_SUITE("short_options");
