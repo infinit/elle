@@ -70,6 +70,34 @@ operator <(::BIGNUM const& a,
   return (::BN_cmp(&a, &b) < 0);
 }
 
+bool
+operator !=(::BIGNUM const& a,
+            ::BIGNUM const& b)
+{
+  return (::BN_cmp(&a, &b) != 0);
+}
+
+bool
+operator >(::BIGNUM const& a,
+           ::BIGNUM const& b)
+{
+  return (::BN_cmp(&a, &b) > 0);
+}
+
+bool
+operator <=(::BIGNUM const& a,
+            ::BIGNUM const& b)
+{
+  return !(b < a);
+}
+
+bool
+operator >=(::BIGNUM const& a,
+            ::BIGNUM const& b)
+{
+  return !(a < b);
+}
+
 /*--------------.
 | Serialization |
 `--------------*/

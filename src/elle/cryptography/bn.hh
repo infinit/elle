@@ -8,7 +8,6 @@
 
 # include <iosfwd>
 # include <utility>
-ELLE_OPERATOR_RELATIONALS();
 
 /*----------.
 | Operators |
@@ -24,6 +23,31 @@ operator ==(::BIGNUM const& a,
 bool
 operator <(::BIGNUM const& a,
            ::BIGNUM const& b);
+
+// XXX: The following operators used to be automatically defined via
+// std::rel_ops. However, we should always prefer boost::*_ordered over
+// std::rel_ops because it poisons the environment.
+// In this case, we have no visibility over ::BIGNUM, therefore, we have two
+// solutions.
+// 1. Create a wrapper over BIGNUM.
+// 2. Manually define operators.
+//
+// For now, we chose 2.
+
+bool
+operator !=(::BIGNUM const& a,
+            ::BIGNUM const& b);
+bool
+operator >(::BIGNUM const& a,
+           ::BIGNUM const& b);
+
+bool
+operator <=(::BIGNUM const& a,
+            ::BIGNUM const& b);
+
+bool
+operator >=(::BIGNUM const& a,
+            ::BIGNUM const& b);
 
 /*--------------.
 | Serialization |

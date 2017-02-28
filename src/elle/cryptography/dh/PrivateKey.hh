@@ -1,6 +1,12 @@
 #ifndef ELLE_CRYPTOGRAPHY_DH_PRIVATEKEY_HH
 # define ELLE_CRYPTOGRAPHY_DH_PRIVATEKEY_HH
 
+# include <utility>
+
+# include <openssl/evp.h>
+
+# include <boost/operators.hpp>
+
 # include <elle/cryptography/fwd.hh>
 # include <elle/cryptography/types.hh>
 # include <elle/cryptography/SecretKey.hh>
@@ -11,10 +17,6 @@
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
 
-# include <utility>
-ELLE_OPERATOR_RELATIONALS();
-
-# include <openssl/evp.h>
 
 //
 // ---------- Class -----------------------------------------------------------
@@ -27,8 +29,9 @@ namespace elle
     namespace dh
     {
       /// Represent a private key in the DH asymmetric cryptosystem.
-      class PrivateKey:
-        public elle::Printable
+      class PrivateKey
+        : public elle::Printable
+        , private boost::totally_ordered<PrivateKey>
       {
         /*-------------.
         | Construction |

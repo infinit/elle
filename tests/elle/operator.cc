@@ -1,13 +1,15 @@
+#include <utility>
+
+#include <boost/operators.hpp>
+
 #include <elle/assert.hh>
 #include <elle/operator.hh>
 #include <elle/Exception.hh>
 
-#include <utility>
-ELLE_OPERATOR_RELATIONALS();
-
 namespace test
 {
   class Operator
+    : public boost::totally_ordered<Operator>
   {
   public:
     Operator(std::string const& string):

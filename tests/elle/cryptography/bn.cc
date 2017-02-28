@@ -78,6 +78,57 @@ test_serialize()
   }
 }
 
+static
+void
+test_compare()
+{
+  ::BIGNUM bn_1000;
+  ::BIGNUM bn_2000;
+  ::BIGNUM bn_minus_1000;
+
+  ::BN_init(&bn_1000);
+  ::BN_set_word(&bn_1000, 1000);
+
+  ::BN_init(&bn_2000);
+  ::BN_set_word(&bn_2000, 2000);
+
+  ::BN_init(&bn_minus_1000);
+  ::BN_set_word(&bn_minus_1000, 1000);
+  ::BN_set_negative(&bn_minus_1000, 1);
+
+#define CHECK_EQUAL(x)                   \
+  BOOST_CHECK_EQUAL(x, x);               \
+  BOOST_CHECK_GE(x, x);                  \
+  BOOST_CHECK_LE(x, x)
+
+  CHECK_EQUAL(bn_1000);
+  CHECK_EQUAL(bn_2000);
+  CHECK_EQUAL(bn_minus_1000);
+#undef CHECK_EQUAL
+
+#define CHECK_LESSER(x, y)                      \
+  BOOST_CHECK_LT(x, y);                         \
+  BOOST_CHECK_LE(x, y)
+
+  CHECK_LESSER(bn_minus_1000, bn_1000);
+  CHECK_LESSER(bn_minus_1000, bn_2000);
+  CHECK_LESSER(bn_1000, bn_2000);
+#undef CHECK_LESSER
+
+#define CHECK_GREATER(x, y)                     \
+  BOOST_CHECK_GT(x, y);                         \
+  BOOST_CHECK_GE(x, y)
+
+  CHECK_GREATER(bn_2000, bn_minus_1000);
+  CHECK_GREATER(bn_2000, bn_1000);
+  CHECK_GREATER(bn_1000, bn_minus_1000);
+#undef CHECK_GREATER
+
+  ::BN_free(&bn_1000);
+  ::BN_free(&bn_2000);
+  ::BN_free(&bn_minus_1000);
+}
+
 /*-----.
 | Main |
 `-----*/
@@ -88,6 +139,8 @@ ELLE_TEST_SUITE()
 
   suite->add(BOOST_TEST_CASE(test_represent));
   suite->add(BOOST_TEST_CASE(test_serialize));
+  suite->add(BOOST_TEST_CASE(test_compare));
+
 
   boost::unit_test::framework::master_test_suite().add(suite);
 }

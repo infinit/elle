@@ -3,13 +3,13 @@
 
 # include <utility>
 
+# include <boost/operators.hpp>
+
 # include <elle/Printable.hh>
 # include <elle/attribute.hh>
 # include <elle/fwd.hh>
 # include <elle/operator.hh>
 # include <elle/serialization.hh>
-
-ELLE_OPERATOR_RELATIONALS();
 
 # include <elle/cryptography/fwd.hh>
 # include <elle/cryptography/Oneway.hh>
@@ -24,8 +24,9 @@ namespace elle
   namespace cryptography
   {
     /// Represent a secret key for symmetric cryptosystem operations.
-    class SecretKey:
-      public elle::Printable
+    class SecretKey
+      : public elle::Printable
+      , private boost::totally_ordered<SecretKey>
     {
       /*---------------.
       | Default Values |

@@ -5,11 +5,11 @@
 
 # include <openssl/evp.h>
 
+# include <boost/operators.hpp>
+
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
 # include <elle/serialization.hh>
-
-ELLE_OPERATOR_RELATIONALS();
 
 # include <elle/cryptography/fwd.hh>
 # include <elle/cryptography/types.hh>
@@ -27,8 +27,9 @@ namespace elle
     namespace dsa
     {
       /// A private key in the DSA asymmetric cryptosystem.
-      class PrivateKey:
-        public elle::Printable
+      class PrivateKey
+        : public elle::Printable
+        , private boost::totally_ordered<PrivateKey>
       {
         /*-------------.
         | Construction |

@@ -4,11 +4,11 @@
 # include <memory>
 # include <utility>
 
+# include <boost/operators.hpp>
+
 # include <openssl/evp.h>
 
 # include <elle/serialization.hh>
-
-ELLE_OPERATOR_RELATIONALS();
 
 # include <elle/cryptography/fwd.hh>
 # include <elle/cryptography/types.hh>
@@ -32,6 +32,7 @@ namespace elle
       class PrivateKey
         : public elle::Printable
         , public std::enable_shared_from_this<PrivateKey>
+        , private boost::totally_ordered<PrivateKey>
       {
         /*-------------.
         | Construction |
