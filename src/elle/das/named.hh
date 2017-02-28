@@ -6,6 +6,7 @@
 #include <elle/attribute.hh>
 #include <elle/log.hh>
 #include <elle/meta.hh>
+#include <elle/serialization/Serializer.hh>
 
 #include <elle/das/Symbol.hh>
 
@@ -391,6 +392,22 @@ namespace elle
           Call(get_type<Args> const& ... args)
             : make_effective<Args>(args)...
           {}
+
+          Call(elle::serialization::SerializerIn& s)
+            : make_effective<Args>(
+                s.deserialize<std::remove_cv_reference_t<get_type<Args>>>(
+                  make_symbol<Args>::name()))...
+          {}
+
+          void
+          serialize(serialization::Serializer& s)
+          {
+            auto ignore = {
+              (s.serialize(make_symbol<Args>::name(),
+                           this->make_effective<Args>::value), 0)...
+            };
+            (void)ignore;
+          }
         };
 
         template <typename ... Effective>

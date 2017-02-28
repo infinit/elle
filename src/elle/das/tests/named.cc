@@ -1,6 +1,8 @@
 # include <string>
 
 # include <elle/das/named.hh>
+# include <elle/serialization/binary.hh>
+# include <elle/serialization/json.hh>
 # include <elle/test.hh>
 
 #define NAMED_FUNCTION(Name, F, ...)                                    \
@@ -283,6 +285,7 @@ default_positional()
 ELLE_DAS_SYMBOL(foo);
 ELLE_DAS_SYMBOL(bar);
 
+template <typename S>
 static
 void
 call()
@@ -295,6 +298,11 @@ call()
     foo, bar);
   auto call = f.call(42, "forty two");
   BOOST_CHECK_EQUAL(f(call), "42 = forty two");
+  auto serialized = elle::serialization::serialize<S>(call, false);
+  auto deserialized =
+    elle::serialization::deserialize<S, typename decltype(f)::Call>(
+      serialized, false);
+  BOOST_CHECK_EQUAL(f(deserialized), f(call));
 }
 
 /*-------.
@@ -310,5 +318,6 @@ ELLE_TEST_SUITE()
   master.add(BOOST_TEST_CASE(positional));
   master.add(BOOST_TEST_CASE(default_value));
   master.add(BOOST_TEST_CASE(default_positional));
-  master.add(BOOST_TEST_CASE(call));
+  master.add(BOOST_TEST_CASE(call<elle::serialization::Json>));
+  master.add(BOOST_TEST_CASE(call<elle::serialization::Binary>));
 }
