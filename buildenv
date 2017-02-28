@@ -19,6 +19,7 @@ def json_converter(o):
   raise TypeError('%s is not JSON serializable' % o)
 
 def copy(f, t):
+  os.makedirs(os.path.dirname(t))
   sh.cp('-a', f, t)
 
 def mv(f, t):
