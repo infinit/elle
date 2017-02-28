@@ -54,5 +54,25 @@ namespace elle
     {
       return {o};
     }
+
+    template <typename O, typename R, typename ... Args>
+    std::function<R (Args...)>
+    bind_method(O const& o, R (O::*m)(Args ... args) const)
+    {
+      return [&o, m] (Args ... args)
+      {
+        return (o.*m)(std::forward<Args>(args)...);
+      };
+    }
+
+    template <typename O, typename R, typename ... Args>
+    std::function<R (Args...)>
+    bind_method(O& o, R (O::*m)(Args ... args))
+    {
+      return [&o, m] (Args ... args)
+      {
+        return (o.*m)(std::forward<Args>(args)...);
+      };
+    }
   }
 }
