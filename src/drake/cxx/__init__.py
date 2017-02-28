@@ -880,24 +880,27 @@ class GccToolkit(Toolkit):
       libraries = (obj for obj in objs if isinstance(obj, Library))
       self.__libraries_flags(cfg, libraries, cmd)
       if cfg.whole_archive:
-        pre=list()
-        ar=list()
-        post=list()
-        arnames=list()
-        for e in cmd:
-          e = str(e)
-          if e[-2:] == '.a' or e[0:2] == '-l':
-            if e.split('/')[-1] not in arnames:
-              ar.append(e)
-              arnames.append(e.split('/')[-1])
+        if self.os is drake.os.macos:
+          cmd += '-Wl,-all_load' # close enough
+        else:
+          pre=list()
+          ar=list()
+          post=list()
+          arnames=list()
+          for e in cmd:
+            e = str(e)
+            if e[-2:] == '.a' or e[0:2] == '-l':
+              if e.split('/')[-1] not in arnames:
+                ar.append(e)
+                arnames.append(e.split('/')[-1])
+              else:
+                pass
             else:
-              pass
-          else:
-            if len(ar):
-              post.append(e)
-            else:
-              pre.append(e)
-        cmd = pre + ['-Wl,--whole-archive'] + ar + ['-Wl,--no-whole-archive'] + post
+              if len(ar):
+                post.append(e)
+              else:
+                pre.append(e)
+          cmd = pre + ['-Wl,--whole-archive'] + ar + ['-Wl,--no-whole-archive'] + post
 
       return cmd
 
@@ -925,27 +928,30 @@ class GccToolkit(Toolkit):
       cmd += ['-shared', '-o', exe.path()]
       self.__libraries_flags(cfg, to_link, cmd)
       if cfg.whole_archive:
-        pre=list()
-        ar=list()
-        post=list()
-        arnames=list()
-        for e in cmd:
-          e = str(e)
-          if e[-2:] == '.a' or e[0:2] == '-l':
-            if e.split('/')[-1] not in arnames:
-              ar.append(e)
-              arnames.append(e.split('/')[-1])
+        if self.os is drake.os.macos:
+          cmd += '-Wl,-all_load' # close enough
+        else:
+          pre=list()
+          ar=list()
+          post=list()
+          arnames=list()
+          for e in cmd:
+            e = str(e)
+            if e[-2:] == '.a' or e[0:2] == '-l':
+              if e.split('/')[-1] not in arnames:
+                ar.append(e)
+                arnames.append(e.split('/')[-1])
+              else:
+                pass
             else:
-              pass
-          else:
-            if len(ar):
-              post.append(e)
-            else:
-              pre.append(e)
-        cmd = pre
-        if self.os is drake.os.windows:
-          cmd.append('-Wl,--export-all-symbols')
-        cmd += ['-Wl,--whole-archive'] + ar + ['-Wl,--no-whole-archive'] + post
+              if len(ar):
+                post.append(e)
+              else:
+                pre.append(e)
+          cmd = pre
+          if self.os is drake.os.windows:
+            cmd.append('-Wl,--export-all-symbols')
+          cmd += ['-Wl,--whole-archive'] + ar + ['-Wl,--no-whole-archive'] + post
       return cmd
 
   def libname_static(self, cfg, path):
