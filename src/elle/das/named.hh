@@ -347,10 +347,13 @@ namespace elle
       namespace
       {
         template <typename T>
-        struct get_type
+        struct get_type_impl
         {
           using type = typename T::Type;
         };
+
+        template <typename T>
+        using get_type = typename get_type_impl<T>::type;
       }
 
       template <typename R, typename ... Args>
@@ -358,7 +361,7 @@ namespace elle
         : public Printable::as<Function<R (Args...)>>
       {
       public:
-        using F = std::function<R (typename get_type<Args>::type ...)>;
+        using F = std::function<R (get_type<Args> ...)>;
         template <typename ... CArgs>
         Function(F f, CArgs&& ... args)
           : _function(std::move(f))
@@ -376,17 +379,17 @@ namespace elle
             this->_function, std::forward<Effective>(effective)...);
         }
 
+        template <typename T>
+        using make_effective = typename make_symbol<T>::template Effective<
+          std::remove_cv_reference_t<get_type<T>>,
+          std::remove_cv_reference_t<get_type<T>>>;
+
         class Call
-          : public make_symbol<Args>::template Effective<
-              std::remove_cv_reference_t<typename get_type<Args>::type>,
-              std::remove_cv_reference_t<typename get_type<Args>::type>>...
+          : public make_effective<Args>...
         {
         public:
-          Call(typename get_type<Args>::type const& ... args)
-            : make_symbol<Args>::template Effective<
-                std::remove_cv_reference_t<typename get_type<Args>::type>,
-                std::remove_cv_reference_t<typename get_type<Args>::type>>
-              (args)...
+          Call(get_type<Args> const& ... args)
+            : make_effective<Args>(args)...
           {}
         };
 
@@ -395,7 +398,7 @@ namespace elle
         call(Effective&& ... args)
         {
           return this->_prototype.call(
-            [] (typename get_type<Args>::type const& ... args)
+            [] (get_type<Args> const& ... args)
             {
               return Call(args...);
             }, std::forward<Effective>(args)...);
@@ -404,10 +407,7 @@ namespace elle
         R
         operator() (Call& c) const
         {
-          return this->_function(
-            c.make_symbol<Args>::
-            template Effective<std::remove_cv_reference_t<typename get_type<Args>::type>,
-            std::remove_cv_reference_t<typename get_type<Args>::type>>::value...);
+          return this->_function(c.make_effective<Args>::value...);
         }
 
         ELLE_ATTRIBUTE_R(F, function);
