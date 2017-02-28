@@ -8,11 +8,11 @@
 	fetchRecurseSubmodules = false
 [submodule "src/elle/reactor/modules/miniupnp"]
 	path = src/elle/reactor/modules/miniupnp
-	url = https://github.com/infinit/miniupnp
+	url = ../miniupnp
 	fetchRecurseSubmodules = false
 [submodule "src/elle/reactor/modules/libutp"]
 	path = src/elle/reactor/modules/libutp
-	url = https://github.com/infinit/libutp
+	url = ../libutp
 	fetchRecurseSubmodules = false
 [submodule "src/elle/reactor/modules/osxfuse"]
 	path = src/elle/reactor/modules/osxfuse
@@ -20,7 +20,7 @@
 	fetchRecurseSubmodules = false
 [submodule "src/elle/reactor/modules/dokany"]
 	path = src/elle/reactor/modules/dokany
-	url = https://github.com/infinit/dokan
+	url = ../dokan
 	fetchRecurseSubmodules = false
 [submodule "src/elle/cryptography/modules/dopenssl"]
 	path = src/elle/cryptography/modules/dopenssl
