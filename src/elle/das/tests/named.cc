@@ -293,16 +293,47 @@ call()
   auto f = elle::das::named::function(
     [] (int x, std::string const& s)
     {
+      if (x < 0)
+        elle::err("negative");
       return std::to_string(x) + " = " + s;
     },
     foo, bar);
-  auto call = f.call(42, "forty two");
-  BOOST_CHECK_EQUAL(f(call), "42 = forty two");
-  auto serialized = elle::serialization::serialize<S>(call, false);
-  auto deserialized =
-    elle::serialization::deserialize<S, typename decltype(f)::Call>(
-      serialized, false);
-  BOOST_CHECK_EQUAL(f(deserialized), f(call));
+  {
+    auto call = f.call(42, "forty two");
+    BOOST_CHECK_EQUAL(f(call)(), "42 = forty two");
+    auto result = [&]
+    {
+      auto serialized = elle::serialization::serialize<S>(call, false);
+      return f(elle::serialization::deserialize<S, typename decltype(f)::Call>(
+                 serialized, false));
+    }();
+    BOOST_CHECK_EQUAL(result(), "42 = forty two");
+    {
+      auto serialized = elle::serialization::serialize<S>(result, false);
+      BOOST_CHECK_EQUAL(
+        (elle::serialization::deserialize<S, typename decltype(f)::Result>(
+          serialized, false)()),
+        "42 = forty two");
+    }
+  }
+  {
+    auto call = f.call(-1, "one");
+    BOOST_CHECK_THROW(f(call)(), elle::Error);
+    auto result = [&]
+    {
+      auto serialized = elle::serialization::serialize<S>(call, false);
+      return f(elle::serialization::deserialize<S, typename decltype(f)::Call>(
+                 serialized, false));
+    }();
+    BOOST_CHECK_THROW(result(), elle::Error);
+    {
+      auto serialized = elle::serialization::serialize<S>(result, false);
+      BOOST_CHECK_THROW(
+        (elle::serialization::deserialize<S, typename decltype(f)::Result>(
+          serialized, false)()),
+        elle::Error);
+    }
+  }
 }
 
 /*-------.

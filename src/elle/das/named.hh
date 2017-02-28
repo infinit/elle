@@ -2,6 +2,7 @@
 
 #include <utility>
 
+#include <elle/Option.hh>
 #include <elle/Printable.hh>
 #include <elle/attribute.hh>
 #include <elle/log.hh>
@@ -410,6 +411,21 @@ namespace elle
           }
         };
 
+        class Result
+          : public elle::Option<R, std::exception_ptr>
+        {
+        public:
+          using elle::Option<R, std::exception_ptr>::Option;
+          R
+          operator()()
+          {
+            if (this->template is<R>())
+              return this->template get<R>();
+            else
+              std::rethrow_exception(this->template get<std::exception_ptr>());
+          }
+        };
+
         template <typename ... Effective>
         Call
         call(Effective&& ... args)
@@ -421,10 +437,19 @@ namespace elle
             }, std::forward<Effective>(args)...);
         }
 
-        R
-        operator() (Call& c) const
+        template <typename C>
+        std::enable_if_t<
+          std::is_same<std::remove_cv_reference_t<C>, Call>::value, Result>
+        operator() (C&& c) const
         {
-          return this->_function(c.make_effective<Args>::value...);
+          try
+          {
+            return Result(this->_function(std::forward<C>(c).make_effective<Args>::value...));
+          }
+          catch (elle::Exception const& e)
+          {
+            return Result(std::current_exception());
+          }
         }
 
         ELLE_ATTRIBUTE_R(F, function);
