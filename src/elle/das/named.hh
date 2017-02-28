@@ -278,7 +278,7 @@ namespace elle
         struct Call;
 
         template <typename I, I ... Index>
-          struct Call<std::integer_sequence<I, Index ...>>
+        struct Call<std::integer_sequence<I, Index ...>>
         {
           template <typename Default, typename F, typename ... Args>
           static
@@ -374,6 +374,40 @@ namespace elle
         {
           return this->_prototype.call(
             this->_function, std::forward<Effective>(effective)...);
+        }
+
+        class Call
+          : public make_symbol<Args>::template Effective<
+              std::remove_cv_reference_t<typename get_type<Args>::type>,
+              std::remove_cv_reference_t<typename get_type<Args>::type>>...
+        {
+        public:
+          Call(typename get_type<Args>::type const& ... args)
+            : make_symbol<Args>::template Effective<
+                std::remove_cv_reference_t<typename get_type<Args>::type>,
+                std::remove_cv_reference_t<typename get_type<Args>::type>>
+              (args)...
+          {}
+        };
+
+        template <typename ... Effective>
+        Call
+        call(Effective&& ... args)
+        {
+          return this->_prototype.call(
+            [] (typename get_type<Args>::type const& ... args)
+            {
+              return Call(args...);
+            }, std::forward<Effective>(args)...);
+        }
+
+        R
+        operator() (Call& c) const
+        {
+          return this->_function(
+            c.make_symbol<Args>::
+            template Effective<std::remove_cv_reference_t<typename get_type<Args>::type>,
+            std::remove_cv_reference_t<typename get_type<Args>::type>>::value...);
         }
 
         ELLE_ATTRIBUTE_R(F, function);

@@ -276,6 +276,27 @@ default_positional()
   default_positional_f(false);
 }
 
+/*-----.
+| Call |
+`-----*/
+
+ELLE_DAS_SYMBOL(foo);
+ELLE_DAS_SYMBOL(bar);
+
+static
+void
+call()
+{
+  auto f = elle::das::named::function(
+    [] (int x, std::string const& s)
+    {
+      return std::to_string(x) + " = " + s;
+    },
+    foo, bar);
+  auto call = f.call(42, "forty two");
+  BOOST_CHECK_EQUAL(f(call), "42 = forty two");
+}
+
 /*-------.
 | Driver |
 `-------*/
@@ -289,4 +310,5 @@ ELLE_TEST_SUITE()
   master.add(BOOST_TEST_CASE(positional));
   master.add(BOOST_TEST_CASE(default_value));
   master.add(BOOST_TEST_CASE(default_positional));
+  master.add(BOOST_TEST_CASE(call));
 }
