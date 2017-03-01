@@ -4,10 +4,6 @@ import drake
 import copy
 import os
 
-lib_static = None
-lib_dynamic = None
-library = None
-
 rule_build = None
 rule_check = None
 rule_install = None
@@ -26,7 +22,6 @@ def configure(cxx_toolkit,
 
   global rule_install, rule_build, rule_check, rule_tests
   global config
-  global lib_static, lib_dynamic, library
 
   ## ----------------- ##
   ## C++ configuration ##
@@ -53,14 +48,6 @@ def configure(cxx_toolkit,
     'serializer.hh',
     'serializer.hxx',
   )
-  lib_dynamic = \
-    drake.cxx.DynLib('lib/elle_das', sources, cxx_toolkit, local_config)
-  lib_static = \
-    drake.cxx.StaticLib('lib/elle_das', sources, cxx_toolkit, local_config)
-  if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
-    library = lib_static
-  else:
-    library = lib_dynamic
 
   ## ----- ##
   ## Tests ##
@@ -83,7 +70,7 @@ def configure(cxx_toolkit,
 
   config_tests = drake.cxx.Config(local_config)
   config_tests.add_local_include_path(elle_tests_path)
-  test_libs = [library, elle.library]
+  test_libs = [elle.library]
   config_tests += boost.config_test(
     static = not boost.prefer_shared or None,
     link = not boost.prefer_shared)
@@ -92,12 +79,12 @@ def configure(cxx_toolkit,
     link = not boost.prefer_shared)
   if boost.prefer_shared:
     test_libs += list(map(lambda x: drake.copy(x, 'lib', strip_prefix = True),
-                          [boost.timer_dynamic, boost.test_dynamic, elle.library]))
+                          test_libs + [boost.timer_dynamic, boost.test_dynamic]))
   if cxx_toolkit.os is drake.os.android:
     config_tests.lib('stdc++')
     config_tests.lib('atomic')
   config_tests.lib_path_runtime(
-    drake.Path('../../..') / library.path().dirname()
+    drake.Path('../../..') / test_libs[0].path().dirname()
   )
   for name in tests:
     test = drake.cxx.Executable(
@@ -121,7 +108,7 @@ def configure(cxx_toolkit,
     'examples/samples/das',
   ]
   config_examples = drake.cxx.Config(local_config)
-  example_libs = [library, elle.library]
+  example_libs = [elle.library]
   for example in examples:
     if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
       config_examples += boost.config_date_time(static = True)
@@ -141,9 +128,6 @@ def configure(cxx_toolkit,
 
   if prefix is not False:
     rule_install = drake.Rule('install')
-    if cxx_toolkit.os not in [drake.os.windows, drake.os.ios]:
-      rule_install << drake.install(lib_dynamic, prefix)
-    rule_install << drake.install(lib_static, prefix)
     rule_install << drake.install(
       (node for node in sources if isinstance(node, drake.cxx.Header)),
       prefix / 'include' / 'elle' / 'das')
