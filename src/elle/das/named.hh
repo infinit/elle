@@ -276,6 +276,13 @@ namespace elle
             (this->defaults.extend(std::forward<NewArgs>(args)...));
         }
 
+        template <int Index, typename F, typename ... Args>
+        using find = named::find<Index,
+                                 0,
+                                 std::remove_cv_reference_t<F>,
+                                 elle::meta::List<>,
+                                 elle::meta::List<Args...>>;
+
         template <typename Sequence>
         struct Call;
 
@@ -287,13 +294,8 @@ namespace elle
           auto
           call(Default& defaults, F const& f, Args&& ... args)
           {
-            return f(
-              find<Index,
-                   0,
-                   std::remove_cv_reference_t<Formal>,
-                   elle::meta::List<>,
-                   elle::meta::List<Args...>>::get(
-                     defaults, std::forward<Args>(args)...)...);
+            return f(find<Index, Formal, Args...>::get(
+                       defaults, std::forward<Args>(args)...)...);
           }
         };
 
