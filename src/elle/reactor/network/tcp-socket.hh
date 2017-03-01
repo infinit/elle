@@ -11,16 +11,16 @@ namespace elle
       class TCPSocket
         : public StreamSocket<boost::asio::ip::tcp::socket>
       {
-        /*---------.
-          | Typedefs |
-          `---------*/
+        /*------.
+        | Types |
+        `------*/
       public:
         using Super = StreamSocket<boost::asio::ip::tcp::socket>;
         using AsioResolver = boost::asio::ip::tcp::resolver;
 
         /*-------------.
-          | Construction |
-          `-------------*/
+        | Construction |
+        `-------------*/
       public:
         TCPSocket(const std::string& hostname,
                   const std::string& port,

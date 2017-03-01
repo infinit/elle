@@ -237,20 +237,19 @@ namespace elle
       `-----------*/
 
       template <typename AsioSocket>
-      class Connection:
-        public SocketOperation<AsioSocket>
+      class Connection
+        : public SocketOperation<AsioSocket>
       {
       public:
         using EndPoint = typename AsioSocket::endpoint_type;
         using Super = SocketOperation<AsioSocket>;
         Connection(AsioSocket& socket,
-                   const EndPoint& endpoint):
-          Super(socket),
-          _endpoint(endpoint)
+                   const EndPoint& endpoint)
+          : Super(socket)
+          , _endpoint(endpoint)
         {}
 
 
-        virtual
         void
         print(std::ostream& stream) const override
         {
@@ -258,7 +257,6 @@ namespace elle
         }
 
       protected:
-        virtual
         void
         _start() override
         {
@@ -448,7 +446,6 @@ namespace elle
           , _socket(plain)
         {}
 
-        virtual
         void
         print(std::ostream& stream) const override
         {
@@ -456,7 +453,6 @@ namespace elle
         }
 
       protected:
-        virtual
         void
         _start() override
         {
@@ -596,7 +592,6 @@ namespace elle
         {}
 
       protected:
-        virtual
         void
         _start() override
         {
@@ -624,7 +619,6 @@ namespace elle
           Super::_wakeup(error);
         }
 
-        virtual
         void
         print(std::ostream& stream) const override
         {
@@ -678,15 +672,14 @@ namespace elle
         using Spe = SocketSpecialization<AsioSocket>;
         Write(PlainSocket& plain,
               AsioSocket& socket,
-              elle::ConstWeakBuffer buffer):
-          Super(Spe::socket(socket)),
-          _socket(plain),
-          _buffer(buffer),
-          _written(0)
+              elle::ConstWeakBuffer buffer)
+          : Super(Spe::socket(socket))
+          , _socket(plain)
+          , _buffer(buffer)
+          , _written(0)
         {}
 
       protected:
-        virtual
         void
         _start() override
         {
@@ -704,7 +697,6 @@ namespace elle
           Super::_wakeup(error);
         }
 
-        virtual
         void
         print(std::ostream& stream) const override
         {

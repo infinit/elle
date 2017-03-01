@@ -18,8 +18,8 @@ namespace elle
       template <typename AsioSocket>
       class SocketOperation;
 
-      class Socket:
-        public elle::IOStream
+      class Socket
+        : public elle::IOStream
       {
       /*------.
       | Types |
@@ -188,9 +188,9 @@ namespace elle
       class StreamSocket
         : public PlainSocket<AsioSocket, EndPoint>
       {
-      /*---------.
-      | Typedefs |
-      `---------*/
+      /*------.
+      | Types |
+      `------*/
       public:
         /// Self type.
         using Self = StreamSocket<AsioSocket, EndPoint>;
@@ -204,14 +204,14 @@ namespace elle
         // XXX: gcc 4.7 can't use parent's constructor.
         StreamSocket(std::unique_ptr<AsioSocket> socket,
                      EndPoint const& peer,
-                     DurationOpt timeout):
-          Super(std::move(socket), peer, timeout)
+                     DurationOpt timeout)
+          : Super(std::move(socket), peer, timeout)
         {}
 
         // XXX: gcc 4.7 can't use parent's constructor.
         StreamSocket(std::unique_ptr<AsioSocket> socket,
-                     EndPoint const& peer):
-          Super(std::move(socket), peer)
+                     EndPoint const& peer)
+          : Super(std::move(socket), peer)
         {}
 
         StreamSocket(Self&& socket)

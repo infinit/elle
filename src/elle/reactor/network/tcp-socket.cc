@@ -14,8 +14,8 @@ namespace elle
     namespace network
     {
       /*-------------.
-        | Construction |
-        `-------------*/
+      | Construction |
+      `-------------*/
 
       TCPSocket::TCPSocket(std::unique_ptr<AsioSocket> socket,
                            AsioSocket::endpoint_type const& endpoint)
