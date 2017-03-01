@@ -297,6 +297,15 @@ namespace elle
             return f(find<Index, Formal, Args...>::get(
                        defaults, std::forward<Args>(args)...)...);
           }
+
+          template <typename Default, typename F, typename ... Args>
+          static
+          auto
+          map(Default& defaults, F const& f, Args&& ... args)
+          {
+            return std::make_tuple(find<Index, Formal, Args...>::get(
+                                     defaults, std::forward<Args>(args)...)...);
+          }
         };
 
         template <typename F, typename ... Args>
@@ -305,6 +314,14 @@ namespace elle
         {
           return Call<std::make_index_sequence<sizeof ... (Formal)>>::call(
             this->defaults, f, std::forward<Args>(args)...);
+        }
+
+        template <typename ... Args>
+        auto
+        map(Args&& ... args) const
+        {
+          return Call<std::make_index_sequence<sizeof ... (Formal)>>::map(
+            this->defaults, std::forward<Args>(args)...);
         }
 
         template <typename Arg>
