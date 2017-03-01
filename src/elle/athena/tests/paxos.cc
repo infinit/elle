@@ -203,11 +203,12 @@ class InstrumentedPeer
   : public Peer<T, Version, ServerId>
 {
 public:
+  using Super = Peer<T, Version, ServerId>;
   using Client = paxos::Client<T, Version, ServerId>;
 
   InstrumentedPeer(ServerId id, paxos::Server<T, Version, ServerId>& paxos,
                    bool go_through = false)
-    : Peer<T, Version, ServerId>(id, paxos)
+    : Super{id, paxos}
     , fail(false)
     , propose_barrier("propose barrier")
     , accept_barrier("accept barrier")
@@ -232,9 +233,12 @@ public:
   {
     if (fail)
       throw paxos::Unavailable();
-    this->propose_signal.signal();
-    elle::reactor::wait(this->propose_barrier);
-    return Peer<T, Version, ServerId>::propose(q, p);
+    else
+    {
+      this->propose_signal.signal();
+      elle::reactor::wait(this->propose_barrier);
+      return Super::propose(q, p);
+    }
   }
 
 
@@ -245,9 +249,12 @@ public:
   {
     if (fail)
       throw paxos::Unavailable();
-    this->accept_signal.signal();
-    elle::reactor::wait(this->accept_barrier);
-    return Peer<T, Version, ServerId>::accept(q, p, value);
+    else
+    {
+      this->accept_signal.signal();
+      elle::reactor::wait(this->accept_barrier);
+      return Super::accept(q, p, value);
+    }
   }
 
 
@@ -257,9 +264,12 @@ public:
   {
     if (fail)
       throw paxos::Unavailable();
-    this->confirm_signal.signal();
-    elle::reactor::wait(this->confirm_barrier);
-    return Peer<T, Version, ServerId>::confirm(q, p);
+    else
+    {
+      this->confirm_signal.signal();
+      elle::reactor::wait(this->confirm_barrier);
+      return Super::confirm(q, p);
+    }
   }
 
   bool fail;
@@ -724,11 +734,11 @@ class ProposeOnlyPeer
   : public Peer<T, Version, ServerId>
 {
 public:
-  using Client = paxos::Client<T, Version, ServerId>;
   using Super = Peer<T, Version, ServerId>;
+  using Client = paxos::Client<T, Version, ServerId>;
 
   ProposeOnlyPeer(ServerId id, paxos::Server<T, Version, ServerId>& paxos)
-    : Peer<T, Version, ServerId>(id, paxos)
+    : Super{id, paxos}
   {}
 
 
