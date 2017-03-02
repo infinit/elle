@@ -58,10 +58,17 @@ static
 void
 value()
 {
-  auto v = std::make_unique<int>(1);
-  // Check ENFORCE returns the tested value.
-  ELLE_ENFORCE(v).reset(new int(2));
-  ELLE_ASSERT_EQ(*v, 2);
+  {
+    auto v = std::make_unique<int>(1);
+    // Check ENFORCE returns the tested value.
+    ELLE_ENFORCE(v).reset(new int(2));
+    BOOST_TEST(*v == 2);
+  }
+  // ENFORCE forwards rvalues as such.
+  {
+    auto p = ELLE_ENFORCE(std::make_unique<int>(42));
+    BOOST_TEST(*p == 42);
+  }
 }
 
 ELLE_TEST_SUITE()

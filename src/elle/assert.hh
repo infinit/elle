@@ -128,15 +128,8 @@ namespace elle
    */
   template <typename T>
   ELLE_API
-  T const&
-  _elle_assert(T const& predicate,
-               std::string const& message,
-               char const* file,
-               int line);
-  template <typename T>
-  ELLE_API
-  T&
-  _elle_assert(T& predicate,
+  decltype(auto)
+  _elle_assert(T&& predicate,
                std::string const& message,
                char const* file,
                int line);
