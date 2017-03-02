@@ -1,5 +1,4 @@
-#ifndef ELLE_UTILS_HH
-# define ELLE_UTILS_HH
+#pragma once
 
 namespace elle
 {
@@ -17,5 +16,3 @@ namespace elle
     return const_cast<T*>(o);
   }
 }
-
-#endif

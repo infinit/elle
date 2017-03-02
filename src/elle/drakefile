@@ -550,6 +550,7 @@ def configure(zlib_lib,
     'tuple.cc',
     'type_traits.cc',
     'unordered_map.cc',
+    'utils.cc',
     'utility/Suffixes.cc',
     ]
   if cxx_toolkit.os is not drake.os.android:
