@@ -36,7 +36,7 @@
 #define ELLE_attribute_R(Type, Name, ...)                           \
   ELLE_attribute_r(Type, Name, __VA_ARGS__)                         \
   {                                                                 \
-    return (this->BOOST_PP_CAT(_, Name));                           \
+    return this->BOOST_PP_CAT(_, Name);                             \
   }                                                                 \
 
 #define ELLE_ATTRIBUTE_r(Type, Name, ...)                           \
@@ -96,7 +96,7 @@
 #define ELLE_attribute_X(Type, Name, ...)                           \
   ELLE_attribute_x(Type, Name, __VA_ARGS__)                         \
   {                                                                 \
-    return (this->BOOST_PP_CAT(_, Name));                           \
+    return this->BOOST_PP_CAT(_, Name);                             \
   }                                                                 \
 
 #define ELLE_ATTRIBUTE_x(Type, Name, ...)                           \
@@ -303,7 +303,7 @@
   {                                                                 \
     std::unique_lock<elle::threading::read_mutex> lock              \
       (this->BOOST_PP_CAT(BOOST_PP_CAT(_, Name), _mutex));          \
-    return (this->BOOST_PP_CAT(_, Name));                           \
+    return this->BOOST_PP_CAT(_, Name);                             \
   }
 
 /// Define and implement a thread safe accessor enabling one to set the

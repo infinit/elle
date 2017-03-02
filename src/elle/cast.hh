@@ -1,7 +1,6 @@
-#ifndef ELLE_CAST_HH
-# define ELLE_CAST_HH
+#pragma once
 
-# include <elle/printf.hh>
+#include <elle/printf.hh>
 
 namespace elle
 {
@@ -61,5 +60,3 @@ namespace elle
     }
   };
 }
-
-#endif
