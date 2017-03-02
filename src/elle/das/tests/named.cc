@@ -336,6 +336,19 @@ call()
   }
 }
 
+/*----.
+| Map |
+`----*/
+
+static
+void
+map()
+{
+  auto p = elle::das::named::prototype(foo = boost::none);
+  BOOST_CHECK(!boost::optional<int>(std::get<0>(p.map())));
+  BOOST_CHECK_EQUAL(p.map(42), std::make_tuple(42));
+}
+
 /*-------.
 | Driver |
 `-------*/
@@ -351,4 +364,5 @@ ELLE_TEST_SUITE()
   master.add(BOOST_TEST_CASE(default_positional));
   master.add(BOOST_TEST_CASE(call<elle::serialization::Json>));
   master.add(BOOST_TEST_CASE(call<elle::serialization::Binary>));
+  master.add(BOOST_TEST_CASE(map));
 }

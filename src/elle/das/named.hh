@@ -298,10 +298,10 @@ namespace elle
                        defaults, std::forward<Args>(args)...)...);
           }
 
-          template <typename Default, typename F, typename ... Args>
+          template <typename Default, typename ... Args>
           static
           auto
-          map(Default& defaults, F const& f, Args&& ... args)
+          map(Default& defaults, Args&& ... args)
           {
             return std::make_tuple(find<Index, Formal, Args...>::get(
                                      defaults, std::forward<Args>(args)...)...);
