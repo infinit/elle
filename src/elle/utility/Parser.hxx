@@ -51,14 +51,14 @@ namespace elle
     ParserDeclare(bool);
     ParserDeclare(Character);
     ParserDeclare(Real);
-    ParserDeclare(Integer8);
-    ParserDeclare(Integer16);
-    ParserDeclare(Integer32);
-    ParserDeclare(Integer64);
-    ParserDeclare(Natural8);
-    ParserDeclare(Natural16);
-    ParserDeclare(Natural32);
-    ParserDeclare(Natural64);
+    ParserDeclare(int8_t);
+    ParserDeclare(int16_t);
+    ParserDeclare(int32_t);
+    ParserDeclare(int64_t);
+    ParserDeclare(uint8_t);
+    ParserDeclare(uint16_t);
+    ParserDeclare(uint32_t);
+    ParserDeclare(uint64_t);
     ParserDeclare(String);
 
 //

@@ -20,9 +20,9 @@ namespace elle
     Version(); // XXX[to remove later]
     inline
     constexpr
-    Version(elle::Natural8 major,
-            elle::Natural8 minor,
-            elle::Natural8 subminor);
+    Version(uint8_t major,
+            uint8_t minor,
+            uint8_t subminor);
 
     /*-----------.
     | Interfaces |
@@ -49,9 +49,9 @@ namespace elle
   | Attributes |
   `-----------*/
   public:
-    ELLE_ATTRIBUTE_R(elle::Natural8, major);
-    ELLE_ATTRIBUTE_R(elle::Natural8, minor);
-    ELLE_ATTRIBUTE_R(elle::Natural8, subminor);
+    ELLE_ATTRIBUTE_R(uint8_t, major);
+    ELLE_ATTRIBUTE_R(uint8_t, minor);
+    ELLE_ATTRIBUTE_R(uint8_t, subminor);
 
   /*--------------.
   | Serialization |

@@ -38,7 +38,7 @@ namespace elle
       bool operator==(const Pattern&) const;
 
       // dumpable
-      Status Dump(const Natural32 = 0) const;
+      Status Dump(const uint32_t = 0) const;
 
       //
       // attributes

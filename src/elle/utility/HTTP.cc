@@ -487,7 +487,7 @@ namespace elle
 
       // append the given data to the region.
       if (region->Append(reinterpret_cast<const Byte*>(ptr),
-                         static_cast<Natural64>(size * nmemb)) == Status::Error)
+                         static_cast<uint64_t>(size * nmemb)) == Status::Error)
         return (0);
 
       return (size * nmemb);

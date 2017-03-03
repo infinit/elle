@@ -54,7 +54,7 @@ namespace elle
     ///
     /// this method dumps the object's internal.
     ///
-    Status              Pattern::Dump(const Natural32           margin) const
+    Status              Pattern::Dump(const uint32_t           margin) const
     {
       String            alignment(margin, ' ');
 

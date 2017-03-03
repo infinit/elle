@@ -25,7 +25,7 @@ namespace elle
     /// common constructor.
     ///
     Duration::Duration(const Unit                               unit,
-                       const Natural64                          value):
+                       const uint64_t                          value):
       unit(unit),
       value(value)
     {
@@ -55,7 +55,7 @@ namespace elle
     ///
     /// this function dumps an duration object.
     ///
-    Status              Duration::Dump(Natural32                margin) const
+    Status              Duration::Dump(uint32_t                margin) const
     {
       String            alignment(margin, ' ');
 

@@ -19,7 +19,7 @@ namespace elle
 
       virtual ~Dumpable() {}
 
-      virtual Status    Dump(const Natural32 shift = 0) const = 0;
+      virtual Status    Dump(const uint32_t shift = 0) const = 0;
     };
 
   }

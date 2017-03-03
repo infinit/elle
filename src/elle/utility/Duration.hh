@@ -37,7 +37,7 @@ namespace elle
       //
       Duration();
       Duration(const Unit,
-               const Natural64);
+               const uint64_t);
       Duration(Duration const& other) = default;
 
       //
@@ -49,13 +49,13 @@ namespace elle
       bool operator==(const Duration&) const;
 
       // dumpable
-      Status Dump(const Natural32 = 0) const;
+      Status Dump(const uint32_t = 0) const;
 
       //
       // attributes
       //
       Unit              unit;
-      Natural64         value;
+      uint64_t         value;
     };
 
   }

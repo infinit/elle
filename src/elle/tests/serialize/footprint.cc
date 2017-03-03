@@ -81,7 +81,7 @@ footprint()
 {
   A a;
 
-  elle::Natural32 size = elle::serialize::footprint(a);
+  uint32_t size = elle::serialize::footprint(a);
 
   BOOST_CHECK_EQUAL(size, 24);
 }

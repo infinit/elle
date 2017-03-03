@@ -9,7 +9,7 @@ namespace elle
   {
 
     /// This type represents a factory product.
-    typedef Natural32           Product;
+    typedef uint32_t           Product;
 
   }
 }

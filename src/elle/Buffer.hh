@@ -1,16 +1,15 @@
-#ifndef ELLE_BUFFER_HH
-# define ELLE_BUFFER_HH
+#pragma once
 
-# include <iosfwd>
-# include <limits>
-# include <memory>
+#include <iosfwd>
+#include <limits>
+#include <memory>
 
-# include <boost/operators.hpp>
+#include <boost/operators.hpp>
 
-# include <elle/IOStream.hh>
-# include <elle/attribute.hh>
-# include <elle/operator.hh>
-# include <elle/types.hh>
+#include <elle/IOStream.hh>
+#include <elle/attribute.hh>
+#include <elle/operator.hh>
+#include <elle/types.hh>
 
 namespace elle
 {
@@ -183,7 +182,7 @@ namespace elle
   public:
     // XXX[to remove in the future, if we use DumpArchives]
     void
-    dump(const Natural32 shift = 0) const;
+    dump(const uint32_t shift = 0) const;
   };
 
   ELLE_API
@@ -314,7 +313,7 @@ namespace elle
   public:
     // XXX[to remove in the future, if we use DumpArchives]
     void
-    dump(const Natural32 shift = 0) const;
+    dump(const uint32_t shift = 0) const;
   };
 
 
@@ -431,6 +430,4 @@ namespace std
   };
 }
 
-# include <elle/Buffer.hxx>
-
-#endif
+#include <elle/Buffer.hxx>

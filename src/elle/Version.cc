@@ -25,11 +25,11 @@ namespace elle
   void
   Version::print(std::ostream& stream) const
   {
-    stream << static_cast<elle::Natural32>(this->_major)
+    stream << static_cast<uint32_t>(this->_major)
            << "."
-           << static_cast<elle::Natural32>(this->_minor)
+           << static_cast<uint32_t>(this->_minor)
            << "."
-           << static_cast<elle::Natural32>(this->_subminor);
+           << static_cast<uint32_t>(this->_subminor);
   }
 
   /*----------.

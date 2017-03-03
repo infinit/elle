@@ -16,7 +16,7 @@ namespace elle
     /// this variable contains the alignment where the descriptions
     /// must be displayed in Usage().
     ///
-    const Natural32             Parser::Alignment = 25;
+    const uint32_t             Parser::Alignment = 25;
 
 //
 // ---------- option-specific methods -----------------------------------------
@@ -44,7 +44,7 @@ namespace elle
     ///
     /// this method dumps the option.
     ///
-    Status              Parser::Option::Dump(const Natural32    margin) const
+    Status              Parser::Option::Dump(const uint32_t    margin) const
     {
       String            alignment(margin, ' ');
 
@@ -92,7 +92,7 @@ namespace elle
     ///
     /// default constructor.
     ///
-    Parser::Parser(Natural32                                    argc,
+    Parser::Parser(uint32_t                                    argc,
                    Character**                                  argv):
       argc(argc),
       argv(argv),
@@ -105,7 +105,7 @@ namespace elle
     ///
     Parser::~Parser()
     {
-      Natural32         i;
+      uint32_t         i;
 
       // release the longs structure.
       if (this->longs != nullptr)
@@ -183,7 +183,7 @@ namespace elle
     bool Parser::Locate(const String&            name,
                                        Parser::Option*&         option)
     {
-      Natural32         i;
+      uint32_t         i;
 
       // go through the options.
       for (i = 0; i < this->options.size(); i++)
@@ -208,7 +208,7 @@ namespace elle
     bool Parser::Locate(const Character&         character,
                                        Parser::Option*&         option)
     {
-      Natural32         i;
+      uint32_t         i;
 
       // go through the options.
       for (i = 0; i < this->options.size(); i++)
@@ -241,7 +241,7 @@ namespace elle
       // not do it.
       if (this->longs == nullptr)
         {
-          Natural32     i;
+          uint32_t     i;
 
           // first compute the short option string, starting with the ':'
           // character.
@@ -448,7 +448,7 @@ namespace elle
     ///
     Void                Parser::Usage()
     {
-      Natural32         i;
+      uint32_t         i;
 
       // display the general usage.
       std::cerr << "[Usage] " << this->argv[0] << " {options...}"
@@ -461,7 +461,7 @@ namespace elle
       // go through the options.
       for (i = 0; i < this->options.size(); i++)
         {
-          Natural32     length;
+          uint32_t     length;
 
           // print the short and long option.
           std::cerr << "  -" << this->options[i]->character
@@ -556,10 +556,10 @@ namespace elle
     ///
     /// this method dumps the parser.
     ///
-    Status              Parser::Dump(const Natural32            margin) const
+    Status              Parser::Dump(const uint32_t            margin) const
     {
       String            alignment(margin, ' ');
-      Natural32         i;
+      uint32_t         i;
 
       std::cout << alignment << "[Parser]" << std::endl;
 

@@ -274,12 +274,12 @@ namespace elle
   }
 
   void
-  Buffer::dump(const Natural32 margin) const
+  Buffer::dump(const uint32_t margin) const
   {
-    Natural32         space = 78 - margin - io::Dumpable::Shift.length();
+    uint32_t         space = 78 - margin - io::Dumpable::Shift.length();
     String            alignment(margin, ' ');
-    Natural32         i;
-    Natural32         j;
+    uint32_t         i;
+    uint32_t         j;
 
     std::cout << alignment
               << "[Buffer] "
@@ -468,12 +468,12 @@ namespace elle
 
 
   void
-  ConstWeakBuffer::dump(const Natural32 margin) const
+  ConstWeakBuffer::dump(const uint32_t margin) const
   {
-    Natural32         space = 78 - margin - io::Dumpable::Shift.length();
+    uint32_t         space = 78 - margin - io::Dumpable::Shift.length();
     String            alignment(margin, ' ');
-    Natural32         i;
-    Natural32         j;
+    uint32_t         i;
+    uint32_t         j;
 
     std::cout << alignment
               << "[Buffer] "

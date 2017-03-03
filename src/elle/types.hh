@@ -17,27 +17,17 @@
 
 namespace elle
 {
-  using Integer8 = int8_t;
-  using Integer16 = int16_t;
-  using Integer32 = int32_t;
-  using Integer64 = int64_t;
-
-  using Natural8 = uint8_t;
-  using Natural16 = uint16_t;
-  using Natural32 = uint32_t;
-  using Natural64 = uint64_t;
-
   using Void = void;
   using Char = char;
   using Character = char;
-  using Byte = Natural8;
+  using Byte = uint8_t;
   using Real = double;
 
   using String = std::basic_string<Character>;
 
-  using Size = Natural64;
-  using Index = Natural64;
-  using Offset = Natural64;
+  using Size = uint64_t;
+  using Index = uint64_t;
+  using Offset = uint64_t;
 
   ///
   /// this enumeration represents a return status.

@@ -37,7 +37,7 @@ namespace elle
       //
       // constants
       //
-      static const Natural32            Alignment;
+      static const uint32_t            Alignment;
 
       //
       // enumeration
@@ -52,14 +52,14 @@ namespace elle
           Typebool,
           TypeCharacter,
           TypeReal,
-          TypeInteger8,
-          TypeInteger16,
-          TypeInteger32,
-          TypeInteger64,
-          TypeNatural8,
-          TypeNatural16,
-          TypeNatural32,
-          TypeNatural64,
+          Typeint8_t,
+          Typeint16_t,
+          Typeint32_t,
+          Typeint64_t,
+          Typeuint8_t,
+          Typeuint16_t,
+          Typeuint32_t,
+          Typeuint64_t,
           TypeString
         };
 
@@ -109,7 +109,7 @@ namespace elle
         //
 
         // dumpable
-        Status          Dump(const Natural32 = 0) const;
+        Status          Dump(const uint32_t = 0) const;
       };
 
       //
@@ -132,7 +132,7 @@ namespace elle
       //
       // constructors & destructors
       //
-      Parser(Natural32,
+      Parser(uint32_t,
              Character**);
       ~Parser();
 
@@ -189,12 +189,12 @@ namespace elle
       //
 
       // dumpable
-      Status            Dump(const Natural32 = 0) const;
+      Status            Dump(const uint32_t = 0) const;
 
       //
       // attributes
       //
-      Natural32         argc;
+      uint32_t         argc;
       Character**       argv;
 
       String            description;
