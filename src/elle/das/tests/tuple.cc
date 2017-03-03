@@ -14,6 +14,14 @@ basics()
   BOOST_CHECK_EQUAL(t.bar, "lol");
 }
 
+static
+void
+print()
+{
+  auto t = elle::das::make_tuple(foo = 3, bar = "lol");
+  BOOST_CHECK_EQUAL(elle::sprintf("%s", t), "(foo = 3, bar = lol)");
+}
+
 /*-------.
 | Driver |
 `-------*/
@@ -22,4 +30,5 @@ ELLE_TEST_SUITE()
 {
   auto& master = boost::unit_test::framework::master_test_suite();
   master.add(BOOST_TEST_CASE(basics));
+  master.add(BOOST_TEST_CASE(print));
 }
