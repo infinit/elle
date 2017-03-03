@@ -299,14 +299,15 @@ namespace elle
                        defaults, std::forward<Args>(args)...)...);
           }
 
-          template <typename Default, typename ... Args>
+          template <typename ... Types, typename ... Args>
           static
           auto
-          map(Default& defaults, Args&& ... args)
+          map(DefaultStore const& defaults, Args&& ... args)
           {
             return das::make_tuple(
-              make_formal<Formal>() = find<Index, Formal, Args...>::get(
-                defaults, std::forward<Args>(args)...)...);
+              (make_formal<Formal>() =
+                Types{find<Index, Formal, Args...>::get(
+                  defaults, std::forward<Args>(args)...)})...);
           }
         };
 
@@ -318,12 +319,13 @@ namespace elle
             this->defaults, f, std::forward<Args>(args)...);
         }
 
-        template <typename ... Args>
+        template <typename ... Types, typename ... Args>
         auto
         map(Args&& ... args) const
         {
-          return Call<std::make_index_sequence<sizeof ... (Formal)>>::map(
-            this->defaults, std::forward<Args>(args)...);
+          return Call<std::make_index_sequence<sizeof ... (Formal)>>::
+            template map<Types...>(
+              this->defaults, std::forward<Args>(args)...);
         }
 
         template <typename Arg>
