@@ -90,6 +90,7 @@ def configure(cxx_toolkit,
     'printer',
     'serialize',
     'symbol',
+    'tuple',
   ]:
     test = drake.cxx.Executable(
       'tests/%s' % name,

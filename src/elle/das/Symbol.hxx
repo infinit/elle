@@ -51,6 +51,12 @@
       return o.CName;                                           \
     }                                                           \
                                                                 \
+    template <typename T>                                       \
+    struct Field                                                \
+    {                                                           \
+      T CName;                                                  \
+    };                                                          \
+                                                                \
   private:                                                      \
     template <typename T>                                       \
     static constexpr                                            \
