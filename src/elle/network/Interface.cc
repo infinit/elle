@@ -197,13 +197,12 @@ namespace elle
             oss << std::hex << std::setfill('0') << std::setw(2);
             for (size_t i = 0; i < sizeof(inet_addr->sin6_addr.s6_addr); i+=2)
             {
-              if (i != 0)
+              if (i)
                 oss << ':';
               oss << std::setfill('0') << std::setw(2) << std::hex
                   << static_cast<unsigned int>(tab[i])
                   << std::setfill('0') << std::setw(2) << std::hex
-                  << static_cast<unsigned int>(tab[i+1])
-                  ;
+                  << static_cast<unsigned int>(tab[i+1]) ;
             }
             map[iter->ifa_name].ipv6_address.push_back(oss.str());
           }

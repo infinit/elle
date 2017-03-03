@@ -276,17 +276,18 @@ namespace elle
   void
   Buffer::dump(const uint32_t margin) const
   {
-    uint32_t         space = 78 - margin - io::Dumpable::Shift.length();
-    String            alignment(margin, ' ');
-    uint32_t         i;
-    uint32_t         j;
+    uint32_t space = 78 - margin - io::Dumpable::Shift.length();
+    String alignment(margin, ' ');
+    uint32_t i;
+    uint32_t j;
 
+    auto saver = boost::io::ios_all_saver(std::cout);
     std::cout << alignment
               << "[Buffer] "
               << "address(" << static_cast<Void*>(this->_contents) << ") "
               << "size(" << std::dec << this->_size << ") "
               << "capacity(" << std::dec << this->_capacity << ")"
-              << std::endl;
+              << '\n';
 
     // since a byte is represented by two characters.
     space = space / 2;
@@ -295,7 +296,7 @@ namespace elle
     std::cout.fill('0');
 
     // display the region.
-    for (i = 0; i < (this->_size / space); i++)
+    for (i = 0; i < this->_size / space; i++)
       {
         std::cout << alignment << io::Dumpable::Shift;
 
@@ -305,10 +306,10 @@ namespace elle
                     << std::setw(2)
                     << (int)this->_contents[i * space + j];
 
-        std::cout << std::endl;
+        std::cout << '\n';
       }
 
-    if ((this->_size % space) != 0)
+    if (this->_size % space)
       {
         std::cout << alignment << io::Dumpable::Shift;
 

@@ -1,3 +1,5 @@
+#include <boost/io/ios_state.hpp>
+
 #include <elle/utility/Parser.hh>
 #include <elle/io/Dumpable.hh>
 
@@ -561,6 +563,7 @@ namespace elle
       String            alignment(margin, ' ');
       uint32_t         i;
 
+      auto saver = boost::io::ios_all_saver{std::cout};
       std::cout << alignment << "[Parser]" << std::endl;
 
       // dump argc.
