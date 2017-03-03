@@ -881,7 +881,7 @@ class GccToolkit(Toolkit):
       self.__libraries_flags(cfg, libraries, cmd)
       if cfg.whole_archive:
         if self.os is drake.os.macos:
-          cmd += '-Wl,-all_load' # close enough
+          cmd.append( '-Wl,-all_load') # close enough
         else:
           pre=list()
           ar=list()
@@ -929,7 +929,7 @@ class GccToolkit(Toolkit):
       self.__libraries_flags(cfg, to_link, cmd)
       if cfg.whole_archive:
         if self.os is drake.os.macos:
-          cmd += '-Wl,-all_load' # close enough
+          cmd.append('-Wl,-all_load') # close enough
         else:
           pre=list()
           ar=list()
