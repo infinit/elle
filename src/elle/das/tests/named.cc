@@ -345,8 +345,8 @@ void
 map()
 {
   auto p = elle::das::named::prototype(foo = boost::none);
-  BOOST_CHECK(!boost::optional<int>(std::get<0>(p.map())));
-  BOOST_CHECK_EQUAL(p.map(42), std::make_tuple(42));
+  BOOST_CHECK(!boost::optional<int>(p.map().foo));
+  BOOST_CHECK_EQUAL(p.map(42).foo, 42);
 }
 
 /*-------.

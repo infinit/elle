@@ -10,6 +10,7 @@
 #include <elle/serialization/Serializer.hh>
 
 #include <elle/das/Symbol.hh>
+#include <elle/das/tuple.hh>
 
 namespace elle
 {
@@ -303,8 +304,9 @@ namespace elle
           auto
           map(Default& defaults, Args&& ... args)
           {
-            return std::make_tuple(find<Index, Formal, Args...>::get(
-                                     defaults, std::forward<Args>(args)...)...);
+            return das::make_tuple(
+              make_formal<Formal>() = find<Index, Formal, Args...>::get(
+                defaults, std::forward<Args>(args)...)...);
           }
         };
 
