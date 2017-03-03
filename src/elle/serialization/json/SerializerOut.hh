@@ -119,6 +119,7 @@ namespace elle
         ELLE_ATTRIBUTE(boost::any, json);
         ELLE_ATTRIBUTE(std::vector<boost::any*>, current);
         ELLE_ATTRIBUTE(bool, pretty);
+        ELLE_ATTRIBUTE_R(std::ostream&, output);
       };
     }
   }

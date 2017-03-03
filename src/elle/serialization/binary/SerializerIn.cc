@@ -13,7 +13,8 @@ namespace elle
     {
       SerializerIn::SerializerIn(std::istream& input,
                                  bool versioned)
-        : Super(input, versioned)
+        : Super(versioned)
+        , _input(input)
       {
         this->_check_magic(input);
       }
@@ -21,7 +22,8 @@ namespace elle
       SerializerIn::SerializerIn(std::istream& input,
                                  Versions versions,
                                  bool versioned)
-        : Super(input, std::move(versions), versioned)
+        : Super(std::move(versions), versioned)
+        , _input(input)
       {
         this->_check_magic(input);
       }

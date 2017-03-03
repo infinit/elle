@@ -26,9 +26,8 @@ namespace elle
     | Construction |
     `-------------*/
     public:
-      SerializerIn(std::istream& input, bool versioned);
-      SerializerIn(std::istream& input,
-                   Versions versions, bool versioned = true);
+      SerializerIn(bool versioned);
+      SerializerIn(Versions versions, bool versioned = true);
 
     /*-----------.
     | Properties |
@@ -64,7 +63,6 @@ namespace elle
     `--------*/
     protected:
       friend class Serializer;
-      ELLE_ATTRIBUTE_R(std::istream&, input);
     };
   }
 }

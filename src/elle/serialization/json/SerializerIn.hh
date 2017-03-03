@@ -91,7 +91,7 @@ namespace elle
 
         ELLE_ATTRIBUTE(boost::any, json);
         ELLE_ATTRIBUTE(std::vector<boost::any*>, current);
-
+        ELLE_ATTRIBUTE(std::istream&, input);
       private:
         template <typename T, typename ... Alternatives>
         T&

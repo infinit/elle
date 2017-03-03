@@ -92,6 +92,7 @@ namespace elle
         size_t
         serialize_number(std::istream& output,
                          int64_t& value);
+        ELLE_ATTRIBUTE_R(std::istream&, input);
       private:
         int64_t _serialize_number();
         template <typename T>

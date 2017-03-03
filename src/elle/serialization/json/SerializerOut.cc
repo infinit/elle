@@ -21,10 +21,11 @@ namespace elle
       SerializerOut::SerializerOut(std::ostream& output,
                                    bool versioned,
                                    bool pretty)
-        : Super(output, versioned)
+        : Super(versioned)
         , _json()
         , _current()
         , _pretty(pretty)
+        , _output(output)
       {
         this->_current.push_back(&this->_json);
       }
@@ -33,10 +34,11 @@ namespace elle
                                    Versions versions,
                                    bool versioned,
                                    bool pretty)
-        : Super(output, std::move(versions), versioned)
+        : Super(std::move(versions), versioned)
         , _json()
         , _current()
         , _pretty(pretty)
+        , _output(output)
       {
         this->_current.push_back(&this->_json);
       }

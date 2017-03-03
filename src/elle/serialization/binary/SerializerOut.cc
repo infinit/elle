@@ -18,7 +18,8 @@ namespace elle
       `-------------*/
 
       SerializerOut::SerializerOut(std::ostream& output, bool versioned)
-        : Super(output, versioned)
+        : Super(versioned)
+        , _output(output)
       {
         this->_write_magic(output);
       }
@@ -26,7 +27,8 @@ namespace elle
       SerializerOut::SerializerOut(std::ostream& output,
                                    Versions versions,
                                    bool versioned)
-        : Super(output, std::move(versions), versioned)
+        : Super(std::move(versions), versioned)
+        , _output(output)
       {
         this->_write_magic(output);
       }

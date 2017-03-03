@@ -24,9 +24,8 @@ namespace elle
     | Construction |
     `-------------*/
     public:
-      SerializerOut(std::ostream& output, bool versioned = true);
-      SerializerOut(std::ostream& output,
-                    Versions versions, bool versioned = true);
+      SerializerOut(bool versioned = true);
+      SerializerOut(Versions versions, bool versioned = true);
 
     /*-----------.
     | Properties |
@@ -75,9 +74,6 @@ namespace elle
     `--------*/
     protected:
       friend class Serializer;
-      std::ostream&
-      output();
-      ELLE_ATTRIBUTE(std::ostream&, output);
     };
   }
 }

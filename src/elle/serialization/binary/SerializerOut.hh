@@ -91,7 +91,7 @@ namespace elle
         size_t
         serialize_number(std::ostream& output,
                          int64_t number);
-
+        ELLE_ATTRIBUTE_R(std::ostream&, output);
       private:
         void
         _serialize_number(int64_t number);

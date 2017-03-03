@@ -29,10 +29,11 @@ namespace elle
 
       SerializerIn::SerializerIn(std::istream& input,
                                  bool versioned)
-        : Super(input, versioned)
+        : Super(versioned)
         , _partial(false)
         , _json()
         , _current()
+        , _input(input)
       {
         this->_load_json(input);
       }
@@ -40,10 +41,11 @@ namespace elle
       SerializerIn::SerializerIn(std::istream& input,
                                  Versions versions,
                                  bool versioned)
-        : Super(input, std::move(versions), versioned)
+        : Super(std::move(versions), versioned)
         , _partial(false)
         , _json()
         , _current()
+        , _input(input)
       {
         this->_load_json(input);
       }
@@ -65,10 +67,11 @@ namespace elle
       }
 
       SerializerIn::SerializerIn(elle::json::Json input, bool versioned)
-        : Super(ELLE_SFINAE_INSTANCE(std::istream), versioned) // FIXME
+        : Super(versioned)
         , _partial(false)
         , _json(std::move(input))
         , _current()
+        , _input(ELLE_SFINAE_INSTANCE(std::istream)) // FIXME
       {
         this->_current.push_back(&this->_json);
       }

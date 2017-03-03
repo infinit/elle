@@ -4,17 +4,13 @@ namespace elle
 {
   namespace serialization
   {
-    SerializerOut::SerializerOut(std::ostream& output,
-                                 bool versioned)
+    SerializerOut::SerializerOut(bool versioned)
       : Super(versioned)
-      , _output(output)
     {}
 
-    SerializerOut::SerializerOut(std::ostream& output,
-                                 Versions versions,
+    SerializerOut::SerializerOut(Versions versions,
                                  bool versioned)
       : Super(std::move(versions), versioned)
-      , _output(output)
     {}
 
     void
@@ -27,12 +23,6 @@ namespace elle
     SerializerOut::out() const
     {
       return true;
-    }
-
-    std::ostream&
-    SerializerOut::output()
-    {
-      return this->_output;
     }
   }
 }
