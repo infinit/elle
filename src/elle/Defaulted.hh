@@ -1,5 +1,7 @@
 #pragma once
 
+#include <elle/attribute.hh>
+
 namespace elle
 {
   /// An optional that knows its default value.
