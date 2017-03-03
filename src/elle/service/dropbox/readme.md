@@ -6,14 +6,14 @@ The Dropbox library provides a *reactorification* for the [Dropbox](https://www.
 
 ## Motivation
 
-To demonstrate capabilities of our [file system](https://github.com/infinit/fs) interface used by our storage platform, we've created a wrapper for the Dropbox web API using the [reactor](/reactor).
+To demonstrate capabilities of our [file system](https://github.com/infinit/infinit) interface used by our storage platform, we've created a wrapper for the Dropbox web API using the [reactor](/src/elle/reactor).
 
 ## How to compile
 
 _See [Elle: How to compile](https://github.com/infinit/elle#how-to-compile)._
 
 ```bash
-./drake //dropbox/build -j 2
+./drake //src/elle/service/dropbox/build -j 2
 ```
 
 ## Maintainers

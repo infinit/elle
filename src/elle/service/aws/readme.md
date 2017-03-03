@@ -6,14 +6,14 @@ The AWS library provides a *reactorification* of the [Amazon Web Services](https
 
 ## Motivation
 
-The [reactor](/reactor) provides a reactorified HTTP(s) capabilities, the [cryptography](/cryptography) provides tools to generate signatures. With both libraries, we've created a reactorified library to performs AWS operations.
+The [reactor](/src/elle/reactor) provides a reactorified HTTP(s) capabilities, the [cryptography](/src/elle/cryptography) provides tools to generate signatures. With both libraries, we've created a reactorified library to performs AWS operations.
 
 ## How to compile
 
 _See [Elle: How to compile](https://github.com/infinit/elle#how-to-compile)._
 
 ```bash
-./drake //aws/build -j 2
+./drake //src/elle/service/aws/build -j 2
 ```
 
 ## Maintainers

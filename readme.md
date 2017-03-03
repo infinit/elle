@@ -16,8 +16,8 @@ Here is an example showing an asynchronous HTTP operation in a natural form (no 
 
 ```cpp
 // Initialize the HTTP Request.
-reactor::http::Request r("https://en.wikipedia.org/w/api.php",
-                         reactor::http::Method::GET);
+elle::reactor::http::Request r("https://en.wikipedia.org/w/api.php",
+                               elle::reactor::http::Method::GET);
 r.query_string({
   {"format", "json"},
   {"action", "query"},
@@ -31,7 +31,7 @@ r.finalize();
 // Deserialize the json response.
 std::cout << elle::json::pretty_print(elle::json::read(r)) << std::endl;
 ```
-Full example [here](examples/samples/get_wikipedia.cc).
+<!-- Full example [here](elle/src/elle/examples/samples/get_wikipedia.cc). -->
 
 ## Getting Elle.
 
@@ -46,14 +46,14 @@ git clone https://github.com/infinit/elle --recursive # Clone elle and its submo
 ## Structure
 
 As mentioned earlier, Elle is composed of a set of sub-libraries, designed to ease C++ development through robust and flexible implementations, including:
-- [elle](elle): Utilities including serialization, logs, buffer, formatting, ...
-- [reactor](reactor): An asynchronous framework using a coroutines scheduler
-- [cryptography](cryptography): Object-oriented cryptography wrapper around OpenSSL
-- [protocol](protocol): Network communication designed to support RPCs
-- [das](das): Symbol-based introspection
-- [athena](athena): Byzantine environment algorithms (Paxos)
-- [aws](aws): *reactorified* AWS API wrapper
-- [dropbox](dropbox): *reactorified* Dropbox API wrapper
+- [elle](src/elle): Utilities including serialization, logs, buffer, formatting, ...
+- [reactor](src/elle/reactor): An asynchronous framework using a coroutines scheduler
+- [cryptography](src/elle/cryptography): Object-oriented cryptography wrapper around OpenSSL
+- [protocol](src/elle/protocol): Network communication designed to support RPCs
+- [das](src/elle/das): Symbol-based introspection
+- [athena](src/elle/athena): Byzantine environment algorithms (Paxos)
+- [aws](src/elle/service/aws): *reactorified* AWS API wrapper
+- [dropbox](src/elle/service/dropbox): *reactorified* Dropbox API wrapper
 
 ## How to build Elle (or parts of Elle)
 
@@ -95,12 +95,12 @@ cd elle/_build/osx
 Because Elle was designed to be modular, you can build specific parts of Elle by running `./drake //<module>/build`:
 
 ```bash
-./drake //cryptography/build -j 2 # To build libcryptography and its dependencies.
-./drake //reactor/build -j 2 # To build the libreactor and its dependencies.
-./drake //protocol/build -j 2 # To build the libprotocol and its dependencies.
+./drake //src/elle/cryptography/build -j 2 # To build libcryptography and its dependencies.
+./drake //src/elle/reactor/build -j 2 # To build the libreactor and its dependencies.
+./drake //src/elle/protocol/build -j 2 # To build the libprotocol and its dependencies.
 ./drake //...
 ```
-It will result on `<module>/lib/lib<module>.so` and its dependencies on GNU/Linux, `<module>/lib/lib<module>.dylib` on macOS, ...
+It will result on `<module>/lib/libelle_<module>.so` and its dependencies on GNU/Linux, `<module>/lib/lib<module>.dylib` on macOS, ...
 
 ### Dependencies
 

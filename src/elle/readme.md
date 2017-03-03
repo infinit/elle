@@ -220,7 +220,7 @@ ELLE_LOG_LEVEL=component1:DUMP,component2:NONE ./log
 _See [Elle: How to compile](https://github.com/infinit/elle#how-to-compile)._
 
 ```bash
-./drake //elle/build -j 2
+./drake //src/elle/build -j 2
 ```
 
 ## Maintainers

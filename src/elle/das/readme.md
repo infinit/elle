@@ -13,7 +13,7 @@ The less code you write, the happier you should be is the philosophy behind Das.
 _See [Elle: How to compile](https://github.com/infinit/elle#how-to-compile)._
 
 ```bash
-./drake //das/build -j 2
+./drake //src/elle/das/build -j 2
 ```
 
 ## Example
@@ -28,17 +28,17 @@ struct Record
   std::string title;
   std::string artist;
 
-  using Model = das::Model<Record, elle::meta::List<Symbol_title, Symbol_artist>>;
+  using Model = elle::das::Model<Record, elle::meta::List<Symbol_title, Symbol_artist>>;
 };
 
 // ...
 
-Record record{"Sandstorm", "Darube"};
+Record record{"Sandstorm", "Darude"};
 // Default printer.
-std::cout << record << std::endl; // Record(title = Sandstorm, artist = Darube)
+std::cout << record << std::endl; // Record(title = Sandstorm, artist = Darude)
 // Default serialization.
 elle::serialization::json::SerializerOut serializer(std::cout, false);
-das::serialize(record, serializer); // {"title": "Sandstorm", "artist": "Darube"}
+elle::das::serialize(record, serializer); // {"title": "Sandstorm", "artist": "Darude"}
 ```
 
 ## Maintainers

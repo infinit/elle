@@ -13,13 +13,13 @@ The reactor was designed to suit the needs of I/O bound projects. In this situat
 The main logic of simple echo server implementation would look like:
 
 ```cpp
-reactor::Thread acceptor(sched, "acceptor", [&]
+elle::reactor::Thread acceptor(sched, "acceptor", [&]
   {
-    reactor::network::TCPServer server;
+    elle::reactor::network::TCPServer server;
     server.listen(8080);
     // Scope enable to start tasks and make sure they are terminated upon
     // destruction, elle::With handles nested exceptions.
-    elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
+    elle::With<elle::reactor::Scope>() << [&] (reactor::Scope& scope)
     {
       while (true)
       {
@@ -40,7 +40,7 @@ reactor::Thread acceptor(sched, "acceptor", [&]
                 socket->write(line);
               }
             }
-            catch (reactor::network::ConnectionClosed const&)
+            catch (elle::reactor::network::ConnectionClosed const&)
             {}
           });
       }
