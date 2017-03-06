@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include <elle/printf-fwd.hh>
+
 namespace elle
 {
   namespace das
@@ -67,6 +69,14 @@ namespace elle
         name()
         {
           return S::name();
+        }
+
+        friend
+        std::ostream&
+        operator<<(std::ostream& out, Effective const& e)
+        {
+          elle::fprintf(out, "%s = %s", e.name(), e.value);
+          return out;
         }
       };
 
