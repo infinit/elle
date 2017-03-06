@@ -14,15 +14,6 @@ namespace elle
       , _set{set}
     {}
 
-    template <typename ... Args,
-              typename Sfinae = std::enable_if_t<
-                std::is_constructible<T, Args...>::value, void>>
-    explicit
-    Defaulted(Args&& ... args)
-      : _value(std::forward<Args>(args)...)
-      , _set(true)
-    {}
-
     Defaulted(Defaulted const&) = default;
 
     Defaulted(Defaulted&&) = default;
