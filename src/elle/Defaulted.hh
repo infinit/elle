@@ -74,6 +74,15 @@ namespace elle
     bool _set = false;
   };
 
+  template <typename T>
+  std::ostream&
+  operator <<(std::ostream& out, Defaulted<T> const& t)
+  {
+    elle::fprintf(out, "%s", t.get());
+    if (!t)
+      elle::fprintf(out, " (default)");
+    return out;
+  }
 
   template <typename T>
   Defaulted<T>
