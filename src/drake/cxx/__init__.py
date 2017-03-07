@@ -643,7 +643,12 @@ class GccToolkit(Toolkit):
       self.__version = tuple(map(int, self.preprocess_values(vars)))
     else:
       raise Exception('unknown GCC kind')
-    self.c = compiler_c or '%sgcc%s' % (self.prefix, self.suffix)
+    self.c = compiler_c or '%s%s%s' % (self.prefix,
+                                       self.basename
+                                       # Order matters.
+                                       .replace('clang++', 'clang')
+                                       .replace('g++', 'gcc'),
+                                       self.suffix)
     if archiver:
       self.ar = archiver
     else:
@@ -1020,7 +1025,7 @@ class GccToolkit(Toolkit):
     if self.__splitted is None:
       # On MacPorts, compilers are named clang++-mp-3.9, g++-mp-6, etc.
       r = re.compile(
-        '(.*-)?(g\+\+|clang\+\+)(?:-mp)?(-[0-9]+(\.[0-9]+(\.[0-9]+)?)?)?$')
+        '(.*-)?(g\+\+|clang\+\+)((?:-mp)?-[0-9]+(\.[0-9]+(\.[0-9]+)?)?)?$')
       match = r.match(self.cxx)
       if not match:
         raise Exception('unrecognized compiler name: %s' % self.cxx)
@@ -1029,10 +1034,17 @@ class GccToolkit(Toolkit):
 
   @property
   def prefix(self):
+    '''The prefix to the compiler name, e.g., `arm-`.'''
     return self.__split()[0]
 
   @property
+  def basename(self):
+    '''The compiler basename, e.g., `clang++`.'''
+    return self.__split()[1]
+
+  @property
   def suffix(self):
+    '''The compiler suffix, e.g., `-mp-3.9`.'''
     return self.__split()[2]
 
   @property
