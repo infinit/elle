@@ -256,18 +256,15 @@ class Config:
         return self.__defines
 
     def flag(self, f):
-
         self.flags.append(f)
 
     def ldflag(self, f):
       self.ldflags.append(f)
 
     def framework_add(self, name):
-
         self._framework[name] = None
 
     def frameworks(self):
-
         return self._framework.keys()
 
     def add_local_include_path(self, path):
@@ -297,34 +294,28 @@ class Config:
 
     @property
     def local_include_path(self):
-
         return list(self.__local_includes)
 
     @property
     def system_include_path(self):
-
         return list(self.__system_includes)
 
 
     @property
     def library_path(self):
-
         return iter(self.__lib_paths)
 
 
     @property
     def whole_archive(self):
-
         return self.__whole_archive
 
 
     def use_whole_archive(self):
-
         self.__whole_archive = True
 
 
     def lib_path(self, path):
-
         if path == Path('/lib') or path == Path('/usr/lib'):
             return
         p = Path(path)
@@ -336,12 +327,10 @@ class Config:
 
 
     def lib_path_runtime(self, path):
-
         self.__rpath.append(drake.Path(path))
 
 
     def lib(self, lib, static = False):
-
       if lib in self.__libs:
         if self.__libs[lib].static != static:
           raise Exception('library %s dynamic versus static '
@@ -541,31 +530,24 @@ class Toolkit(metaclass = _ToolkitType):
 
     @classmethod
     def default(self):
-
         return GccToolkit()
 
     def hook_object_deps_add(self, f):
-
         self._hook_object_deps.append(f)
 
     def hook_object_deps(self):
-
         return self._hook_object_deps
 
     def hook_bin_deps_add(self, f):
-
         self._hook_bin_deps.append(f)
 
     def hook_bin_deps(self):
-
         return self._hook_bin_deps
 
     def hook_bin_src_add(self, f):
-
         self._hook_bin_src.append(f)
 
     def hook_bin_src(self):
-
         return self._hook_bin_src
 
 class GccToolkit(Toolkit):
