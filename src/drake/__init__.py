@@ -3240,6 +3240,16 @@ def install(sources, to, strip_prefix = None, post_process = None, follow_symlin
   """
   return __copy(sources, to, strip_prefix, Install, post_process, follow_symlinks)
 
+def symlink(sources, to, strip_prefix = None):
+  """Convenience function to create Symlinker builders.
+
+  See documentation of copy.
+  """
+  def builder(source, path, post_process, follow_symlinks):
+    return drake.Symlink(path, source).builder
+  return __copy(
+    sources, to, strip_prefix, builder, None, None)
+
 
 class Rule(VirtualNode):
 
@@ -4308,6 +4318,10 @@ class Symlinker(ShellCommand):
     if not self.__path.absolute():
       self.__path = self.__path.without_prefix(
         self.__link.path().dirname())
+
+  @property
+  def target(self):
+    return self.__target
 
   def hash(self):
     return {

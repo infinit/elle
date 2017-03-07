@@ -22,3 +22,9 @@ with Drake() as d:
   sc.build()
   assert os.path.islink('scopied/link')
   assertEq(os.readlink('scopied/link'), 'source')
+
+with Drake() as d:
+  foo = drake.write('foo', 'dir/foo')
+  bar = drake.write('foo', 'dir/bar')
+  copies = drake.symlink([foo, bar], 'cdir')
+  map(lambda n: n.build(), copies)
