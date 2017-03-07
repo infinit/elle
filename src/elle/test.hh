@@ -199,8 +199,8 @@ static                                                                \
 void                                                                  \
 Name()                                                                \
 {                                                                     \
-  elle::reactor::Scheduler sched;                                           \
-  elle::reactor::Thread main(                                               \
+  elle::reactor::Scheduler sched;                                     \
+  elle::reactor::Thread main(                                         \
     sched, "main",                                                    \
     [&]                                                               \
     {                                                                 \
@@ -215,7 +215,15 @@ static                                                                \
 void                                                                  \
 Name##_impl()                                                         \
 
-# ifndef ELLE_TEST_NO_MEMFRY
+
+
+// Clang defines _FORTIFY_SOURCE when given -fsanitize=address, and it
+// does not like what we do here.
+#if defined _FORTIFY_SOURCE
+# define  ELLE_TEST_NO_MEMFRY 1
+#endif
+
+# if !defined ELLE_TEST_NO_MEMFRY
 
 // Apple clang-703.0.29 doesn't like using an offset of size_t.
 static const int _memfry_offset = 2 * sizeof(std::size_t);
