@@ -20,6 +20,7 @@ namespace symbol
 
 using elle::das::operator <<;
 
+/// A struct without ctor.
 struct DevicePOD
 {
   bool
@@ -30,6 +31,7 @@ struct DevicePOD
 
   int id;
   std::string name;
+  int useless_and_not_serialized;
 
   using Model
     = elle::das::Model<DevicePOD,
@@ -56,6 +58,7 @@ struct NopeString
   operator =(NopeString const&) = delete;
 };
 
+/// A struct with a ctor.
 struct Device
 {
   Device(int id, NopeString name)
@@ -71,6 +74,7 @@ struct Device
 
   int id;
   NopeString name;
+  int useless_and_not_serialized;
 
   using Model = elle::das::Model<Device,
                                  decltype(elle::meta::list(symbol::id,
