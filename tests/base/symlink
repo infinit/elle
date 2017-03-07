@@ -6,10 +6,19 @@ import drake
 from utils import *
 
 with Drake() as d:
-  source = drake.touch('source')
+  source = drake.write('content', 'source')
   s = drake.Symlink('link', source)
   ss = drake.Symlink('sub/link', source)
   s.build()
   assertEq(os.readlink('link'), 'source')
   ss.build()
   assertEq(os.readlink('sub/link'), '../source')
+  c = drake.copy(s, 'copied')
+  c.build()
+  assert not os.path.islink('copied/link')
+  with open('copied/link', 'r') as f:
+    assertEq(f.read(), 'content')
+  sc = drake.copy(s, 'scopied', follow_symlinks = False)
+  sc.build()
+  assert os.path.islink('scopied/link')
+  assertEq(os.readlink('scopied/link'), 'source')
