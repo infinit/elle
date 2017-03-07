@@ -4295,12 +4295,12 @@ class PythonModule(Builder):
 
 class Symlinker(ShellCommand):
 
-  def __init__(self, link, target):
+  def __init__(self, link, target, build_target = True):
     self.__link = link
     self.__target = target
     self.__path = self.__target.path()
     super().__init__(
-      [],
+      [self.__target] if build_target else [],
       [self.__link],
       None,
       'Symlink %s' % self.__link)
@@ -4338,7 +4338,13 @@ class Symlinker(ShellCommand):
 
 class Symlink(Node):
 
-  def __init__(self, path, target):
+  def __init__(self, path, target, build_target = True):
+    '''Create a Symlink node.
+
+    path         -- Path of the symlink
+    target       -- Target node the symlink should point to.
+    build_target -- Whether to build the target node first when built.
+    '''
     super().__init__(path)
     self.__target = target
-    Symlinker(self, target)
+    Symlinker(self, target, build_target = build_target)
