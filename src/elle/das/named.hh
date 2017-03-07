@@ -38,6 +38,18 @@ namespace elle
         std::remove_reference_t<decltype(_make_formal<T>(42))>;
 
       template <typename T>
+      typename T::Symbol
+      _make_default(...);
+
+      template <typename T>
+      std::enable_if_exists_t<typename T::Passing, T>
+      _make_default(int);
+
+      template <typename T>
+      using make_default =
+        std::remove_reference_t<decltype(_make_default<T>(42))>;
+
+      template <typename T>
       T
       _make_symbol(...);
 
@@ -390,7 +402,7 @@ namespace elle
         template <typename ... CArgs>
         Function(F f, CArgs&& ... args)
           : _function(std::move(f))
-          , _prototype(DefaultStore<make_symbol<Args>...>(
+          , _prototype(DefaultStore<make_default<Args>...>(
                          std::forward<CArgs>(args)...))
         {
           static_assert(sizeof ... (Args) == sizeof ... (args), "LOLEUH");
@@ -477,7 +489,7 @@ namespace elle
 
         ELLE_ATTRIBUTE_R(F, function);
         ELLE_ATTRIBUTE_R(
-          (Prototype<make_symbol<Args> ...>), prototype);
+          (Prototype<make_default<Args> ...>), prototype);
 
         void
         print(std::ostream& out) const

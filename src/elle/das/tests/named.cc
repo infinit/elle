@@ -297,7 +297,7 @@ call()
         elle::err("negative");
       return std::to_string(x) + " = " + s;
     },
-    foo, bar);
+    foo = 0, bar = "");
   {
     auto call = f.call(42, "forty two");
     BOOST_CHECK_EQUAL(f(call)(), "42 = forty two");

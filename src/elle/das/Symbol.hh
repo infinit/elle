@@ -23,6 +23,8 @@ namespace elle
       : public Symbol
     {
     public:
+      using Symbol = S;
+
       template <typename T>
       struct Formal
       {
@@ -41,6 +43,7 @@ namespace elle
         using Type = E;
         using Formal = S;
         using Passing = P;
+        using Symbol = S;
         Type value;
 
         template <typename ER, typename PR>
