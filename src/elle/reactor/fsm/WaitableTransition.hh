@@ -13,8 +13,7 @@ namespace elle
         public Transition
       {
       public:
-        typedef std::function<bool ()> PreTrigger;
-        virtual
+        using PreTrigger = std::function<bool ()>;
         boost::optional<std::function<void()>>
         run(reactor::Signal& triggered,
             Transition*& trigger,
@@ -34,7 +33,6 @@ namespace elle
       | Printable |
       `----------*/
       public:
-        virtual
         void
         print(std::ostream& stream) const override;
       };

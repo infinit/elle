@@ -219,7 +219,7 @@ class Scheduler:
   public boost::python::wrapper<elle::reactor::Scheduler>
 {
 public:
-  typedef elle::reactor::Scheduler Super;
+  using Super = elle::reactor::Scheduler;
 
 private:
   virtual

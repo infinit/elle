@@ -20,8 +20,8 @@ namespace elle
         | Types |
         `------*/
         public:
-          typedef Backend Self;
-          typedef reactor::backend::Backend Super;
+          using Self = Backend;
+          using Super = reactor::backend::Backend;
           class Thread;
 
         /*-------------.

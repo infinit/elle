@@ -75,13 +75,13 @@ namespace elle
         | Thread |
         `-------*/
         /// Default allocator type.
-        typedef TemplatedStackAllocator<
+        using StackAllocator = TemplatedStackAllocator<
           8 * 1024 * 1024,  // Max: 8 MiB
-          4 * 128 * 1024,       // Default: 128 kiB
+          4 * 128 * 1024,   // Default: 128 kiB
           8 * 1024          // Min: 8 kiB
-          > StackAllocator;
+          >;
         /// Type of context pointer used.
-        typedef boost::context::fcontext_t Context;
+        using Context = boost::context::fcontext_t;
 
         /// Allocator.
         static StackAllocator stack_allocator;
@@ -97,11 +97,11 @@ namespace elle
           public backend::Thread
         {
         /*---------.
-        | Typedefs |
+        | Types.   |
         `---------*/
         public:
-          typedef Thread Self;
-          typedef backend::Thread Super;
+          using Self = Thread;
+          using Super = backend::Thread;
         /*-------------.
         | Construction |
         `-------------*/
@@ -138,9 +138,9 @@ namespace elle
               stack_allocator.deallocate(this->_stack_pointer,
                                          StackAllocator::default_stack_size());
             }
-            #ifdef VALGRIND
+#ifdef VALGRIND
             VALGRIND_STACK_DEREGISTER(this->_valgrind_stack);
-            #endif
+#endif
           }
 
         private:
@@ -156,7 +156,6 @@ namespace elle
         | Switching |
         `----------*/
         public:
-          virtual
           void
           step() override
           {
@@ -201,7 +200,6 @@ namespace elle
           }
 
 
-          virtual
           void
           yield() override
           {
@@ -293,9 +291,9 @@ namespace elle
           /// make_fcontext.
           friend void wrapped_run(intptr_t);
           ELLE_ATTRIBUTE(bool, root);
-          #ifdef VALGRIND
+#ifdef VALGRIND
           ELLE_ATTRIBUTE(unsigned int, valgrind_stack);
-          #endif
+#endif
         };
 
         static

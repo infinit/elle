@@ -17,7 +17,7 @@ namespace elle
       public Waitable
     {
     public:
-      typedef Thread::Action Action;
+      using Action = Thread::Action;
       Timer(const Timer& b) = delete;
       Timer(Scheduler& s,
         const std::string& name,

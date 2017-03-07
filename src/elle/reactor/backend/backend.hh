@@ -27,7 +27,7 @@ namespace elle
       | Types |
       `------*/
       public:
-        typedef Backend Self;
+        using Self = Backend;
         virtual
         ~Backend();
 
@@ -53,7 +53,7 @@ namespace elle
       `---------*/
       public:
         /// Ourselves.
-        typedef Thread Self;
+        using Self = Thread;
         enum class Status
         {
           /// The thread has finished.

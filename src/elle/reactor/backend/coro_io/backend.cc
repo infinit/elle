@@ -30,8 +30,8 @@ namespace elle
         | Typedefs |
         `---------*/
         public:
-          typedef Thread Self;
-          typedef backend::Thread Super;
+          using Self = Thread;
+          using Super = backend::Thread;
 
         /*-------------.
         | Construction |

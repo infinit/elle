@@ -19,8 +19,8 @@ namespace elle
         | Types |
         `------*/
         public:
-          typedef Backend Self;
-          typedef reactor::backend::Backend Super;
+          using Self = Backend;
+          using Super = reactor::backend::Backend;
           class Thread;
 
         /*-------------.
@@ -34,11 +34,9 @@ namespace elle
         | Threads |
         `--------*/
         public:
-          virtual
           std::unique_ptr<backend::Thread>
           make_thread(const std::string& name,
                       Action action) override;
-          virtual
           backend::Thread*
           current() const override;
 

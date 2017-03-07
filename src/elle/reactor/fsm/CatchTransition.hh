@@ -16,14 +16,13 @@ namespace elle
       | Types |
       `------*/
       public:
-        typedef CatchTransition Self;
-        typedef Transition Super;
+        using Self = CatchTransition;
+        using Super = Transition;
 
       /*-------------.
       | Construction |
       `-------------*/
       public:
-        virtual
         void
         done(Transition*& trigger, std::exception_ptr& exn) override;
         ELLE_ATTRIBUTE_RW(std::function<bool (std::exception_ptr const&)>,

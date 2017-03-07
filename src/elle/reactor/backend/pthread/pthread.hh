@@ -30,7 +30,7 @@ namespace elle
           `---------*/
           public:
             /// Ourselves.
-            typedef Thread Self;
+            using Self = Thread;
 
           /*-------------.
           | Construction |

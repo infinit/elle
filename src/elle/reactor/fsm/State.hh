@@ -26,7 +26,7 @@ namespace elle
       | Types |
       `------*/
       public:
-        typedef std::function<void ()> Action;
+        using Action = std::function<void ()>;
 
       /*-------------.
       | Construction |

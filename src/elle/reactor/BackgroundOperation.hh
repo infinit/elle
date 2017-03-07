@@ -31,7 +31,7 @@ namespace elle
       , public BackgroundOperationResult<T>
     {
     public:
-      typedef std::function<T ()> Action;
+      using Action = std::function<T ()>;
       struct Status
       {
         bool aborted;

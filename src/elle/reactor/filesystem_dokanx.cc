@@ -14,7 +14,7 @@
 #include <elle/os/environ.hh>
 #include <elle/finally.hh>
 #include <ntstatus.h>
-typedef DWORD NTSTATUS;
+using NTSTATUS = DWORD;
 
 #include <dokan/dokan.h>
 #include <strsafe.h>
@@ -64,7 +64,7 @@ namespace elle
 
         std::wstring from_utf8(std::string const& source)
         {
-          typedef std::codecvt<wchar_t,char,std::mbstate_t> facet_type;
+          using facet_type = std::codecvt<wchar_t,char,std::mbstate_t>;
           std::locale mylocale;
           const facet_type& myfacet = std::use_facet<facet_type>(mylocale);
 

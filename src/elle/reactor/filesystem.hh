@@ -14,7 +14,8 @@
 #include <elle/filesystem.hh>
 #include <elle/reactor/waitable.hh>
 
-static_assert(sizeof(off_t) == 8, "off_t is 32 bits long, define _FILE_OFFSET_BITS to 64");
+static_assert(sizeof(off_t) == 8,
+              "off_t is 32 bits long, define _FILE_OFFSET_BITS to 64");
 
 # if defined(INFINIT_WINDOWS) || defined(INFINIT_ANDROID)
 struct statvfs {
@@ -43,9 +44,8 @@ namespace elle
   {
     namespace filesystem
     {
-      typedef
-      std::function<void(std::string const&, struct stat* stbuf)>
-      OnDirectoryEntry;
+      using OnDirectoryEntry =
+      std::function<void(std::string const&, struct stat* stbuf)>;
 
       /** Exception type for filesystem errors. Filesystems should not throw
        *  anything else.
@@ -59,7 +59,8 @@ namespace elle
           , _error_code(error_code)
         {}
 
-        Error(int error_code, std::string const& message, elle::Backtrace const& bt)
+        Error(int error_code, std::string const& message,
+              elle::Backtrace const& bt)
           : elle::Error(bt, message)
           , _error_code(error_code)
         {}

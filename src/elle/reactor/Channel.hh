@@ -19,7 +19,7 @@ namespace elle
         | Types |
         `------*/
       public:
-        typedef Channel<T, Container> Self;
+        using Self = Channel<T, Container>;
 
         /*-------------.
         | Construction |

@@ -15,9 +15,9 @@ namespace elle
     {
     public:
   #if defined(INFINIT_WINDOWS)
-      typedef HANDLE Handle;
+      using Handle = HANDLE;
   #else
-      typedef int Handle;
+      using Handle = int;
   #endif
       FDStream(boost::asio::io_service& service, Handle fd);
       FDStream(Handle fd);

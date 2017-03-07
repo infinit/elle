@@ -28,9 +28,9 @@ namespace elle
     `------*/
     public:
       /// Our own type.
-      typedef MultiLockBarrier Self;
+      using Self = MultiLockBarrier;
       /// The parent type.
-      typedef Waitable Super;
+      using Super = Waitable;
     /*-------------.
     | Construction |
     `-------------*/

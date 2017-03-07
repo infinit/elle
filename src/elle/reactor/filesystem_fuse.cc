@@ -38,7 +38,7 @@ namespace elle
   {
     namespace filesystem
     {
-      typedef std::shared_ptr<Path> PathPtr;
+      using PathPtr = std::shared_ptr<Path>;
 
       static const char* check_path(const char* path)
       {

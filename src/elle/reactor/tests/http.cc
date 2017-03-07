@@ -23,7 +23,7 @@
 
 ELLE_LOG_COMPONENT("elle.reactor.http.test");
 
-typedef elle::reactor::network::HttpServer HTTPServer;
+using HTTPServer = elle::reactor::network::HttpServer;
 #define PERSIST_CHECK_EQUAL(a, b)                          \
   do                                                       \
   {                                                        \
