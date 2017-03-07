@@ -3045,6 +3045,7 @@ class Copy(Builder):
     """The source node."""
     return self.__source
 
+  @property
   def target(self):
     """The target node."""
     return self.__target
@@ -3098,7 +3099,7 @@ class Copy(Builder):
     return ['cp', self.__source.path(), self.__target.path()]
 
   def __str__(self):
-    return 'copy of %s' % self.target()
+    return 'copy of %s' % self.target
 
 
 class Install(Copy):
@@ -3185,7 +3186,7 @@ def __copy_stripped(source, to, strip_prefix, builder, post_process, follow_syml
       if Copy._Copy__original(source) is res:
         __copy_stripped_cache[key] = res
         return res
-    res = builder(source, path, post_process, follow_symlinks).target()
+    res = builder(source, path, post_process, follow_symlinks).target
     for dep in source.dependencies:
       if not dep.name_absolute().absolute():
         node = __copy_stripped(dep, to, strip_prefix, builder, post_process, follow_symlinks)
