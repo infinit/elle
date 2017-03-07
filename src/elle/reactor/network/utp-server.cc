@@ -58,7 +58,7 @@ namespace elle
       on_sendto(utp_callback_arguments* args)
       {
         UTPServer::EndPoint ep;
-        sockaddr_in *sin = (sockaddr_in*)args->address;
+        auto *sin = (sockaddr_in*)args->address;
         if (sin->sin_family == AF_INET)
         {
           ep = UTPServer::EndPoint(
@@ -67,7 +67,7 @@ namespace elle
         }
         else if (sin->sin_family == AF_INET6)
         {
-          sockaddr_in6 *sin = (sockaddr_in6*)args->address;
+          auto *sin = (sockaddr_in6*)args->address;
           auto addr = std::array<unsigned char, 16>{{0}};
           memcpy(addr.data(), sin->sin6_addr.s6_addr, 16);
           ep = UTPServer::EndPoint(boost::asio::ip::address_v6(addr),
@@ -194,7 +194,7 @@ namespace elle
       {}
 
       UTPServer::~UTPServer()
-      {}
+      = default;
 
       /*-----------.
       | Attributes |

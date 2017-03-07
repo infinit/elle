@@ -64,7 +64,7 @@ namespace elle
     FuseContext::_loop_one_thread(reactor::Scheduler& sched)
     {
       fuse_session* s = fuse_get_session(this->_fuse);
-      fuse_chan* ch = fuse_session_next_chan(s, NULL);
+      fuse_chan* ch = fuse_session_next_chan(s, nullptr);
       size_t buffer_size = fuse_chan_bufsize(ch);
       void* buffer_data = malloc(buffer_size);
       while (!fuse_exited(this->_fuse))
@@ -103,7 +103,7 @@ namespace elle
     FuseContext::_loop_single()
     {
       fuse_session* s = fuse_get_session(this->_fuse);
-      fuse_chan* ch = fuse_session_next_chan(s, NULL);
+      fuse_chan* ch = fuse_session_next_chan(s, nullptr);
       int fd = fuse_chan_fd(ch);
       ELLE_TRACE("Got fuse fs %s", fd);
       boost::asio::posix::stream_descriptor socket(scheduler().io_service());
@@ -183,7 +183,7 @@ namespace elle
       bool stop = false;
       std::list<elle::Buffer> requests;
       fuse_session* s = fuse_get_session(this->_fuse);
-      fuse_chan* ch = fuse_session_next_chan(s, NULL);
+      fuse_chan* ch = fuse_session_next_chan(s, nullptr);
       size_t buffer_size = fuse_chan_bufsize(ch);
       auto lock = this->_mt_barrier.lock();
       auto worker = [&] {
@@ -281,7 +281,7 @@ namespace elle
     FuseContext::_loop_mt(Scheduler& sched)
     {
       fuse_session* s = fuse_get_session(this->_fuse);
-      fuse_chan* ch = fuse_session_next_chan(s, NULL);
+      fuse_chan* ch = fuse_session_next_chan(s, nullptr);
       size_t buffer_size = fuse_chan_bufsize(ch);
 #ifndef INFINIT_MACOSX
       int fd = fuse_chan_fd(ch);
@@ -418,15 +418,15 @@ namespace elle
         // to ensure that the syscall is not automatically restarted (default on
         // OS X, see `man signal`).
         struct sigaction action;
-        sigaction(SIGUSR1, NULL, &action);
+        sigaction(SIGUSR1, nullptr, &action);
         action.sa_handler = &_signal_handler;
         action.sa_flags &= ~SA_RESTART;
-        sigaction(SIGUSR1, &action, NULL);
+        sigaction(SIGUSR1, &action, nullptr);
         int res = 0;
         sigset_t mask_set;
         sigemptyset(&mask_set);
         sigaddset(&mask_set, SIGUSR1);
-        res = pthread_sigmask(SIG_BLOCK, &mask_set, NULL);
+        res = pthread_sigmask(SIG_BLOCK, &mask_set, nullptr);
         if (res != 0)
           ELLE_WARN("failed to mask SIGUSR1 on main thread, error: %d", res);
         res = pthread_kill(this->_loop_thread->native_handle(), SIGUSR1);
@@ -508,7 +508,7 @@ namespace elle
             DADiskUnmount(disk,
                           kDADiskUnmountOptionForce,
                           _unmount_callback,
-                          NULL);
+                          nullptr);
             float run_time =
               grace_time ? grace_time.get().total_seconds() : 15.0f;
             // returns CFRunLoopRunResult on 10.11+

@@ -1,6 +1,7 @@
 #include <ostream>
 
 #include <elle/reactor/network/proxy.hh>
+#include <utility>
 
 namespace elle
 {
@@ -33,15 +34,15 @@ namespace elle
       | Proxy |
       `------*/
       Proxy::Proxy(ProxyType type,
-                   std::string const& host,
+                   std::string  host,
                    uint16_t port,
-                   std::string const& username,
-                   std::string const& password)
+                   std::string  username,
+                   std::string  password)
         : _type(type)
-        , _host(host)
+        , _host(std::move(host))
         , _port(port)
-        , _username(username)
-        , _password(password)
+        , _username(std::move(username))
+        , _password(std::move(password))
       {}
 
       Proxy::Proxy()
@@ -49,7 +50,7 @@ namespace elle
       {}
 
       Proxy::~Proxy()
-      {}
+      = default;
 
       void
       Proxy::print(std::ostream& stream) const

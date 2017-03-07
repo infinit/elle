@@ -19,7 +19,7 @@ namespace elle
       {}
 
       TCPServer::~TCPServer()
-      {}
+      = default;
 
       /*----------.
       | Accepting |

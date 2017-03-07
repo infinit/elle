@@ -3,6 +3,7 @@
 #include <elle/reactor/network/exception.hh>
 #include <elle/reactor/network/ssl-server.hh>
 #include <elle/utility/Move.hh>
+#include <utility>
 
 ELLE_LOG_COMPONENT("elle.reactor.network.SSLServer");
 
@@ -17,10 +18,10 @@ namespace elle
       `-------------*/
 
       SSLServer::SSLServer(std::unique_ptr<SSLCertificate> certificate,
-                           reactor::Duration const& handshake_timeout)
+                           reactor::Duration  handshake_timeout)
         : Super()
         , _certificate(std::move(certificate))
-        , _handshake_timeout(handshake_timeout)
+        , _handshake_timeout(std::move(handshake_timeout))
         , _sockets()
         , _handshake_thread(elle::sprintf("%s handshake", *this),
                             std::bind(&SSLServer::_handshake,

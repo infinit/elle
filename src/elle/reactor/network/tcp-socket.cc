@@ -46,7 +46,7 @@ namespace elle
       {}
 
       TCPSocket::~TCPSocket()
-      {}
+      = default;
     }
   }
 }

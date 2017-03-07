@@ -4,6 +4,7 @@
 #include <elle/reactor/network/ssl-socket.hh>
 #include <elle/reactor/scheduler.hh>
 #include <elle/utility/Move.hh>
+#include <utility>
 
 ELLE_LOG_COMPONENT("elle.reactor.network.SSLSocket");
 
@@ -51,7 +52,7 @@ namespace elle
 
       SSLCertificateOwner::SSLCertificateOwner(
         std::shared_ptr<SSLCertificate> certificate):
-          _certificate(certificate)
+          _certificate(std::move(certificate))
       {
         if (this->_certificate == nullptr)
           this->_certificate.reset(new SSLCertificate());
@@ -133,7 +134,7 @@ namespace elle
         : SSLCertificateOwner(certificate)
         , Super(std::move(socket), endpoint)
         , _shutdown_asynchronous(false)
-        , _timeout(handshake_timeout)
+        , _timeout(std::move(handshake_timeout))
       {}
 
       /*----------------.
@@ -161,7 +162,6 @@ namespace elle
           _type(type)
         {}
 
-        virtual
         void
         print(std::ostream& stream) const override
         {
@@ -169,7 +169,6 @@ namespace elle
         }
 
       protected:
-        virtual
         void
         _start() override
         {
@@ -181,7 +180,6 @@ namespace elle
         }
 
       private:
-        virtual
         void
         _handle_error(boost::system::error_code const& error) override
         {
@@ -222,7 +220,6 @@ namespace elle
           , _socket(socket)
         {}
 
-        virtual
         void
         print(std::ostream& stream) const override
         {
@@ -230,7 +227,6 @@ namespace elle
         }
 
       protected:
-        virtual
         void
         _start() override
         {
@@ -271,7 +267,7 @@ namespace elle
         else
         {
           ELLE_TRACE_SCOPE("%s: shutdown SSL asynchronously", *this);
-          bool const has_timeout = bool(this->_timeout);
+          auto const has_timeout = bool(this->_timeout);
           auto socket_raw = this->_socket.get();
           auto socket = elle::utility::move_on_copy(this->_socket);
           auto timer = elle::utility::move_on_copy(

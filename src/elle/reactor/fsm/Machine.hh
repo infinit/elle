@@ -30,7 +30,7 @@ namespace elle
       | Construction |
       `-------------*/
       public:
-        Machine(std::string const& name = "");
+        Machine(std::string  name = "");
 
       /*-------.
       | States |

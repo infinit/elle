@@ -9,6 +9,7 @@
 #include <elle/reactor/network/udp-socket.hh>
 #include <elle/reactor/scheduler.hh>
 #include <elle/reactor/thread.hh>
+#include <utility>
 
 ELLE_LOG_COMPONENT("elle.reactor.network.UDPSocket");
 
@@ -110,7 +111,7 @@ namespace elle
 
         protected:
 
-          virtual void _start()
+          void _start() override
           {
             // FIXME: be synchronous if enough bytes are available
             EndPoint peer;
@@ -186,7 +187,7 @@ namespace elle
 
         protected:
 
-          virtual void _start()
+          void _start() override
           {
             auto wake = [&] (boost::system::error_code const e, std::size_t w) {
               this->_wakeup(e, w);
@@ -258,7 +259,7 @@ namespace elle
           {}
 
         protected:
-          virtual void _start()
+          void _start() override
           {
             this->socket().async_send(
               boost::asio::buffer(this->_buffer.contents(),
@@ -292,15 +293,15 @@ namespace elle
           UDPSendTo(Scheduler& scheduler,
                     PlainSocket<AsioSocket>* socket,
                     elle::ConstWeakBuffer& buffer,
-                    EndPoint const & endpoint):
+                    EndPoint  endpoint):
             Super(*socket->socket()),
             _buffer(buffer),
             _written(0),
-            _endpoint(endpoint)
+            _endpoint(std::move(endpoint))
           {}
 
         protected:
-          virtual void _start()
+          void _start() override
           {
             auto wake = [&] (boost::system::error_code const e, std::size_t w)
               {

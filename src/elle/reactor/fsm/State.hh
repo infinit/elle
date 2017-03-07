@@ -37,7 +37,7 @@ namespace elle
         explicit
         State(char const* name);
         explicit
-        State(std::string const& name = "", Action const& action = [] () {});
+        State(std::string  name = "", Action  action = [] () {});
       private:
         friend class Machine;
         ELLE_ATTRIBUTE(Action, action);

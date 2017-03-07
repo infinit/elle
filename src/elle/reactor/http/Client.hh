@@ -17,7 +17,7 @@ namespace elle
       {
       public:
         /// Create a Client.
-        Client(std::string const& user_agent = "Elle");
+        Client(std::string  user_agent = "Elle");
         /// Dispose of a Client.
         ~Client();
         /// Create a request and register it with this client.

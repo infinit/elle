@@ -10,6 +10,7 @@
 #include <elle/reactor/network/utp-server-impl.hh>
 #include <elle/reactor/scheduler.hh>
 #include <elle/reactor/thread.hh>
+#include <utility>
 
 #include <utp.h>
 
@@ -72,7 +73,7 @@ namespace elle
         , _write_mutex()
         , _connect_barrier(elle::sprintf("%s connection", this))
         , _destroyed_barrier(elle::sprintf("%s desroyed", this))
-        , _server(server)
+        , _server(std::move(server))
         , _pending_operations(elle::sprintf("%s pending operations", this))
         , _write_pos(0)
         , _open(open)
@@ -227,7 +228,7 @@ namespace elle
       {
         if (this->_write.size())
         {
-          unsigned char* data =
+          auto* data =
             const_cast<unsigned char*>(this->_write.contents());
           int sz = this->_write.size();
           while (this->_write_pos < sz)
@@ -317,7 +318,7 @@ namespace elle
         auto lock = this->_impl->_pending_operations.lock();
         ptime start = microsec_clock::universal_time();
         Lock l(this->_impl->_write_mutex);
-        unsigned char* data = const_cast<unsigned char*>(buf.contents());
+        auto* data = const_cast<unsigned char*>(buf.contents());
         int sz = buf.size();
         this->_impl->_write = buf;
         this->_impl->_write_pos = 0;
@@ -473,7 +474,7 @@ namespace elle
           return EndPoint(boost::asio::ip::address::from_string("0.0.0.0"), 0);
         if (addr.sin6_family == AF_INET)
         {
-          struct sockaddr_in* addr4 = (struct sockaddr_in*)&addr;
+          auto* addr4 = (struct sockaddr_in*)&addr;
           return EndPoint(address_v4(ntohl(addr4->sin_addr.s_addr)),
                           ntohs(addr4->sin_port));
         }

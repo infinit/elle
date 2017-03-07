@@ -24,7 +24,6 @@ namespace elle
       {
       public:
         UPNPImpl()
-          : devlist(0)
         {
           memset(&urls, 0, sizeof(UPNPUrls));
         }
@@ -36,7 +35,7 @@ namespace elle
             freeUPNPDevlist(this->devlist);
         }
 
-        UPNPDev* devlist;
+        UPNPDev* devlist{0};
         void _initialize();
         void _setup_redirect(Protocol p,
                              unsigned short port,
@@ -61,7 +60,7 @@ namespace elle
       }
 
       UPNP::~UPNP()
-      {}
+      = default;
 
       void
       UPNP::initialize()
@@ -88,7 +87,7 @@ namespace elle
       { // THREADED
         // timeoutMS multicastiface, daemonpath, sameport, use_ipv6
         int error = 0;
-        this->devlist = upnpDiscover(2000, 0, 0, 0, 0, &error);
+        this->devlist = upnpDiscover(2000, nullptr, nullptr, 0, 0, &error);
         if (!this->devlist)
         {
           ELLE_TRACE("upnpDiscover failed with %s", error);
@@ -154,7 +153,7 @@ namespace elle
           this->lanaddr,
           "reactor",
           protocol_string.c_str(),
-          0, // remotehost
+          nullptr, // remotehost
           "0", effectivePort);
         if (r != UPNPCOMMAND_SUCCESS)
         {
@@ -184,7 +183,7 @@ namespace elle
           this->urls.controlURL,
           this->data.first.servicetype,
           effectivePort,
-          protocol_string.c_str(), NULL/*remoteHost*/,
+          protocol_string.c_str(), nullptr/*remoteHost*/,
           intClient, intPort,
           nullptr/*desc*/,
           nullptr/*enabled*/,
@@ -240,12 +239,12 @@ namespace elle
                                        _impl->data.first.servicetype,
                                        port,
                                        protocol,
-                                       0);
+                                       nullptr);
         ELLE_DEBUG("%s: released with %s", *this, strupnperror(r));
       }
 
       PortMapping::PortMapping()
-        : _owner(0)
+        : _owner(nullptr)
       {}
 
       PortMapping::~PortMapping()

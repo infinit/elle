@@ -10,6 +10,7 @@
 #include <elle/reactor/http/Service.hh>
 #include <elle/reactor/http/exceptions.hh>
 #include <elle/reactor/scheduler.hh>
+#include <utility>
 
 ELLE_LOG_COMPONENT("elle.reactor.http.Request");
 
@@ -68,9 +69,9 @@ namespace elle
         boost::optional<Configuration::Proxy> proxy)
         : _version(version)
         , _keep_alive(keep_alive)
-        , _proxy(proxy)
-        , _timeout(timeout)
-        , _stall_timeout(stall_timeout)
+        , _proxy(std::move(proxy))
+        , _timeout(std::move(timeout))
+        , _stall_timeout(std::move(stall_timeout))
         , _headers()
           // XXX: not supported by wsgiref and <=nginx-1.2 ...
         , _chunked_transfers(false)
@@ -79,7 +80,7 @@ namespace elle
       {}
 
       Request::Configuration::~Configuration()
-      {}
+      = default;
 
       void
       Request::Configuration::header_add(std::string const& header,

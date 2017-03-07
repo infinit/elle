@@ -10,7 +10,7 @@ namespace elle
     {}
 
     Mutex::~Mutex()
-    {}
+    = default;
 
     bool
     Mutex::locked() const

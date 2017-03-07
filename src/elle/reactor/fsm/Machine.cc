@@ -10,6 +10,7 @@
 #include <elle/reactor/fsm/WaitableTransition.hh>
 #include <elle/reactor/scheduler.hh>
 #include <elle/reactor/signal.hh>
+#include <utility>
 
 ELLE_LOG_COMPONENT("elle.reactor.fsm.Machine")
 
@@ -23,14 +24,14 @@ namespace elle
       | Construction |
       `-------------*/
 
-      Machine::Machine(std::string const& name):
+      Machine::Machine(std::string  name):
         _states(),
         _start(nullptr),
         _transitions(),
         _running(false),
         _exception(nullptr),
         _current_state(nullptr),
-        _name(name)
+        _name(std::move(name))
       {}
 
       /*-------.

@@ -21,9 +21,9 @@ namespace elle
       protected:
         WaitableTransition(State& start,
                            State& end,
-                           Waitables const& trigger,
+                           Waitables  trigger,
                            bool preemptive = false,
-                           PreTrigger const& pre_trigger = PreTrigger());
+                           PreTrigger  pre_trigger = PreTrigger());
         friend class Machine;
         ELLE_ATTRIBUTE_R(Waitables, trigger);
         ELLE_ATTRIBUTE_R(bool, preemptive);

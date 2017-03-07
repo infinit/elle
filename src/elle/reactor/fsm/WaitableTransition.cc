@@ -4,6 +4,7 @@
 #include <elle/reactor/fsm/WaitableTransition.hh>
 #include <elle/reactor/scheduler.hh>
 #include <elle/reactor/signal.hh>
+#include <utility>
 
 ELLE_LOG_COMPONENT("elle.reactor.fsm.Transition")
 
@@ -58,13 +59,13 @@ namespace elle
 
       WaitableTransition::WaitableTransition(State& start,
                                              State& end,
-                                             Waitables const& trigger,
+                                             Waitables  trigger,
                                              bool preemptive,
-                                             PreTrigger const& pre_trigger):
+                                             PreTrigger  pre_trigger):
         Transition(start, end),
-        _trigger(trigger),
+        _trigger(std::move(trigger)),
         _preemptive(preemptive),
-        _pre_trigger(pre_trigger)
+        _pre_trigger(std::move(pre_trigger))
       {}
 
       /*----------.

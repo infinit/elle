@@ -160,7 +160,7 @@ namespace elle
                                void* userp,
                                void*)
       {
-        Service* self = reinterpret_cast<Service*>(userp);
+        auto* self = reinterpret_cast<Service*>(userp);
         self->handle_socket_action(easy, socket, action);
         return 0;
       }
@@ -292,7 +292,7 @@ namespace elle
                                 long ms,
                                 void* userp)
       {
-        Service* self = reinterpret_cast<Service*>(userp);
+        auto* self = reinterpret_cast<Service*>(userp);
         if (ms == -1)
           self->unset_timeout();
         else

@@ -1,4 +1,5 @@
 #include <elle/reactor/fsm/State.hh>
+#include <utility>
 
 namespace elle
 {
@@ -18,9 +19,9 @@ namespace elle
         State(std::string(name))
       {}
 
-      State::State(std::string const& name, Action const& action):
-        _action(action),
-        _name(name)
+      State::State(std::string  name, Action  action):
+        _action(std::move(action)),
+        _name(std::move(name))
       {}
 
       /*----------.

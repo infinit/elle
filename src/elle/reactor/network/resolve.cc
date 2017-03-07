@@ -4,6 +4,7 @@
 #include <elle/reactor/network/resolve.hh>
 #include <elle/reactor/operation.hh>
 #include <elle/reactor/scheduler.hh>
+#include <utility>
 
 ELLE_LOG_COMPONENT("elle.reactor.network.resolve");
 
@@ -19,18 +20,17 @@ namespace elle
       public:
         using Resolver = typename Protocol::resolver;
         using EndPoint = typename Protocol::resolver::endpoint_type;
-        Resolution(const std::string& hostname, const std::string& service,
+        Resolution(std::string  hostname, std::string  service,
                    bool ipv4_only):
           Operation(*reactor::Scheduler::scheduler()),
           _resolver(reactor::Scheduler::scheduler()->io_service()),
           _canceled(false),
-          _hostname(hostname),
-          _service(service),
+          _hostname(std::move(hostname)),
+          _service(std::move(service)),
           _end_point(),
           _ipv4_only(ipv4_only)
         {}
 
-        virtual
         void
         print(std::ostream& stream) const override
         {
@@ -47,7 +47,6 @@ namespace elle
         }
 
       protected:
-        virtual
         void
         _abort() override
         {
@@ -57,7 +56,6 @@ namespace elle
           reactor::wait(*this);
         }
 
-        virtual
         void
         _start() override
         {

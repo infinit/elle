@@ -13,6 +13,7 @@
 #include <elle/reactor/http/Service.hh>
 #include <elle/reactor/http/exceptions.hh>
 #include <elle/reactor/scheduler.hh>
+#include <utility>
 
 ELLE_LOG_COMPONENT("elle.reactor.http.Client");
 
@@ -37,7 +38,7 @@ namespace elle
         }
 
         ~Impl()
-        {}
+        = default;
 
       private:
         friend class Client;
@@ -45,9 +46,9 @@ namespace elle
         ELLE_ATTRIBUTE(elle::generic_unique_ptr<CURLSH>, share);
       };
 
-      Client::Client(std::string const& user_agent):
+      Client::Client(std::string  user_agent):
         _impl(new Impl),
-        _user_agent(user_agent)
+        _user_agent(std::move(user_agent))
       {}
 
       Client::~Client()

@@ -16,7 +16,7 @@ namespace elle
       `-------------*/
       public:
         FingerprintedSocket(SSLEndPoint const& endpoint,
-                            std::vector<unsigned char> const& fingerprint,
+                            std::vector<unsigned char>  fingerprint,
                             DurationOpt timeout = DurationOpt());
 
         FingerprintedSocket(const std::string& hostname,

@@ -5,6 +5,7 @@
 #include <elle/reactor/network/fingerprinted-socket.hh>
 #include <elle/reactor/network/exception.hh>
 #include <elle/reactor/scheduler.hh>
+#include <utility>
 
 ELLE_LOG_COMPONENT("elle.reactor.network.FingerprintedSocket");
 
@@ -19,10 +20,10 @@ namespace elle
       `-------------*/
       FingerprintedSocket::FingerprintedSocket(
         SSLEndPoint const& endpoint,
-        std::vector<unsigned char> const& fingerprint,
+        std::vector<unsigned char>  fingerprint,
         DurationOpt timeout):
           SSLSocket(endpoint, timeout),
-          _fingerprint(fingerprint)
+          _fingerprint(std::move(fingerprint))
       {
         this->_check_certificate();
       }
@@ -37,7 +38,7 @@ namespace elle
 
 
       FingerprintedSocket::~FingerprintedSocket()
-      {}
+      = default;
 
       /*------------------.
       | Certificate Check |

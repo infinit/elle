@@ -2,6 +2,7 @@
 #include <elle/log/Logger.hh>
 #include <elle/os/environ.hh>
 #include <elle/reactor/storage.hh>
+#include <utility>
 
 namespace elle
 {
@@ -12,8 +13,8 @@ namespace elle
     {
     public:
       using Factory = elle::log::Indenter::Factory;
-      Indentation(Factory const& factory)
-        : _factory(factory)
+      Indentation(Factory  factory)
+        : _factory(std::move(factory))
         , _indentations()
       {}
 
@@ -73,16 +74,14 @@ namespace elle
       public elle::log::Tag
     {
     public:
-      virtual
       std::string
-      name()
+      name() override
       {
         return "coroutine";
       }
 
-      virtual
       std::string
-      content()
+      content() override
       {
         static std::string max_repr =
           elle::os::getenv("ELLE_LOG_COROUTINE_MAX_WIDTH", "");

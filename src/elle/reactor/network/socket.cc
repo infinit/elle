@@ -11,6 +11,7 @@
 #include <elle/reactor/network/socket.hh>
 #include <elle/reactor/network/tcp-socket.hh>
 #include <elle/reactor/scheduler.hh>
+#include <utility>
 
 ELLE_LOG_COMPONENT("elle.reactor.network.Socket");
 
@@ -63,8 +64,8 @@ namespace elle
             : _socket(socket)
             , _pacified(false)
           {
-            setg(0, 0, 0);
-            setp(0, 0);
+            setg(nullptr, nullptr, nullptr);
+            setp(nullptr, nullptr);
           }
 
           char read_buffer[buffer_size];
@@ -74,7 +75,7 @@ namespace elle
             ELLE_TRACE_SCOPE("%s: underflow", *this);
             if (this->_pacified)
             {
-              setg(0, 0, 0);
+              setg(nullptr, nullptr, nullptr);
               return EOF;
             }
             int size = 0;
@@ -120,7 +121,7 @@ namespace elle
           {
             Size size = pptr() - pbase();
             ELLE_TRACE_SCOPE("%s: sync %s bytes", *this, size);
-            setp(0, 0);
+            setp(nullptr, nullptr);
             if (size > 0 && !this->_pacified)
               this->_socket->write(
                 elle::ConstWeakBuffer(this->write_buffer, size));
@@ -142,7 +143,7 @@ namespace elle
       {}
 
       Socket::~Socket()
-      {}
+      = default;
 
       std::unique_ptr<Socket>
       Socket::create(Protocol protocol,
@@ -244,9 +245,9 @@ namespace elle
         using EndPoint = typename AsioSocket::endpoint_type;
         using Super = SocketOperation<AsioSocket>;
         Connection(AsioSocket& socket,
-                   const EndPoint& endpoint)
+                   EndPoint  endpoint)
           : Super(socket)
-          , _endpoint(endpoint)
+          , _endpoint(std::move(endpoint))
         {}
 
 
@@ -583,11 +584,11 @@ namespace elle
         ReadUntil(PlainSocket& plain,
                   AsioSocket& socket,
                   boost::asio::streambuf& buffer,
-                  std::string const& delimiter):
+                  std::string  delimiter):
           Super(Spe::socket(socket)),
           _socket(plain),
           _streambuffer(buffer),
-          _delimiter(delimiter),
+          _delimiter(std::move(delimiter)),
           _buffer()
         {}
 
@@ -675,7 +676,7 @@ namespace elle
               elle::ConstWeakBuffer buffer)
           : Super(Spe::socket(socket))
           , _socket(plain)
-          , _buffer(buffer)
+          , _buffer(std::move(buffer))
           , _written(0)
         {}
 

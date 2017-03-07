@@ -26,7 +26,7 @@ namespace elle
       {}
 
       Server::~Server()
-      {}
+      = default;
 
       /*----------.
       | Listening |
@@ -73,21 +73,21 @@ namespace elle
         {}
 
         void
-        print(std::ostream& stream) const
+        print(std::ostream& stream) const override
         {
           elle::fprintf(stream, "accept on %s", this->_acceptor.local_endpoint());
         }
 
       private:
         void
-        _abort()
+        _abort() override
         {
           this->_acceptor.cancel();
           this->_signal();
         }
 
         void
-        _start()
+        _start() override
         {
           this->_acceptor.async_accept(
             this->_socket,

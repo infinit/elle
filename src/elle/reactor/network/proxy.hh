@@ -38,10 +38,10 @@ namespace elle
 
       public:
         Proxy(ProxyType type,
-              std::string const& host,
+              std::string  host,
               uint16_t port,
-              std::string const& username = "",
-              std::string const& password = "");
+              std::string  username = "",
+              std::string  password = "");
 
         /// Creates empty proxy of "None" type.
         Proxy();

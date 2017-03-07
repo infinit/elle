@@ -29,7 +29,7 @@ namespace elle
       `-------------*/
       public:
         SSLServer(std::unique_ptr<SSLCertificate> certificate,
-                  reactor::Duration const& handshake_timeout = 30_sec);
+                  reactor::Duration  handshake_timeout = 30_sec);
         virtual
         ~SSLServer();
 

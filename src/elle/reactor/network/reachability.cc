@@ -107,7 +107,7 @@ namespace elle
         : _running(false)
         , _first(true)
         , _owner(&owner)
-        , _reachability_ref(NULL)
+        , _reachability_ref(nullptr)
         , _sched(&reactor::scheduler())
       {
         ELLE_TRACE_SCOPE("%s: init with host: %s",
@@ -121,7 +121,7 @@ namespace elle
           sa.sin_len = sizeof(sa);
           sa.sin_family = AF_INET;
           this->_reachability_ref =
-            SCNetworkReachabilityCreateWithAddress(NULL, (sockaddr*)(&sa));
+            SCNetworkReachabilityCreateWithAddress(nullptr, (sockaddr*)(&sa));
         }
         else
         {
@@ -138,7 +138,7 @@ namespace elle
               if (res == 1)
               {
                 this->_reachability_ref =
-                  SCNetworkReachabilityCreateWithAddress(NULL, (sockaddr*)(&sa));
+                  SCNetworkReachabilityCreateWithAddress(nullptr, (sockaddr*)(&sa));
               }
               else
                 ELLE_WARN("%s: unable to create sockaddr_in", &this->_owner);
@@ -153,7 +153,7 @@ namespace elle
               if (res == 1)
               {
                 this->_reachability_ref =
-                  SCNetworkReachabilityCreateWithAddress(NULL, (sockaddr*)(&sa));
+                  SCNetworkReachabilityCreateWithAddress(nullptr, (sockaddr*)(&sa));
               }
               else
                 ELLE_WARN("%s: unable to create sockaddr_in6", &this->_owner);
@@ -164,7 +164,7 @@ namespace elle
           else // Host was not IP address, assume hostname.
           {
             this->_reachability_ref =
-              SCNetworkReachabilityCreateWithName(NULL, host.get().c_str());
+              SCNetworkReachabilityCreateWithName(nullptr, host.get().c_str());
           }
         }
         if (this->_reachability_ref)
@@ -200,7 +200,7 @@ namespace elle
         this->_first = true;
         this->_thread.reset(new std::thread([&]
         {
-          SCNetworkReachabilityContext context = {0, this, NULL, NULL, NULL};
+          SCNetworkReachabilityContext context = {0, this, nullptr, nullptr, nullptr};
           if (SCNetworkReachabilitySetCallback(this->_reachability_ref,
                                                reachability_callback,
                                                &context))
@@ -245,7 +245,7 @@ namespace elle
           ELLE_DEBUG("%s: stopped", *this->_owner);
           CFRunLoopStop(this->_run_loop);
           CFRelease(this->_run_loop);
-          this->_run_loop = NULL;
+          this->_run_loop = nullptr;
         }
         if (this->_thread && this->_thread->joinable())
           this->_thread->join();
