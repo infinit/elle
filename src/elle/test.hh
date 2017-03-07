@@ -1,11 +1,10 @@
-#ifndef ELLE_TEST_HH
-# define ELLE_TEST_HH
+#pragma once
 
-# ifdef VALGRIND
-#  include <valgrind/valgrind.h>
-# else
-#  define RUNNING_ON_VALGRIND 0
-# endif
+#ifdef VALGRIND
+# include <valgrind/valgrind.h>
+#else
+# define RUNNING_ON_VALGRIND 0
+#endif
 
 #include <boost/preprocessor/cat.hpp>
 #include <boost/preprocessor/punctuation/comma_if.hpp>
@@ -34,22 +33,22 @@
 /// }}}
 ///
 
-# include <elle/Exception.hh>
+#include <elle/Exception.hh>
 
-# ifdef ELLE_TEST_MODULE
-#  define BOOST_TEST_MODULE ELLE_TEST_MODULE
-# endif
+#ifdef ELLE_TEST_MODULE
+# define BOOST_TEST_MODULE ELLE_TEST_MODULE
+#endif
 
-# ifdef INFINIT_WINDOWS
-#  include <winsock2.h>
-# endif
-# include <boost/test/unit_test.hpp>
+#ifdef INFINIT_WINDOWS
+# include <winsock2.h>
+#endif
+#include <boost/test/unit_test.hpp>
 
 static std::string test_binary;
 
-# if defined(BOOST_TEST_DYN_LINK)
+#if defined(BOOST_TEST_DYN_LINK)
 
-#  define ELLE_TEST_SUITE()                             \
+# define ELLE_TEST_SUITE()                              \
 static                                                  \
 void                                                    \
 _test_suite();                                          \
@@ -113,35 +112,35 @@ static                                                  \
 void                                                    \
 _test_suite()                                           \
 
-# else
-#  error "please define BOOST_TEST_DYN_LINK or BOOST_TEST_STATIC_LINK"
-# endif
+#else
+# error "please define BOOST_TEST_DYN_LINK or BOOST_TEST_STATIC_LINK"
+#endif
 
-# define ELLE_TEST_PROTOTYPE_HELPER(R, Data, I, Elem)                   \
+#define ELLE_TEST_PROTOTYPE_HELPER(R, Data, I, Elem)                    \
   BOOST_PP_COMMA_IF(I)                                                  \
   BOOST_PP_TUPLE_ELEM(0, Elem) BOOST_PP_TUPLE_ELEM(1, Elem)             \
 
-# define ELLE_TEST_PROTOTYPE(Args)                                      \
+#define ELLE_TEST_PROTOTYPE(Args)                                       \
   BOOST_PP_SEQ_FOR_EACH_I(ELLE_TEST_PROTOTYPE_HELPER, _, Args)          \
 
-# define ELLE_TEST_CALL_HELPER(R, Data, I, Elem)                        \
+#define ELLE_TEST_CALL_HELPER(R, Data, I, Elem)                         \
   BOOST_PP_COMMA_IF(I)                                                  \
   BOOST_PP_TUPLE_ELEM(1, Elem)                                          \
 
-# define ELLE_TEST_CALL(Args)                                           \
+#define ELLE_TEST_CALL(Args)                                            \
   BOOST_PP_SEQ_FOR_EACH_I(ELLE_TEST_CALL_HELPER, _, Args)               \
 
-# define ELLE_TEST_SCHEDULED(...)                                       \
+#define ELLE_TEST_SCHEDULED(...)                                        \
   ELLE_TEST_SCHEDULED_SEQ(BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))        \
 
-# define ELLE_TEST_SCHEDULED_SEQ(Seq)                                   \
+#define ELLE_TEST_SCHEDULED_SEQ(Seq)                                    \
   ELLE_TEST_SCHEDULED_HELPER(BOOST_PP_SEQ_HEAD(Seq),                    \
                              BOOST_PP_SEQ_TAIL(Seq))                    \
 
-# ifdef INFINIT_WINDOWS
-#  define ELLE_TEST_HANDLE_SIGALRM(Sched, Name)
-# else
-#  define ELLE_TEST_HANDLE_SIGALRM(Sched, Name)                             \
+#ifdef INFINIT_WINDOWS
+# define ELLE_TEST_HANDLE_SIGALRM(Sched, Name)
+#else
+# define ELLE_TEST_HANDLE_SIGALRM(Sched, Name)                              \
   Sched.signal_handle(SIGALRM,                                              \
                       []                                                    \
                       {                                                     \
@@ -150,10 +149,10 @@ _test_suite()                                           \
                           s->dump_state();                                  \
                         throw elle::Error("test timeout");                  \
                       });
-# endif
+#endif
 
 
-# define ELLE_TEST_SCHEDULED_HELPER(Name, Args)                       \
+#define ELLE_TEST_SCHEDULED_HELPER(Name, Args)                        \
 static                                                                \
 void                                                                  \
 BOOST_PP_CAT(Name,_impl)(ELLE_TEST_PROTOTYPE(Args));                  \
@@ -223,7 +222,7 @@ Name##_impl()                                                         \
 # define  ELLE_TEST_NO_MEMFRY 1
 #endif
 
-# if !defined ELLE_TEST_NO_MEMFRY
+#if !defined ELLE_TEST_NO_MEMFRY
 
 // Apple clang-703.0.29 doesn't like using an offset of size_t.
 static const int _memfry_offset = 2 * sizeof(std::size_t);
@@ -268,20 +267,18 @@ operator delete(void* p) throw()
   }
 }
 
-# endif
+#endif
 
-# ifdef __arm__
-#  define ARM_FACTOR 1
-# else
-#  define ARM_FACTOR 0
-# endif
+#ifdef __arm__
+# define ARM_FACTOR 1
+#else
+# define ARM_FACTOR 0
+#endif
 
 template <typename T>
 static
 auto
-valgrind(T base, int factor = 50) -> decltype(base * 42)
+valgrind(T base, int factor = 50)
 {
   return base * (RUNNING_ON_VALGRIND ? factor : 1) * (ARM_FACTOR ? factor : 1);
 }
-
-#endif
