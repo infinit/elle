@@ -126,7 +126,7 @@ namespace elle
 #endif
           }
 
-          ~Thread()
+          ~Thread() override
           {
             ELLE_ASSERT(this->status() == Status::done ||
                         this->status() == Status::starting ||
@@ -300,7 +300,7 @@ namespace elle
         void
         wrapped_run(intptr_t arg)
         {
-          Backend::Thread* thread = reinterpret_cast<Backend::Thread*>(arg);
+          auto* thread = reinterpret_cast<Backend::Thread*>(arg);
           thread->_run();
         }
 
@@ -314,7 +314,7 @@ namespace elle
         {}
 
         Backend::~Backend()
-        {}
+        = default;
 
         std::unique_ptr<backend::Thread>
         Backend::make_thread(const std::string& name, Action action)

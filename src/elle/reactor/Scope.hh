@@ -25,7 +25,7 @@ namespace elle
     `-------------*/
     private:
       /// Create a scope.
-      Scope(std::string const& name = std::string{});
+      Scope(std::string name = {});
       /// Destruct a scope, terminating all managed threads now.
       ///
       /// \throw Terminate if interrupted while killing managed threads.

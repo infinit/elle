@@ -1,7 +1,7 @@
 #define _FILE_OFFSET_BITS 64 // This goes before sys/types.h.
 #define FUSE_USE_VERSION 26
 
-#include <errno.h>
+#include <cerrno>
 #include <sys/types.h>
 
 /*
@@ -54,7 +54,7 @@ namespace elle
         ELLE_TRACE_SCOPE("fusop_getattr %s", path);
         try
         {
-          FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+          auto* fs = (FileSystem*)fuse_get_context()->private_data;
           PathPtr p = fs->path(path);
           p->stat(stbuf);
         }
@@ -79,7 +79,7 @@ namespace elle
         ELLE_TRACE_SCOPE("fusop_readdir %s", path);
         try
         {
-          FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+          auto* fs = (FileSystem*)fuse_get_context()->private_data;
           PathPtr p = fs->path(path);
           p->list_directory(
             [&](std::string const& filename, struct stat* stbuf)
@@ -104,7 +104,7 @@ namespace elle
         ELLE_TRACE_SCOPE("fusop_open %s %s", path, fi->flags);
         try
         {
-          FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+          auto* fs = (FileSystem*)fuse_get_context()->private_data;
           PathPtr p = fs->path(path);
           auto handle = p->open(fi->flags, 0);
           fi->fh = (decltype(fi->fh)) handle.release();
@@ -127,7 +127,7 @@ namespace elle
         ELLE_TRACE_SCOPE("fusop_create %s %s %s", path, mode, fi->flags);
         try
         {
-          FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+          auto* fs = (FileSystem*)fuse_get_context()->private_data;
           PathPtr p = fs->path(path);
           auto handle = p->create(fi->flags, mode);
           fi->fh = (decltype(fi->fh)) handle.release();
@@ -149,7 +149,7 @@ namespace elle
         ELLE_TRACE_SCOPE("fusop_unlink %s", path);
         try
         {
-          FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+          auto* fs = (FileSystem*)fuse_get_context()->private_data;
           PathPtr p = fs->path(path);
           p->unlink();
         }
@@ -170,7 +170,7 @@ namespace elle
         ELLE_TRACE_SCOPE("fusop_mkdir %s", path);
         try
         {
-          FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+          auto* fs = (FileSystem*)fuse_get_context()->private_data;
           PathPtr p = fs->path(path);
           p->mkdir(mode);
         }
@@ -191,7 +191,7 @@ namespace elle
         ELLE_TRACE_SCOPE("fusop_rmdir %s", path);
         try
         {
-          FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+          auto* fs = (FileSystem*)fuse_get_context()->private_data;
           PathPtr p = fs->path(path);
           p->rmdir();
         }
@@ -213,7 +213,7 @@ namespace elle
         ELLE_TRACE_SCOPE("fusop_rename %s %s", path, to);
         try
         {
-          FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+          auto* fs = (FileSystem*)fuse_get_context()->private_data;
           PathPtr p = fs->path(path);
           p->rename(to);
         }
@@ -238,7 +238,7 @@ namespace elle
                          check_path(path), size, offset);
         try
         {
-          Handle* handle = (Handle*)fi->fh;
+          auto* handle = (Handle*)fi->fh;
           return handle->read(elle::WeakBuffer(buf, size), size, offset);
         }
         catch (Error const& e)
@@ -262,7 +262,7 @@ namespace elle
                          check_path(path), fi->fh, size, offset);
         try
         {
-          Handle* handle = (Handle*)fi->fh;
+          auto* handle = (Handle*)fi->fh;
           return handle->write(elle::WeakBuffer((void*)buf, size), size, offset);
         }
         catch (Error const& e)
@@ -303,7 +303,7 @@ namespace elle
                          check_path(path), fi->fh);
         try
         {
-          Handle* handle = (Handle*)fi->fh;
+          auto* handle = (Handle*)fi->fh;
           if (handle)
             handle->close();
         }
@@ -324,7 +324,7 @@ namespace elle
         ELLE_TRACE_SCOPE("fusop_ftruncate %s %s", check_path(path), offset);
         try
         {
-          Handle* handle = (Handle*)fi->fh;
+          auto* handle = (Handle*)fi->fh;
           handle->ftruncate(offset);
         }
         catch (Error const& e)
@@ -344,7 +344,7 @@ namespace elle
         ELLE_TRACE_SCOPE("fusop_readlink %s", path);
         try
         {
-          FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+          auto* fs = (FileSystem*)fuse_get_context()->private_data;
           PathPtr p = fs->path(path);
           auto target = p->readlink();
           auto starget = target.string();
@@ -369,7 +369,7 @@ namespace elle
         ELLE_TRACE_SCOPE("fusop_symlink %s %s", target, where);
         try
         {
-          FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+          auto* fs = (FileSystem*)fuse_get_context()->private_data;
           PathPtr p = fs->path(where);
           p->symlink(target);
         }
@@ -391,7 +391,7 @@ namespace elle
         ELLE_TRACE_SCOPE("fusop_link %s %s", path, to);
         try
         {
-          FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+          auto* fs = (FileSystem*)fuse_get_context()->private_data;
           PathPtr p = fs->path(path);
           p->link(to);
         }
@@ -412,7 +412,7 @@ namespace elle
         ELLE_TRACE_SCOPE("fusop_chmod %s %s", path, mode);
         try
         {
-          FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+          auto* fs = (FileSystem*)fuse_get_context()->private_data;
           PathPtr p = fs->path(path);
           p->chmod(mode);
         }
@@ -433,7 +433,7 @@ namespace elle
         ELLE_TRACE_SCOPE("fusop_chown %s", path);
         try
         {
-          FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+          auto* fs = (FileSystem*)fuse_get_context()->private_data;
           PathPtr p = fs->path(path);
           p->chown(uid, gid);
         }
@@ -454,7 +454,7 @@ namespace elle
         ELLE_TRACE_SCOPE("fusop_statfs %s", path);
         try
         {
-          FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+          auto* fs = (FileSystem*)fuse_get_context()->private_data;
           PathPtr p = fs->path(path);
           p->statfs(svfs);
         }
@@ -475,7 +475,7 @@ namespace elle
         ELLE_TRACE_SCOPE("fusop_utimens %s", path);
         try
         {
-          FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+          auto* fs = (FileSystem*)fuse_get_context()->private_data;
           PathPtr p = fs->path(path);
           p->utimens(tv);
         }
@@ -496,7 +496,7 @@ namespace elle
         ELLE_TRACE_SCOPE("fusop_truncate %s", path);
         try
         {
-          FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+          auto* fs = (FileSystem*)fuse_get_context()->private_data;
           PathPtr p = fs->path(path);
           p->truncate(new_size);
         }
@@ -526,7 +526,7 @@ namespace elle
         ELLE_TRACE_SCOPE("fusop_setxattr %s", path);
         try
         {
-          FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+          auto* fs = (FileSystem*)fuse_get_context()->private_data;
           PathPtr p = fs->path(path);
           p->setxattr(key, std::string(val, valsize), flags);
         }
@@ -555,7 +555,7 @@ namespace elle
         ELLE_TRACE_SCOPE("fusop_getxattr %s buf %s", path, valsize);
         try
         {
-          FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+          auto* fs = (FileSystem*)fuse_get_context()->private_data;
           PathPtr p = fs->path(path);
           std::string res = p->getxattr(key);
           if (val)
@@ -580,7 +580,7 @@ namespace elle
         ELLE_TRACE_SCOPE("fusop_listxattr %s", path);
         try
         {
-          FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+          auto* fs = (FileSystem*)fuse_get_context()->private_data;
           PathPtr p = fs->path(path);
           std::vector<std::string> res = p->listxattr();
           std::string packed;
@@ -609,7 +609,7 @@ namespace elle
         ELLE_TRACE_SCOPE("fusop_removexattr %s", path);
         try
         {
-          FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+          auto* fs = (FileSystem*)fuse_get_context()->private_data;
           PathPtr p = fs->path(path);
           p->removexattr(key);
         }
@@ -630,7 +630,7 @@ namespace elle
         ELLE_TRACE_SCOPE("fusop_fsync %s %s", check_path(path), datasync);
         try
         {
-          Handle* handle = (Handle*)fi->fh;
+          auto* handle = (Handle*)fi->fh;
           handle->fsync(datasync);
         }
         catch (Error const& e)
@@ -654,7 +654,7 @@ namespace elle
             reinterpret_cast<Handle*>(fi->fh)->fsync(datasync);
           else
           {
-            FileSystem* fs = (FileSystem*)fuse_get_context()->private_data;
+            auto* fs = (FileSystem*)fuse_get_context()->private_data;
             PathPtr p = fs->path(path);
             // p->fsync(key);
           }

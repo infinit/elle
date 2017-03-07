@@ -3,6 +3,7 @@
 #include <elle/reactor/exception.hh>
 #include <elle/reactor/scheduler.hh>
 #include <elle/reactor/thread.hh>
+#include <utility>
 
 ELLE_LOG_COMPONENT("elle.reactor.Scope");
 
@@ -14,11 +15,11 @@ namespace elle
     | Construction |
     `-------------*/
 
-    Scope::Scope(std::string const& name)
+    Scope::Scope(std::string name)
       : _threads()
       , _running(0)
       , _exception(nullptr)
-      , _name(name)
+      , _name(std::move(name))
     {}
 
     Scope::~Scope() noexcept(false)

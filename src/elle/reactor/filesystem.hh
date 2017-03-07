@@ -304,7 +304,7 @@ namespace elle
       class BindHandle: public Handle
       {
       public:
-        BindHandle(int fd, boost::filesystem::path const&);
+        BindHandle(int fd, boost::filesystem::path );
 
         int
         read(elle::WeakBuffer buffer, size_t size, off_t offset) override;
@@ -324,7 +324,7 @@ namespace elle
         : public Operations
       {
       public:
-        BindOperations(boost::filesystem::path const& source);
+        BindOperations(boost::filesystem::path  source);
 
         std::shared_ptr<Path>
         path(std::string const& path) override;

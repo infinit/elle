@@ -7,6 +7,7 @@
 
 #include <elle/reactor/filesystem.hh>
 #include <elle/serialization/json.hh>
+#include <utility>
 
 ELLE_LOG_COMPONENT("elle.reactor.filesystem.journal");
 
@@ -84,17 +85,14 @@ namespace elle
           _in.reset(new std::ofstream(path + "in"));
           _out.reset(new std::ofstream(path + "out"));
         }
-        virtual
         void
         filesystem(FileSystem* fs) override
         {
           _filesystem = fs;
           _backend->filesystem(fs);
         }
-        virtual
         std::shared_ptr<Path>
         path(std::string const& path) override;
-        virtual
         std::shared_ptr<Path>
         wrap(std::string const& path, std::shared_ptr<Path> in) override;
         void push_op(std::string const& path, std::string const& op)
@@ -161,14 +159,14 @@ namespace elle
         JournalOperations& _owner;
         std::unique_ptr<Handle> _backend;
       public:
-        ~JournalHandle()
+        ~JournalHandle() override
         {
           _owner.push_in(
             PushSerializer(this, "dispose")()
           );
           _owner.push_out(PushSerializer(this, "dispose")("success", True)());
         }
-        virtual void close() override
+        void close() override
         {
           _owner.push_in(
             PushSerializer(this, "close")()
@@ -180,7 +178,7 @@ namespace elle
           }
           REACTOR_FILESYSTEM_HERROR("close")
         }
-        virtual void fsyncdir(int datasync) override
+        void fsyncdir(int datasync) override
         {
           _owner.push_in(
             PushSerializer(this, "fsyncdir")("datasync", datasync)()
@@ -192,7 +190,7 @@ namespace elle
           }
           REACTOR_FILESYSTEM_HERROR("fsyncdir")
         }
-        virtual void fsync(int datasync) override
+        void fsync(int datasync) override
         {
           _owner.push_in(
             PushSerializer(this, "fsync")("datasync", datasync)()
@@ -204,7 +202,7 @@ namespace elle
           }
           REACTOR_FILESYSTEM_HERROR("fsync")
         }
-        virtual void ftruncate(off_t offset) override
+        void ftruncate(off_t offset) override
         {
           _owner.push_in(
             PushSerializer(this, "ftruncate")("size", offset)()
@@ -216,9 +214,9 @@ namespace elle
           }
           REACTOR_FILESYSTEM_HERROR("ftruncate")
         }
-        virtual int read(elle::WeakBuffer buffer, size_t size, off_t offset) override
+        int read(elle::WeakBuffer buffer, size_t size, off_t offset) override
         {
-          uint64_t size_ = uint64_t(size);
+          auto size_ = uint64_t(size);
           _owner.push_in(
             PushSerializer(this, "read")("size", size_)("offset", offset)()
           );
@@ -232,12 +230,11 @@ namespace elle
           REACTOR_FILESYSTEM_HERROR("read")
         }
 
-        virtual
         int
         write(elle::ConstWeakBuffer buffer, size_t size, off_t offset) override
         {
           elle::Buffer buf(buffer.contents(), buffer.size());
-          uint64_t size_ = uint64_t(size);
+          auto size_ = uint64_t(size);
           _owner.push_in(
             PushSerializer(this, "write")("size", size_)("offset", offset)("content", buf)()
           );
@@ -255,17 +252,17 @@ namespace elle
       {
       public:
         JournalPath(JournalOperations& owner, std::shared_ptr<Path> backend,
-                    std::string const& full_path)
+                    std::string  full_path)
         : _owner(owner)
-        , _full_path(full_path)
-        , _backend(backend)
+        , _full_path(std::move(full_path))
+        , _backend(std::move(backend))
         {}
       private:
         JournalOperations& _owner;
         std::string _full_path;
         std::shared_ptr<Path> _backend;
       public:
-        virtual std::shared_ptr<Path> child(std::string const& name) override
+        std::shared_ptr<Path> child(std::string const& name) override
         {
           ELLE_DEBUG("journal_child %s", name);
           InOp inop(_owner);
@@ -273,7 +270,7 @@ namespace elle
           return std::make_shared<JournalPath>(_owner, res,
             _full_path + (_full_path == "/" ? "" : "/") + name);
         }
-        virtual std::unique_ptr<Handle> create(int flags, mode_t mode) override
+        std::unique_ptr<Handle> create(int flags, mode_t mode) override
         {
           InOp inop(_owner);
           void* h = nullptr;
@@ -295,7 +292,7 @@ namespace elle
           }
           REACTOR_FILESYSTEM_ERROR("create")
         }
-        virtual std::unique_ptr<Handle> open(int flags, mode_t mode) override
+        std::unique_ptr<Handle> open(int flags, mode_t mode) override
         {
           InOp inop(_owner);
           void* h = nullptr;
@@ -317,7 +314,7 @@ namespace elle
           }
           REACTOR_FILESYSTEM_ERROR("open")
         }
-        virtual void stat(struct stat* s) override
+        void stat(struct stat* s) override
         {
           ELLE_DEBUG("journal_stat %s", _full_path);
           InOp inop(_owner);
@@ -352,7 +349,7 @@ namespace elle
           }
           REACTOR_FILESYSTEM_ERROR("stat");
         }
-        virtual void mkdir(mode_t mode) override
+        void mkdir(mode_t mode) override
         {
           InOp inop(_owner);
           _owner.push_in(
@@ -365,7 +362,7 @@ namespace elle
           }
           REACTOR_FILESYSTEM_ERROR("mkdir");
         }
-        virtual void rmdir() override
+        void rmdir() override
         {
           _owner.push_op(_full_path, "rmdir");
           try
@@ -375,7 +372,7 @@ namespace elle
           }
           REACTOR_FILESYSTEM_ERROR("rmdir");
         }
-        virtual void list_directory(OnDirectoryEntry cb) override
+        void list_directory(OnDirectoryEntry cb) override
         {
           InOp inop(_owner);
           _owner.push_op(_full_path, "list_directory");
@@ -392,7 +389,7 @@ namespace elle
           }
           REACTOR_FILESYSTEM_ERROR("list_directory");
         }
-        virtual void unlink() override
+        void unlink() override
         {
           InOp inop(_owner);
           _owner.push_op(_full_path, "unlink");
@@ -403,7 +400,7 @@ namespace elle
           }
           REACTOR_FILESYSTEM_ERROR("unlink");
         }
-        virtual void rename(boost::filesystem::path const& where) override
+        void rename(boost::filesystem::path const& where) override
         {
           InOp inop(_owner);
           _owner.push_in(
@@ -416,7 +413,7 @@ namespace elle
           }
           REACTOR_FILESYSTEM_ERROR("rename");
         }
-        virtual boost::filesystem::path readlink() override
+        boost::filesystem::path readlink() override
         {
           InOp inop(_owner);
           _owner.push_op(_full_path, "readlink");
@@ -430,7 +427,7 @@ namespace elle
           }
           REACTOR_FILESYSTEM_ERROR("readlink");
         }
-        virtual void symlink(boost::filesystem::path const& where) override
+        void symlink(boost::filesystem::path const& where) override
         {
           InOp inop(_owner);
           _owner.push_in(
@@ -443,7 +440,7 @@ namespace elle
           }
           REACTOR_FILESYSTEM_ERROR("symlink");
         }
-        virtual void link(boost::filesystem::path const& where) override
+        void link(boost::filesystem::path const& where) override
         {
           ELLE_DEBUG("journal_link");
           InOp inop(_owner);
@@ -457,7 +454,7 @@ namespace elle
           }
           REACTOR_FILESYSTEM_ERROR("link");
         }
-        virtual void chmod(mode_t mode) override
+        void chmod(mode_t mode) override
         {
           InOp inop(_owner);
           _owner.push_in(
@@ -470,7 +467,7 @@ namespace elle
           }
           REACTOR_FILESYSTEM_ERROR("chmod");
         }
-        virtual void chown(int uid, int gid) override
+        void chown(int uid, int gid) override
         {
           InOp inop(_owner);
           _owner.push_in(
@@ -483,7 +480,7 @@ namespace elle
           }
           REACTOR_FILESYSTEM_ERROR("chown");
         }
-        virtual void statfs(struct statvfs* st) override
+        void statfs(struct statvfs* st) override
         {
           InOp inop(_owner);
           _owner.push_op(_full_path, "statfs");
@@ -511,7 +508,7 @@ namespace elle
           }
           REACTOR_FILESYSTEM_ERROR("statfs");
         }
-        virtual void utimens(const struct timespec tv[2]) override
+        void utimens(const struct timespec tv[2]) override
         {
           InOp inop(_owner);
           uint64_t ta = tv[0].tv_sec * 1000000000ULL + tv[0].tv_nsec;
@@ -526,7 +523,7 @@ namespace elle
           }
           REACTOR_FILESYSTEM_ERROR("utimens");
         }
-        virtual void truncate(off_t new_size) override
+        void truncate(off_t new_size) override
         {
           InOp inop(_owner);
           _owner.push_in(
@@ -539,7 +536,7 @@ namespace elle
           }
           REACTOR_FILESYSTEM_ERROR("truncate");
         }
-        virtual void setxattr(std::string const& name, std::string const& value,
+        void setxattr(std::string const& name, std::string const& value,
                               int flags) override
         {
           InOp inop(_owner);
@@ -553,7 +550,7 @@ namespace elle
           }
           REACTOR_FILESYSTEM_ERROR("setxattr");
         }
-        virtual std::string getxattr(std::string const& name) override
+        std::string getxattr(std::string const& name) override
         {
           InOp inop(_owner);
           _owner.push_in(
@@ -582,7 +579,7 @@ namespace elle
           }
           REACTOR_FILESYSTEM_ERROR("listxattr");
         }
-        virtual void removexattr(std::string const& name) override
+        void removexattr(std::string const& name) override
         {
           InOp inop(_owner);
            _owner.push_in(
@@ -595,7 +592,7 @@ namespace elle
            }
            REACTOR_FILESYSTEM_ERROR("removexattr");
         }
-        virtual std::shared_ptr<Path> unwrap() override
+        std::shared_ptr<Path> unwrap() override
         {
           ELLE_DEBUG("unwrap: %s", _owner.in_op());
           if (_owner.in_op())

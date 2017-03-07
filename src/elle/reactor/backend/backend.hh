@@ -71,7 +71,7 @@ namespace elle
       | Construction |
       `-------------*/
       public:
-        Thread(const std::string& name, Action action);
+        Thread(std::string  name, Action action);
         virtual
         ~Thread();
 

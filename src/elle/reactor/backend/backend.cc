@@ -2,6 +2,7 @@
 #if defined(INFINIT_MACOSX)
 // libc++
 # include <elle/reactor/libcxx-exceptions/cxa_exception.hpp>
+#include <utility>
 # define THROW_SPEC
 #else
 //libstdc++
@@ -20,16 +21,16 @@ namespace elle
       `--------*/
 
       Backend::~Backend()
-      {}
+      = default;
 
       /*-------------.
       | Construction |
       `-------------*/
 
-      Thread::Thread(const std::string& name,
+      Thread::Thread(std::string  name,
                      Action action):
         _action(std::move(action)),
-        _name(name),
+        _name(std::move(name)),
         _status(Status::starting),
         _unwinding(false),
         _exception_storage(new __cxxabiv1::__cxa_eh_globals())

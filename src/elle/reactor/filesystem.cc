@@ -267,8 +267,8 @@ namespace elle
       Handle::fsyncdir(int datasync)
       {}
 
-      BindOperations::BindOperations(bfs::path const& source)
-        : _source(source)
+      BindOperations::BindOperations(bfs::path  source)
+        : _source(std::move(source))
       {}
 
       BindPath::BindPath(bfs::path const& path, BindOperations& ops)
@@ -438,9 +438,9 @@ namespace elle
         return std::make_unique<BindHandle>(fd, where);
       }
 
-      BindHandle::BindHandle(int fd, bfs::path const& where)
+      BindHandle::BindHandle(int fd, bfs::path  where)
         : _fd(fd)
-        , _where(where)
+        , _where(std::move(where))
       {}
 
       void
