@@ -1,9 +1,8 @@
-#ifndef ELLE_SFINAE_HH
-# define ELLE_SFINAE_HH
+#pragma once
 
-# include <cstddef>
+#include <cstddef>
 
-# include <boost/preprocessor/cat.hpp>
+#include <boost/preprocessor/cat.hpp>
 
 namespace elle
 {
@@ -15,24 +14,21 @@ namespace elle
   }
 }
 
-# define ELLE_SFINAE_IF_WORKS(Expr)                             \
-  int, ::elle::sfinae::Helper<sizeof(Expr, 0)>* = 0
+#define ELLE_SFINAE_IF_WORKS(Expr)                      \
+  int, ::elle::sfinae::Helper<sizeof(Expr, 0)>* = nullptr
 
-# define ELLE_SFINAE_IF_POSSIBLE()                             \
+#define ELLE_SFINAE_IF_POSSIBLE()               \
   int
 
-# define ELLE_SFINAE_OTHERWISE()                \
+#define ELLE_SFINAE_OTHERWISE()                 \
   unsigned int
 
-# define ELLE_SFINAE_TRY()                      \
+#define ELLE_SFINAE_TRY()                       \
   42
 
-# define ELLE_SFINAE_INSTANCE(Type)             \
-  (*reinterpret_cast<typename std::remove_reference<Type>::type*>((void*)(0)))
-
-# define ELLE_STATIC_PREDICATE(Name, Test)                              \
+#define ELLE_STATIC_PREDICATE(Name, Test)                               \
   template <typename T>                                                 \
-  inline constexpr                                                      \
+  constexpr                                                             \
   std::enable_if_exists_t<Test, bool>                                   \
   BOOST_PP_CAT(_, Name)(int)                                            \
   {                                                                     \
@@ -40,7 +36,7 @@ namespace elle
   }                                                                     \
                                                                         \
   template <typename T>                                                 \
-  inline constexpr                                                      \
+  constexpr                                                             \
   bool                                                                  \
   BOOST_PP_CAT(_, Name)(...)                                            \
   {                                                                     \
@@ -48,11 +44,9 @@ namespace elle
   }                                                                     \
                                                                         \
   template <typename T>                                                 \
-  inline constexpr                                                      \
+  constexpr                                                             \
   bool                                                                  \
   Name()                                                                \
   {                                                                     \
     return BOOST_PP_CAT(_, Name)<T>(42);                                \
-  }                                                                     \
-
-#endif
+  }

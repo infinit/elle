@@ -33,7 +33,6 @@ namespace elle
         , _partial(false)
         , _json()
         , _current()
-        , _input(input)
       {
         this->_load_json(input);
       }
@@ -45,9 +44,17 @@ namespace elle
         , _partial(false)
         , _json()
         , _current()
-        , _input(input)
       {
         this->_load_json(input);
+      }
+
+      SerializerIn::SerializerIn(elle::json::Json input, bool versioned)
+        : Super(versioned)
+        , _partial(false)
+        , _json(std::move(input))
+        , _current()
+      {
+        this->_current.push_back(&this->_json);
       }
 
       void
@@ -64,16 +71,6 @@ namespace elle
           exception.inner_exception(std::current_exception());
           throw exception;
         }
-      }
-
-      SerializerIn::SerializerIn(elle::json::Json input, bool versioned)
-        : Super(versioned)
-        , _partial(false)
-        , _json(std::move(input))
-        , _current()
-        , _input(ELLE_SFINAE_INSTANCE(std::istream)) // FIXME
-      {
-        this->_current.push_back(&this->_json);
       }
 
       void
