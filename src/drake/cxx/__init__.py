@@ -1018,8 +1018,9 @@ class GccToolkit(Toolkit):
 
   def __split(self):
     if self.__splitted is None:
+      # On MacPorts, compilers are named clang++-mp-3.9, g++-mp-6, etc.
       r = re.compile(
-        '(.*-)?(g\+\+|clang\+\+)(-[0-9]+(\.[0-9]+(\.[0-9]+)?)?)?$')
+        '(.*-)?(g\+\+|clang\+\+)(?:-mp)?(-[0-9]+(\.[0-9]+(\.[0-9]+)?)?)?$')
       match = r.match(self.cxx)
       if not match:
         raise Exception('unrecognized compiler name: %s' % self.cxx)
