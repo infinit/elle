@@ -39,27 +39,6 @@ namespace elle
       }
     }
 
-    static
-    bool
-    color()
-    {
-      static const char* color_env_name = "ELLE_LOG_COLOR";
-      char* color_env = ::getenv(color_env_name);
-      if (color_env)
-        {
-          std::string c(color_env);
-          if (c == "0")
-            return false;
-          else if (c == "1")
-            return true;
-          else
-            throw elle::Exception(elle::sprintf("invalid value for %s: %s",
-                                                color_env_name, c));
-        }
-      else
-        return true;
-    }
-
     TextLogger::TextLogger(std::ostream& out,
                            std::string const& log_level,
                            bool display_type,
@@ -129,6 +108,52 @@ namespace elle
       }
     }
 
+    namespace
+    {
+      /// Whether to use colors.
+      bool
+      color()
+      {
+        static const char* color_env_name = "ELLE_LOG_COLOR";
+        if (char* color_env = ::getenv(color_env_name))
+        {
+          std::string c(color_env);
+          if (c == "0")
+            return false;
+          else if (c == "1")
+            return true;
+          else
+            throw elle::Exception(elle::sprintf("invalid value for %s: %s",
+                                                color_env_name, c));
+        }
+        else
+          return true;
+      }
+
+      std::string
+      get_color_code(Logger::Level level, Logger::Type type)
+      {
+        static bool c = color();
+        if (c)
+          switch (type)
+          {
+          case Logger::Type::info:
+            if (level == Logger::Level::log)
+              return "[1m";
+            else
+              return "";
+          case Logger::Type::warning:
+            // Yellow
+            return "[33;01;33m";
+          case Logger::Type::error:
+            // Red
+            return "[33;01;31m";
+          }
+        else
+          return "";
+        elle::unreachable();
+      }
+    }
 
     void
     TextLogger::_message(
@@ -145,23 +170,25 @@ namespace elle
     {
       if (_warn_err_only && type < Type::warning)
         return;
-      std::string trimmed_message = message;
-      boost::algorithm::trim_if(
-        trimmed_message,
-        boost::algorithm::is_any_of(" \t\n\r"));
-      std::vector<std::string> lines;
-      boost::split(lines,
-                   trimmed_message,
-                   boost::algorithm::is_any_of("\r\n"),
-                   boost::token_compress_on);
-      ELLE_ASSERT(lines.size() > 0);
-      std::string msg = lines[0];
+      auto lines = std::vector<std::string>{};
+      {
+        auto trimmed = boost::algorithm::trim_copy_if(
+          message,
+          boost::algorithm::is_any_of(" \t\n\r"));
+        boost::split(lines,
+                     trimmed,
+                     boost::algorithm::is_any_of("\r\n"),
+                     boost::token_compress_on);
+        ELLE_ASSERT(!lines.empty());
+      }
+      auto msg = lines[0];
 
       // Indentation
-      static bool const display_indentation = !::getenv("ELLE_LOG_NO_INDENTATION");
+      static bool const display_indentation
+        = !::getenv("ELLE_LOG_NO_INDENTATION");
       if (display_indentation)
       {
-        std::string align = std::string(indentation * 2, ' ');
+        auto align = std::string(indentation * 2, ' ');
         msg = align + msg;
       }
 
@@ -193,12 +220,12 @@ namespace elle
       std::string comp;
       if (show_component)
       {
-        unsigned int size = component.size();
+        auto size = component.size();
         ELLE_ASSERT_LTE(size, this->component_max_size());
-        unsigned int pad = this->component_max_size() - size;
-        comp = std::string("[") + std::string(pad / 2, ' ')
+        auto pad = this->component_max_size() - size;
+        comp = "[" + std::string(pad / 2, ' ')
           + component + std::string(pad / 2 + pad % 2, ' ')
-          + std::string("] ");
+          + "] ";
       }
       msg = comp + msg;
 
@@ -206,32 +233,15 @@ namespace elle
       if (this->_enable_time)
         msg = elle::sprintf("%s: %s", time, msg);
 
-      static bool c = color();
-      std::string color_code;
-      if (c)
-        switch (type)
-        {
-          case Type::info:
-            if (level == Level::log)
-              color_code = "[1m";
-            break;
-          case Type::warning:
-            // Yellow
-            color_code = "[33;01;33m";
-            break;
-          case Type::error:
-            // Red
-            color_code = "[33;01;31m";
-            break;
-        }
-      _output << color_code;
-      _output << msg << std::endl;
+      auto color_code = get_color_code(level, type);
+      _output << color_code << msg << std::endl;
+
       if (lines.size() > 1)
       {
-          ELLE_ASSERT_GTE(msg.size(), lines[0].size());
-          std::string indent(msg.size() - lines[0].size(), ' ');
-          for (elle::Size i = 1; i < lines.size(); i++)
-              _output << indent << lines[i] << std::endl;
+        ELLE_ASSERT_GTE(msg.size(), lines[0].size());
+        auto indent = std::string(msg.size() - lines[0].size(), ' ');
+        for (elle::Size i = 1; i < lines.size(); i++)
+          _output << indent << lines[i] << std::endl;
       }
       if (!color_code.empty())
         _output << "[0m";
