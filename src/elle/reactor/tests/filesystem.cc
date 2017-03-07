@@ -159,7 +159,7 @@ static void run_filesystem(elle::reactor::filesystem::FileSystem &fs,
   sched.run();
 }
 
-static void test_sum(void)
+static void test_sum()
 {
   elle::reactor::filesystem::FileSystem fs(std::make_unique<sum::Operations>(), true);
 #ifdef INFINIT_WINDOWS
@@ -270,7 +270,7 @@ namespace xorfs
 
 static
 void
-test_xor(void)
+test_xor()
 {
   auto tmpmount = fs::temp_directory_path() / fs::unique_path();
   auto tmpsource = fs::temp_directory_path() / fs::unique_path();

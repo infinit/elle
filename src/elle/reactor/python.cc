@@ -131,11 +131,9 @@ public:
   {
     boost::python::incref(instance);
   }
-  virtual
-  ~Thread()
-  {}
+  ~Thread() override
+  = default;
 
-  virtual
   void
   _scheduler_release() override
   {
@@ -144,7 +142,6 @@ public:
 
 protected:
   // FIXME: factor with parent method
-  virtual
   void
   _action_wrapper(const Thread::Action& action) override
   {
@@ -201,9 +198,9 @@ create_exception_class(const char* name,
   std::string scopeName =
     bp::extract<std::string>(bp::scope().attr("__name__"));
   std::string qualifiedName0 = scopeName + "." + name;
-  char* qualifiedName1 = const_cast<char*>(qualifiedName0.c_str());
+  auto* qualifiedName1 = const_cast<char*>(qualifiedName0.c_str());
 
-  PyObject* typeObj = PyErr_NewException(qualifiedName1, baseTypeObj, 0);
+  PyObject* typeObj = PyErr_NewException(qualifiedName1, baseTypeObj, nullptr);
   if(!typeObj) bp::throw_error_already_set();
   bp::scope().attr(name) = bp::handle<>(bp::borrowed(typeObj));
   return typeObj;
@@ -222,7 +219,6 @@ public:
   using Super = elle::reactor::Scheduler;
 
 private:
-  virtual
   void
   _rethrow_exception(std::exception_ptr e) const override
   {

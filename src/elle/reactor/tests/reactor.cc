@@ -139,9 +139,9 @@ nested_schedulers()
       inner.run();
       BOOST_CHECK(elle::reactor::Scheduler::scheduler() == &outer);
     });
-  BOOST_CHECK(elle::reactor::Scheduler::scheduler() == 0);
+  BOOST_CHECK(elle::reactor::Scheduler::scheduler() == nullptr);
   outer.run();
-  BOOST_CHECK(elle::reactor::Scheduler::scheduler() == 0);
+  BOOST_CHECK(elle::reactor::Scheduler::scheduler() == nullptr);
 }
 
 ELLE_TEST_SCHEDULED(managed)
@@ -295,7 +295,6 @@ namespace waitable
       this->_raise<BeaconException>();
     }
 
-    virtual
     bool
     _wait(elle::reactor::Thread*, Waker const&) override
     {
@@ -1862,7 +1861,7 @@ test_storage_multithread()
   try
   {
     for (int i = 0; i < 64; ++i)
-      threads.push_back(std::thread(action));
+      threads.emplace_back(action);
   }
   catch (...)
   {

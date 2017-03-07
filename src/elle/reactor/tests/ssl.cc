@@ -18,6 +18,7 @@
 #include <elle/reactor/network/ssl-socket.hh>
 #include <elle/reactor/network/tcp-server.hh>
 #include <elle/reactor/thread.hh>
+#include <utility>
 
 ELLE_LOG_COMPONENT("elle.reactor.network.SSL.test");
 
@@ -184,9 +185,9 @@ ELLE_TEST_SCHEDULED(short_read)
 class Sniffer
 {
 public:
-  Sniffer(std::string const& secret):
+  Sniffer(std::string  secret):
     _thread("sniffer", std::bind(&Sniffer::_run, this)),
-    _secret(secret),
+    _secret(std::move(secret)),
     _server()
   {
     this->_server.listen();

@@ -46,7 +46,7 @@ namespace elle
     `-------------*/
     public:
       /// Construct a Waitable.
-      Waitable(const std::string& name = std::string());
+      Waitable(std::string  name = std::string());
       /// Move a Waitable.
       Waitable(Waitable&& source);
     protected:

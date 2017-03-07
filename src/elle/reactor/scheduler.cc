@@ -43,7 +43,7 @@ namespace elle
     Scheduler::Scheduler()
       : _done(false)
       , _shallstop(false)
-      , _current(0)
+      , _current(nullptr)
       , _starting()
       , _starting_mtx()
       , _running()
@@ -225,11 +225,11 @@ namespace elle
         /* nothing */;
       this->_running_thread = std::thread::id();
       delete this->_background_service_work;
-      this->_background_service_work = 0;
+      this->_background_service_work = nullptr;
       for (auto& thread: this->_background_pool)
         thread.join();
       delete this->_io_service_work;
-      this->_io_service_work = 0;
+      this->_io_service_work = nullptr;
       // Cancel all pending signal handlers.
       this->_signal_handlers.clear();
       this->_io_service.run();
@@ -877,10 +877,10 @@ namespace __cxxabiv1
       }
       if (t == nullptr)
       {
-        static __cxa_eh_globals* nullthread_ceg = new __cxa_eh_globals();
+        static auto* nullthread_ceg = new __cxa_eh_globals();
         return nullthread_ceg;
       }
-      __cxa_eh_globals* ceg = (__cxa_eh_globals*)t->exception_storage();
+      auto* ceg = (__cxa_eh_globals*)t->exception_storage();
       return ceg;
     }
 

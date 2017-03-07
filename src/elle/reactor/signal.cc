@@ -9,7 +9,7 @@ namespace elle
     {}
 
     Signal::~Signal()
-    {}
+    = default;
 
     bool
     Signal::signal()

@@ -10,7 +10,7 @@
 
 using elle::reactor::backend::Thread;
 
-elle::reactor::backend::Backend* m = 0;
+elle::reactor::backend::Backend* m = nullptr;
 
 static
 void
@@ -39,13 +39,13 @@ test_die()
   m = new Backend;
   int i = 0;
   {
-    auto t = m->make_thread("test_die", std::bind(inc, &i));
+    auto t = m->make_thread("test_die", [&i] { inc(&i); });
     t->step();
     BOOST_CHECK_EQUAL(i, 1);
     BOOST_CHECK(t->status() == Thread::Status::done);
   }
   {
-    auto t = m->make_thread("test_die", std::bind(inc, &i));
+    auto t = m->make_thread("test_die", [&i] { inc(&i); });
     t->step();
     BOOST_CHECK_EQUAL(i, 2);
     BOOST_CHECK(t->status() == Thread::Status::done);

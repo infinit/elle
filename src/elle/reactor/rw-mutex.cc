@@ -28,7 +28,7 @@ namespace elle
 
     RWMutex::WriteMutex::WriteMutex(RWMutex& owner)
       : _owner(owner)
-      , _locked(0)
+      , _locked(nullptr)
       , _locked_recursive(0)
     {}
 
@@ -85,7 +85,7 @@ namespace elle
       ELLE_ASSERT(_locked);
       _signal();
       _owner._signal();
-      _locked = 0;
+      _locked = nullptr;
       return false;
     }
 

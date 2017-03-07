@@ -20,9 +20,9 @@ namespace elle
       using Action = Thread::Action;
       Timer(const Timer& b) = delete;
       Timer(Scheduler& s,
-        const std::string& name,
+        std::string  name,
         Duration d,
-        const Action& action);
+        Action  action);
       Timer(const std::string& name,
         Duration d,
         const Action& action);

@@ -20,6 +20,7 @@
 #include <elle/reactor/signal.hh>
 
 #include <elle/reactor/network/http-server.hh>
+#include <utility>
 
 ELLE_LOG_COMPONENT("elle.reactor.http.test");
 
@@ -107,7 +108,6 @@ ELLE_TEST_SCHEDULED(bad_request)
 class SilentHttpServer:
   public HTTPServer
 {
-  virtual
   void
   _response(elle::reactor::network::Socket&,
             elle::reactor::http::StatusCode,
@@ -127,7 +127,6 @@ ELLE_TEST_SCHEDULED(no_answer)
 class PartialHttpServer:
   public HTTPServer
 {
-  virtual
   void
   _response(elle::reactor::network::Socket& socket,
             elle::reactor::http::StatusCode,
@@ -157,7 +156,6 @@ ELLE_TEST_SCHEDULED(partial_answer)
 class FuckOffHttpServer:
   public HTTPServer
 {
-  virtual
   void
   _serve(std::unique_ptr<elle::reactor::network::Socket>) override
   {}
@@ -286,7 +284,7 @@ timeout()
     port = serv.port();
     sig.signal();
     std::unique_ptr<elle::reactor::network::Socket> socket(serv.accept());
-    while (1)
+    while (true)
       elle::reactor::sleep(1_sec);
   };
   elle::reactor::Thread tcp(sched, "tcp", tcp_serv);
@@ -513,7 +511,6 @@ class ScheduledSilentHttpServer:
   public HTTPServer
 {
 protected:
-  virtual
   void
   _serve(std::unique_ptr<elle::reactor::network::Socket>) override
   {
@@ -560,7 +557,6 @@ ELLE_TEST_SCHEDULED(escaped_string)
 class NoHeaderHttpServer:
   public HTTPServer
 {
-  virtual
   void
   _response(elle::reactor::network::Socket& socket,
             elle::reactor::http::StatusCode,
@@ -596,13 +592,13 @@ class SlowHttpServer:
 public:
   SlowHttpServer(std::string reply, int chunk,
                  bool wait_sem = true, elle::reactor::DurationOpt delay=elle::reactor::DurationOpt())
-    : _reply(reply)
+    : _reply(std::move(reply))
     , _chunk(chunk)
     , _wait_sem(wait_sem)
-    , _delay(delay)
+    , _delay(std::move(delay))
   {}
 
-  ~SlowHttpServer()
+  ~SlowHttpServer() override
   {
     this->_finalize();
   }
@@ -614,7 +610,6 @@ public:
   elle::reactor::DurationOpt _delay;
 
 protected:
-  virtual
   void
   _serve(std::unique_ptr<elle::reactor::network::Socket> s) override
   {
@@ -767,7 +762,6 @@ ELLE_TEST_SCHEDULED(keep_alive)
 class RedirectHTTPServer
   : public HTTPServer
 {
-  virtual
   void
   _response(elle::reactor::network::Socket& socket,
             elle::reactor::http::StatusCode,

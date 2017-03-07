@@ -776,11 +776,11 @@ ELLE_TEST_SUITE()
   fsm->add(BOOST_TEST_CASE(test_run_transition_signal), 0, 10);
   fsm->add(BOOST_TEST_CASE(test_run_transition_pre_trigger), 0, 10);
   fsm->add(BOOST_TEST_CASE(test_run_unused_transition), 0, 10);
-  fsm->add(BOOST_TEST_CASE(std::bind(test_run_preemptive_transition, false)), 0, 10);
-  fsm->add(BOOST_TEST_CASE(std::bind(test_run_preemptive_transition, true)), 0, 10);
+  fsm->add(BOOST_TEST_CASE([] { test_run_preemptive_transition(false); }), 0, 10);
+  fsm->add(BOOST_TEST_CASE([] { test_run_preemptive_transition(true); }), 0, 10);
   fsm->add(BOOST_TEST_CASE(test_run_preemptive_transition_pre_opened), 0, 10);
-  fsm->add(BOOST_TEST_CASE(std::bind(test_run_two_transitions_triggered, false)), 0, 10);
-  fsm->add(BOOST_TEST_CASE(std::bind(test_run_two_transitions_triggered, true)), 0, 10);
+  fsm->add(BOOST_TEST_CASE([] { test_run_two_transitions_triggered(false); }), 0, 10);
+  fsm->add(BOOST_TEST_CASE([] { test_run_two_transitions_triggered(true); }), 0, 10);
   fsm->add(BOOST_TEST_CASE(test_recursive_state), 0, 10);
   fsm->add(BOOST_TEST_CASE(test_circular), 0, 10);
   fsm->add(BOOST_TEST_CASE(test_FIFT), 0, 10);

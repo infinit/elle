@@ -7,6 +7,7 @@
 #include <elle/reactor/scheduler.hh>
 #include <elle/reactor/thread.hh>
 #include <elle/reactor/timer.hh>
+#include <utility>
 
 ELLE_LOG_COMPONENT("elle.reactor.Timer")
 
@@ -21,12 +22,12 @@ namespace elle
     {}
 
     Timer::Timer(Scheduler& s,
-                 const std::string& name,
+                 std::string  name,
                  Duration d,
-                 const Action& action)
+                 Action  action)
       : _scheduler(s)
-      , _name(name)
-      , _action(action)
+      , _name(std::move(name))
+      , _action(std::move(action))
       , _timer(s.io_service())
       , _finished(false)
     {

@@ -85,7 +85,7 @@ reactor_pthread_cond_timedwait(reactor_pthread_cond_t * c,
 {
   ELLE_TRACE("reactor_pthread_cond_timedwait %s", *m);
   struct timeval now;
-  gettimeofday(&now, NULL);
+  gettimeofday(&now, nullptr);
   int msDelta = (timeout->tv_sec - now.tv_sec) * 1000;
   msDelta += timeout->tv_nsec/1000000 - now.tv_usec / 1000;
   (*m)->release();
@@ -115,7 +115,7 @@ reactor_mixed_pthread_cond_timedwait(reactor_pthread_cond_t * c,
 {
   ELLE_TRACE("reactor_pthread_cond_timedwait %s", *m);
   struct timeval now;
-  gettimeofday(&now, NULL);
+  gettimeofday(&now, nullptr);
   int msDelta = (timeout->tv_sec - now.tv_sec) * 1000;
   msDelta += timeout->tv_nsec/1000000 - now.tv_usec / 1000;
   pthread_mutex_unlock(m);

@@ -6,6 +6,7 @@
 #include <elle/reactor/thread.hh>
 #include <elle/reactor/waitable.hh>
 #include <elle/string/algorithm.hh>
+#include <utility>
 
 ELLE_LOG_COMPONENT("elle.reactor.Thread");
 
@@ -17,8 +18,8 @@ namespace elle
     | Construction |
     `-------------*/
 
-    Waitable::Waitable(const std::string& name)
-      : _name(name)
+    Waitable::Waitable(std::string  name)
+      : _name(std::move(name))
       , _waiters()
       , _exception()
     {}

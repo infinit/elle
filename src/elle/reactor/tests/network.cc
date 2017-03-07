@@ -22,6 +22,7 @@
 #endif
 #include <elle/reactor/signal.hh>
 #include <elle/reactor/thread.hh>
+#include <utility>
 
 #include "reactor.hh"
 
@@ -393,8 +394,7 @@ class Server
 {
 public:
   Server():
-    _server(),
-    _port(0)
+    _server()
   {
     this->_server.listen(0);
     this->_port = this->_server.port();
@@ -444,12 +444,11 @@ class ContentServer:
   public Server
 {
 public:
-  ContentServer(std::string const& content):
+  ContentServer(std::string  content):
     Server(),
-    _content(content)
+    _content(std::move(content))
   {}
 
-  virtual
   void
   _serve(std::unique_ptr<elle::reactor::network::Socket> socket) override
   {
@@ -621,8 +620,8 @@ ELLE_TEST_SCHEDULED(resolution_abort)
 ELLE_TEST_SCHEDULED(read_terminate_recover)
 {
   char wbuf[100];
-  for (auto i = 0u; i < sizeof wbuf; ++i)
-    wbuf[i] = rand();
+  for (char & i : wbuf)
+    i = rand();
   elle::reactor::network::TCPServer server;
   server.listen();
   elle::reactor::Barrier terminated;
@@ -673,8 +672,8 @@ ELLE_TEST_SCHEDULED(read_terminate_recover)
 ELLE_TEST_SCHEDULED(read_terminate_recover_iostream)
 {
   char wbuf[100];
-  for (auto i = 0u; i < sizeof wbuf; ++i)
-    wbuf[i] = rand();
+  for (char & i : wbuf)
+    i = rand();
   elle::reactor::network::TCPServer server;
   server.listen();
   elle::reactor::Barrier terminated;
