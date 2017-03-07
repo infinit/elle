@@ -231,12 +231,12 @@ namespace elle
       template <typename T>
       struct DefaultFor<true, T>
         : public T::Formal::
-            template Effective<typename T::Type, typename T::Type const&>
+            template Effective<typename T::Default, typename T::Default const&>
       {
         static constexpr bool has = true;
-        using type = typename T::Type;
+        using type = typename T::Default;
         using Super = typename T::Formal::
-          template Effective<typename T::Type, typename T::Type const&>;
+          template Effective<typename T::Default, typename T::Default const&>;
         using Super::Super;
       };
 

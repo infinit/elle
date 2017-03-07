@@ -278,12 +278,31 @@ default_positional()
   default_positional_f(false);
 }
 
-/*-----.
-| Call |
-`-----*/
+/*---------------------.
+| Default non copiable |
+`---------------------*/
 
 ELLE_DAS_SYMBOL(foo);
 ELLE_DAS_SYMBOL(bar);
+
+static
+void
+default_noncopiable()
+{
+  elle::das::named::Function<
+    int (decltype(foo)::Effective<std::nullptr_t, std::nullptr_t, std::unique_ptr<int>>)> f(
+    [] (std::unique_ptr<int> p)
+    {
+      return p ? *p : 0;
+    },
+    foo = nullptr);
+  BOOST_CHECK_EQUAL(f(), 0);
+  BOOST_CHECK_EQUAL(f(std::make_unique<int>(300)), 300);
+}
+
+/*-----.
+| Call |
+`-----*/
 
 template <typename S>
 static
@@ -362,6 +381,7 @@ ELLE_TEST_SUITE()
   master.add(BOOST_TEST_CASE(positional));
   master.add(BOOST_TEST_CASE(default_value));
   master.add(BOOST_TEST_CASE(default_positional));
+  master.add(BOOST_TEST_CASE(default_noncopiable));
   master.add(BOOST_TEST_CASE(call<elle::serialization::Json>));
   master.add(BOOST_TEST_CASE(call<elle::serialization::Binary>));
   master.add(BOOST_TEST_CASE(map));

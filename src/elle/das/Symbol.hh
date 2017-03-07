@@ -37,14 +37,15 @@ namespace elle
        *  @param E The value type.
        *  @param P The type through which the value was passed.
        */
-      template <typename E, typename P>
+      template <typename E, typename P, typename T= E>
       struct Effective
       {
-        using Type = E;
+        using Type = T;
+        using Default = E;
         using Formal = S;
         using Passing = P;
         using Symbol = S;
-        Type value;
+        E value;
 
         template <typename ER, typename PR>
         using rebind = Effective<ER, PR>;
