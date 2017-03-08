@@ -25,11 +25,6 @@ using elle::das::operator <<;
 struct Node
 {
   using Self = Node;
-  bool
-  operator ==(Self const& rhs) const
-  {
-    return this->id == rhs.id && this->age == rhs.age;
-  }
 
   int id;
   elle::athena::LamportAge age;
@@ -44,13 +39,28 @@ ELLE_DAS_SERIALIZE(Node);
 
 static
 void
+compare()
+{
+  using elle::athena::LamportAge;
+  auto a1 = LamportAge{};
+  BOOST_TEST(a1 == a1);
+  auto a2 = a1;
+  a2.start();
+  BOOST_TEST(a1 < a2);
+}
+
+
+static
+void
 serialization()
 {
   namespace tt = boost::test_tools;
   using elle::serialization::json::serialize;
   using elle::serialization::json::deserialize;
+
   {
-    auto const n = Node{42, 1943};
+    auto n = Node{42, {}};
+    n.age.start();
     ELLE_LOG("n: \"%s\"", n);
 
     auto s1 = serialize(n);
@@ -58,11 +68,11 @@ serialization()
     {
       auto const n1 = deserialize<Node>(s1);
       ELLE_LOG("n1: \"%s\"", n1);
-      BOOST_TEST(float(n.age.timestamp()) == float(n1.age.timestamp()), tt::tolerance(2.0f));
+      BOOST_TEST(n.age == n1.age);
     }
 
     /// Let time pass.
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    std::this_thread::sleep_for(std::chrono::seconds(2));
     auto s2 = serialize(n);
     ELLE_LOG("s2: \"%s\"", s2);
 
@@ -71,7 +81,8 @@ serialization()
     {
       auto const n2 = deserialize<Node>(s2);
       ELLE_LOG("n2: \"%s\"", n2);
-      BOOST_TEST(float(n.age.timestamp()) == float(n2.age.timestamp()), tt::tolerance(2.0f));
+      BOOST_TEST(n.age == n2.age,
+                 tt::tolerance(2.0f));
     }
   }
 }
@@ -79,5 +90,6 @@ serialization()
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
-  suite.add(BOOST_TEST_CASE(serialization), 0, valgrind(1));
+  suite.add(BOOST_TEST_CASE(compare), 0, 3);
+  suite.add(BOOST_TEST_CASE(serialization), 0, 3);
 }

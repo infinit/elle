@@ -3,20 +3,14 @@
 #include <boost/operators.hpp>
 
 #include <elle/attribute.hh>
-#include <elle/das/Symbol.hh>
-#include <elle/das/printer.hh>
 #include <elle/serialization/binary.hh>
 #include <elle/serialization/json.hh>
+#include <elle/printf.hh>
 
 namespace elle
 {
   namespace athena
   {
-    namespace symbol
-    {
-      ELLE_DAS_SYMBOL(timestamp);
-    }
-
     /// An age (duration since a date to now) made to be transported.
     ///
     /// Clocks are relative and we should not expect a timestamp on
@@ -31,29 +25,30 @@ namespace elle
     /// propagate to the others the corresponding age.
     ///
     /// In other words, locally we keep the disappearance time, but we
-    /// exchange durations.
+    /// exchange ages.
     class LamportAge
       : private boost::equivalent<LamportAge>
       , private boost::totally_ordered<LamportAge>
+      , public Printable
     {
     public:
       using Self = LamportAge;
       /// A reference date as an int.
       using Timestamp = int64_t;
-      constexpr static auto null_timestamp = Timestamp{-1};
 
       /// A clock.
       using Clock = std::chrono::high_resolution_clock;
       /// A reference date.
       using Time = std::chrono::time_point<Clock>;
+      /// A duration.
+      using Duration = std::chrono::seconds;
 
-      constexpr LamportAge(Timestamp t) noexcept
+      constexpr LamportAge(Time t) noexcept
         : _timestamp{t}
       {}
 
-      constexpr LamportAge() noexcept
-        : Self{null_timestamp}
-      {}
+      /// Initialized with the Clock's epoch.
+      constexpr LamportAge() = default;
 
       /// The default value LamportAge.
       constexpr static LamportAge null()
@@ -64,17 +59,41 @@ namespace elle
       /// Set the reference time.
       void start(Time t = Clock::now())
       {
-        _timestamp = timestamp(t);
+        _timestamp = t;
       }
 
-      /// From a date to an int.
+      /// Get the current age.
+      Duration
+      age() const
+      {
+        return std::chrono::duration_cast<Duration>(Clock::now() - _timestamp);
+      }
+
+      /// From a date to a number of milliseconds as an int.
       static Timestamp
       timestamp(Time t)
       {
-        return std::chrono::duration_cast<std::chrono::milliseconds>
+        return std::chrono::duration_cast<Duration>
           (t.time_since_epoch()).count();
       }
 
+      /*-----------.
+      | Printable  |
+      `-----------*/
+    public:
+      /// Print pretty representation to \a stream.
+      void
+      print(std::ostream& s) const override
+      {
+        elle::fprintf(s, "LamportAge(t=%s, a=%s)",
+                      std::chrono::duration_cast<std::chrono::seconds>
+                      (timestamp().time_since_epoch()),
+                      age());
+      }
+
+      /*--------------.
+      | Serializable  |
+      `--------------*/
       using serialization_tag = elle::serialization_tag;
       void
       serialize(elle::serialization::Serializer& ser)
@@ -83,30 +102,25 @@ namespace elle
         {
           auto& s = static_cast<elle::serialization::SerializerOut&>(ser);
           // Send the age, not the timestamp.
-          s.serialize("age", timestamp(Clock::now()) - timestamp());
+          s.serialize("age", age());
         }
         else
         {
           auto& s = static_cast<elle::serialization::SerializerIn&>(ser);
           // Receive the age, not the timestamp.
-          _timestamp = timestamp(Clock::now()) - s.deserialize<Timestamp>("age");
+          _timestamp = Clock::now() - s.deserialize<Duration>("age");
         }
       }
-
-      /// Default model, e.g. for printer.
-      using Model = elle::das::Model<
-        LamportAge,
-        decltype(elle::meta::list(symbol::timestamp))>;
-      ELLE_ATTRIBUTE_R(Timestamp, timestamp);
+      ELLE_ATTRIBUTE_R(Time, timestamp);
     };
 
     inline
     bool
     operator<(LamportAge const& lhs, LamportAge const& rhs)
     {
-      return lhs.timestamp() < rhs.timestamp();
+      // Don't be too precise when comparing the timestamps.
+      return LamportAge::timestamp(lhs.timestamp())
+        < LamportAge::timestamp(rhs.timestamp());
     }
-
-    using elle::das::operator<<;
   }
 }
