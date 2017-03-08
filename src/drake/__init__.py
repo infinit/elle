@@ -3187,6 +3187,7 @@ def __copy_stripped(source, to, strip_prefix, builder, post_process, follow_syml
         __copy_stripped_cache[key] = res
         return res
     res = builder(source, path, post_process, follow_symlinks).target
+    assert res is not source
     for dep in source.dependencies:
       if not dep.name_absolute().absolute():
         node = __copy_stripped(dep, to, strip_prefix, builder, post_process, follow_symlinks)
