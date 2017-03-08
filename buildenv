@@ -366,7 +366,7 @@ class State:
     ns = self.__opts.cache_namespace or getpass.getuser()
     return 'cache/%s/%s' % (ns, self.branch.replace('/', '_'))
 
-  def rsync(self, s, d, exclude=None):
+  def rsync(self, s, d, exclude = None):
     v = self.__opts.verbose
     args = [
       '--archive',
@@ -375,6 +375,7 @@ class State:
       # '--progress',
       '--recursive',
       '--update',
+      '--delete',
     ]
     if exclude is not None:
       if isinstance(exclude, str):
