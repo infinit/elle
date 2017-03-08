@@ -1713,11 +1713,14 @@ class Binary(Node):
     return self.__dynamic_libraries
 
   def src_add(self, source, tk, cfg):
-    if source.__class__ == Object:
+    pointee = source
+    while isinstance(pointee, drake.Symlink):
+      pointee = pointee.target
+    if isinstance(pointee, Object):
       self.sources.append(source)
-    elif source.__class__ == StaticLib:
+    elif isinstance(pointee, StaticLib):
       self.sources.append(source)
-    elif source.__class__ == Source:
+    elif isinstance(pointee, Source):
       # FIXME: factor
       p = source.name_relative.with_extension('o')
       if str(p) in drake.Drake.current.nodes:
@@ -1725,15 +1728,15 @@ class Binary(Node):
       else:
         o = Object(source, tk, cfg)
       self.sources.append(o)
-    elif source.__class__ == ResourceFile:
+    elif isinstance(pointee, ResourceFile):
       self.sources.append(Resource(source, tk, cfg))
-    elif source.__class__ == Header:
+    elif isinstance(pointee, Header):
       pass
-    elif isinstance(source, (DynLib, Module)):
+    elif isinstance(pointee, (DynLib, Module)):
       self.__dynamic_libraries.add(source)
     else:
       for consumer in source.consumers:
-        if isinstance(consumer, drake.Converter) \
+        if isinstance(pointee, drake.Converter) \
            and consumer.source is source:
           try:
             self.src_add(consumer.target, tk, cfg)
