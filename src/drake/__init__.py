@@ -4306,18 +4306,18 @@ class PythonModule(Builder):
 
 class Symlinker(ShellCommand):
 
-  def __init__(self, link, target, build_target = True):
-    self.__link = link
-    self.__target = target
-    self.__path = self.__target.path()
+  def __init__(self, link, linked, build_linked = True):
+    self.__target = link
+    self.__linked = linked
+    self.__path = self.__linked.path()
     super().__init__(
-      [self.__target] if build_target else [],
-      [self.__link],
+      [self.__linked] if build_linked else [],
+      [self.__target],
       None,
-      'Symlink %s' % self.__link)
+      'Symlink %s' % self.__target)
     if not self.__path.absolute():
       self.__path = self.__path.without_prefix(
-        self.__link.path().dirname())
+        self.__target.path().dirname())
 
   @property
   def target(self):
@@ -4330,18 +4330,18 @@ class Symlinker(ShellCommand):
 
   @property
   def command(self):
-    return ['ln', '-sfn', self.__path, self.__link.path()]
+    return ['ln', '-sfn', self.__path, self.__target.path()]
 
   def execute(self):
     # Override ShellCommand execution to avoid forking, but still
     # pretend to be a shell command for raw mode, Makefile generation,
     # etc.
     try:
-      if _OS.path.exists(str(self.__link)):
-        _OS.remove(str(self.__link))
+      if _OS.path.exists(str(self.__target)):
+        _OS.remove(str(self.__target))
       self.output(
         command_flatten(self.command) if _RAW else self.pretty)
-      _OS.symlink(str(self.__path), str(self.__link.path()))
+      _OS.symlink(str(self.__path), str(self.__target.path()))
     except Exception as e:
       print(e, file = sys.stderr)
       return False
@@ -4349,7 +4349,7 @@ class Symlinker(ShellCommand):
       return True
 
   def __str__(self):
-    return 'Symlinker(%r, %r)' % (self.__path, self.__link)
+    return 'Symlinker(%r, %r)' % (self.__linked, self.__target)
 
 class Symlink(Node):
 
@@ -4362,4 +4362,8 @@ class Symlink(Node):
     '''
     super().__init__(path)
     self.__target = target
-    Symlinker(self, target, build_target = build_target)
+    Symlinker(self, target, build_linked = build_target)
+
+  @property
+  def target(self):
+    return self.__target
