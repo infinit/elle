@@ -329,8 +329,9 @@ def configure(openssl_config,
       bin_path,
       [
         drake.node(path),
-        library, elle_library, openssl_lib_ssl, openssl_lib_crypto
-      ],
+        library,
+        elle_library,
+      ] + openssl_libs,
       cxx_toolkit, config_test)
     rule_tests << bin
     if valgrind_tests:
@@ -367,8 +368,9 @@ def configure(openssl_config,
       example,
       [
         drake.node('%s.cc' % example),
-        library, elle_library, openssl_lib_ssl, openssl_lib_crypto
-      ],
+        library,
+        elle_library,
+      ] + openssl_libs,
       cxx_toolkit, exe_cxx_config)
   rule_build << rule_examples
 
