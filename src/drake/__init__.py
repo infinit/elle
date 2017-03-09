@@ -2989,11 +2989,11 @@ class Copy(Builder):
   >>> with open(str(source.path()), 'w') as f:
   ...   print('Content.', file = f)
   >>> builder = Copy(source, Path('/tmp/.drake.Copy.dest'))
-  >>> target = builder.target()
+  >>> target = builder.target
   >>> target
   /tmp/.drake.Copy.dest
   >>> target.path().remove()
-  >>> builder.target().build()
+  >>> builder.target.build()
   Copy /tmp/.drake.Copy.dest
   >>> with open(str(target.path()), 'r') as f:
   ...   content = f.read()
