@@ -2085,8 +2085,9 @@ class Builder:
                 explain(self, 'the builder hash is invalid')
                 execute = True
               if not execute and self._builder_hash != stored_hash:
-                explain(self, 'hash for the builder changed:\n%r\n%r',
-                        stored_hash, self._builder_hash)
+                explain(self,
+                        'hash for the builder changed:\n%r\n%r'
+                        % (stored_hash, self._builder_hash))
                 execute = True
             else:
               explain(self, 'the builder hash is missing')
