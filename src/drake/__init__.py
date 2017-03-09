@@ -3113,14 +3113,14 @@ class Install(Copy):
 
   def execute(self):
     self.output('Install %s to %s' % (self.source.path(),
-                                   self.target().path()),
-                'Install %s' % self.target())
+                                      self.target.path()),
+                'Install %s' % self.target)
     if not self._copy():
       return False
-    if self.target().install_command is not None:
-      with WritePermissions(self.target()):
+    if self.target.install_command is not None:
+      with WritePermissions(self.target):
         return self.cmd(pretty = None,
-                        cmd = self.target().install_command)
+                        cmd = self.target.install_command)
     return True
 
   @property
