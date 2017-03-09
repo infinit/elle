@@ -18,11 +18,13 @@ namespace elle
       static constexpr char const* virtually_serializable_key = ".type";
     };
 
-    template <bool Versioned>
+    template <typename H, bool Versioned>
     class VirtuallySerializable
       : public VirtuallySerializableBase
     {
     public:
+      using Hierarchy = H;
+
       virtual
       ~VirtuallySerializable()
       {}
@@ -32,11 +34,13 @@ namespace elle
       serialize(Serializer& s) = 0;
     };
 
-    template <>
-    class VirtuallySerializable<true>
+    template <typename H>
+    class VirtuallySerializable<H, true>
       : public VirtuallySerializableBase
     {
     public:
+      using Hierarchy = H;
+
       virtual
       ~VirtuallySerializable()
       {}

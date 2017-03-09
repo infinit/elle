@@ -674,7 +674,8 @@ path()
 
 template <bool Versioned>
 class Super
-  : public elle::serialization::VirtuallySerializable<Versioned>
+  : public elle::serialization::VirtuallySerializable<Super<Versioned>,
+                                                      Versioned>
 {
 public:
   Super(int i)
@@ -709,7 +710,7 @@ _register_SuperU("SuperU");
 
 template <>
 class Super<true>
-  : public elle::serialization::VirtuallySerializable<true>
+  : public elle::serialization::VirtuallySerializable<Super<true>, true>
 {
 public:
   Super(int i)
@@ -924,7 +925,7 @@ hierarchy()
     typename Format::SerializerOut output(stream, false);
     std::unique_ptr<Super<Versioned>> super(new Super<Versioned>(0));
     std::unique_ptr<Super<Versioned>> s1(new Sub1<Versioned>(2));
-    std::unique_ptr<Super<Versioned>> s2(new Sub2<Versioned>(3));
+    std::unique_ptr<Sub2<Versioned>> s2(new Sub2<Versioned>(3));
     output.serialize("super", super);
     output.serialize("sub1", s1);
     output.serialize("sub2", s2);

@@ -158,15 +158,27 @@ namespace elle
       }
 
       template <typename P, typename T>
-      void _set_ptr(P& target, T* ptr)
+      void
+      _set_ptr(P& target, T* ptr)
       {
         target.reset(ptr);
       }
 
       template<typename P, typename T>
-      void _set_ptr(P* &target, T* ptr)
+      std::enable_if_t<std::is_same<P, T>::value, void>
+      _set_ptr(P*& target, T* ptr)
       {
         target = ptr;
+      }
+
+      template<typename P, typename T>
+      std::enable_if_t<!std::is_same<P, T>::value, void>
+      _set_ptr(P*& target, T* ptr)
+      {
+        target = dynamic_cast<P*>(ptr);
+        if (!target)
+          elle::err("deserialized %s is not a %s",
+                    elle::type_info<T>(), elle::type_info<P>());
       }
 
       struct current_name
@@ -210,7 +222,7 @@ namespace elle
         {
           ELLE_ASSERT(bool(ptr));
           auto id = elle::type_info(*ptr);
-          auto const& map = Hierarchy<T>::_rmap();
+          auto const& map = Hierarchy<typename T::Hierarchy>::_rmap();
           auto it = map.find(id);
           if (it == map.end())
           {
@@ -229,7 +241,7 @@ namespace elle
           ELLE_LOG_COMPONENT("elle.serialization.Serializer");
           ELLE_DEBUG_SCOPE("%s: deserialize virtual key%s of type %s",
                            s, _details::current_name(s), type_info<T>());
-          auto const& map = Hierarchy<T>::_map();
+          auto const& map = Hierarchy<typename T::Hierarchy>::_map();
           std::string type_name;
           s.serialize(T::virtually_serializable_key, type_name);
           ELLE_DUMP("%s: type: %s", s, type_name);
