@@ -66,7 +66,12 @@ namespace elle
       Duration
       age() const
       {
-        return std::chrono::duration_cast<Duration>(Clock::now() - _timestamp);
+        if (_timestamp == Time{})
+          return Duration{0};
+        else
+          return std::max(Duration{1},
+                          std::chrono::duration_cast<Duration>(Clock::now()
+                                                               - _timestamp));
       }
 
       /// From a date to a number of milliseconds as an int.
@@ -86,8 +91,7 @@ namespace elle
       print(std::ostream& s) const override
       {
         elle::fprintf(s, "LamportAge(t=%s, a=%s)",
-                      std::chrono::duration_cast<std::chrono::seconds>
-                      (timestamp().time_since_epoch()),
+                      timestamp(timestamp()),
                       age());
       }
 
@@ -108,7 +112,11 @@ namespace elle
         {
           auto& s = static_cast<elle::serialization::SerializerIn&>(ser);
           // Receive the age, not the timestamp.
-          _timestamp = Clock::now() - s.deserialize<Duration>("age");
+          auto age = s.deserialize<Duration>("age");
+          if (age == Duration{0})
+            _timestamp = Time{};
+          else
+            _timestamp = Clock::now() - age;
         }
       }
       ELLE_ATTRIBUTE_R(Time, timestamp);

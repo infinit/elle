@@ -23,7 +23,7 @@ namespace symbol
 using elle::das::operator <<;
 
 struct Node
-{
+ {
   using Self = Node;
 
   int id;
@@ -58,7 +58,25 @@ serialization()
   using elle::serialization::json::serialize;
   using elle::serialization::json::deserialize;
 
+#define CHECK_EQUAL_AGE(Age1, Age2)                     \
+  do {                                                  \
+    ELLE_LOG("Check %s == %s", Age1, Age2);             \
+    ELLE_LOG("Check %s == %s", Age1.age(), Age2.age()); \
+    auto min = std::min(Age1.age(), Age2.age());        \
+    auto max = std::max(Age1.age(), Age2.age());        \
+    auto d = max - min;                                 \
+    BOOST_TEST(d <= std::chrono::seconds(3));           \
+  } while (false)
+
+
   {
+    // n0's age will not change, we don't `start` it.
+    auto const n0 = Node{21, {}};
+    ELLE_LOG("n0: \"%s\"", n0);
+    auto s01 = serialize(n0);
+    BOOST_TEST(n0.age == deserialize<Node>(s01).age);
+
+    // n will be aging.
     auto n = Node{42, {}};
     n.age.start();
     ELLE_LOG("n: \"%s\"", n);
@@ -68,7 +86,7 @@ serialization()
     {
       auto const n1 = deserialize<Node>(s1);
       ELLE_LOG("n1: \"%s\"", n1);
-      BOOST_TEST(n.age == n1.age);
+      CHECK_EQUAL_AGE(n.age, n1.age);
     }
 
     /// Let time pass.
@@ -76,13 +94,19 @@ serialization()
     auto s2 = serialize(n);
     ELLE_LOG("s2: \"%s\"", s2);
 
+    /// n0 was not started, the serialization is the same.
+    {
+      auto s02 = serialize(n0);
+      BOOST_TEST(s01 == s02);
+      CHECK_EQUAL_AGE(n0.age, deserialize<Node>(s02).age);
+    }
+
     /// Both serializations must differ, as time passed.
     BOOST_TEST(s1 != s2);
     {
       auto const n2 = deserialize<Node>(s2);
       ELLE_LOG("n2: \"%s\"", n2);
-      BOOST_TEST(n.age == n2.age,
-                 tt::tolerance(2.0f));
+      CHECK_EQUAL_AGE(n.age, n2.age);
     }
   }
 }
