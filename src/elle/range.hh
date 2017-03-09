@@ -9,6 +9,8 @@ namespace elle
     template <typename It>
     struct range
     {
+      using iterator = It;
+      using const_iterator = It;
       It begin() const { return _begin; }
       It end() const { return _end; }
       It _begin, _end;
