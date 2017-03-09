@@ -11,7 +11,7 @@ x86_64-centos6-gcc4:
     - export DRAKE_MTIME=0 # rsync and mtime comparisons don't play along very well
     - export DRAKE_EXPLAIN=1
     - git submodule sync
-    - git submodule update --init --recursive
+    - git submodule update --init --recursive --force
     - git fetch origin --tags
     - SOURCE_DIR="${CI_PROJECT_DIR}"
     - BUILD_DIR="$(dirname ${CI_PROJECT_DIR})/${CI_PROJECT_NAME}-build"
@@ -42,7 +42,7 @@ x86_64-ubuntu-gcc4:
     - export DRAKE_MTIME=0 # rsync and mtime comparisons don't play along very well
     - export DRAKE_EXPLAIN=1
     - git submodule sync --recursive
-    - git submodule update --init --recursive
+    - git submodule update --init --recursive --force
     - git fetch origin --tags
     - SOURCE_DIR="${CI_PROJECT_DIR}"
     - BUILD_DIR="$(dirname ${CI_PROJECT_DIR})/${CI_PROJECT_NAME}-build"
@@ -74,7 +74,7 @@ x86_64-jessie-gcc4:
     - export DRAKE_MTIME=0 # rsync and mtime comparisons don't play along very well
     - export DRAKE_EXPLAIN=1
     - git submodule sync --recursive
-    - git submodule update --init --recursive
+    - git submodule update --init --recursive --force
     - git fetch origin --tags
     - SOURCE_DIR="${CI_PROJECT_DIR}"
     - BUILD_DIR="$(dirname ${CI_PROJECT_DIR})/${CI_PROJECT_NAME}-build"
@@ -105,7 +105,7 @@ x86_64-alpine-gcc:
     - export DRAKE_MTIME=0 # rsync and mtime comparisons don't play along very well
     - export DRAKE_EXPLAIN=1
     - git submodule sync --recursive
-    - git submodule update --init --recursive
+    - git submodule update --init --recursive --force
     - git fetch origin --tags
     - SOURCE_DIR="${CI_PROJECT_DIR}"
     - BUILD_DIR="$(dirname ${CI_PROJECT_DIR})/${CI_PROJECT_NAME}-build"
@@ -137,7 +137,7 @@ i386-jessie-gcc4:
     - export DRAKE_MTIME=0 # rsync and mtime comparisons don't play along very well
     - export DRAKE_EXPLAIN=1
     - git submodule sync --recursive
-    - git submodule update --init --recursive
+    - git submodule update --init --recursive --force
     - git fetch origin --tags
     - SOURCE_DIR="${CI_PROJECT_DIR}"
     - BUILD_DIR="$(dirname ${CI_PROJECT_DIR})/${CI_PROJECT_NAME}-build"
@@ -168,7 +168,7 @@ x86_64-windows-mingw4:
     - export DRAKE_MTIME=0 # rsync and mtime comparisons don't play along very well
     - export DRAKE_EXPLAIN=1
     - git submodule sync --recursive
-    - git submodule update --init --recursive
+    - git submodule update --init --recursive --force
     - git fetch origin --tags
     - SOURCE_DIR="${CI_PROJECT_DIR}"
     - BUILD_DIR="$(dirname ${CI_PROJECT_DIR})/${CI_PROJECT_NAME}-build"
@@ -199,7 +199,7 @@ x86_64-windows-mingw4:
 #    - export DRAKE_MTIME=0 # rsync and mtime comparisons don't play along very well
 #    - export DRAKE_EXPLAIN=1
 #    - git submodule sync --recursive
-#    - git submodule update --init --recursive
+#    - git submodule update --init --recursive --force
 #    - git fetch origin --tags
 #    - mkdir -p ../elle-build ../elle-install
 #    - farm/configure --arch i686 --os windows --compiler mingw4 --project Elle --source-dir . --build-dir ../elle-build --install-dir ../elle-install
@@ -215,7 +215,7 @@ x86_64-osx-clang:
   stage: build
   script:
     - git submodule sync --recursive
-    - git submodule update --init --recursive
+    - git submodule update --init --recursive --force
     - git fetch origin --tags
     - SOURCE_DIR=$PWD
     - BUILD_DIR=$SOURCE_DIR/../elle-build
