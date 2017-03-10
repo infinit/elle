@@ -31,7 +31,7 @@ brew install python3
 
 Drake requires *Python3* along with the following modules:
 - [greenlet](https://pypi.python.org/pypi/greenlet) *(Micro-threads)*.
-- [oset](https://pypi.python.org/pypi/oset) *(Set that remembers original insertion order)*.
+- [orderedset](https://pypi.python.org/pypi/orderedset) *(Set that remembers original insertion order)*.
 
 Some builders require specific modules, such as:
 - [mako](https://pypi.python.org/pypi/Mako) *(Templating)*.

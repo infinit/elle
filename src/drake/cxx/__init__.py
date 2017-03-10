@@ -11,7 +11,6 @@ import drake
 import io
 import os
 import os.path
-import oset
 import re
 import shutil
 import subprocess
@@ -60,7 +59,7 @@ class Config:
             self.__libraries = sched.OrderedSet()
             self.flags = []
             self.ldflags = []
-            self._framework = oset.oset()
+            self._framework = sched.OrderedSet()
             self.__defines = collections.OrderedDict()
             self.__standard = None
             self.__rpath = []

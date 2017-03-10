@@ -129,8 +129,7 @@ class Scope:
       else:
         break
 
-import oset
-OrderedSet = oset.oset
+from orderedset import OrderedSet
 
 class SchedulingPolicy:
 

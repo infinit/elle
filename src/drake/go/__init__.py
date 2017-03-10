@@ -13,12 +13,13 @@
 # - Discover current architecture
 # - Support all Go specific environment
 
-import oset
 import collections
 import drake
 import os
 import copy
+
 from os import environ
+from orderedset import OrderedSet
 
 class Configuration:
   """
@@ -31,8 +32,8 @@ class Configuration:
     :param config: An optional configuration.
     :type config: Configuration
     """
-    self.__ldflags = oset.oset()
-    self.__tags = oset.oset()
+    self.__ldflags = OrderedSet()
+    self.__tags = OrderedSet()
     if config:
       self += config
 
