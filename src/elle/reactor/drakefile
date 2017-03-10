@@ -293,7 +293,6 @@ def configure(curl_config,
     local_cxx_config.define('REACTOR_CORO_BACKEND_IO')
   else:
     local_cxx_config.define('REACTOR_CORO_BACKEND_BOOST_CONTEXT')
-  print('=' * 42, local_cxx_config)
 
   # FUSE
   fuse_lib = None
@@ -627,7 +626,6 @@ def configure(curl_config,
     cxx_toolkit,
     lib_cxx_config,
   )
-  print('=' * 42, backend_lib.dependencies)
 
   if backend == Backends.io:
     libcoroutine_sources = drake.nodes(
