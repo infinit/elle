@@ -23,9 +23,9 @@ x86_64-centos6-gcc4:
     - mkdir -p "$INSTALL_DIR"
     - scl enable devtoolset-4 rh-python34 "farm/configure --arch x86_64 --os centos6 --compiler gcc4 --project Elle --source-dir \"$SOURCE_DIR\" --build-dir \"$BUILD_DIR\" --install-dir \"$INSTALL_DIR\""
     - cd "$BUILD_DIR"
-    - scl enable devtoolset-4 rh-python34 "python3 drake -j 4 //build"
-    - scl enable devtoolset-4 rh-python34 "python3 drake -j 4 //check"
-    - scl enable devtoolset-4 rh-python34 "python3 drake -j 4 //install"
+    - scl enable devtoolset-4 rh-python34 "python3 drake -j $(nproc) //build"
+    - scl enable devtoolset-4 rh-python34 "python3 drake -j $(nproc) //check"
+    - scl enable devtoolset-4 rh-python34 "python3 drake -j $(nproc) //install"
     - TARBALL="elle-x86_64-centos6-gcc4-$DESC.tbz"
     - tar -cvjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
     - scp "$TARBALL" buildslave@packages.infinit.sh:tmp
@@ -88,9 +88,9 @@ x86_64-jessie-gcc4:
     - mkdir -p "$INSTALL_DIR"
     - farm/configure --arch x86_64 --os jessie --compiler gcc4 --project Elle --source-dir "$SOURCE_DIR" --build-dir "$BUILD_DIR" --install-dir "$INSTALL_DIR"
     - cd "$BUILD_DIR"
-    - python3 drake -j 4 //build
-    - python3 drake -j 4 //check
-    - python3 drake -j 4 //install
+    - python3 drake -j $(nproc) //build
+    - python3 drake -j $(nproc) //check
+    - python3 drake -j $(nproc) //install
     - TARBALL="$BUILD_DIR/elle-x86_64-jessie-gcc4-$DESC.tbz"
     - tar -cvjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
     - scp "$TARBALL" buildslave@packages.infinit.sh:tmp
@@ -120,9 +120,9 @@ x86_64-alpine-gcc:
     - mkdir -p "${BUILD_DIR}" "${INSTALL_DIR}"
     - farm/configure --arch x86_64 --os alpine --compiler gcc4 --project Elle --source-dir "$SOURCE_DIR" --build-dir "$BUILD_DIR" --install-dir "$INSTALL_DIR"
     - cd "$BUILD_DIR"
-    - python3 drake -j 4 //build
-    - python3 drake -j 4 //check
-    - python3 drake -j 4 //install
+    - python3 drake -j $(nproc) //build
+    - python3 drake -j $(nproc) //check
+    - python3 drake -j $(nproc) //install
     - TARBALL="$BUILD_DIR/elle-x86_64-alpine-gcc-$DESC.tbz"
     - tar -cvjf $TARBALL -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
     - scp "$TARBALL" buildslave@packages.infinit.sh:tmp
@@ -153,9 +153,9 @@ i386-jessie-gcc4:
     - mkdir -p "$INSTALL_DIR"
     - farm/configure --arch i386 --os jessie --compiler gcc4 --project Elle --source-dir "$SOURCE_DIR" --build-dir "$BUILD_DIR" --install-dir "$INSTALL_DIR"
     - cd "$BUILD_DIR"
-    - python3 drake -j 4 //build
-    - python3 drake -j 4 //check
-    - python3 drake -j 4 //install
+    - python3 drake -j $(nproc) //build
+    - python3 drake -j $(nproc) //check
+    - python3 drake -j $(nproc) //install
     - TARBALL="$BUILD_DIR/elle-i386-jessie-gcc4-$DESC.tbz"
     - tar -cvjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
     - scp "$TARBALL" buildslave@packages.infinit.sh:tmp
@@ -185,9 +185,9 @@ x86_64-windows-mingw4:
     - mkdir -p "$INSTALL_DIR"
     - farm/configure --arch x86_64 --os windows --compiler mingw4 --project Elle --source-dir "$SOURCE_DIR" --build-dir "$BUILD_DIR" --install-dir "$INSTALL_DIR"
     - cd "$BUILD_DIR"
-    - python3 drake -j 4 //build
-    - python3 drake -j 4 //check
-    - python3 drake -j 4 //install
+    - python3 drake -j $(nproc) //build
+    - python3 drake -j $(nproc) //check
+    - python3 drake -j $(nproc) //install
     - TARBALL="$BUILD_DIR/elle-x86_64-windows-mingw4-$DESC.tbz"
     - tar -cvjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
     - scp "$TARBALL" buildslave@packages.infinit.sh:tmp
@@ -209,9 +209,9 @@ x86_64-windows-mingw4:
 #    - git fetch origin --tags
 #    - mkdir -p ../elle-build ../elle-install
 #    - farm/configure --arch i686 --os windows --compiler mingw4 --project Elle --source-dir . --build-dir ../elle-build --install-dir ../elle-install
-#    - cd ../elle-build && python3 drake -j 4 //build
-#    - cd ../elle-build && python3 drake -j 4 //check
-#    - cd ../elle-build && python3 drake -j 4 //install
+#    - cd ../elle-build && python3 drake -j $(nproc) //build
+#    - cd ../elle-build && python3 drake -j $(nproc) //check
+#    - cd ../elle-build && python3 drake -j $(nproc) //install
 #  tags:
 #    - i686
 #    - windows
