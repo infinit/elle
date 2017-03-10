@@ -70,6 +70,7 @@ def configure(curl_config,
   # Local C++ configuration
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
   local_cxx_config = drake.cxx.Config(cxx_config)
+
   local_cxx_config += config
   local_cxx_config.lib_path_runtime('.')
   local_cxx_config.enable_debug_symbols()
@@ -257,11 +258,19 @@ def configure(curl_config,
   boost = boost or drake.cxx.boost.Boost()
   local_cxx_config += boost.config()
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
-    local_cxx_config += boost.config_signals(static = True)
-    local_cxx_config += boost.config_system(static = True)
-    local_cxx_config += boost.config_thread(static = True)
+    local_cxx_config += boost.config_signals(link = False, static = True)
+    local_cxx_config.library_add(
+      drake.copy(boost.signals_static, 'lib', strip_prefix = True))
+    local_cxx_config += boost.config_system(link = False, static = True)
+    local_cxx_config.library_add(
+      drake.copy(boost.system_static, 'lib', strip_prefix = True))
+    local_cxx_config += boost.config_thread(link = False, static = True)
+    local_cxx_config.library_add(
+      drake.copy(boost.thread_static, 'lib', strip_prefix = True))
     if backend == Backends.boost:
-      local_cxx_config += boost.config_context(static = True)
+      local_cxx_config += boost.config_context(link = False, static = True)
+      local_cxx_config.library_add(
+        drake.copy(boost.context_static, 'lib', strip_prefix = True))
   else:
     if backend == Backends.boost:
       local_cxx_config += boost.config_context(link = False)
@@ -284,6 +293,7 @@ def configure(curl_config,
     local_cxx_config.define('REACTOR_CORO_BACKEND_IO')
   else:
     local_cxx_config.define('REACTOR_CORO_BACKEND_BOOST_CONTEXT')
+  print('=' * 42, local_cxx_config)
 
   # FUSE
   fuse_lib = None
@@ -617,6 +627,7 @@ def configure(curl_config,
     cxx_toolkit,
     lib_cxx_config,
   )
+  print('=' * 42, backend_lib.dependencies)
 
   if backend == Backends.io:
     libcoroutine_sources = drake.nodes(
@@ -666,7 +677,7 @@ def configure(curl_config,
   ]
   lib_static_link_libs = [
     curl_lib,
-    elle.lib_static,
+    elle_lib,
     miniupnpc.library,
     utp_lib,
   ]

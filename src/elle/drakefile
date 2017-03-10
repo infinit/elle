@@ -56,19 +56,31 @@ def configure(zlib_lib,
   boost = boost or drake.cxx.boost.Boost()
   cxx_config += boost.config()
   if cxx_toolkit.os in [drake.os.macos, drake.os.windows, drake.os.ios, drake.os.android]:
-    cxx_config += boost.config_filesystem(static = True)
+    cxx_config += boost.config_filesystem(link = False, static = True)
+    cxx_config.library_add(
+      drake.copy(boost.filesystem_static, 'lib', strip_prefix = True))
   else:
     cxx_config += boost.config_filesystem(link = False)
     cxx_config.library_add(drake.copy(boost.filesystem_dynamic,
                                       'lib', strip_prefix = True))
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
-    cxx_config += boost.config_system(static = True)
-    cxx_config += boost.config_thread(static = True)
+    cxx_config += boost.config_system(link = False, static = True)
+    cxx_config.library_add(
+      drake.copy(boost.system_static, 'lib', strip_prefix = True))
+    cxx_config += boost.config_thread(link = False, static = True)
+    cxx_config.library_add(
+      drake.copy(boost.thread_static, 'lib', strip_prefix = True))
     if cxx_toolkit.os is drake.os.windows:
-      cxx_config += boost.config_locale(static = True)
-    cxx_config += boost.config_chrono(static = True)
+      cxx_config += boost.config_locale(link = False, static = True)
+      cxx_config.library_add(
+        drake.copy(boost.locale_static, 'lib', strip_prefix = True))
+    cxx_config += boost.config_chrono(link = False, static = True)
+    cxx_config.library_add(
+      drake.copy(boost.chrono_static, 'lib', strip_prefix = True))
     if python3 is not None and cxx_toolkit.os is not drake.os.windows:
-      boost_python = drake.cxx.Config(boost.config_python(static = True))
+      boost_python = drake.cxx.Config(boost.config_python(link = False, static = True))
+      cxx_config.library_add(
+        drake.copy(boost.python_static, 'lib', strip_prefix = True))
   else:
     if python3 is not None:
       boost_python = drake.cxx.Config(

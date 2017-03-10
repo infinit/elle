@@ -67,12 +67,17 @@ def configure(openssl_config,
   boost = boost or drake.cxx.boost.Boost()
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
     if python is not None and build_python_module:
-      boost_python = boost.config_python(static = True)
+      boost_python = boost.config_python(link = False, static = True)
+      boost_python.library_add(drake.copy(boost.python_static, 'lib', strip_prefix = True))
       boost_python += python
-    boost_test = boost.config_test(static = True)
-    boost_timer = boost.config_timer(static = True)
-    boost_thread = boost.config_thread(static = True)
-    boost_filesystem = boost.config_filesystem(static = True)
+    boost_test = boost.config_test(link = False, static = True)
+    boost_test.library_add(drake.copy(boost.test_static, 'lib', strip_prefix = True))
+    boost_timer = boost.config_timer(link = False, static = True)
+    boost_timer.library_add(drake.copy(boost.timer_static, 'lib', strip_prefix = True))
+    boost_thread = boost.config_thread(link = False, static = True)
+    boost_thread.library_add(drake.copy(boost.thread_static, 'lib', strip_prefix = True))
+    boost_filesystem = boost.config_filesystem(link = False, static = True)
+    boost_filesystem.library_add(drake.copy(boost.filesystem_static, 'lib', strip_prefix = True))
   else:
     if python is not None and build_python_module:
       boost_python = drake.cxx.Config(boost.config_python(link = False))
@@ -110,7 +115,7 @@ def configure(openssl_config,
   cxx_config += config
   cxx_config += boost.config()
   if cxx_toolkit.os in [drake.os.ios, drake.os.windows, drake.os.android]:
-    cxx_config += boost.config_system(static = True)
+    cxx_config += boost.config_system(link = False, static = True)
   else:
     cxx_config.library_add(
       drake.copy(boost.system_dynamic, 'lib', strip_prefix = True))
