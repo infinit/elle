@@ -1568,9 +1568,6 @@ class StaticLibLinker(ShellCommand):
     def __init__(self, objs, lib, tk, cfg):
       self.objs = objs
       self.__library = lib
-      for o in self.objs:
-        if isinstance(o, StaticLib):
-          lib.dependency_add(o)
       self.toolkit = tk
       self.config = cfg
       super().__init__(objs, [lib], None)
