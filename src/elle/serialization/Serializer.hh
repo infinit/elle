@@ -170,6 +170,10 @@ namespace elle
       serialize_object(T& v);
       void
       serialize_object(elle::Version& v);
+      void
+      serialize_variant(std::vector<std::string> const& names,
+                        int index, // out: filled, in: -1
+                        std::function<void(int)> const& f);
       template <typename T>
       void
       serialize_ptr(std::string const& name, T* &v, bool anonymous = false);
@@ -302,6 +306,11 @@ namespace elle
       void
       _serialize_option(bool present,
                         std::function<void ()> const& f) = 0;
+      virtual
+      void
+      _serialize_variant(std::vector<std::string> const& names,
+                         int index, // out: filled, in: -1
+                         std::function<void(int)> const& f);
       template <typename S = void,
                 template <typename, typename> class C,
                 typename T, typename A>

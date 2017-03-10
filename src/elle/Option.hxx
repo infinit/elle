@@ -311,7 +311,7 @@ namespace elle
       static void
       apply(V& v, int, serialization::SerializerIn& s)
       {
-        new (&v) V(s.deserialize<V>("value"));
+        new (&v) V(s.deserialize<V>());
       }
     };
   }
@@ -319,16 +319,8 @@ namespace elle
   template <typename ... Types>
   Option<Types ...>::Option(serialization::SerializerIn& s)
   {
-    try
-    {
-      s.serialize("type", this->_index);
-      this->template _apply<_details::OptionDeserialize>(s);
-    }
-    catch (...)
-    {
-      this->_index = -1;
-      throw;
-    }
+    this->_index = -1;
+    serialize(s);
   }
 
   namespace _details
@@ -339,7 +331,19 @@ namespace elle
       static void
       apply(V& v, int, serialization::Serializer& s)
       {
-        s.serialize("value", v);
+        s.serialize_forward(v);
+      }
+    };
+    template<typename V>
+    struct OptionNames
+    {
+      typedef int type;
+      static
+      int
+      value(std::vector<std::string>& names)
+      {
+        names.push_back(type_info<V>().name());
+        return 0;
       }
     };
   }
@@ -348,24 +352,33 @@ namespace elle
   void
   Option<Types ...>::serialize(serialization::Serializer& s)
   {
+    std::vector<std::string> names;
+    meta::List<Types...>::template map<_details::OptionNames>::value(names);
     // FIXME: simplify with split serialization
-    if (s.in())
+    if (s.in() && this->_index != -1)
       this->template _apply<_details::OptionReset>();
-    s.serialize("type", this->_index);
-    if (s.in())
-      try
-      {
-        this->template _apply<_details::OptionDeserialize>(
-          static_cast<serialization::SerializerIn&>(s));
-      }
-      catch (...)
-      {
-        this->_index = -1;
-        throw;
-      }
-    else
-      this->template _apply<_details::OptionSerialize>(s);
-  }
+    s.serialize_variant(names, this->_index,
+     [&](int idx) {
+       if (s.in())
+       {
+         this->_index = idx;
+         try
+         {
+           this->template _apply<_details::OptionDeserialize>(
+             static_cast<serialization::SerializerIn&>(s));
+         }
+         catch (...)
+         {
+           this->_index = -1;
+           throw;
+         }
+       }
+       else
+       {
+         this->template _apply<_details::OptionSerialize>(s);
+       }
+     });
+   }
 
   /*----------.
   | Printable |

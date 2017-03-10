@@ -161,5 +161,24 @@ namespace elle
       ELLE_LOG_COMPONENT("elle.serialization.Serializer");
       ELLE_WARN("%s: do nothing", *this);
     }
+
+    void
+    Serializer::serialize_variant(std::vector<std::string> const& names,
+                        int index, // out: filled, in: -1
+                        std::function<void(int)> const& f)
+    {
+      this->_serialize_variant(names, index, f);
+    }
+
+    void
+    Serializer::_serialize_variant(std::vector<std::string> const& names,
+                                  int index, // out: filled, in: -1
+                                  std::function<void(int)> const& f)
+    {
+      this->serialize("type", index);
+      this->_enter("value");
+      elle::SafeFinally leave([&] { this->_leave("value");});
+      f(index);
+    }
   }
 }
