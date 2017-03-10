@@ -438,7 +438,7 @@ namespace elle
           void
           serialize(serialization::Serializer& s)
           {
-            auto ignore = {
+            int ignore[] = {
               (s.serialize(make_symbol<Args>::name(),
                            this->make_effective<Args>::value), 0)...
             };
