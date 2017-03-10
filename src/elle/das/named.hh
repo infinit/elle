@@ -450,6 +450,7 @@ namespace elle
           : public elle::Option<R, std::exception_ptr>
         {
         public:
+          using Super = elle::Option<R, std::exception_ptr>;
           using elle::Option<R, std::exception_ptr>::Option;
           R
           operator()()
