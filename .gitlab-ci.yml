@@ -23,7 +23,7 @@ x86_64-osx-clang:
   stage: check
   script:
     - git fetch origin --tags
-    - pip3 install -r requirements.txt
+    - pip3 install --user -r requirements.txt
     - (cd _build && ./drake //check)
     - tests/test.py
     - (cd examples/hello_world/_build/macosx64 && ./drake //build && ./hello_world)
