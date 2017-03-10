@@ -235,6 +235,6 @@ for prop, library in Boost._Boost__libraries.items():
         setattr(self, name + '_header', Config(c))
         c.library_add(lib)
         setattr(self, name, Config(c))
-      return getattr(self, name + ('_header' if not link else ''))
+      return drake.cxx.Config(getattr(self, name + ('_header' if not link else '')))
     setattr(Boost, 'config_%s' % prop, config_getter)
   unclosure(prop, library)
