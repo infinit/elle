@@ -14,7 +14,7 @@ int
 main()
 {
   using elle::system::Process;
-  Process p({elle::sprintf("%s/tests/system/true" EXTENSION,
-                           elle::os::getenv("BUILD_DIR"))});
+  Process p({elle::sprintf("%s/system/true" EXTENSION,
+                           elle::os::getenv("TEST_DIR"))});
   return p.wait();
 }

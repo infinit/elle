@@ -623,6 +623,7 @@ def configure(zlib_lib,
     rule_tests << test
     env = {
       'BUILD_DIR': str(drake.path_build()),
+      'TEST_DIR': str(drake.path_build(tests_path)),
     }
     if valgrind_tests and valgrind_this_test:
       runner = drake.valgrind.ValgrindRunner(exe = test,
