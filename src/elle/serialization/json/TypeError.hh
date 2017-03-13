@@ -9,8 +9,9 @@ namespace elle
 {
   namespace serialization
   {
-    class TypeError:
-      public Error
+    /// An error related to a mismatching type.
+    class TypeError
+      : public Error
     {
     public:
       TypeError(std::string const& field,

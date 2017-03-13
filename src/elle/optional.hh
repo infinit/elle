@@ -6,6 +6,7 @@
 
 namespace boost
 {
+  /// Pretty printer for boost::optionals.
   template <typename T>
   std::ostream&
   operator <<(std::ostream& s, boost::optional<T> const& o)

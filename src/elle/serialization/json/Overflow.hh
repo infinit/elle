@@ -9,6 +9,7 @@ namespace elle
   {
     namespace json
     {
+      /// Error related to an overflow.
       class Overflow
         : public serialization::Error
       {

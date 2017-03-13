@@ -23,6 +23,31 @@ namespace elle
   {
     namespace cli
     {
+      /// Create a command line interface for a function using symbols.
+      ///
+      /// \code{.cc}
+      ///
+      /// ELLE_DAS_CLI_SYMBOL(prefix, 'p', "The prefix", false);
+      /// ELLE_DAS_CLI_SYMBOL(body, 'b', "The body", false);
+      ///
+      /// ...
+      ///
+      /// auto func = [] (std::string const& foo, std::string const& bar)
+      ///             {
+      ///               return foo + "_" + bar;
+      ///             };
+      /// auto const proto = elle::das::named::prototype(prefix, body);
+      /// assert(
+      ///   elle::das::cli::call(proto, func,
+      ///                        {"--prefix", "bad", "--body", "karma"})
+      ///   == "bad_karma");
+      ///
+      /// assert(
+      ///   elle::sprintf("%s", elle::das::cli::help(proto))
+      ///   == "  -p, --prefix arg          The prefix\n"
+      ///      "  -b, --body arg            The body\n");
+      ///
+      /// \endcode
       /*---------.
       | Errors.  |
       `---------*/
@@ -123,9 +148,9 @@ namespace elle
       class CLI_Symbol
       {};
 
-      /*----------.
-      | Options.  |
-      `----------*/
+      /*--------.
+      | Options |
+      `--------*/
 
       struct Option
       {

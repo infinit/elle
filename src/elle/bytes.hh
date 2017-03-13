@@ -56,8 +56,8 @@ namespace elle
 {
   /// Pretty-print a number of bytes.
   ///
-  /// \param bytes  the number of bytes.
-  /// \param si     whether to use KB, MB instead of KiB, MiB, etc.
+  /// @param bytes  The number of bytes.
+  /// @param si Whether to use scientific notation or not (KiB vs KB, etc.).
   std::string
   human_data_size(double bytes, bool si = true);
 }

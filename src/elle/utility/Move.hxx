@@ -6,25 +6,25 @@ namespace elle
   namespace utility
   {
     template <typename T>
-    Move<T>::Move(T&& t):
-      value(std::move(t))
+    Move<T>::Move(T&& t)
+      : value(std::move(t))
     {}
 
     template <typename T>
-    Move<T>::Move(Move const& other):
-      value(std::move(other.value))
+    Move<T>::Move(Move const& other)
+      : value(std::move(other.value))
     {}
 
     template <typename T>
-    Move<T>::Move(Move&& other):
-      value(std::move(other.value))
+    Move<T>::Move(Move&& other)
+      : value(std::move(other.value))
     {}
 
     template <typename T>
     Move<T>&
     Move<T>::operator =(Move const& other)
     {
-      value = std::move(other.value);
+      this->value = std::move(other.value);
       return *this;
     }
 
@@ -32,7 +32,7 @@ namespace elle
     Move<T>&
     Move<T>::operator =(Move&& other)
     {
-      value = std::move(other.value);
+      this->value = std::move(other.value);
       return *this;
     }
 

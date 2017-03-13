@@ -7,11 +7,10 @@ namespace elle
 {
   namespace system
   {
-    /** Path to the current executable.
-     *
-     *  \return path to the current executable.
-     *  \throw elle::Error if unable to determine current executable path.
-     */
+    /// Path to the current executable.
+    ///
+    /// @returns path to the current executable.
+    /// @throw elle::Error if unable to determine current executable path.
     boost::filesystem::path
     self_path();
   }

@@ -7,6 +7,7 @@ namespace elle
   {
     typedef int ProcessId;
 
+    /// Portable way to get our PID.
     ProcessId
     getpid();
 

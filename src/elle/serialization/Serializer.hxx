@@ -918,12 +918,47 @@ namespace elle
     Serializer::_serialize(std::unordered_map<std::string, V, Rest...>& map)
     {
       ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-      ELLE_TRACE_SCOPE("%s: serialize dictionary%s",
+      ELLE_TRACE_SCOPE("%s: serialize dictionary %s",
                        this, _details::current_name(*this));
       if (this->out())
       {
         this->_size(map.size());
-        for (std::pair<std::string, V> pair: map)
+        for (auto pair: map)
+        {
+          this->_serialize_dict_key(
+            pair.first,
+            [&] ()
+            {
+              Serializer::serialize_switch(*this, pair.second);
+              // FIXME: wtf is this leave ?
+              elle::SafeFinally leave(
+                [&] { this->_leave(this->current_name()); });
+            });
+        }
+      }
+      else
+      {
+        this->_deserialize_dict_key(
+          [&] (std::string const& key)
+          {
+            V value;
+            Serializer::serialize_switch(*this, value);
+            map.insert({key, value});
+          });
+      }
+    }
+
+    template <typename V, typename ... Rest>
+    void
+    Serializer::_serialize(std::map<std::string, V, Rest...>& map)
+    {
+      ELLE_LOG_COMPONENT("elle.serialization.Serializer");
+      ELLE_TRACE_SCOPE("%s: serialize dictionary %s",
+                       this, _details::current_name(*this));
+      if (this->out())
+      {
+        this->_size(map.size());
+        for (auto pair: map)
         {
           this->_serialize_dict_key(
             pair.first,

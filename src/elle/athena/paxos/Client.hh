@@ -11,6 +11,10 @@ namespace elle
   {
     namespace paxos
     {
+      /// A client of the Paxos consensus algorithm.
+      ///
+      /// For more details, on both the terminology and the algorithm:
+      /// https://en.wikipedia.org/wiki/Paxos_(computer_science)
       template <typename T, typename Version, typename ClientId>
       class Client
         : public elle::Printable
@@ -29,23 +33,44 @@ namespace elle
         | Peer |
         `-----*/
       public:
+        /// The default interface of a Peer.
         class Peer
           : public elle::Printable
         {
         public:
+          /// Create a peer with \a given id.
+          ///
+          /// @param id The peer id.
           Peer(ClientId id);
           virtual
           ~Peer() = default;
+          /// Send \a Proposal to \a Quorum.
+          ///
+          /// @param q The quorum the proposal is sent to.
+          /// @param p The proposal.
+          /// @returns An optional acceptation.
           virtual
           boost::optional<Accepted>
           propose(Quorum const& q, Proposal const& p) = 0;
+          /// Tell the Quorum you accept \a proposal.
+          ///
+          /// @param q The quorum the proposal is sent to.
+          /// @param p The proposal.
+          /// @param value The value you agreed for.
           virtual
           Proposal
           accept(Quorum const& q, Proposal const& p,
                  elle::Option<T, Quorum> const& value) = 0;
+          /// Confirm \a proposal.
+          ///
+          /// @param q The quorum the proposal is sent to.
+          /// @param p The proposal.
           virtual
           void
           confirm(Quorum const& q, Proposal const& p) = 0;
+          /// Get the Accepted proposal.
+          ///
+          /// @param q The quorum.
           virtual
           boost::optional<Accepted>
           get(Quorum const& q) = 0;
@@ -64,6 +89,7 @@ namespace elle
         `-------------*/
       public:
         Client(ClientId id, Peers peers);
+        /// Change the peers.
         void
         peers(Peers peers);
         ELLE_ATTRIBUTE_R(ClientId, id);
@@ -75,23 +101,21 @@ namespace elle
         | Consensus |
         `----------*/
       public:
-        /** Submit \a value as the chosen value.
-         *
-         *  \param value the submitted value
-         *  \return the value that was chosen if not the one we submitted
-         */
+        /// Submit \a value as the chosen value.
+        ///
+        /// @param value The submitted value
+        /// @returns The value that was chosen if not the one we submitted
         boost::optional<Accepted>
         choose(elle::Option<T, Quorum> const& value);
-        /** Submit \a value as the chosen value.
-         *
-         *  \param value the submitted value
-         *  \return the value that was chosen if not the one we submitted
-         */
+        /// Submit \a value as the chosen value.
+        ///
+        /// @param value The submitted value
+        /// @param version The version of the proposal.
+        /// @returns The value that was chosen if not the one we submitted
         boost::optional<Accepted>
         choose(elle::_detail::attribute_r_t<Version> version,
                elle::Option<T, Quorum> const& value);
-        /** Get the latest chosen value.
-         */
+        /// Get the latest chosen value.
         boost::optional<T>
         get();
         std::pair<boost::optional<T>, Quorum>
@@ -99,12 +123,11 @@ namespace elle
         ELLE_ATTRIBUTE(int, round);
 
       private:
-        /** Check a majority of members where reached.
-         *
-         *  \param q The quorum we consult.
-         *  \param reached The number of member successfully consulted.
-         *  \throws TooFewPeers if a strict majority was not reached.
-         */
+        /// Check a majority of members where reached.
+        ///
+        /// @param q The quorum we consult.
+        /// @param reached The number of member successfully consulted.
+        /// @throws TooFewPeers if a strict majority was not reached.
         void
         _check_headcount(Quorum const& q,
                          int reached,

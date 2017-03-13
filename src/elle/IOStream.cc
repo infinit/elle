@@ -113,9 +113,9 @@ namespace elle
   | PlainStreamBuffer |
   `------------------*/
 
-  PlainStreamBuffer::PlainStreamBuffer():
-    _ibuf(),
-    _obuf()
+  PlainStreamBuffer::PlainStreamBuffer()
+    : _ibuf()
+    , _obuf()
   {}
 
   PlainStreamBuffer::~PlainStreamBuffer()
@@ -124,26 +124,26 @@ namespace elle
   WeakBuffer
   PlainStreamBuffer::read_buffer()
   {
-    static Size max_size = _bufsize;
+    static Size max_size = PlainStreamBuffer::_bufsize;
     ELLE_TRACE("read at most %s bytes", max_size)
     {
-      Size size = read(_ibuf, max_size);
+      Size size = read(this->_ibuf, max_size);
       ELLE_TRACE("got %s bytes", size);
-      return WeakBuffer(_ibuf, size);
+      return WeakBuffer(this->_ibuf, size);
     }
   }
 
   WeakBuffer
   PlainStreamBuffer::write_buffer()
   {
-    return WeakBuffer(_obuf, _bufsize);
+    return WeakBuffer(this->_obuf, PlainStreamBuffer::_bufsize);
   }
 
   void
   PlainStreamBuffer::flush(Size size)
   {
     ELLE_TRACE("write %s bytes", size)
-      write(_obuf, size);
+      write(this->_obuf, size);
   }
 
   /*-------------------.

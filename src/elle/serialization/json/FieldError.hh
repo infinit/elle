@@ -10,8 +10,8 @@ namespace elle
     namespace json
     {
       /// Serialization error related to a specific JSON field.
-      class FieldError:
-        public Error
+      class FieldError
+        : public Error
       {
       public:
         typedef FieldError Self;

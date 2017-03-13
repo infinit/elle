@@ -9,12 +9,12 @@
 
 namespace elle
 {
-  /// Universal unique identifier
+  /// Universal unique identifier.
   ///
   /// Universal unique identifier as per RFC 4122. This class is mostly a
   /// convenience wrapper above boost::uuids.
-  class ELLE_API UUID:
-    public boost::uuids::uuid
+  class ELLE_API UUID
+    : public boost::uuids::uuid
   {
   /*-------------.
   | Construction |

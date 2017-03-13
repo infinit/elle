@@ -9,8 +9,9 @@ namespace elle
 {
   namespace serialization
   {
-    class MissingKey:
-      public Error
+    /// Error related to a missing key.
+    class MissingKey
+      : public Error
     {
     public:
       MissingKey(std::string const& field);

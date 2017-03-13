@@ -9,6 +9,9 @@ namespace elle
   {
     namespace json
     {
+      /// A specialized SerializerIn for JSON.
+      ///
+      /// Deserialize objects from their JSON representations.
       class ELLE_API SerializerIn
         : public serialization::SerializerIn
       {
@@ -23,9 +26,20 @@ namespace elle
       | Construction |
       `-------------*/
       public:
+        /// Construct a SerializerIn for JSON.
+        ///
+        /// @see elle::serialization::SerializerIn.
         SerializerIn(std::istream& input, bool versioned = true);
+        /// Construct a SerializerIn for JSON.
+        ///
+        /// @see elle::serialization::SerializerIn.
         SerializerIn(std::istream& input,
                      Versions versions, bool versioned = true);
+        /// Construct a SerializerIn from a JSON object.
+        ///
+        /// @param input A json object.
+        /// @param versioned Whether the Serializer will read the version of
+        ///                  objects.
         SerializerIn(elle::json::Json input, bool versioned = true);
       private:
         void

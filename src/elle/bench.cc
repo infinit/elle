@@ -22,22 +22,22 @@ namespace elle
     , _roundfactor(std::pow(10, roundto))
     , _enabled{elle::log::detail::Send::active(elle::log::Logger::Level::trace,
                                                elle::log::Logger::Type::info,
-                                               _name.c_str())}
+                                               this->_name.c_str())}
     , _start{boost::posix_time::microsec_clock::universal_time()}
   {}
 
   void
   Bench::add(double val)
   {
-    if (!_count)
-      _min = _max = val;
-    ++_count;
-    _sum += val;
-    _min = std::min (val, _min);
-    _max = std::max (val, _max);
-    if (_log_interval != boost::posix_time::time_duration()
-        && boost::posix_time::microsec_clock::universal_time() - _start
-        > _log_interval)
+    if (!this->_count)
+      this->_min = this->_max = val;
+    ++this->_count;
+    this->_sum += val;
+    this->_min = std::min(val, this->_min);
+    this->_max = std::max(val, this->_max);
+    if (this->_log_interval != boost::posix_time::time_duration()
+        && boost::posix_time::microsec_clock::universal_time() - this->_start
+        > this->_log_interval)
     {
       log();
       reset();
@@ -47,17 +47,20 @@ namespace elle
   void
   Bench::reset()
   {
-    _sum = _count = _min = _max = 0;
-    _start = boost::posix_time::microsec_clock::universal_time();
+    this->_sum = this->_count = this->_min = this->_max = 0;
+    this->_start = boost::posix_time::microsec_clock::universal_time();
   }
 
   void
   Bench::log()
   {
-    char const* _trace_component_ = _name.c_str();
-    ELLE_TRACE("%s: AVG %s, MIN %s, MAX %s, COUNT %s", _name,
-      std::round(double(_sum*_roundfactor/_count)) / _roundfactor,
-      _min, _max, _count);
+    char const* _trace_component_ = this->_name.c_str();
+    ELLE_TRACE(
+      "%s: AVG %s, MIN %s, MAX %s, COUNT %s", this->_name,
+      std::round(double(this->_sum *
+                        this->_roundfactor /
+                        this->_count)) / this->_roundfactor,
+      this->_min, this->_max, this->_count);
   }
 
   void Bench::show()
@@ -93,12 +96,12 @@ namespace elle
   Bench::BenchScope::BenchScope(Bench& owner)
     : _owner(owner)
   {
-    _start = boost::posix_time::microsec_clock::universal_time();
+    this->_start = boost::posix_time::microsec_clock::universal_time();
   }
 
   Bench::BenchScope::~BenchScope()
   {
-    auto d = boost::posix_time::microsec_clock::universal_time() - _start;
-    _owner.add(d.total_microseconds());
+    auto d = boost::posix_time::microsec_clock::universal_time() - this->_start;
+    this->_owner.add(d.total_microseconds());
   }
 }

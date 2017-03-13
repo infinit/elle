@@ -22,6 +22,7 @@ namespace elle
     elle::err(sprintf(fmt, std::forward<Args>(args)...));
   }
 
+  /// Format and throw an exception of type \E.
   template <typename E, typename ... Args>
   ELLE_COMPILER_ATTRIBUTE_NORETURN
   void

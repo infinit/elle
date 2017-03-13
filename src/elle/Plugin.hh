@@ -11,16 +11,25 @@
 
 namespace elle
 {
+  /// Base class for Plugin injection.
   class ELLE_API BasePlugin
   {
   public:
+    ///
     void
     load() const;
   };
 
+  /// Create a plugin.
+  ///
+  /// \code{.cc}
+  ///
+  /// XXX[doc].
+  ///
+  /// \endcode
   template <typename T>
-  class ELLE_API Plugin:
-    public BasePlugin
+  class ELLE_API Plugin
+    : public BasePlugin
   {
   public:
     using plugins_t
@@ -36,12 +45,18 @@ namespace elle
     };
     template <typename ... Args>
     Plugin(Args const& ... args);
+    /// Register a plugin to the global plugin storage.
+    ///
+    /// N.B. This triggers hook_added signal.
     static
     void
     register_plugin(std::unique_ptr<T> plugin);
+    /// Get the global plugin map.
+    ///
     static
     plugins_t&
     plugins();
+    /// XXX[doc]
     static
     boost::signals2::signal<void (T&)>&
     hook_added();

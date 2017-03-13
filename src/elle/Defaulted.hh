@@ -5,6 +5,19 @@
 namespace elle
 {
   /// An optional that knows its default value.
+  ///
+  /// The value returned is read-only, to keep consistency.
+  ///
+  /// \code{.cc}
+  ///
+  /// auto d = Defaulted<bool>(true);
+  /// assert(!d); // d was not set.
+  /// assert(d.get()); // d's value is true.
+  /// d = false;
+  /// assert(d); // d was set.
+  /// assert(!d.get()); // d's value is now false.
+  ///
+  /// \endcode
   template <typename T>
   class Defaulted
   {
@@ -52,7 +65,8 @@ namespace elle
     }
 
     /// A pointer to the value, readonly.
-    T const* operator->() const
+    T const*
+    operator->() const
     {
       return &this->_value;
     }

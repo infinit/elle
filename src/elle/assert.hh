@@ -23,8 +23,8 @@ namespace elle
   ///
   /// @note You should never catch directly `AssertError`, nor its base class
   /// `std::exception`, but in the main function of the program.
-  class ELLE_API AssertError:
-    public std::exception
+  class ELLE_API AssertError
+    : public std::exception
   {
   private:
     std::string _what;

@@ -213,10 +213,10 @@ ELLE_TEST_SCHEDULED(nonempty_queue)
       s2 = srv.accept();
       ser2p.reset(new Serializer(*s2, v, false));
       cs2p.reset(new ChanneledStream(*ser2p));
-  }, true);
+    }, true);
 
   elle::reactor::network::TCPSocket s1("127.0.0.1",
-                                 srv.local_endpoint().port());
+                                       srv.local_endpoint().port());
   Serializer ser1(s1, v, false);
   ChanneledStream cs1(ser1);
   while (!cs2p)

@@ -16,7 +16,9 @@
 # include <elle/cryptography/types.hh>
 # include <elle/cryptography/Oneway.hh>
 # include <elle/cryptography/Cipher.hh>
-# include <elle/cryptography/rsa/Seed.hh>
+# if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+#  include <elle/cryptography/rsa/Seed.hh>
+# endif
 # include <elle/cryptography/rsa/Padding.hh>
 # include <elle/cryptography/rsa/defaults.hh>
 

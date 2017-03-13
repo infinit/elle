@@ -15,6 +15,8 @@ namespace elle
   {
   public:
     /// Print pretty representation to \a stream.
+    ///
+    /// @param The std::ostream.
     virtual
     void
     print(std::ostream& stream) const = 0;

@@ -29,6 +29,14 @@ namespace elle
       std::function<bool(boost::filesystem::path const&)>
       Excluder; /// Returns true to exclude the file
 
+    /// Create an archive containing \a list of files.
+    ///
+    /// @param format The type of archive.
+    /// @param files The paths of the files to archive.
+    /// @param path Where to write the resulting archive.
+    /// @param renamer A function to rename entries.
+    /// @param excluder A function to exclude files.
+    /// @param ignore_failure Ignore failure (like non-existent files, etc.)
     ELLE_API
     void
     archive(Format format,
@@ -38,7 +46,14 @@ namespace elle
             Excluder const& excluder = Excluder(),
             bool ignore_failure = false);
 
+    /// Extract an archive to a given path.
+    ///
     /// The extract function supports all formats, no need to specify it
+    ///
+    /// @param archive The path of the archive.
+    /// @param output An optional location where to output the archive. If
+    //                unspecified, archive will be extracted in its parent
+    ///               folder.
     ELLE_API
     void
     extract(boost::filesystem::path const& archive,

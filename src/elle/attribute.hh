@@ -8,6 +8,11 @@
 #include <boost/preprocessor/variadic/to_seq.hpp>
 
 /// Define a private attribute.
+/// This is equivalent to:
+///
+/// private:
+///   <Type> _<Name>;
+///
 #define ELLE_ATTRIBUTE(Type, ...)                                   \
   ELLE_ATTRIBUTE_(Type, BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))      \
 
@@ -22,7 +27,14 @@
 | r |
 `--*/
 
-/// Define an accessor for attribute Name.
+/// Define an accessor for attribute _Name.
+///
+/// This is equivalent to:
+///
+/// public:
+///   <Type> [const&]
+///   <Name>() const
+///
 #define ELLE_attribute_r(Type, Name, ...)                           \
   public:                                                           \
   ELLE_ATTRIBUTE_PROPERTIES_PREFUN(                                 \
@@ -32,17 +44,50 @@
   ELLE_ATTRIBUTE_PROPERTIES_POSTFUN(                                \
     BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))                          \
 
-/// Define and implement an accessor for attribute Name.
+/// Define and implement an accessor for attribute _Name.
+///
+/// This is equivalent to:
+///
+/// public:
+///   <Type> [const&]
+///   <Name>() const
+///   {
+///     return this->_<Name>;
+///   }
+///
 #define ELLE_attribute_R(Type, Name, ...)                           \
   ELLE_attribute_r(Type, Name, __VA_ARGS__)                         \
   {                                                                 \
     return this->BOOST_PP_CAT(_, Name);                             \
   }                                                                 \
 
+/// Define the private attribute _Name and define its accessor.
+///
+/// This is equivalent to:
+///
+/// private:
+///   <Type> _<Name>;
+/// public:
+///   <Type>[ const&]
+///   name() const
+///
 #define ELLE_ATTRIBUTE_r(Type, Name, ...)                           \
   ELLE_ATTRIBUTE(Type, Name, __VA_ARGS__)                           \
   ELLE_attribute_r(Type, Name, __VA_ARGS__)                         \
 
+/// Define the private attribute _Name and define and implement its accessor.
+///
+/// This is equivalent to:
+///
+/// private:
+///   <Type> _<Name>;
+/// public:
+///   <Type>[ const&]
+///   name() const
+///   {
+///     return this->_<Name>;
+///   }
+///
 #define ELLE_ATTRIBUTE_R(Type, Name, ...)                           \
   ELLE_ATTRIBUTE(Type, Name, __VA_ARGS__)                           \
   ELLE_attribute_R(Type, Name, __VA_ARGS__)                         \
@@ -51,7 +96,14 @@
 | w |
 `--*/
 
-/// Define a setter for attribute Name.
+/// Define a setter for attribute _Name.
+///
+/// This is equivalent to:
+///
+/// public:
+///   void
+///   <Name>(<Type>[ const&] val)
+///
 #define ELLE_attribute_w(Type, Name, ...)                           \
   public:                                                           \
   ELLE_ATTRIBUTE_PROPERTIES_PREFUN(                                 \
@@ -62,17 +114,50 @@
   ELLE_ATTRIBUTE_PROPERTIES_POSTFUN(                                \
     BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))                          \
 
-/// Define and implement a setter for attribute Name.
+/// Define and implement a setter for attribute _Name.
+///
+/// This is equivalent to:
+///
+/// public:
+///   void
+///   <Name>(<Type>[ const&] val)
+///   {
+///     this->_<Name> = val;
+///   }
+///
 #define ELLE_attribute_W(Type, Name, ...)                           \
   ELLE_attribute_w(Type, Name, __VA_ARGS__)                         \
   {                                                                 \
     this->BOOST_PP_CAT(_, Name) = name;                             \
   }                                                                 \
 
+/// Define a private attribute _Name and define its setter.
+///
+/// This is equivalent to:
+///
+/// private:
+///   <Type> _<Name>;
+/// public:
+///   void
+///   <Name>(<Type>[ const&] val)
+///
 #define ELLE_ATTRIBUTE_w(Type, Name, ...)                           \
   ELLE_ATTRIBUTE(Type, Name, __VA_ARGS__)                           \
   ELLE_attribute_w(Type, Name, __VA_ARGS__)                         \
 
+/// Define a private attribute and define and implement its setter.
+///
+/// This is equivalent to:
+///
+/// private:
+///   <Type> _<Name>;
+/// public:
+///   void
+///   <Name>(<Type>[ const&] val)
+///   {
+///     this->_<Name> = val;
+///   }
+///
 #define ELLE_ATTRIBUTE_W(Type, Name, ...)                           \
   ELLE_ATTRIBUTE(Type, Name, __VA_ARGS__)                           \
   ELLE_attribute_W(Type, Name, __VA_ARGS__)                         \
@@ -81,7 +166,13 @@
 | x |
 `--*/
 
-/// Define a mutating accessor for property Name.
+/// Define a mutating accessor for attribute _Name.
+///
+/// This is equivalent to:
+///
+/// public:
+///   <Type>&
+///   <Name>()
 #define ELLE_attribute_x(Type, Name, ...)                           \
   public:                                                           \
   ELLE_ATTRIBUTE_PROPERTIES_PREFUN(                                 \
@@ -92,17 +183,46 @@
   ELLE_ATTRIBUTE_PROPERTIES_POSTFUN(                                \
     BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))                          \
 
-/// Define and implement a mutating accessor for property Name.
+/// Define and implement a mutating accessor for attribute _Name.
+///
+/// This is equivalent to:
+///
+/// {
+///   return this->_<Name>;
+/// }
 #define ELLE_attribute_X(Type, Name, ...)                           \
   ELLE_attribute_x(Type, Name, __VA_ARGS__)                         \
   {                                                                 \
     return this->BOOST_PP_CAT(_, Name);                             \
   }                                                                 \
 
+/// Define a private attribute _Name and define its mutating accessor.
+///
+/// This is equivalent to:
+///
+/// private:
+///   <Type> _<Name>;
+/// public:
+///   <Type>&
+///   <Name>()
+///
 #define ELLE_ATTRIBUTE_x(Type, Name, ...)                           \
   ELLE_ATTRIBUTE(Type, Name, __VA_ARGS__)                           \
   ELLE_attribute_x(Type, Name, __VA_ARGS__)                         \
 
+/// Define a private attribute Name and define and implement its mutating
+/// accessor.
+///
+/// This is equivalent to:
+///
+/// private:
+///   <Type> _<Name>;
+/// public:
+///   <Type>&
+///   <Name>()
+///   {
+///     return this->_<Name>;
+///   }
 #define ELLE_ATTRIBUTE_X(Type, Name, ...)                           \
   ELLE_ATTRIBUTE(Type, Name, __VA_ARGS__)                           \
   ELLE_attribute_X(Type, Name, __VA_ARGS__)                         \
@@ -111,34 +231,45 @@
 | rw |
 `---*/
 
+/// Define both accessor and setter for attribute _Name.
 #define ELLE_attribute_rw(Type, Name, ...)                          \
   ELLE_attribute_r(Type, Name, __VA_ARGS__);                        \
   ELLE_attribute_w(Type, Name, __VA_ARGS__);                        \
 
+/// Define a private attribute _Name and both its accessor and setter.
 #define ELLE_ATTRIBUTE_rw(Type, Name, ...)                          \
   ELLE_ATTRIBUTE(Type, Name, __VA_ARGS__)                           \
   ELLE_attribute_rw(Type, Name, __VA_ARGS__)                        \
 
+/// Define and implement accessor and define setter for attribute _Name.
 #define ELLE_attribute_Rw(Type, Name, ...)                          \
   ELLE_attribute_R(Type, Name, __VA_ARGS__)                         \
   ELLE_attribute_w(Type, Name, __VA_ARGS__)                         \
 
+/// Define a private attribute _Name, define and implement its accessor and
+/// define its setter.
 #define ELLE_ATTRIBUTE_Rw(Type, Name, ...)                          \
   ELLE_ATTRIBUTE(Type, Name, __VA_ARGS__)                           \
   ELLE_attribute_Rw(Type, Name, __VA_ARGS__)                        \
 
+/// Define accessor and define and implement setter for attribute _Name.
 #define ELLE_attribute_rW(Type, Name, ...)                          \
   ELLE_attribute_r(Type, Name, __VA_ARGS__);                        \
   ELLE_attribute_W(Type, Name, __VA_ARGS__)                         \
 
+/// Define a private attribute _Name, define its accessor and define and
+/// implement its setter.
 #define ELLE_ATTRIBUTE_rW(Type, Name, ...)                          \
   ELLE_ATTRIBUTE(Type, Name, __VA_ARGS__)                           \
   ELLE_attribute_rW(Type, Name, __VA_ARGS__)                        \
 
+/// Define and implement both accessor and setter for attribute _Name.
 #define ELLE_attribute_RW(Type, Name, ...)                          \
   ELLE_attribute_R(Type, Name, __VA_ARGS__)                         \
   ELLE_attribute_W(Type, Name, __VA_ARGS__)                         \
 
+/// Define a private attribute _Name and define and implement both its accessor
+/// and setter.
 #define ELLE_ATTRIBUTE_RW(Type, Name, ...)                          \
   ELLE_ATTRIBUTE(Type, Name, __VA_ARGS__)                           \
   ELLE_attribute_RW(Type, Name, __VA_ARGS__)                        \
@@ -147,34 +278,48 @@
 | rx |
 `---*/
 
+/// Define both accessor and mutable accessor for attribute _Name.
 #define ELLE_attribute_rx(Type, Name, ...)                          \
   ELLE_attribute_r(Type, Name, __VA_ARGS__);                        \
   ELLE_attribute_x(Type, Name, __VA_ARGS__);                        \
 
+/// Define a private attribute _Name both its accessor and mutable accessor.
 #define ELLE_ATTRIBUTE_rx(Type, Name, ...)                          \
   ELLE_ATTRIBUTE(Type, Name, __VA_ARGS__)                           \
   ELLE_attribute_rx(Type, Name, __VA_ARGS__)                        \
 
+/// Define and implement accessor and define mutable accessor for attribute
+/// _Name.
 #define ELLE_attribute_Rx(Type, Name, ...)                          \
   ELLE_attribute_R(Type, Name, __VA_ARGS__)                         \
   ELLE_attribute_x(Type, Name, __VA_ARGS__)                         \
 
+/// Define a private attribute _Name, define and implement its accessor
+/// and define its mutable accessor.
 #define ELLE_ATTRIBUTE_Rx(Type, Name, ...)                          \
   ELLE_ATTRIBUTE(Type, Name, __VA_ARGS__)                           \
   ELLE_attribute_Rx(Type, Name, __VA_ARGS__)                        \
 
+/// Define accessor and define and implement mutable accessor for attribute
+/// _Name.
 #define ELLE_attribute_rX(Type, Name, ...)                          \
   ELLE_attribute_r(Type, Name, __VA_ARGS__);                        \
   ELLE_attribute_X(Type, Name, __VA_ARGS__)                         \
 
+/// Define a private attribute _Name, define its accessor and define and
+/// implement its mutable accessor.
 #define ELLE_ATTRIBUTE_rX(Type, Name, ...)                          \
   ELLE_ATTRIBUTE(Type, Name, __VA_ARGS__)                           \
   ELLE_attribute_rX(Type, Name, __VA_ARGS__)                        \
 
+/// Define and implement both mutable accessor and mutable accessor for attribute
+/// _Name.
 #define ELLE_attribute_RX(Type, Name, ...)                          \
   ELLE_attribute_R(Type, Name, __VA_ARGS__)                         \
   ELLE_attribute_X(Type, Name, __VA_ARGS__)                         \
 
+/// Define a private attribute _Name and define and implement both its
+/// accessor and mutable accessor.
 #define ELLE_ATTRIBUTE_RX(Type, Name, ...)                          \
   ELLE_ATTRIBUTE(Type, Name, __VA_ARGS__)                           \
   ELLE_attribute_RX(Type, Name, __VA_ARGS__)                        \
@@ -183,111 +328,153 @@
 | wx |
 `---*/
 
+/// Define both setter and mutable accessor for attribute _Name.
 #define ELLE_attribute_wx(Type, Name, ...)                          \
   ELLE_attribute_w(Type, Name, __VA_ARGS__);                        \
   ELLE_attribute_x(Type, Name, __VA_ARGS__);                        \
 
+/// Define a private attribute _Name both its setter and mutable accessor.
 #define ELLE_ATTRIBUTE_wx(Type, Name, ...)                          \
   ELLE_ATTRIBUTE(Type, Name, __VA_ARGS__)                           \
   ELLE_attribute_wx(Type, Name, __VA_ARGS__)                        \
 
+/// Define and implement setter and define setter for attribute _Name.
 #define ELLE_attribute_Wx(Type, Name, ...)                          \
-  ELLE_attribute_W(Type, Name, __VA_ARGS__)                         \
+  ELLE_attribute_w(Type, Name, __VA_ARGS__)                         \
   ELLE_attribute_x(Type, Name, __VA_ARGS__)                         \
 
+/// Define a private attribute _Name, define and implement its setter
+/// and define its setter.
 #define ELLE_ATTRIBUTE_Wx(Type, Name, ...)                          \
   ELLE_ATTRIBUTE(Type, Name, __VA_ARGS__)                           \
-  ELLE_attribute_Wx(Type, Name, __VA_ARGS__)                        \
+  ELLE_attribute_wx(Type, Name, __VA_ARGS__)                        \
 
+/// Define setter and define and implement setter for attribute _Name.
 #define ELLE_attribute_wX(Type, Name, ...)                          \
   ELLE_attribute_w(Type, Name, __VA_ARGS__);                        \
   ELLE_attribute_X(Type, Name, __VA_ARGS__)                         \
 
+/// Define a private attribute _Name, define its setter and define and
+/// implement its setter.
 #define ELLE_ATTRIBUTE_wX(Type, Name, ...)                          \
   ELLE_ATTRIBUTE(Type, Name, __VA_ARGS__)                           \
   ELLE_attribute_wX(Type, Name, __VA_ARGS__)                        \
 
+/// Define and implement both setter and setter for attribute _Name.
 #define ELLE_attribute_WX(Type, Name, ...)                          \
-  ELLE_attribute_W(Type, Name, __VA_ARGS__)                         \
+  ELLE_attribute_w(Type, Name, __VA_ARGS__)                         \
   ELLE_attribute_X(Type, Name, __VA_ARGS__)                         \
 
+/// Define a private attribute _Name and define and implement both its mutable
+/// accessor and setter.
 #define ELLE_ATTRIBUTE_WX(Type, Name, ...)                          \
   ELLE_ATTRIBUTE(Type, Name, __VA_ARGS__)                           \
-  ELLE_attribute_WX(Type, Name, __VA_ARGS__)                        \
+  ELLE_attribute_wX(Type, Name, __VA_ARGS__)                        \
 
 /*----.
 | rwx |
 `----*/
 
+/// Define accessor, setter and mutable accessor for attribute _Name.
 #define ELLE_attribute_rwx(Type, Name, ...)                         \
   ELLE_attribute_r(Type, Name, __VA_ARGS__);                        \
   ELLE_attribute_w(Type, Name, __VA_ARGS__);                        \
   ELLE_attribute_x(Type, Name, __VA_ARGS__);                        \
 
+/// Define a private attribute _Name and its accessor, setter and mutable
+/// accessor.
 #define ELLE_ATTRIBUTE_rwx(Type, Name, ...)                         \
   ELLE_ATTRIBUTE(Type, Name, __VA_ARGS__)                           \
   ELLE_attribute_rwx(Type, Name, __VA_ARGS__)                       \
 
+/// Define and implement accessor and define setter and mutable accessor for
+/// attribute _Name.
 #define ELLE_attribute_Rwx(Type, Name, ...)                         \
   ELLE_attribute_R(Type, Name, __VA_ARGS__)                         \
   ELLE_attribute_w(Type, Name, __VA_ARGS__)                         \
   ELLE_attribute_x(Type, Name, __VA_ARGS__)                         \
 
+/// Define a private attribute _Name, define and implement its accessor and
+/// define its setter and mutable accessor.
 #define ELLE_ATTRIBUTE_Rwx(Type, Name, ...)                         \
   ELLE_ATTRIBUTE(Type, Name, __VA_ARGS__)                           \
   ELLE_attribute_Rwx(Type, Name, __VA_ARGS__)                       \
 
+/// Define and implement setter and define accessor and mutable accessor for
+/// attribute _Name.
 #define ELLE_attribute_rWx(Type, Name, ...)                         \
   ELLE_attribute_r(Type, Name, __VA_ARGS__);                        \
   ELLE_attribute_x(Type, Name, __VA_ARGS__);                        \
   ELLE_attribute_W(Type, Name, __VA_ARGS__)                         \
 
+/// Define a private attribute _Name, define and implement its setter and
+/// define its accessor and mutable accessor.
 #define ELLE_ATTRIBUTE_rWx(Type, Name, ...)                         \
   ELLE_ATTRIBUTE(Type, Name, __VA_ARGS__)                           \
   ELLE_attribute_rWx(Type, Name, __VA_ARGS__)                       \
 
+/// Define and implement setter and accessor and define mutable accessor for
+/// attribute _Name.
 #define ELLE_attribute_RWx(Type, Name, ...)                         \
   ELLE_attribute_R(Type, Name, __VA_ARGS__)                         \
   ELLE_attribute_W(Type, Name, __VA_ARGS__)                         \
   ELLE_attribute_x(Type, Name, __VA_ARGS__)                         \
 
+/// Define a private attribute _Name, define and implement its accessor and
+/// setter and define its mutable accessor.
 #define ELLE_ATTRIBUTE_RWx(Type, Name, ...)                         \
   ELLE_ATTRIBUTE(Type, Name, __VA_ARGS__)                           \
   ELLE_attribute_RWx(Type, Name, __VA_ARGS__)                       \
 
+/// Define and implement mutable accessor and define accessor and setter for
+/// attribute _Name.
 #define ELLE_attribute_rwX(Type, Name, ...)                         \
   ELLE_attribute_r(Type, Name, __VA_ARGS__);                        \
   ELLE_attribute_w(Type, Name, __VA_ARGS__);                        \
   ELLE_attribute_X(Type, Name, __VA_ARGS__);                        \
 
+/// Define a private attribute _Name, define and implement its mutable accessor
+/// and define its accessor and setter.
 #define ELLE_ATTRIBUTE_rwX(Type, Name, ...)                         \
   ELLE_ATTRIBUTE(Type, Name, __VA_ARGS__)                           \
   ELLE_attribute_rwX(Type, Name, __VA_ARGS__)                       \
 
+/// Define and implement accessor and mutable accessor and define setter for
+/// attribute _Name.
 #define ELLE_attribute_RwX(Type, Name, ...)                         \
   ELLE_attribute_R(Type, Name, __VA_ARGS__)                         \
   ELLE_attribute_w(Type, Name, __VA_ARGS__)                         \
   ELLE_attribute_X(Type, Name, __VA_ARGS__)                         \
 
+/// Define a private attribute _Name, define and implement its accessor and
+/// mutable accessor and define its setter.
 #define ELLE_ATTRIBUTE_RwX(Type, Name, ...)                         \
   ELLE_ATTRIBUTE(Type, Name, __VA_ARGS__)                           \
   ELLE_attribute_RwX(Type, Name, __VA_ARGS__)                       \
 
+/// Define and implement setter and mutable accessor and define accessor for
+/// attribute _Name.
 #define ELLE_attribute_rWX(Type, Name, ...)                         \
   ELLE_attribute_r(Type, Name, __VA_ARGS__);                        \
   ELLE_attribute_W(Type, Name, __VA_ARGS__)                         \
   ELLE_attribute_X(Type, Name, __VA_ARGS__);                        \
 
+/// Define a private attribute _Name, define and implement its setter and
+/// mutable accessor and define its setter.
 #define ELLE_ATTRIBUTE_rWX(Type, Name, ...)                         \
   ELLE_ATTRIBUTE(Type, Name, __VA_ARGS__)                           \
   ELLE_attribute_rWX(Type, Name, __VA_ARGS__)                       \
 
+/// Define and implement accessor, setter and mutable accessor for attribute
+/// _Name.
 #define ELLE_attribute_RWX(Type, Name, ...)                         \
   ELLE_attribute_R(Type, Name, __VA_ARGS__)                         \
   ELLE_attribute_W(Type, Name, __VA_ARGS__)                         \
   ELLE_attribute_X(Type, Name, __VA_ARGS__)                         \
 
-#define ELLE_ATTRIBUTE_RWX(Type, Name, ...)                         \
+/// Define a private attribute _Name, define and implement its accessor, setter
+/// and mutable accessor.
+#define ELLE_ATTRIBUTE_RWX(Type, Name, ...)     \
   ELLE_ATTRIBUTE(Type, Name, __VA_ARGS__)                           \
   ELLE_attribute_RWX(Type, Name, __VA_ARGS__)                       \
 
