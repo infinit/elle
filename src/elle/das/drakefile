@@ -47,6 +47,7 @@ def configure(cxx_toolkit,
     'printer.hh',
     'serializer.hh',
     'serializer.hxx',
+    'tuple.hh',
   )
 
   ## ----- ##

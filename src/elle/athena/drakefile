@@ -58,6 +58,7 @@ def configure(cxx_toolkit,
     local_config.library_add(
       drake.copy(boost.system_dynamic, 'lib', strip_prefix = True))
   sources = drake.nodes(
+    'LamportAge.hh',
     'paxos/Client.cc',
     'paxos/Client.hh',
     'paxos/Client.hxx',

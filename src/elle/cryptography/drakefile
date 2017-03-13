@@ -230,7 +230,7 @@ def configure(openssl_config,
     sources += drake.nodes(
       'rsa/Seed.cc',
       'rsa/Seed.hh'
-      ) + [dopenssl_library]
+    ) + [dopenssl_library]
 
   cxx_config_lib = drake.cxx.Config(cxx_config)
   cxx_config_lib.lib_path_runtime('.')
