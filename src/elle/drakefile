@@ -52,50 +52,53 @@ def configure(zlib_lib,
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
   cxx_config = drake.cxx.Config(cxx_config) or drake.cxx.Config()
 
+  # Libraries.
+  lib_path = '../../lib'
+
   # Boost
   boost = boost or drake.cxx.boost.Boost()
   cxx_config += boost.config()
   if cxx_toolkit.os in [drake.os.macos, drake.os.windows, drake.os.ios, drake.os.android]:
     cxx_config += boost.config_filesystem(link = False, static = True)
     cxx_config.library_add(
-      drake.copy(boost.filesystem_static, 'lib', strip_prefix = True))
+      drake.copy(boost.filesystem_static, lib_path, strip_prefix = True))
   else:
     cxx_config += boost.config_filesystem(link = False)
     cxx_config.library_add(drake.copy(boost.filesystem_dynamic,
-                                      'lib', strip_prefix = True))
+                                      lib_path, strip_prefix = True))
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
     cxx_config += boost.config_system(link = False, static = True)
     cxx_config.library_add(
-      drake.copy(boost.system_static, 'lib', strip_prefix = True))
+      drake.copy(boost.system_static, lib_path, strip_prefix = True))
     cxx_config += boost.config_thread(link = False, static = True)
     cxx_config.library_add(
-      drake.copy(boost.thread_static, 'lib', strip_prefix = True))
+      drake.copy(boost.thread_static, lib_path, strip_prefix = True))
     if cxx_toolkit.os is drake.os.windows:
       cxx_config += boost.config_locale(link = False, static = True)
       cxx_config.library_add(
-        drake.copy(boost.locale_static, 'lib', strip_prefix = True))
+        drake.copy(boost.locale_static, lib_path, strip_prefix = True))
     cxx_config += boost.config_chrono(link = False, static = True)
     cxx_config.library_add(
-      drake.copy(boost.chrono_static, 'lib', strip_prefix = True))
+      drake.copy(boost.chrono_static, lib_path, strip_prefix = True))
     if python3 is not None and cxx_toolkit.os is not drake.os.windows:
       boost_python = drake.cxx.Config(boost.config_python(link = False, static = True))
       cxx_config.library_add(
-        drake.copy(boost.python_static, 'lib', strip_prefix = True))
+        drake.copy(boost.python_static, lib_path, strip_prefix = True))
   else:
     if python3 is not None:
       boost_python = drake.cxx.Config(
         boost.config_system(link = False))
       boost_python.library_add(
-        drake.copy(boost.python_dynamic, 'lib', strip_prefix = True))
+        drake.copy(boost.python_dynamic, lib_path, strip_prefix = True))
     cxx_config += boost.config_system(link = False)
     cxx_config.library_add(drake.copy(boost.system_dynamic,
-                                      'lib', strip_prefix = True))
+                                      lib_path, strip_prefix = True))
     cxx_config += boost.config_thread(link = False)
     cxx_config.library_add(drake.copy(boost.thread_dynamic,
-                                      'lib', strip_prefix = True))
+                                      lib_path, strip_prefix = True))
     cxx_config += boost.config_chrono(link = False)
     cxx_config.library_add(drake.copy(boost.chrono_dynamic,
-                                      'lib', strip_prefix = True))
+                                      lib_path, strip_prefix = True))
 
   # JSON spirit
   cxx_config.add_local_include_path('json/modules/json-spirit/include')
@@ -106,7 +109,7 @@ def configure(zlib_lib,
 
   config = drake.cxx.Config()
   config.standard = drake.cxx.Config.cxx_14
-  config.lib_path('lib')
+  config.lib_path(lib_path)
   config.define('BOOST_PP_VARIADICS')
   config.define('BOOST_FILESYSTEM_NO_DEPRECATED', '1')
   config += boost.config()
@@ -127,17 +130,17 @@ def configure(zlib_lib,
   # Libraries
   if ldap_libs:
     ldap = True
-    ldap_libs = drake.copy(ldap_libs, 'lib', strip_prefix = True)
+    ldap_libs = drake.copy(ldap_libs, lib_path, strip_prefix = True)
     openssl_libs = drake.copy([openssl_lib_crypto, openssl_lib_ssl],
-                             'lib', strip_prefix = True)
+                             lib_path, strip_prefix = True)
 
     cxx_config = cxx_config + ldap_config
     cxx_config.define('HAVE_LDAP=1')
     config.define('HAVE_LDAP=1')
 
-  zlib_lib = drake.copy(zlib_lib, 'lib', strip_prefix = True)
+  zlib_lib = drake.copy(zlib_lib, lib_path, strip_prefix = True)
   cxx_config += zlib_config
-  libarchive_lib = drake.copy(libarchive_lib, 'lib',
+  libarchive_lib = drake.copy(libarchive_lib, lib_path,
                               strip_prefix = True)
   if cxx_toolkit.os in [drake.os.macos, drake.os.ios]:
     cxx_config.framework_add('Foundation')
@@ -435,13 +438,13 @@ def configure(zlib_lib,
                        cxx_toolkit, cxx_archive_config))
 
   lib_static = drake.cxx.StaticLib(
-    'lib/elle_core',
+    lib_path + '/elle_core',
     sources + [zlib_lib, libarchive_lib],
     cxx_toolkit,
     cxx_config_libs,
   )
   lib_dynamic = drake.cxx.DynLib(
-    'lib/elle_core',
+    lib_path + '/elle_core',
     sources + [zlib_lib, libarchive_lib] + (ldap_libs and (ldap_libs + openssl_libs) or []),
     cxx_toolkit,
     cxx_config_libs,
@@ -479,7 +482,7 @@ def configure(zlib_lib,
     python_lib_sources = [drake.node('log/python.cc')]
     python_cxx_config += boost_python
     python_log_lib = drake.cxx.Module(
-      'lib/python/elle/_log',
+      lib_path + '/python/elle/_log',
       python_lib_sources + [library],
       cxx_toolkit, python_cxx_config)
     python.append(python_log_lib)
@@ -488,18 +491,18 @@ def configure(zlib_lib,
       'log.py',
       '__init__.py',
       )
-    python += drake.copy(python_sources, 'lib/python', 'src')
+    python += drake.copy(python_sources, lib_path + '/python', 'src')
     python_rule << python
 
     if cxx_toolkit.os is drake.os.windows:
       python_plugin_datetime = drake.cxx.StaticLib(
-        'lib/python-datetime-bindings',
+        lib_path + '/python-datetime-bindings',
         drake.nodes('python/datetime-converter.cc'),
         cxx_toolkit,
         python_cxx_config)
     else:
       python_plugin_datetime = drake.cxx.Module(
-        'lib/python-datetime-bindings',
+        lib_path + '/python-datetime-bindings',
         drake.nodes('python/datetime-converter.cc'),
         cxx_toolkit,
         python_cxx_config)
@@ -637,7 +640,7 @@ def configure(zlib_lib,
     cxx_config_examples += boost.config_date_time(static = True)
   else:
     cxx_config_examples.library_add(
-      drake.copy(boost.date_time_dynamic, 'lib', strip_prefix = True))
+      drake.copy(boost.date_time_dynamic, lib_path, strip_prefix = True))
   for example in examples:
     config_examples = drake.cxx.Config(cxx_config_examples)
     rule_examples << drake.cxx.Executable(
@@ -654,8 +657,8 @@ def configure(zlib_lib,
     rule_install = drake.Rule('install')
     prefix = drake.Path(prefix)
     if cxx_toolkit.os not in [drake.os.windows, drake.os.ios]:
-      rule_install << drake.install(lib_dynamic, prefix)
-    rule_install << drake.install(lib_static, prefix)
+      rule_install << drake.install(lib_dynamic, prefix / 'lib', strip_prefix = True)
+    rule_install << drake.install(lib_static, prefix / 'lib', strip_prefix = True)
     rule_install << drake.install(
       (node for node in sources if isinstance(node, drake.cxx.Header)),
       prefix / 'include' / 'elle')

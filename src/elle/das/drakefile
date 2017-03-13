@@ -31,6 +31,7 @@ def configure(cxx_toolkit,
   config = drake.cxx.Config(elle.config)
   local_config = drake.cxx.Config(config) + cxx_config
   local_config.warnings.parentheses = False
+  lib_path = '../../../lib'
 
   ## ------ ##
   ## Libdas ##
@@ -79,7 +80,7 @@ def configure(cxx_toolkit,
     static = not boost.prefer_shared or None,
     link = not boost.prefer_shared)
   if boost.prefer_shared:
-    test_libs += list(map(lambda x: drake.copy(x, 'lib', strip_prefix = True),
+    test_libs += list(map(lambda x: drake.copy(x, lib_path, strip_prefix = True),
                           test_libs + [boost.timer_dynamic, boost.test_dynamic]))
   if cxx_toolkit.os is drake.os.android:
     config_tests.lib('stdc++')

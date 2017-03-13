@@ -61,7 +61,8 @@ def configure(curl_config,
   config = drake.cxx.Config()
   config.add_local_include_path('bin')
   config.standard = drake.cxx.Config.cxx_14
-  config.lib_path('lib')
+  lib_path = '../../../lib'
+  config.lib_path(lib_path)
 
   # Das
   das = das or drake.include('../das')
@@ -246,9 +247,9 @@ def configure(curl_config,
            '@rpath/libc++abi.dylib',
            str(drake.path_build(tgt, True))
           ])
-    lib_cxx = drake.copy(drake.nodes('/usr/lib/libc++.1.dylib'), 'lib', strip_prefix = True,
+    lib_cxx = drake.copy(drake.nodes('/usr/lib/libc++.1.dylib'), lib_path, strip_prefix = True,
       post_process = rpath_libcxx)
-    lib_cxx_abi = drake.copy(drake.nodes(libcxxabi_lib), 'lib', strip_prefix = True,
+    lib_cxx_abi = drake.copy(drake.nodes(libcxxabi_lib), lib_path, strip_prefix = True,
       post_process = rpath_libcxxabi)
     cxx_libs = lib_cxx + lib_cxx_abi
   else:
@@ -260,34 +261,34 @@ def configure(curl_config,
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
     local_cxx_config += boost.config_signals(link = False, static = True)
     local_cxx_config.library_add(
-      drake.copy(boost.signals_static, 'lib', strip_prefix = True))
+      drake.copy(boost.signals_static, lib_path, strip_prefix = True))
     local_cxx_config += boost.config_system(link = False, static = True)
     local_cxx_config.library_add(
-      drake.copy(boost.system_static, 'lib', strip_prefix = True))
+      drake.copy(boost.system_static, lib_path, strip_prefix = True))
     local_cxx_config += boost.config_thread(link = False, static = True)
     local_cxx_config.library_add(
-      drake.copy(boost.thread_static, 'lib', strip_prefix = True))
+      drake.copy(boost.thread_static, lib_path, strip_prefix = True))
     if backend == Backends.boost:
       local_cxx_config += boost.config_context(link = False, static = True)
       local_cxx_config.library_add(
-        drake.copy(boost.context_static, 'lib', strip_prefix = True))
+        drake.copy(boost.context_static, lib_path, strip_prefix = True))
   else:
     if backend == Backends.boost:
       local_cxx_config += boost.config_context(link = False)
       local_cxx_config.library_add(
-        drake.copy(boost.context_dynamic, 'lib', strip_prefix = True,
+        drake.copy(boost.context_dynamic, lib_path, strip_prefix = True,
                    post_process = set_local_libcxx(cxx_toolkit)))
     local_cxx_config += boost.config_signals(link = False)
     local_cxx_config.library_add(
-      drake.copy(boost.signals_dynamic, 'lib', strip_prefix = True,
+      drake.copy(boost.signals_dynamic, lib_path, strip_prefix = True,
                  post_process = set_local_libcxx(cxx_toolkit)))
     local_cxx_config += boost.config_system(link = False)
     local_cxx_config.library_add(
-      drake.copy(boost.system_dynamic, 'lib', strip_prefix = True,
+      drake.copy(boost.system_dynamic, lib_path, strip_prefix = True,
                  post_process = set_local_libcxx(cxx_toolkit)))
     local_cxx_config += boost.config_thread(link = False)
     local_cxx_config.library_add(
-      drake.copy(boost.thread_dynamic, 'lib', strip_prefix = True,
+      drake.copy(boost.thread_dynamic, lib_path, strip_prefix = True,
                  post_process = set_local_libcxx(cxx_toolkit)))
   if backend == Backends.io:
     local_cxx_config.define('REACTOR_CORO_BACKEND_IO')
@@ -352,7 +353,7 @@ def configure(curl_config,
       fuse_config = drake.cxx.Config()
       fuse_config.add_local_include_path('fuse/include')
       local_cxx_config += fuse_config
-      fuse_lib = drake.copy(fuse_lib, 'lib', strip_prefix = True)
+      fuse_lib = drake.copy(fuse_lib, lib_path, strip_prefix = True)
     elif cxx_toolkit.os is drake.os.macos:
       osxfuse_version = drake.Version(3, 5, 4)
       osxfuse_base_name = 'osxfuse-%s' % osxfuse_version
@@ -414,22 +415,22 @@ def configure(curl_config,
 
   # Curl
   local_cxx_config += curl_config
-  curl_lib = drake.copy(curl_lib, 'lib', strip_prefix = True)
+  curl_lib = drake.copy(curl_lib, lib_path, strip_prefix = True)
 
   # OpenSSL (for SSL sockets)
   local_cxx_config += openssl_config
   openssl_libs = drake.copy([openssl_lib_ssl, openssl_lib_crypto],
-                            'lib', strip_prefix = True)
+                            lib_path, strip_prefix = True)
 
 
   # Zlib
   local_cxx_config += zlib_config
-  zlib_lib = drake.copy(zlib_lib, 'lib', strip_prefix = True)
+  zlib_lib = drake.copy(zlib_lib, lib_path, strip_prefix = True)
 
   # Elle
   elle = elle or drake.include('../../../elle')
   local_cxx_config += elle.config
-  elle_lib = drake.copy(elle.library, 'lib', strip_prefix = True, post_process = set_local_libcxx(cxx_toolkit))
+  elle_lib = drake.copy(elle.library, lib_path, strip_prefix = True, post_process = set_local_libcxx(cxx_toolkit))
 
   # miniupnpc
   miniupnp = drake.include('modules/miniupnp', cxx_toolkit, archs = archs)
@@ -625,7 +626,7 @@ def configure(curl_config,
     'backend/fwd.hh',
   )
   backend_lib = drake.cxx.StaticLib(
-    'lib/reactor/backend',
+    lib_path + '/elle_reactor_backend',
     backend_sources,
     cxx_toolkit,
     lib_cxx_config,
@@ -643,12 +644,12 @@ def configure(curl_config,
     libcoroutine_cxx_config.warnings.missing_declarations = None
     if valgrind is not None:
       libcoroutine_cxx_config.define('USE_VALGRIND')
-    libcoroutine = drake.cxx.StaticLib('lib/reactor/coroutine',
+    libcoroutine = drake.cxx.StaticLib(lib_path + '/elle_reactor_coroutine',
                                        libcoroutine_sources,
                                        cxx_toolkit,
                                        libcoroutine_cxx_config)
     backend_coro_io = drake.cxx.StaticLib(
-      'lib/reactor/backend_coro_io',
+      lib_path + '/elle_reactor_backend_coro_io',
       drake.nodes(
         'backend/coro_io/backend.cc',
         'backend/coro_io/backend.hh',
@@ -664,7 +665,7 @@ def configure(curl_config,
   lib_cxx_config.add_local_include_path('modules/libutp')
   backend_boost_context_cxx_config = drake.cxx.Config(lib_cxx_config)
   backend_boost_context = drake.cxx.StaticLib(
-    'lib/reactor/backend_boost_context',
+    lib_path + '/elle_reactor_backend_boost_context',
     drake.nodes(
       'backend/boost_context/backend.cc',
       'backend/boost_context/backend.hh',
@@ -697,7 +698,7 @@ def configure(curl_config,
   if fuse_lib is not None:
     lib_dynamic_link_libs.append(fuse_lib)
   lib_static = drake.cxx.StaticLib(
-    'lib/elle_reactor',
+    lib_path + '/elle_reactor',
     sources + lib_static_link_libs + openssl_libs,
     cxx_toolkit, lib_cxx_config)
   lib_dynamic_link_libs = [
@@ -718,7 +719,7 @@ def configure(curl_config,
     lib_cxx_config.framework_add('DiskArbitration')
     pass #lib_cxx_config.use_local_libcxx = True
   lib_dynamic = drake.cxx.DynLib(
-    'lib/elle_reactor',
+    lib_path + '/elle_reactor',
     sources + lib_dynamic_link_libs + openssl_libs + cxx_libs,
     cxx_toolkit, lib_cxx_config)
   rule_build << lib_static
@@ -737,11 +738,12 @@ def configure(curl_config,
     else:
       python_cxx_config += boost.config_python(link = False)
       python_cxx_config.library_add(
-        drake.copy(boost.python_dynamic, 'lib', strip_prefix = True))
-    python_sources = drake.nodes('python.cc')
+        drake.copy(boost.python_dynamic, lib_path, strip_prefix = True))
+    python_sources = drake.nodes('python.cc', 'python.hh')
+    sources += python_sources
     datetime = drake.copy(elle.python_plugin_datetime,
-                          'lib', True)
-    python_lib = drake.cxx.Module('lib/python/reactor',
+                          lib_path, True)
+    python_lib = drake.cxx.Module(lib_path + '/python/reactor',
                                   python_sources + [library, datetime],
                                   cxx_toolkit, python_cxx_config)
     drake.Rule('python') << python_lib
@@ -831,7 +833,7 @@ def configure(curl_config,
     _libs = [boost.timer_dynamic, boost.test_dynamic]
     if not use_boost_filesystem_static_library:
       _libs += [boost.filesystem_dynamic]
-    test_libs += list(map(lambda x: drake.copy(x, 'lib', strip_prefix = True),
+    test_libs += list(map(lambda x: drake.copy(x, lib_path, strip_prefix = True),
                           _libs + test_libs))
   if cxx_toolkit.os == drake.os.android:
     cxx_config_tests.lib('stdc++')
@@ -842,7 +844,7 @@ def configure(curl_config,
   for test_name, libraries, stdin in tests:
     import copy
     local_test_libs = copy.copy(test_libs) + \
-        list(map(lambda x: drake.copy(x, 'lib', strip_prefix = True),
+        list(map(lambda x: drake.copy(x, lib_path, strip_prefix = True),
                  libraries))
     test_sources = drake.nodes('%s/%s.cc' % (tests_path, test_name))
     if cxx_toolkit.os == drake.os.macos:
@@ -892,7 +894,7 @@ def configure(curl_config,
       python_runner = drake.Runner(
         exe = test,
         env = {
-          'PYTHONPATH': str(drake.path_build('lib/python')),
+          'PYTHONPATH': str(drake.path_build(lib_path + '/python')),
         },
       )
       python_runner.reporting = drake.Runner.Reporting.on_failure
@@ -922,8 +924,8 @@ def configure(curl_config,
   if prefix is not False:
     rule_install = drake.Rule('install')
     if cxx_toolkit.os not in [drake.os.windows, drake.os.ios]:
-      rule_install << drake.install(lib_dynamic, prefix)
-    rule_install << drake.install(lib_static, prefix)
+      rule_install << drake.install(lib_dynamic, prefix / 'lib')
+    rule_install << drake.install(lib_static, prefix / 'lib')
     rule_install << drake.install(
       (node for node in sources if isinstance(node, drake.cxx.Header)),
       prefix / 'include' / 'elle' / 'reactor')
