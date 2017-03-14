@@ -1,9 +1,8 @@
-#ifndef ELLE_CRYPTOGRAPHY_DSA_SERIALIZATION_HH
-# define ELLE_CRYPTOGRAPHY_DSA_SERIALIZATION_HH
+#pragma once
 
-# include <openssl/dsa.h>
+#include <openssl/dsa.h>
 
-# include <elle/cryptography/serialization.hh>
+#include <elle/cryptography/serialization.hh>
 
 namespace elle
 {
@@ -19,12 +18,10 @@ namespace elle
 
         struct DSA
         {
-          typedef ::DSA Type;
+          using Type = ::DSA;
           static constexpr const char* identifier = "dsa";
         };
       }
     }
   }
 }
-
-#endif

@@ -23,7 +23,7 @@ namespace elle
 
     using Renamer =
       std::function<boost::filesystem::path(boost::filesystem::path const&)>;
-    /// Returns true to exclude the file
+    /// Returns true to exclude the file.
     using Excluder =
       std::function<bool(boost::filesystem::path const&)>;
 

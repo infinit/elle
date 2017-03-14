@@ -1,9 +1,8 @@
-#ifndef ELLE_CRYPTOGRAPHY_CRYPTOSYSTEM_HH
-# define ELLE_CRYPTOGRAPHY_CRYPTOSYSTEM_HH
+#pragma once
 
-# include <iosfwd>
+#include <iosfwd>
 
-# include <elle/serialization/Serializer.hh>
+#include <elle/serialization/Serializer.hh>
 
 namespace elle
 {
@@ -43,7 +42,7 @@ namespace elle
     template <>
     struct Serialize<elle::cryptography::Cryptosystem>
     {
-      typedef uint8_t Type;
+      using Type = uint8_t;
       static
       uint8_t
       convert(elle::cryptography::Cryptosystem const& value);
@@ -53,5 +52,3 @@ namespace elle
     };
   }
 }
-
-#endif

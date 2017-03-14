@@ -1,13 +1,13 @@
-#ifndef ELLE_CRYPTOGRAPHY_BN_HH
-# define ELLE_CRYPTOGRAPHY_BN_HH
+#pragma once
 
-# include <openssl/bn.h>
+#include <openssl/bn.h>
 
-# include <elle/serialization/Serializer.hh>
-# include <elle/operator.hh>
+#include <elle/serialization/Serializer.hh>
+#include <elle/operator.hh>
 
-# include <iosfwd>
-# include <utility>
+#include <iosfwd>
+#include <utility>
+
 ELLE_OPERATOR_RELATIONALS();
 
 /*----------.
@@ -38,7 +38,7 @@ namespace elle
     template <>
     struct Serialize<BIGNUM*>
     {
-      typedef elle::Buffer Type;
+      using Type = elle::Buffer;
       static
       elle::Buffer
       convert(::BIGNUM* const& value);
@@ -48,5 +48,3 @@ namespace elle
     };
   }
 }
-
-#endif

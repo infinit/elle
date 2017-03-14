@@ -1,12 +1,9 @@
-#ifndef ELLE_CRYPTOGRAPHY_RSA_PRIVATEKEY_HXX
-# define ELLE_CRYPTOGRAPHY_RSA_PRIVATEKEY_HXX
-
 //
 // ---------- Class -----------------------------------------------------------
 //
 
-# include <elle/serialization/binary.hh>
-# include <elle/utility/Move.hh>
+#include <elle/serialization/binary.hh>
+#include <elle/utility/Move.hh>
 
 namespace elle
 {
@@ -81,7 +78,7 @@ namespace elle
 // ---------- Hash ------------------------------------------------------------
 //
 
-# include <elle/serialization/binary.hh>
+#include <elle/serialization/binary.hh>
 
 namespace std
 {
@@ -103,5 +100,3 @@ namespace std
     }
   };
 }
-
-#endif

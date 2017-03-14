@@ -1,22 +1,21 @@
-#ifndef ELLE_CRYPTOGRAPHY_RSA_PRIVATEKEY_HH
-# define ELLE_CRYPTOGRAPHY_RSA_PRIVATEKEY_HH
+#pragma once
 
-# include <memory>
-# include <utility>
+#include <memory>
+#include <utility>
 
-# include <openssl/evp.h>
+#include <openssl/evp.h>
 
-# include <elle/serialization.hh>
+#include <elle/serialization.hh>
 
 ELLE_OPERATOR_RELATIONALS();
 
-# include <elle/cryptography/fwd.hh>
-# include <elle/cryptography/types.hh>
-# include <elle/cryptography/Oneway.hh>
-# include <elle/cryptography/Cipher.hh>
-# include <elle/cryptography/rsa/Seed.hh>
-# include <elle/cryptography/rsa/Padding.hh>
-# include <elle/cryptography/rsa/defaults.hh>
+#include <elle/cryptography/fwd.hh>
+#include <elle/cryptography/types.hh>
+#include <elle/cryptography/Oneway.hh>
+#include <elle/cryptography/Cipher.hh>
+#include <elle/cryptography/rsa/Seed.hh>
+#include <elle/cryptography/rsa/Padding.hh>
+#include <elle/cryptography/rsa/defaults.hh>
 
 //
 // ---------- Class -----------------------------------------------------------
@@ -157,7 +156,7 @@ namespace elle
         PrivateKey(elle::serialization::SerializerIn& serializer);
         void
         serialize(elle::serialization::Serializer& serializer);
-        typedef elle::serialization_tag serialization_tag;
+        using serialization_tag = elle::serialization_tag;
 
         /*-----------.
         | Attributes |
@@ -199,6 +198,4 @@ namespace elle
   }
 }
 
-# include <elle/cryptography/rsa/PrivateKey.hxx>
-
-#endif
+#include <elle/cryptography/rsa/PrivateKey.hxx>

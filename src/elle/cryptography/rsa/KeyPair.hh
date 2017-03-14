@@ -1,21 +1,20 @@
-#ifndef ELLE_CRYPTOGRAPHY_RSA_KEYPAIR_HH
-# define ELLE_CRYPTOGRAPHY_RSA_KEYPAIR_HH
+#pragma once
 
-# include <iosfwd>
+#include <iosfwd>
 
-# include <utility>
+#include <utility>
 
-# include <elle/types.hh>
-# include <elle/serialization.hh>
-# include <elle/serialization/Serializer.hh>
+#include <elle/types.hh>
+#include <elle/serialization.hh>
+#include <elle/serialization/Serializer.hh>
 
-# include <elle/cryptography/fwd.hh>
-# include <elle/cryptography/Oneway.hh>
-# include <elle/cryptography/Cipher.hh>
-# include <elle/cryptography/rsa/KeyPair.hh>
-# include <elle/cryptography/rsa/PublicKey.hh>
-# include <elle/cryptography/rsa/PrivateKey.hh>
-# include <elle/cryptography/rsa/defaults.hh>
+#include <elle/cryptography/fwd.hh>
+#include <elle/cryptography/Oneway.hh>
+#include <elle/cryptography/Cipher.hh>
+#include <elle/cryptography/rsa/KeyPair.hh>
+#include <elle/cryptography/rsa/PublicKey.hh>
+#include <elle/cryptography/rsa/PrivateKey.hh>
+#include <elle/cryptography/rsa/defaults.hh>
 
 ELLE_OPERATOR_RELATIONALS();
 
@@ -101,7 +100,7 @@ namespace elle
         KeyPair(elle::serialization::SerializerIn& serializer);
         void
         serialize(elle::serialization::Serializer& serializer);
-        typedef elle::serialization_tag serialization_tag;
+        using serialization_tag = elle::serialization_tag;
 
         /*-----------.
         | Attributes |
@@ -157,6 +156,4 @@ namespace elle
   }
 }
 
-# include <elle/cryptography/rsa/KeyPair.hxx>
-
-#endif
+#include <elle/cryptography/rsa/KeyPair.hxx>

@@ -1,7 +1,4 @@
-#ifndef ELLE_CRYPTOGRAPHY_RSA_KEYPAIR_HXX
-# define ELLE_CRYPTOGRAPHY_RSA_KEYPAIR_HXX
-
-# include <elle/cryptography/rsa/PublicKey.hh>
+#include <elle/cryptography/rsa/PublicKey.hh>
 
 namespace std
 {
@@ -15,5 +12,3 @@ namespace std
     }
   };
 }
-
-#endif

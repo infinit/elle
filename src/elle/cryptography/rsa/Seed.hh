@@ -1,19 +1,18 @@
-#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+#pragma once
 
-# ifndef ELLE_CRYPTOGRAPHY_RSA_SEED_HH
-#  define ELLE_CRYPTOGRAPHY_RSA_SEED_HH
+#if defined ELLE_CRYPTOGRAPHY_ROTATION
 
-#  include <elle/cryptography/fwd.hh>
-#  include <elle/cryptography/types.hh>
+# include <elle/cryptography/fwd.hh>
+# include <elle/cryptography/types.hh>
 
-#  include <elle/types.hh>
-#  include <elle/attribute.hh>
-#  include <elle/operator.hh>
-#  include <elle/Buffer.hh>
-#  include <elle/Printable.hh>
-#  include <elle/serialization/Serializer.hh>
+# include <elle/types.hh>
+# include <elle/attribute.hh>
+# include <elle/operator.hh>
+# include <elle/Buffer.hh>
+# include <elle/Printable.hh>
+# include <elle/serialization/Serializer.hh>
 
-#  include <utility>
+# include <utility>
 ELLE_OPERATOR_RELATIONALS();
 
 //
@@ -74,7 +73,7 @@ namespace elle
         Seed(elle::serialization::SerializerIn& serializer);
         void
         serialize(elle::serialization::Serializer& serializer);
-        typedef elle::serialization_tag serialization_tag;
+        using serialization_tag = elle::serialization_tag;
 
         /*-----------.
         | Attributes |
@@ -115,7 +114,5 @@ namespace elle
     }
   }
 }
-
-# endif
 
 #endif
