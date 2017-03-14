@@ -480,7 +480,7 @@ namespace elle
         {
           try
           {
-            return Result(this->_function(std::forward<C>(c).make_effective<Args>::value...));
+            return Result(this->_function(std::move(c.make_effective<Args>::value)...));
           }
           catch (elle::Exception const& e)
           {
@@ -488,6 +488,20 @@ namespace elle
           }
         }
 
+        template <typename C>
+        std::enable_if_t<
+        std::is_same<std::remove_cv_reference_t<C>, Call>::value, Result>
+        operator() (C const& c) const
+        {
+          try
+          {
+            return Result(this->_function(c.make_effective<Args>::value...));
+          }
+          catch (elle::Exception const& e)
+          {
+            return Result(std::current_exception());
+          }
+        }
         ELLE_ATTRIBUTE_R(F, function);
         ELLE_ATTRIBUTE_R(
           (Prototype<make_default<Args> ...>), prototype);
