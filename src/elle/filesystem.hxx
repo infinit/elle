@@ -1,4 +1,0 @@
-#ifndef ELLE_FILESYSTEM_HXX
-# define ELLE_FILESYSTEM_HXX
-
-#endif
