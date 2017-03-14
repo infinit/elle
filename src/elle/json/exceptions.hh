@@ -1,7 +1,6 @@
-#ifndef ELLE_JSON_EXCEPTIONS_HH
-# define ELLE_JSON_EXCEPTIONS_HH
+#pragma once
 
-# include <elle/Error.hh>
+#include <elle/Error.hh>
 
 namespace elle
 {
@@ -11,10 +10,8 @@ namespace elle
       public elle::Error
     {
     public:
-      typedef elle::Error Super;
+      using Super = elle::Error;
       ParseError(std::string const& message);
     };
   }
 }
-
-#endif

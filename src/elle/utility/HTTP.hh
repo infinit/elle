@@ -1,21 +1,20 @@
-#ifndef ELLE_UTILITY_HTTP_HH
-# define ELLE_UTILITY_HTTP_HH
+#pragma once
 
-# include <elle/types.hh>
+#include <elle/types.hh>
 
-# include <elle/utility/fwd.hh>
+#include <elle/utility/fwd.hh>
 
-# if defined(INFINIT_MACOSX)
+#if defined INFINIT_MACOSX
 /// A bug exists in which, on MacOS X, curl includes <osreldate.h> if
 /// __FreeBSD__ is defined, which it has to be for FUSE.
 ///
 /// Therefore, __FreeBSD__ is undefined before including <curl/curl.h>
-#  undef __FreeBSD__
-#  include <curl/curl.h>
-#  define __FreeBSD__ 10
-# else
-#  include <curl/curl.h>
-# endif
+# undef __FreeBSD__
+# include <curl/curl.h>
+# define __FreeBSD__ 10
+#else
+# include <curl/curl.h>
+#endif
 
 namespace elle
 {
@@ -46,7 +45,7 @@ namespace elle
       //
       // types
       //
-      typedef String                    Content;
+      using Content = String;
 
       //
       // constants
@@ -97,5 +96,3 @@ namespace elle
 
   }
 }
-
-#endif

@@ -1,6 +1,3 @@
-#ifndef ELLE_MEMORY_HXX
-# define ELLE_MEMORY_HXX
-
 namespace elle
 {
   template<typename T, typename... Args>
@@ -89,5 +86,3 @@ namespace elle
     return *this;
   }
 }
-
-#endif
