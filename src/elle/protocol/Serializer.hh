@@ -1,18 +1,17 @@
-#ifndef ELLE_PROTOCOL_PACKET_SERIALIZER_HH
-# define ELLE_PROTOCOL_PACKET_SERIALIZER_HH
+#pragma once
 
-# include <iostream>
+#include <iostream>
 
-# include <elle/reactor/mutex.hh>
+#include <elle/reactor/mutex.hh>
 
-# include <elle/attribute.hh>
-# include <elle/compiler.hh>
+#include <elle/attribute.hh>
+#include <elle/compiler.hh>
 
-# include <elle/protocol/Stream.hh>
+#include <elle/protocol/Stream.hh>
 
-# ifdef EOF
-#  undef EOF
-# endif
+#ifdef EOF
+# undef EOF
+#endif
 
 namespace elle
 {
@@ -25,8 +24,8 @@ namespace elle
     | Types |
     `------*/
     public:
-      typedef Stream Super;
-      typedef std::iostream Inner;
+      using Super = Stream;
+      using Inner = std::iostream;
       class EOF
         : public elle::Error
       {
@@ -85,5 +84,3 @@ namespace elle
     };
   }
 }
-
-#endif

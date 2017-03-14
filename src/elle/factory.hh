@@ -1,5 +1,4 @@
-#ifndef ELLE_FACTORY_HH
- # define ELLE_FACTORY_HH
+#pragma once
 
 #include <elle/Error.hh>
 #include <elle/memory.hh>
@@ -36,7 +35,8 @@ namespace elle
     return _details::Factory<F>(std::move(f));
   }
 
-  template<typename T> class Factory
+  template <typename T>
+  class Factory
   {
   public:
     class KeyError: public Error
@@ -46,8 +46,8 @@ namespace elle
         : Error("No such key: " + key)
         {}
     };
-    typedef std::vector<std::string> Arguments;
-    typedef std::function<std::unique_ptr<T>(Arguments const&)> Builder;
+    using Arguments = std::vector<std::string>;
+    using Builder = std::function<std::unique_ptr<T>(Arguments const&)>;
     static
     int
     register_(std::string const& name, Builder builder);
@@ -55,17 +55,13 @@ namespace elle
     std::unique_ptr<T>
     instantiate(std::string const& name, Arguments const& args);
   private:
-    typedef std::unordered_map<std::string, Builder> Items;
+    using Items = std::unordered_map<std::string, Builder>;
     static Items& _items();
   };
+}
 
 #define FACTORY_REGISTER(type, name, builder)                       \
   static int __attribute__((unused))                                \
   unused = elle::Factory<type>::register_(name, builder)
 
-}
-
 #include <elle/factory.hxx>
-
-
-#endif

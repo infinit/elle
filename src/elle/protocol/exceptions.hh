@@ -11,7 +11,7 @@ namespace elle
       public elle::Exception
     {
     public:
-      typedef elle::Exception Super;
+      using Super = elle::Exception;
       Error(std::string const& message);
     };
 
@@ -20,7 +20,7 @@ namespace elle
       public Error
     {
     public:
-      typedef Error Super;
+      using Super = Error;
       ChecksumError();
     };
 
@@ -29,7 +29,7 @@ namespace elle
       public Error
     {
     public:
-      typedef Error Super;
+      using Super = Error;
       InterruptionError();
     };
 
@@ -38,7 +38,7 @@ namespace elle
       public Error
     {
     public:
-      typedef Error Super;
+      using Super = Error;
       RPCError(std::string const& message);
     };
   }

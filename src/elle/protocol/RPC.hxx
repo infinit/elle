@@ -1,21 +1,18 @@
-#ifndef ELLE_PROTOCOL_RPC_HXX
-# define ELLE_PROTOCOL_RPC_HXX
+#include <type_traits>
 
-# include <type_traits>
+#include <elle/Backtrace.hh>
+#include <elle/log.hh>
+#include <elle/printf.hh>
+#include <elle/memory.hh>
 
-# include <elle/Backtrace.hh>
-# include <elle/log.hh>
-# include <elle/printf.hh>
-# include <elle/memory.hh>
+#include <elle/reactor/network/exception.hh>
+#include <elle/reactor/Scope.hh>
+#include <elle/reactor/scheduler.hh>
+#include <elle/reactor/thread.hh>
 
-# include <elle/reactor/network/exception.hh>
-# include <elle/reactor/Scope.hh>
-# include <elle/reactor/scheduler.hh>
-# include <elle/reactor/thread.hh>
-
-# include <elle/protocol/Channel.hh>
-# include <elle/protocol/ChanneledStream.hh>
-# include <elle/protocol/exceptions.hh>
+#include <elle/protocol/Channel.hh>
+#include <elle/protocol/ChanneledStream.hh>
+#include <elle/protocol/exceptions.hh>
 
 namespace elle
 {
@@ -331,7 +328,7 @@ namespace elle
     RPC<IS, OS>::add(boost::function<R (Args...)> const& f)
     {
       uint32_t id = this->_id++;
-      typedef Procedure<IS, OS, R, Args...> Proc;
+      using Proc = Procedure<IS, OS, R, Args...>;
       this->_procedures[id] = std::unique_ptr<Proc>(new Proc(*this, id, f));
       return RemoteProcedure<R, Args...>(*this, id);
     }
@@ -604,5 +601,3 @@ namespace elle
     }
   }
 }
-
-#endif

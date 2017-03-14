@@ -21,8 +21,8 @@ cleanup()
 
 BOOST_AUTO_TEST_CASE(nominal)
 {
-  typedef elle::AtomicFile::Read Read;
-  typedef elle::AtomicFile::Write Write;
+  using Read = elle::AtomicFile::Read;
+  using Write = elle::AtomicFile::Write;
   static std::string const data1("File me !\n");
   static std::string const data2("File me harder !\n");
   cleanup();

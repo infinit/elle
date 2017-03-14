@@ -45,9 +45,9 @@ int rpc(std::string const& host, int port, int id,
       elle::reactor::network::TCPSocket socket(sched, host, port);
       elle::protocol::Serializer serializer(sched, socket);
       elle::protocol::ChanneledStream channels(sched, serializer);
-      typedef elle::protocol::RPC<elle::serialize::InputBinaryArchive,
+      using RPC = elle::protocol::RPC<elle::serialize::InputBinaryArchive,
                                      elle::serialize::OutputBinaryArchive>
-        RPC;
+       ;
       RPC rpcs(channels);
       // FIXME
       if (args.size() != 2)
