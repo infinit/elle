@@ -75,7 +75,7 @@ public:
   std::string name;
   Device device;
 
-  typedef serialization serialization_tag;
+  using serialization_tag = serialization;
 };
 
 using DasUser =

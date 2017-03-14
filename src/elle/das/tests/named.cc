@@ -1,20 +1,20 @@
-# include <string>
+#include <string>
 
-# include <elle/das/named.hh>
-# include <elle/serialization/binary.hh>
-# include <elle/serialization/json.hh>
-# include <elle/test.hh>
+#include <elle/das/named.hh>
+#include <elle/serialization/binary.hh>
+#include <elle/serialization/json.hh>
+#include <elle/test.hh>
 
-#define NAMED_FUNCTION(Name, F, ...)                                    \
-  template <typename ... Args>                                          \
-  auto                                                                  \
-  Name(Args&& ... args) ->                                              \
-    decltype(elle::das::named::prototype(__VA_ARGS__).call(                   \
-               F, std::forward<Args>(args)...))                         \
-  {                                                                     \
-    return elle::das::named::prototype(__VA_ARGS__).call(                     \
-      F, std::forward<Args>(args)...);                                  \
-  }                                                                     \
+#define NAMED_FUNCTION(Name, F, ...)                            \
+  template <typename ... Args>                                  \
+  auto                                                          \
+  Name(Args&& ... args) ->                                      \
+    decltype(elle::das::named::prototype(__VA_ARGS__).call(     \
+               F, std::forward<Args>(args)...))                 \
+  {                                                             \
+    return elle::das::named::prototype(__VA_ARGS__).call(       \
+      F, std::forward<Args>(args)...);                          \
+  }
 
 /*------.
 | Basic |

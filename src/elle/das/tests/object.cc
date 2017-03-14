@@ -121,8 +121,8 @@ public:
   }
 };
 
-typedef elle::das::Model<
-  Device, elle::meta::List<Symbol_name, Symbol_model, Symbol_id>> DasDevice;
+using DasDevice = elle::das::Model<
+  Device, elle::meta::List<Symbol_name, Symbol_model, Symbol_id>>;
 
 namespace das
 {
