@@ -105,7 +105,7 @@ namespace elle
 
         if_.mac_address = "";
         addr.s_addr = *(u_long*)host->h_addr_list[i];
-        if_.ipv4_address = inet_ntoa(addr);
+        if_.ipv4_address.emplace_back(inet_ntoa(addr));
         addresses[elle::sprintf("%s-%d", host->h_name, i)] = if_;
       }
 
