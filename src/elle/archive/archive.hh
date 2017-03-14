@@ -1,13 +1,12 @@
-#ifndef ELLE_ARCHIVE_HH
-# define ELLE_ARCHIVE_HH
+#pragma once
 
-# include <functional>
-# include <vector>
+#include <functional>
+#include <vector>
 
-# include <boost/optional.hpp>
+#include <boost/optional.hpp>
 
-# include <elle/compiler.hh>
-# include <elle/filesystem.hh>
+#include <elle/compiler.hh>
+#include <elle/filesystem.hh>
 
 namespace elle
 {
@@ -22,12 +21,11 @@ namespace elle
       zip_uncompressed
     };
 
-    typedef
-      std::function<boost::filesystem::path(boost::filesystem::path const&)>
-      Renamer;
-    typedef
-      std::function<bool(boost::filesystem::path const&)>
-      Excluder; /// Returns true to exclude the file
+    using Renamer =
+      std::function<boost::filesystem::path(boost::filesystem::path const&)>;
+    /// Returns true to exclude the file
+    using Excluder =
+      std::function<bool(boost::filesystem::path const&)>;
 
     ELLE_API
     void
@@ -45,5 +43,3 @@ namespace elle
             boost::optional<boost::filesystem::path> const& output = boost::none);
   }
 }
-
-#endif

@@ -1,12 +1,11 @@
-#ifndef ELLE_CRYPTOGRAPHY_TYPES_HH
-# define ELLE_CRYPTOGRAPHY_TYPES_HH
+#pragma once
 
-# include <memory>
+#include <memory>
 
-# include <elle/cryptography/deleter.hh>
+#include <elle/cryptography/deleter.hh>
 
-# include <openssl/bn.h>
-# include <openssl/evp.h>
+#include <openssl/bn.h>
+#include <openssl/evp.h>
 
 namespace elle
 {
@@ -15,14 +14,9 @@ namespace elle
     /// Define some smart pointer types for low-level structures.
     namespace types
     {
-      typedef std::unique_ptr<BIGNUM,
-                              deleter::BIGNUM> BIGNUM;
-      typedef std::unique_ptr<EVP_PKEY,
-                              deleter::EVP_PKEY> EVP_PKEY;
-      typedef std::unique_ptr<EVP_PKEY_CTX,
-                              deleter::EVP_PKEY_CTX> EVP_PKEY_CTX;
+      using BIGNUM = std::unique_ptr<BIGNUM, deleter::BIGNUM>;
+      using EVP_PKEY = std::unique_ptr<EVP_PKEY, deleter::EVP_PKEY>;
+      using EVP_PKEY_CTX = std::unique_ptr<EVP_PKEY_CTX, deleter::EVP_PKEY_CTX>;
     }
   }
 }
-
-#endif

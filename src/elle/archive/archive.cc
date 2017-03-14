@@ -72,7 +72,7 @@ namespace elle
         check_call(archive, archive_write_free(archive));
       }
     };
-    typedef std::unique_ptr< ::archive, archive_deleter > ArchivePtr;
+    using ArchivePtr = std::unique_ptr< ::archive, archive_deleter >;
 
     struct archive_read_deleter
     {
@@ -84,7 +84,7 @@ namespace elle
         check_call(archive, archive_read_free(archive));
       }
     };
-    typedef std::unique_ptr< ::archive, archive_read_deleter > ArchiveReadPtr;
+    using ArchiveReadPtr = std::unique_ptr< ::archive, archive_read_deleter >;
 
     struct archive_entry_deleter
     {
@@ -95,7 +95,7 @@ namespace elle
         archive_entry_free(entry);
       }
     };
-    typedef std::unique_ptr< ::archive_entry, archive_entry_deleter > EntryPtr;
+    using EntryPtr = std::unique_ptr< ::archive_entry, archive_entry_deleter >;
 
     static
     void

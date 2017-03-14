@@ -679,7 +679,7 @@ namespace elle
                            std::string const& url,
                            bool& fatal)
       {
-        typedef elle::reactor::http::StatusCode StatusCode;
+        using StatusCode = elle::reactor::http::StatusCode;
         auto status = request.status();
         fatal = false; // if true, exception is not known to be recoverable
 
