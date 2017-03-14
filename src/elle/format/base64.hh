@@ -1,8 +1,7 @@
-#ifndef ELLE_FORMAT_BASE64_HH
-# define ELLE_FORMAT_BASE64_HH
+#pragma once
 
-# include <elle/types.hh>
-# include <elle/Buffer.hh>
+#include <elle/types.hh>
+#include <elle/Buffer.hh>
 
 namespace elle
 {
@@ -10,9 +9,9 @@ namespace elle
   {
     namespace base64
     {
-      class ELLE_API StreamBuffer:
-        public elle::StreamBuffer,
-        public elle::Printable
+      class ELLE_API StreamBuffer
+        : public elle::StreamBuffer
+        , public elle::Printable
       {
       /*-------------.
       | Construction |
@@ -87,5 +86,3 @@ namespace elle
     }
   }
 }
-
-#endif

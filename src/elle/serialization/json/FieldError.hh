@@ -1,7 +1,6 @@
-#ifndef ELLE_SERIALIZATION_JSON_FIELD_ERROR_HH
-# define ELLE_SERIALIZATION_JSON_FIELD_ERROR_HH
+#pragma once
 
-# include <elle/serialization/Error.hh>
+#include <elle/serialization/Error.hh>
 
 namespace elle
 {
@@ -14,13 +13,11 @@ namespace elle
         public Error
       {
       public:
-        typedef FieldError Self;
-        typedef Error Super;
+        using Self = FieldError;
+        using Super = Error;
         FieldError(std::string const& field, std::string const& message);
         ELLE_ATTRIBUTE_R(std::string, field);
       };
     }
   }
 }
-
-#endif
