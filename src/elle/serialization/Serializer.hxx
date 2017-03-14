@@ -1,3 +1,5 @@
+// Cppguard needed, can't use pragma once.
+
 #ifndef ELLE_SERIALIZATION_SERIALIZER_HXX
 # define ELLE_SERIALIZATION_SERIALIZER_HXX
 
@@ -1045,7 +1047,7 @@ namespace elle
       this->_serialize<S, std::vector, T, A>(collection);
     }
 
-    // Specific overload to catch std::vector subclasses (for das, namely).
+    // Specific overload to catch std::set subclasses (for das, namely).
     template <typename T, typename C, typename A>
     void
     Serializer::_serialize(std::set<T, C, A>& collection)

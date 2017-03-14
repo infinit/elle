@@ -1,7 +1,5 @@
-#ifndef ELLE_SERIALIZATION_SERIALIZER_OUT_HXX
-# define ELLE_SERIALIZATION_SERIALIZER_OUT_HXX
-
-#  include <elle/serialization/Serializer.hxx>
+#pragma once
+#include <elle/serialization/Serializer.hxx>
 
 namespace elle
 {
@@ -37,5 +35,3 @@ namespace elle
     }
   }
 }
-
-#endif
