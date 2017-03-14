@@ -1055,6 +1055,13 @@ namespace elle
       this->_serialize_collection(collection);
     }
 
+    template <typename... Args>
+    void
+    Serializer::_serialize(boost::container::flat_set<Args...>& collection)
+    {
+      this->_serialize_collection(collection);
+    }
+
     template <typename T, typename I>
     void
     Serializer::_serialize(
