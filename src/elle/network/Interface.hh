@@ -16,7 +16,7 @@ namespace elle
     {
     public:
       std::string mac_address;
-      std::string ipv4_address;
+      std::vector<std::string> ipv4_address;
       std::vector<std::string> ipv6_address;
 
     public:

@@ -188,7 +188,7 @@ namespace elle
               oss << '.';
             oss << static_cast<unsigned int>(tab[i]);
           }
-          map[iter->ifa_name].ipv4_address = oss.str();
+          map[iter->ifa_name].ipv4_address.push_back(oss.str());
           break;
         case AF_INET6:
           {
