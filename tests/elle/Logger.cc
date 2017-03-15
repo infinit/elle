@@ -20,7 +20,7 @@ template<bool b>
 void
 _message_test(bool env)
 {
-  typedef elle::log::Logger::Level Level;
+  using Level = elle::log::Logger::Level;
 
   std::stringstream ss;
   elle::log::TextLogger* logger;
@@ -114,7 +114,7 @@ _environment_format_test(bool env)
 {
   ELLE_LOG_COMPONENT("Test");
 
-  typedef elle::log::Logger::Level Level;
+  using Level = elle::log::Logger::Level;
 
   std::stringstream ss, res;
   elle::log::TextLogger* logger;

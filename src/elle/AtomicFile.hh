@@ -53,7 +53,7 @@ namespace elle
   `------*/
   public:
     /// Self type.
-    typedef AtomicFile Self;
+    using Self = AtomicFile;
 
   /*-------------.
   | Construction |

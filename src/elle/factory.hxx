@@ -1,9 +1,8 @@
-#ifndef ELLE_FACTORY_HXX
-# define ELLE_FACTORY_HXX
+#pragma once
 
 namespace elle
 {
-  template<typename T>
+  template <typename T>
   int
   Factory<T>::register_(std::string const& name, Builder builder)
   {
@@ -11,7 +10,7 @@ namespace elle
     return 0;
   }
 
-  template<typename T>
+  template <typename T>
   std::unique_ptr<T>
   Factory<T>::instantiate(std::string const& name, Arguments const& args)
   {
@@ -21,7 +20,7 @@ namespace elle
     return it->second(args);
   }
 
-  template<typename T>
+  template <typename T>
   typename Factory<T>::Items&
   Factory<T>::_items()
   {
@@ -29,5 +28,3 @@ namespace elle
     return items;
   }
 }
-
-#endif

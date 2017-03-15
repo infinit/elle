@@ -327,7 +327,7 @@ static
 void
 serialization_fry()
 {
-  typedef elle::Option<int, std::shared_ptr<int>> O;
+  using O = elle::Option<int, std::shared_ptr<int>>;
   O o1(std::make_shared<int>(42));
   auto s = elle::serialization::binary::serialize(o1, "option");
   {
@@ -366,7 +366,7 @@ static
 void
 exceptions()
 {
-  typedef elle::Option<Count, Thrower> O;
+  using O = elle::Option<Count, Thrower>;
   int count = 0;
   {
     O o{Count(count)};

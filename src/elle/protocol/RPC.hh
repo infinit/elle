@@ -1,18 +1,17 @@
-#ifndef ELLE_PROTOCOL_RPC_HH
-# define ELLE_PROTOCOL_RPC_HH
+#pragma once
 
-# include <ostream>
-# include <memory>
-# include <unordered_map>
+#include <ostream>
+#include <memory>
+#include <unordered_map>
 
-# include <boost/function.hpp>
-# include <boost/noncopyable.hpp>
+#include <boost/function.hpp>
+#include <boost/noncopyable.hpp>
 
-# include <elle/Printable.hh>
+#include <elle/Printable.hh>
 
-# include <elle/reactor/thread.hh>
+#include <elle/reactor/thread.hh>
 
-# include <elle/protocol/fwd.hh>
+#include <elle/protocol/fwd.hh>
 
 namespace elle
 {
@@ -26,7 +25,7 @@ namespace elle
       LastMessageException(std::string const& what);
     };
 
-    typedef std::function<void(std::exception_ptr)> ExceptionHandler;
+    using ExceptionHandler = std::function<void(std::exception_ptr)>;
 
     template <typename ISerializer, typename OSerializer>
     class BaseProcedure
@@ -57,8 +56,8 @@ namespace elle
       : public BaseProcedure<ISerializer, OSerializer>
     {
     public:
-      typedef RPC<ISerializer, OSerializer> Owner;
-      typedef boost::function<R (Args...)> Function;
+      using Owner = RPC<ISerializer, OSerializer>;
+      using Function = boost::function<R (Args...)>;
 
     public:
       virtual
@@ -123,8 +122,8 @@ namespace elle
       class RemoteProcedure
       {
       public:
-        typedef R ReturnType;
-        typedef RPC<ISerializer, OSerializer> Owner;
+        using ReturnType = R;
+        using Owner = RPC<ISerializer, OSerializer>;
 
       public:
         RemoteProcedure(std::string const& name,
@@ -164,10 +163,10 @@ namespace elle
       parallel_run();
 
     protected:
-      typedef BaseProcedure<ISerializer, OSerializer> LocalProcedure;
-      typedef std::pair<std::string,
-                        std::unique_ptr<LocalProcedure>> NamedProcedure;
-      typedef std::unordered_map<uint32_t, NamedProcedure> Procedures;
+      using LocalProcedure = BaseProcedure<ISerializer, OSerializer>;
+      using NamedProcedure = std::pair<std::string,
+                        std::unique_ptr<LocalProcedure>>;
+      using Procedures = std::unordered_map<uint32_t, NamedProcedure>;
 
       ELLE_ATTRIBUTE(Procedures, procedures, protected);
       ELLE_ATTRIBUTE(std::vector<BaseRPC*>, rpcs, protected);
@@ -176,13 +175,10 @@ namespace elle
     | Printable |
     `----------*/
     public:
-      virtual
       void
       print(std::ostream& stream) const override;
     };
   }
 }
 
-# include <elle/protocol/RPC.hxx>
-
-#endif
+#include <elle/protocol/RPC.hxx>

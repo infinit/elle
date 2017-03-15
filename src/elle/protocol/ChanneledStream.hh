@@ -1,11 +1,10 @@
-#ifndef ELLE_PROTOCOL_CHANNELEDSTREAM_HH
-# define ELLE_PROTOCOL_CHANNELEDSTREAM_HH
+#pragma once
 
-# include <unordered_map>
+#include <unordered_map>
 
-# include <elle/protocol/Channel.hh>
-# include <elle/protocol/Stream.hh>
-# include <elle/protocol/fwd.hh>
+#include <elle/protocol/Channel.hh>
+#include <elle/protocol/Stream.hh>
+#include <elle/protocol/fwd.hh>
 
 namespace elle
 {
@@ -45,9 +44,9 @@ namespace elle
     | Types |
     `------*/
     public:
-      typedef ChanneledStream Self;
-      typedef Stream Super;
-      typedef std::unordered_map<int, Channel*> Channels;
+      using Self = ChanneledStream;
+      using Super = Stream;
+      using Channels = std::unordered_map<int, Channel*>;
 
     /*-------------.
     | Construction |
@@ -134,5 +133,3 @@ namespace elle
     };
   }
 }
-
-#endif

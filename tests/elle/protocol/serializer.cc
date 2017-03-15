@@ -28,10 +28,10 @@ struct Focket // Fake socket.
   struct StreamBuffer
     : public elle::DynamicStreamBuffer
   {
-    typedef elle::DynamicStreamBuffer Super;
+    using Super = elle::DynamicStreamBuffer;
 
     StreamBuffer(elle::Buffer& our,
-                  elle::Buffer& their,
+                 elle::Buffer& their,
                  bool yield_during_writing = true,
                  bool yield_during_reading = true)
       : elle::DynamicStreamBuffer(buffer_size)

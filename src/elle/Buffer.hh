@@ -43,9 +43,9 @@ namespace elle
     /// Byte.
     using Byte = uint8_t;
     /// Data owned by a Buffer:
-    typedef std::unique_ptr<Byte, detail::MallocDeleter> ContentPtr;
+    using ContentPtr = std::unique_ptr<Byte, detail::MallocDeleter>;
     /// Content owned by a Buffer: data and size.
-    typedef std::pair<ContentPtr, Size> ContentPair;
+    using ContentPair = std::pair<ContentPtr, Size>;
 
   /*-------------.
   | Construction |

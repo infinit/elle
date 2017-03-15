@@ -1,5 +1,4 @@
-#ifndef ELLE_FACTORY_HH
- # define ELLE_FACTORY_HH
+#pragma once
 
 #include <elle/Error.hh>
 #include <elle/memory.hh>
@@ -82,7 +81,7 @@ namespace elle
   ///
   /// \endcode
   ///
-  template<typename T>
+  template <typename T>
   class Factory
   {
   public:
@@ -120,14 +119,10 @@ namespace elle
     Items&
     _items();
   };
+}
 
 #define FACTORY_REGISTER(type, name, builder)                       \
   static int __attribute__((unused))                                \
   unused = elle::Factory<type>::register_(name, builder)
 
-}
-
 #include <elle/factory.hxx>
-
-
-#endif

@@ -264,7 +264,11 @@ class State:
           to = '%s/.drake/%s' % (tmp, to)
           mkpath(os.path.dirname(to))
           rm(to)
-          mv(fr, to)
+          if os.path.exists(fr):
+            mv(fr, to)
+          else:
+            print('%s: missing drake directory: %s' % (sys.argv[0], fr),
+                  file = sys.stderr)
         except:
           rm(tmp)
           raise
