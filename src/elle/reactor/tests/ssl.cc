@@ -108,9 +108,8 @@ ELLE_TEST_SCHEDULED(transfer)
       {
         SSLCertificate certificate;
         elle::reactor::wait(listening);
-        auto endpoint = elle::reactor::network::resolve_tcp(
-          "127.0.0.1",
-          std::to_string(port));
+        auto endpoint
+          = elle::reactor::network::resolve_tcp("127.0.0.1", port)[0];
         FingerprintedSocket socket(endpoint,
                                    fingerprint);
         socket.write(std::string("lulz"));
@@ -165,16 +164,13 @@ ELLE_TEST_SCHEDULED(short_read)
       {
         SSLCertificate certificate;
         elle::reactor::wait(listening);
-        auto endpoint = elle::reactor::network::resolve_tcp(
-          "127.0.0.1",
-          std::to_string(port));
+        auto endpoint
+          = elle::reactor::network::resolve_tcp("127.0.0.1", port)[0];
         {
-          FingerprintedSocket socket(endpoint,
-                                     fingerprint);
+          FingerprintedSocket socket(endpoint, fingerprint);
         }
         {
-          FingerprintedSocket socket(endpoint,
-                                     fingerprint);
+          FingerprintedSocket socket(endpoint, fingerprint);
           socket.socket()->next_layer().close();
         }
       });

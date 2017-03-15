@@ -38,7 +38,7 @@ namespace elle
                            const std::string& port)
         : Super(
           std::make_unique<boost::asio::ip::udp::socket>(sched.io_service()),
-          resolve_udp(hostname, port),
+          resolve_udp(hostname, port)[0],
           DurationOpt())
       {}
 

@@ -26,14 +26,15 @@ namespace elle
           using Super = Operation;
           using Resolver = typename Protocol::resolver;
           using EndPoint = typename Protocol::resolver::endpoint_type;
-          Resolution(std::string  hostname, std::string  service,
+          using EndPoints = std::vector<EndPoint>;
+          Resolution(std::string hostname, std::string service,
                      bool ipv4_only)
             : Super{*reactor::Scheduler::scheduler()}
             , _resolver{reactor::Scheduler::scheduler()->io_service()}
             , _canceled{false}
             , _hostname{std::move(hostname)}
             , _service{std::move(service)}
-            , _end_point{}
+            , _end_points{}
             , _ipv4_only{ipv4_only}
           {}
 
@@ -77,19 +78,23 @@ namespace elle
           _wakeup(const boost::system::error_code& error,
                   typename Resolver::iterator it)
           {
+            auto const end
+              = typename Resolver::iterator::basic_resolver_iterator();
             if (this->_canceled)
+            {
               ELLE_TRACE_SCOPE("%s: canceled", *this);
+            }
             else if (error)
             {
               ELLE_TRACE_SCOPE("%s: ended with error: %s", *this, error.message());
               this->_raise<ResolutionError>(this->_hostname, error.message());
             }
-            else if (it == typename Resolver::iterator::basic_resolver_iterator())
+            else if (it == end)
             {
               // From the boost documentation:
               //   A successful resolve operation is guaranteed to pass at least
               //   one entry to the handler.
-              // This assumption is false on wine.
+              // This is false on wine.
               ELLE_TRACE_SCOPE(
                 "%s: ended with no error but an empty address list", *this);
               this->_raise<ResolutionError>(
@@ -98,9 +103,12 @@ namespace elle
             else
             {
               ELLE_TRACE_SCOPE("%s: ended", *this);
-              this->_end_point = *it;
-              ELLE_DEBUG("%s: endpoint address: %s",
-                         *this, this->_end_point.address().to_string());
+              for (; it != end; ++it)
+              {
+                this->_end_points.emplace_back(*it);
+                ELLE_DEBUG("%s: endpoint address: %s",
+                           *this, this->_end_points.back().address().to_string());
+              }
             }
             this->done();
           }
@@ -109,33 +117,42 @@ namespace elle
           ELLE_ATTRIBUTE(bool, canceled);
           ELLE_ATTRIBUTE(std::string, hostname);
           ELLE_ATTRIBUTE(std::string, service);
-          ELLE_ATTRIBUTE_R(EndPoint, end_point);
+          ELLE_ATTRIBUTE_R(EndPoints, end_points);
           ELLE_ATTRIBUTE_R(bool, ipv4_only);
         };
 
+        std::string
+        to_string(const Port& port)
+        {
+          if (auto i = boost::get<std::string>(&port))
+            return *i;
+          else
+            return std::to_string(boost::get<int>(port));
+        }
+
         template <typename Protocol>
-        typename Protocol::resolver::endpoint_type
+        std::vector<typename Protocol::resolver::endpoint_type>
         resolve(const std::string& hostname,
-                const std::string& service,
+                const Port& service,
                 bool ipv4_only)
         {
-          Resolution<Protocol> resolution(hostname, service, ipv4_only);
+          Resolution<Protocol> resolution(hostname, to_string(service), ipv4_only);
           resolution.run();
-          return resolution.end_point();
+          return resolution.end_points();
         }
       }
 
-      boost::asio::ip::tcp::endpoint
+      std::vector<boost::asio::ip::tcp::endpoint>
       resolve_tcp(const std::string& hostname,
-                  const std::string& service,
+                  const Port& service,
                   bool ipv4_only)
       {
         return resolve<boost::asio::ip::tcp>(hostname, service, ipv4_only);
       }
 
-      boost::asio::ip::udp::endpoint
+      std::vector<boost::asio::ip::udp::endpoint>
       resolve_udp(const std::string& hostname,
-                  const std::string& service,
+                  const Port& service,
                   bool ipv4_only)
       {
         return resolve<boost::asio::ip::udp>(hostname, service, ipv4_only);
