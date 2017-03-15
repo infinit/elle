@@ -3,7 +3,7 @@
 #include <elle/assert.hh>
 #include <elle/log.hh>
 #include <elle/reactor/exception.hh>
-#include <elle/reactor/operation.hh>
+#include <elle/reactor/Operation.hh>
 #include <elle/reactor/scheduler.hh>
 #include <elle/reactor/thread.hh>
 
@@ -13,14 +13,14 @@ namespace elle
 {
   namespace reactor
   {
-    Operation::Operation():
-      Operation(*Scheduler::scheduler())
+    Operation::Operation()
+      : Operation(*Scheduler::scheduler())
     {}
 
-    Operation::Operation(Scheduler& sched):
-      Super(),
-      _running(false),
-      _sched(sched)
+    Operation::Operation(Scheduler& sched)
+      : Super()
+      , _running(false)
+      , _sched(sched)
     {}
 
     bool

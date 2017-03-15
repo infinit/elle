@@ -2,7 +2,7 @@
 #include <elle/log.hh>
 #include <elle/reactor/network/udp-server-socket.hh>
 #include <elle/reactor/network/udp-server.hh>
-#include <elle/reactor/operation.hh>
+#include <elle/reactor/Operation.hh>
 #include <elle/reactor/scheduler.hh>
 #include <elle/reactor/thread.hh>h>
 

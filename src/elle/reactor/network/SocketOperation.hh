@@ -4,7 +4,7 @@
 
 #include <elle/reactor/network/exception.hh>
 #include <elle/reactor/network/socket.hh>
-#include <elle/reactor/operation.hh>
+#include <elle/reactor/Operation.hh>
 
 namespace elle
 {
@@ -18,9 +18,8 @@ namespace elle
       public:
         SocketOperation(AsioSocket& socket);
       protected:
-        virtual
         void
-        _abort();
+        _abort() override;
 
         void
         _wakeup(const boost::system::error_code& error);

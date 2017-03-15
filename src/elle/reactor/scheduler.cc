@@ -15,7 +15,7 @@
 # include <elle/reactor/backend/boost_context/backend.hh>
 #endif
 #include <elle/reactor/exception.hh>
-#include <elle/reactor/operation.hh>
+#include <elle/reactor/Operation.hh>
 #include <elle/reactor/scheduler.hh>
 #include <elle/reactor/thread.hh>
 

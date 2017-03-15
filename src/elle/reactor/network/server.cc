@@ -2,7 +2,7 @@
 #include <elle/reactor/network/server.hh>
 #include <elle/reactor/network/ssl-socket.hh>
 #include <elle/reactor/network/tcp-socket.hh>
-#include <elle/reactor/operation.hh>
+#include <elle/reactor/Operation.hh>
 #include <elle/reactor/scheduler.hh>
 
 ELLE_LOG_COMPONENT("elle.reactor.network.Server");

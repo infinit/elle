@@ -2,7 +2,7 @@
 
 #include <elle/reactor/network/exception.hh>
 #include <elle/reactor/network/resolve.hh>
-#include <elle/reactor/operation.hh>
+#include <elle/reactor/Operation.hh>
 #include <elle/reactor/scheduler.hh>
 #include <utility>
 
