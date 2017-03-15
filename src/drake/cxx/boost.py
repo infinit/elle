@@ -140,6 +140,10 @@ class Boost(drake.Configuration):
                     (version, self._format_search([path for path, include_subdir in prefixes]),
                      ', '.join(map(str, miss))))
 
+  @property
+  def prefer_shared(self):
+    return self.__prefer_shared
+
   def __find_lib(self, lib, lib_path, cxx_toolkit, static):
     # Suffixes
     suffixes = ['-mt', '']
