@@ -138,7 +138,6 @@ namespace elle
       {
         return ifa_name.find("awdl") == 0;
       }
-
     }
 
     std::map<std::string, Interface>

@@ -1,9 +1,8 @@
-#ifndef ELLE_NETWORK_HOSTNAME_HH
-# define ELLE_NETWORK_HOSTNAME_HH
+#pragma once
 
-# include <string>
+#include <string>
 
-# include <elle/compiler.hh>
+#include <elle/compiler.hh>
 
 namespace elle
 {
@@ -14,5 +13,3 @@ namespace elle
     hostname();
   }
 }
-
-#endif
