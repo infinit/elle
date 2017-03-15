@@ -46,7 +46,7 @@ namespace elle
       std::unique_ptr<elle::log::Indentation>&
       _indentation()
       {
-        std::unique_ptr<elle::log::Indentation>& idt = _indentations.Get();
+        std::unique_ptr<elle::log::Indentation>& idt = _indentations.get();
         if (!idt)
           idt = this->_factory();
         return idt;

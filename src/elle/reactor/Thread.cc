@@ -107,31 +107,9 @@ namespace elle
         return this->_yield_backtrace;
     }
 
-    /*---------.
-    | Tracking |
-    `---------*/
-
-    Thread::Tracker&
-    Thread::destructed()
-    {
-      return _destructed;
-    }
-
-    Thread::Tracker&
-    Thread::released()
-    {
-      return _released;
-    }
-
     /*-------.
     | Status |
     `-------*/
-
-    Thread::State
-    Thread::state() const
-    {
-      return _state;
-    }
 
     bool
     Thread::done() const

@@ -38,9 +38,9 @@ namespace elle
           public:
             /** Construct a Thread.
              *
-             * @param manager The manager.
-             * @param name This name for debugging purpose.
-             * @param action The main routine this thread will run.
+             * \param manager The manager.
+             * \param name This name for debugging purpose.
+             * \param action The main routine this thread will run.
              */
             Thread(Manager& manager,
                    const std::string& name,

@@ -9,16 +9,35 @@ namespace elle
   {
     namespace fsm
     {
-      class WaitableTransition:
-        public Transition
+      /// Specialization of Transition that waits on a Trigger.
+      ///
+      /// XXX[doc]: Add an example.
+      class WaitableTransition
+        : public Transition
       {
       public:
         using PreTrigger = std::function<bool ()>;
-        boost::optional<std::function<void()>>
+        /// Specialization of run.
+        ///
+        /// If pre_trigger is set, trigger (if not already done) and go directly
+        /// to the next State (return boost::none).
+        /// Otherwise, return a function that will wait for the trigger.
+        ///
+        /// In both cases, if preemptive is set, terminate origin State.
+        boost::optional<Action>
         run(reactor::Signal& triggered,
             Transition*& trigger,
             Thread& action_thread) override;
       protected:
+        /// Construct a WaitableTransition.
+        ///
+        /// \param start The source State of the Transition.
+        /// \param end the destination State of the Transition.
+        /// \param trigger The Waitables to trigger the condition.
+        /// \param preemptive Whether if the trigger should interrupt the
+        ///                   current flow of the State. Otherwise, the
+        ///                   transition occurs at the end of the State.
+        /// \param pre_trigger The Condition for pre triggering a Transition.
         WaitableTransition(State& start,
                            State& end,
                            Waitables  trigger,
@@ -27,7 +46,7 @@ namespace elle
         friend class Machine;
         ELLE_ATTRIBUTE_R(Waitables, trigger);
         ELLE_ATTRIBUTE_R(bool, preemptive);
-        ELLE_ATTRIBUTE_R(std::function<bool ()>, pre_trigger);
+        ELLE_ATTRIBUTE_R(PreTrigger, pre_trigger);
 
       /*----------.
       | Printable |

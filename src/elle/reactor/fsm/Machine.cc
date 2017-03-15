@@ -24,14 +24,14 @@ namespace elle
       | Construction |
       `-------------*/
 
-      Machine::Machine(std::string  name):
-        _states(),
-        _start(nullptr),
-        _transitions(),
-        _running(false),
-        _exception(nullptr),
-        _current_state(nullptr),
-        _name(std::move(name))
+      Machine::Machine(std::string name)
+        : _states()
+        , _start(nullptr)
+        , _transitions()
+        , _running(false)
+        , _exception(nullptr)
+        , _current_state(nullptr)
+        , _name(std::move(name))
       {}
 
       /*-------.

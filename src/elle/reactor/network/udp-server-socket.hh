@@ -10,6 +10,7 @@ namespace elle
   {
     namespace network
     {
+      /// XXX[doc].
       class UDPServerSocket
         : public Socket
       {
@@ -25,7 +26,8 @@ namespace elle
         `-------------*/
         public:
           UDPServerSocket(Scheduler& sched,
-                          UDPServer* server, const EndPoint& peer);
+                          UDPServer* server,
+                          EndPoint const& peer);
           virtual
           ~UDPServerSocket();
 

@@ -15,16 +15,16 @@ namespace elle
 {
   namespace reactor
   {
-    Timer::Timer(const std::string& name,
+    Timer::Timer(std::string const& name,
                  Duration d,
-                 const Action& action)
+                 Action const& action)
       : Timer(*Scheduler::scheduler(), name, d, action)
     {}
 
     Timer::Timer(Scheduler& s,
-                 std::string  name,
+                 std::string name,
                  Duration d,
-                 Action  action)
+                 Action action)
       : _scheduler(s)
       , _name(std::move(name))
       , _action(std::move(action))

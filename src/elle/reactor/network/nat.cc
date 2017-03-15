@@ -86,9 +86,9 @@ namespace elle
 
       Hole::Hole(reactor::Scheduler& sched,
                  boost::asio::ip::udp::endpoint const& longinus,
-                 int local_port):
-        _handle{nullptr},
-        _longinus{longinus}
+                 int local_port)
+        : _handle{nullptr},
+        , _longinus{longinus}
       {
         // Randomize port manually
         if (local_port == 0)
@@ -425,9 +425,9 @@ namespace elle
                  int port,
                  int local_port)
       {
-        auto longinus =
+        auto hole =
           network::resolve_udp(sched, hostname, std::to_string(port));
-        return Hole(sched, longinus, local_port);
+        return Hole(sched, hole, local_port);
       }
     } /* nat */
   } /* reactor */

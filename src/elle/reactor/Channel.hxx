@@ -135,7 +135,7 @@ namespace elle
 
     template <typename T, typename Container>
     const T&
-    Channel<T, Container>::peek()
+    Channel<T, Container>::peek() const
     {
       ELLE_LOG_COMPONENT("elle.reactor.Channel");
       ELLE_TRACE_SCOPE("%s: peek", this);

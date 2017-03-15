@@ -38,8 +38,8 @@ namespace elle
       {
         try
         {
-          this->_acceptor.reset(new Acceptor(
-            this->_scheduler.io_service(), end_point));
+          this->_acceptor.reset(
+            new Acceptor(this->_scheduler.io_service(), end_point));
         }
         catch (boost::system::system_error& e)
         {
@@ -131,7 +131,8 @@ namespace elle
         ELLE_TRACE_SCOPE("%s: wait for connection", *this);
         // FIXME: server should listen in ctor to avoid this crappy state ?
         ELLE_ASSERT_NEQ(this->acceptor(), nullptr);
-        Accept<Socket, EndPoint, Acceptor> accept(socket, peer, *this->_acceptor);
+        Accept<Socket, EndPoint, Acceptor> accept(
+          socket, peer, *this->_acceptor);
         accept.run();
       }
 

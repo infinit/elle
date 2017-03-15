@@ -11,25 +11,18 @@ namespace elle
 
     template <typename V>
     bool
-    VSignal<V>::Emit(V const& val)
+    VSignal<V>::emit(V const& val)
     {
-      _value = val;
-      return _signal();
+      this->_value = val;
+      return this->_signal();
     }
 
     template <typename V>
     bool
-    VSignal<V>::EmitOne(V const& val)
+    VSignal<V>::emit_one(V const& val)
     {
-      _value = val;
-      return _signal_one();
-    }
-
-    template <typename V>
-    V const&
-    VSignal<V>::Value() const
-    {
-      return _value;
+      this->_value = val;
+      return this->_signal_one();
     }
   }
 }

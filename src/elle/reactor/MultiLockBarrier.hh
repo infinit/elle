@@ -36,7 +36,8 @@ namespace elle
     `-------------*/
     public:
       /// Create a opened MultiLockBarrier with the given name.
-      /// @param name The MultiLockBarrier name, for pretty-printing purpose.
+      ///
+      /// \param name The MultiLockBarrier name, for pretty-printing purpose.
       MultiLockBarrier(const std::string& name = std::string());
       virtual
       ~MultiLockBarrier();

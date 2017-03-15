@@ -554,9 +554,10 @@ namespace elle
 
     namespace
     {
-      void CallLaterHelper(Scheduler* sched,
-                           const std::function<void ()>& f,
-                           Duration delay)
+      void
+      _call_later_helper(Scheduler* sched,
+                         std::function<void ()> const& f,
+                         Duration delay)
       {
         sched->current()->sleep(delay);
         f();
@@ -564,12 +565,12 @@ namespace elle
     }
 
     void
-    Scheduler::CallLater(const std::function<void ()>&  f,
-                         const std::string&               name,
-                         Duration                         delay)
+    Scheduler::call_later(std::string const& name,
+                          std::function<void ()> const&  f,
+                          Duration delay)
     {
       new Thread(*this, name,
-                 std::bind(&CallLaterHelper, this, f, delay), true);
+                 std::bind(&_call_later_helper, this, f, delay), true);
     }
 
     /*----------------.
@@ -673,16 +674,6 @@ namespace elle
                                 std::placeholders::_1,
                                 std::placeholders::_2));
       this->_signal_handlers.emplace_back(std::move(set));
-    }
-
-    /*-----.
-    | Asio |
-    `-----*/
-
-    boost::asio::io_service&
-    Scheduler::io_service()
-    {
-      return this->_io_service;
     }
 
     /*----------------.
@@ -799,13 +790,10 @@ namespace elle
       reactor::wait(s);
     }
 
-    /** Run the given operation in the next cycle.
-     *
-     *  \param name Descriptive name of the operation, for debugging.
-     *  \param f    Operation to run later.
-     */
-    void run_later(std::string const& name,
-                   std::function<void ()> const& f)
+
+    void
+    run_later(std::string const& name,
+              std::function<void ()> const& f)
     {
       auto* sched = Scheduler::scheduler();
       ELLE_ASSERT(sched);

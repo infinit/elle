@@ -13,36 +13,30 @@ namespace elle
     = default;
 
     bool
-    Mutex::locked() const
-    {
-      return _locked;
-    }
-
-    bool
     Mutex::release()
     {
-      ELLE_ASSERT(_locked);
-      _locked = false;
-      _signal();
+      ELLE_ASSERT(this->_locked);
+      this->_locked = false;
+      this->_signal();
       return false;
     }
 
     bool
     Mutex::acquire()
     {
-      if (_locked)
+      if (this->_locked)
         return false;
-      _locked = true;
+      this->_locked = true;
       return true;
     }
 
     bool
     Mutex::_wait(Thread* thread, Waker const& waker)
     {
-      if (_locked)
+      if (this->_locked)
       {
         this->Waitable::_wait(thread, waker);
-        _locked = true;
+        this->_locked = true;
         return true;
       }
       else

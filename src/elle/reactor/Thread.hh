@@ -23,6 +23,48 @@ namespace elle
     ELLE_DAS_SYMBOL(dispose);
     ELLE_DAS_SYMBOL(managed);
 
+    /// Thread represent a coroutine in a Scheduler environment.
+    ///
+    /// A Thread is a sequence of instructions to be executed. In the
+    /// non-preemptive environment, a Thread will execute its instructions until
+    /// it yields (via Thread::yield)  or waits (Waitable::wait), allowing other
+    /// coroutines to execute.
+    /// The Scheduler is in charge of managing Thread activity.
+    /// A Thread lives until it's Thread::Action is over, the Thread is
+    /// terminated by the Scheduler or an Exception escapes from Thread::Action.
+    ///
+    /// Thread can spawn other Threads, wait on Waitables, throw execptions that
+    /// that can be catched or propagate to the parent Thread until it escapes
+    /// the Scheduler and interrupt the cycles.
+    ///
+    /// A frequent pattern to be in a scheduler environment is:
+    ///
+    /// \code{.cc}
+    ///
+    /// int
+    /// main(int main (int argc, char *argv[])
+    /// {
+    ///   auto sheduler = reactor::Scheduler{};
+    ///   auto main_thread = reactor::Thread{
+    ///      scheduler, "main",
+    ///      []
+    ///      {
+    ///        // code to execute, e.g.:
+    ///        // _main(argc, argv);
+    ///      }};
+    ///   try
+    ///   {
+    ///      scheduler.run();
+    ///      return 0;
+    ///   }
+    ///   catch (std::runtime_error const&)
+    ///   {
+    ///      // do something.
+    ///      return -1;
+    ///   }
+    /// }
+    ///
+    /// \endcode
     class Thread:
       public Waitable
     {
@@ -54,25 +96,61 @@ namespace elle
     | Construction |
     `-------------*/
     public:
+      /// Create a Thread that will run an Action, using the given Scheduler.
+      ///
+      /// \param scheduler The Scheduler in charge of the Thread.
+      /// \param name A descriptive name of Thread to be spawn.
+      /// \param action The Action to execute.
+      /// \param dispose Put the Scheduler in charge of destroying the Thread.
       Thread(Scheduler& scheduler,
              const std::string& name,
              Action action,
              bool dispose = false);
+      /// Create a Thread that will run an Action, using the current Scheduler.
+      ///
+      /// \pre Must be in a invoked from another Thread.
+      ///
+      /// \param scheduler The Scheduler in charge of the Thread.
+      /// \param name A descriptive name of Thread to be spawn.
+      /// \param action The action to execute.
+      /// \param dispose Put the Scheduler in charge of destroying the Thread.
       Thread(const std::string& name,
              Action action,
              bool dispose = false);
+      /// Create a Thread that will run an Action, using the current Scheduler.
+      ///
+      /// \pre Must be in a invoked from another Thread.
+      ///
+      /// \param scheduler The Scheduler in charge of the Thread.
+      /// \param name A descriptive name of Thread to be spawn.
+      /// \param action The action to execute.
+      /// \param args The named arguments `dispose` and `managed`.
       template <typename ... Args>
       Thread(const std::string& name,
              Action action,
              Args&& ... args);
 
-      // Returned shared ptr will be kept live until action finished
+      /// Create a Thread.
+      ///
+      /// Returned std::shared_ptr will be kept live until action finished.
+      ///
+      /// \param scheduler The Scheduler in charge of managing the Thread.
+      /// \param name A descriptive name.
+      /// \param action The Action to perform.
+      /// \returns A std::shared_ptr managing the created Thread.
       static
       ThreadPtr
       make_tracked(Scheduler& scheduler,
                    const std::string& name,
                    Action action);
-      // Returned shared ptr will be kept live until action finished
+      /// Create a Thread.
+      ///
+      /// Same as make_tracked(Scheduler&, ...) but uses the current Scheduler.
+      /// See reactor::Scheduler::scheduler() for more details.
+      ///
+      /// \param name A descriptive name.
+      /// \param action The Action to perform.
+      /// \returns A std::shared_ptr managing the created Thread.
       static
       ThreadPtr
       make_tracked(const std::string& name,
@@ -85,7 +163,7 @@ namespace elle
       void
       _scheduler_release();
     private:
-      ThreadPtr _self;
+      ELLE_ATTRIBUTE(ThreadPtr, self);
       ELLE_ATTRIBUTE_RW(bool, dispose);
       ELLE_ATTRIBUTE_RW(bool, managed);
 
@@ -102,20 +180,17 @@ namespace elle
       `---------*/
     public:
       using Tracker = boost::signals2::signal<void ()>;
-      // signal invoked when Thread object is being destroyed
-      Tracker&
-      destructed();
-      // signal invoked when Thread is released by scheduler
-      Tracker&
-      released();
     private:
-      Tracker _destructed;
-      Tracker _released;
+      /// signal invoked when Thread object is being destroyed.
+      ELLE_ATTRIBUTE_X(Tracker, destructed);
+      // signal invoked when Thread is released by the Scheduler.
+      ELLE_ATTRIBUTE_X(Tracker, released);
 
-      /*-------.
-      | Status |
-      `-------*/
+    /*-------.
+    | Status |
+    `-------*/
     public:
+      /// State represents every possible state a Thread can be in.
       enum class State
       {
         /// The thread has finished.
@@ -126,14 +201,13 @@ namespace elle
         frozen,
       };
       /// Current state.
-      State state() const;
-      /// Whether our state is 'done'.
-      bool done() const;
+      ELLE_ATTRIBUTE_R(State, state);
+      /// Whether our state is 'State::done'.
+      bool
+      done() const;
       /// Pretty name.
-      std::string name() const;
-    private:
-      State _state;
-
+      std::string
+      name() const;
     /*----------.
     | Printable |
     `----------*/
@@ -145,10 +219,18 @@ namespace elle
       | Run |
       `----*/
     public:
-      void sleep(Duration d);
-      void yield();
+      /// Sleep for a certain duration.
+      ///
+      /// \param d The duration the Thread will sleep.
+      void
+      sleep(Duration d);
+      /// Yield, allowing other Threads to be executed without changing the
+      /// current state.
+      void
+      yield();
     private:
-      void _step();
+      void
+      _step();
 
     /*-----------.
     | Exceptions |
@@ -179,34 +261,38 @@ namespace elle
       /// Exception thrown by the thread execution.
       std::exception_ptr _exception_thrown;
 
-      /*----------------.
-      | Synchronization |
-      `----------------*/
+    /*----------------.
+    | Synchronization |
+    `----------------*/
     public:
-      /// Wait for a group of waitables to be done.
+      /// Wait for a group waitables to be done.
       ///
-      /// If any of the specified waitables asks to be waited for,
-      /// this will freeze the thread until all of them are done. A
-      /// timeout may be specified, in which case the wait will be
-      /// aborted and false will be returned.
+      /// If any of the specified waitables asks to be waited for, this will
+      /// freeze the thread until all of them are done. A timeout may be
+      /// specified, in which case the wait will be aborted and false will be
+      /// returned.
       ///
       /// @see Waitable.
       ///
-      /// @param waitables The waitables to wait for.
-      /// @param timeout Maximum delay before aborting the operation.
-      /// @return Whether the operation finished and didn't timeout.
-      bool wait(Waitables const& waitables,
-                DurationOpt timeout = DurationOpt());
+      /// \param waitables The Waitables to wait for.
+      /// \param timeout The maximum delay before aborting the operation.
+      /// \returns Whether the operation finished and didn't timeout.
+      bool
+      wait(Waitables const& waitables,
+           DurationOpt timeout = DurationOpt());
       /// Shortcut to wait for a single waitable to be done.
-      bool wait(Waitable& s,
-                DurationOpt timeout = DurationOpt());
+      bool
+      wait(Waitable& s,
+           DurationOpt timeout = DurationOpt());
       /// Terminate execution of the thread by injecting a terminate exception.
-      void terminate();
+      void
+      terminate();
       /// Terminate thread and wait for termination to be effective.
       ///
-      /// @param suicide   if true, terminate_now is a noop if this
-      ///     thread is the current one.
-      void terminate_now(bool suicide = true);
+      /// \param suicide If true, terminate_now is a noop if this thread is
+      ///                the current one.
+      void
+      terminate_now(bool suicide = true);
     protected:
       bool
       _wait(Thread* thread, Waker const& waker) override;
@@ -214,14 +300,18 @@ namespace elle
       friend class Scope;
       friend class TimeoutGuard;
       friend class Waitable;
-      void _wait_timeout(const boost::system::error_code& e,
-                         std::string const& waited);
-      void _wait_abort(std::string const& reason);
-      void _freeze();
-      void _wake(Waitable* waitable);
+      void
+      _wait_timeout(const boost::system::error_code& e,
+                    std::string const& waited);
+      void
+      _wait_abort(std::string const& reason);
+      void
+      _freeze();
+      void
+      _wake(Waitable* waitable);
       ELLE_ATTRIBUTE_R(std::set<Waitable*>, waited);
-      bool _timeout;
-      boost::asio::deadline_timer _timeout_timer;
+      ELLE_ATTRIBUTE(bool, timeout);
+      ELLE_ATTRIBUTE(boost::asio::deadline_timer, timeout_timer);
 
     /*------.
     | Hooks |
@@ -295,19 +385,19 @@ namespace elle
       /*-------------.
       | Construction |
       `-------------*/
-      public:
-        VThread(Scheduler& scheduler,
-                const std::string& name,
-                Action action);
+    public:
+      VThread(Scheduler& scheduler,
+              const std::string& name,
+              Action action);
 
       /*-------.
       | Result |
       `-------*/
-      public:
-        const R&
-        result() const;
-      private:
-        R _result;
+    public:
+      const R&
+      result() const;
+    private:
+      R _result;
     };
 
     /*----------------.
@@ -322,8 +412,8 @@ namespace elle
 
     /// Run an operation at a given frequency.
     ///
-    /// Run the @param op operation every @param freq. For now, the
-    /// implementation simply sleeps for @param freq between every action thus
+    /// Run the \param op operation every \param freq. For now, the
+    /// implementation simply sleeps for \param freq between every action thus
     /// inducing a drift. This is suitable for actions that need to be run
     /// in background roughly regularly such as garbage collecting,
     /// notification checking, ... It is not suitable if the frequency must be
@@ -332,11 +422,11 @@ namespace elle
     /// The thread that run the operation is returned, enabling the caller to
     /// stop it at will.
     ///
-    /// @param freq     The frequency at which to run the operation.
-    /// @param name     The name of the thread that will run the operation.
-    /// @param op       The operation to run.
-    /// @param dispose  Whether to delete the thread when it's done.
-    /// @return         The thread running the operation.
+    /// \param freq The frequency at which to run the operation.
+    /// \param op The Operation to run.
+    /// \param name The Name of the thread that will run the operation.
+    /// \param dispose Whether to delete the thread when it's done.
+    /// \returns The thread running the operation.
     Thread::unique_ptr
     every(Duration freq,
           const std::string& name,

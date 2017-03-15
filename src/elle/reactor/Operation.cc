@@ -88,11 +88,5 @@ namespace elle
       this->_running = false;
       this->_signal();
     }
-
-    Scheduler&
-    Operation::scheduler()
-    {
-      return this->_sched;
-    }
   }
 }

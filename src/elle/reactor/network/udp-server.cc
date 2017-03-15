@@ -25,7 +25,7 @@ namespace elle
 
       UDPServer::~UDPServer()
       {
-        delete _acceptor;
+        delete this->_acceptor;
       }
 
       /*----------.
@@ -35,9 +35,9 @@ namespace elle
       void
       UDPServer::listen(const EndPoint& end_point)
       {
-        _acceptor =
+        this->_acceptor =
           new boost::asio::ip::udp::socket(scheduler().io_service(), end_point);
-        _receive();
+        this->_receive();
       }
 
       void
@@ -56,14 +56,14 @@ namespace elle
       UDPServer::accept()
       {
         ELLE_TRACE("%s: accept", *this);
-        if (_accepted.empty())
+        if (this->_accepted.empty())
         {
           ELLE_TRACE("%s: wait for incoming connection", *this);
           scheduler().current()->wait(_accept);
         }
-        ELLE_ASSERT(!_accepted.empty());
-        UDPServerSocket* res = _accepted.back();
-        _accepted.pop_back();
+        ELLE_ASSERT(!this->_accepted.empty());
+        UDPServerSocket* res = this->_accepted.back();
+        this->_accepted.pop_back();
         // ELLE_TRACE("%s: got client: %s", *this, *res);
         return res;
       }
@@ -75,9 +75,9 @@ namespace elle
       void
       UDPServer::_receive()
       {
-        _acceptor->async_receive_from
-          (boost::asio::buffer(_buffer, sizeof(_buffer)), _peer,
-           boost::bind(&UDPServer::_receive_handle, this, _1, _2));
+        this->_acceptor->async_receive_from(
+          boost::asio::buffer(this->_buffer, sizeof(this->_buffer)),
+          this->_peer, boost::bind(&UDPServer::_receive_handle, this, _1, _2));
       }
 
       std::size_t
@@ -112,18 +112,18 @@ namespace elle
         }
         ELLE_TRACE("%s: %s bytes available from %s",
                        *this, bytes, this->_peer);
-        Clients::iterator elt = _clients.find(_peer);
+        auto elt = this->_clients.find(this->_peer);
         UDPServerSocket* socket = 0;
-        if (elt == _clients.end())
+        if (elt == this->_clients.end())
         {
           socket = new UDPServerSocket(scheduler(), this, _peer);
           static const Size buffer_size = 512;
           socket->_read_buffer = new Byte[buffer_size];
           socket->_read_buffer_capacity = buffer_size;
           ELLE_TRACE("%s: new client: %s", *this, *socket);
-          _clients[_peer] = socket;
-          _accepted.push_back(socket);
-          _accept.signal();
+          this->_clients[this->_peer] = socket;
+          this->_accepted.push_back(socket);
+          this->_accept.signal();
         }
         else
         {
@@ -144,10 +144,10 @@ namespace elle
         // Copy data
         ELLE_TRACE("%s: post client data", *this);
         memmove(socket->_read_buffer + socket->_read_buffer_size,
-                _buffer, bytes);
+                this->_buffer, bytes);
         socket->_read_buffer_size += bytes;
         socket->_read_ready.signal();
-        _receive();
+        this->_receive();
       }
 
       /*---------.
@@ -157,7 +157,7 @@ namespace elle
       void
       UDPServer::print(std::ostream& s) const
       {
-        s << "UDP Server " << _acceptor->local_endpoint();
+        s << "UDP Server " << this->_acceptor->local_endpoint();
       }
 
       std::ostream& operator << (std::ostream& s, const UDPServer& server)

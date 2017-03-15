@@ -9,7 +9,7 @@ namespace elle
     `-------------*/
 
     template <typename ... Args>
-    Thread::Thread(const std::string& name,
+    Thread::Thread(std::string const& name,
                    Action action,
                    Args&& ... args)
       : Thread(name, std::move(action))
@@ -24,8 +24,10 @@ namespace elle
     }
 
     template <typename R>
-    static void vthread_catcher(const typename VThread<R>::Action& action,
-                                R& result)
+    static
+    void
+    vthread_catcher(typename VThread<R>::Action const& action,
+                    R& result)
     {
       result = action();
     }

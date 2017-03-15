@@ -8,6 +8,7 @@ namespace elle
   {
     namespace network
     {
+      /// A StreamSocket designed for TCP connections.
       class TCPSocket
         : public StreamSocket<boost::asio::ip::tcp::socket>
       {
@@ -22,12 +23,24 @@ namespace elle
         | Construction |
         `-------------*/
       public:
+        /// Construct a TCPSocket.
+        ///
+        /// \param hostname The name of the host.
+        /// \param port The port the host is listening to.
+        /// \param timeout The maximum duration before the connection attempt
+        ///                times out.
         TCPSocket(const std::string& hostname,
                   const std::string& port,
                   DurationOpt timeout = DurationOpt());
+        /// @see TCPSocket::TCPSocket.
         TCPSocket(const std::string& hostname,
                   int port,
                   DurationOpt timeout = DurationOpt());
+        /// Construct a TCPSocket.
+        ///
+        /// \param endpoint The EndPoint of the host.
+        /// \param timeout The maximum duration before the connection attempt
+        ///                times out.
         TCPSocket(boost::asio::ip::tcp::endpoint const& endpoint,
                   DurationOpt timeout = DurationOpt());
         TCPSocket(TCPSocket&& src);

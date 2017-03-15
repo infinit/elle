@@ -30,6 +30,7 @@ namespace elle
       /*------.
       | Proxy |
       `------*/
+      /// Binding to a Proxy.
       class Proxy:
         public elle::Printable
       {
@@ -37,6 +38,13 @@ namespace elle
         using Self = elle::reactor::network::Proxy;
 
       public:
+        /// Construct a Proxy.
+        ///
+        /// \param type The Proxy type.
+        /// \param host The host name of the proxy.
+        /// \param port The port used by the proxy.
+        /// \param username The username on the proxy.
+        /// \param password The password on the proxy.
         Proxy(ProxyType type,
               std::string  host,
               uint16_t port,

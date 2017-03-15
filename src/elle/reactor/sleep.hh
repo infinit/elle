@@ -7,9 +7,30 @@ namespace elle
 {
   namespace reactor
   {
-    class Sleep: public Operation
+    /// Sleep is an Operation that does nothing but waiting for a certain
+    /// duration
+    ///
+    /// Sleep is, for example, used by Thread::sleep(duration).
+    ///
+    /// \code{.cc}
+    ///
+    /// std::time_t start = std::time(NULL);
+    /// auto sleep = elle::reactor::Sleep{elle::reactor::Scheduler::scheduler(),
+    ///                                   2_sec};
+    /// sleep.run();
+    /// std::cout << std::difftime(std::time(NULL), start) << " s";
+    ///
+    /// // Result: 2 s
+    ///
+    /// \endcode
+    class Sleep
+      : public Operation
     {
     public:
+      /// Construct a Sleep.
+      ///
+      /// \param scheduler The Scheduler to run the Operation.
+      /// \param d The Duration the Thread must sleep.
       Sleep(Scheduler& scheduler, Duration d);
 
     protected:

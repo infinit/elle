@@ -11,16 +11,16 @@ namespace elle
     namespace fsm
     {
       EndTransition::EndTransition(State& start,
-                                   State& end):
-        Transition(start, end),
-        _condition()
+                                   State& end)
+        : Transition(start, end)
+        , _condition()
       {}
 
       EndTransition::EndTransition(State& start,
                                    State& end,
-                                   std::function<bool ()> const& condition):
-        Transition(start, end),
-        _condition(condition)
+                                   std::function<bool ()> const& condition)
+        : Transition(start, end)
+        , _condition(condition)
       {}
 
       void

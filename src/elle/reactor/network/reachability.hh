@@ -16,6 +16,7 @@ namespace elle
   {
     namespace network
     {
+      /// macOS and iOS reachability callback.
       class Reachability
       {
       public:

@@ -16,11 +16,13 @@ namespace elle
     `----------------*/
 
     template <typename R>
-    static void wrapper(std::mutex& mutex,
-                        std::condition_variable& cond,
-                        const std::function<R ()>& action,
-                        std::exception_ptr& exn,
-                        R& res)
+    static
+    void
+    wrapper(std::mutex& mutex,
+            std::condition_variable& cond,
+            std::function<R ()> const& action,
+            std::exception_ptr& exn,
+            R& res)
     {
       try
       {

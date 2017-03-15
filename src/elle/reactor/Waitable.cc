@@ -18,7 +18,7 @@ namespace elle
     | Construction |
     `-------------*/
 
-    Waitable::Waitable(std::string  name)
+    Waitable::Waitable(std::string name)
       : _name(std::move(name))
       , _waiters()
       , _exception()

@@ -15,6 +15,7 @@ namespace elle
   {
     namespace network
     {
+      /// Supposed to be hidden implementation of our UTPServer.
       class UTPServer::Impl
         : public std::enable_shared_from_this<UTPServer::Impl>
       {

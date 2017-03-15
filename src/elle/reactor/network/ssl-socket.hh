@@ -15,18 +15,41 @@ namespace elle
   {
     namespace network
     {
+      /// An SSL context.
+      ///
+      /// SSLCertificate is just an helper for boost::asio::ssl::context.
       class SSLCertificate
       {
       public:
         using SSLCertificateMethod = boost::asio::ssl::context::method;
 
+        /// Create an SSLCertificate.
+        ///
+        /// Initialize the underlying context with the given method and set
+        /// verify to none.
+        /// This is the client implementation of the SSLCertificate.
+        ///
+        /// \param meth The ssl::context::method to use.
         SSLCertificate(SSLCertificateMethod meth =
-                         boost::asio::ssl::context::tlsv1_client);
+                       boost::asio::ssl::context::tlsv1_client);
+        /// Create an SSLCertificate from given certificate, key and dh.
+        ///
+        /// \param certificate The content of the certificate.
+        /// \param key The key.
+        /// \param dh The Diffie-Hellman key exchange.
+        /// \param meth The ssl::context::method to use.
         SSLCertificate(std::vector<char> const& certificate,
                        std::vector<char> const& key,
                        std::vector<char> const& dh,
                        SSLCertificateMethod meth =
                          boost::asio::ssl::context::tlsv1_server);
+        /// Create an SSLCertificate from given paths for certificate, key and
+        /// dh.
+        ///
+        /// \param certificate The path to the certificate.
+        /// \param key The path to the key.
+        /// \param dh The path to the Diffie-Hellman key exchange.
+        /// \param meth The ssl::context::method to use.
         SSLCertificate(std::string const& certificate,
                        std::string const& key,
                        std::string const& dhfile,
@@ -40,6 +63,7 @@ namespace elle
       using SSLStream = boost::asio::ssl::stream<boost::asio::ip::tcp::socket>;
       using SSLEndPointType = boost::asio::ip::tcp::socket::endpoint_type;
 
+      /// XXX[doc]
       class SSLCertificateOwner
       {
       public:
@@ -52,9 +76,10 @@ namespace elle
         ELLE_ATTRIBUTE_R(std::shared_ptr<SSLCertificate>, certificate);
       };
 
-      class SSLSocket:
-        public SSLCertificateOwner,
-        public StreamSocket <SSLStream, SSLEndPointType>
+      /// An StreamSocket designed for SSL connections.
+      class SSLSocket
+        : public SSLCertificateOwner
+        , public StreamSocket <SSLStream, SSLEndPointType>
       {
       public:
         using Super = StreamSocket<SSLStream, SSLEndPointType>;
@@ -62,19 +87,39 @@ namespace elle
         using SSLEndPoint = boost::asio::ip::tcp::endpoint;
 
       public:
-        /// Create a client socket.
+        /// Construct a client socket.
+        ///
+        /// \param hostname The name of the host.
+        /// \param port The port the host is listening to.
+        /// \param timeout The maximum duration before the connection attempt
+        ///                times out.
         SSLSocket(const std::string& hostname,
                   const std::string& port,
                   DurationOpt timeout = DurationOpt());
-        /// Create a client socket.
+        /// Construct a client socket.
+        ///
+        /// \param endpoint The EndPoint of the host.
+        /// \param timeout The maximum duration before the connection attempt
+        ///                times out.
         SSLSocket(SSLEndPoint const& endpoint,
                   DurationOpt timeout = DurationOpt());
-        /// Create a server socket.
+        /// Construct a server socket.
+        ///
+        /// \param hostname The name of the host.
+        /// \param port The port the host is listening to.
+        /// \param certificate An SSLCertificate.
+        /// \param timeout The maximum duration before the connection attempt
+        ///                times out.
         SSLSocket(const std::string& hostname,
                   const std::string& port,
                   SSLCertificate& certificate,
                   DurationOpt timeout = DurationOpt());
-        /// Create a server socket.
+        /// Construct a server socket.
+        ///
+        /// \param endpoint The EndPoint of the host.
+        /// \param certificate An SSLCertificate.
+        /// \param timeout The maximum duration before the connection attempt
+        ///                times out.
         SSLSocket(SSLEndPoint const& endpoint,
                   SSLCertificate& certificate,
                   DurationOpt timeout = DurationOpt());
@@ -84,7 +129,8 @@ namespace elle
       | Pretty printing |
       `----------------*/
       public:
-        void print(std::ostream& s) const;
+        void
+        print(std::ostream& s) const;
 
       /*-----------.
       | Connection |

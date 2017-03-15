@@ -27,18 +27,6 @@ namespace elle
 
     template <typename T>
     void
-    BackgroundOperation<T>::_abort()
-    {
-      ELLE_LOG_COMPONENT("elle.reactor.BackgroundOperation");
-      auto& sched = *Scheduler::scheduler();
-      ELLE_TRACE_SCOPE("%s: abort background operation", sched);
-      this->_status->aborted = true;
-      this->_signal();
-      ++sched._background_pool_free;
-    }
-
-    template <typename T>
-    void
     BackgroundOperationResult<T>::_result_set(T&& v)
     {
       this->_result.emplace(v);
@@ -115,6 +103,18 @@ namespace elle
             };
           }
         });
+    }
+
+    template <typename T>
+    void
+    BackgroundOperation<T>::_abort()
+    {
+      ELLE_LOG_COMPONENT("elle.reactor.BackgroundOperation");
+      auto& sched = *Scheduler::scheduler();
+      ELLE_TRACE_SCOPE("%s: abort background operation", sched);
+      this->_status->aborted = true;
+      this->_signal();
+      ++sched._background_pool_free;
     }
   }
 }

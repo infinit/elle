@@ -8,12 +8,6 @@ namespace elle
       : _count(count)
     {}
 
-    int
-    Semaphore::count() const
-    {
-      return this->_count;
-    }
-
     bool
     Semaphore::acquire()
     {

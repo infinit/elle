@@ -68,7 +68,7 @@ namespace elle
         ELLE_ATTRIBUTE_R(int, error_code);
       };
 
-      /// Handle to an open file
+      /// Handle to an open file.
       class Handle
       {
       public:
@@ -238,13 +238,14 @@ namespace elle
         : public reactor::Waitable
       {
       public:
-        /** Create a new file system with given operations
-        *
-        * @param full_tree: If set, will use Operations.path('/') only and
-        *        traverse the filesystem tree using Path::child().
-        *        Otherwise Operations::path() will be used with full pathes
-        *        and Path::child will never be called.
-        */
+        /// Create a new file system with given operations
+        ///
+        /// @path operations Operations root.
+        /// \param full_tree: If set, will use Operations.path('/') only and
+        ///        traverse the filesystem tree using Path::child().
+        ///        Otherwise Operations::path() will be used with full pathes
+        ///        and Path::child will never be called.
+        ///
         FileSystem(std::unique_ptr<Operations> op, bool full_tree);
         ~FileSystem();
 

@@ -155,7 +155,7 @@ namespace elle
         /// \param url The URL to query.  \param method The HTTP method to use.
         /// \param conf The Configuration to apply.
         ///
-        /// \throw RequestError if the request cannot be created and started.
+        /// @throw RequestError if the request cannot be created and started.
         Request(std::string const& url,
                 Method method = Method::GET,
                 Configuration conf = Configuration());
@@ -170,7 +170,7 @@ namespace elle
         /// \param content_type The MIME type of the uploded body.
         /// \param conf         The Configuration to apply.
         ///
-        /// \throw RequestError if the request cannot be created and started.
+        /// @throw RequestError if the request cannot be created and started.
         Request(std::string const& url,
                 Method method,
                 std::string const& content_type,
@@ -316,7 +316,7 @@ namespace elle
       ///
       /// \param url  The URL to query.
       /// \param conf The Configuration for the request.
-      /// \return The server response body.
+      /// \returns The server response body.
       elle::Buffer
       get(std::string const& url,
           Request::Configuration conf = Request::Configuration());

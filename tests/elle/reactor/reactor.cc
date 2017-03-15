@@ -1810,12 +1810,12 @@ void
 storage(elle::reactor::LocalStorage<int>& val,
         int start)
 {
-  val.Get() = start;
+  val.get() = start;
   elle::reactor::yield();
-  BOOST_CHECK_EQUAL(val.Get(), start);
-  val.Get()++;
+  BOOST_CHECK_EQUAL(val.get(), start);
+  val.get()++;
   elle::reactor::yield();
-  BOOST_CHECK_EQUAL(val.Get(), start + 1);
+  BOOST_CHECK_EQUAL(val.get(), start + 1);
 }
 
 static
@@ -1843,7 +1843,7 @@ test_storage_multithread()
 
   auto coro_action = [&]()
     {
-      val.Get() = 0;
+      val.get() = 0;
     };
 
   auto action = [&]()

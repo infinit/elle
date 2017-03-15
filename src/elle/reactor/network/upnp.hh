@@ -13,38 +13,42 @@ namespace elle
     namespace network
     {
       class UPNP;
-      /** Handle for one port redirection provided by a router.
-      * Moveable, non-copyable. Mapping gets released on destruction.
-      */
+      /// Handle for one port redirection provided by a router.
+      /// Movable, non-copyable. Mapping gets released on destruction.
       class PortMapping
       {
       public:
         PortMapping();
         PortMapping(PortMapping const&) = delete;
-        void operator=(PortMapping const&) = delete;
+        void
+        operator=(PortMapping const&) = delete;
         PortMapping(PortMapping && b);
-        void operator=(PortMapping&& b);
+        void
+        operator=(PortMapping&& b);
         ~PortMapping();
         /// Release redirection handle. The redirection will never be
         /// unregistered
-        void release();
+        void
+        release();
         operator bool () const;
         std::string internal_host;
         std::string internal_port;
         std::string external_host;
         std::string external_port;
-        Protocol    protocol;
+        Protocol protocol;
         std::shared_ptr<UPNP> _owner;
       };
 
-      std::ostream& operator << (std::ostream&, PortMapping const&);
+      std::ostream&
+      operator << (std::ostream&, PortMapping const&);
 
       class UPNPImpl;
 
-      /** UPNP-IGD client, used to query public IP address and make port
-       * redirection requests to a router.
-       */
-      class UPNP: public std::enable_shared_from_this<UPNP>
+      /// UPNP-IGD client, used to query public IP address and make port
+      /// redirection requests to a router.
+      ///
+      class UPNP
+        : public std::enable_shared_from_this<UPNP>
       {
       public:
         static
@@ -70,12 +74,13 @@ namespace elle
       public:
         UPNP(PrivateGuard);
       private:
-
-        void release(PortMapping &);
-        void _release(char const* port, char const* protocol);
+        void
+        release(PortMapping &);
+        void
+        _release(char const* port, char const* protocol);
         friend class PortMapping;
         std::shared_ptr<UPNPImpl> _impl;
-        Mutex     _mutex;
+        Mutex _mutex;
       };
     }
   }

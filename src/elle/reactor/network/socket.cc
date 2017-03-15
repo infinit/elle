@@ -228,8 +228,8 @@ namespace elle
         catch (elle::Exception const&)
         {
           // Nothing. If the socket was invalid, no need to disconnect it. We
-          // might be able to catch a more precise exception if _disconnect throws
-          // differently.
+          // might be able to catch a more precise exception if _disconnect
+          // throws differently.
         }
       }
 
@@ -314,7 +314,8 @@ namespace elle
         if (this->_socket)
         {
           boost::system::error_code error;
-          Spe::socket(*this->_socket).shutdown(Spe::Socket::shutdown_both, error);
+          Spe::socket(*this->_socket).shutdown(Spe::Socket::shutdown_both,
+                                               error);
           if (error)
           {
             if (error == boost::asio::error::not_connected
@@ -535,9 +536,8 @@ namespace elle
           buf = buf.range(size);
         }
         using Spe = SocketSpecialization<AsioSocket>;
-        auto read = Read<Self, typename Spe::Socket> (*this,
-                                                      Spe::socket(*this->socket()),
-                                                      buf, some);
+        auto read = Read<Self, typename Spe::Socket> (
+          *this, Spe::socket(*this->socket()), buf, some);
         bool finished;
         try
         {

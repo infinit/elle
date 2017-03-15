@@ -14,8 +14,8 @@ namespace elle
   {
     namespace network
     {
-      SSLCertificate::SSLCertificate(SSLCertificateMethod meth):
-        _context(meth)
+      SSLCertificate::SSLCertificate(SSLCertificateMethod meth)
+        : _context(meth)
       {
         this->_context.set_options(boost::asio::ssl::verify_none);
       }
@@ -23,8 +23,8 @@ namespace elle
       SSLCertificate::SSLCertificate(std::vector<char> const& certificate,
                                      std::vector<char> const& key,
                                      std::vector<char> const& dh,
-                                     SSLCertificateMethod meth):
-      _context(meth)
+                                     SSLCertificateMethod meth)
+        : _context(meth)
       {
         using boost::asio::const_buffer;
         this->_context.set_options(boost::asio::ssl::verify_none);
@@ -39,8 +39,8 @@ namespace elle
       SSLCertificate::SSLCertificate(std::string const& certificate,
                                      std::string const& key,
                                      std::string const& dhfile,
-                                     SSLCertificateMethod meth):
-        _context(meth)
+                                     SSLCertificateMethod meth)
+        : _context(meth)
       {
         this->_context.set_options(boost::asio::ssl::verify_none);
         this->_context.use_certificate_file(certificate,
@@ -51,8 +51,8 @@ namespace elle
       }
 
       SSLCertificateOwner::SSLCertificateOwner(
-        std::shared_ptr<SSLCertificate> certificate):
-          _certificate(std::move(certificate))
+        std::shared_ptr<SSLCertificate> certificate)
+        : _certificate(std::move(certificate))
       {
         if (this->_certificate == nullptr)
           this->_certificate.reset(new SSLCertificate());

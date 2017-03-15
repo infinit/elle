@@ -9,8 +9,10 @@ namespace elle
   {
     namespace fsm
     {
-      class CatchTransition:
-        public Transition
+      /// A specialized Transition that occurs when an exception is thrown from
+      /// the origin State.
+      class CatchTransition
+        : public Transition
       {
       /*------.
       | Types |
@@ -18,15 +20,23 @@ namespace elle
       public:
         using Self = CatchTransition;
         using Super = Transition;
-
+        using Condition = std::function<bool (std::exception_ptr const&)>;
       /*-------------.
       | Construction |
       `-------------*/
       public:
+        /// If the State is over because of an exception and this exception is
+        /// relevant for our condition, set the trigger to this.
+        ///
+        /// \param trigger Who trigger the Transition. If condition(exn) is
+        ///                true, set trigger = this and reset exn.
+        /// \param exn An exception pointer.
+        ///
+        /// \post if exn is not null and condition(exn) is true,
+        ///       trigger == this.
         void
         done(Transition*& trigger, std::exception_ptr& exn) override;
-        ELLE_ATTRIBUTE_RW(std::function<bool (std::exception_ptr const&)>,
-                          condition);
+        ELLE_ATTRIBUTE_RW(Condition, condition);
       protected:
         CatchTransition(State& start,
                         State& end,

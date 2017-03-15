@@ -32,7 +32,8 @@ namespace elle
       `-------------*/
     public:
       /// Create a closed Barrier with the given name.
-      /// @param name The barrier name, for pretty-printing purpose.
+      ///
+      /// \param name The barrier name, for pretty-printing purpose.
       Barrier(const std::string& name = std::string());
       Barrier(Barrier&&) = default;
       ~Barrier();
@@ -77,12 +78,16 @@ namespace elle
       | Inversion |
       `----------*/
     private:
+      /// Same as Barrier except the condition is inverted. A Thread will wait
+      /// upon the InvertedBarrier until its closed.
       class InvertedBarrier
         : public Waitable
       {
       public:
         InvertedBarrier(Barrier& barrier);
-        bool _wait(Thread* thread, Waker const& waker) override;
+        /// Stop the thread if and only if this is opened.
+        bool
+        _wait(Thread* thread, Waker const& waker) override;
         operator bool() const;
       private:
         friend class Barrier;

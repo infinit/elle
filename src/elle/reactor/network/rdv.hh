@@ -24,6 +24,7 @@ namespace elle
           error, // error string in target_address
         };
 
+        /// Message to be exchanged during RDV connection.
         struct Message
         {
           Message() {}
@@ -52,11 +53,15 @@ namespace elle
 
   namespace serialization
   {
+    /// Conversion API to make reactor::network::rdv::Endpoint serializable.
     template<typename T>
     struct SerializeEndpoint
     {
       using Type = elle::Buffer;
-      static Type convert(T& ep)
+
+      static
+      Type
+      convert(T& ep)
       {
         Type res;
         if (ep.address().is_v4())
@@ -74,7 +79,9 @@ namespace elle
         return res;
       }
 
-      static T convert(elle::Buffer& repr)
+      static
+      T
+      convert(elle::Buffer& repr)
       {
         ELLE_ASSERT(repr.size() == 6 || repr.size() == 18);
         if (repr.size() == 6)

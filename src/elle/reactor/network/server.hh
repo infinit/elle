@@ -13,6 +13,8 @@ namespace elle
   {
     namespace network
     {
+      /// Abstract version Server that can accept connections and provide
+      /// Sockets.
       class Server
         : public elle::Printable
       {
@@ -26,11 +28,12 @@ namespace elle
       | Construction |
       `-------------*/
       public:
-        /** Create a server.
-         *  @param sched The underlying scheduler.
-         */
-        Server();
+        /// Create a server.
+        ///
+        /// \param sched The underlying Scheduler.
         Server(Scheduler& scheduler);
+        /// Create a server using the current Scheduler.
+        Server();
         virtual
         ~Server();
 
@@ -38,6 +41,7 @@ namespace elle
       | Accepting |
       `----------*/
       public:
+        /// Return a Socket by calling _accept.
         std::unique_ptr<Socket>
         accept();
       protected:
@@ -47,6 +51,10 @@ namespace elle
         ELLE_ATTRIBUTE(Scheduler&, scheduler, protected);
       };
 
+      /// Abstract specialization of a Server for
+      /// - A specific type of Socket
+      /// - A specific type of Endpoint
+      /// - A specific type of Acceptor.
       template <typename AsioSocket_, typename EndPoint_, typename Acceptor_>
       class ProtoServer
         : public Server
@@ -69,10 +77,15 @@ namespace elle
       | Listening |
       `----------*/
       public:
+        /// Reset the acceptor with a new instance for the given endpoint.
+        ///
+        /// \param endpoint Endpoint to listen to.
         void
-        listen(EndPoint const& end_point);
+        listen(EndPoint const& endpoint);
+        /// Reset the acceptor with a new instance for the default endpoint.
         void
         listen();
+        /// Return our acceptor's local_endpoint.
         EndPoint
         local_endpoint() const;
       protected:

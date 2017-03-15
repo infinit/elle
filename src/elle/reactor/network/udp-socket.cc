@@ -70,7 +70,7 @@ namespace elle
       `--------------*/
 
       void
-      UDPSocket::bind(boost::asio::ip::udp::endpoint const& endpoint)
+      UDPSocket::bind(EndPoint const& endpoint)
       {
         if (endpoint.address().is_v6())
           socket()->open(boost::asio::ip::udp::v6()); // gives us mapped v4 too
@@ -86,49 +86,49 @@ namespace elle
       class UDPRead
         : public SocketOperation<boost::asio::ip::udp::socket>
       {
-        public:
-          using AsioSocket = boost::asio::ip::udp::socket;
-          using EndPoint = boost::asio::ip::udp::endpoint;
-          using Super = SocketOperation<AsioSocket>;
-          UDPRead(Scheduler& scheduler,
-                  PlainSocket<AsioSocket>* socket,
-                  elle::WeakBuffer& buffer):
-            Super(*socket->socket()),
-            _buffer(buffer),
-            _read(0)
-          {}
+      public:
+        using AsioSocket = boost::asio::ip::udp::socket;
+        using EndPoint = boost::asio::ip::udp::endpoint;
+        using Super = SocketOperation<AsioSocket>;
+        UDPRead(Scheduler& scheduler,
+                PlainSocket<AsioSocket>* socket,
+                elle::WeakBuffer& buffer):
+          Super(*socket->socket()),
+          _buffer(buffer),
+          _read(0)
+        {}
 
-          virtual const char* type_name() const
-          {
-            static const char* name = "socket read";
-            return name;
-          }
+        virtual const char* type_name() const
+        {
+          static const char* name = "socket read";
+          return name;
+        }
 
-          Size
-          read()
-          {
-            return _read;
-          }
+        Size
+        read()
+        {
+          return _read;
+        }
 
-        protected:
-          void
-          _start() override
-          {
-            // FIXME: be synchronous if enough bytes are available
-            EndPoint peer;
-            this->socket().async_receive(
-              boost::asio::buffer(_buffer.mutable_contents(), _buffer.size()),
-              boost::bind(&UDPRead::_wakeup, this, _1, _2));
-          }
+      protected:
+        void
+        _start() override
+        {
+          // FIXME: be synchronous if enough bytes are available
+          EndPoint peer;
+          this->socket().async_receive(
+            boost::asio::buffer(_buffer.mutable_contents(), _buffer.size()),
+            boost::bind(&UDPRead::_wakeup, this, _1, _2));
+        }
 
-        private:
-          void
-          _wakeup(const boost::system::error_code& error,
-                  std::size_t read)
-          {
-            this->_read = read;
-            Super::_wakeup(error);
-          }
+      private:
+        void
+        _wakeup(const boost::system::error_code& error,
+                std::size_t read)
+        {
+          this->_read = read;
+          Super::_wakeup(error);
+        }
 
         elle::WeakBuffer& _buffer;
         Size _read;
@@ -155,59 +155,60 @@ namespace elle
       class UDPRecvFrom
         : public DataOperation<boost::asio::ip::udp::socket>
       {
-        public:
-          using AsioSocket = boost::asio::ip::udp::socket;
-          using EndPoint = boost::asio::ip::udp::endpoint;
-          using Super = DataOperation<AsioSocket>;
-          UDPRecvFrom(Scheduler& scheduler,
-                      PlainSocket<AsioSocket>* socket,
-                      elle::WeakBuffer& buffer,
-                      boost::asio::ip::udp::endpoint & endpoint)
-            : Super(*socket->socket())
-            , _buffer(buffer)
-            , _read(0)
-            , _endpoint(endpoint)
-          {}
+      public:
+        using AsioSocket = boost::asio::ip::udp::socket;
+        using EndPoint = boost::asio::ip::udp::endpoint;
+        using Super = DataOperation<AsioSocket>;
+        UDPRecvFrom(Scheduler& scheduler,
+                    PlainSocket<AsioSocket>* socket,
+                    elle::WeakBuffer& buffer,
+                    boost::asio::ip::udp::endpoint & endpoint)
+          : Super(*socket->socket())
+          , _buffer(buffer)
+          , _read(0)
+          , _endpoint(endpoint)
+        {}
 
-          virtual const char* type_name() const
-          {
-            static const char* name = "socket recv_from";
-            return name;
-          }
+        virtual const char* type_name() const
+        {
+          static const char* name = "socket recv_from";
+          return name;
+        }
 
-          Size
-          read()
-          {
-            return _read;
-          }
+        Size
+        read()
+        {
+          return _read;
+        }
 
-        protected:
+      protected:
 
-          void
-          _start() override
-          {
-            auto wake = [&] (boost::system::error_code const e, std::size_t w) {
-              this->_wakeup(e, w);
-            };
+        void
+        _start() override
+        {
+          auto wake = [&] (boost::system::error_code const e, std::size_t w) {
+            this->_wakeup(e, w);
+          };
 
-            this->socket().async_receive_from(
-              boost::asio::buffer(_buffer.mutable_contents(), _buffer.size()),
-              this->_endpoint,
-              wake);
-          }
+          this->socket().async_receive_from(
+            boost::asio::buffer(_buffer.mutable_contents(), _buffer.size()),
+            this->_endpoint,
+            wake);
+        }
 
-        private:
-          void
-          _wakeup(const boost::system::error_code& error,
-                       std::size_t read)
-          {
-            this->_read = read;
-            Super::_wakeup(error);
-          }
+      private:
+        void
+        _wakeup(const boost::system::error_code& error,
+                std::size_t read)
+        {
+          this->_read = read;
+          Super::_wakeup(error);
+          return;
+        }
 
-          elle::WeakBuffer& _buffer;
-          Size _read;
-          boost::asio::ip::udp::endpoint &_endpoint;
+        elle::WeakBuffer& _buffer;
+        Size _read;
+        boost::asio::ip::udp::endpoint& _endpoint;
       };
 
       Size
@@ -227,7 +228,6 @@ namespace elle
         return recvfrom.read();
       }
 
-
       /*------.
       | Write |
       `------*/
@@ -241,10 +241,10 @@ namespace elle
         using Super = DataOperation<AsioSocket>;
         UDPWrite(Scheduler& scheduler,
                  PlainSocket<AsioSocket>* socket,
-                 elle::ConstWeakBuffer& buffer):
-          Super(*socket->socket()),
-          _buffer(buffer),
-          _written(0)
+                 elle::ConstWeakBuffer& buffer)
+          : Super(*socket->socket())
+          , _buffer(buffer)
+          , _written(0)
         {}
 
       protected:
@@ -273,45 +273,45 @@ namespace elle
       class UDPSendTo
         : public DataOperation<boost::asio::ip::udp::socket>
       {
-        public:
-          using AsioSocket = boost::asio::ip::udp::socket;
-          using EndPoint = boost::asio::ip::udp::endpoint;
-          using Super = DataOperation<AsioSocket>;
-          UDPSendTo(Scheduler& scheduler,
-                    PlainSocket<AsioSocket>* socket,
-                    elle::ConstWeakBuffer& buffer,
-                    EndPoint  endpoint):
-            Super(*socket->socket()),
-            _buffer(buffer),
-            _written(0),
-            _endpoint(std::move(endpoint))
-          {}
+      public:
+        using AsioSocket = boost::asio::ip::udp::socket;
+        using EndPoint = boost::asio::ip::udp::endpoint;
+        using Super = DataOperation<AsioSocket>;
+        UDPSendTo(Scheduler& scheduler,
+                  PlainSocket<AsioSocket>* socket,
+                  elle::ConstWeakBuffer& buffer,
+                  EndPoint  endpoint)
+          : Super(*socket->socket())
+          , _buffer(buffer)
+          , _written(0)
+          , _endpoint(std::move(endpoint))
+        {}
 
-        protected:
-          void
-          _start() override
-          {
-            auto wake = [&] (boost::system::error_code const e, std::size_t w)
-              {
-                this->_wakeup(e, w);
-              };
-            auto buffer = boost::asio::buffer(_buffer.contents(),
-                                              _buffer.size());
-            this->socket().async_send_to(buffer, this->_endpoint, wake);
-          }
+      protected:
+        void
+        _start() override
+        {
+          auto wake = [&] (boost::system::error_code const e, std::size_t w)
+            {
+              this->_wakeup(e, w);
+            };
+          auto buffer = boost::asio::buffer(_buffer.contents(),
+                                            _buffer.size());
+          this->socket().async_send_to(buffer, this->_endpoint, wake);
+        }
 
-        private:
-          void
-          _wakeup(const boost::system::error_code& error,
-                  std::size_t written)
-          {
-            this->_written = written;
-            Super::_wakeup(error);
-          }
+      private:
+        void
+        _wakeup(const boost::system::error_code& error,
+                std::size_t written)
+        {
+          this->_written = written;
+          Super::_wakeup(error);
+        }
 
-          elle::ConstWeakBuffer& _buffer;
-          Size _written;
-          EndPoint _endpoint;
+        elle::ConstWeakBuffer& _buffer;
+        Size _written;
+        EndPoint _endpoint;
       };
 
       void

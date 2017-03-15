@@ -12,6 +12,7 @@ namespace elle
 {
   namespace reactor
   {
+    /// XXX[doc].
     template <typename T>
     class LocalStorage
     {
@@ -20,14 +21,17 @@ namespace elle
       LocalStorage();
       ~LocalStorage();
       operator T&();
-      T& Get(T const& def);
-      T& Get();
+      T&
+      get(T const& def);
+      T&
+      get();
 
     private:
       template <typename Fun>
       T&
       _get(Fun fun);
-      void _Clean(Thread* t);
+      void
+      _clean(Thread* t);
       using Content = std::unordered_map<void*, T>;
       Content _content;
       using Links = std::unordered_map<void*, boost::signals2::connection>;

@@ -14,7 +14,7 @@ namespace elle
     template <typename T>
     LocalStorage<T>::~LocalStorage()
     {
-      std::lock_guard<std::mutex> lock(_mutex);
+      std::lock_guard<std::mutex> lock(this->_mutex);
       for (auto const& i: this->_links)
         i.second.disconnect();
     }
@@ -22,21 +22,21 @@ namespace elle
     template <typename T>
     LocalStorage<T>::operator T&()
     {
-      return this->Get();
+      return this->get();
     }
 
     template <typename T>
     T&
-    LocalStorage<T>::Get()
+    LocalStorage<T>::get()
     {
-      return _get([](auto&) {});
+      return this->_get([](auto&) {});
     }
 
     template <typename T>
     T&
-    LocalStorage<T>::Get(T const& def)
+    LocalStorage<T>::get(T const& def)
     {
-      return _get([&def](auto& storage) { storage = def; });
+      return this->_get([&def](auto& storage) { storage = def; });
     }
 
     template <typename T>
@@ -46,8 +46,9 @@ namespace elle
     {
       Scheduler* sched = Scheduler::scheduler();
       Thread* current = sched ? sched->current() : nullptr;
-      void* key = current ? static_cast<void*>(current) : static_cast<void*>(sched);
-      std::lock_guard<std::mutex> lock(_mutex);
+      void* key = current ? static_cast<void*>(current)
+                          : static_cast<void*>(sched);
+      std::lock_guard<std::mutex> lock(this->_mutex);
       auto it = this->_content.find(key);
       if (it == this->_content.end())
         {
@@ -56,7 +57,7 @@ namespace elle
           if (current)
           {
             auto link = current->destructed().connect(
-              std::bind(&Self::_Clean, this, current)
+              std::bind(&Self::_clean, this, current)
             );
             this->_links[current] = link;
           }
@@ -68,9 +69,9 @@ namespace elle
 
     template <typename T>
     void
-    LocalStorage<T>::_Clean(Thread* current)
+    LocalStorage<T>::_clean(Thread* current)
     {
-      std::lock_guard<std::mutex> lock(_mutex);
+      std::lock_guard<std::mutex> lock(this->_mutex);
       this->_links.erase(current);
       auto it = this->_content.find(current);
       ELLE_ASSERT_NEQ(it, this->_content.end());

@@ -10,6 +10,7 @@ namespace elle
   {
     namespace network
     {
+      /// Specialized StreamSocket for inter-process communication.
       class UnixDomainSocket
         : public StreamSocket<boost::asio::local::stream_protocol::socket,
                               boost::asio::local::stream_protocol::endpoint>
@@ -18,8 +19,18 @@ namespace elle
         using Super = StreamSocket<
           boost::asio::local::stream_protocol::socket,
           boost::asio::local::stream_protocol::endpoint>;
+        /// Construct a UnixDomainSocket.
+        ///
+        /// \param ep The EndPoint of the peer.
+        /// \param timeout The  maximum duration before the connection attempt
+        ///                times out.
         UnixDomainSocket(EndPoint const& ep,
                          DurationOpt timeout = {});
+        /// Construct a UnixDomainSocket.
+        ///
+        /// \param path The path name to construct an endpoint from.
+        /// \param timeout The maximum duration before the connection attempt
+        ///                times out.
         UnixDomainSocket(boost::filesystem::path const& path,
                          DurationOpt timeout = {});
 

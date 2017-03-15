@@ -9,6 +9,7 @@
 #include <elle/network/Locus.hh>
 #include <elle/reactor/network/udp-socket.hh>
 #include <elle/reactor/scheduler.hh>
+#include <elle/Duration.hh>
 
 namespace elle
 {
@@ -16,18 +17,21 @@ namespace elle
   {
     namespace nat
     {
+      /// DISCLAIMER.
+      ///
+      /// This is deprecated in favor of RDVSocket.
+      ///
+      /// However, everything should work just fine.
 
-      inline boost::posix_time::seconds
-      operator "" _sec(const char* str)
-      {
-        return boost::posix_time::seconds{std::stoi(str)};
-      }
-
+      /// Local connection to an Hole, for hole punching.
+      ///
+      /// A hole is a third party that can relay external and internal address
+      /// and port for each client.
       class Hole
       {
       private:
-        std::unique_ptr<reactor::network::UDPSocket>      _handle;
-        boost::asio::ip::udp::endpoint                    _longinus;
+        ELLE_ATTRIBUTE(std::unique_ptr<reactor::network::UDPSocket>, handle);
+        ELLE_ATTRIBUTE(boost::asio::ip::udp::endpoint, hole_endpoint);
 
         ELLE_ATTRIBUTE_R(boost::asio::ip::udp::endpoint, public_endpoint);
       public:
@@ -42,8 +46,13 @@ namespace elle
         Hole(Hole&& hole);
         ~Hole() = default;
 
-        Hole(reactor::Scheduler& sched,
-             boost::asio::ip::udp::endpoint const& longinus,
+        /// Construct a Hole.
+        ///
+        /// \param scheduler The Scheduler to use.
+        /// \param hole_endpoint The UDP EndPoint of the Hole.
+        /// \param local_port The local port to force.
+        Hole(reactor::Scheduler& scheduler,
+             boost::asio::ip::udp::endpoint const& hole_endpoint,
              int local_port = 0);
       private:
         boost::asio::ip::udp::endpoint
@@ -51,11 +60,14 @@ namespace elle
       };
 
 #if defined(REACTOR_HAVE_STUN)
+      /// Breach for NAT traversal.
+      ///
+      /// Use STUN to figure out local and mapped endpoints.
       class Breach
       {
       private:
-        std::unique_ptr<reactor::network::UDPSocket> _handle;
-        boost::asio::ip::udp::endpoint _stunserver;
+        ELLE_ATTRIBUTE(std::unique_ptr<reactor::network::UDPSocket>, handle);
+        ELLE_ATTRIBUTE(boost::asio::ip::udp::endpoint, stun_endpoint);
 
       public:
         enum class NatBehavior
@@ -65,13 +77,13 @@ namespace elle
           /// IP address and port are the same between client and server view
           /// (NO NAT)
           DirectMapping,
-          /// same mapping regardless of IP:port original packet sent to (the
+          /// Same mapping regardless of IP:port original packet sent to (the
           /// kind of NAT we like)
           EndpointIndependentMapping,
-          /// mapping changes for local socket based on remote IP address only,
+          /// Mapping changes for local socket based on remote IP address only,
           /// but remote port can change (partially symmetric, not great)
           AddressDependentMapping,
-          /// different port mapping if the ip address or port change (symmetric
+          /// Different port mapping if the ip address or port change (symmetric
           /// NAT, difficult to predict port mappings)
           AddressAndPortDependentMapping
         };
@@ -82,6 +94,7 @@ namespace elle
         ELLE_ATTRIBUTE_R(NatBehavior, nat_behavior);
 
       public:
+        /// Take ownership of the UDPSocket used.
         std::unique_ptr<reactor::network::UDPSocket>
         take_handle();
 
@@ -93,28 +106,40 @@ namespace elle
         ~Breach() = default;
 
         Breach(Breach&& breach);
-
+        /// Construct a Breach.
+        ///
+        /// \param scheduler The Scheduler to use.
+        /// \param hole_endpoint The UDP EndPoint of the STUN server.
+        /// \param local_port The local port to force.
         Breach(reactor::Scheduler& sched,
                boost::asio::ip::udp::endpoint const& stunserver,
                unsigned short local_port = 0);
       };
 #endif
 
+      /// Helper around Hole and Breach.
       class NAT
       {
-      public:
-
       public:
         NAT(reactor::Scheduler& s);
         ~NAT() = default;
 
       public:
+        /// Create a Hole.
+        ///
+        /// \param hostname The host name of the hole.
+        /// \param port The port used by the hole.
+        /// \param local_port The local port to force.
         Hole
         punch(std::string const& hostname,
               int port,
               int local_port = 0);
 
 #if defined(REACTOR_HAVE_STUN)
+        /// Create a Breach.
+        ///
+        /// \param endpoint The UDP EndPoint of the STUN server.
+        /// \param local_port The local port to force.
         Breach
         map(boost::asio::ip::udp::endpoint const& endpoint,
             unsigned short local_port = 0);

@@ -11,12 +11,38 @@ namespace elle
   {
     /// Manage a collection of Threads.
     ///
-    /// A Scope enables to start parallel tasks in threads and make sure they
+    /// A Scope enables to start parallel tasks in Threads and make sure they
     /// are terminated upon destruction.  As a Waitable, a Scope blocks its
-    /// waiters until all currently managed threads are done, enabling to easily
-    /// join the group of managed threads.  If an exception escapes from a
-    /// thread, all other threads are killed and waiting the Scope will re-throw
+    /// waiters until all currently managed Threads are done, enabling to easily
+    /// join the group of managed Threads.  If an exception escapes from a
+    /// Thread, all other threads are killed and waiting the Scope will re-throw
     /// the exception.
+    ///
+    /// \code{.cc}
+    ///
+    /// elle::With<elle::reactor::Scope>() << [] (elle::reactor::Scope& s)
+    ///   {
+    ///     elle::reactor::Barrier b;
+    ///     s.run_background("one",
+    ///       [&b]
+    ///       {
+    ///         std::cout << "[one sleep] "
+    ///         elle::reactor::sleep(50_ms);
+    ///         b.open();
+    ///         std::cout << "[one done] "
+    ///       });
+    ///     s.run_background("two",
+    ///       [&b]
+    ///       {
+    ///         std::cout << "[two wait] ";
+    ///         b.wait();
+    ///         std::cout << "[two done] ";
+    ///       });
+    ///     s.wait(); // Wait until all managed Threads are done.
+    ///   };
+    /// // Result: [one sleep] [two wait] [one done] [two done]
+    ///
+    /// \endcode.
     class Scope
       : public reactor::Waitable
     {
@@ -48,6 +74,7 @@ namespace elle
       Thread&
       run_background(std::string const& name,
                      Thread::Action a);
+      /// Terminate the Scope by terminating all managed Threads.
       void
       terminate_now();
     private:
