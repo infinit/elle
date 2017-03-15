@@ -152,4 +152,4 @@ namespace elle
   }
 }
 
-#include <elle/reactor/waitable.hxx>
+#include <elle/reactor/Waitable.hxx>

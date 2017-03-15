@@ -12,7 +12,7 @@
 #include <elle/Buffer.hh>
 #include <elle/Exception.hh>
 #include <elle/filesystem.hh>
-#include <elle/reactor/waitable.hh>
+#include <elle/reactor/Waitable.hh>
 
 static_assert(sizeof(off_t) == 8,
               "off_t is 32 bits long, define _FILE_OFFSET_BITS to 64");

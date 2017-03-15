@@ -12,7 +12,7 @@
 #include <elle/reactor/duration.hh>
 #include <elle/reactor/fwd.hh>
 #include <elle/reactor/signals.hh>
-#include <elle/reactor/waitable.hh>
+#include <elle/reactor/Waitable.hh>
 
 namespace elle
 {

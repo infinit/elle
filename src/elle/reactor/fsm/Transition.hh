@@ -3,7 +3,7 @@
 #include <boost/optional.hpp>
 
 #include <elle/reactor/fsm/fwd.hh>
-#include <elle/reactor/waitable.hh>
+#include <elle/reactor/Waitable.hh>
 
 namespace elle
 {

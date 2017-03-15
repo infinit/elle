@@ -4,7 +4,7 @@
 #include <elle/make-vector.hh>
 #include <elle/reactor/scheduler.hh>
 #include <elle/reactor/thread.hh>
-#include <elle/reactor/waitable.hh>
+#include <elle/reactor/Waitable.hh>
 #include <elle/string/algorithm.hh>
 #include <utility>
 
