@@ -1,4 +1,4 @@
-
+import os
 import drake
 import drake.cxx
 import drake.cxx.boost
@@ -38,17 +38,12 @@ def configure(cryptography,
 
   # Elle
   config += elle.config
-  elle_library = drake.copy(elle.library, lib_path, strip_prefix = True)
 
   # Reactor
   config += reactor.config
-  reactor_library = drake.copy(reactor.library, lib_path,
-                               strip_prefix = True)
 
   # Cryptography
   config += cryptography.config
-  cryptography_library = drake.copy(cryptography.library, lib_path,
-                                    strip_prefix = True)
 
   # Local C++ configuration
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
@@ -85,11 +80,11 @@ def configure(cryptography,
   from itertools import chain
   lib_static = drake.cxx.StaticLib(
     lib_path + '/elle_webapi_aws',
-    chain(sources, (elle_library, reactor_library, cryptography_library)),
+    chain(sources, (elle.library, reactor.library, cryptography.library)),
     cxx_toolkit, local_cxx_config)
   lib_dynamic = drake.cxx.DynLib(
     lib_path + '/elle_webapi_aws',
-    chain(sources, (elle_library, reactor_library, cryptography_library)),
+    chain(sources, (elle.library, reactor.library, cryptography.library)),
     cxx_toolkit, local_cxx_config)
 
   # Build
@@ -117,7 +112,7 @@ def configure(cryptography,
   ]
 
   cxx_config_tests = drake.cxx.Config(local_cxx_config)
-  test_libs = [library, reactor_library, elle_library, cryptography_library]
+  test_libs = [library, reactor.library, elle.library, cryptography.library]
   cxx_config_tests += boost.config_test(
     static = not boost.prefer_shared or None,
     link = not boost.prefer_shared)
@@ -141,10 +136,10 @@ def configure(cryptography,
     cxx_config_tests.lib('stdc++')
     cxx_config_tests.lib('atomic')
   test_libs_path = tests_path / lib_path
-  cxx_config_tests.lib_path_runtime(test_libs_path)
-  test_libs = list(map(lambda l: drake.copy(l, test_libs_path,
-                                            strip_prefix = True),
-                       test_libs))
+  list(map(lambda lib: cxx_config_tests.lib_path_runtime(os.path.relpath(
+    str(lib.path().dirname()),
+    str(tests_path))),
+           (lib for lib in test_libs if isinstance(lib, drake.cxx.DynLib))))
   cxx_config_tests.add_local_include_path(elle_tests_path)
   for name in tests:
     test = drake.cxx.Executable(

@@ -599,8 +599,7 @@ def configure(zlib_lib,
     static = not boost.prefer_shared or None,
     link = not boost.prefer_shared)
   if boost.prefer_shared:
-    test_libs += list(map(lambda x: drake.copy(x, lib_path, strip_prefix = True),
-                          [boost.timer_dynamic, boost.test_dynamic]))
+    test_libs += [boost.timer_dynamic, boost.test_dynamic]
   for test in tests:
     if isinstance(test, tuple):
       test, dependencies, valgrind_this_test = test
@@ -608,16 +607,18 @@ def configure(zlib_lib,
       dependencies = ()
       valgrind_this_test = True
     local_config_tests = drake.cxx.Config(config_tests)
-    local_config_tests.lib_path_runtime(
-      drake.Path('../' * test.count('/')) / '../..' / library.path().dirname()
-    )
+    test_path = drake.Path(tests_path / test)
+    list(map(lambda lib: local_config_tests.lib_path_runtime(os.path.relpath(
+      str(lib.path().dirname()),
+      str(test_path.dirname()))),
+             (lib for lib in test_libs if isinstance(lib, drake.cxx.DynLib))))
     if cxx_toolkit.os is drake.os.macos and \
         cxx_toolkit.kind is drake.cxx.GccToolkit.Kind.gcc and \
           test == 'Backtrace.cc':
       local_config_tests.enable_optimization(False)
     test = drake.cxx.Executable(
       tests_path / os.path.splitext(test)[0],
-      drake.nodes(tests_path / test) + test_libs,
+      drake.nodes(test_path) + test_libs,
       cxx_toolkit, local_config_tests)
     for dep in dependencies:
       test.dependency_add(dep)

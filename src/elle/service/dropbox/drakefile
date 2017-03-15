@@ -37,7 +37,7 @@ def configure(cxx_toolkit,
   ## Library ##
   ## ------- ##
 
-  elle_lib = drake.copy(elle.lib_dynamic, lib_path, strip_prefix = True)
+  elle_lib = elle.lib_dynamic
   sources = drake.nodes(
     'Dropbox.cc',
     'Dropbox.hh',

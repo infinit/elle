@@ -39,18 +39,6 @@ def configure(cxx_toolkit,
   ## Library ##
   ## ------- ##
 
-  if cxx_toolkit.os in [
-      drake.os.windows, drake.os.ios, drake.os.android]:
-    elle_lib = elle.lib_static
-    reactor_lib = reactor.lib_static
-    cryptography_lib = cryptography.lib_static
-  else:
-    elle_lib = drake.copy(
-      elle.lib_dynamic, lib_path, strip_prefix = True)
-    reactor_lib = drake.copy(
-      reactor.lib_dynamic, lib_path, strip_prefix = True)
-    cryptography_lib = drake.copy(
-      cryptography.lib_dynamic, lib_path, strip_prefix = True)
 
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
     local_config += boost.config_system(static = True)
@@ -66,7 +54,7 @@ def configure(cxx_toolkit,
     'paxos/Server.hh',
     'paxos/Server.hxx',
   )
-  dependencies = [elle_lib, reactor_lib, cryptography_lib]
+  dependencies = [elle.library, reactor.library, cryptography.library]
   lib_dynamic = drake.cxx.DynLib(
     lib_path + '/elle_athena',
     sources + dependencies,
