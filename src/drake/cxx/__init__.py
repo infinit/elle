@@ -875,7 +875,7 @@ class GccToolkit(Toolkit):
           arnames=list()
           for e in cmd:
             e = str(e)
-            if e[-2:] == '.a' or e[0:2] == '-l':
+            if e[-2:] == '.a':
               if e.split('/')[-1] not in arnames:
                 ar.append(e)
                 arnames.append(e.split('/')[-1])
@@ -923,7 +923,7 @@ class GccToolkit(Toolkit):
           arnames=list()
           for e in cmd:
             e = str(e)
-            if e[-2:] == '.a' or e[0:2] == '-l':
+            if e[-2:] == '.a':
               if e.split('/')[-1] not in arnames:
                 ar.append(e)
                 arnames.append(e.split('/')[-1])
