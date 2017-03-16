@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
-import sys
-import threadpool
 import threading
 import unittest
+
+from drake import threadpool
 
 class TestStandaloneCoroutine(unittest.TestCase):
 

@@ -1,13 +1,8 @@
 #!/usr/bin/env python3
 
-# Ensure this drake is used
-import os.path
-import sys
-SELF = os.path.realpath(__file__)
-sys.path = [os.path.dirname(os.path.dirname(SELF))] + sys.path
-
-import sched
 import unittest
+
+from drake import sched
 
 class BeaconException(Exception):
   pass

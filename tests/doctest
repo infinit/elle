@@ -6,13 +6,6 @@ import os.path
 import sys
 import unittest
 
-myself = os.getcwd()
-dir = os.path.dirname(__file__)
-if dir:
-  myself += '/%s' % dir
-sys.path = [myself + '/../src'] + sys.path
-os.environ['PYTHONPATH'] = ':'.join(sys.path)
-
 import drake
 import drake.cxx
 import drake.cxx.boost
@@ -22,8 +15,6 @@ import drake.python
 import drake.utils
 import sched
 
-assert os.system('src/drake/threadpool-test.py') == 0
-assert os.system('src/drake/sched-test.py') == 0
 
 def test_suite():
   tests = []

@@ -10,7 +10,6 @@ x86_64-ubuntu-gcc4:
     - git fetch origin --tags
     - pip3 install -r requirements.txt
     - (cd _build && ./drake //check)
-    - tests/test.py
     - (cd examples/hello_world/_build/linux64 && ./drake //build && ./hello_world)
     - (cd examples/user_libraries/_build/linux64 && ./drake //build && ./bin/colored_shape)
     - (cd examples/gnu_builder/_build/linux64 && ./drake //build && ./bin/http_request)
@@ -25,7 +24,6 @@ x86_64-osx-clang:
     - git fetch origin --tags
     - pip3 install --user -r requirements.txt
     - (cd _build && ./drake //check)
-    - tests/test.py
     - (cd examples/hello_world/_build/macosx64 && ./drake //build && ./hello_world)
     - (cd examples/user_libraries/_build/macosx64 && ./drake //build && ./bin/colored_shape)
     - (cd examples/gnu_builder/_build/macosx64 && ./drake //build && ./bin/http_request)

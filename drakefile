@@ -78,16 +78,20 @@ def configure(prefix = '.'):
     'base/symlink',
     'base/termination',
     'base/termination-keep-successful',
+    'doctest',
+    'sched',
+    'threadpool',
   ]
 
   for test in tests:
     test = drake.node('tests/%s' % test)
     test.dependencies_add(sources)
-    check << drake.Runner(
+    runner = drake.Runner(
       test,
       env = {'PYTHONPATH': PYTHONPATH},
     ).status
-
+    runner.reporting = drake.Runner.Reporting.on_failure
+    check << runner
   # Old style tests
 
   tests = [
