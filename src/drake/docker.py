@@ -45,7 +45,7 @@ class DockerFile(drake.Node):
     self.__cmd = []
     self.__entry_point = []
     self.__ports = []
-    self.__runs = []
+    self.__steps = []
     self.__volumes = []
     DockerFile.Builder(self)
 
@@ -81,7 +81,10 @@ class DockerFile(drake.Node):
     self.__volumes = volumes
 
   def run(self, cmd):
-    self.__runs.append(cmd)
+    self.__steps.append(('RUN', cmd))
+
+  def env(self, k, v):
+    self.__steps.append(('ENV', '{} {}'.format(k, v)))
 
   @property
   def image(self):
@@ -112,8 +115,8 @@ class DockerFile(drake.Node):
     return self.__ports
 
   @property
-  def runs(self):
-    return self.__runs
+  def steps(self):
+    return self.__steps
 
   @property
   def volumes_(self):
@@ -128,7 +131,7 @@ class DockerFile(drake.Node):
       'labels': self.__labels,
       'maintainer': self.__maintainer,
       'ports': self.__ports,
-      'runs': self.__runs,
+      'steps': self.__steps,
       'volumes': self.__volumes,
     }
 
@@ -148,8 +151,8 @@ class DockerFile(drake.Node):
                 file = f)
         for k, v in self.__dockerfile.labels.items():
           print('LABEL %s="%s"' % (k, v), file = f)
-        for run in self.__dockerfile.runs:
-          print('RUN %s' % run, file = f)
+        for cmd, args in self.__dockerfile.steps:
+          print('{} {}'.format(cmd, args), file = f)
         for p, nodes in self.__dockerfile._DockerFile__adds.items():
           for add in rootify(
               chain(*(parents(n.path().without_prefix(root))
