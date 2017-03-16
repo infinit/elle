@@ -14,10 +14,12 @@
 # - Support all Go specific environment
 
 import collections
+import copy
 import drake
 import os
-import copy
+import subprocess
 
+from drake.which import which
 from os import environ
 from orderedset import OrderedSet
 
@@ -121,7 +123,7 @@ class Config:
     }
 
 
-class Toolkit(dict):
+class Toolkit:
   """
   A Toolkit represents an abstraction of a Go environment.
 
@@ -130,11 +132,6 @@ class Toolkit(dict):
   """
 
   properties = ["home", "root", "os", "arch"]
-
-  def __getattribute__(self, attr):
-    if attr not in Toolkit.properties:
-      return super().__getattribute__(attr)
-    return copy.copy(self[attr])
 
   def __init__(self,
                tk = None,
@@ -168,24 +165,43 @@ class Toolkit(dict):
     print(t2.arch)
     > "amd64"
     """
-    import inspect
-    args, _, _, values = inspect.getargvalues(inspect.currentframe())
-    args.remove('tk')
-    args.remove('self')
-    assert args == Toolkit.properties
-    if tk is not None:
-      assert not any(map(lambda x: values[x], args))
-      return super().__init__(**copy.deepcopy(tk))
+    if isinstance(tk, Toolkit):
+      assert all(a is None for a in [home, root, os, arch])
+      return super().__init__(home = tk.home,
+                              root = tk.root,
+                              os = tk.os,
+                              arch = tk.arch)
     else:
-      for entry in Toolkit.properties:
-        super().__init__(**{
-          entry: values[entry] or environ.get('GO%s' % entry.upper())
-            for entry in Toolkit.properties
-        })
+      self.__arch = arch
+      self.__go = tk or which('go')
+      self.__home = home
+      self.__os = os
+      self.__root = root
+      self.__version = None
     try:
       self.run(['help'])
     except FileNotFoundError:
       raise Exception('go executable not found')
+
+  @property
+  def arch(self):
+    return self.__arch
+
+  @property
+  def go(self):
+    return self.__go
+
+  @property
+  def home(self):
+    return self.__home
+
+  @property
+  def os(self):
+    return self.__os
+
+  @property
+  def root(self):
+    return self.__root
 
   @property
   def env(self):
@@ -195,39 +211,11 @@ class Toolkit(dict):
     :return: The Go specific environment.
     :rtype: dict
     """
-    env = dict()
-    for entry in Toolkit.properties:
-      if self.get(entry):
-        env['GO%s' % entry.upper()] = self.get(entry)
-    return env
-
-  def command(self, cmd):
-    """
-    Return the tuple command, updated environment.
-
-    :param cmd: The command to execute (omitting 'go').
-    :type cmd: list of string
-
-    :return: The tuple command, environment.
-    :rtype: tuple(list, dict)
-    """
-    import copy
-    environ = copy.copy(os.environ)
-    environ.update(self.env)
-    return ['go'] + cmd, environ
-
-  def __run(self, cmd, env):
-    """
-    Actually run the given command with the given environment.
-
-    :param cmd: The command to run.
-    :param env: The environment for the command to run.
-
-    :return: Formatted, utf-8 decoded output of the subprocess.
-    :rtype: str
-    """
-    import subprocess
-    return subprocess.check_output(cmd, env = env).decode('utf-8').strip()
+    return {
+      k: getattr(self, k)
+      for k in Toolkit.properties
+      if getattr(self, k) is not None
+    }
 
   def run(self, cmd):
     """
@@ -239,7 +227,8 @@ class Toolkit(dict):
     :return: Same as __run
     :rtype: Same as __run
     """
-    return self.__run(*self.command(cmd))
+    return subprocess.check_output([self.go] + cmd,
+                                   env = self.env).decode('utf-8').strip()
 
   def dependencies(self, node):
     """
@@ -265,7 +254,9 @@ class Toolkit(dict):
     :rtype: str.
     """
     import re
-    return re.sub('^go version', '', self.run(['version'])).strip()
+    if self.__version is None:
+      self.__version = re.sub('^go version', '', self.run(['version'])).strip()
+    return self.__version
 
   def list(self, entity):
     """
@@ -292,12 +283,14 @@ class Toolkit(dict):
     :return: The command to execute.
     :rtype: list of str.
     """
-    cmd = ['build']
-    cmd += ['-o', str(target.path())]
-    cmd += ['-tags', "%s" % ' '.join(config.tags)]
-    cmd += ['-ldflags', "%s" % ' '.join(config.ldflags)]
-    cmd += [str(source.path())]
-    return self.command(cmd)
+    return [
+      self.go,
+      'build',
+      '-o', str(target.path()),
+      '-tags', ' '.join(config.tags),
+      '-ldflags', ' '.join(config.ldflags),
+      str(source.path()),
+    ]
 
   def hash(self):
     """
