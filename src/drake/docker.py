@@ -232,11 +232,11 @@ class DockerBuilder(drake.Builder):
         shutil.rmtree(str(g))
       else:
         os.remove(g)
-    self.cmd('Docker build image %s' % self.__path,
+    tag = ':'.join((self.__image.repository, self.__image.tag))
+    self.cmd('Docker build image %s' % tag,
              ['docker', 'build',
               '--force-rm',
-              '--tag', '%s:%s' % (self.__image.repository,
-                                  self.__image.tag),
+              '--tag', tag,
                self.__path,
              ],
              throw = True)
