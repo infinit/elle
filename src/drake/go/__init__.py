@@ -170,13 +170,13 @@ class Toolkit(dict):
     else:
       for entry in Toolkit.properties:
         super().__init__(**{
-          entry: values[entry] or environ.get('GO%s' % entry.upper()) for entry in Toolkit.properties
+          entry: values[entry] or environ.get('GO%s' % entry.upper())
+            for entry in Toolkit.properties
         })
     try:
       self.run(['help'])
     except FileNotFoundError:
-      import sys
-      sys.exit("Error:\n  Go not found, make sure Go is installed and is referenced in your PATH.")
+      raise Exception('go executable not found')
 
   @property
   def env(self):
