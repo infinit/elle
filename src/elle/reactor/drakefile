@@ -28,7 +28,6 @@ rule_examples = None
 with open(str(drake.path_source('../../../drake-utils.py')), 'r') as f:
   exec(f.read(), globals(), globals())
 
-
 def configure(curl_config,
               curl_lib,
               zlib_config,
@@ -911,15 +910,19 @@ def configure(curl_config,
 
   cxx_config_examples = drake.cxx.Config(local_cxx_config)
   rule_examples = drake.Rule('examples')
+  examples_path = drake.Path('../../../examples')
   for example in [
-    'examples/demo/echo_server'
+    'demo/elle/reactor/echo_server'
   ]:
-    name = example
-    source = drake.nodes('%s.cc' % name)
-    rule_examples << drake.cxx.Executable(
-      name,
+    source = drake.nodes('%s/%s.cc' % (examples_path, example))
+    example = drake.cxx.Executable(
+      examples_path / example,
       source + [library, elle.library],
       cxx_toolkit, cxx_config_examples)
+    rule_examples << example
+    runner = drake.Runner(exe = example, args = ['0', 'true'])
+    runner.reporting = drake.Runner.Reporting.on_failure
+    rule_examples << runner.status
   rule_build << rule_examples
 
   ## ------- ##

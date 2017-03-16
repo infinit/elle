@@ -104,10 +104,9 @@ def configure(cxx_toolkit,
   ## -------- ##
 
   rule_examples = drake.Rule('examples')
-  elle_examples_path = drake.Path('../../../examples')
-  examples_path = elle_tests_path / 'elle/das'
+  examples_path = drake.Path('../../../examples')
   examples = [
-    'examples/samples/das',
+    'samples/elle/das/das'
   ]
   config_examples = drake.cxx.Config(local_config)
   example_libs = [elle.library]
@@ -120,7 +119,7 @@ def configure(cxx_toolkit,
                               example_libs))
     rule_examples << drake.cxx.Executable(
       example,
-      [drake.node('%s.cc' % example)] + example_libs,
+      [drake.node('%s/%s.cc' % (examples_path, example))] + example_libs,
       cxx_toolkit, config_examples)
   rule_build << rule_examples
 

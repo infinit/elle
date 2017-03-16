@@ -375,21 +375,24 @@ def configure(openssl_config,
 
   global rule_examples
   rule_examples = drake.Rule('examples')
-
+  examples_path = drake.Path('../../../examples')
   examples = [
-    'examples/samples/sample',
-    'examples/demo/crypt'
+    ('samples/elle/cryptography/sample', []),
+    ('demo/elle/cryptography/crypt', ['--encipher', 'foo', 'passphrase'])
   ]
-
-  for example in examples:
-    rule_examples << drake.cxx.Executable(
-      example,
+  for (example, args) in examples:
+    example = drake.cxx.Executable(
+      examples_path / example,
       [
-        drake.node('%s.cc' % example),
+        drake.node('%s/%s.cc' % (examples_path, example)),
         library,
         elle_library,
       ] + openssl_libs,
       cxx_toolkit, exe_cxx_config)
+    rule_examples << example
+    runner = drake.Runner(exe = example, args = args)
+    runner.reporting = drake.Runner.Reporting.on_failure
+    rule_examples << runner.status
   rule_build << rule_examples
 
   ## ------- ##

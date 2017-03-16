@@ -641,12 +641,13 @@ def configure(zlib_lib,
   ## -------- ##
 
   rule_examples = drake.Rule('examples')
+  examples_path = drake.Path('../../examples')
   examples = [
-    'examples/samples/attributes',
-    'examples/samples/buffer',
-    'examples/samples/serialization',
-    'examples/samples/printable',
-    'examples/samples/log',
+    'samples/elle/attributes',
+    'samples/elle/buffer',
+    'samples/elle/serialization',
+    'samples/elle/printable',
+    'samples/elle/log',
   ]
   cxx_config_examples = drake.cxx.Config(cxx_config)
   cxx_config_examples.enable_debug_symbols()
@@ -657,10 +658,16 @@ def configure(zlib_lib,
       drake.copy(boost.date_time_dynamic, lib_path, strip_prefix = True))
   for example in examples:
     config_examples = drake.cxx.Config(cxx_config_examples)
-    rule_examples << drake.cxx.Executable(
+    example = drake.cxx.Executable(
       os.path.splitext(example)[0],
-      drake.nodes('%s.cc' % example) + [library, zlib_lib, libarchive_lib],
+      drake.nodes('%s/%s.cc' % (examples_path, example)) + [
+        library, zlib_lib, libarchive_lib
+      ],
       cxx_toolkit, config_examples)
+    rule_examples << example
+    runner = drake.Runner(exe = example)
+    runner.reporting = drake.Runner.Reporting.on_failure
+    rule_examples << runner.status
   rule_build << rule_examples
 
   ## ------- ##
@@ -671,8 +678,10 @@ def configure(zlib_lib,
     rule_install = drake.Rule('install')
     prefix = drake.Path(prefix)
     if cxx_toolkit.os not in [drake.os.windows, drake.os.ios]:
-      rule_install << drake.install(lib_dynamic, prefix / 'lib', strip_prefix = True)
-    rule_install << drake.install(lib_static, prefix / 'lib', strip_prefix = True)
+      rule_install << drake.install(lib_dynamic, prefix / 'lib',
+                                    strip_prefix = True)
+    rule_install << drake.install(lib_static, prefix / 'lib',
+                                  strip_prefix = True)
     rule_install << drake.install(
       (node for node in sources if isinstance(node, drake.cxx.Header)),
       prefix / 'include' / 'elle')
