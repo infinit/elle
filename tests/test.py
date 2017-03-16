@@ -17,6 +17,7 @@ import drake
 import drake.cxx
 import drake.cxx.boost
 import drake.git
+import drake.go
 import drake.python
 import drake.utils
 import sched
@@ -38,8 +39,16 @@ def test_suite():
 
   tests = [doctest.DocTestSuite(module = m,
                                 setUp = setup, tearDown = teardown)
-           for m in (sched, drake, drake.cxx, drake.cxx.boost,
-                     drake.git, drake.python, drake.utils)]
+           for m in [
+               drake,
+               drake.cxx,
+               drake.cxx.boost,
+               drake.git,
+               drake.go,
+               drake.python,
+               drake.utils,
+               sched,
+           ]]
   return unittest.TestSuite(tests)
 
 unittest.main(defaultTest='test_suite')
