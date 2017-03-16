@@ -115,7 +115,8 @@ class Config:
     :return: A string representing the current Config.
     :rtype: str
     """
-    return 'tags:' + ' '.join(self.tags) + ', ldflags: ' + ' '.join(self.ldflags)
+    return 'tags:{}, ldflags:{}'.format(
+      ' '.join(self.tags), ' '.join(self.ldflags))
 
 class Toolkit(dict):
   """
@@ -132,7 +133,12 @@ class Toolkit(dict):
       return super().__getattribute__(attr)
     return copy.copy(self[attr])
 
-  def __init__(self, tk = None, home = None, root = None, os = None, arch = None):
+  def __init__(self,
+               tk = None,
+               home = None,
+               root = None,
+               os = None,
+               arch = None):
     """
     Create a toolkit or clone an existing one.
 
@@ -298,7 +304,9 @@ class Toolkit(dict):
     :rtype: str
     """
     import operator
-    return self.version + " ".join(["%s=%s" % (k, self.env[k]) for k in sorted(self.env.keys(), key=operator.itemgetter(1))])
+    return self.version + ' '.join([
+      '='.join(k, self.env[k])
+      for k in sorted(self.env.keys(), key=operator.itemgetter(1))])
 
 class Source(drake.Node):
   """
