@@ -21,16 +21,16 @@ import copy
 from os import environ
 from orderedset import OrderedSet
 
-class Configuration:
+class Config:
   """
-  A Configuration represents a list of options to build a Go executables.
+  A Config represents a list of options to build a Go executables.
   """
   def __init__(self, config = None):
     """
-    Create a Configuration from scrtach or from an existing configuration.
+    Create a Config from scrtach or from an existing configuration.
 
     :param config: An optional configuration.
-    :type config: Configuration
+    :type config: Config
     """
     self.__ldflags = OrderedSet()
     self.__tags = OrderedSet()
@@ -110,9 +110,9 @@ class Configuration:
 
   def identifier(self):
     """
-    Return the identifier of the Configuration.
+    Return the identifier of the Config.
 
-    :return: A string representing the current Configuration.
+    :return: A string representing the current Config.
     :rtype: str
     """
     return 'tags:' + ' '.join(self.tags) + ', ldflags: ' + ' '.join(self.ldflags)
@@ -274,7 +274,7 @@ class Toolkit(dict):
     Return the command build for the given config, source and target.
 
     :param config: A configuration.
-    :type config: Configuration
+    :type config: Config
     :param source: A source file.
     :type source: Source
     :param target: The target to build.
@@ -320,23 +320,23 @@ drake.Node.extensions['go'] = Source
 class Builder(drake.Builder):
   """
   Builder to transform a Go source to an Executable using the given Toolkit and
-  Configuration.
+  Config.
 
   Example:
 
   Builder(
     Source("main.go"),
     Toolkit(),
-    Configuration(),
+    Config(),
     Executable("bin/exe", create_builder = False));
 
   # or, simpler
 
-  Executable(Source("main.go"), Toolkit(), Configuration())
+  Executable(Source("main.go"), Toolkit(), Config())
   """
   def __init__(self, node, toolkit, config, target):
     """
-    Create a Builder from a Source, a Toolkit and a Configuration that creates
+    Create a Builder from a Source, a Toolkit and a Config that creates
     a Executable.
 
     :param node: A Source.
@@ -344,7 +344,7 @@ class Builder(drake.Builder):
     :param toolkit: The Toolkit to use.
     :type toolkit: Toolkit
     :param config: The configuration to use.
-    :type config: Configuration
+    :type config: Config
     :param target: The target Executable to be build
     :type target: Executable
     """
@@ -393,19 +393,19 @@ class Executable(drake.Node):
 
   Example:
 
-  Executable(Source("main.go"), Toolkit(), Configuration())
+  Executable(Source("main.go"), Toolkit(), Config())
   """
   def __init__(self, source, toolkit = None, config = None, target = None,
                create_builder = True):
     """
-    Create an Executable from a given Source, Toolkit and Configuration.
+    Create an Executable from a given Source, Toolkit and Config.
 
     :param source: The source for the Executable
     :type source: Source
     :param toolkit: The Toolkit to use.
     :type toolkit: Toolkit
     :param config: The configuration to use.
-    :type config: Configuration
+    :type config: Config
     :param create_builder: Whether if the Builder should be declared.
     :type create_builder: bool
     """
