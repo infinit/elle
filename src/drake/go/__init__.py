@@ -108,15 +108,18 @@ class Config:
     self.add_ldflags(configuration.ldflags)
     return self
 
-  def identifier(self):
+  def hash(self):
     """
-    Return the identifier of the Config.
+    Return the hash of the Config used for dependency computation.
 
-    :return: A string representing the current Config.
-    :rtype: str
+    :return: Hash of the Config.
+    :rtype: dict
     """
-    return 'tags:{}, ldflags:{}'.format(
-      ' '.join(self.tags), ' '.join(self.ldflags))
+    return {
+      'tags': self.tags,
+      'ldflags': self.ldflags,
+    }
+
 
 class Toolkit(dict):
   """
@@ -296,17 +299,17 @@ class Toolkit(dict):
     cmd += [str(source.path())]
     return self.command(cmd)
 
-  def identifier(self):
+  def hash(self):
     """
-    Return the identifier of the Toolkit.
+    The hash of the Toolkit used for dependency computation.
 
-    :return: A string representing the Toolkit
+    :return: Hash of the Toolkit
     :rtype: str
     """
-    import operator
-    return self.version + ' '.join([
-      '='.join(k, self.env[k])
-      for k in sorted(self.env.keys(), key=operator.itemgetter(1))])
+    return {
+      'version': self.version,
+      'env': self.env,
+    }
 
 class Source(drake.Node):
   """
@@ -391,7 +394,10 @@ class Builder(drake.Builder):
     :return: An unique identifier
     :rtype: str
     """
-    return str(self.__source) + self.__toolkit.identifier() + self.__config.identifier()
+    return {
+      'toolkit': self.__toolkit.identifier(),
+      'config': self.__config.identifier(),
+    }
 
 class Executable(drake.Node):
   """
