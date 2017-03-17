@@ -840,11 +840,14 @@ class GccToolkit(Toolkit):
     rpath = sched.OrderedSet(cfg._Config__rpath)
     rpath_link = sched.OrderedSet()
     prefix = exe.path().dirname()
-    if self.os == drake.os.linux:
+    # Shouldn't that be "all but windows?" that doesn't have the notion of
+    # rpath?
+    if self.os in [drake.os.linux, drake.os.macos]:
       for lib in (lib for lib in objs if isinstance(lib, DynLib)):
         for library in lib.dynamic_libraries:
           rpath.add(library.path().dirname().without_prefix(prefix))
-          rpath_link.add(str(library.path().dirname()))
+          if self.os is drake.os.linux:
+            rpath_link.add(str(library.path().dirname()))
     return rpath, rpath_link
 
   def link(self, cfg, objs, exe):
