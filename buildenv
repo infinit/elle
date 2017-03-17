@@ -320,20 +320,21 @@ class State:
     cleaned = []
     state = self.__state
     trees = state.setdefault('build-trees', {})
-    for days in range(10, 1, -1):
-      if self.__opts.cleanup_threshold <= self.disk_space():
-        break
-      print('cleaning builds older than', days, 'days')
-      delay = datetime.timedelta(days=days)
+    def clean_older(delay):
       for b in list(trees):
         tree = trees[b]
         if datetime.datetime.utcnow() - tree['last_use'] > delay:
-          cleaned.append(b)
+          cleaned.append((b, tree['last_use']))
           del trees[b]
           try:
             shutil.rmtree(tree['path'])
           except FileNotFoundError:
             pass
+    max_age = datetime.timedelta(days = 7)
+    clean_older(max_age)
+    while self.disk_space() < self.__opts.cleanup_threshold:
+      max_age -= datetime.timedelta(days = 1)
+      clean_older(max_age)
     return {
       'cleaned': cleaned,
     }
