@@ -342,10 +342,6 @@ def configure(openssl_config,
   for test in tests:
     config_test_local = drake.cxx.Config(config_tests)
     path = drake.Path(tests_path / test)
-    list(map(lambda lib: config_test_local.lib_path_runtime(os.path.relpath(
-      str(lib.path().dirname()),
-      str(path.dirname()))),
-             (lib for lib in test_libs if isinstance(lib, drake.cxx.DynLib))))
     bin_path = path.without_last_extension()
     bin = drake.cxx.Executable(
       bin_path,

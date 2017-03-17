@@ -135,10 +135,6 @@ def configure(cryptography,
   if cxx_toolkit.os == drake.os.android:
     cxx_config_tests.lib('stdc++')
     cxx_config_tests.lib('atomic')
-  list(map(lambda lib: cxx_config_tests.lib_path_runtime(os.path.relpath(
-    str(lib.path().dirname()),
-    str(tests_path))),
-           (lib for lib in test_libs if isinstance(lib, drake.cxx.DynLib))))
   for name in tests:
     test = drake.cxx.Executable(
       '%s/%s' % (tests_path, name),

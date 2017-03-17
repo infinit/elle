@@ -84,10 +84,6 @@ def configure(cxx_toolkit,
   if cxx_toolkit.os is drake.os.android:
     config_tests.lib('stdc++')
     config_tests.lib('atomic')
-  list(map(lambda lib: config_tests.lib_path_runtime(os.path.relpath(
-    str(lib.path().dirname()),
-    str(tests_path))),
-           (lib for lib in test_libs if isinstance(lib, drake.cxx.DynLib))))
   for name in tests:
     test = drake.cxx.Executable(
       tests_path / name,

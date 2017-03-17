@@ -848,10 +848,6 @@ def configure(curl_config,
     local_cxx_config_tests = drake.cxx.Config(cxx_config_tests)
     if cxx_toolkit.os == drake.os.macos:
       local_test_libs += cxx_libs
-    list(map(lambda lib: local_cxx_config_tests.lib_path_runtime(os.path.relpath(
-      str(lib.path().dirname()),
-      str(tests_path))),
-             (lib for lib in libraries if isinstance(lib, drake.cxx.DynLib))))
     test_sources = drake.nodes('%s/%s.cc' % (tests_path, test_name))
     test = drake.cxx.Executable('%s/%s' % (tests_path, test_name),
                                 test_sources + local_test_libs,

@@ -136,10 +136,6 @@ def configure(cryptography,
     cxx_config_tests.lib('stdc++')
     cxx_config_tests.lib('atomic')
   test_libs_path = tests_path / lib_path
-  list(map(lambda lib: cxx_config_tests.lib_path_runtime(os.path.relpath(
-    str(lib.path().dirname()),
-    str(tests_path))),
-           (lib for lib in test_libs if isinstance(lib, drake.cxx.DynLib))))
   cxx_config_tests.add_local_include_path(elle_tests_path)
   for name in tests:
     test = drake.cxx.Executable(
