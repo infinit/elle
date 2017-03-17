@@ -331,7 +331,8 @@ class State:
             pass
     max_age = datetime.timedelta(days = 7)
     clean_older(max_age)
-    while self.disk_space() < self.__opts.cleanup_threshold:
+    while self.disk_space() < self.__opts.cleanup_threshold and \
+          max_age >= datetime.timedelta(days = 3):
       max_age -= datetime.timedelta(days = 1)
       clean_older(max_age)
     return {
