@@ -303,7 +303,6 @@ class State:
     '''Available disk space in GB.'''
     statvfs = os.statvfs('.')
     res = int(statvfs.f_frsize * statvfs.f_bavail / 1024 ** 3)
-    print('disk_space: available space:', res)
     return res
 
   def garbage_collect_build_trees(self):
