@@ -157,7 +157,7 @@ namespace elle
 
   /// Like PlainStreamBuffer but with an configurable size.
   ///
-  /// In this version, underlying buffers are dynamically allocated in the
+  /// In this version, underlying buffers are dynamically allocated by the
   /// constructor.
   ///
   /// N.B. It can't be resized afterward.
