@@ -40,7 +40,7 @@ namespace elle
                              DurationOpt timeout)
       {
         _id = id;
-        rdv_connect(id, resolve_udp(rdv_host, std::to_string(rdv_port)),
+        rdv_connect(id, resolve_udp(rdv_host, rdv_port)[0],
                     timeout);
       }
 

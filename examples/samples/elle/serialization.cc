@@ -100,14 +100,15 @@ private:
   ELLE_ATTRIBUTE_RX(std::vector<std::string>, tags);
 
 public:
-  typedef elle::serialization_tag serialization_tag;
+  using serialization_tag = elle::serialization_tag;
 };
 
 int
 main()
 {
-  Record record("Sandstorm", "Darube",
-                boost::posix_time::time_from_string("1999-11-26 00:00:00.000"));
+  auto record
+    = Record("Sandstorm", "Darube",
+             boost::posix_time::time_from_string("1999-11-26 00:00:00.000"));
   record.tags().push_back("Dance");
   record.tags().push_back("Electronic");
   // Serialize Record as in version 0.1.0, where release_date & tags didn't
@@ -150,5 +151,4 @@ main()
     std::cout << "Record serialized at version 0.3.0 looks like: "
               << std::endl << "> " << r << std::endl;
   }
-  return 0;
 }

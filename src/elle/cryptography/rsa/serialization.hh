@@ -1,9 +1,8 @@
-#ifndef ELLE_CRYPTOGRAPHY_RSA_SERIALIZATION_HH
-# define ELLE_CRYPTOGRAPHY_RSA_SERIALIZATION_HH
+#pragma once
 
-# include <openssl/rsa.h>
+#include <openssl/rsa.h>
 
-# include <elle/cryptography/serialization.hh>
+#include <elle/cryptography/serialization.hh>
 
 namespace elle
 {
@@ -19,12 +18,10 @@ namespace elle
 
         struct RSA
         {
-          typedef ::RSA Type;
+          using Type = ::RSA;
           static constexpr const char* identifier = "rsa";
         };
       }
     }
   }
 }
-
-#endif

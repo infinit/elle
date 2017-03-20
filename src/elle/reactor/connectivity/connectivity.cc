@@ -44,9 +44,9 @@ namespace elle
         elle::reactor::network::UDPSocket s;
         s.close();
         s.bind(boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), 0));
-        auto server_ep = elle::reactor::network::resolve_udp(
-          host, std::to_string(port));
-        s.send_to(std::string("foo\n"), server_ep);
+        auto server_ep
+          = elle::reactor::network::resolve_udp(host, port);
+        s.send_to(std::string("foo\n"), server_ep[0]);
         boost::asio::ip::udp::endpoint ep;
         char buffer[5000];
         auto sz = s.receive_from(elle::WeakBuffer(buffer, sizeof buffer),
@@ -108,10 +108,10 @@ namespace elle
           });
         socket.rdv_connect(
           "connectivity-client-udp",
-          elle::reactor::network::resolve_udp("rdv.infinit.sh", "7890"),
+          elle::reactor::network::resolve_udp("rdv.infinit.sh", "7890")[0],
           5_sec);
-        auto ep = elle::reactor::network::resolve_udp(host, std::to_string(port));
-        socket.send_to(std::string("foo\n"), ep);
+        auto ep = elle::reactor::network::resolve_udp(host, port);
+        socket.send_to(std::string("foo\n"), ep[0]);
         elle::reactor::wait(poller);
         spoll.abort();
         if (!success)

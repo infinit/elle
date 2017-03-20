@@ -1,19 +1,17 @@
-#ifndef ELLE_CRYPTOGRAPHY_SECRETKEY_HH
-# define ELLE_CRYPTOGRAPHY_SECRETKEY_HH
+#pragma once
 
-# include <utility>
+#include <utility>
 
-# include <boost/operators.hpp>
+#include <boost/operators.hpp>
 
-# include <elle/Printable.hh>
-# include <elle/attribute.hh>
-# include <elle/fwd.hh>
-# include <elle/operator.hh>
-# include <elle/serialization.hh>
-
-# include <elle/cryptography/fwd.hh>
-# include <elle/cryptography/Oneway.hh>
-# include <elle/cryptography/Cipher.hh>
+#include <elle/Printable.hh>
+#include <elle/attribute.hh>
+#include <elle/fwd.hh>
+#include <elle/operator.hh>
+#include <elle/serialization.hh>
+#include <elle/cryptography/fwd.hh>
+#include <elle/cryptography/Oneway.hh>
+#include <elle/cryptography/Cipher.hh>
 
 //
 // ---------- Class -----------------------------------------------------------
@@ -118,7 +116,7 @@ namespace elle
       SecretKey(elle::serialization::SerializerIn& serializer);
       void
       serialize(elle::serialization::Serializer& serializer);
-      typedef elle::serialization_tag serialization_tag;
+      using serialization_tag = elle::serialization_tag;
 
       /*-----------.
       | Attributes |
@@ -151,5 +149,3 @@ namespace elle
     }
   }
 }
-
-#endif

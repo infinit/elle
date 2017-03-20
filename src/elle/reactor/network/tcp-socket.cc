@@ -36,7 +36,7 @@ namespace elle
       TCPSocket::TCPSocket(const std::string& hostname,
                            const std::string& port,
                            DurationOpt timeout)
-        : TCPSocket(resolve_tcp(hostname, port), timeout)
+        : TCPSocket(resolve_tcp(hostname, port)[0], timeout)
       {}
 
       TCPSocket::TCPSocket(const std::string& hostname,

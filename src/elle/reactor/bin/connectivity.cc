@@ -53,7 +53,10 @@ run(int argc, char** argv)
     if (i.second.ipv4_address.empty())
       continue;
     std::cerr << "  " << i.second.ipv4_address << std::endl;
-    public_ips.push_back(i.second.ipv4_address);
+    for (auto const& ip: i.second.ipv4_address)
+      public_ips.push_back(ip);
+    for (auto const& ip: i.second.ipv6_address)
+      public_ips.push_back(ip);
   }
 
   std::cerr << "\nConnectivity:" << std::endl;

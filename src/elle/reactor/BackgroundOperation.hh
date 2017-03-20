@@ -2,7 +2,7 @@
 
 #include <elle/optional.hh>
 
-#include <elle/reactor/operation.hh>
+#include <elle/reactor/Operation.hh>
 
 namespace elle
 {

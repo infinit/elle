@@ -379,6 +379,15 @@ resolution_failure()
         elle::reactor::network::resolve_tcp("does.not.exist", "http"),
         elle::reactor::network::ResolutionError);
       BOOST_CHECK_THROW(
+        elle::reactor::network::resolve_tcp("does.not.exist", 80),
+        elle::reactor::network::ResolutionError);
+      BOOST_CHECK_THROW(
+        elle::reactor::network::resolve_tcp_repr("does.not.exist:http"),
+        elle::reactor::network::ResolutionError);
+      BOOST_CHECK_THROW(
+        elle::reactor::network::resolve_tcp_repr("does.not.exist:80"),
+        elle::reactor::network::ResolutionError);
+      BOOST_CHECK_THROW(
         elle::reactor::network::TCPSocket("does.not.exist", "http"),
         elle::reactor::network::ResolutionError);
     });

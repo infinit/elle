@@ -1,10 +1,3 @@
-#ifndef ELLE_CRYPTOGRAPHY_DSA_KEYPAIR_HXX
-# define ELLE_CRYPTOGRAPHY_DSA_KEYPAIR_HXX
-
-//
-// ---------- Hash ------------------------------------------------------------
-//
-
 namespace std
 {
   template <>
@@ -17,5 +10,3 @@ namespace std
     }
   };
 }
-
-#endif

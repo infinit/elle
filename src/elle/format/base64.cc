@@ -71,7 +71,7 @@ namespace elle
         return res;
       }
 
-      typedef base64_from_binary<transform_width<const char *, 6, 8>> encoder;
+      using encoder = base64_from_binary<transform_width<const char *, 6, 8>>;
       template <typename SourceIterator, typename DestinationIterator>
       void
       _stream_encode(SourceIterator begin,
@@ -81,7 +81,7 @@ namespace elle
         std::copy(encoder(begin), encoder(end), output);
       }
 
-      typedef transform_width<binary_from_base64<char const *>, 8, 6> decoder;
+      using decoder = transform_width<binary_from_base64<char const *>, 8, 6>;
       template <typename SourceIterator, typename DestinationIterator>
       void
       _stream_decode(SourceIterator begin,

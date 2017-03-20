@@ -1,7 +1,7 @@
 #pragma once
 
 #include <elle/reactor/duration.hh>
-#include <elle/reactor/waitable.hh>
+#include <elle/reactor/Waitable.hh>
 
 namespace elle
 {

@@ -17,6 +17,7 @@ namespace elle
         DELETE,
         GET,
         HEAD,
+        OPTIONS,
         POST,
         PUT,
       };

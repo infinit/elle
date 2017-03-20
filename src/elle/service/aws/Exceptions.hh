@@ -108,7 +108,7 @@ namespace elle
         public elle::Exception
       {
       public:
-        typedef elle::Exception Super;
+        using Super = elle::Exception;
         AWSException(std::string const& operation,
                      std::string const& url,
                      unsigned int attempt,

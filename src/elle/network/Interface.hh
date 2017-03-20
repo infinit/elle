@@ -1,11 +1,10 @@
-#ifndef ELLE_NETWORK_INTERFACE_HH
-# define ELLE_NETWORK_INTERFACE_HH
+#pragma once
 
-# include <map>
-# include <string>
-# include <vector>
+#include <map>
+#include <string>
+#include <vector>
 
-# include <elle/compiler.hh>
+#include <elle/compiler.hh>
 
 namespace elle
 {
@@ -16,7 +15,7 @@ namespace elle
     {
     public:
       std::string mac_address;
-      std::string ipv4_address;
+      std::vector<std::string> ipv4_address;
       std::vector<std::string> ipv6_address;
 
     public:
@@ -54,6 +53,4 @@ namespace elle
   }
 }
 
-# include <elle/network/Interface.hxx>
-
-#endif
+#include <elle/network/Interface.hxx>

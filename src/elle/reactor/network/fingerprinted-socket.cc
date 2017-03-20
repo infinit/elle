@@ -33,7 +33,7 @@ namespace elle
         const std::string& port,
         std::vector<unsigned char> const& fingerprint,
         DurationOpt timeout):
-          FingerprintedSocket(resolve_tcp(hostname, port), fingerprint, timeout)
+          FingerprintedSocket(resolve_tcp(hostname, port)[0], fingerprint, timeout)
       {}
 
 

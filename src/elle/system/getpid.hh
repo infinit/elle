@@ -1,11 +1,10 @@
-#ifndef ELLE_SYSTEM_GETPID_HH
-# define ELLE_SYSTEM_GETPID_HH
+#pragma once
 
 namespace elle
 {
   namespace system
   {
-    typedef int ProcessId;
+    using ProcessId = int;
 
     /// Portable way to get our PID.
     ProcessId
@@ -13,4 +12,3 @@ namespace elle
 
   }
 }
-#endif

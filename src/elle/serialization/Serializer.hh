@@ -12,6 +12,7 @@
 # include <unordered_set>
 
 # include <boost/any.hpp>
+# include <boost/container/flat_set.hpp>
 # include <boost/date_time/posix_time/posix_time.hpp>
 # include <boost/multi_index_container.hpp>
 
@@ -765,6 +766,13 @@ namespace elle
       template <typename T, typename C, typename A>
       void
       _serialize(std::set<T, C, A>& collection);
+      /// Serialize or deserialize a boost::container::flat_set.
+      ///
+      /// @tparam Args... The flat_set template parameters.
+      /// @param collection A flat set.
+      template <typename... Args>
+      void
+      _serialize(boost::container::flat_set<Args...>& collection);
       /// Serialize or deserialize a boost::multi_index_container.
       ///
       /// @tparam T The type of the elements the bmi stores.

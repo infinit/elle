@@ -1,9 +1,8 @@
-#ifndef ELLE_MEMORY_HH
-# define ELLE_MEMORY_HH
+#pragma once
 
-# include <cstddef>
-# include <functional>
-# include <memory>
+#include <cstddef>
+#include <functional>
+#include <memory>
 
 namespace elle
 {
@@ -20,7 +19,7 @@ namespace elle
   `------*/
   public:
     using Self = generic_unique_ptr<T>;
-    typedef std::unique_ptr<T, std::function<void (T*)>> Super;
+    using Super = std::unique_ptr<T, std::function<void (T*)>>;
 
   /*-------------.
   | Construction |
@@ -68,6 +67,4 @@ namespace elle
   };
 }
 
-# include <elle/memory.hxx>
-
-#endif
+#include <elle/memory.hxx>

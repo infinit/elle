@@ -1,7 +1,7 @@
 #pragma once
 
 # include <elle/reactor/asio.hh>
-# include <elle/reactor/operation.hh>
+# include <elle/reactor/Operation.hh>
 
 namespace elle
 {

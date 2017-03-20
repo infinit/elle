@@ -1,15 +1,12 @@
-#ifndef ELLE_OPTION_HXX
-# define ELLE_OPTION_HXX
+#include <algorithm>
+#include <type_traits>
+#include <utility>
 
-# include <algorithm>
-# include <type_traits>
-# include <utility>
-
-# include <elle/Error.hh>
-# include <elle/TypeInfo.hh>
-# include <elle/meta.hh>
-# include <elle/printf.hh>
-# include <elle/utils.hh>
+#include <elle/Error.hh>
+#include <elle/TypeInfo.hh>
+#include <elle/meta.hh>
+#include <elle/printf.hh>
+#include <elle/utils.hh>
 
 namespace elle
 {
@@ -337,7 +334,7 @@ namespace elle
     template<typename V>
     struct OptionNames
     {
-      typedef int type;
+      using type = int;
       static
       int
       value(std::vector<std::string>& names)
@@ -405,5 +402,3 @@ namespace elle
     return output;
   }
 }
-
-#endif

@@ -62,7 +62,7 @@ namespace elle
       SSLSocket::SSLSocket(const std::string& hostname,
                            const std::string& port,
                            DurationOpt timeout)
-        : SSLSocket(resolve_tcp(hostname, port), timeout)
+        : SSLSocket(resolve_tcp(hostname, port)[0], timeout)
       {}
 
       SSLSocket::SSLSocket(boost::asio::ip::tcp::endpoint const& endpoint,
@@ -82,7 +82,7 @@ namespace elle
                            const std::string& port,
                            SSLCertificate& certificate,
                            DurationOpt timeout)
-        : SSLSocket(resolve_tcp(hostname, port), certificate, timeout)
+        : SSLSocket(resolve_tcp(hostname, port)[0], certificate, timeout)
       {}
 
       SSLSocket::SSLSocket(boost::asio::ip::tcp::endpoint const& endpoint,

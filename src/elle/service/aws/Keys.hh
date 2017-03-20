@@ -10,9 +10,9 @@ namespace elle
   {
     namespace aws
     {
-      typedef boost::posix_time::ptime RequestTime;
-      typedef std::map<std::string, std::string> RequestHeaders;
-      typedef std::map<std::string, std::string> RequestQuery;
+      using RequestTime = boost::posix_time::ptime;
+      using RequestHeaders = std::map<std::string, std::string>;
+      using RequestQuery = std::map<std::string, std::string>;
 
       /// AWS request type.
       enum class RequestType

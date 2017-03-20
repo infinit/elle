@@ -222,11 +222,11 @@ namespace elle
 #if defined(INFINIT_MACOSX) || defined(INFINIT_IOS)
       // macos has 64 bit lseek because off_t is 64 bits
       ELLE_ASSERT_GTE(sizeof(off_t), 8u);
-      typedef off_t seek_offset_type;
+      using seek_offset_type = off_t;
       #define SEEK_FUNC ::lseek
 #else
       // linux has lseek64
-      typedef off64_t seek_offset_type;
+      using seek_offset_type = off64_t;
       #define SEEK_FUNC ::lseek64
 #endif
       seek_offset_type amount = SEEK_FUNC(_handle, offset, SEEK_SET);

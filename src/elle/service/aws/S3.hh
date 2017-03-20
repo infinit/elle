@@ -36,8 +36,8 @@ namespace elle
         `------*/
       public:
         using ProgressCallback = std::function<void (int)>;
-        typedef uint64_t FileSize;
-        typedef std::vector<std::pair<std::string, FileSize>> List;
+        using FileSize = uint64_t;
+        using List = std::vector<std::pair<std::string, FileSize>>;
 
         enum class StorageClass
         {
@@ -115,7 +115,7 @@ namespace elle
           std::string const& mime_type = "binary/octet-stream",
           StorageClass storage_class = StorageClass::Default);
 
-        typedef std::pair<int, std::string> MultiPartChunk;
+        using MultiPartChunk = std::pair<int, std::string>;
         /// Upload one part of a multipart upload
         /// @return id for chunk information that needs to be passed to
         /// multipart_finalize
@@ -222,8 +222,8 @@ namespace elle
         void
         print(std::ostream& stream) const;
         // Callback invoked on all errors, transient or not
-        typedef
-        std::function<void(AWSException const&, bool will_retry)> ErrorCallback;
+        using ErrorCallback =
+          std::function<void(AWSException const&, bool will_retry)>;
         ELLE_ATTRIBUTE_RW(ErrorCallback, on_error);
       };
 

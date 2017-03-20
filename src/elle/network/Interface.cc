@@ -1,7 +1,3 @@
-#include <elle/network/Interface.hh>
-#include <elle/Exception.hh>
-#include <elle/printf.hh>
-
 #include <bitset>
 #include <iomanip>
 #include <iostream>
@@ -12,17 +8,17 @@
 #ifdef INFINIT_WINDOWS
 # include <winsock2.h>
 #elif defined INFINIT_ANDROID
-# include <sys/socket.h>
-# include <netinet/in.h>
 # include <arpa/inet.h>
-# include <net/if.h>
 # include <elle/network/ifaddrs_android.h>
-#else
-# include <sys/socket.h>
-# include <netinet/in.h>
-# include <arpa/inet.h>
 # include <net/if.h>
+# include <netinet/in.h>
+# include <sys/socket.h>
+#else
+# include <arpa/inet.h>
 # include <ifaddrs.h>
+# include <net/if.h>
+# include <netinet/in.h>
+# include <sys/socket.h>
 #endif
 
 #include <sys/types.h>
@@ -34,8 +30,9 @@
 # include <netpacket/packet.h>
 #endif
 
-#include <stdio.h>
-
+#include <elle/Exception.hh>
+#include <elle/printf.hh>
+#include <elle/network/Interface.hh>
 
 #ifdef AF_PACKET
 # define hw_addr_family AF_PACKET
@@ -105,7 +102,7 @@ namespace elle
 
         if_.mac_address = "";
         addr.s_addr = *(u_long*)host->h_addr_list[i];
-        if_.ipv4_address = inet_ntoa(addr);
+        if_.ipv4_address.emplace_back(inet_ntoa(addr));
         addresses[elle::sprintf("%s-%d", host->h_name, i)] = if_;
       }
 
@@ -138,7 +135,6 @@ namespace elle
       {
         return ifa_name.find("awdl") == 0;
       }
-
     }
 
     std::map<std::string, Interface>
@@ -187,7 +183,7 @@ namespace elle
               oss << '.';
             oss << static_cast<unsigned int>(tab[i]);
           }
-          map[iter->ifa_name].ipv4_address = oss.str();
+          map[iter->ifa_name].ipv4_address.push_back(oss.str());
           break;
         case AF_INET6:
           {

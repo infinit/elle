@@ -1,11 +1,10 @@
-#ifndef ELLE_OPTION_HH
-# define ELLE_OPTION_HH
+#pragma once
 
-# include <cstddef>
-# include <type_traits>
-# include <iosfwd>
+#include <cstddef>
+#include <type_traits>
+#include <iosfwd>
 
-# include <elle/serialization/Serializer.hh>
+#include <elle/serialization/Serializer.hh>
 
 namespace elle
 {
@@ -127,6 +126,4 @@ namespace elle
   };
 }
 
-# include <elle/Option.hxx>
-
-#endif
+#include <elle/Option.hxx>

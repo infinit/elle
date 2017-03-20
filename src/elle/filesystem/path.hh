@@ -1,9 +1,8 @@
-#ifndef ELLE_FILESYSTEM_PATH_SERIALIZATION_HH
-# define ELLE_FILESYSTEM_PATH_SERIALIZATION_HH
+#pragma once
 
-# include <boost/filesystem/path.hpp>
+#include <boost/filesystem/path.hpp>
 
-# include <elle/serialization/Serializer.hh>
+#include <elle/serialization/Serializer.hh>
 
 namespace elle
 {
@@ -12,7 +11,7 @@ namespace elle
     template<>
     struct ELLE_API Serialize<boost::filesystem::path>
     {
-      typedef std::string Type;
+      using Type = std::string;
       static
       Type
       convert(boost::filesystem::path& path);
@@ -23,6 +22,3 @@ namespace elle
     };
   }
 }
-
-
-#endif

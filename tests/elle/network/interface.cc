@@ -1,6 +1,9 @@
-#include <elle/network/Interface.hh>
 #include <iostream>
 
+#include <elle/printf.hh>
+#include <elle/network/Interface.hh>
+
+// FIXME: How is this a "test" ??
 int
 main()
 {

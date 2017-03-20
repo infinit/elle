@@ -15,7 +15,7 @@
 #include <elle/reactor/http/Version.hh>
 #include <elle/reactor/http/fwd.hh>
 #include <elle/reactor/network/proxy.hh>
-#include <elle/reactor/operation.hh>
+#include <elle/reactor/Operation.hh>
 
 namespace elle
 {

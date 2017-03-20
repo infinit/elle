@@ -1,11 +1,4 @@
-#ifndef ELLE_CRYPTOGRAPHY_DSA_PRIVATEKEY_HXX
-# define ELLE_CRYPTOGRAPHY_DSA_PRIVATEKEY_HXX
-
-//
-// ---------- Hash ------------------------------------------------------------
-//
-
-# include <elle/serialization/binary.hh>
+#include <elle/serialization/binary.hh>
 
 namespace std
 {
@@ -27,5 +20,3 @@ namespace std
     }
   };
 }
-
-#endif
