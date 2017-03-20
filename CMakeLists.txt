@@ -95,4 +95,4 @@ if (Uri_BUILD_DOCS)
   endif()
 endif()
 
-install(DIRECTORY include DESTINATION include)
+install(DIRECTORY include DESTINATION ".")
