@@ -19,7 +19,7 @@ namespace elle
   ///   assert(i == 3);
   /// }
   ///
-  /// \encode
+  /// \endcode
   template <typename T, typename U>
   struct ScopedAssignment
   {

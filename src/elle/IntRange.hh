@@ -8,15 +8,15 @@
 
 namespace elle
 {
-  /// A range of integers, defined by its beginning and end.
+  /// A range of integers, defined by its beginning and size.
   ///
   /// \code{.cc}
   ///
-  /// IntRange x{10, 100};
+  /// IntRange x{10, 100}; // 10..109 (from 10 with 100 entries)
   /// assert(x.begin() == 10);
-  /// assert(x.end() == 110);
+  /// assert(x.end() == 109);
   /// assert(x.contains(50));
-  /// assert(x.contains({20, 30})); // Contains the range {20, 21, ..., 49, 50};
+  /// assert(x.contains({20, 30})); // Contains the range {20, 21, ..., 48, 49};
   ///
   /// \endcode
   class IntRange
@@ -28,9 +28,10 @@ namespace elle
     /// Create a Range from a given start point and size.
     ///
     /// N.B. Second argument is not the end of the range but the size of the
-    ///      range.
+    ///      range. Therefore, Range(0, 5) is [0, 1, 2, 3, 4].
     ///
-    /// @param
+    /// @param start Where the range starts.
+    /// @param size The number of elements in the range.
     IntRange(int start, int size);
 
   /*----------.
@@ -121,7 +122,7 @@ namespace elle
   /// auto ranges = elle::IntRanges{{
   ///   elle::IntRange{0, 5},
   ///   elle::IntRange{10, 5},
-  /// }};
+  /// }}; // 0, 1, 2, 3, 4, 10, 11, 12, 13, 14
   /// assert(ranges.contains(4));
   /// assert(!ranges.contains(8));
   /// assert(ranges.contains({1, 3}));
@@ -129,7 +130,7 @@ namespace elle
   ///   std::cout << range;
   /// // Result: (0, 5)(10, 5)
   ///
-  /// \encode
+  /// \endcode
   class IntRanges
   {
   public:
@@ -156,11 +157,8 @@ namespace elle
     /// @returns The next free position.
     int
     next_free(int position) const;
-    /// Complete the current IntRanges with a given IntRange.
-    ///
-    /// Complete merge underlying `IntRange`s.
-    ///
-    /// XXX: Broken.
+    /// Complete the current IntRanges with a given IntRange and merge
+    /// underlying `IntRange`s.
     ///
     /// @param range The IntRange to complete IntRanges with.
     /// @returns XXX[doc].
@@ -169,14 +167,14 @@ namespace elle
     /// Check if the given IntRange is contained in any of the underlying
     /// `IntRange`s.
     ///
-    /// @params range The IntRange.
+    /// @param range The IntRange.
     /// @returns Whether the given range is contained.
     bool
     contains(IntRange const& range) const;
     /// Check if the given value is contained in any of the underlying
     /// `IntRange`s.
     ///
-    /// @params range The value.
+    /// @param pos The value.
     /// @returns Whether the given value is contained.
     bool
     contains(int pos) const;

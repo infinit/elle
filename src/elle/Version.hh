@@ -24,7 +24,7 @@ namespace elle
   /// assert(v_1_1_0.subminor() == 0);
   /// assert(v_1_1_0 > v_0_3_1);
   ///
-  /// \encode
+  /// \endcode
   class ELLE_API Version
     : public elle::Printable
   {
