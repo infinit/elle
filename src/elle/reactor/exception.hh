@@ -14,7 +14,7 @@ namespace elle
     {
     public:
       Exception(const std::string& message);
-      Exception(elle::Backtrace const& bt, elle::String const& format);
+      Exception(elle::Backtrace const& bt, std::string const& format);
     };
 
     class Timeout

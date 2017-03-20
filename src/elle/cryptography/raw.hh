@@ -5,7 +5,6 @@
 # include <elle/cryptography/Cipher.hh>
 # include <elle/cryptography/Oneway.hh>
 
-# include <elle/types.hh>
 # include <elle/fwd.hh>
 
 # include <openssl/evp.h>

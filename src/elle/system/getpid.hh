@@ -6,6 +6,7 @@ namespace elle
   {
     using ProcessId = int;
 
+    /// Portable way to get our PID.
     ProcessId
     getpid();
 

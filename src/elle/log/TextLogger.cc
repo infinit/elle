@@ -234,18 +234,18 @@ namespace elle
         msg = elle::sprintf("%s: %s", time, msg);
 
       auto color_code = get_color_code(level, type);
-      _output << color_code << msg << std::endl;
+      this->_output << color_code << msg << std::endl;
 
       if (lines.size() > 1)
       {
         ELLE_ASSERT_GTE(msg.size(), lines[0].size());
         auto indent = std::string(msg.size() - lines[0].size(), ' ');
-        for (elle::Size i = 1; i < lines.size(); i++)
-          _output << indent << lines[i] << std::endl;
+        for (auto i = 1u; i < lines.size(); i++)
+          this->_output << indent << lines[i] << std::endl;
       }
       if (!color_code.empty())
-        _output << "[0m";
-      _output.flush();
+        this->_output << "[0m";
+      this->_output.flush();
     }
   }
 }

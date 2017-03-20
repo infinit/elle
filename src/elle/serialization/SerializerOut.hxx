@@ -26,12 +26,5 @@ namespace elle
       if (auto entry = this->enter(name))
         this->serialize_switch<S>(*this, const_cast<T&>(v));
     }
-
-    template <typename S, typename T>
-    void
-    SerializerOut::serialize_ptr(std::string const& name, T* v)
-    {
-      this->Serializer::serialize<S>(name, v);
-    }
   }
 }

@@ -13,13 +13,23 @@ namespace elle
 {
   namespace protocol
   {
-    class Stream: public elle::Printable
+    /// An abstract stream, with two basic entry points: read and write.
+    ///
+    /// XXX: Shouldn't Stream inherit from IOStream?
+    class Stream
+      : public elle::Printable
     {
     /*-------------.
     | Construction |
     `-------------*/
     public:
+      /// Construct a Stream.
+      ///
+      /// @param scheduler A reactor::Scheduler.
       Stream(elle::reactor::Scheduler& scheduler);
+      /// Construct a Stream.
+      ///
+      /// Default reactor::Scheduler is used.
       Stream();
       virtual
       ~Stream();
@@ -37,6 +47,9 @@ namespace elle
     | Receiving |
     `----------*/
     public:
+      /// Read a buffer.
+      ///
+      /// @returns A Buffer.
       virtual
       elle::Buffer
       read() = 0;
@@ -45,6 +58,9 @@ namespace elle
     | Sending |
     `--------*/
     public:
+      /// Write an packet.
+      ///
+      /// @param packet The buffer to write.
       void
       write(elle::Buffer const& packet);
     protected:
@@ -56,18 +72,45 @@ namespace elle
     | Int serialization |
     `------------------*/
     public:
+      /// Write an uint32_t to \a given stream.
+      ///
+      /// The version is for compatibility reasons. From version 0.3.0, the way
+      /// the protocol serializes `int`s changed.
+      ///
+      /// @param s The stream to write to.
+      /// @param i The int to write.
+      /// @param v The version.
       static
       void
       uint32_put(std::ostream& s, uint32_t i, elle::Version const& v);
-
+      /// Read an uint32_t from \a given stream.
+      ///
+      /// The version is for compatibility reasons. From version 0.3.0, the way
+      /// the protocol serializes `int`s changed.
+      ///
+      /// @param s The stream to read from.
+      /// @param v The version.
       static
       uint32_t
       uint32_get(std::istream& s, elle::Version const& v);
-
+      /// Write an uint32_t to \a given buffer.
+      ///
+      /// The version is for compatibility reasons. From version 0.3.0, the way
+      /// the protocol serializes `int`s changed.
+      ///
+      /// @param buffer The buffer to write to.
+      /// @param i The int to write.
+      /// @param v The version.
       static
       void
-      uint32_put(elle::Buffer& s, uint32_t i, elle::Version const& v);
-
+      uint32_put(elle::Buffer& buffer, uint32_t i, elle::Version const& v);
+      /// Read an uint32_t from \a given stream.
+      ///
+      /// The version is for compatibility reasons. From version 0.3.0, the way
+      /// the protocol serializes `int`s changed.
+      ///
+      /// @param s The stream to read from.
+      /// @param v The version.
       static
       uint32_t
       uint32_get(elle::Buffer& s, elle::Version const& v);

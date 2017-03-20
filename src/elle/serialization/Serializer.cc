@@ -148,7 +148,7 @@ namespace elle
 
     void
     Serializer::_serialize_dict_key(std::string const&,
-        std::function<void ()> const&)
+                                    std::function<void ()> const&)
     {
       ELLE_LOG_COMPONENT("elle.serialization.Serializer");
       ELLE_WARN("%s: do nothing", *this);
@@ -156,7 +156,7 @@ namespace elle
 
     void
     Serializer::_deserialize_dict_key(
-        std::function<void (std::string const&)> const&)
+      std::function<void (std::string const&)> const&)
     {
       ELLE_LOG_COMPONENT("elle.serialization.Serializer");
       ELLE_WARN("%s: do nothing", *this);

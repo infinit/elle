@@ -5,6 +5,7 @@
 
 namespace elle
 {
+  /// The serialization tag used by Elle.
   struct ELLE_API serialization_tag
   {
     static elle::Version version;

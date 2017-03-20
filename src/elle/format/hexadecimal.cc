@@ -34,7 +34,7 @@ namespace elle
         size_t src_size = string.size();
         size_t dst_size = src_size / 2;
         ELLE_ASSERT(src_size % 2 == 0);
-        Byte* dst = nullptr;
+        uint8_t* dst = nullptr;
           {
             size_t old_size = buffer.size();
             buffer.size(old_size + dst_size);
@@ -58,28 +58,28 @@ namespace elle
           }
       }
 
-      String
+      std::string
       encode(ConstWeakBuffer buffer)
       {
-        String string;
+        std::string string;
         encode(buffer, string);
         return (string);
       }
 
       void
       encode(ConstWeakBuffer buffer,
-             String& string)
+             std::string& string)
       {
         static char const* chars = "0123456789abcdef";
         if (buffer.size() == 0)
           return;
-        Size i = string.size();
+        Buffer::Size i = string.size();
         string.resize(i + buffer.size() * 2);
-        Byte const* ptr = buffer.contents();
-        Byte const* end = ptr + buffer.size();
+        uint8_t const* ptr = buffer.contents();
+        uint8_t const* end = ptr + buffer.size();
         while (ptr != end)
         {
-          Byte c = *ptr++;
+          uint8_t c = *ptr++;
           string[i++] = chars[(c >> 4) & 0xf];
           string[i++] = chars[c & 0xf];
         }

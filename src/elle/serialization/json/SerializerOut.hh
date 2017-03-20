@@ -14,6 +14,15 @@ namespace elle
   {
     namespace json
     {
+      /// A specialized SerializerOut for JSON.
+      ///
+      /// Serialize object to their JSON representation.
+      ///
+      /// Details:
+      /// - Optional non initialized are not serialized.
+      /// - unordered_map and map are serialized dict {x: y}.
+      /// - unordered_multimap are serialized list of list [[x, x], [x, y]].
+      /// - empty maps and unordered_multimap are serialized as null.
       class ELLE_API SerializerOut
         : public serialization::SerializerOut
       {
@@ -28,9 +37,19 @@ namespace elle
       | Construction |
       `-------------*/
       public:
+        /// Construct a SerializerOut for JSON.
+        ///
+        /// @see elle::serialization::SerializerOut
+        ///
+        /// @param pretty Whether the JSON should be formatted.
         SerializerOut(std::ostream& output,
                       bool versioned = true,
                       bool pretty = false);
+        /// Construct a SerializerOut for JSON.
+        ///
+        /// @see elle::serialization::SerializerOut
+        ///
+        /// @param pretty Whether the JSON should be formatted.
         SerializerOut(std::ostream& output,
                       Versions versions,
                       bool versioned = true,

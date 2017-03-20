@@ -12,6 +12,14 @@ namespace elle
   {
     namespace binary
     {
+      /// A specialized SerializerOut for binary.
+      ///
+      /// Serialize object to their binary representation.
+      ///
+      /// Details:
+      /// - In binary, order matters. Do not reorder members afterward,
+      ///   otherwise the existing serialized version won't be deserializable
+      ///   anymore.
       class ELLE_API SerializerOut
         : public serialization::SerializerOut
       {
@@ -26,7 +34,13 @@ namespace elle
       | Construction |
       `-------------*/
       public:
+        /// Construct a SerializerOut for binary.
+        ///
+        /// @see elle::serialization::SerializerOut.
         SerializerOut(std::ostream& output, bool versioned = true);
+        /// Construct a SerializerOut for binary.
+        ///
+        /// @see elle::serialization::SerializerOut.
         SerializerOut(std::ostream& output,
                       Versions versions, bool versioned = true);
         virtual

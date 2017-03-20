@@ -12,6 +12,28 @@ namespace elle
 {
   namespace protocol
   {
+    /// A Channel of a ChanneledStream, identified by its unique Id.
+    ///
+    /// The Channels are specialization of Stream, designed to work with a
+    /// ChanneledStream as backend. When writing in a Channel, the packet will
+    /// be prefixed by the Id of the Channel allowing the ChanneledStream to
+    /// determine the destination of the packet through a single connection.
+    ///
+    /// @see ChanneledStream for more information.
+    ///
+    /// \code{.cc}
+    ///
+    /// // Consider channeled_stream, a ChanneledStream.
+    ///
+    /// // Open a Channel.
+    /// elle::protocol::Channel channel1(channeled_stream);
+    /// channel1.write({"hello there!"});
+    ///
+    /// // Wait and connect to a Channel open by the peer.
+    /// auto channel2 = channeled_stream.accept();
+    /// auto packet = channel2.read();
+    ///
+    /// \endcode
     class Channel
       : public Stream
     {
@@ -27,10 +49,18 @@ namespace elle
     | Construction |
     `-------------*/
     public:
+      /// Construct a Channel for a ChannelStream.
+      ///
+      /// @param backend The ChannelStream used as backend.
       Channel(ChanneledStream& backend);
+      /// Move constructor.
       Channel(Channel&& source);
       ~Channel();
     private:
+      /// Construct a Channel for a ChanneledStream.
+      ///
+      /// @param backend The ChanneledStream used as backend.
+      /// @param id The id of the Channel.
       Channel(ChanneledStream& backend, int id);
 
     /*--------.
@@ -50,6 +80,9 @@ namespace elle
     | Receiving |
     `----------*/
     public:
+      /// Read data from the Channel.
+      ///
+      /// @see Stream::read.
       elle::Buffer
       read() override;
 
@@ -57,6 +90,9 @@ namespace elle
     | Sending |
     `--------*/
     protected:
+      /// Write data to the Channel.
+      ///
+      /// @see Stream::_write.
       void
       _write(elle::Buffer const& packet) override;
 

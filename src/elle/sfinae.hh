@@ -14,6 +14,8 @@ namespace elle
   }
 }
 
+/// Helpers for template arguments for SFINAE operations.
+
 #define ELLE_SFINAE_IF_WORKS(Expr)                      \
   int, ::elle::sfinae::Helper<sizeof(Expr, 0)>* = nullptr
 

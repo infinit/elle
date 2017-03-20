@@ -31,6 +31,29 @@
 
 namespace elle
 {
+  /// A class to measure execution time of a given scope.
+  ///
+  /// \code{.cc}
+  ///
+  /// void
+  /// foo()
+  /// {
+  ///   ELLE_MEASURE("global");
+  ///   for (auto i: data)
+  ///   {
+  ///     ELLE_MEASURE("first loop");
+  ///     {
+  ///       for (auto j: i.data())
+  ///       {
+  ///         ELLE_MEASURE("second loop");
+  ///         process(j);
+  ///       }
+  ///     }
+  ///   }
+  /// }
+  ///
+  ///
+  /// \endcode
   struct Measure
   {
 #ifdef ELLE_WITH_MEASURE
@@ -50,12 +73,13 @@ namespace elle
         this->done = true;
         using namespace std::chrono;
         auto d = duration_cast<milliseconds>(system_clock::now() - this->start);
-        elle::printf("%s %s took %s ms (%s:%s)\n",
-                     std::string(_indent(), '#'),
-                     this->name,
-                     d.count(),
-                     this->file,
-                     this->line);
+        elle::fprintf(std::cout,
+                      "%s %s took %s ms (%s:%s)\n",
+                      std::string(_indent(), '#'),
+                      this->name,
+                      d.count(),
+                      this->file,
+                      this->line);
         _indent()--;
       }
     }
@@ -85,6 +109,7 @@ namespace elle
     inline Measure(Args&&...) {}
     inline void end() {}
 #endif
+  public:
      operator bool() const { return false; }
   };
 }

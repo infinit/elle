@@ -33,7 +33,7 @@ namespace elle
       }
 
       void
-        print(std::ostream& o) const
+      print(std::ostream& o) const
       {
         elle::fprintf(o, "%s.%s", this->_object, S::name());
       }

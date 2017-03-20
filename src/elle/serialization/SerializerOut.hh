@@ -10,6 +10,8 @@ namespace elle
 {
   namespace serialization
   {
+    /// A Serializer specialized for serializing and writing serialized data to
+    /// a stream.
     class ELLE_API SerializerOut
       : public Serializer
     {
@@ -24,13 +26,20 @@ namespace elle
     | Construction |
     `-------------*/
     public:
+      /// Construct a SerializerOut from an output stream.
+      ///
+      /// @see Serializer(bool);
       SerializerOut(bool versioned = true);
+      /// Construct a SerializerOut from an output stream.
+      ///
+      /// @see Serializer(Versions, bool);
       SerializerOut(Versions versions, bool versioned = true);
 
     /*-----------.
     | Properties |
     `-----------*/
     public:
+      /// Return true.
       bool
       out() const override;
 
@@ -38,29 +47,45 @@ namespace elle
     | Overloads |
     `----------*/
     public:
-      // Const overloads
+      /// The SerializerOut doesn't modify the given object.
+
+      /// Const overload of Serializer::serialize_forward.
+      ///
+      /// @see Serializer::serialize_forward(T&).
       template <typename S = void, typename T>
       void
       serialize_forward(T const& v);
+      /// Const overload of Serializer::serialize_forward.
+      ///
+      /// @see Serializer::serialize_forward(T*).
       template <typename S = void, typename T>
       void
       serialize_forward(T const* &v);
+      /// Const overload of Serializer::serialize.
+      ///
+      /// @see Serializer::serialize(..., T&);
       template <typename S = void, typename T>
       void
       serialize(std::string const& name, T const& v);
+      /// Const overload of Serializer::serialize.
+      ///
+      /// @see Serializer::serialize(std::pair<T1, T2>&);
       template <typename T1, typename T2>
       void
       serialize(std::pair<T1, T2> const& p);
-      // Litteral strings overload
+      /// Serialize literal strings.
+      ///
+      /// @param name The name of the entry.
+      /// @param v The literal string to write.
       void
       serialize(std::string const& name, char const* v);
+      /// Overload of Serializer::serialize.
+      ///
+      /// @see Serializer::serialize(std::string, collection&);x
       template <typename As,
                 template <typename, typename> class C, typename T, typename A>
       void
       serialize(std::string const& name, C<T, A>& collection, as<As>);
-      template <typename S, typename T>
-      void
-      serialize_ptr(std::string const& name, T* ptr);
     protected:
       template <typename As,
                 template <typename, typename> class C, typename T, typename A>

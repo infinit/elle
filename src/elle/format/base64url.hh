@@ -3,7 +3,6 @@
 
 # include <elle/Buffer.hh>
 # include <elle/format/base64.hh>
-# include <elle/types.hh>
 
 namespace elle
 {

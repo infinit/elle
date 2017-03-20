@@ -7,6 +7,7 @@ namespace elle
 {
   namespace system
   {
+    /// Return the current username.
     std::string
     username();
   }

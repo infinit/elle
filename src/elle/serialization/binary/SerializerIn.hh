@@ -12,8 +12,13 @@ namespace elle
   {
     namespace binary
     {
-       class ELLE_API SerializerIn
-         : public serialization::SerializerIn
+      /// A specialized SerializerIn for binary.
+      ///
+      /// Deserialize objects from their binary representations.
+      ///
+      ///
+      class ELLE_API SerializerIn
+        : public serialization::SerializerIn
       {
       /*------.
       | Types |

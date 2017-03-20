@@ -8,6 +8,52 @@ namespace elle
 {
   namespace das
   {
+    /// Flatten objects as tuple.
+    ///
+    /// \code{.cc}
+    ///
+    /// namespace symbols
+    /// {
+    ///   ELLE_DAS_SYMBOL(foo);
+    ///   ELLE_DAS_SYMBOL(id);
+    ///   ELLE_DAS_SYMBOL(name);
+    /// }
+    ///
+    /// struct Foo
+    /// {
+    ///   std::string name;
+    ///
+    ///   using Model = elle::das::Model<
+    ///                   Foo,
+    ///                   decltype(elle::meta::list(symbols::name))>;
+    /// };
+    ///
+    /// struct Device
+    /// {
+    ///   Device(int id, std::string const& name)
+    ///     : id(id)
+    ///     , foo(name)
+    ///   {}
+    ///
+    ///   int id;
+    ///   Foo foo;
+    ///
+    ///   using Model = elle::das::Model<
+    ///                   Device,
+    ///                   decltype(elle::meta::list(symbols::id,
+    ///                                             symbols::foo))>;
+    /// };
+    ///
+    /// Device d(42, "towel");
+    /// auto flat = elle::das::flatten(d);
+    /// auto rflat = elle::das::flatten_ref(d);
+    /// assert(std::get<0>(flat) == d.id);
+    /// assert(std::get<0>(std::get<1>(flat)) == d.foo.name);
+    /// std::get<0>(rflat) += 5;
+    /// assert(std::get<0>(rflat) == d.id);
+    /// assert(std::get<0>(rflat) == std::get<0>(flat) + 5);
+    ///
+    /// \endcode
     namespace
     {
       template <typename O, template <typename> class M>

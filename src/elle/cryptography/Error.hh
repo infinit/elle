@@ -1,7 +1,6 @@
 #ifndef ELLE_CRYPTOGRAPHY_ERROR_HH
 # define ELLE_CRYPTOGRAPHY_ERROR_HH
 
-# include <elle/types.hh>
 # include <elle/Error.hh>
 
 namespace elle

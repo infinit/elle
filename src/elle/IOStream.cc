@@ -15,29 +15,29 @@ namespace elle
   | IOStreamClear |
   `--------------*/
 
-  IOStreamClear::IOStreamClear(std::ios& s):
-    _stream(s)
+  IOStreamClear::IOStreamClear(std::ios& s)
+    : _stream(s)
   {}
 
   IOStreamClear::~IOStreamClear()
   {
-    _stream.clear();
+    this->_stream.clear();
   }
 
   /*---------.
   | IOStream |
   `---------*/
 
-  IOStream::IOStream(std::streambuf* buffer):
-    std::iostream(buffer),
-    _buffer(buffer)
+  IOStream::IOStream(std::streambuf* buffer)
+    : std::iostream(buffer)
+    , _buffer(buffer)
   {
     exceptions(std::iostream::badbit);
   }
 
-  IOStream::IOStream(IOStream&& source):
-    std::iostream(source._buffer),
-    _buffer(source._buffer)
+  IOStream::IOStream(IOStream&& source)
+    : std::iostream(source._buffer)
+    , _buffer(source._buffer)
   {
     source._buffer = nullptr;
   }
@@ -47,7 +47,7 @@ namespace elle
     if (this->_buffer)
     {
       this->_buffer->pubsync();
-      delete _buffer;
+      delete this->_buffer;
     }
   }
 
@@ -68,7 +68,7 @@ namespace elle
   StreamBuffer::underflow()
   {
     ELLE_TRACE_SCOPE("%s: underflow", *this);
-    WeakBuffer b = read_buffer();
+    WeakBuffer b = this->read_buffer();
     if (b.empty())
     {
       setg(0, 0, 0);
@@ -83,11 +83,11 @@ namespace elle
   StreamBuffer::overflow(int c)
   {
     ELLE_TRACE_SCOPE("%s: overflow", *this);
-    sync();
-    WeakBuffer b = write_buffer();
+    this->sync();
+    WeakBuffer b = this->write_buffer();
     setp(reinterpret_cast<char*>(b.mutable_contents()),
          reinterpret_cast<char*>(b.mutable_contents() + b.size()));
-    b.mutable_contents()[0] = static_cast<Byte>(c);
+    b.mutable_contents()[0] = static_cast<Buffer::Byte>(c);
     pbump(1);
     // Success is indicated by "A value different from EOF".
     return EOF + 1;
@@ -100,7 +100,7 @@ namespace elle
     ELLE_TRACE_SCOPE("%s: sync %s bytes", *this, size);
     setp(0, 0);
     if (size > 0)
-      flush(size);
+      this->flush(size);
     // Success
     return 0;
   }
@@ -113,9 +113,9 @@ namespace elle
   | PlainStreamBuffer |
   `------------------*/
 
-  PlainStreamBuffer::PlainStreamBuffer():
-    _ibuf(),
-    _obuf()
+  PlainStreamBuffer::PlainStreamBuffer()
+    : _ibuf()
+    , _obuf()
   {}
 
   PlainStreamBuffer::~PlainStreamBuffer()
@@ -124,36 +124,36 @@ namespace elle
   WeakBuffer
   PlainStreamBuffer::read_buffer()
   {
-    static Size max_size = _bufsize;
+    static Size max_size = PlainStreamBuffer::_bufsize;
     ELLE_TRACE("read at most %s bytes", max_size)
     {
-      Size size = read(_ibuf, max_size);
+      Size size = this->read(this->_ibuf, max_size);
       ELLE_TRACE("got %s bytes", size);
-      return WeakBuffer(_ibuf, size);
+      return WeakBuffer(this->_ibuf, size);
     }
   }
 
   WeakBuffer
   PlainStreamBuffer::write_buffer()
   {
-    return WeakBuffer(_obuf, _bufsize);
+    return WeakBuffer(this->_obuf, PlainStreamBuffer::_bufsize);
   }
 
   void
   PlainStreamBuffer::flush(Size size)
   {
     ELLE_TRACE("write %s bytes", size)
-      write(_obuf, size);
+      this->write(this->_obuf, size);
   }
 
   /*-------------------.
   | DynamicStreamBuffer |
   `-------------------*/
 
-  DynamicStreamBuffer::DynamicStreamBuffer(Size size):
-    _bufsize(size),
-    _ibuf(new Byte[size]),
-    _obuf(new Byte[size])
+  DynamicStreamBuffer::DynamicStreamBuffer(Size size)
+    : _bufsize(size)
+    , _ibuf(new Byte[size])
+    , _obuf(new Byte[size])
   {}
 
   DynamicStreamBuffer::~DynamicStreamBuffer()
@@ -167,7 +167,7 @@ namespace elle
   {
     ELLE_TRACE("read at most %s bytes", this->_bufsize)
     {
-      Size size = read((char *)_ibuf, this->_bufsize);
+      Size size = this->read((char *)this->_ibuf, this->_bufsize);
       ELLE_TRACE("got %s bytes", size);
       return WeakBuffer{this->_ibuf, size};
     }
@@ -176,7 +176,7 @@ namespace elle
   WeakBuffer
   DynamicStreamBuffer::write_buffer()
   {
-    return WeakBuffer{this->_obuf, _bufsize};
+    return WeakBuffer{this->_obuf, this->_bufsize};
   }
 
   void

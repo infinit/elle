@@ -2,18 +2,14 @@
 
 #if defined ELLE_CRYPTOGRAPHY_ROTATION
 
-# include <elle/cryptography/fwd.hh>
-# include <elle/cryptography/types.hh>
+#include <utility>
 
-# include <elle/types.hh>
-# include <elle/attribute.hh>
-# include <elle/operator.hh>
-# include <elle/Buffer.hh>
-# include <elle/Printable.hh>
-# include <elle/serialization/Serializer.hh>
-
-# include <utility>
-ELLE_OPERATOR_RELATIONALS();
+#include <elle/cryptography/fwd.hh>
+#include <elle/attribute.hh>
+#include <elle/operator.hh>
+#include <elle/Buffer.hh>
+#include <elle/Printable.hh>
+#include <elle/serialization/Serializer.
 
 //
 // ---------- Class -----------------------------------------------------------

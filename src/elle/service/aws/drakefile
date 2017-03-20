@@ -1,4 +1,4 @@
-
+import os
 import drake
 import drake.cxx
 import drake.cxx.boost
@@ -30,6 +30,7 @@ def configure(cryptography,
   global config
   config = drake.cxx.Config()
   config.standard = drake.cxx.Config.cxx_14
+  lib_path = '../../../../lib'
 
   # Boost
   boost = boost or drake.cxx.boost.Boost()
@@ -37,17 +38,12 @@ def configure(cryptography,
 
   # Elle
   config += elle.config
-  elle_library = drake.copy(elle.library, 'lib', strip_prefix = True)
 
   # Reactor
   config += reactor.config
-  reactor_library = drake.copy(reactor.library, 'lib',
-                               strip_prefix = True)
 
   # Cryptography
   config += cryptography.config
-  cryptography_library = drake.copy(cryptography.library, 'lib',
-                                    strip_prefix = True)
 
   # Local C++ configuration
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
@@ -61,7 +57,7 @@ def configure(cryptography,
   else:
     local_cxx_config += boost.config_date_time(link = False)
     local_cxx_config.library_add(drake.copy(boost.date_time_dynamic,
-                                            'lib', strip_prefix = True))
+                                            lib_path, strip_prefix = True))
 
   sources = drake.nodes(
     'CanonicalRequest.cc',
@@ -83,12 +79,12 @@ def configure(cryptography,
   global lib_static, lib_dynamic, library
   from itertools import chain
   lib_static = drake.cxx.StaticLib(
-    'lib/elle_webapi_aws',
-    chain(sources, (elle_library, reactor_library, cryptography_library)),
+    lib_path + '/elle_webapi_aws',
+    chain(sources, (elle.library, reactor.library, cryptography.library)),
     cxx_toolkit, local_cxx_config)
   lib_dynamic = drake.cxx.DynLib(
-    'lib/elle_webapi_aws',
-    chain(sources, (elle_library, reactor_library, cryptography_library)),
+    lib_path + '/elle_webapi_aws',
+    chain(sources, (elle.library, reactor.library, cryptography.library)),
     cxx_toolkit, local_cxx_config)
 
   # Build
@@ -101,49 +97,50 @@ def configure(cryptography,
   else:
     library = lib_static
 
-  # Tests
+  ## ----- ##
+  ## Tests ##
+  ## ----- ##
+
   global rule_check, rule_tests
   rule_check = drake.TestSuite('check')
   rule_tests = drake.Rule('tests')
+  elle_tests_path = drake.Path('../../../../tests')
+  tests_path = elle_tests_path / 'elle/service/aws'
 
   tests = [
     'aws_requests',
   ]
 
   cxx_config_tests = drake.cxx.Config(local_cxx_config)
+  test_libs = [library, reactor.library, elle.library, cryptography.library]
+  cxx_config_tests += boost.config_test(
+    static = not boost.prefer_shared or None,
+    link = not boost.prefer_shared)
+  cxx_config_tests += boost.config_timer(
+    static = not boost.prefer_shared or None,
+    link = not boost.prefer_shared)
+  cxx_config_tests += boost.config_system(
+    static = not boost.prefer_shared or None,
+    link = not boost.prefer_shared)
+  cxx_config_tests += boost.config_thread(
+    static = not boost.prefer_shared or None,
+    link = not boost.prefer_shared)
+  if boost.prefer_shared:
+    test_libs += [
+      boost.test_dynamic,
+      boost.timer_dynamic,
+      boost.system_dynamic,
+      boost.thread_dynamic
+    ]
   if cxx_toolkit.os == drake.os.android:
     cxx_config_tests.lib('stdc++')
     cxx_config_tests.lib('atomic')
-  if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
-    cxx_config_tests += boost.config_test(static = True)
-    cxx_config_tests += boost.config_timer(static = True)
-    cxx_config_tests += boost.config_system(static = True)
-    cxx_config_tests += boost.config_thread(static = True)
-  else:
-    cxx_config_tests += boost.config_system(link = False)
-    cxx_config_tests.library_add(
-      drake.copy(boost.system_dynamic, 'lib', strip_prefix = True))
-    cxx_config_tests += boost.config_test(link = False)
-    cxx_config_tests.library_add(
-      drake.copy(boost.test_dynamic, 'lib', strip_prefix = True))
-    cxx_config_tests += boost.config_timer(link = False)
-    cxx_config_tests.library_add(
-      drake.copy(boost.timer_dynamic, 'lib', strip_prefix = True))
-    cxx_config_tests += boost.config_thread(link = False)
-    cxx_config_tests.library_add(
-      drake.copy(boost.thread_dynamic, 'lib', strip_prefix = True))
-  cxx_config_tests.lib_path_runtime('../lib')
-
+  test_libs_path = tests_path / lib_path
+  cxx_config_tests.add_local_include_path(elle_tests_path)
   for name in tests:
     test = drake.cxx.Executable(
-      'tests/%s' % name,
-      (
-        drake.node('tests/%s.cc' % name),
-        library,
-        elle_library,
-        reactor_library,
-        cryptography_library,
-      ),
+      tests_path / name,
+      [drake.node(tests_path / ('%s.cc' % name))] + test_libs,
       cxx_toolkit,
       cxx_config_tests,
     )
@@ -167,8 +164,8 @@ def configure(cryptography,
     global rule_install
     rule_install = drake.Rule('install')
     if cxx_toolkit.os not in [drake.os.windows, drake.os.ios]:
-      rule_install << drake.install(lib_dynamic, prefix)
-    rule_install << drake.install(lib_static, prefix)
+      rule_install << drake.install(lib_dynamic, prefix / 'lib', strip_prefix = True)
+    rule_install << drake.install(lib_static, prefix / 'lib', strip_prefix = True)
     rule_install << drake.install(
-      (node for node in sources if isinstance(node, drake.cxx.Header)),
+      list(filter(lambda n: isinstance(n, drake.cxx.Header), sources)),
       prefix / 'include' / 'elle' / 'service' / 'aws')

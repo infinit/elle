@@ -31,20 +31,21 @@ def configure(cxx_toolkit,
   config = elle.config + das.config + reactor.config
   config.add_local_include_path('src')
   local_config = drake.cxx.Config(config) + cxx_config
+  lib_path = '../../../../lib'
 
   ## ------- ##
   ## Library ##
   ## ------- ##
 
-  elle_lib = drake.copy(elle.lib_dynamic, 'lib', strip_prefix = True)
+  elle_lib = elle.lib_dynamic
   sources = drake.nodes(
     'Dropbox.cc',
     'Dropbox.hh',
   )
-  lib_dynamic = drake.cxx.DynLib('lib/elle_dropbox',
+  lib_dynamic = drake.cxx.DynLib(lib_path + '/elle_dropbox',
                                  sources + [elle_lib],
                                  cxx_toolkit, local_config)
-  lib_static = drake.cxx.StaticLib('lib/elle_dropbox',
+  lib_static = drake.cxx.StaticLib(lib_path + '/elle_dropbox',
                                    sources,
                                    cxx_toolkit, local_config)
   rule_build = drake.Rule('build')
@@ -59,8 +60,8 @@ def configure(cxx_toolkit,
     global rule_install
     rule_install = drake.Rule('install')
     if cxx_toolkit.os not in [drake.os.windows, drake.os.ios]:
-      rule_install << drake.install(lib_dynamic, prefix)
-    rule_install << drake.install(lib_static, prefix)
+      rule_install << drake.install(lib_dynamic, prefix / 'lib', strip_prefix = True)
+    rule_install << drake.install(lib_static, prefix / 'lib', strip_prefix = True)
     rule_install << drake.install(
-      (node for node in sources if isinstance(node, drake.cxx.Header)),
+      list(filter(lambda n: isinstance(n, drake.cxx.Header), sources)),
       prefix / 'include' / 'elle' / 'service' / 'dropbox')

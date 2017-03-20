@@ -11,6 +11,7 @@ namespace elle
 {
   namespace system
   {
+    /// A process spawner.
     class ELLE_API Process
     {
     /*------.
@@ -24,8 +25,17 @@ namespace elle
     | Construction |
     `-------------*/
     public:
-      // If set_uid is true, set real uid/gid to effective uid/gid before exec
+      /// Create a process.
+      ///
+      /// @param args List of arguments, starting with the executable, followed
+      ///             by the arguments.
+      /// @param set_uid Set real uid/gid to effective uid/gid before exec.
       Process(Arguments args, bool set_uid = false);
+      /// Create a process.
+      ///
+      /// @param args List of arguments, starting with the executable, followed
+      ///             by the arguments.
+      /// @param set_uid Set real uid/gid to effective uid/gid before exec.
       Process(std::initializer_list<std::string> args,
               bool set_uid = false);
       ~Process();
@@ -41,8 +51,12 @@ namespace elle
     | Control |
     `--------*/
     public:
-      int wait();
-      int pid();
+      /// Wait for Process to return.
+      int
+      wait();
+      /// Get Process ID.
+      int
+      pid();
 
     /*---------------.
     | Implementation |

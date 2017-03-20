@@ -52,50 +52,53 @@ def configure(zlib_lib,
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
   cxx_config = drake.cxx.Config(cxx_config) or drake.cxx.Config()
 
+  # Libraries.
+  lib_path = '../../lib'
+
   # Boost
   boost = boost or drake.cxx.boost.Boost()
   cxx_config += boost.config()
   if cxx_toolkit.os in [drake.os.macos, drake.os.windows, drake.os.ios, drake.os.android]:
     cxx_config += boost.config_filesystem(link = False, static = True)
     cxx_config.library_add(
-      drake.copy(boost.filesystem_static, 'lib', strip_prefix = True))
+      drake.copy(boost.filesystem_static, lib_path, strip_prefix = True))
   else:
     cxx_config += boost.config_filesystem(link = False)
     cxx_config.library_add(drake.copy(boost.filesystem_dynamic,
-                                      'lib', strip_prefix = True))
+                                      lib_path, strip_prefix = True))
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
     cxx_config += boost.config_system(link = False, static = True)
     cxx_config.library_add(
-      drake.copy(boost.system_static, 'lib', strip_prefix = True))
+      drake.copy(boost.system_static, lib_path, strip_prefix = True))
     cxx_config += boost.config_thread(link = False, static = True)
     cxx_config.library_add(
-      drake.copy(boost.thread_static, 'lib', strip_prefix = True))
+      drake.copy(boost.thread_static, lib_path, strip_prefix = True))
     if cxx_toolkit.os is drake.os.windows:
       cxx_config += boost.config_locale(link = False, static = True)
       cxx_config.library_add(
-        drake.copy(boost.locale_static, 'lib', strip_prefix = True))
+        drake.copy(boost.locale_static, lib_path, strip_prefix = True))
     cxx_config += boost.config_chrono(link = False, static = True)
     cxx_config.library_add(
-      drake.copy(boost.chrono_static, 'lib', strip_prefix = True))
+      drake.copy(boost.chrono_static, lib_path, strip_prefix = True))
     if python3 is not None and cxx_toolkit.os is not drake.os.windows:
       boost_python = drake.cxx.Config(boost.config_python(link = False, static = True))
       cxx_config.library_add(
-        drake.copy(boost.python_static, 'lib', strip_prefix = True))
+        drake.copy(boost.python_static, lib_path, strip_prefix = True))
   else:
     if python3 is not None:
       boost_python = drake.cxx.Config(
         boost.config_system(link = False))
       boost_python.library_add(
-        drake.copy(boost.python_dynamic, 'lib', strip_prefix = True))
+        drake.copy(boost.python_dynamic, lib_path, strip_prefix = True))
     cxx_config += boost.config_system(link = False)
     cxx_config.library_add(drake.copy(boost.system_dynamic,
-                                      'lib', strip_prefix = True))
+                                      lib_path, strip_prefix = True))
     cxx_config += boost.config_thread(link = False)
     cxx_config.library_add(drake.copy(boost.thread_dynamic,
-                                      'lib', strip_prefix = True))
+                                      lib_path, strip_prefix = True))
     cxx_config += boost.config_chrono(link = False)
     cxx_config.library_add(drake.copy(boost.chrono_dynamic,
-                                      'lib', strip_prefix = True))
+                                      lib_path, strip_prefix = True))
 
   # JSON spirit
   cxx_config.add_local_include_path('json/modules/json-spirit/include')
@@ -106,7 +109,7 @@ def configure(zlib_lib,
 
   config = drake.cxx.Config()
   config.standard = drake.cxx.Config.cxx_14
-  config.lib_path('lib')
+  config.lib_path(lib_path)
   config.define('BOOST_PP_VARIADICS')
   config.define('BOOST_FILESYSTEM_NO_DEPRECATED', '1')
   config += boost.config()
@@ -127,17 +130,17 @@ def configure(zlib_lib,
   # Libraries
   if ldap_libs:
     ldap = True
-    ldap_libs = drake.copy(ldap_libs, 'lib', strip_prefix = True)
+    ldap_libs = drake.copy(ldap_libs, lib_path, strip_prefix = True)
     openssl_libs = drake.copy([openssl_lib_crypto, openssl_lib_ssl],
-                             'lib', strip_prefix = True)
+                             lib_path, strip_prefix = True)
 
     cxx_config = cxx_config + ldap_config
     cxx_config.define('HAVE_LDAP=1')
     config.define('HAVE_LDAP=1')
 
-  zlib_lib = drake.copy(zlib_lib, 'lib', strip_prefix = True)
+  zlib_lib = drake.copy(zlib_lib, lib_path, strip_prefix = True)
   cxx_config += zlib_config
-  libarchive_lib = drake.copy(libarchive_lib, 'lib',
+  libarchive_lib = drake.copy(libarchive_lib, lib_path,
                               strip_prefix = True)
   if cxx_toolkit.os in [drake.os.macos, drake.os.ios]:
     cxx_config.framework_add('Foundation')
@@ -161,16 +164,20 @@ def configure(zlib_lib,
     'AtomicFile.hh',
     'Backtrace.cc',
     'Backtrace.hh',
+    'Backtrace.hxx',
     'BadAlloc.cc',
     'BadAlloc.hh',
     'Buffer.cc',
     'Buffer.hh',
+    'Buffer.hxx',
+    'Defaulted.hh',
     'Duration.cc',
     'Duration.hh',
     'Error.cc',
     'Error.hh',
     'Exception.cc',
     'Exception.hh',
+    'Exception.hxx',
     'Exit.cc',
     'Exit.hh',
     'IOStream.cc',
@@ -179,6 +186,7 @@ def configure(zlib_lib,
     'IntRange.hh',
     'Lazy.hh',
     'Lazy.hxx',
+    'Measure.hh',
     'Option.hh',
     'Option.hxx',
     'Plugin.cc',
@@ -188,19 +196,27 @@ def configure(zlib_lib,
     'Printable.hh',
     'ProducerPool.hh',
     'ProducerPool.hxx',
+    'ScopedAssignment.hh',
     'TypeInfo.cc',
     'TypeInfo.hh',
     'TypeInfo.hxx',
     'UUID.cc',
     'UUID.hh',
     'Version.cc',
+    'Version.hh',
+    'Version.hxx',
+    'With.hh',
+    'With.hxx',
     'algorithm.hh',
     'assert.cc',
     'assert.hh',
+    'assert.hxx',
+    'attribute.hh',
     'bench.cc',
     'bench.hh',
     'bytes.cc',
     'bytes.hh',
+    'cast.hh',
     'chrono.cc',
     'chrono.hh',
     'chrono.hxx',
@@ -232,14 +248,6 @@ def configure(zlib_lib,
     'format/hexadecimal.hh',
     'functional.hh',
     'fwd.hh',
-    'io/Console.cc',
-    'io/Console.hh',
-    'io/Dumpable.cc',
-    'io/Dumpable.hh',
-    'io/Pattern.cc',
-    'io/Pattern.hh',
-    'io/Unique.hh',
-    'io/fwd.hh',
     'log.hh',
     'log/CompositeLogger.cc',
     'log/CompositeLogger.hh',
@@ -252,14 +260,21 @@ def configure(zlib_lib,
     'log/SysLogger.hh',
     'log/TextLogger.cc',
     'log/TextLogger.hh',
+    'log/fwd.hh',
+    'log/macros.hh',
     'make-vector.hh',
+    'memory.hh',
+    'memory.hxx',
     'meta.hh',
+    'meta.hxx',
     'network/Interface.cc',
     'network/Interface.hh',
     'network/Interface.hxx',
     'network/fwd.hh',
     'network/hostname.cc',
     'network/hostname.hh',
+    'operator.hh',
+    'optional.hh',
     'os.hh',
     'os/environ.cc',
     'os/environ.hh',
@@ -271,6 +286,8 @@ def configure(zlib_lib,
     'os/locale.hh',
     'print.cc',
     'print.hh',
+    'print.hxx',
+    'printf-fwd.hh',
     'printf.cc',
     'printf.hh',
     'printf.hxx',
@@ -293,16 +310,18 @@ def configure(zlib_lib,
     'system/unistd.hh',
     'system/user_paths.hh',
     'time.hh',
-    'types.hh',
+    'unordered_map.hh',
+    'unreachable.hh',
+    'utility/Move.hh',
+    'utility/Move.hxx',
     'utils.hh',
+    'windows.h',
     )
 
-  if cxx_toolkit.os not in [drake.os.windows, drake.os.ios]:
-    sources.append(drake.node('utility/Unicode-unix.cc'))
   if ldap_libs:
     sources += drake.nodes(
-      'ldap.hh',
       'ldap.cc',
+      'ldap.hh',
     )
   version = drake.node('elle.hh')
   CxxVersionGenerator(output = version, git = git,
@@ -372,20 +391,6 @@ def configure(zlib_lib,
     )
 
   sources += drake.nodes(
-    'utility/Duration.cc',
-    'utility/Duration.hh',
-    'utility/Duration.hxx',
-    'utility/Parser.cc',
-    'utility/Parser.hh',
-    'utility/Parser.hxx',
-    'utility/Product.hh',
-    'utility/URI.hh',
-    'utility/Unicode.hh',
-    'utility/Utility.hh',
-    'utility/fwd.hh',
-   )
-
-  sources += drake.nodes(
     'serialization/Error.cc',
     'serialization/Error.hh',
     'serialization/Serializer.cc',
@@ -445,13 +450,13 @@ def configure(zlib_lib,
                        cxx_toolkit, cxx_archive_config))
 
   lib_static = drake.cxx.StaticLib(
-    'lib/elle_core',
+    lib_path + '/elle_core',
     sources + [zlib_lib, libarchive_lib],
     cxx_toolkit,
     cxx_config_libs,
   )
   lib_dynamic = drake.cxx.DynLib(
-    'lib/elle_core',
+    lib_path + '/elle_core',
     sources + [zlib_lib, libarchive_lib] + (ldap_libs and (ldap_libs + openssl_libs) or []),
     cxx_toolkit,
     cxx_config_libs,
@@ -489,7 +494,7 @@ def configure(zlib_lib,
     python_lib_sources = [drake.node('log/python.cc')]
     python_cxx_config += boost_python
     python_log_lib = drake.cxx.Module(
-      'lib/python/elle/_log',
+      lib_path + '/python/elle/_log',
       python_lib_sources + [library],
       cxx_toolkit, python_cxx_config)
     python.append(python_log_lib)
@@ -498,18 +503,18 @@ def configure(zlib_lib,
       'log.py',
       '__init__.py',
       )
-    python += drake.copy(python_sources, 'lib/python', 'src')
+    python += drake.copy(python_sources, lib_path + '/python', 'src')
     python_rule << python
 
     if cxx_toolkit.os is drake.os.windows:
       python_plugin_datetime = drake.cxx.StaticLib(
-        'lib/python-datetime-bindings',
+        lib_path + '/python-datetime-bindings',
         drake.nodes('python/datetime-converter.cc'),
         cxx_toolkit,
         python_cxx_config)
     else:
       python_plugin_datetime = drake.cxx.Module(
-        'lib/python-datetime-bindings',
+        lib_path + '/python-datetime-bindings',
         drake.nodes('python/datetime-converter.cc'),
         cxx_toolkit,
         python_cxx_config)
@@ -520,7 +525,7 @@ def configure(zlib_lib,
 
   rule_tests = drake.Rule('tests')
   rule_check = drake.TestSuite('check')
-
+  tests_path = drake.Path('../../tests') / 'elle'
   tests = [
     'AtomicFile.cc',
     'Backtrace.cc',
@@ -549,6 +554,7 @@ def configure(zlib_lib,
     'json.cc',
     'memory.cc',
     'meta.cc',
+    'Range.cc',
     'network/hostname.cc',
     'network/interface.cc',
     'network/interface_autoip.cc',
@@ -573,8 +579,8 @@ def configure(zlib_lib,
       'threading/rw-mutex.cc',
     ])
   process_helpers = [
-    drake.cxx.Executable('tests/system/%s' % name,
-                         drake.nodes('tests/system/%s.cc' % name),
+    drake.cxx.Executable('%s/system/%s' % (tests_path, name),
+                         drake.nodes('%s/system/%s.cc' % (tests_path, name)),
                          cxx_toolkit, drake.cxx.Config())
     for name in ('true', 'false')]
   tests.extend([
@@ -582,43 +588,41 @@ def configure(zlib_lib,
     ('system/process-fail.cc', process_helpers, True),
   ])
 
-  cxx_config_exe = drake.cxx.Config(cxx_config) + config
-  cxx_config_exe.enable_debug_symbols()
-  if cxx_toolkit.os == drake.os.android:
-    cxx_config_exe.lib('stdc++')
-    cxx_config_exe.lib('atomic')
-  cxx_config_tests = drake.cxx.Config(cxx_config_exe)
-  if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
-    cxx_config_tests += boost.config_test(static = True)
-    cxx_config_tests += boost.config_timer(static = True)
-  else:
-    cxx_config_tests += boost.config_test(link = False)
-    cxx_config_tests.library_add(
-      drake.copy(boost.test_dynamic, 'lib', strip_prefix = True))
-    cxx_config_tests += boost.config_timer(link = False)
-    cxx_config_tests.library_add(
-      drake.copy(boost.timer_dynamic, 'lib', strip_prefix = True))
+  config_tests = drake.cxx.Config(cxx_config)
+  config_tests.add_local_include_path(drake.Path('../../tests'))
+  config_tests.enable_debug_symbols()
+  test_libs = [library, zlib_lib, libarchive_lib]
+  config_tests.enable_debug_symbols()
+  config_tests += boost.config_test(
+    static = not boost.prefer_shared or None,
+    link = not boost.prefer_shared)
+  config_tests += boost.config_timer(
+    static = not boost.prefer_shared or None,
+    link = not boost.prefer_shared)
+  if boost.prefer_shared:
+    test_libs += [boost.timer_dynamic, boost.test_dynamic]
   for test in tests:
     if isinstance(test, tuple):
       test, dependencies, valgrind_this_test = test
     else:
       dependencies = ()
       valgrind_this_test = True
-    config_test = drake.cxx.Config(cxx_config_tests)
+    local_config_tests = drake.cxx.Config(config_tests)
+    test_path = drake.Path(tests_path / test)
     if cxx_toolkit.os is drake.os.macos and \
         cxx_toolkit.kind is drake.cxx.GccToolkit.Kind.gcc and \
           test == 'Backtrace.cc':
-      config_test.enable_optimization(False)
-    config_test.lib_path_runtime('%s../lib' % ('../' * test.count('/')))
+      local_config_tests.enable_optimization(False)
     test = drake.cxx.Executable(
-      'tests/%s' % os.path.splitext(test)[0],
-      drake.nodes('tests/%s' % test) + [library, zlib_lib, libarchive_lib],
-      cxx_toolkit, config_test)
+      tests_path / os.path.splitext(test)[0],
+      drake.nodes(test_path) + test_libs,
+      cxx_toolkit, local_config_tests)
     for dep in dependencies:
       test.dependency_add(dep)
     rule_tests << test
     env = {
       'BUILD_DIR': str(drake.path_build()),
+      'TEST_DIR': str(drake.path_build(tests_path)),
     }
     if valgrind_tests and valgrind_this_test:
       runner = drake.valgrind.ValgrindRunner(exe = test,
@@ -634,26 +638,33 @@ def configure(zlib_lib,
   ## -------- ##
 
   rule_examples = drake.Rule('examples')
+  examples_path = drake.Path('../../examples')
   examples = [
-    'examples/samples/attributes',
-    'examples/samples/buffer',
-    'examples/samples/serialization',
-    'examples/samples/printable',
-    'examples/samples/log',
+    'samples/elle/attributes',
+    'samples/elle/buffer',
+    'samples/elle/serialization',
+    'samples/elle/printable',
+    'samples/elle/log',
   ]
-  cxx_config_examples = drake.cxx.Config(cxx_config_tests)
+  cxx_config_examples = drake.cxx.Config(cxx_config)
   cxx_config_examples.enable_debug_symbols()
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
     cxx_config_examples += boost.config_date_time(static = True)
   else:
     cxx_config_examples.library_add(
-      drake.copy(boost.date_time_dynamic, 'lib', strip_prefix = True))
+      drake.copy(boost.date_time_dynamic, lib_path, strip_prefix = True))
   for example in examples:
     config_examples = drake.cxx.Config(cxx_config_examples)
-    rule_examples << drake.cxx.Executable(
+    example = drake.cxx.Executable(
       os.path.splitext(example)[0],
-      drake.nodes('%s.cc' % example) + [library, zlib_lib, libarchive_lib],
+      drake.nodes('%s/%s.cc' % (examples_path, example)) + [
+        library, zlib_lib, libarchive_lib
+      ],
       cxx_toolkit, config_examples)
+    rule_examples << example
+    runner = drake.Runner(exe = example)
+    runner.reporting = drake.Runner.Reporting.on_failure
+    rule_examples << runner.status
   rule_build << rule_examples
 
   ## ------- ##
@@ -664,10 +675,12 @@ def configure(zlib_lib,
     rule_install = drake.Rule('install')
     prefix = drake.Path(prefix)
     if cxx_toolkit.os not in [drake.os.windows, drake.os.ios]:
-      rule_install << drake.install(lib_dynamic, prefix)
-    rule_install << drake.install(lib_static, prefix)
+      rule_install << drake.install(lib_dynamic, prefix / 'lib',
+                                    strip_prefix = True)
+    rule_install << drake.install(lib_static, prefix / 'lib',
+                                  strip_prefix = True)
     rule_install << drake.install(
-      list(filter(lambda n: isinstance(n, drake.cxx.Header), sources)),
+      (node for node in sources if isinstance(node, drake.cxx.Header)),
       prefix / 'include' / 'elle')
 
 # Local Variables:

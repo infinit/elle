@@ -20,6 +20,8 @@ namespace elle
   {
     namespace paxos
     {
+      /// XXX[doc].
+      ///
       template <typename T,
                 typename Version,
                 typename ClientId,
@@ -38,17 +40,39 @@ namespace elle
         | Proposal |
         `---------*/
       public:
+        /// A Proposal for the consensus.
+        ///
+        /// @see https://en.wikipedia.org/wiki/Paxos_(computer_science).
+        ///
+        /// "Each attempt to define an agreed value v is performed with
+        ///  proposals which may or may not be accepted by Acceptors.
+        ///  Each proposal is uniquely numbered for a given Proposer. The value
+        ///  corresponding to a numbered proposal can be computed as part of
+        ///  running the Paxos protocol, but need not be."
+        ///
+        /// A proposal is defined as a tuple (version, round, sender).
         struct Proposal
         {
+          /// Construct an empty Proposal (used for deserialization purpose).
           Proposal();
+          /// Construct a Proposal for a given tuple (version, round, sender).
           Proposal(Version version, int round, ClientId sender);
           Version version;
           int round;
           ClientId sender;
+          /// Check if this proposal is equal to \a given one.
+          ///
+          /// @param rhs Another proposal.
+          /// @returns Whether proposals are equal.
           bool
           operator ==(Proposal const& rhs) const;
+          /// Check if this proposal is lesser than \a given one.
+          ///
+          /// @param rhs Another proposal.
+          /// @returns Whether this proposal is lesser than the given proposal.
           bool
           operator <(Proposal const& rhs) const;
+          /// (De)Serialize a Proposal.
           void
           serialize(elle::serialization::Serializer& s);
           using serialization_tag = elle::serialization_tag;
@@ -66,9 +90,16 @@ namespace elle
         | Accepted |
         `---------*/
       public:
+        /// An accepted Proposal.
         struct Accepted
         {
+          /// Deserialize an Accepted proposal.
           Accepted(elle::serialization::SerializerIn& s, elle::Version const& v);
+          /// Construct a Accepted from \a proposal and \a value.
+          ///
+          /// @param proposal The proposal accepted.
+          /// @param value The value agreed.
+          /// @param confirmed Whether the acceptation is confirmed.
           Accepted(Proposal proposal, elle::Option<T, Quorum> value,
                    bool confirmed);
           Proposal proposal;
@@ -90,15 +121,21 @@ namespace elle
         | WrongQuorum |
         `------------*/
       public:
+        /// An wrong quorum Error.
         class WrongQuorum
           : public elle::Error
         {
         public:
           using Super = elle::Error;
+          /// Construct a WrongQuorum exception.
+          ///
+          /// @param excepted The expected Quorum.
+          /// @param effective The effective Quorum.
           WrongQuorum(Quorum expected, Quorum effective);
+          /// Deserialize a WrongQuorum exception.
           WrongQuorum(elle::serialization::SerializerIn& input,
                       elle::Version const& version);
-
+          /// (De)Serialize a WrongQuorum exception.
           void
           serialize(elle::serialization::Serializer& s,
                     elle::Version const& version) override;
@@ -117,6 +154,7 @@ namespace elle
         | PartialState |
         `-------------*/
       public:
+        /// XXX[doc].
         class PartialState
           : public elle::Error
         {
@@ -155,6 +193,10 @@ namespace elle
         | Consensus |
         `----------*/
       public:
+        /// Propose \a Proposal to \a Quorum.
+        ///
+        /// If the Proposal is already outdated, return the newest Proposal.
+        ///
         boost::optional<Accepted>
         propose(Quorum q, Proposal p);
         Proposal

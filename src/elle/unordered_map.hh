@@ -7,6 +7,9 @@
 
 namespace elle
 {
+  /// A unordered_map that throws a more relevant exception when querying a
+  /// element that doesn't exist. The resulting exception contains... the name
+  /// of the key.
   template <typename... Args>
   class unordered_map
     : public std::unordered_map<Args...>
@@ -18,6 +21,9 @@ namespace elle
     using key_type = typename Super::key_type;
     using mapped_type = typename Super::mapped_type;
 
+    /// Returns a reference to the mapped value of the element with key
+    /// equivalent to key. If no such element exists, an exception of type
+    /// elle::Error is thrown.
     mapped_type&
     at(key_type const& k)
     {

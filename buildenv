@@ -18,12 +18,6 @@ def json_converter(o):
     return o.isoformat()
   raise TypeError('%s is not JSON serializable' % o)
 
-def copy(f, t):
-  parent = os.path.dirname(t)
-  if not os.path.exists(parent):
-    os.makedirs(parent)
-  sh.cp('-a', f, t)
-
 def mv(f, t):
   os.rename(f, t)
 
@@ -34,6 +28,10 @@ def mkpath(p):
     if e.args[0] != 17: # EEXIST
       raise
 
+def copy(f, t):
+  mkpath(os.path.dirname(t))
+  sh.cp('-a', f, t)
+
 def rm(p):
   try:
     if not os.path.isdir(p) or os.path.islink(p):
@@ -43,7 +41,6 @@ def rm(p):
   except OSError as e:
     if e.args[0] != 2: # ENOENT
       raise
-
 
 class CLError(Exception):
   pass

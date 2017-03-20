@@ -5,6 +5,7 @@ import drake.cxx
 import drake.cxx.boost
 import drake.templating
 import sys
+import os
 
 config = None
 lib_static = None
@@ -26,7 +27,6 @@ rule_examples = None
 
 with open(str(drake.path_source('../../../drake-utils.py')), 'r') as f:
   exec(f.read(), globals(), globals())
-
 
 def configure(curl_config,
               curl_lib,
@@ -61,7 +61,8 @@ def configure(curl_config,
   config = drake.cxx.Config()
   config.add_local_include_path('bin')
   config.standard = drake.cxx.Config.cxx_14
-  config.lib_path('lib')
+  lib_path = '../../../lib'
+  config.lib_path(lib_path)
 
   # Das
   das = das or drake.include('../das')
@@ -246,9 +247,9 @@ def configure(curl_config,
            '@rpath/libc++abi.dylib',
            str(drake.path_build(tgt, True))
           ])
-    lib_cxx = drake.copy(drake.nodes('/usr/lib/libc++.1.dylib'), 'lib', strip_prefix = True,
+    lib_cxx = drake.copy(drake.nodes('/usr/lib/libc++.1.dylib'), lib_path, strip_prefix = True,
       post_process = rpath_libcxx)
-    lib_cxx_abi = drake.copy(drake.nodes(libcxxabi_lib), 'lib', strip_prefix = True,
+    lib_cxx_abi = drake.copy(drake.nodes(libcxxabi_lib), lib_path, strip_prefix = True,
       post_process = rpath_libcxxabi)
     cxx_libs = lib_cxx + lib_cxx_abi
   else:
@@ -260,34 +261,34 @@ def configure(curl_config,
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
     local_cxx_config += boost.config_signals(link = False, static = True)
     local_cxx_config.library_add(
-      drake.copy(boost.signals_static, 'lib', strip_prefix = True))
+      drake.copy(boost.signals_static, lib_path, strip_prefix = True))
     local_cxx_config += boost.config_system(link = False, static = True)
     local_cxx_config.library_add(
-      drake.copy(boost.system_static, 'lib', strip_prefix = True))
+      drake.copy(boost.system_static, lib_path, strip_prefix = True))
     local_cxx_config += boost.config_thread(link = False, static = True)
     local_cxx_config.library_add(
-      drake.copy(boost.thread_static, 'lib', strip_prefix = True))
+      drake.copy(boost.thread_static, lib_path, strip_prefix = True))
     if backend == Backends.boost:
       local_cxx_config += boost.config_context(link = False, static = True)
       local_cxx_config.library_add(
-        drake.copy(boost.context_static, 'lib', strip_prefix = True))
+        drake.copy(boost.context_static, lib_path, strip_prefix = True))
   else:
     if backend == Backends.boost:
       local_cxx_config += boost.config_context(link = False)
       local_cxx_config.library_add(
-        drake.copy(boost.context_dynamic, 'lib', strip_prefix = True,
+        drake.copy(boost.context_dynamic, lib_path, strip_prefix = True,
                    post_process = set_local_libcxx(cxx_toolkit)))
     local_cxx_config += boost.config_signals(link = False)
     local_cxx_config.library_add(
-      drake.copy(boost.signals_dynamic, 'lib', strip_prefix = True,
+      drake.copy(boost.signals_dynamic, lib_path, strip_prefix = True,
                  post_process = set_local_libcxx(cxx_toolkit)))
     local_cxx_config += boost.config_system(link = False)
     local_cxx_config.library_add(
-      drake.copy(boost.system_dynamic, 'lib', strip_prefix = True,
+      drake.copy(boost.system_dynamic, lib_path, strip_prefix = True,
                  post_process = set_local_libcxx(cxx_toolkit)))
     local_cxx_config += boost.config_thread(link = False)
     local_cxx_config.library_add(
-      drake.copy(boost.thread_dynamic, 'lib', strip_prefix = True,
+      drake.copy(boost.thread_dynamic, lib_path, strip_prefix = True,
                  post_process = set_local_libcxx(cxx_toolkit)))
   if backend == Backends.io:
     local_cxx_config.define('REACTOR_CORO_BACKEND_IO')
@@ -307,7 +308,7 @@ def configure(curl_config,
       'fuse/include/fuse/fuse_lowlevel_compat.h',
       'fuse/include/fuse/fuse_lowlevel.h',
       'fuse/include/fuse/fuse_opt.h'
-      )
+    )
     if cxx_toolkit.os is drake.os.linux:
       fuse_version = '2.9.4'
       fuse_version_us = fuse_version.replace(".", "_")
@@ -352,7 +353,7 @@ def configure(curl_config,
       fuse_config = drake.cxx.Config()
       fuse_config.add_local_include_path('fuse/include')
       local_cxx_config += fuse_config
-      fuse_lib = drake.copy(fuse_lib, 'lib', strip_prefix = True)
+      fuse_lib = drake.copy(fuse_lib, lib_path, strip_prefix = True)
     elif cxx_toolkit.os is drake.os.macos:
       osxfuse_version = drake.Version(3, 5, 4)
       osxfuse_base_name = 'osxfuse-%s' % osxfuse_version
@@ -414,22 +415,23 @@ def configure(curl_config,
 
   # Curl
   local_cxx_config += curl_config
-  curl_lib = drake.copy(curl_lib, 'lib', strip_prefix = True)
+  curl_lib = drake.copy(curl_lib, lib_path, strip_prefix = True)
 
   # OpenSSL (for SSL sockets)
   local_cxx_config += openssl_config
   openssl_libs = drake.copy([openssl_lib_ssl, openssl_lib_crypto],
-                            'lib', strip_prefix = True)
+                            lib_path, strip_prefix = True)
 
 
   # Zlib
   local_cxx_config += zlib_config
-  zlib_lib = drake.copy(zlib_lib, 'lib', strip_prefix = True)
+  zlib_lib = drake.copy(zlib_lib, lib_path, strip_prefix = True)
 
   # Elle
   elle = elle or drake.include('../../../elle')
   local_cxx_config += elle.config
-  elle_lib = drake.copy(elle.library, 'lib', strip_prefix = True, post_process = set_local_libcxx(cxx_toolkit))
+
+  # elle_lib = drake.copy(elle.library, lib_path, strip_prefix = True, post_process = set_local_libcxx(cxx_toolkit))
 
   # miniupnpc
   miniupnp = drake.include('modules/miniupnp', cxx_toolkit, archs = archs)
@@ -445,11 +447,14 @@ def configure(curl_config,
 
   sources = drake.nodes(
     'BackgroundOperation.hh',
+    'BackgroundFuture.hh',
+    'BackgroundFuture.hxx',
     'BackgroundOperation.hxx',
     'Barrier.cc',
     'Barrier.hh',
     'Barrier.hxx',
     'Channel.hh',
+    'Channel.hxx',
     'FDStream.cc',
     'FDStream.hh',
     'Generator.cc',
@@ -464,8 +469,12 @@ def configure(curl_config,
     'TimeoutGuard.cc',
     'TimeoutGuard.hh',
     'asio.hh',
+    'duration.hh',
     'exception.cc',
     'exception.hh',
+    'for-each.hh',
+    'for-each.hxx',
+    'fsm.hh',
     'fsm/CatchTransition.cc',
     'fsm/CatchTransition.hh',
     'fsm/EndTransition.cc',
@@ -497,8 +506,8 @@ def configure(curl_config,
     'network/fingerprinted-socket.cc',
     'network/fingerprinted-socket.hh',
     'network/fwd.hh',
-    'network/http-server.hh',
     'network/http-server.cc',
+    'network/http-server.hh',
     'network/proxy.cc',
     'network/proxy.hh',
     'network/rdv-socket.cc',
@@ -523,9 +532,10 @@ def configure(curl_config,
     'network/udp-socket.hh',
     'network/upnp.cc',
     'network/upnp.hh',
+    'network/utp-server-impl.hh',
     'network/utp-server.cc',
     'network/utp-server.hh',
-    'network/utp-server-impl.hh',
+    'network/utp-socket-impl.hh',
     'network/utp-socket.cc',
     'network/utp-socket.hh',
     'network/utp-socket-impl.hh',
@@ -535,29 +545,30 @@ def configure(curl_config,
     'rw-mutex.hh',
     'scheduler.cc',
     'scheduler.hh',
+    'scheduler.hxx',
     'semaphore.cc',
     'semaphore.hh',
     'signal.cc',
     'signal.hh',
+    'signal.hxx',
     'signals.hh',
     'sleep.cc',
     'sleep.hh',
     'storage.cc',
     'storage.hh',
+    'storage.hxx',
     'thread.cc',
     'thread.hh',
+    'thread.hxx',
     'timer.cc',
     'timer.hh',
     'Waitable.cc',
     'Waitable.hh',
-    # 'backend/pthread/pthread.cc',
-    # 'backend/pthread/pthread.hh',
-    # 'network/nat.cc',
-    # 'network/nat.hh',
-    )
+    'Waitable.hxx',
+  )
   sources += drake.nodes(
-    'filesystem.hh',
     'filesystem.cc',
+    'filesystem.hh',
     'filesystem_journal.cc',
   )
   if cxx_toolkit.os in [drake.os.linux, drake.os.macos]:
@@ -577,8 +588,8 @@ def configure(curl_config,
   else:
     dokan = drake.include('modules/dokany', cxx_toolkit, cxx_config)
     sources += drake.nodes(
+      'filesystem_dokanx.cc',
       'fuse.hh',
-      'filesystem_dokanx.cc'
       )
     local_cxx_config += dokan.config
     dokan_lib = dokan.lib_dynamic
@@ -586,6 +597,7 @@ def configure(curl_config,
   sources += drake.nodes(
     'http/Client.cc',
     'http/Client.hh',
+    'http/Client.hxx',
     'http/EscapedString.cc',
     'http/EscapedString.hh',
     'http/Method.cc',
@@ -596,16 +608,17 @@ def configure(curl_config,
     'http/Service.hh',
     'http/StatusCode.cc',
     'http/StatusCode.hh',
-    'http/url.hh',
-    'http/url.cc',
     'http/Version.cc',
     'http/Version.hh',
     'http/exceptions.cc',
     'http/exceptions.hh',
+    'http/fwd.hh',
+    'http/url.cc',
+    'http/url.hh',
   )
   connectivity_sources = drake.nodes(
-    'connectivity/connectivity.hh',
     'connectivity/connectivity.cc',
+    'connectivity/connectivity.hh',
   )
   sources += connectivity_sources
 
@@ -617,15 +630,18 @@ def configure(curl_config,
 
   lib_cxx_config = drake.cxx.Config(local_cxx_config)
 
+  backend_sources = drake.nodes(
+    'backend/backend.cc',
+    'backend/backend.hh',
+    'backend/fwd.hh',
+  )
   backend_lib = drake.cxx.StaticLib(
-    'lib/reactor/backend',
-    drake.nodes(
-      'backend/backend.cc',
-      'backend/backend.hh',
-    ),
+    lib_path + '/elle_reactor_backend',
+    backend_sources,
     cxx_toolkit,
     lib_cxx_config,
   )
+  sources += backend_sources
 
   if backend == Backends.io:
     libcoroutine_sources = drake.nodes(
@@ -638,12 +654,12 @@ def configure(curl_config,
     libcoroutine_cxx_config.warnings.missing_declarations = None
     if valgrind is not None:
       libcoroutine_cxx_config.define('USE_VALGRIND')
-    libcoroutine = drake.cxx.StaticLib('lib/reactor/coroutine',
+    libcoroutine = drake.cxx.StaticLib(lib_path + '/elle_reactor_coroutine',
                                        libcoroutine_sources,
                                        cxx_toolkit,
                                        libcoroutine_cxx_config)
     backend_coro_io = drake.cxx.StaticLib(
-      'lib/reactor/backend_coro_io',
+      lib_path + '/elle_reactor_backend_coro_io',
       drake.nodes(
         'backend/coro_io/backend.cc',
         'backend/coro_io/backend.hh',
@@ -659,7 +675,7 @@ def configure(curl_config,
   lib_cxx_config.add_local_include_path('modules/libutp')
   backend_boost_context_cxx_config = drake.cxx.Config(lib_cxx_config)
   backend_boost_context = drake.cxx.StaticLib(
-    'lib/reactor/backend_boost_context',
+    lib_path + '/elle_reactor_backend_boost_context',
     drake.nodes(
       'backend/boost_context/backend.cc',
       'backend/boost_context/backend.hh',
@@ -669,13 +685,13 @@ def configure(curl_config,
   )
   lib_dynamic_link_libs = [
     curl_lib,
-    elle_lib,
+    elle.library,
     miniupnpc.library,
     utp_lib,
   ]
   lib_static_link_libs = [
     curl_lib,
-    elle_lib,
+    elle.library,
     miniupnpc.library,
     utp_lib,
   ]
@@ -692,12 +708,12 @@ def configure(curl_config,
   if fuse_lib is not None:
     lib_dynamic_link_libs.append(fuse_lib)
   lib_static = drake.cxx.StaticLib(
-    'lib/elle_reactor',
+    lib_path + '/elle_reactor',
     sources + lib_static_link_libs + openssl_libs,
     cxx_toolkit, lib_cxx_config)
   lib_dynamic_link_libs = [
     curl_lib,
-    elle_lib,
+    elle.library,
     miniupnpc.library,
     utp_lib,
   ]
@@ -713,7 +729,7 @@ def configure(curl_config,
     lib_cxx_config.framework_add('DiskArbitration')
     pass #lib_cxx_config.use_local_libcxx = True
   lib_dynamic = drake.cxx.DynLib(
-    'lib/elle_reactor',
+    lib_path + '/elle_reactor',
     sources + lib_dynamic_link_libs + openssl_libs + cxx_libs,
     cxx_toolkit, lib_cxx_config)
   rule_build << lib_static
@@ -732,12 +748,11 @@ def configure(curl_config,
     else:
       python_cxx_config += boost.config_python(link = False)
       python_cxx_config.library_add(
-        drake.copy(boost.python_dynamic, 'lib', strip_prefix = True))
-    python_sources = drake.nodes('python.cc')
-    datetime = drake.copy(elle.python_plugin_datetime,
-                          'lib', True)
-    python_lib = drake.cxx.Module('lib/python/reactor',
-                                  python_sources + [library, datetime],
+        drake.copy(boost.python_dynamic, lib_path, strip_prefix = True))
+    python_sources = drake.nodes('python.cc', 'python.hh')
+    sources += python_sources
+    python_lib = drake.cxx.Module(lib_path + '/python/reactor',
+                                  python_sources + [library, elle.python_plugin_datetime],
                                   cxx_toolkit, python_cxx_config)
     drake.Rule('python') << python_lib
     rule_build << python_lib
@@ -745,6 +760,7 @@ def configure(curl_config,
   ## ----- ##
   ## Bins  ##
   ## ----- ##
+
   binaries_config = [
     'connectivity-server',
     'connectivity',
@@ -753,12 +769,11 @@ def configure(curl_config,
   cxx_config_bin = drake.cxx.Config(local_cxx_config)
   cxx_config_bin.lib_path_runtime('../lib')
   for name in binaries_config:
-    sources = drake.nodes('bin/%s.cc' % name)
     bin = drake.cxx.Executable(
       'bin/%s' % name,
-        sources + [
+        drake.nodes('bin/%s.cc' % name) + [
         library,
-        elle_lib,
+        elle.library,
       ],
       cxx_toolkit,
       cxx_config_bin)
@@ -769,10 +784,9 @@ def configure(curl_config,
   if cxx_toolkit.os is drake.os.linux:
     fnetusermount_binaries = []
     for name in ['fnetusermount-client', 'fnetusermount-server']:
-      sources = drake.nodes('bin/%s.cc' % name)
       bin = drake.cxx.Executable(
         'bin/%s' % name,
-        sources,
+        drake.nodes('bin/%s.cc' % name),
         cxx_toolkit,
         cxx_config_bin)
       rule_build << bin
@@ -781,10 +795,11 @@ def configure(curl_config,
   ## ----- ##
   ## Tests ##
   ## ----- ##
-
   global rule_check, rule_tests
-  rule_check = drake.TestSuite('check')
   rule_tests = drake.Rule('tests')
+  rule_check = drake.TestSuite('check')
+  elle_tests_path = drake.Path('../../../tests')
+  tests_path = elle_tests_path / 'elle/reactor'
 
   # (bin, libs, stdin)
   tests = [
@@ -809,36 +824,35 @@ def configure(curl_config,
     tests.append(('filesystem_git', [], None))
 
   cxx_config_tests = drake.cxx.Config(local_cxx_config)
-
-  cxx_config_tests.add_local_include_path('tests')
-  cxx_config_tests += boost.config_filesystem(static = (cxx_toolkit.os in [drake.os.macos, drake.os.ios, drake.os.android]) or None)
-  if cxx_toolkit.os in [drake.os.macos]:
-    pass # cxx_config_tests.use_local_libcxx = True
+  cxx_config_tests.add_local_include_path(elle_tests_path)
+  test_libs = [elle.library, library]
+  cxx_config_tests += boost.config_test(
+    static = not boost.prefer_shared or None,
+    link = not boost.prefer_shared)
+  cxx_config_tests += boost.config_timer(
+    static = not boost.prefer_shared or None,
+    link = not boost.prefer_shared)
+  use_boost_filesystem_static_library = not boost.prefer_shared or \
+                                        cxx_toolkit.os is drake.os.macos
+  cxx_config_tests += boost.config_filesystem(
+    static = use_boost_filesystem_static_library or None,
+    link = use_boost_filesystem_static_library)
+  if boost.prefer_shared:
+    test_libs += [boost.timer_dynamic, boost.test_dynamic]
+    if not use_boost_filesystem_static_library:
+      test_libs += [boost.filesystem_dynamic]
   if cxx_toolkit.os == drake.os.android:
     cxx_config_tests.lib('stdc++')
     cxx_config_tests.lib('atomic')
-  if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
-    cxx_config_tests += boost.config_test(static = True)
-    cxx_config_tests += boost.config_timer(static = True)
-  else:
-    cxx_config_tests += boost.config_test(link = False)
-    cxx_config_tests.library_add(
-      drake.copy(boost.test_dynamic, 'lib', strip_prefix = True))
-    cxx_config_tests += boost.config_timer(link = False)
-    cxx_config_tests.library_add(
-      drake.copy(boost.timer_dynamic, 'lib', strip_prefix = True))
-
   for test_name, libraries, stdin in tests:
-    tests_config = drake.cxx.Config(cxx_config_tests)
-    tests_config.lib_path_runtime('%s../lib' % ('../' * test_name.count('/')))
-    test_sources = drake.nodes('tests/%s.cc' % test_name) + [
-      library, elle_lib
-      ] + libraries
+    local_test_libs = test_libs + libraries
+    local_cxx_config_tests = drake.cxx.Config(cxx_config_tests)
     if cxx_toolkit.os == drake.os.macos:
-      test_sources += cxx_libs
-    test = drake.cxx.Executable('tests/%s' % test_name,
-                                test_sources,
-                                cxx_toolkit, tests_config)
+      local_test_libs += cxx_libs
+    test_sources = drake.nodes('%s/%s.cc' % (tests_path, test_name))
+    test = drake.cxx.Executable('%s/%s' % (tests_path, test_name),
+                                test_sources + local_test_libs,
+                                cxx_toolkit, cxx_config_tests)
     rule_tests << test
     if test_name in ['filesystem_git', 'filesystem_bind', 'rdv-cat','rdv-utp-cat', 'utp-chat']:
       continue
@@ -868,22 +882,22 @@ def configure(curl_config,
 
   if python3 is not None and cxx_toolkit.os is not drake.os.windows:
     python_tests = (
-      'tests/python',
+      'python',
       )
     with drake.templating.Context(content = {
         'python_interpreter': str(python3.python_interpreter),
     }):
       for test in python_tests:
-        drake.node('%s.tmpl' % python_tests)
+        drake.node('%s/%s.tmpl' % (tests_path, test))
     for test in python_tests:
-      test = drake.node(test)
+      test = drake.node('%s/%s' % (tests_path, test))
       test.dependency_add(python_lib)
       python_runner = drake.Runner(
         exe = test,
         env = {
-          'PYTHONPATH': str(drake.path_build('lib/python')),
+          'PYTHONPATH': str(drake.path_build(lib_path + '/python')),
         },
-        )
+      )
       python_runner.reporting = drake.Runner.Reporting.on_failure
       rule_check << python_runner.status
 
@@ -893,15 +907,19 @@ def configure(curl_config,
 
   cxx_config_examples = drake.cxx.Config(local_cxx_config)
   rule_examples = drake.Rule('examples')
+  examples_path = drake.Path('../../../examples')
   for example in [
-    'examples/demo/echo_server'
+    'demo/elle/reactor/echo_server'
   ]:
-    name = example
-    source = drake.nodes('%s.cc' % name)
-    rule_examples << drake.cxx.Executable(
-      name,
-      source + [library, elle_lib],
+    source = drake.nodes('%s/%s.cc' % (examples_path, example))
+    example = drake.cxx.Executable(
+      examples_path / example,
+      source + [library, elle.library],
       cxx_toolkit, cxx_config_examples)
+    rule_examples << example
+    runner = drake.Runner(exe = example, args = ['0', 'true'])
+    runner.reporting = drake.Runner.Reporting.on_failure
+    rule_examples << runner.status
   rule_build << rule_examples
 
   ## ------- ##
@@ -911,8 +929,8 @@ def configure(curl_config,
   if prefix is not False:
     rule_install = drake.Rule('install')
     if cxx_toolkit.os not in [drake.os.windows, drake.os.ios]:
-      rule_install << drake.install(lib_dynamic, prefix)
-    rule_install << drake.install(lib_static, prefix)
+      rule_install << drake.install(lib_dynamic, prefix / 'lib')
+    rule_install << drake.install(lib_static, prefix / 'lib')
     rule_install << drake.install(
-      list(filter(lambda n: isinstance(n, drake.cxx.Header), sources)),
+      (node for node in sources if isinstance(node, drake.cxx.Header)),
       prefix / 'include' / 'elle' / 'reactor')

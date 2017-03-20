@@ -5,7 +5,6 @@
 
 #include <elle/compiler.hh>
 #include <elle/printf.hh>
-#include <elle/types.hh>
 #include <elle/unreachable.hh>
 
 namespace elle ELLE_API
@@ -24,16 +23,15 @@ namespace elle
   ///
   /// @note You should never catch directly `AssertError`, nor its base class
   /// `std::exception`, but in the main function of the program.
-  class ELLE_API AssertError:
-    public std::exception
+  class ELLE_API AssertError
+    : public std::exception
   {
   private:
     std::string _what;
   public:
     AssertError(char const* condition,
                 char const* file,
-                Size line) noexcept;
-
+                uint64_t line) noexcept;
 
     const char*
     what() const noexcept override;
@@ -164,7 +162,7 @@ namespace elle
 
   template <typename C, typename E>
   void _assert_contains(C const& container,
-                         E const& element,
+                        E const& element,
                         char const* c_str,
                         char const* e_str,
                         char const* file,

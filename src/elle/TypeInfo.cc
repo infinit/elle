@@ -47,7 +47,7 @@ namespace elle
   std::vector<std::pair<std::string, std::string>>&
   _abbreviations()
   {
-    static std::vector<std::pair<std::string, std::string> > abbreviations;
+    static std::vector<std::pair<std::string, std::string>> abbreviations;
     return abbreviations;
   }
 

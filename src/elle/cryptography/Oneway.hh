@@ -3,7 +3,6 @@
 
 # include <elle/cryptography/fwd.hh>
 
-# include <elle/types.hh>
 # include <elle/serialization/Serializer.hh>
 
 # include <openssl/evp.h>

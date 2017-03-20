@@ -1253,15 +1253,18 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
 
   # XXX.
   sources = drake.nodes(
+    'src/bitset',
     'src/chrono',
     'src/deque',
+    'src/iosfwd',
+    'src/iostream',
     'src/list',
     'src/map',
     'src/map',
     'src/memory',
     'src/set',
-    'src/set',
     'src/stdlib.h',
+    'src/tuple',
     'src/type_traits',
     'src/unordered_map',
     'src/unordered_set',
@@ -1390,6 +1393,16 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     valgrind = valgrind,
     valgrind_tests = valgrind_tests,
   )
+
+  ## ------- ##
+  ## Install ##
+  ## ------- ##
+
+  if prefix is not False:
+    rule_install = drake.Rule('install')
+    rule_install << drake.install(
+      (node for node in sources if isinstance(node, drake.cxx.Header)),
+      prefix / 'include', strip_prefix = True)
 
   config += cryptography.config
   config += elle.config

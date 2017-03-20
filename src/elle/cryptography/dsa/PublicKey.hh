@@ -2,16 +2,14 @@
 
 #include <utility>
 
+#include <boost/operators.hpp>
+
 #include <openssl/evp.h>
 
-#include <elle/types.hh>
 #include <elle/attribute.hh>
 #include <elle/operator.hh>
 #include <elle/serialization/Serializer.hh>
 #include <elle/serialization.hh>
-
-ELLE_OPERATOR_RELATIONALS();
-
 #include <elle/cryptography/dsa/PrivateKey.hh>
 #include <elle/cryptography/fwd.hh>
 #include <elle/cryptography/types.hh>
@@ -29,8 +27,9 @@ namespace elle
     namespace dsa
     {
       /// Represent a public key in the DSA asymmetric cryptosystem.
-      class PublicKey:
-        public elle::Printable
+      class PublicKey
+        : public elle::Printable
+        , private boost::totally_ordered<PublicKey>
       {
         /*-------------.
         | Construction |

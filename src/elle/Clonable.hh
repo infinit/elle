@@ -4,6 +4,7 @@
 
 namespace elle
 {
+  /// Clonable Interface.
   template <typename Cloned>
   class Clonable
   {

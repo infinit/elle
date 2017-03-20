@@ -1,7 +1,6 @@
 #ifndef ELLE_CRYPTOGRAPHY_RSA_PADDING_HH
 # define ELLE_CRYPTOGRAPHY_RSA_PADDING_HH
 
-# include <elle/types.hh>
 # include <elle/serialization/Serializer.hh>
 
 # include <openssl/evp.h>

@@ -1,10 +1,10 @@
 #pragma once
 
 #include <iosfwd>
-
 #include <utility>
 
-#include <elle/types.hh>
+#include <boost/operators.hpp>
+
 #include <elle/serialization.hh>
 #include <elle/serialization/Serializer.hh>
 
@@ -15,8 +15,6 @@
 #include <elle/cryptography/rsa/PublicKey.hh>
 #include <elle/cryptography/rsa/PrivateKey.hh>
 #include <elle/cryptography/rsa/defaults.hh>
-
-ELLE_OPERATOR_RELATIONALS();
 
 //
 // ---------- Class -----------------------------------------------------------
@@ -33,8 +31,9 @@ namespace elle
       ///
       /// Note that the public key is always written as a capital 'K'
       /// while a private key is noted with a lower-case 'k'.
-      class KeyPair:
-        public elle::Printable
+      class KeyPair
+        : public elle::Printable
+        , private boost::totally_ordered<KeyPair>
       {
       public:
         /*-------------.

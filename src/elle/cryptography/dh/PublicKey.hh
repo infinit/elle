@@ -1,20 +1,20 @@
 #ifndef ELLE_CRYPTOGRAPHY_DH_PUBLICKEY_HH
 # define ELLE_CRYPTOGRAPHY_DH_PUBLICKEY_HH
 
+# include <utility>
+
+# include <boost/operators.hpp>
+
+# include <openssl/evp.h>
+
 # include <elle/cryptography/dh/PrivateKey.hh>
 # include <elle/cryptography/fwd.hh>
 # include <elle/cryptography/types.hh>
 # include <elle/cryptography/Oneway.hh>
 # include <elle/cryptography/Cipher.hh>
 
-# include <elle/types.hh>
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
-
-# include <utility>
-ELLE_OPERATOR_RELATIONALS();
-
-# include <openssl/evp.h>
 
 //
 // ---------- Class -----------------------------------------------------------
@@ -27,8 +27,9 @@ namespace elle
     namespace dh
     {
       /// Represent a public key in the DH asymmetric cryptosystem.
-      class PublicKey:
-        public elle::Printable
+      class PublicKey
+        : public elle::Printable
+        , private boost::totally_ordered<PublicKey>
       {
         /*-------------.
         | Construction |

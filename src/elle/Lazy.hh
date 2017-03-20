@@ -57,16 +57,16 @@ namespace elle
 
   /// Print the value of \a lazy into \a output.
   ///
-  /// \param  output The stream to print to.
-  /// \param  lazy   The Lazy whose value to print.
-  /// \return \a output
+  /// @param output The stream to print to.
+  /// @param lazy The Lazy whose value to print.
+  /// @returns The stream.
   template <typename T>
   std::ostream&
   operator << (std::ostream& output, Lazy<T> const& lazy);
 
   /// Helper to create lazy values.
   ///
-  /// \return Lazy(\a f).
+  /// @return Lazy(\a f).
   template <typename F>
   auto
   lazy(F&& f) -> Lazy<decltype(f())>;

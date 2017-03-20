@@ -271,8 +271,7 @@ namespace elle
         }
 
         /// Check we don't skip any version and the previous version was
-        /// confirmed
-        /// before starting a new one.
+        /// confirmed before starting a new one.
         static
         bool
         check_confirmed(Server<T, Version, CId, SId>& self, Proposal const& p)

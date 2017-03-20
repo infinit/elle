@@ -7,6 +7,10 @@ namespace elle
 {
   /// This is really the `map` function in functional languages:
   /// a vector of the values of `fun(e)` for e in c.
+  ///
+  /// @param A container to apply the function to.
+  /// @param The function to apply.
+  /// @returns A vector containing the result of the map.
   template <typename Cont, typename Fun>
   auto
   make_vector(const Cont& c, Fun&& fun)
@@ -22,6 +26,9 @@ namespace elle
   }
 
   /// The content of \a cont as a vector.
+  ///
+  /// @param A container.
+  /// @results A vector.
   template <typename Cont>
   auto
   make_vector(const Cont& c)

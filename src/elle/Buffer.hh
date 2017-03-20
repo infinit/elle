@@ -9,7 +9,6 @@
 #include <elle/IOStream.hh>
 #include <elle/attribute.hh>
 #include <elle/operator.hh>
-#include <elle/types.hh>
 
 namespace elle
 {
@@ -41,6 +40,8 @@ namespace elle
   public:
     /// Size of a Buffer.
     using Size = uint64_t;
+    /// Byte.
+    using Byte = uint8_t;
     /// Data owned by a Buffer:
     using ContentPtr = std::unique_ptr<Byte, detail::MallocDeleter>;
     /// Content owned by a Buffer: data and size.
@@ -201,8 +202,8 @@ namespace elle
   /// represent C-style buffers as one entity, with some useful shortcuts and
   /// facilities.  It has no intelligence or memory managment whatsoever, and
   /// shouldn't have any.
-  class ELLE_API ConstWeakBuffer:
-    private boost::totally_ordered<ConstWeakBuffer>
+  class ELLE_API ConstWeakBuffer
+    : private boost::totally_ordered<ConstWeakBuffer>
   {
   /*------.
   | Types |
@@ -251,7 +252,7 @@ namespace elle
   `--------*/
   public:
     /// Get byte at position \a i.
-    Byte
+    Buffer::Byte
     operator[] (unsigned i) const;
     /// A subset of this buffer.
     ConstWeakBuffer
@@ -262,7 +263,7 @@ namespace elle
     /// Size of the buffer.
     ELLE_ATTRIBUTE_R(Size, size);
     /// Buffer constant data.
-    ELLE_ATTRIBUTE_R(const Byte*, contents);
+    ELLE_ATTRIBUTE_R(const Buffer::Byte*, contents);
 
   /*---------------------.
   | Relational Operators |
@@ -301,10 +302,10 @@ namespace elle
   | Iterable |
   `---------*/
   public:
-    using const_iterator = const Byte *;
-    const Byte*
+    using const_iterator = const Buffer::Byte *;
+    const_iterator
     begin() const;
-    const Byte*
+    const_iterator
     end() const;
 
   /*---------.
@@ -322,8 +323,9 @@ namespace elle
   `-----------*/
 
   /// A ConstWeakBuffer with mutable data.
-  class ELLE_API WeakBuffer:
-    public ConstWeakBuffer, private boost::totally_ordered<WeakBuffer>
+  class ELLE_API WeakBuffer
+    : public ConstWeakBuffer
+    , private boost::totally_ordered<WeakBuffer>
   {
   /*------.
   | Types |
@@ -364,9 +366,9 @@ namespace elle
   `--------*/
   public:
     /// Get byte at position \a i.
-    Byte&
+    Buffer::Byte&
     operator[] (unsigned i);
-    Byte*
+    Buffer::Byte*
     mutable_contents() const;
     /// A subset of this buffer.
     WeakBuffer
@@ -380,10 +382,10 @@ namespace elle
   | Iterable |
   `---------*/
   public:
-    using iterator = Byte *;
-    Byte*
+    using iterator = Buffer::Byte*;
+    iterator
     begin();
-    Byte*
+    iterator
     end();
 
   /*--------------.
@@ -392,10 +394,12 @@ namespace elle
 
   public:
     /// Construct an output streambuf from the buffer.
-    std::streambuf* ostreambuf();
+    std::streambuf*
+    ostreambuf();
 
     /// Construct an input streambuf from the buffer.
-    std::streambuf* istreambuf() const;
+    std::streambuf*
+    istreambuf() const;
   };
 
   /*----------.
@@ -419,14 +423,16 @@ namespace std
   struct ELLE_API hash<elle::ConstWeakBuffer>
   {
   public:
-    elle::Buffer::Size operator()(elle::ConstWeakBuffer const& buffer) const;
+    elle::Buffer::Size
+    operator()(elle::ConstWeakBuffer const& buffer) const;
   };
 
   template<>
   struct ELLE_API hash<elle::Buffer>
   {
   public:
-    elle::Buffer::Size operator()(elle::Buffer const& buffer) const;
+    elle::Buffer::Size
+    operator()(elle::Buffer const& buffer) const;
   };
 }
 

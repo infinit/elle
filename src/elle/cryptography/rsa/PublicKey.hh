@@ -4,20 +4,21 @@
 # include <memory>
 # include <utility>
 
+# include <boost/operators.hpp>
+
 # include <openssl/evp.h>
 
-# include <elle/types.hh>
 # include <elle/attribute.hh>
 # include <elle/operator.hh>
 # include <elle/serialization.hh>
-
-ELLE_OPERATOR_RELATIONALS();
 
 # include <elle/cryptography/fwd.hh>
 # include <elle/cryptography/types.hh>
 # include <elle/cryptography/Oneway.hh>
 # include <elle/cryptography/Cipher.hh>
-# include <elle/cryptography/rsa/Seed.hh>
+# if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+#  include <elle/cryptography/rsa/Seed.hh>
+# endif
 # include <elle/cryptography/rsa/Padding.hh>
 # include <elle/cryptography/rsa/defaults.hh>
 
@@ -31,6 +32,7 @@ namespace elle
       class PublicKey
         : public elle::Printable
         , public std::enable_shared_from_this<PublicKey>
+        , private boost::totally_ordered<PublicKey>
       {
       /*-------------.
       | Construction |

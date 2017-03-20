@@ -7,6 +7,7 @@ namespace elle
 {
   namespace system
   {
+    /// Get the name of the given signal.
     std::string
     strsignal(int signum);
   } /* system */

@@ -1,6 +1,7 @@
 #include <elle/IntRange.hh>
-
 #include <elle/log.hh>
+
+#include <boost/algorithm/cxx11/any_of.hpp>
 
 ELLE_LOG_COMPONENT("elle.IntRange");
 
@@ -16,6 +17,19 @@ namespace elle
   {
     return this->start() < rhs.start() ||
            this->start() == rhs.start() && this->end() < rhs.end();
+  }
+
+  bool
+  IntRange::operator >(IntRange const& rhs) const
+  {
+    return this->end() > rhs.end() ||
+           this->end() == rhs.end() && this->start() > rhs.start();
+  }
+
+  bool
+  IntRange::operator ==(IntRange const& rhs) const
+  {
+    return this->start() == rhs.start() && this->end() == rhs.end();
   }
 
   int
@@ -58,27 +72,33 @@ namespace elle
   IntRange::operator -(IntRange const& rhs) const
   {
     // Disjoint
-    if (!rhs.overlaps(*this))
-      return *this;
+    if (!rhs.overlaps(*this) && !this->contains(rhs))
+      ELLE_DEBUG("disjoint")
+        return *this;
     // Superset
     if (rhs.contains(*this))
-      return IntRanges();
+      ELLE_DEBUG("superset")
+        return IntRanges();
     // Prefix
     if (rhs.start() <= this->start())
-      return IntRange(rhs.end(), this->end());
+      ELLE_DEBUG("prefix")
+        return IntRange(rhs.end(), this->end() - rhs.end());
     // Suffix
     if (rhs.end() >= this->end())
-      return IntRange(this->start(), rhs.end());
+      ELLE_DEBUG("suffix")
+        return IntRange(this->start(), rhs.start() - this->start());
     // Right in the middle
-    return IntRanges
-      ({IntRange(this->start(), rhs.start()), IntRange(rhs.end(), this->end())});
+    ELLE_DEBUG("right in the middle")
+      return IntRanges{{
+        IntRange{this->start(), rhs.start() - this->start()},
+        IntRange{rhs.end(), this->end() - rhs.end()}
+      }};
   }
 
   std::ostream&
   operator <<(std::ostream& output, IntRange const& range)
   {
-    elle::fprintf(output, "(%s, %s)", range.start(), range.size());
-    return output;
+    return elle::fprintf(output, "(%s, %s)", range.start(), range.size());
   }
 
   /*-------.
@@ -145,16 +165,29 @@ namespace elle
   }
 
   bool
-  IntRanges::contains(IntRange range) const
+  IntRanges::contains(IntRange const& range) const
   {
-    for (auto const& chunk: this->_ranges)
-    {
-      if (chunk.contains(range))
-        return true;
-      else if (chunk.start() >= range.start())
-        return false;
-    }
-    return false;
+    return boost::algorithm::any_of(this->_ranges,
+                                    [&range] (auto const& chunk)
+                                    {
+                                      return chunk.contains(range);
+                                    });
+  }
+
+  bool
+  IntRanges::contains(int pos) const
+  {
+    return boost::algorithm::any_of(this->_ranges,
+                                    [pos] (auto const& chunk)
+                                    {
+                                      return chunk.contains(pos);
+                                    });
+  }
+
+  bool
+  IntRanges::operator ==(IntRanges const& rhs) const
+  {
+    return this->_ranges == rhs._ranges;
   }
 
   IntRanges
@@ -210,20 +243,33 @@ namespace elle
     return res;
   }
 
+  IntRanges::iterator
+  IntRanges::begin()
+  {
+    return this->_ranges.begin();
+  }
+
+  IntRanges::const_iterator
+  IntRanges::begin() const
+  {
+    return this->_ranges.begin();
+  }
+
+  IntRanges::iterator
+  IntRanges::end()
+  {
+    return this->_ranges.end();
+  }
+
+  IntRanges::const_iterator
+  IntRanges::end() const
+  {
+    return this->_ranges.end();
+  }
+
   std::ostream&
   operator <<(std::ostream& output, IntRanges const& ranges)
   {
-    output << "[";
-    bool first = true;
-    for (auto range: ranges)
-    {
-      if (first)
-        first = false;
-      else
-        output << ", ";
-      output << range;
-    }
-    output << "]";
-    return output;
+    return output << ranges._ranges;
   }
 }

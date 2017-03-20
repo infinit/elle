@@ -1,10 +1,10 @@
-#ifndef ELLE_BAD_ALLOC_HH
-# define ELLE_BAD_ALLOC_HH
+#pragma once
 
-# include <elle/Error.hh>
+#include <elle/Error.hh>
 
 namespace elle
 {
+  /// Equivalent of std::bad_alloc.
   class BadAlloc
     : public Error
   {
@@ -12,5 +12,3 @@ namespace elle
     BadAlloc();
   };
 }
-
-#endif

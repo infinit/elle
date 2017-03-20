@@ -3,7 +3,6 @@
 
 # include <openssl/rsa.h>
 
-# include <elle/types.hh>
 # include <elle/Buffer.hh>
 
 namespace elle

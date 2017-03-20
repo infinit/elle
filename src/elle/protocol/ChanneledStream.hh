@@ -10,6 +10,33 @@ namespace elle
 {
   namespace protocol
   {
+    /// A Stream, in charge of multiplexing communications.
+    ///
+    /// When writing in a ChanneledStream, the packet is assigned to a Channel,
+    /// uniquely identified. When writing the actual socket, the Channel in
+    /// charge of the packet will identify the packet.
+    /// On the other side of the socket, the other ChanneledStream will create a
+    /// Channel with the same number, allowing the two owners of each side of
+    /// the socket to communicate through the same socket. Multiplexing and
+    /// demultiplexing will be transparent for the user.
+    ///
+    /// \code{.cc}
+    ///
+    /// // Consider two peer, connected by an arbitrary socket s.
+    ///
+    /// // Bob creates two Channels.
+    /// elle::protocol::Serializer serializer(s);
+    /// elle::protocol::ChanneledStream channel_stream(serializer);
+    /// elle::protocol::Channel c1(channel_stream);
+    /// elle::protocol::Channel c2(channel_stream);
+    ///
+    /// // Alice, on the other side can get those two Channels, via accept.
+    /// elle::protocol::Serializer serializer(s);
+    /// elle::protocol::ChanneledStream channel_stream(serializer);
+    /// auto channel = channel_stream.accept();
+    /// auto channel2 = channel_stream.accept();
+    ///
+    /// \endcode
     class ChanneledStream
       : public Stream
     {
@@ -50,9 +77,13 @@ namespace elle
     | Receiving |
     `----------*/
     public:
+      ///
       elle::Buffer
       read() override;
 
+      /// Wait for an incoming connection.
+      ///
+      /// The Channel
       Channel
       accept();
 

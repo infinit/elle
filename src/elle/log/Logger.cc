@@ -123,7 +123,8 @@ namespace elle
       this->_setup_indentation();
       // FIXME: resets indentation
       elle::Plugin<Indenter>::hook_added().connect(
-        [this] (Indenter&) { this->_setup_indentation(); });
+        [this] (Indenter&) { this->_setup_indentation(); }
+      );
       auto levels = elle::os::getenv("ELLE_LOG_LEVEL", log_level);
       if (!levels.empty())
         this->_setup_levels(levels);

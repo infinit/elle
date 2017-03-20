@@ -13,9 +13,9 @@ namespace elle
 
   template <typename T>
   template <typename ... Args>
-  With<T>::With(Args&&... args):
-    _used(false),
-    _value(reinterpret_cast<T*>(this->_data))
+  With<T>::With(Args&&... args)
+    : _used(false)
+    , _value(reinterpret_cast<T*>(this->_data))
   {
     ELLE_LOG_COMPONENT("elle.With");
     ELLE_TRACE("%s: construct", *this)
@@ -23,9 +23,9 @@ namespace elle
   }
 
   template <typename T>
-  With<T>::With(With<T>&& value):
-    _used(value._used),
-    _value(reinterpret_cast<T*>(this->_data))
+  With<T>::With(With<T>&& value)
+    : _used(value._used)
+    , _value(reinterpret_cast<T*>(this->_data))
   {
     ELLE_LOG_COMPONENT("elle.With");
     ELLE_TRACE("%s: construct by copy", *this)
@@ -58,8 +58,8 @@ namespace elle
   public:
     template <typename F, typename V>
     inline
-    ReturnHolder(F const& f, V& v):
-      _value(f(v))
+    ReturnHolder(F const& f, V& v)
+      : _value(f(v))
     {}
 
     inline

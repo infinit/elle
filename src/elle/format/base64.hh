@@ -1,6 +1,5 @@
 #pragma once
 
-#include <elle/types.hh>
 #include <elle/Buffer.hh>
 
 namespace elle

@@ -3,8 +3,6 @@
 #include <boost/filesystem.hpp>
 
 #include <elle/Buffer.hh>
-#include <elle/types.hh>
-
 #include <elle/system/platform.hh>
 
 namespace elle
@@ -36,7 +34,7 @@ namespace elle
 
     namespace path
     {
-      static Character const separator('/');
+      static char const separator('/');
     };
     /// Read a part of a file, from file_offset to either size bytes or EOF
     Buffer
@@ -53,6 +51,7 @@ namespace elle
     truncate(boost::filesystem::path file_name,
              uint64_t new_size);
 
+    /// A portable FileHandle.
     class FileHandle
     {
     public:
@@ -62,17 +61,36 @@ namespace elle
         WRITE,
         APPEND
       };
+      /// Create an empty (invalid) FileHandle.
       FileHandle();
-      FileHandle(boost::filesystem::path, OpenMode mode);
-      FileHandle(FileHandle && b);
+      /// Create a FileHandle from \a path and \an OpenMode.
+      ///
+      /// @param path The path of the file.
+      /// @param mode The OpenMode.
+      FileHandle(boost::filesystem::path const& path, OpenMode mode);
+      /// Construct a FileHandle from a moved FileHandle.
+      FileHandle(FileHandle&& b);
       FileHandle(FileHandle const&) = delete;
       FileHandle& operator=(FileHandle const&) = delete;
+      /// Assign use the content of another moved FileHandle.
       FileHandle& operator=(FileHandle&& b);
       ~FileHandle();
+      /// Write the Buffer to the file.
+      ///
+      /// @param buffer The Buffer to write.
       void
       write(Buffer const& buffer);
+      /// Read the \n bytes after current position from the file.
+      ///
+      /// @param size The maximum number of bytes to read.
+      /// @returns A Buffer containing the data read.
       Buffer
       read(uint64_t size);
+      /// Read the \n bytes after offset.
+      ///
+      /// @param file_offset The position where to start reading.
+      /// @param size The maximum number of bytes to read.
+      /// @returns A Buffer containing the data read.
       Buffer
       read(uint64_t file_offset, uint64_t size);
     private:

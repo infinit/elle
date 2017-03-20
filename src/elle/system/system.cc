@@ -16,8 +16,9 @@ namespace elle
 {
   namespace system
   {
-    void truncate(boost::filesystem::path path,
-                  uint64_t size)
+    void
+    truncate(boost::filesystem::path path,
+             uint64_t size)
     {
       using namespace boost::system::errc; // make_error_code and errors
 #ifdef INFINIT_WINDOWS
@@ -88,15 +89,16 @@ namespace elle
           boost::system::error_code(ENOENT, boost::system::system_category()));
     }
 
-    Buffer read_file_chunk(boost::filesystem::path path,
-                           uint64_t offset,
-                           uint64_t size)
+    Buffer
+    read_file_chunk(boost::filesystem::path path,
+                    uint64_t offset,
+                    uint64_t size)
     {
       return FileHandle(path, FileHandle::READ).read(offset, size);
     }
 
-    FileHandle::FileHandle(boost::filesystem::path path, OpenMode mode)
-    : _path(path)
+    FileHandle::FileHandle(boost::filesystem::path const& path, OpenMode mode)
+      : _path(path)
     {
 #ifdef INFINIT_WINDOWS
       ELLE_LOG_COMPONENT("elle.system");
@@ -170,11 +172,11 @@ namespace elle
     -1;
 #endif
     FileHandle::FileHandle()
-    : _handle(_invalid)
+      : _handle(_invalid)
     {
     }
     FileHandle::FileHandle(FileHandle && b)
-    : _handle(_invalid)
+      : _handle(_invalid)
     {
       *this = std::move(b);
     }

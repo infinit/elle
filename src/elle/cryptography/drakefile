@@ -43,8 +43,9 @@ def configure(openssl_config,
   cxx_config = drake.cxx.Config(cxx_config)
 
   # Libraries
+  lib_path = '../../../lib'
   openssl_libs = drake.copy([openssl_lib_crypto, openssl_lib_ssl],
-                            'lib', strip_prefix = True)
+                            lib_path, strip_prefix = True)
 
   if enable_rotation:
     dopenssl = drake.include(
@@ -58,7 +59,7 @@ def configure(openssl_config,
       )
 
     dopenssl_lib_static = dopenssl.lib_static
-    dopenssl_lib_dynamic = drake.copy(dopenssl.lib_dynamic, 'lib', strip_prefix = True)
+    dopenssl_lib_dynamic = drake.copy(dopenssl.lib_dynamic, lib_path, strip_prefix = True)
     if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
       dopenssl_library = dopenssl_lib_static
     else:
@@ -68,43 +69,39 @@ def configure(openssl_config,
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
     if python is not None and build_python_module:
       boost_python = boost.config_python(link = False, static = True)
-      boost_python.library_add(drake.copy(boost.python_static, 'lib', strip_prefix = True))
+      boost_python.library_add(drake.copy(boost.python_static, lib_path, strip_prefix = True))
       boost_python += python
     boost_test = boost.config_test(link = False, static = True)
-    boost_test.library_add(drake.copy(boost.test_static, 'lib', strip_prefix = True))
+    boost_test.library_add(drake.copy(boost.test_static, lib_path, strip_prefix = True))
     boost_timer = boost.config_timer(link = False, static = True)
-    boost_timer.library_add(drake.copy(boost.timer_static, 'lib', strip_prefix = True))
+    boost_timer.library_add(drake.copy(boost.timer_static, lib_path, strip_prefix = True))
     boost_thread = boost.config_thread(link = False, static = True)
-    boost_thread.library_add(drake.copy(boost.thread_static, 'lib', strip_prefix = True))
+    boost_thread.library_add(drake.copy(boost.thread_static, lib_path, strip_prefix = True))
     boost_filesystem = boost.config_filesystem(link = False, static = True)
-    boost_filesystem.library_add(drake.copy(boost.filesystem_static, 'lib', strip_prefix = True))
+    boost_filesystem.library_add(drake.copy(boost.filesystem_static, lib_path, strip_prefix = True))
   else:
     if python is not None and build_python_module:
       boost_python = drake.cxx.Config(boost.config_python(link = False))
-      boost_python.library_add(drake.copy(boost.python_dynamic, 'lib', strip_prefix = True))
+      boost_python.library_add(drake.copy(boost.python_dynamic, lib_path, strip_prefix = True))
       boost_python += python
     boost_test = drake.cxx.Config(boost.config_test(link = False))
-    boost_test.library_add(drake.copy(boost.test_dynamic, 'lib', strip_prefix = True))
+    boost_test.library_add(drake.copy(boost.test_dynamic, lib_path, strip_prefix = True))
     boost_timer = drake.cxx.Config(boost.config_timer(link = False))
-    boost_timer.library_add(drake.copy(boost.timer_dynamic, 'lib', strip_prefix = True))
+    boost_timer.library_add(drake.copy(boost.timer_dynamic, lib_path, strip_prefix = True))
     boost_thread = drake.cxx.Config(boost.config_thread(link = False))
-    boost_thread.library_add(drake.copy(boost.thread_dynamic, 'lib', strip_prefix = True))
+    boost_thread.library_add(drake.copy(boost.thread_dynamic, lib_path, strip_prefix = True))
     boost_filesystem = drake.cxx.Config(boost.config_filesystem(link = False))
-    boost_filesystem.library_add(drake.copy(boost.filesystem_dynamic, 'lib', strip_prefix = True))
+    boost_filesystem.library_add(drake.copy(boost.filesystem_dynamic, lib_path, strip_prefix = True))
 
-  elle_lib_static = drake.copy(
-    elle.lib_static, 'lib', strip_prefix = True)
-  elle_lib_dynamic = drake.copy(
-    elle.lib_dynamic, 'lib', strip_prefix = True)
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
-    elle_library = elle_lib_static
+    elle_library = elle.lib_static
   else:
-    elle_library = elle_lib_dynamic
+    elle_library = elle.lib_dynamic
 
   # Global Configuration
   config = drake.cxx.Config()
   config.standard = drake.cxx.Config.cxx_14
-  config.lib_path('lib')
+  config.lib_path(lib_path)
   config += openssl_config
   if enable_rotation:
     config.define("ELLE_CRYPTOGRAPHY_ROTATION")
@@ -118,7 +115,7 @@ def configure(openssl_config,
     cxx_config += boost.config_system(link = False, static = True)
   else:
     cxx_config.library_add(
-      drake.copy(boost.system_dynamic, 'lib', strip_prefix = True))
+      drake.copy(boost.system_dynamic, lib_path, strip_prefix = True))
   cxx_config += elle.config
   cxx_config += openssl_config
   if enable_rotation:
@@ -230,17 +227,17 @@ def configure(openssl_config,
     sources += drake.nodes(
       'rsa/Seed.cc',
       'rsa/Seed.hh'
-      ) + [dopenssl_library]
+    ) + [dopenssl_library]
 
   cxx_config_lib = drake.cxx.Config(cxx_config)
-  cxx_config_lib.lib_path_runtime('.')
+  cxx_config_lib.lib_path_runtime(lib_path)
 
-  lib_static = drake.cxx.StaticLib('lib/elle_cryptography',
-                                   sources + [elle_lib_static] + openssl_libs,
+  lib_static = drake.cxx.StaticLib(lib_path + '/elle_cryptography',
+                                   sources + [elle.lib_static] + openssl_libs,
                                    cxx_toolkit,
                                    cxx_config_lib)
-  lib_dynamic = drake.cxx.DynLib('lib/elle_cryptography',
-                                 sources + [elle_lib_dynamic] + openssl_libs,
+  lib_dynamic = drake.cxx.DynLib(lib_path + '/elle_cryptography',
+                                 sources + [elle.lib_dynamic] + openssl_libs,
                                  cxx_toolkit,
                                  cxx_config_lib)
 
@@ -253,7 +250,7 @@ def configure(openssl_config,
     cxx_config_python.lib_path_runtime('..')
     cxx_config_python += boost_python
     python_module = drake.cxx.Module(
-      'lib/python/cryptography',
+      lib_path + '/python/cryptography',
       drake.nodes('python.cc') + [lib_dynamic],
       cxx_toolkit,
       cxx_config_python)
@@ -270,9 +267,35 @@ def configure(openssl_config,
   else:
     library = lib_static
 
+  ## ----------- ##
+  ## Executables ##
+  ## ----------- ##
+
+  exe_cxx_config = drake.cxx.Config(cxx_config)
+  if cxx_toolkit.os == drake.os.android:
+    exe_cxx_config.lib('stdc++')
+    exe_cxx_config.lib('atomic')
+  exe_cxx_config += config
+  exe_cxx_config += boost.config()
+  exe_cxx_config += boost_timer
+  exe_cxx_config += boost_thread
+  exe_cxx_config += boost_filesystem
+  exe_cxx_config += openssl_config
+  exe_cxx_config += elle.config
+
   ## ----- ##
   ## Tests ##
   ## ----- ##
+
+  global rule_check, rule_tests
+  rule_check = drake.TestSuite('check')
+  rule_tests = drake.Rule('tests')
+  if enable_rotation:
+    rule_check << dopenssl.rule_check
+  if enable_rotation:
+    rule_tests << dopenssl.rule_tests
+  elle_tests_path = drake.Path('../../../tests')
+  tests_path = elle_tests_path / 'elle/cryptography'
 
   tests = [
     "SecretKey.cc",
@@ -300,44 +323,30 @@ def configure(openssl_config,
       "rsa/scenario.cc",
     ]
 
-  exe_cxx_config = drake.cxx.Config(cxx_config)
-
-  if cxx_toolkit.os == drake.os.android:
-    exe_cxx_config.lib('stdc++')
-    exe_cxx_config.lib('atomic')
-  exe_cxx_config += config
-  exe_cxx_config += boost.config()
-  exe_cxx_config += boost_timer
-  exe_cxx_config += boost_thread
-  exe_cxx_config += boost_filesystem
-  exe_cxx_config += openssl_config
-  exe_cxx_config += elle.config
-
-  tests_cxx_config = drake.cxx.Config(exe_cxx_config)
-  tests_cxx_config += boost_test
-
-  global rule_check, rule_tests
-  rule_check = drake.TestSuite('check')
+  config_tests = drake.cxx.Config(exe_cxx_config)
+  config_tests.add_local_include_path(elle_tests_path)
+  config_tests += boost.config_test(
+    static = not boost.prefer_shared or None,
+    link = not boost.prefer_shared)
+  use_boost_filesystem_static_library = not boost.prefer_shared or \
+                                        cxx_toolkit.os is drake.os.macos
+  test_libs = [library, elle_library]
+  test_libs += openssl_libs
+  # XXX: Link only with tests that actually need dopenssl.
   if enable_rotation:
-    rule_check << dopenssl.rule_check
-
-  rule_tests = drake.Rule('tests')
-  if enable_rotation:
-    rule_tests << dopenssl.rule_tests
-
+    test_libs += [dopenssl_library]
+  if boost.prefer_shared:
+    test_libs += [boost.test_dynamic]
+    if not use_boost_filesystem_static_library:
+      test_libs += [boost.filesystem_dynamic]
   for test in tests:
-    config_test = drake.cxx.Config(tests_cxx_config)
-    config_test.lib_path_runtime('%s../../lib' % ('../' * test.count('/')))
-    path = drake.Path('tests/cryptography/%s' % test)
-    bin_path = drake.Path('tests/cryptography/%s' % os.path.splitext(test)[0])
+    config_test_local = drake.cxx.Config(config_tests)
+    path = drake.Path(tests_path / test)
+    bin_path = path.without_last_extension()
     bin = drake.cxx.Executable(
       bin_path,
-      [
-        drake.node(path),
-        library,
-        elle_library,
-      ] + openssl_libs,
-      cxx_toolkit, config_test)
+      [drake.node(path)] + test_libs,
+      cxx_toolkit, config_test_local)
     rule_tests << bin
     if valgrind_tests:
       runner = drake.valgrind.ValgrindRunner(exe = bin,
@@ -347,7 +356,7 @@ def configure(openssl_config,
     runner.reporting = drake.Runner.Reporting.on_failure
     rule_check << runner.status
   if python is not None and build_python_module:
-    python_test = drake.node('tests/python')
+    python_test = drake.node('%s/python' % tests_path)
     python_test.dependency_add(python_module)
     python_runner = drake.Runner(
       exe = python_test,
@@ -362,21 +371,24 @@ def configure(openssl_config,
 
   global rule_examples
   rule_examples = drake.Rule('examples')
-
+  examples_path = drake.Path('../../../examples')
   examples = [
-    'examples/samples/sample',
-    'examples/demo/crypt'
+    ('samples/elle/cryptography/sample', []),
+    ('demo/elle/cryptography/crypt', ['--encipher', 'foo', 'passphrase'])
   ]
-
-  for example in examples:
-    rule_examples << drake.cxx.Executable(
-      example,
+  for (example, args) in examples:
+    example = drake.cxx.Executable(
+      examples_path / example,
       [
-        drake.node('%s.cc' % example),
+        drake.node('%s/%s.cc' % (examples_path, example)),
         library,
         elle_library,
       ] + openssl_libs,
       cxx_toolkit, exe_cxx_config)
+    rule_examples << example
+    runner = drake.Runner(exe = example, args = args)
+    runner.reporting = drake.Runner.Reporting.on_failure
+    rule_examples << runner.status
   rule_build << rule_examples
 
   ## ------- ##
@@ -387,8 +399,8 @@ def configure(openssl_config,
     rule_install = drake.Rule('install')
     prefix = drake.Path(prefix)
     if cxx_toolkit.os not in [drake.os.windows, drake.os.ios, drake.os.android]:
-      rule_install << drake.install(lib_dynamic, prefix)
-    rule_install << drake.install(lib_static, prefix)
+      rule_install << drake.install(lib_dynamic, prefix / 'lib', strip_prefix = True)
+    rule_install << drake.install(lib_static, prefix / 'lib', strip_prefix = True)
     rule_install << drake.install(
-      list(filter(lambda n: isinstance(n, drake.cxx.Header), sources)),
+      (node for node in sources if isinstance(node, drake.cxx.Header)),
       prefix / 'include' / 'elle' / 'cryptography')

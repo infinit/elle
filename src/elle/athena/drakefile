@@ -1,4 +1,5 @@
 import drake
+import copy
 
 rule_build = None
 rule_check = None
@@ -32,44 +33,35 @@ def configure(cxx_toolkit,
 
   config = elle.config + das.config + reactor.config + cryptography.config
   local_config = drake.cxx.Config(config) + cxx_config
+  lib_path = '../../../lib'
 
   ## ------- ##
   ## Library ##
   ## ------- ##
 
-  if cxx_toolkit.os in [
-      drake.os.windows, drake.os.ios, drake.os.android]:
-    elle_lib = elle.lib_static
-    reactor_lib = reactor.lib_static
-    cryptography_lib = cryptography.lib_static
-  else:
-    elle_lib = drake.copy(
-      elle.lib_dynamic, 'lib', strip_prefix = True)
-    reactor_lib = drake.copy(
-      reactor.lib_dynamic, 'lib', strip_prefix = True)
-    cryptography_lib = drake.copy(
-      cryptography.lib_dynamic, 'lib', strip_prefix = True)
 
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
     local_config += boost.config_system(static = True)
   else:
     local_config += boost.config_system(link = False)
     local_config.library_add(
-      drake.copy(boost.system_dynamic, 'lib', strip_prefix = True))
+      drake.copy(boost.system_dynamic, lib_path, strip_prefix = True))
   sources = drake.nodes(
+    'LamportAge.hh',
     'paxos/Client.cc',
     'paxos/Client.hh',
     'paxos/Client.hxx',
     'paxos/Server.hh',
     'paxos/Server.hxx',
   )
+  dependencies = [elle.library, reactor.library, cryptography.library]
   lib_dynamic = drake.cxx.DynLib(
-    'lib/elle_athena',
-    sources + [elle_lib, reactor_lib, cryptography_lib],
+    lib_path + '/elle_athena',
+    sources + dependencies,
     cxx_toolkit, local_config)
   lib_static = drake.cxx.StaticLib(
-    'lib/elle_athena',
-    sources + [elle_lib, reactor_lib, cryptography_lib],
+    lib_path + '/elle_athena',
+    sources + dependencies,
     cxx_toolkit, local_config)
   rule_build = drake.Rule('build')
   if cxx_toolkit.os in [
@@ -83,27 +75,35 @@ def configure(cxx_toolkit,
   ## Tests ##
   ## ----- ##
 
-  local_config_tests = drake.cxx.Config(local_config)
-  local_config_tests.enable_debug_symbols()
-  if cxx_toolkit.os in [
-      drake.os.windows, drake.os.ios, drake.os.android]:
-    local_config_tests += boost.config_test(static = True)
-    local_config_tests += boost.config_timer(static = True)
-  else:
-    local_config_tests += boost.config_test(link = False)
-    local_config_tests.library_add(
-      drake.copy(boost.test_dynamic, 'lib', strip_prefix = True))
-    local_config_tests += boost.config_timer(link = False)
-    local_config_tests.library_add(
-      drake.copy(boost.timer_dynamic, 'lib', strip_prefix = True))
-  local_config_tests.lib_path_runtime('../lib')
   rule_tests = drake.Rule('tests')
   rule_check = drake.TestSuite('check')
-  for name in ('lamport-age', 'paxos',):
+  elle_tests_path = drake.Path('../../../tests')
+  tests_path = elle_tests_path / 'elle/athena'
+
+  tests = [
+    'paxos',
+    'lamport-age'
+  ]
+
+  local_config_tests = drake.cxx.Config(local_config)
+  local_config_tests.add_local_include_path(elle_tests_path)
+  local_config_tests.enable_debug_symbols()
+  test_libs = copy.copy(dependencies) + [library]
+  local_config_tests += boost.config_test(
+    static = not boost.prefer_shared or None,
+    link = not boost.prefer_shared)
+  local_config_tests += boost.config_timer(
+    static = not boost.prefer_shared or None,
+    link = not boost.prefer_shared)
+  if boost.prefer_shared:
+    test_libs += list(map(lambda x: drake.copy(x, lib_path, strip_prefix = True),
+                          [boost.timer_dynamic, boost.test_dynamic]))
+  local_config_tests.lib_path_runtime(
+    drake.Path('../../..') / library.path().dirname())
+  for name in tests:
     test = drake.cxx.Executable(
-      'tests/%s' % name,
-      [drake.node('tests/%s.cc' % name),
-       library, elle_lib, reactor_lib, cryptography_lib],
+      '%s/%s' % (tests_path, name),
+      [drake.node('%s/%s.cc' % (tests_path, name))] + test_libs,
       cxx_toolkit,
       local_config_tests)
     rule_tests << test
@@ -126,8 +126,8 @@ def configure(cxx_toolkit,
   if prefix is not False:
     rule_install = drake.Rule('install')
     if cxx_toolkit.os not in [drake.os.windows, drake.os.ios]:
-      rule_install << drake.install(lib_dynamic, prefix)
-    rule_install << drake.install(lib_static, prefix)
+      rule_install << drake.install(lib_dynamic, prefix / 'lib', strip_prefix = True)
+    rule_install << drake.install(lib_static, prefix / 'lib', strip_prefix = True)
     rule_install << drake.install(
-      list(filter(lambda n: isinstance(n, drake.cxx.Header), sources)),
+      (node for node in sources if isinstance(node, drake.cxx.Header)),
       prefix / 'include' / 'elle' / 'athena')
