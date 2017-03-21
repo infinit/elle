@@ -1,9 +1,8 @@
-#ifndef ELLE_LAZY_HH
-# define ELLE_LAZY_HH
+#pragma once
 
-# include <boost/optional.hpp>
+#include <boost/optional.hpp>
 
-# include <elle/attribute.hh>
+#include <elle/attribute.hh>
 
 namespace elle
 {
@@ -22,7 +21,7 @@ namespace elle
     /// Self type.
     using Self = Lazy<Value>;
     /// Function type to generate our value.
-    using Lambda = std::function<Value ()>;
+    using Lambda = std::function<auto () -> Value>;
 
   /*-------------.
   | Construction |
@@ -70,9 +69,6 @@ namespace elle
   template <typename F>
   auto
   lazy(F&& f) -> Lazy<decltype(f())>;
-
 }
 
-# include <elle/Lazy.hxx>
-
-#endif
+#include <elle/Lazy.hxx>

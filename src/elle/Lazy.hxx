@@ -1,12 +1,9 @@
-#ifndef ELLE_LAZY_HXX
-# define ELLE_LAZY_HXX
-
 namespace elle
 {
   template <typename T>
-  Lazy<T>::Lazy(Lambda const& lambda):
-    _lambda(lambda),
-    _value()
+  Lazy<T>::Lazy(Lambda const& lambda)
+    : _lambda(lambda)
+    , _value()
   {}
 
   template <typename T>
@@ -54,5 +51,3 @@ namespace elle
     return Lazy<decltype(f())>(std::forward<F>(f));
   }
 }
-
-#endif

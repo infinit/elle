@@ -1,6 +1,3 @@
-#ifndef ELLE_LOG_HH
-# define ELLE_LOG_HH
+#pragma once
 
-# include <elle/log/macros.hh>
-
-#endif
+#include <elle/log/macros.hh>
