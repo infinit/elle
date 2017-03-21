@@ -178,6 +178,8 @@ class Toolkit:
       self.__os = os
       self.__root = root
       self.__version = None
+    if self.go is None:
+      raise Exception('go executable is undefined.  Check its installation')
     try:
       self.run(['help'])
     except FileNotFoundError:
