@@ -641,7 +641,6 @@ def configure(curl_config,
     cxx_toolkit,
     lib_cxx_config,
   )
-  sources += backend_sources
 
   if backend == Backends.io:
     libcoroutine_sources = drake.nodes(
@@ -932,6 +931,7 @@ def configure(curl_config,
     if cxx_toolkit.os not in [drake.os.windows, drake.os.ios]:
       rule_install << drake.install(lib_dynamic, prefix / 'lib')
     rule_install << drake.install(lib_static, prefix / 'lib')
-    rule_install << drake.install(
-      (node for node in sources if isinstance(node, drake.cxx.Header)),
-      prefix / 'include' / 'elle' / 'reactor')
+    for s in [sources, backend_sources]:
+      rule_install << drake.install(
+        (node for node in s if isinstance(node, drake.cxx.Header)),
+        prefix / 'include' / 'elle' / 'reactor')
