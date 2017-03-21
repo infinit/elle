@@ -360,7 +360,7 @@ def configure(openssl_config,
     python_test.dependency_add(python_module)
     python_runner = drake.Runner(
       exe = python_test,
-      env = {'PYTHONPATH': str(drake.path_build('lib/python'))},
+      env = {'PYTHONPATH': str(drake.path_build('%s/python' % lib_path))},
     )
     python_runner.reporting = drake.Runner.Reporting.on_failure
     rule_check << python_runner.status

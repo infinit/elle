@@ -751,9 +751,10 @@ def configure(curl_config,
         drake.copy(boost.python_dynamic, lib_path, strip_prefix = True))
     python_sources = drake.nodes('python.cc', 'python.hh')
     sources += python_sources
-    python_lib = drake.cxx.Module(lib_path + '/python/reactor',
-                                  python_sources + [library, elle.python_plugin_datetime],
-                                  cxx_toolkit, python_cxx_config)
+    python_lib = drake.cxx.Module(
+      lib_path + '/python/reactor',
+      python_sources + [library, elle.python_plugin_datetime],
+      cxx_toolkit, python_cxx_config)
     drake.Rule('python') << python_lib
     rule_build << python_lib
 
