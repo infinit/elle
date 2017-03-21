@@ -10,19 +10,17 @@ namespace std
   template <typename... Args>
   std::ostream&
   operator <<(ostream& out,
-              unordered_map<Args...> const& map)
+              unordered_map<Args...> const& s)
   {
-    out << "{";
-    bool first = true;
-    for (auto const& elt: map)
+    auto const format = is_fixed(out) ? "%s%f: %f" : "%s%s: %s";
+    out << '{';
+    auto* sep = "";
+    for (auto const& e: s)
     {
-      if (first)
-        first = false;
-      else
-        out << ", ";
-      elle::fprintf(out, "%s: %s", elt.first, elt.second);
+      elle::fprintf(out, format, sep, e.first, e.second);
+      sep = ", ";
     }
-    out << "}";
+    out << '}';
     return out;
   }
 

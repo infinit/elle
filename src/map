@@ -4,6 +4,7 @@
 #include_next <map>
 #include <vector>
 
+#include <elle/make-vector.hh>
 #include <elle/printf-fwd.hh>
 
 namespace std
@@ -11,25 +12,23 @@ namespace std
   template <typename... Args>
   std::ostream&
   operator <<(ostream& out,
-              map<Args...> const& map)
+              map<Args...> const& s)
   {
-    out << "{";
-    bool first = true;
-    for (auto const& elt: map)
+    auto const format = is_fixed(out) ? "%s%f: %f" : "%s%s: %s";
+    out << '{';
+      auto* sep = "";
+    for (auto const& e: s)
     {
-      if (first)
-        first = false;
-      else
-        out << ", ";
-      elle::fprintf(out, "%s: %s", elt.first, elt.second);
+      elle::fprintf(out, format, sep, e.first, e.second);
+      sep = ", ";
     }
-    out << "}";
+    out << '}';
     return out;
   }
 
   template <typename... Args, typename E>
   bool
-  contains(std::map<Args...> const& map, E const& e)
+  contains(map<Args...> const& map, E const& e)
   {
     return map.find(e) != map.end();
   }
@@ -42,10 +41,8 @@ namespace elle
   keys(std::map<K, Args...> const& m)
     -> std::vector<K>
   {
-    auto res = std::vector<K>{};
-    for (const auto& p: m)
-      res.emplace_back(p.first);
-    return res;
+    return make_vector(m,
+                       [](const auto& p) { return p.first; });
   }
 }
 

@@ -10,11 +10,9 @@ namespace std
   std::basic_ostream<charT, traits>&
   operator <<(std::basic_ostream<charT, traits>& o, std::pair<T1, T2> const& p)
   {
-    if (is_fixed(o))
-      elle::fprintf(o, "(%f, %f)", p.first, p.second);
-    else
-      elle::fprintf(o, "(%s, %s)", p.first, p.second);
-    return o;
+    return elle::fprintf(o,
+                         is_fixed(o) ? "(%f, %f)" : "(%s, %s)",
+                         p.first, p.second);
   }
 }
 

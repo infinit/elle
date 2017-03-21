@@ -46,17 +46,15 @@ namespace boost
     std::ostream&
     operator <<(std::ostream& out, flat_set<Args...> const& s)
     {
-      out << "{";
-      bool first = true;
+      auto const format = is_fixed(out) ? "%s%f" : "%s%s";
+      out << '{';
+      auto* sep = "";
       for (auto const& e: s)
-        {
-          if (first)
-            first = false;
-          else
-            out << ", ";
-          elle::fprintf(out, "%s", e);
-        }
-      out << "}";
+      {
+        elle::fprintf(out, format, sep, e);
+        sep = ", ";
+      }
+      out << '}';
       return out;
     }
   }
