@@ -359,7 +359,7 @@ namespace elle
         this->_eptr = std::current_exception();
         this->terminate();
       }
-      if (thread->state() == Thread::state::done)
+      if (thread->state() == Thread::State::done)
       {
         ELLE_TRACE("%s: %s finished", *this, *thread);
         this->_running.erase(thread);
@@ -380,7 +380,7 @@ namespace elle
     void
     Scheduler::_freeze(Thread& thread)
     {
-      ELLE_ASSERT_EQ(thread.state(), Thread::state::running);
+      ELLE_ASSERT_EQ(thread.state(), Thread::State::running);
       ELLE_ASSERT_NEQ(this->_running.find(&thread), this->_running.end());
       this->_running.erase(&thread);
       this->_frozen.insert(&thread);
@@ -409,7 +409,7 @@ namespace elle
     void
     Scheduler::_unfreeze(Thread& thread, std::string const& reason)
     {
-      ELLE_ASSERT_EQ(thread.state(), Thread::state::frozen);
+      ELLE_ASSERT_EQ(thread.state(), Thread::State::frozen);
       this->_frozen.erase(&thread);
       this->_running.insert(&thread);
       thread.unfrozen()(reason);
@@ -433,7 +433,7 @@ namespace elle
       {
         // Threads expect to be done when deleted. For this very
         // particuliar case, hack the state before deletion.
-        t->_state = Thread::state::done;
+        t->_state = Thread::State::done;
         t->_scheduler_release();
       }
       this->_starting.clear();
@@ -473,7 +473,7 @@ namespace elle
       if (this->_starting.erase(thread))
       {
         ELLE_DEBUG("%s: %s was starting, discard it", *this, *thread);
-        thread->_state = Thread::state::done;
+        thread->_state = Thread::State::done;
         thread->Waitable::_signal();
         thread->_scheduler_release();
         return true;
@@ -484,16 +484,16 @@ namespace elle
       {
         thread->_terminating = true;
         thread->raise<Terminate>(thread->name());
-        if (thread->state() == Thread::state::frozen && thread->interruptible())
+        if (thread->state() == Thread::State::frozen && thread->interruptible())
         {
-          if (thread->state() == Thread::state::frozen)
+          if (thread->state() == Thread::State::frozen)
           {
             thread->_wait_abort("thread termination");
-            ELLE_ASSERT_EQ(thread->state(), Thread::state::running);
+            ELLE_ASSERT_EQ(thread->state(), Thread::State::running);
           }
         }
       }
-      return thread->state() == Thread::state::done;
+      return thread->state() == Thread::State::done;
     }
 
     void

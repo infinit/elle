@@ -28,7 +28,7 @@ namespace elle
                    bool dispose)
       : _dispose(dispose)
       , _managed(false)
-      , _state(state::running)
+      , _state(State::running)
       , _injection()
       , _exception()
       , _waited()
@@ -71,7 +71,7 @@ namespace elle
 
     Thread::~Thread()
     {
-      if (this->state() != state::done)
+      if (this->state() != State::done)
       {
         if (reactor::scheduler().current() == this)
           ELLE_ABORT("%s: destroyed from itself in state %s",
@@ -136,7 +136,7 @@ namespace elle
     bool
     Thread::done() const
     {
-      return state() == state::done;
+      return state() == State::done;
     }
 
     std::string
@@ -193,7 +193,7 @@ namespace elle
       if (this->_thread->status() == backend::Thread::Status::done)
       {
         ELLE_TRACE_SCOPE("%s: done", *this);
-        _state = Thread::state::done;
+        _state = Thread::State::done;
         if (this->_managed && this->_exception_thrown)
           this->Waitable::_raise(this->_exception_thrown);
         this->Waitable::_signal();
@@ -325,7 +325,7 @@ namespace elle
       ELLE_TRACE_SCOPE("%s: wait %s%s", *this, waitables,
                        timeout ? elle::sprintf(" for %s", timeout) : "");
 #endif
-      ELLE_ASSERT_EQ(_state, state::running);
+      ELLE_ASSERT_EQ(_state, State::running);
       ELLE_ASSERT(_waited.empty());
       bool freeze = false;
       for (Waitable* s: waitables)
@@ -401,7 +401,7 @@ namespace elle
     bool
     Thread::_wait(Thread* thread, Waker const& waker)
     {
-      if (_state == state::done)
+      if (_state == State::done)
         if (this->_managed && this->_exception_thrown)
           std::rethrow_exception(this->_exception_thrown);
         else
@@ -440,7 +440,7 @@ namespace elle
         return;
       // If we're not frozen anymore, the task must have ended in the same asio
       // poll than the timeout: Thread::_wake was just called. Ignore the timeout.
-      if (state() != state::frozen)
+      if (state() != State::frozen)
         return;
       ELLE_TRACE("%s: timed out", *this);
       this->_timeout = true;
@@ -456,13 +456,13 @@ namespace elle
     Thread::_wait_abort(std::string const& reason)
     {
       ELLE_TRACE("%s: abort wait because: %s", *this, reason);
-      ELLE_ASSERT_EQ(state(), state::frozen);
+      ELLE_ASSERT_EQ(state(), State::frozen);
       for (Waitable* waitable: _waited)
         waitable->_unwait(this);
       this->_waited.clear();
       this->_timeout_timer.cancel();
       this->_scheduler._unfreeze(*this, reason);
-      this->_state = Thread::state::running;
+      this->_state = State::running;
     }
 
     void
@@ -470,7 +470,7 @@ namespace elle
     {
       ELLE_TRACE_SCOPE("%s: freeze", *this);
       _scheduler._freeze(*this);
-      _state = Thread::state::frozen;
+      _state = State::frozen;
       yield();
     }
 
@@ -490,7 +490,7 @@ namespace elle
           ELLE_TRACE("%s: nothing to wait on, waking up", *this);
           this->_scheduler._unfreeze(
             *this, elle::sprintf("wait for %s ended", *waitable));
-          this->_state = Thread::state::running;
+          this->_state = State::running;
         }
         else
           ELLE_TRACE("%s: still waiting for %s other elements",
@@ -518,10 +518,10 @@ namespace elle
     Thread::raise_and_wake(std::exception_ptr e)
     {
       this->raise(e);
-      if (this->state() == state::frozen)
+      if (this->state() == State::frozen)
       {
         this->_wait_abort(elle::sprintf("raise %s", elle::exception_string(e)));
-        ELLE_ASSERT_EQ(this->state(), state::running);
+        ELLE_ASSERT_EQ(this->state(), State::running);
       }
     }
 
@@ -563,20 +563,19 @@ namespace elle
     `----------------*/
 
     std::ostream&
-    operator <<(std::ostream&     s,
-                Thread::State     state)
+    operator <<(std::ostream& s, Thread::State state)
     {
       switch (state)
       {
-        case Thread::state::done:
-          s << "done";
-          break;
-        case Thread::state::frozen:
-          s << "frozen";
-          break;
-        case Thread::state::running:
-          s << "running";
-          break;
+      case Thread::State::done:
+        s << "done";
+        break;
+      case Thread::State::frozen:
+        s << "frozen";
+        break;
+      case Thread::State::running:
+        s << "running";
+        break;
       }
       return s;
     }

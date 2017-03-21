@@ -25,7 +25,7 @@ namespace elle
             ELLE_ABORT("unexpected timer error: %s", e);
           ELLE_TRACE_SCOPE("%s", timeout_msg);
           current->raise<reactor::Timeout>(delay);
-          if (current->state() == Thread::state::frozen)
+          if (current->state() == Thread::State::frozen)
             current->_wait_abort("guard timed out");
         });
     }

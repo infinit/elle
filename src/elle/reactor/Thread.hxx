@@ -50,8 +50,9 @@ namespace elle
     VThread<R>::VThread(Scheduler& scheduler,
                         const std::string& name,
                         Action action)
-      : Thread(scheduler, name, std::bind(vthread_catcher<R>, std::move(action),
-                                          std::ref(_result)))
+      : Thread(scheduler, name,
+               [action = std::move(action), res = std::ref(_result)]
+               { vthread_catcher<R>(action, res); })
       , _result()
     {}
 
@@ -59,7 +60,7 @@ namespace elle
     const R&
     VThread<R>::result() const
     {
-      if (state() != Thread::state::done)
+      if (state() != Thread::State::done)
         throw elle::Exception
           ("tried to fetched the result of an unfinished thread");
       return _result;

@@ -1161,7 +1161,7 @@ join_waiter_multiple(elle::reactor::Thread& thread,
                      int& count)
 {
   elle::reactor::yield();
-  BOOST_CHECK(thread.state() == elle::reactor::Thread::state::done);
+  BOOST_CHECK(thread.state() == elle::reactor::Thread::State::done);
   elle::reactor::wait(thread);
   elle::reactor::wait(thread);
   ++count;
@@ -1380,7 +1380,7 @@ test_multithread_spawn_wake()
     [&]
     {
       ELLE_LOG("wait for the scheduler to be frozen")
-        while (keeper.state() != elle::reactor::Thread::state::frozen)
+        while (keeper.state() != elle::reactor::Thread::State::frozen)
           ::usleep(10000);
       new elle::reactor::Thread(sched, "waker", [&] { barrier.open(); }, true);
     });
@@ -1935,7 +1935,7 @@ thread_exception_test()
   }
 
   BOOST_CHECK(exception_thrown);
-  BOOST_CHECK_EQUAL(thread.state(), elle::reactor::Thread::state::done);
+  BOOST_CHECK_EQUAL(thread.state(), elle::reactor::Thread::State::done);
 }
 
 
@@ -2123,7 +2123,7 @@ ELLE_TEST_SCHEDULED(test_terminate_now)
         throw;
       }
     });
-  BOOST_CHECK_EQUAL(t.state(), elle::reactor::Thread::state::running);
+  BOOST_CHECK_EQUAL(t.state(), elle::reactor::Thread::State::running);
   elle::reactor::wait(sleeping);
   t.terminate_now();
   BOOST_CHECK(beacon);
@@ -2172,7 +2172,7 @@ ELLE_TEST_SCHEDULED(test_terminate_now_destroyed)
   {
     // If t2 is effectively waiting for t1 to die and t3 for t2 to die
     // then the test has passed.
-    if (t3.state() == elle::reactor::Thread::state::frozen)
+    if (t3.state() == elle::reactor::Thread::State::frozen)
     {
       finish.open();
       break;
