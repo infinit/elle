@@ -1,13 +1,13 @@
+#include <elle/TypeInfo.hh>
+
 #ifdef __clang__
 # include <cstring>
 #endif
-
-#include <elle/TypeInfo.hh>
-
 #include <algorithm>
 
-#include <elle/Backtrace.hh>
+#include <boost/range/algorithm/sort.hpp>
 
+#include <elle/Backtrace.hh>
 
 namespace elle
 {
@@ -43,42 +43,44 @@ namespace elle
     : _info(*info)
   {}
 
-  static
-  std::vector<std::pair<std::string, std::string>>&
-  _abbreviations()
+  namespace
   {
-    static std::vector<std::pair<std::string, std::string>> abbreviations;
-    return abbreviations;
+    using Map = std::vector<std::pair<std::string, std::string>>;
+    Map&
+    _abbreviations()
+    {
+      static auto res = Map{};
+      return res;
+    }
   }
-
 
   TypeInfo::RegisterAbbrevation::RegisterAbbrevation(std::string const& full,
                                                      std::string const& abbr)
   {
     _abbreviations().emplace_back(full, abbr);
-    std::sort(_abbreviations().begin(), _abbreviations().end(),
-              [] (std::pair<std::string, std::string> const& lhs,
-                  std::pair<std::string, std::string> const& rhs)
-              {
-                return lhs.first.size() > rhs.first.size();
-              });
+    boost::sort(_abbreviations(),
+                [] (auto const& lhs, auto const& rhs)
+                {
+                  return lhs.first.size() > rhs.first.size();
+                });
   }
 
   std::ostream&
   operator << (std::ostream& s, TypeInfo const& ti)
   {
-    bool fixed = s.flags() & std::ios::fixed;
-    auto name = ti.name();
-    if (fixed)
+    if (s.flags() & std::ios::fixed)
     {
+      auto name = ti.name();
       for (auto const& abbr: _abbreviations())
       {
         auto pos = name.find(abbr.first);
         if (pos != std::string::npos)
           name.replace(pos, abbr.first.size(), abbr.second);
       }
+      s << name;
     }
-    s << name;
+    else
+      s << ti.name();
     return s;
   }
 }

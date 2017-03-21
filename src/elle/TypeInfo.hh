@@ -1,12 +1,11 @@
-#ifndef ELLE_TYPE_INFO_HH
-# define ELLE_TYPE_INFO_HH
+#pragma once
 
-# include <string>
-# include <typeindex>
-# include <typeinfo>
+#include <string>
+#include <typeindex>
+#include <typeinfo>
 
-# include <elle/attribute.hh>
-# include <elle/compiler.hh>
+#include <elle/attribute.hh>
+#include <elle/compiler.hh>
 
 namespace elle
 {
@@ -95,6 +94,4 @@ namespace std
   };
 }
 
-# include <elle/TypeInfo.hxx>
-
-#endif
+#include <elle/TypeInfo.hxx>
