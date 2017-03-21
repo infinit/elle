@@ -327,6 +327,7 @@ namespace elle
     void
     Logger::component_pop()
     {
+      assert(!this->_component_stack.empty());
       this->_component_stack.pop_back();
     }
 
@@ -340,21 +341,21 @@ namespace elle
     {
       switch (l)
       {
-        case Logger::Level::none:
-          stream << "none";
-          break;
-        case Logger::Level::log:
-          stream << "log";
-          break;
-        case Logger::Level::trace:
-          stream << "trace";
-          break;
-        case Logger::Level::debug:
-          stream << "debug";
-          break;
-        case Logger::Level::dump:
-          stream << "dump";
-          break;
+      case Logger::Level::none:
+        stream << "none";
+        break;
+      case Logger::Level::log:
+        stream << "log";
+        break;
+      case Logger::Level::trace:
+        stream << "trace";
+        break;
+      case Logger::Level::debug:
+        stream << "debug";
+        break;
+      case Logger::Level::dump:
+        stream << "dump";
+        break;
       }
       return stream;
     }
