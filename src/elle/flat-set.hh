@@ -4,6 +4,8 @@
 
 #include <boost/container/flat_set.hpp>
 
+#include <elle/functional.hh>
+
 namespace elle
 {
   /// Whether \a e is member of \a s.
@@ -25,25 +27,44 @@ namespace elle
   }
 }
 
-/// Boost compliance.
 namespace boost
 {
   namespace container
   {
+    /// Boost.Hash compliance.
     template <typename... Args>
     std::size_t
-    hash_value(boost::container::flat_set<Args...> const& s)
+    hash_value(flat_set<Args...> const& s)
     {
       std::size_t res = 0;
       elle::hash_combine(res, s);
       return res;
     }
+
+    /// Pretty-printing.
+    template <typename... Args>
+    std::ostream&
+    operator <<(std::ostream& out, flat_set<Args...> const& s)
+    {
+      out << "{";
+      bool first = true;
+      for (auto const& e: s)
+        {
+          if (first)
+            first = false;
+          else
+            out << ", ";
+          elle::fprintf(out, "%s", e);
+        }
+      out << "}";
+      return out;
+    }
   }
 }
 
-/// std compliance.
 namespace std
 {
+  /// std.hash compliance.
   template <typename... Args>
   struct hash<boost::container::flat_set<Args...>>
   {
