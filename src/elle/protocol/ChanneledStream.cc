@@ -3,7 +3,7 @@
 #include <elle/log.hh>
 
 #include <elle/reactor/scheduler.hh>
-#include <elle/reactor/thread.hh>
+#include <elle/reactor/Thread.hh>
 
 #include <elle/cryptography/random.hh>
 

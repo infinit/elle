@@ -24,7 +24,7 @@
 #include <elle/reactor/signal.hh>
 #include <elle/reactor/sleep.hh>
 #include <elle/reactor/storage.hh>
-#include <elle/reactor/thread.hh>
+#include <elle/reactor/Thread.hh>
 #include <elle/reactor/timer.hh>
 
 

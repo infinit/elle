@@ -4,7 +4,7 @@
 #include <elle/reactor/Barrier.hh>
 #include <elle/reactor/MultiLockBarrier.hh>
 #include <elle/reactor/duration.hh>
-#include <elle/reactor/thread.hh>
+#include <elle/reactor/Thread.hh>
 
 namespace elle
 {

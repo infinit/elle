@@ -17,7 +17,7 @@
 #include <elle/reactor/network/ssl-server.hh>
 #include <elle/reactor/network/ssl-socket.hh>
 #include <elle/reactor/network/tcp-server.hh>
-#include <elle/reactor/thread.hh>
+#include <elle/reactor/Thread.hh>
 #include <utility>
 
 ELLE_LOG_COMPONENT("elle.reactor.network.SSL.test");

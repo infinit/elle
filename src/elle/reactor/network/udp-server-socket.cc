@@ -4,7 +4,7 @@
 #include <elle/reactor/network/udp-server-socket.hh>
 #include <elle/reactor/network/udp-server.hh>
 #include <elle/reactor/scheduler.hh>
-#include <elle/reactor/thread.hh>
+#include <elle/reactor/Thread.hh>
 
 ELLE_LOG_COMPONENT("elle.reactor.network.UDPServerSocket");
 

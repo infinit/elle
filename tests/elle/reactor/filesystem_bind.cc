@@ -1,6 +1,6 @@
 #include <elle/reactor/filesystem.hh>
 #include <elle/reactor/scheduler.hh>
-#include <elle/reactor/thread.hh>
+#include <elle/reactor/Thread.hh>
 
 namespace rfs = reactor::filesystem;
 rfs::FileSystem* fs;

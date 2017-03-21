@@ -21,7 +21,7 @@
 # include <elle/reactor/network/unix-domain-socket.hh>
 #endif
 #include <elle/reactor/signal.hh>
-#include <elle/reactor/thread.hh>
+#include <elle/reactor/Thread.hh>
 #include <utility>
 
 #include "reactor.hh"

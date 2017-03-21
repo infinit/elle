@@ -9,7 +9,7 @@
 #include <elle/reactor/network/fwd.hh>
 #include <elle/reactor/network/utp-server-impl.hh>
 #include <elle/reactor/scheduler.hh>
-#include <elle/reactor/thread.hh>
+#include <elle/reactor/Thread.hh>
 #include <utility>
 
 #include <utp.h>

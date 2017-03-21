@@ -11,7 +11,7 @@
 #include <elle/reactor/network/nat.hh>
 #include <elle/reactor/network/resolve.hh>
 #include <elle/reactor/sleep.hh>
-#include <elle/reactor/thread.hh>
+#include <elle/reactor/Thread.hh>
 
 #if defined(REACTOR_HAVE_STUN)
 # include <stun/common/commonincludes.hpp>

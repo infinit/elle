@@ -17,7 +17,7 @@
 #include <elle/reactor/exception.hh>
 #include <elle/reactor/Operation.hh>
 #include <elle/reactor/scheduler.hh>
-#include <elle/reactor/thread.hh>
+#include <elle/reactor/Thread.hh>
 
 ELLE_LOG_COMPONENT("elle.reactor.Scheduler");
 

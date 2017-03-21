@@ -3,7 +3,7 @@
 #include <elle/Error.hh>
 #include <elle/optional.hh>
 #include <elle/reactor/Channel.hh>
-#include <elle/reactor/thread.hh>
+#include <elle/reactor/Thread.hh>
 
 namespace elle
 {

@@ -8,7 +8,7 @@
 #include <elle/os/environ.hh>
 
 #include <elle/reactor/logger.hh>
-#include <elle/reactor/thread.hh>
+#include <elle/reactor/Thread.hh>
 
 elle::reactor::Scheduler* sched = nullptr;
 elle::log::TextLogger* logger;

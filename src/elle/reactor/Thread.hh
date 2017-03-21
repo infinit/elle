@@ -354,4 +354,4 @@ namespace elle
   }
 }
 
-#include <elle/reactor/thread.hxx>
+#include <elle/reactor/Thread.hxx>

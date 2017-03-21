@@ -23,7 +23,7 @@
 #include <elle/reactor/network/socket.hh>
 #include <elle/reactor/network/tcp-server.hh>
 #include <elle/reactor/network/tcp-socket.hh>
-#include <elle/reactor/thread.hh>
+#include <elle/reactor/Thread.hh>
 #include <elle/string/algorithm.hh>
 #include <elle/utility/Move.hh>
 

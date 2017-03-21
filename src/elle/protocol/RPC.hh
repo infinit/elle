@@ -9,7 +9,7 @@
 
 #include <elle/Printable.hh>
 
-#include <elle/reactor/thread.hh>
+#include <elle/reactor/Thread.hh>
 
 #include <elle/protocol/fwd.hh>
 

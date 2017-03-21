@@ -3,7 +3,7 @@
 #include <elle/assert.hh>
 #include <elle/log.hh>
 #include <elle/reactor/backend/pthread/pthread.hh>
-#include <elle/reactor/backend/thread.hh>
+#include <elle/reactor/backend/Thread.hh>
 
 ELLE_LOG_COMPONENT("elle.reactor.backend.Threads");
 

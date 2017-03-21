@@ -5,7 +5,7 @@
 #include <elle/Printable.hh>
 #include <elle/reactor/fwd.hh>
 #include <elle/reactor/duration.hh>
-#include <elle/reactor/thread.hh>
+#include <elle/reactor/Thread.hh>
 
 namespace elle
 {

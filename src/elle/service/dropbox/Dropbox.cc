@@ -4,7 +4,7 @@
 #include <elle/reactor/Scope.hh>
 #include <elle/reactor/http/url.hh>
 #include <elle/reactor/scheduler.hh>
-#include <elle/reactor/thread.hh>
+#include <elle/reactor/Thread.hh>
 #include <elle/serialization/json.hh>
 #include <elle/service/dropbox/Dropbox.hh>
 

@@ -8,7 +8,7 @@
 #include <elle/reactor/network/exception.hh>
 #include <elle/reactor/Scope.hh>
 #include <elle/reactor/scheduler.hh>
-#include <elle/reactor/thread.hh>
+#include <elle/reactor/Thread.hh>
 
 #include <elle/protocol/Channel.hh>
 #include <elle/protocol/ChanneledStream.hh>

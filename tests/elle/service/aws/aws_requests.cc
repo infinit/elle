@@ -14,7 +14,7 @@
 #include <elle/service/aws/StringToSign.hh>
 
 #include <elle/reactor/scheduler.hh>
-#include <elle/reactor/thread.hh>
+#include <elle/reactor/Thread.hh>
 
 
 ELLE_LOG_COMPONENT("elle.services.aws.test");

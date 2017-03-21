@@ -118,7 +118,7 @@ add_library(elle ${LINK_METHOD}
   reactor/src/reactor/semaphore.cc
   reactor/src/reactor/signal.cc
   reactor/src/reactor/sleep.cc
-  reactor/src/reactor/thread.cc
+  reactor/src/reactor/Thread.cc
   reactor/src/reactor/Waitable.cc
 
   Version.cc
