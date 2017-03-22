@@ -12,6 +12,7 @@ lib_static = None
 lib_dynamic = None
 library = None
 python_module = None
+examples = None
 
 rule_build = None
 rule_check = None
@@ -37,6 +38,7 @@ def configure(openssl_config,
   global config
   global lib_static, lib_dynamic, library, python_module
   global rule_build, rule_install
+  global examples
 
   # Toolkit
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()

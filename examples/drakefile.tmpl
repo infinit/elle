@@ -1,0 +1,70 @@
+import drake
+import drake.cxx
+import drake.cxx.boost
+
+def configure(cxx_config = drake.cxx.Config(),
+              cxx_toolkit = drake.cxx.Toolkit(),
+              elle = '${prefix}'):
+
+  ## ----- ##
+  ## Rules ##
+  ## ----- ##
+  build = drake.Rule('build')
+
+  ## ------------- ##
+  ## Configuration ##
+  ## ------------- ##
+  cxx_config = drake.cxx.Config(cxx_config)
+  cxx_config.standard = drake.cxx.Config.cxx_14
+  cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
+  elle = drake.Path(elle)
+
+  # Includes.
+  cxx_config.add_system_include_path(elle / 'include')
+
+  # Libraries.
+  cxx_config.lib_path(elle / 'lib')
+  cxx_config.lib_path_runtime(elle / 'lib')
+  cxx_config.lib('elle_core')
+  cxx_config.lib('elle_reactor')
+  cxx_config.lib('elle_protocol')
+  cxx_config.lib('elle_cryptography')
+  cxx_config.lib('elle_protocol')
+  cxx_config.lib('ssl')
+  cxx_config.lib('archive')
+  cxx_config.lib('crypto')
+  cxx_config.lib('curl')
+
+  # Boost.
+  cxx_config.lib('boost_system')
+  cxx_config.lib('boost_thread')
+  cxx_config.lib('boost_date_time')
+  cxx_config.lib('boost_filesystem')
+
+  ## ------- ##
+  ## Sources ##
+  ## ------- ##
+  sources = [
+    'demo/elle/reactor/echo_server',
+    'demo/elle/cryptography/crypt',
+    'demo/google_maps',
+    'samples/elle/das/das',
+    'samples/elle/printable',
+    'samples/elle/buffer',
+    'samples/elle/attributes',
+    'samples/elle/cryptography/sample',
+    'samples/elle/serialization',
+    'samples/elle/log',
+    'samples/http_get_signed_json',
+    'samples/get_wikipedia',
+  ]
+
+  ## ----------- ##
+  ## Executables ##
+  ## ----------- ##
+  for source in sources:
+    build << drake.cxx.Executable(
+      'bin/%s' % source,
+      drake.nodes('%s.cc' % source,),
+      cxx_toolkit,
+      cxx_config)

@@ -10,6 +10,7 @@ rule_install = None
 rule_tests = None
 rule_examples = None
 
+examples = None
 config = None
 
 def configure(cxx_toolkit,
@@ -21,7 +22,7 @@ def configure(cxx_toolkit,
               valgrind_tests = True):
 
   global rule_install, rule_build, rule_check, rule_tests
-  global config
+  global config, examples
 
   ## ----------------- ##
   ## C++ configuration ##

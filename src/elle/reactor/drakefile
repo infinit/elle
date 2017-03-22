@@ -11,6 +11,7 @@ config = None
 lib_static = None
 lib_dynamic = None
 library = None
+examples = None
 python_lib = None
 dokan_lib = None
 cxx_lib = None
@@ -53,6 +54,7 @@ def configure(curl_config,
   global rule_build, rule_install, rule_examples
   global python_lib, dokan_lib
   global connectivity, fnetusermount_binaries
+  global examples
 
   if cxx_toolkit.os is drake.os.macos:
     global osxfuse_package
@@ -908,9 +910,10 @@ def configure(curl_config,
   cxx_config_examples = drake.cxx.Config(local_cxx_config)
   rule_examples = drake.Rule('examples')
   examples_path = drake.Path('../../../examples')
-  for example in [
+  examples = [
     'demo/elle/reactor/echo_server'
-  ]:
+  ]
+  for example in examples:
     source = drake.nodes('%s/%s.cc' % (examples_path, example))
     example = drake.cxx.Executable(
       examples_path / example,

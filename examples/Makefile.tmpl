@@ -1,0 +1,99 @@
+all: bin/demo/google_maps bin/demo/elle/reactor/echo_server bin/samples/elle/serialization bin/samples/elle/log bin/samples/http_get_signed_json bin/samples/elle/cryptography/sample bin/samples/elle/printable bin/samples/elle/das/das bin/samples/elle/buffer bin/samples/get_wikipedia bin/samples/elle/attributes bin/demo/elle/cryptography/crypt
+
+SOURCE_DIR=../examples
+
+bin/demo/google_maps: src/demo/google_maps.o
+	@mkdir -p bin/demo
+	g++ -pthread -Wl,-rpath,${prefix}/lib -L ${prefix}/lib src/demo/google_maps.o -o bin/demo/google_maps -lelle_core -lelle_reactor -lelle_protocol -lelle_cryptography -lelle_protocol -lssl -lcrypto -lcurl -lboost_system -lboost_thread -lboost_date_time
+
+src/demo/google_maps.o:
+	@mkdir -p src/demo
+	g++ -isystem ${prefix}/include -isystem ${prefix}/include -O2 -std=c++14 -Wall -c $(SOURCE_DIR)/demo/google_maps.cc -o src/demo/google_maps.o
+
+bin/demo/elle/reactor/echo_server: src/demo/elle/reactor/echo_server.o
+	@mkdir -p bin/demo/elle/reactor
+	g++ -pthread -Wl,-rpath,${prefix}/lib -L ${prefix}/lib src/demo/elle/reactor/echo_server.o -o bin/demo/elle/reactor/echo_server -lelle_core -lelle_reactor -lelle_protocol -lelle_cryptography -lelle_protocol -lssl -lcrypto -lcurl -lboost_system -lboost_thread -lboost_date_time
+
+src/demo/elle/reactor/echo_server.o:
+	@mkdir -p src/demo/elle/reactor
+	g++ -isystem ${prefix}/include -isystem ${prefix}/include -O2 -std=c++14 -Wall -c $(SOURCE_DIR)/demo/elle/reactor/echo_server.cc -o src/demo/elle/reactor/echo_server.o
+
+bin/samples/elle/serialization: src/samples/elle/serialization.o
+	@mkdir -p bin/samples/elle
+	g++ -pthread -Wl,-rpath,${prefix}/lib -L ${prefix}/lib src/samples/elle/serialization.o -o bin/samples/elle/serialization -lelle_core -lelle_reactor -lelle_protocol -lelle_cryptography -lelle_protocol -lssl -lcrypto -lcurl -lboost_system -lboost_thread -lboost_date_time
+
+src/samples/elle/serialization.o:
+	@mkdir -p src/samples/elle
+	g++ -isystem ${prefix}/include -isystem ${prefix}/include -O2 -std=c++14 -Wall -c $(SOURCE_DIR)/samples/elle/serialization.cc -o src/samples/elle/serialization.o
+
+bin/samples/elle/log: src/samples/elle/log.o
+	@mkdir -p bin/samples/elle
+	g++ -pthread -Wl,-rpath,${prefix}/lib -L ${prefix}/lib src/samples/elle/log.o -o bin/samples/elle/log -lelle_core -lelle_reactor -lelle_protocol -lelle_cryptography -lelle_protocol -lssl -lcrypto -lcurl -lboost_system -lboost_thread -lboost_date_time
+
+src/samples/elle/log.o:
+	@mkdir -p src/samples/elle
+	g++ -isystem ${prefix}/include -isystem ${prefix}/include -O2 -std=c++14 -Wall -c $(SOURCE_DIR)/samples/elle/log.cc -o src/samples/elle/log.o
+
+bin/samples/http_get_signed_json: src/samples/http_get_signed_json.o
+	@mkdir -p bin/samples
+	g++ -pthread -Wl,-rpath,${prefix}/lib -L ${prefix}/lib src/samples/http_get_signed_json.o -o bin/samples/http_get_signed_json -lelle_core -lelle_reactor -lelle_protocol -lelle_cryptography -lelle_protocol -lssl -lcrypto -lcurl -lboost_system -lboost_thread -lboost_date_time
+
+src/samples/http_get_signed_json.o:
+	@mkdir -p src/samples
+	g++ -isystem ${prefix}/include -isystem ${prefix}/include -O2 -std=c++14 -Wall -c $(SOURCE_DIR)/samples/http_get_signed_json.cc -o src/samples/http_get_signed_json.o
+
+bin/samples/elle/cryptography/sample: src/samples/elle/cryptography/sample.o
+	@mkdir -p bin/samples/elle/cryptography
+	g++ -pthread -Wl,-rpath,${prefix}/lib -L ${prefix}/lib src/samples/elle/cryptography/sample.o -o bin/samples/elle/cryptography/sample -lelle_core -lelle_reactor -lelle_protocol -lelle_cryptography -lelle_protocol -lssl -lcrypto -lcurl -lboost_system -lboost_thread -lboost_date_time
+
+src/samples/elle/cryptography/sample.o:
+	@mkdir -p src/samples/elle/cryptography
+	g++ -isystem ${prefix}/include -isystem ${prefix}/include -O2 -std=c++14 -Wall -c $(SOURCE_DIR)/samples/elle/cryptography/sample.cc -o src/samples/elle/cryptography/sample.o
+
+bin/samples/elle/printable: src/samples/elle/printable.o
+	@mkdir -p bin/samples/elle
+	g++ -pthread -Wl,-rpath,${prefix}/lib -L ${prefix}/lib src/samples/elle/printable.o -o bin/samples/elle/printable -lelle_core -lelle_reactor -lelle_protocol -lelle_cryptography -lelle_protocol -lssl -lcrypto -lcurl -lboost_system -lboost_thread -lboost_date_time
+
+src/samples/elle/printable.o:
+	@mkdir -p src/samples/elle
+	g++ -isystem ${prefix}/include -isystem ${prefix}/include -O2 -std=c++14 -Wall -c $(SOURCE_DIR)/samples/elle/printable.cc -o src/samples/elle/printable.o
+
+bin/samples/elle/das/das: src/samples/elle/das/das.o
+	@mkdir -p bin/samples/elle/das
+	g++ -pthread -Wl,-rpath,${prefix}/lib -L ${prefix}/lib src/samples/elle/das/das.o -o bin/samples/elle/das/das -lelle_core -lelle_reactor -lelle_protocol -lelle_cryptography -lelle_protocol -lssl -lcrypto -lcurl -lboost_system -lboost_thread -lboost_date_time
+
+src/samples/elle/das/das.o:
+	@mkdir -p src/samples/elle/das
+	g++ -isystem ${prefix}/include -isystem ${prefix}/include -O2 -std=c++14 -Wall -c $(SOURCE_DIR)/samples/elle/das/das.cc -o src/samples/elle/das/das.o
+
+bin/samples/elle/buffer: src/samples/elle/buffer.o
+	@mkdir -p bin/samples/elle
+	g++ -pthread -Wl,-rpath,${prefix}/lib -L ${prefix}/lib src/samples/elle/buffer.o -o bin/samples/elle/buffer -lelle_core -lelle_reactor -lelle_protocol -lelle_cryptography -lelle_protocol -lssl -lcrypto -lcurl -lboost_system -lboost_thread -lboost_date_time
+
+src/samples/elle/buffer.o:
+	@mkdir -p src/samples/elle
+	g++ -isystem ${prefix}/include -isystem ${prefix}/include -O2 -std=c++14 -Wall -c $(SOURCE_DIR)/samples/elle/buffer.cc -o src/samples/elle/buffer.o
+
+bin/samples/get_wikipedia: src/samples/get_wikipedia.o
+	@mkdir -p bin/samples
+	g++ -pthread -Wl,-rpath,${prefix}/lib -L ${prefix}/lib src/samples/get_wikipedia.o -o bin/samples/get_wikipedia -lelle_core -lelle_reactor -lelle_protocol -lelle_cryptography -lelle_protocol -lssl -lcrypto -lcurl -lboost_system -lboost_thread -lboost_date_time
+
+src/samples/get_wikipedia.o:
+	@mkdir -p src/samples
+	g++ -isystem ${prefix}/include -isystem ${prefix}/include -O2 -std=c++14 -Wall -c $(SOURCE_DIR)/samples/get_wikipedia.cc -o src/samples/get_wikipedia.o
+
+bin/samples/elle/attributes: src/samples/elle/attributes.o
+	@mkdir -p bin/samples/elle
+	g++ -pthread -Wl,-rpath,${prefix}/lib -L ${prefix}/lib src/samples/elle/attributes.o -o bin/samples/elle/attributes -lelle_core -lelle_reactor -lelle_protocol -lelle_cryptography -lelle_protocol -lssl -lcrypto -lcurl -lboost_system -lboost_thread -lboost_date_time
+
+src/samples/elle/attributes.o:
+	@mkdir -p src/samples/elle
+	g++ -isystem ${prefix}/include -isystem ${prefix}/include -O2 -std=c++14 -Wall -c $(SOURCE_DIR)/samples/elle/attributes.cc -o src/samples/elle/attributes.o
+
+bin/demo/elle/cryptography/crypt: src/demo/elle/cryptography/crypt.o
+	@mkdir -p bin/demo/elle/cryptography
+	g++ -pthread -Wl,-rpath,${prefix}/lib -L ${prefix}/lib src/demo/elle/cryptography/crypt.o -o bin/demo/elle/cryptography/crypt -lelle_core -lelle_reactor -lelle_protocol -lelle_cryptography -lelle_protocol -lssl -lcrypto -lcurl -lboost_system -lboost_thread -lboost_date_time
+
+src/demo/elle/cryptography/crypt.o:
+	@mkdir -p src/demo/elle/cryptography
+	g++ -isystem ${prefix}/include -isystem ${prefix}/include -O2 -std=c++14 -Wall -c $(SOURCE_DIR)/demo/elle/cryptography/crypt.cc -o src/demo/elle/cryptography/crypt.o

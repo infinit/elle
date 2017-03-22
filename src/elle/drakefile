@@ -12,6 +12,7 @@ lib_dynamic = None
 library = None
 python = None
 ldap = None
+examples = None
 
 rule_build = None
 rule_check = None
@@ -48,6 +49,7 @@ def configure(zlib_lib,
   global rule_build, rule_check, rule_install, rule_tests, rule_examples
   global python_plugin_datetime
   global ldap
+  global examples
 
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
   cxx_config = drake.cxx.Config(cxx_config) or drake.cxx.Config()

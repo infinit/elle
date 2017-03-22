@@ -1426,8 +1426,8 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
       if r is not None:
         rule << r
 
-  build = drake.Rule('build')
-  recurse(build, 'rule_build')
+  rule_build = drake.Rule('build')
+  recurse(rule_build, 'rule_build')
 
   global rule_tests
   rule_tests = drake.Rule('tests')
@@ -1437,11 +1437,11 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
   rule_check = drake.Rule('check')
   recurse(rule_check, 'rule_check')
 
-  install = drake.Rule('install')
-  recurse(install, 'rule_install')
+  rule_install = drake.Rule('install')
+  recurse(rule_install, 'rule_install')
 
-  examples = drake.Rule('examples')
-  recurse(examples, 'rule_examples')
+  rule_examples = drake.Rule('examples')
+  recurse(rule_examples, 'rule_examples')
 
   example_config = drake.cxx.Config(cxx_config)
   example_config += das.config + elle.config + reactor.config + cryptography.config
@@ -1450,16 +1450,57 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
   else:
     example_config.library_add(
       drake.copy(boost.system_dynamic, 'lib', strip_prefix = True))
-  examples = drake.Rule('examples')
-  for example in [
-    'examples/samples/http_get_signed_json',
-    'examples/samples/get_wikipedia'
-  ]:
-    examples << drake.cxx.Executable(
-      example,
+  examples = [
+    'samples/http_get_signed_json',
+    'samples/get_wikipedia',
+    'demo/google_maps',
+  ]
+  for example in examples:
+    rule_examples << drake.cxx.Executable(
+      'examples/%s' % example,
       [
-        drake.node('%s.cc' % example),
+        drake.node('examples/%s.cc' % example),
         elle.library, reactor.library, cryptography.library
       ],
       cxx_toolkit, example_config)
-  build << examples
+  rule_build << rule_examples
+  examples = drake.nodes(
+    *[
+      'examples/%s.cc' % x for x in
+      list(chain(examples, elle.examples, reactor.examples,
+                 [x[0] for x in cryptography.examples], das.examples))
+    ])
+  examples += drake.nodes(
+    'examples/drakefile',
+    'examples/Makefile',
+    'examples/CMakeLists.txt',
+    'examples/example.key'
+  )
+
+  class Tar(drake.Builder):
+
+    def __init__(self, sources, tarball):
+      super().__init__(srcs = sources,
+                       dsts = [tarball])
+
+    @property
+    def tarball(self):
+      return self.targets()[0]
+
+    def execute(self):
+      self.output('Tar %s' % self.tarball)
+      try:
+        os.remove(str(self.tarball))
+      except FileNotFoundError:
+        pass
+      import tarfile
+      with tarfile.TarFile(str(self.tarball), mode = 'w') as tar:
+        for source in self.sources().values():
+          tar.add(str(source.path()),
+                  arcname = str(source.path().basename()))
+      return True
+
+  tarball = drake.Node('examples.tar.gz')
+  Tar(sources = examples,
+      tarball = tarball)
+  rule_examples << tarball

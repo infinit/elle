@@ -1,0 +1,49 @@
+# Disclaimer: I haven't used CMakeFile for years.
+cmake_minimum_required(VERSION 3.5)
+
+project(ElleExamples)
+
+include_directories("${prefix}/include")
+link_directories("${prefix}/lib")
+
+set(EXECUTABLE_OUTPUT_PATH "bin")
+
+# Ignore warning when using '/' in names.
+cmake_policy(SET CMP0037 OLD)
+
+# Find all demo files.
+file(GLOB_RECURSE demos RELATIVE
+  "${'${CMAKE_CURRENT_SOURCE_DIR}'}"
+  "*.cc")
+
+foreach(demo ${'${demos}'})
+  file(
+    GLOB
+    demoFile
+    ${'${demo}'})
+  # Turn src/<test>.cc to <test>.
+  string(REGEX REPLACE ".cc\$" "" demoExecutable ${'${demo}'})
+  string(REGEX REPLACE "^src/" "" demoExecutable ${'${demoExecutable}'})
+  # Get parent directories.
+  get_filename_component(parent ${'${demoExecutable}'} DIRECTORY)
+  # Create parent directories.
+  file(MAKE_DIRECTORY "${'${CMAKE_CURRENT_BINARY_DIR}'}/bin/${'${parent}'}")
+  add_executable(
+    ${'${demoExecutable}'}
+    ${'${demoFile}'})
+  target_link_libraries(
+    ${'${demoExecutable}'}
+    # Link upon all libraries.
+    elle_core
+    elle_reactor
+    elle_protocol
+    elle_cryptography
+    elle_protocol
+    boost_system
+    boost_thread
+    boost_date_time
+    ssl
+    crypto
+    curl
+  )
+endforeach(demo)
