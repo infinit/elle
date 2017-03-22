@@ -9,7 +9,7 @@
 
 namespace elle
 {
-  /// Whether \a e is in \a v.
+  /// Whether \a e is in \a c.
   template <typename Container, typename T>
   bool
   contains(Container const& c, T const& e)
@@ -17,7 +17,7 @@ namespace elle
     return ::boost::algorithm::any_of_equal(c, e);
   }
 
-  /// Whether \a e is in \a v.
+  /// Whether \a e is in \a c.
   template <typename... Args, typename T>
   bool
   contains(std::unordered_map<Args...> const& c, T const& e)

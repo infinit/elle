@@ -2,6 +2,17 @@
 
 #include <boost/multi_index_container.hpp>
 
+namespace elle
+{
+  /// Whether \a e is in \a c.
+  template <typename... Args, typename T>
+  bool
+  contains(boost::multi_index::multi_index_container<Args...> const& c, T const& e)
+  {
+    return c.find(e) != c.end();
+  }
+}
+
 namespace boost
 {
   namespace multi_index
