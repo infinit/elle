@@ -1,19 +1,36 @@
 #pragma once
 
 #include <algorithm>
+#include <map>
+#include <unordered_map>
 
+#include <boost/algorithm/cxx11/any_of.hpp>
 #include <boost/algorithm/cxx11/none_of.hpp>
 
 namespace elle
 {
   /// Whether \a e is in \a v.
-  ///
-  /// Get rid of it in favor of none_of_equal.
   template <typename Container, typename T>
   bool
   contains(Container const& c, T const& e)
   {
-    return ::boost::algorithm::none_of_equal(c, e);
+    return ::boost::algorithm::any_of_equal(c, e);
+  }
+
+  /// Whether \a e is in \a v.
+  template <typename... Args, typename T>
+  bool
+  contains(std::unordered_map<Args...> const& c, T const& e)
+  {
+    return c.find(e) != c.end();
+  }
+
+  /// Whether \a e is in \a v.
+  template <typename... Args, typename T>
+  bool
+  contains(std::map<Args...> const& c, T const& e)
+  {
+    return c.find(e) != c.end();
   }
 
   /// Emplace back only if not already in the vector.
