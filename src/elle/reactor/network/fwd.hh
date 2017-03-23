@@ -34,7 +34,6 @@ namespace elle
       using Byte = unsigned char;
       /// A number of bytes.
       using Size = unsigned int;
-
     }
   }
 }

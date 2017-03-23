@@ -18,10 +18,10 @@ namespace elle
 
       template <typename AsioSocket>
       SocketOperation<AsioSocket>::SocketOperation(
-        AsioSocket& socket):
-        Operation(*elle::reactor::Scheduler::scheduler()),
-        _socket(socket),
-        _canceled(false)
+        AsioSocket& socket)
+        : Operation(*elle::reactor::Scheduler::scheduler())
+        , _socket(socket)
+        , _canceled(false)
       {}
 
       template <typename AsioSocket>
@@ -114,6 +114,11 @@ namespace elle
 }
 
 #ifdef INFINIT_LINUX
+namespace
+{
+  auto _epoll_interrupt_callback
+  = std::unordered_map<elle::reactor::Thread*, std::function<void()>>{};
+}
 
 namespace elle
 {
@@ -121,18 +126,14 @@ namespace elle
   {
     namespace network
     {
-      static
-        std::unordered_map<elle::reactor::Thread*, std::function<void()>>
-        _epoll_interrupt_callback;
-
       void
       epoll_interrupt_callback(std::function<void()> cb,
                                elle::reactor::Thread* thread)
       {
-        if (!cb)
-          _epoll_interrupt_callback.erase(thread);
-        else
+        if (cb)
           _epoll_interrupt_callback[thread] = cb;
+        else
+          _epoll_interrupt_callback.erase(thread);
       }
     }
   }
@@ -206,9 +207,9 @@ reactor_epoll_wait(int epfd, struct epoll_event *events,
     {
       ELLE_ERR("reactor_epoll_wait threw again: %s", elle::exception_string());
     }
-    auto it = elle::reactor::network::_epoll_interrupt_callback.find(
+    auto it = _epoll_interrupt_callback.find(
       elle::reactor::scheduler().current());
-    if (it != elle::reactor::network::_epoll_interrupt_callback.end())
+    if (it != _epoll_interrupt_callback.end())
     {
       it->second();
       errno = EINTR;
@@ -223,6 +224,7 @@ reactor_epoll_wait(int epfd, struct epoll_event *events,
   else
     return 0;
 }
+
 extern "C"
 int
 reactor_epoll_pwait(int epfd, struct epoll_event *events,

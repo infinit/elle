@@ -57,26 +57,29 @@ namespace elle
   {
     namespace network
     {
-      /** Register a callback that will be invoked if an exception is caught
-       * in reactor_epoll_wait() from thread 'thread'.
-       * If a callback is set the exception will be intercepted, otherwise it
-       * will propagate.
-       * Call with an empty std::function to remove the callback.
-       */
+      /// Register a callback that will be invoked if an exception is caught
+      /// in reactor_epoll_wait() from thread 'thread'.
+      /// If a callback is set the exception will be intercepted, otherwise it
+      /// will propagate.
+      /// Call with an empty std::function to remove the callback.
       void
       epoll_interrupt_callback(std::function<void()> cb,
                                reactor::Thread* thread);
     }
   }
 }
+
 /// epoll adapters using async ios
 extern "C"
-int
-reactor_epoll_wait(int epfd, struct epoll_event *events,
-                   int maxevents, int timeout);
-extern "C"
-int
-reactor_epoll_pwait(int epfd, struct epoll_event *events,
-                    int maxevents, int timeout,
-                    const sigset_t *sigmask);
+{
+  /// timeout is in ms.
+  int
+  reactor_epoll_wait(int epfd, struct epoll_event *events,
+                     int maxevents, int timeout);
+  /// timeout is in ms.
+  int
+  reactor_epoll_pwait(int epfd, struct epoll_event *events,
+                      int maxevents, int timeout,
+                      const sigset_t *sigmask);
+}
 #endif
