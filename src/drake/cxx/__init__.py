@@ -843,11 +843,14 @@ class GccToolkit(Toolkit):
     # Shouldn't that be "all but windows?" that doesn't have the notion of
     # rpath?
     if self.os in [drake.os.linux, drake.os.macos]:
-      for lib in (lib for lib in objs if isinstance(lib, DynLib)):
-        for library in lib.dynamic_libraries:
-          rpath.add(library.path().dirname().without_prefix(prefix))
-          if self.os is drake.os.linux:
-            rpath_link.add(str(library.path().dirname()))
+      def libraries(l):
+        yield l
+        yield from l.dynamic_libraries
+      for library in chain(*(libraries(lib) for lib in objs
+                             if isinstance(lib, DynLib))):
+        rpath.add(library.path().dirname().without_prefix(prefix))
+        if self.os is drake.os.linux:
+          rpath_link.add(str(library.path().dirname()))
     return rpath, rpath_link
 
   def link(self, cfg, objs, exe):
