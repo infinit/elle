@@ -4,6 +4,7 @@
 #include <openssl/crypto.h>
 #include <openssl/rsa.h>
 #include <openssl/err.h>
+#include <openssl/evp.h>
 
 #include <elle/Lazy.hh>
 #include <elle/log.hh>
@@ -437,5 +438,22 @@ namespace elle
         }
       }
     }
+  }
+}
+
+namespace std
+{
+  size_t
+  hash<elle::cryptography::rsa::PrivateKey>::operator ()(
+    elle::cryptography::rsa::PrivateKey const& value) const
+  {
+
+    std::stringstream stream;
+    {
+      elle::serialization::binary::SerializerOut output(stream);
+      output.serialize("value", value);
+    }
+
+    return std::hash<std::string>()(stream.str());
   }
 }

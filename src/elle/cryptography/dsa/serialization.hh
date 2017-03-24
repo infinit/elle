@@ -1,7 +1,6 @@
 #pragma once
 
-#include <openssl/dsa.h>
-
+#include <elle/cryptography/fwd.hh>
 #include <elle/cryptography/serialization.hh>
 
 namespace elle
@@ -18,7 +17,7 @@ namespace elle
 
         struct DSA
         {
-          using Type = ::DSA;
+          using Type = ::DSA*;
           static constexpr const char* identifier = "dsa";
         };
       }

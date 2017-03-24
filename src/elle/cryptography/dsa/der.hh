@@ -1,8 +1,7 @@
 #ifndef ELLE_CRYPTOGRAPHY_DSA_DER_HH
 # define ELLE_CRYPTOGRAPHY_DSA_DER_HH
 
-# include <openssl/dsa.h>
-
+# include <elle/cryptography/fwd.hh>
 # include <elle/Buffer.hh>
 
 namespace elle

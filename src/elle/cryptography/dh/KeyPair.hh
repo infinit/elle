@@ -1,21 +1,19 @@
-#ifndef ELLE_CRYPTOGRAPHY_DH_KEYPAIR_HH
-# define ELLE_CRYPTOGRAPHY_DH_KEYPAIR_HH
+#pragma once
+
+#include <iosfwd>
+#include <utility>
+
+#include <boost/operators.hpp>
+
+#include <elle/cryptography/fwd.hh>
+#include <elle/cryptography/Oneway.hh>
+#include <elle/cryptography/Cipher.hh>
+#include <elle/cryptography/dh/PublicKey.hh>
+#include <elle/cryptography/dh/PrivateKey.hh>
 
 //
 // ---------- Class -----------------------------------------------------------
 //
-
-# include <iosfwd>
-# include <utility>
-
-# include <boost/operators.hpp>
-
-# include <elle/cryptography/fwd.hh>
-# include <elle/cryptography/Oneway.hh>
-# include <elle/cryptography/Cipher.hh>
-# include <elle/cryptography/dh/PublicKey.hh>
-# include <elle/cryptography/dh/PrivateKey.hh>
-
 
 namespace elle
 {
@@ -117,6 +115,16 @@ namespace elle
   }
 }
 
-# include <elle/cryptography/dh/KeyPair.hxx>
+//
+// ---------- Hash ------------------------------------------------------------
+//
 
-#endif
+namespace std
+{
+  template <>
+  struct hash<elle::cryptography::dh::KeyPair>
+  {
+    size_t
+    operator ()(elle::cryptography::dh::KeyPair const& value) const;
+  };
+}

@@ -1,6 +1,8 @@
 #include "cryptography.hh"
 
 #include <elle/cryptography/bn.hh>
+#include <openssl/bn.h>
+
 #include <elle/cryptography/Error.hh>
 
 #include <elle/serialization/json.hh>

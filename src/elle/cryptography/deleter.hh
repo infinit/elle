@@ -1,8 +1,7 @@
 #ifndef ELLE_CRYPTOGRAPHY_DELETER_HH
 # define ELLE_CRYPTOGRAPHY_DELETER_HH
 
-# include <openssl/bn.h>
-# include <openssl/evp.h>
+# include <elle/cryptography/fwd.hh>
 
 /// These deleters can be used with the types defined in types.hh so as
 /// to use smart pointers with such low-level structures.

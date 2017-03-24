@@ -3,9 +3,7 @@
 #include <memory>
 
 #include <elle/cryptography/deleter.hh>
-
-#include <openssl/bn.h>
-#include <openssl/evp.h>
+#include <elle/cryptography/fwd.hh>
 
 namespace elle
 {

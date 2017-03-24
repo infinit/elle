@@ -155,4 +155,12 @@ namespace elle
   }
 }
 
-#include <elle/cryptography/rsa/KeyPair.hxx>
+namespace std
+{
+  template <>
+  struct hash<elle::cryptography::rsa::KeyPair>
+  {
+    size_t
+    operator ()(elle::cryptography::rsa::KeyPair const& value) const;
+  };
+}

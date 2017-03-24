@@ -289,3 +289,13 @@ namespace elle
     }
   }
 }
+
+namespace std
+{
+  size_t
+  hash<elle::cryptography::rsa::KeyPair>::operator ()(
+    elle::cryptography::rsa::KeyPair const& value) const
+  {
+    return (std::hash<elle::cryptography::rsa::PublicKey>()(value.K()));
+  }
+}

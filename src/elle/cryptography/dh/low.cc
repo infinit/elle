@@ -5,6 +5,7 @@
 #include <elle/log.hh>
 #include <elle/Buffer.hh>
 
+#include <openssl/dh.h>
 #include <openssl/evp.h>
 #include <openssl/pem.h>
 #include <openssl/engine.h>

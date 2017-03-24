@@ -1,8 +1,11 @@
+#include <elle/cryptography/fwd.hh>
+
 #include <openssl/crypto.h>
 #include <openssl/engine.h>
 #include <openssl/err.h>
 #include <openssl/hmac.h>
 #include <openssl/rand.h>
+#include <openssl/evp.h>
 
 #include <elle/Buffer.hh>
 #include <elle/log.hh>

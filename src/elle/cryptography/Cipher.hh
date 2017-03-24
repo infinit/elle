@@ -1,9 +1,8 @@
 #ifndef ELLE_CRYPTOGRAPHY_CIPHER_HH
 # define ELLE_CRYPTOGRAPHY_CIPHER_HH
 
+# include <elle/cryptography/fwd.hh>
 # include <elle/serialization/Serializer.hh>
-
-# include <openssl/evp.h>
 
 namespace elle
 {

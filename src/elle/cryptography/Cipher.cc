@@ -1,3 +1,5 @@
+#include <openssl/evp.h>
+
 #include <elle/log.hh>
 
 #include <elle/cryptography/Cipher.hh>

@@ -5,8 +5,6 @@
 
 # include <elle/serialization/Serializer.hh>
 
-# include <openssl/evp.h>
-
 # include <iosfwd>
 
 namespace elle

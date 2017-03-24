@@ -18,6 +18,8 @@
 #include <openssl/err.h>
 #include <openssl/hmac.h>
 #include <openssl/rand.h>
+#include <openssl/evp.h>
+
 
 #include <thread>
 

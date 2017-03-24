@@ -2,9 +2,7 @@
 # define ELLE_CRYPTOGRAPHY_RSA_PADDING_HH
 
 # include <elle/serialization/Serializer.hh>
-
-# include <openssl/evp.h>
-
+# include <elle/cryptography/fwd.hh>
 # include <iosfwd>
 
 namespace elle

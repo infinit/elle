@@ -1,6 +1,8 @@
 #ifndef ELLE_CRYPTOGRAPHY_FWD_HH
 # define ELLE_CRYPTOGRAPHY_FWD_HH
 
+# include <elle/cryptography/openssl.hh>
+
 namespace elle
 {
   namespace cryptography

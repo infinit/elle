@@ -7,8 +7,6 @@
 
 # include <elle/fwd.hh>
 
-# include <openssl/evp.h>
-
 # include <memory>
 
 //

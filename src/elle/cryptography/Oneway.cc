@@ -1,7 +1,8 @@
 #include <elle/cryptography/Oneway.hh>
 #include <elle/cryptography/Error.hh>
-
 #include <elle/log.hh>
+
+# include <openssl/evp.h>
 
 namespace elle
 {

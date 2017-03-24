@@ -207,3 +207,13 @@ namespace elle
     }
   }
 }
+
+namespace std
+{
+  size_t
+  hash<elle::cryptography::dh::KeyPair>::operator ()(
+    elle::cryptography::dh::KeyPair const& value) const
+  {
+    return (std::hash<elle::cryptography::dh::PublicKey>()(value.K()));
+  }
+}

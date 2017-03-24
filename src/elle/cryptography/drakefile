@@ -58,7 +58,7 @@ def configure(openssl_config,
       openssl_lib_crypto = openssl_lib_crypto,
       openssl_lib_ssl = openssl_lib_ssl,
       prefix = prefix,
-      )
+    )
 
     dopenssl_lib_static = dopenssl.lib_static
     dopenssl_lib_dynamic = drake.copy(dopenssl.lib_dynamic, lib_path, strip_prefix = True)
@@ -146,15 +146,12 @@ def configure(openssl_config,
     'dh/fwd.hh',
     'dh/KeyPair.cc',
     'dh/KeyPair.hh',
-    'dh/KeyPair.hxx',
     'dh/low.cc',
     'dh/low.hh',
     'dh/PrivateKey.cc',
     'dh/PrivateKey.hh',
-    'dh/PrivateKey.hxx',
     'dh/PublicKey.cc',
     'dh/PublicKey.hh',
-    'dh/PublicKey.hxx',
     'dsa/all.hh',
     'dsa/defaults.hh',
     'dsa/der.cc',
@@ -162,17 +159,14 @@ def configure(openssl_config,
     'dsa/fwd.hh',
     'dsa/KeyPair.cc',
     'dsa/KeyPair.hh',
-    'dsa/KeyPair.hxx',
     'dsa/low.cc',
     'dsa/low.hh',
     'dsa/pem.cc',
     'dsa/pem.hh',
     'dsa/PrivateKey.cc',
     'dsa/PrivateKey.hh',
-    'dsa/PrivateKey.hxx',
     'dsa/PublicKey.cc',
     'dsa/PublicKey.hh',
-    'dsa/PublicKey.hxx',
     'dsa/serialization.hh',
     'envelope.cc',
     'envelope.hh',
@@ -187,6 +181,7 @@ def configure(openssl_config,
     'hmac.hxx',
     'hotp.cc',
     'hotp.hh',
+    'openssl.hh',
     'Oneway.cc',
     'Oneway.hh',
     'pem.cc',
@@ -203,7 +198,6 @@ def configure(openssl_config,
     'rsa/fwd.hh',
     'rsa/KeyPair.cc',
     'rsa/KeyPair.hh',
-    'rsa/KeyPair.hxx',
     'rsa/KeyPool.hh',
     'rsa/low.cc',
     'rsa/low.hh',
@@ -338,9 +332,15 @@ def configure(openssl_config,
   if enable_rotation:
     test_libs += [dopenssl_library]
   if boost.prefer_shared:
-    test_libs += [boost.test_dynamic]
-    if not use_boost_filesystem_static_library:
-      test_libs += [boost.filesystem_dynamic]
+    test_libs += drake.copy([boost.test_dynamic],
+                            lib_path, strip_prefix = True)
+  else:
+    test_libs += boost.test_static
+  if not use_boost_filesystem_static_library:
+    test_libs += drake.copy([boost.filesystem_dynamic],
+                            lib_path, strip_prefix = True)
+  else:
+    test_libs += boost.filesystem_static
   for test in tests:
     config_test_local = drake.cxx.Config(config_tests)
     path = drake.Path(tests_path / test)

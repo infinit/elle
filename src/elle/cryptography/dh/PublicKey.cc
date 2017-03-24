@@ -3,11 +3,14 @@
 #include <openssl/dh.h>
 #include <openssl/err.h>
 #include <openssl/pem.h>
+#include <openssl/evp.h>
 
 #include <elle/Error.hh>
 #include <elle/finally.hh>
 #include <elle/log.hh>
 #include <elle/printf.hh>
+
+# include <elle/serialization/binary.hh>
 
 #include <elle/cryptography/dh/PublicKey.hh>
 #include <elle/cryptography/dh/PrivateKey.hh>
@@ -195,5 +198,22 @@ namespace elle
                << ")";
       }
     }
+  }
+}
+
+namespace std
+{
+  size_t
+  hash<elle::cryptography::dh::PublicKey>::operator ()(
+    elle::cryptography::dh::PublicKey const& value) const
+  {
+    std::stringstream stream;
+    {
+      elle::serialization::binary::SerializerOut output(stream);
+
+      ELLE_ASSERT(value.key()->pkey.dh->pub_key != nullptr);
+      output.serialize("value", value.key()->pkey.dh->pub_key);
+    }
+    return std::hash<std::string>()(stream.str());
   }
 }

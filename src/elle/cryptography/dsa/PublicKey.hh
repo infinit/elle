@@ -4,8 +4,6 @@
 
 #include <boost/operators.hpp>
 
-#include <openssl/evp.h>
-
 #include <elle/attribute.hh>
 #include <elle/operator.hh>
 #include <elle/serialization/Serializer.hh>
@@ -115,4 +113,12 @@ namespace elle
   }
 }
 
-#include <elle/cryptography/dsa/PublicKey.hxx>
+namespace std
+{
+  template <>
+  struct hash<elle::cryptography::dsa::PublicKey>
+  {
+    size_t
+    operator ()(elle::cryptography::dsa::PublicKey const& value) const;
+  };
+}

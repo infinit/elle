@@ -259,3 +259,13 @@ namespace elle
     }
   }
 }
+
+namespace std
+{
+  size_t
+  hash<elle::cryptography::dsa::KeyPair>::operator ()(
+    elle::cryptography::dsa::KeyPair const& value) const
+  {
+    return (std::hash<elle::cryptography::dsa::PublicKey>()(value.K()));
+  }
+}

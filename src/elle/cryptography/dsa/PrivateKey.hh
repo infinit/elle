@@ -2,7 +2,6 @@
 
 #include <utility>
 
-#include <openssl/evp.h>
 
 #include <boost/operators.hpp>
 
@@ -108,4 +107,12 @@ namespace elle
   }
 }
 
-#include <elle/cryptography/dsa/PrivateKey.hxx>
+namespace std
+{
+  template <>
+  struct hash<elle::cryptography::dsa::PrivateKey>
+  {
+    size_t
+    operator ()(elle::cryptography::dsa::PrivateKey const& value) const;
+  };
+}

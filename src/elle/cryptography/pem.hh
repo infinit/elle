@@ -1,11 +1,9 @@
-#ifndef ELLE_CRYPTOGRAPHY_PEM_HH
-# define ELLE_CRYPTOGRAPHY_PEM_HH
+#pragma once
 
-# include <openssl/evp.h>
+#include <boost/filesystem.hpp>
 
-# include <boost/filesystem.hpp>
-
-# include <elle/cryptography/Cipher.hh>
+#include <elle/cryptography/Cipher.hh>
+#include <elle/cryptography/fwd.hh>
 
 namespace elle
 {
@@ -58,5 +56,3 @@ namespace elle
     }
   }
 }
-
-#endif

@@ -1,5 +1,8 @@
 #include <elle/cryptography/deleter.hh>
 
+#include <openssl/bn.h>
+#include <openssl/evp.h>
+
 namespace elle
 {
   namespace cryptography

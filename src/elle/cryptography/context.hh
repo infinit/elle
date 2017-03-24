@@ -1,9 +1,8 @@
 #ifndef ELLE_CRYPTOGRAPHY_CONTEXT_HH
 # define ELLE_CRYPTOGRAPHY_CONTEXT_HH
 
-# include <openssl/evp.h>
-
 # include <iosfwd>
+# include <elle/cryptography/fwd.hh>
 
 namespace elle
 {

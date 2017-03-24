@@ -1,26 +1,23 @@
-#ifndef ELLE_CRYPTOGRAPHY_RSA_PUBLICKEY_HH
-# define ELLE_CRYPTOGRAPHY_RSA_PUBLICKEY_HH
+#pragma once
 
-# include <memory>
-# include <utility>
+#include <memory>
+#include <utility>
 
-# include <boost/operators.hpp>
+#include <boost/operators.hpp>
 
-# include <openssl/evp.h>
+#include <elle/attribute.hh>
+#include <elle/operator.hh>
+#include <elle/serialization.hh>
 
-# include <elle/attribute.hh>
-# include <elle/operator.hh>
-# include <elle/serialization.hh>
-
-# include <elle/cryptography/fwd.hh>
-# include <elle/cryptography/types.hh>
-# include <elle/cryptography/Oneway.hh>
-# include <elle/cryptography/Cipher.hh>
-# if defined(ELLE_CRYPTOGRAPHY_ROTATION)
-#  include <elle/cryptography/rsa/Seed.hh>
-# endif
-# include <elle/cryptography/rsa/Padding.hh>
-# include <elle/cryptography/rsa/defaults.hh>
+#include <elle/cryptography/fwd.hh>
+#include <elle/cryptography/types.hh>
+#include <elle/cryptography/Oneway.hh>
+#include <elle/cryptography/Cipher.hh>
+#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+# include <elle/cryptography/rsa/Seed.hh>
+#endif
+#include <elle/cryptography/rsa/Padding.hh>
+#include <elle/cryptography/rsa/defaults.hh>
 
 namespace elle
 {
@@ -216,6 +213,14 @@ namespace elle
   }
 }
 
-# include <elle/cryptography/rsa/PublicKey.hxx>
+namespace std
+{
+  template <>
+  struct hash<elle::cryptography::rsa::PublicKey>
+  {
+    size_t
+    operator ()(elle::cryptography::rsa::PublicKey const& value) const;
+  };
+}
 
-#endif
+#include <elle/cryptography/rsa/PublicKey.hxx>

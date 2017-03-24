@@ -2,8 +2,10 @@
 #include <openssl/crypto.h>
 #include <openssl/dh.h>
 #include <openssl/err.h>
+#include <openssl/evp.h>
 
 #include <elle/log.hh>
+#include <elle/serialization/binary.hh>
 
 #include <elle/cryptography/Error.hh>
 #include <elle/cryptography/bn.hh>
@@ -181,5 +183,27 @@ namespace elle
                << ")";
       }
     }
+  }
+}
+
+namespace std
+{
+  size_t
+  hash<elle::cryptography::dh::PrivateKey>::operator()(
+    elle::cryptography::dh::PrivateKey const& value) const
+  {
+    std::stringstream stream;
+    {
+      elle::serialization::binary::SerializerOut output(stream);
+
+      // Note that this is not a great way to represent a key but OpenSSL
+      // does not provide DH-specific DER functions while Diffie Hellman keys
+      // are not exactly supposed to be serialized since used for one-time
+      // key exchanges.
+      ELLE_ASSERT(value.key()->pkey.dh->priv_key != nullptr);
+      output.serialize("value", value.key()->pkey.dh->priv_key);
+    }
+
+    return std::hash<std::string>()(stream.str());
   }
 }

@@ -15,7 +15,7 @@ namespace elle
     template <typename S>
     void
     serialize(elle::serialization::Serializer& serializer,
-              typename S::Type*& data);
+              typename S::Type& data);
   }
 }
 

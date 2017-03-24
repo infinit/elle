@@ -4,8 +4,6 @@
 # include <elle/cryptography/fwd.hh>
 # include <elle/cryptography/Oneway.hh>
 
-# include <openssl/evp.h>
-
 # include <iosfwd>
 
 namespace elle

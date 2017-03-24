@@ -1,20 +1,17 @@
-#ifndef ELLE_CRYPTOGRAPHY_DH_PUBLICKEY_HH
-# define ELLE_CRYPTOGRAPHY_DH_PUBLICKEY_HH
+#pragma once
 
-# include <utility>
+#include <utility>
 
-# include <boost/operators.hpp>
+#include <boost/operators.hpp>
 
-# include <openssl/evp.h>
+#include <elle/cryptography/dh/PrivateKey.hh>
+#include <elle/cryptography/fwd.hh>
+#include <elle/cryptography/types.hh>
+#include <elle/cryptography/Oneway.hh>
+#include <elle/cryptography/Cipher.hh>
 
-# include <elle/cryptography/dh/PrivateKey.hh>
-# include <elle/cryptography/fwd.hh>
-# include <elle/cryptography/types.hh>
-# include <elle/cryptography/Oneway.hh>
-# include <elle/cryptography/Cipher.hh>
-
-# include <elle/attribute.hh>
-# include <elle/operator.hh>
+#include <elle/attribute.hh>
+#include <elle/operator.hh>
 
 //
 // ---------- Class -----------------------------------------------------------
@@ -95,6 +92,12 @@ namespace elle
   }
 }
 
-# include <elle/cryptography/dh/PublicKey.hxx>
-
-#endif
+namespace std
+{
+  template <>
+  struct hash<elle::cryptography::dh::PublicKey>
+  {
+    size_t
+    operator ()(elle::cryptography::dh::PublicKey const& value) const;
+  };
+}

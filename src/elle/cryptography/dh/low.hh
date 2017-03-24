@@ -1,7 +1,7 @@
 #ifndef ELLE_CRYPTOGRAPHY_DH_LOW_HH
 # define ELLE_CRYPTOGRAPHY_DH_LOW_HH
 
-# include <openssl/dh.h>
+# include <elle/cryptography/fwd.hh>
 
 namespace elle
 {

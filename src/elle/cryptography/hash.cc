@@ -1,3 +1,5 @@
+# include <openssl/evp.h>
+
 #include <elle/cryptography/hash.hh>
 #include <elle/cryptography/raw.hh>
 

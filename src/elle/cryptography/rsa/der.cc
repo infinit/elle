@@ -3,6 +3,7 @@
 #include <elle/cryptography/rsa/der.hh>
 
 #include <openssl/err.h>
+#include <openssl/rsa.h>
 #include <openssl/x509.h>
 
 namespace elle

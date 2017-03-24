@@ -1,5 +1,7 @@
 #include "cryptography.hh"
 
+#include <openssl/evp.h>
+
 #include <elle/cryptography/Oneway.hh>
 #include <elle/cryptography/hash.hh>
 #include <elle/cryptography/random.hh>

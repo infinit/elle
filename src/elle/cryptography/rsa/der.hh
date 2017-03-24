@@ -1,7 +1,7 @@
 #ifndef ELLE_CRYPTOGRAPHY_RSA_DER_HH
 # define ELLE_CRYPTOGRAPHY_RSA_DER_HH
 
-# include <openssl/rsa.h>
+# include <elle/cryptography/fwd.hh>
 
 # include <elle/Buffer.hh>
 

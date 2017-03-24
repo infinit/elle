@@ -1,5 +1,6 @@
 #include <openssl/err.h>
 #include <openssl/x509.h>
+#include <openssl/dsa.h>
 
 #include <elle/cryptography/dsa/der.hh>
 #include <elle/cryptography/Error.hh>

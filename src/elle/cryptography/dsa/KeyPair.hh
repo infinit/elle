@@ -127,4 +127,12 @@ namespace elle
   }
 }
 
-#include <elle/cryptography/dsa/KeyPair.hxx>
+namespace std
+{
+  template <>
+  struct hash<elle::cryptography::dsa::KeyPair>
+  {
+    size_t
+    operator ()(elle::cryptography::dsa::KeyPair const& value) const;
+  };
+}

@@ -3,8 +3,6 @@
 #include <memory>
 #include <utility>
 
-#include <openssl/evp.h>
-
 #include <boost/operators.hpp>
 
 #include <elle/serialization.hh>
@@ -199,6 +197,16 @@ namespace elle
       }
     }
   }
+}
+
+namespace std
+{
+  template <>
+  struct hash<elle::cryptography::rsa::PrivateKey>
+  {
+    size_t
+    operator ()(elle::cryptography::rsa::PrivateKey const& value) const;
+  };
 }
 
 #include <elle/cryptography/rsa/PrivateKey.hxx>

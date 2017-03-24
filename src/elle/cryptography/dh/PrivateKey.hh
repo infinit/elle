@@ -1,21 +1,18 @@
-#ifndef ELLE_CRYPTOGRAPHY_DH_PRIVATEKEY_HH
-# define ELLE_CRYPTOGRAPHY_DH_PRIVATEKEY_HH
+#pragma once
 
-# include <utility>
+#include <utility>
 
-# include <openssl/evp.h>
+#include <boost/operators.hpp>
 
-# include <boost/operators.hpp>
+#include <elle/cryptography/fwd.hh>
+#include <elle/cryptography/types.hh>
+#include <elle/cryptography/SecretKey.hh>
+#include <elle/cryptography/Oneway.hh>
+#include <elle/cryptography/Cipher.hh>
+#include <elle/cryptography/dh/fwd.hh>
 
-# include <elle/cryptography/fwd.hh>
-# include <elle/cryptography/types.hh>
-# include <elle/cryptography/SecretKey.hh>
-# include <elle/cryptography/Oneway.hh>
-# include <elle/cryptography/Cipher.hh>
-# include <elle/cryptography/dh/fwd.hh>
-
-# include <elle/attribute.hh>
-# include <elle/operator.hh>
+#include <elle/attribute.hh>
+#include <elle/operator.hh>
 
 
 //
@@ -99,6 +96,12 @@ namespace elle
   }
 }
 
-# include <elle/cryptography/dh/PrivateKey.hxx>
-
-#endif
+namespace std
+{
+  template <>
+  struct hash<elle::cryptography::dh::PrivateKey>
+  {
+    size_t
+    operator ()(elle::cryptography::dh::PrivateKey const& value) const;
+  };
+}

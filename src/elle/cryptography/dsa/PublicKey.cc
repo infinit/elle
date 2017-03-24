@@ -1,7 +1,8 @@
-#include <openssl/engine.h>
 #include <openssl/crypto.h>
 #include <openssl/dsa.h>
+#include <openssl/engine.h>
 #include <openssl/err.h>
+#include <openssl/evp.h>
 #include <openssl/pem.h>
 
 #include <elle/Error.hh>
@@ -21,6 +22,8 @@
 #include <elle/cryptography/finally.hh>
 #include <elle/cryptography/raw.hh>
 #include <elle/cryptography/hash.hh>
+
+#include <elle/serialization/binary.hh>
 
 //
 // ---------- Class -----------------------------------------------------------
@@ -291,5 +294,21 @@ namespace elle
                << "]";
       }
     }
+  }
+}
+
+namespace std
+{
+  size_t
+  hash<elle::cryptography::dsa::PublicKey>::operator ()(
+    elle::cryptography::dsa::PublicKey const& value) const
+  {
+    std::stringstream stream;
+    {
+      elle::serialization::binary::SerializerOut output(stream);
+      output.serialize("value", value);
+    }
+
+    return std::hash<std::string>()(stream.str());
   }
 }
