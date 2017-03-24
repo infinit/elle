@@ -183,32 +183,29 @@ namespace elle
       | Synchronization |
       `----------------*/
     public:
-      /** Wait for a group waitables to be done.
-       *
-       * If any of the specified waitables asks to be waited for,
-       * this will freeze the thread until all of them are done. A
-       * timeout may be specified, in which case the wait will be
-       * aborted and false will be returned.
-       *
-       * @see Waitable.
-       *
-       * @param waitables The waitables to wait for.
-       * @param timeout Maximum delay before aborting the operation.
-       * @return Whether the operation finished and didn't timeout.
-       */
+      /// Wait for a group of waitables to be done.
+      ///
+      /// If any of the specified waitables asks to be waited for,
+      /// this will freeze the thread until all of them are done. A
+      /// timeout may be specified, in which case the wait will be
+      /// aborted and false will be returned.
+      ///
+      /// @see Waitable.
+      ///
+      /// @param waitables The waitables to wait for.
+      /// @param timeout Maximum delay before aborting the operation.
+      /// @return Whether the operation finished and didn't timeout.
       bool wait(Waitables const& waitables,
                 DurationOpt timeout = DurationOpt());
       /// Shortcut to wait for a single waitable to be done.
       bool wait(Waitable& s,
                 DurationOpt timeout = DurationOpt());
-      /** Terminate execution of the thread by injecting a terminate exception.
-       *
-       *
-       */
+      /// Terminate execution of the thread by injecting a terminate exception.
       void terminate();
-      /** Terminate thread and wait for termination to be effective.
-      * @param suicide: if true, terminate_now is a noop if this thread is the current one
-      */
+      /// Terminate thread and wait for termination to be effective.
+      ///
+      /// @param suicide   if true, terminate_now is a noop if this
+      ///     thread is the current one.
       void terminate_now(bool suicide = true);
     protected:
       bool
