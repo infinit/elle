@@ -86,6 +86,9 @@ class DockerFile(drake.Node):
   def env(self, k, v):
     self.__steps.append(('ENV', '{} {}'.format(k, v)))
 
+  def workdir(self, path):
+    self.__steps.append(('WORKDIR', path))
+
   @property
   def image(self):
     return self.__image
