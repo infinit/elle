@@ -323,24 +323,23 @@ namespace elle
     | Every |
     `------*/
 
-    /** Run an operation at a given frequency.
-     *
-     *  Run the \param op operation every \param freq. For now, the
-     *  implementation simply sleeps for \param freq between every action thus
-     *  inducing a drift. This is suitable for actions that need to be run
-     *  in background roughly regularly such as garbage collecting,
-     *  notification checking, ... It is not suitable if the frequency must be
-     *  exactly met on the long term.
-     *
-     *  The thread that run the operation is returned, enabling the caller to
-     *  stop it at will.
-     *
-     *  \param op   The operation to run.
-     *  \param name The name of the thread that will run the operation.
-     *  \param freq The frequency at which to run the operation.
-     *  \param freq Whether to delete the thread when it's done.
-     *  \return     The thread running the operation.
-     */
+    /// Run an operation at a given frequency.
+    ///
+    /// Run the @param op operation every @param freq. For now, the
+    /// implementation simply sleeps for @param freq between every action thus
+    /// inducing a drift. This is suitable for actions that need to be run
+    /// in background roughly regularly such as garbage collecting,
+    /// notification checking, ... It is not suitable if the frequency must be
+    /// exactly met on the long term.
+    ///
+    /// The thread that run the operation is returned, enabling the caller to
+    /// stop it at will.
+    ///
+    /// @param freq     The frequency at which to run the operation.
+    /// @param name     The name of the thread that will run the operation.
+    /// @param op       The operation to run.
+    /// @param dispose  Whether to delete the thread when it's done.
+    /// @return         The thread running the operation.
     Thread::unique_ptr
     every(Duration freq,
           const std::string& name,
