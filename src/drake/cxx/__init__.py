@@ -1626,6 +1626,7 @@ class Header(Node):
 Node.extensions['h'] = Header
 Node.extensions['hh'] = Header
 Node.extensions['hpp'] = Header
+Node.extensions['ipp'] = Header
 Node.extensions['hxx'] = Header
 
 class ResourceFile(Node):
