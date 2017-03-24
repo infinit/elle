@@ -68,19 +68,54 @@ namespace elle
       int _index = -1;
     };
 
+    template <typename T>
+    struct of
+    {
+      static constexpr size_t size = sizeof(T);
+      static constexpr size_t align = alignof(T);
+    };
+
+    template <>
+    struct of<void>
+    {
+      static constexpr size_t size = 0;
+      // The least constraining valid aligment, I think.
+      static constexpr size_t align = 2;
+    };
+
+    template <typename T>
+    struct destruct
+    {
+      static
+      void
+      value(char* buffer)
+      {
+        reinterpret_cast<T&>(*buffer).~T();
+      }
+    };
+
+    template <>
+    struct destruct<void>
+    {
+      static
+      void
+      value(char*)
+      {}
+    };
+
     template <std::size_t Size,
               std::size_t Align,
               int Index,
               typename Head, typename ... Tail>
     class OptionHelper<Size, Align, Index, Head, Tail ...>
-      : public OptionHelper<(sizeof(Head) > Size ? sizeof(Head) : Size),
-                            (alignof(Head) > Align ? alignof(Head) : Align),
+      : public OptionHelper<(of<Head>::size > Size ? of<Head>::size : Size),
+                            (of<Head>::align > Align ? of<Head>::align : Align),
                             Index + 1, Tail ...>
     {
     public:
       using Super =
-        OptionHelper<(sizeof(Head) > Size ? sizeof(Head) : Size),
-                     (alignof(Head) > Align ? alignof(Head) : Align),
+        OptionHelper<(of<Head>::size > Size ? of<Head>::size : Size),
+                     (of<Head>::align > Align ? of<Head>::align : Align),
                      Index + 1, Tail ...>;
       OptionHelper() = default;
 
@@ -162,10 +197,7 @@ namespace elle
       ~OptionHelper()
       {
         if (this->_index == Index)
-        {
-          char* buffer = this->_buffer;
-          reinterpret_cast<Head&>(*buffer).~Head();
-        }
+          destruct<Head>::value(this->_buffer);
       }
 
       OptionHelper(

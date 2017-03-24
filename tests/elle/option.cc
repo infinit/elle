@@ -386,6 +386,16 @@ exceptions()
   BOOST_CHECK_EQUAL(count, 0);
 }
 
+static
+void
+void_member()
+{
+  elle::Option<void, int> x(42);
+  BOOST_TEST(x.is<int>());
+  BOOST_TEST(!x.is<void>());
+  BOOST_TEST(x.get<int>() == 42);
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -398,4 +408,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(serialization_throw));
   suite.add(BOOST_TEST_CASE(serialization_fry));
   suite.add(BOOST_TEST_CASE(exceptions));
+  suite.add(BOOST_TEST_CASE(void_member));
 }
