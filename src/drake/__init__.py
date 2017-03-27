@@ -47,6 +47,7 @@ def path_source(path = None):
   else:
     return Drake.current.path_source / Drake.current.prefix / path
 
+PRETTY = 'DRAKE_PRETTY' in os.environ
 PROFILE = 'DRAKE_PROFILE' in os.environ
 
 class Drake:
@@ -1747,13 +1748,16 @@ def command(cmd, cwd = None, stdout = None, env = None):
 
 
 def command_flatten(command, env = None):
-  if env is not None:
-    output_env = ('%s=%s' % (var, pipes.quote(str(value)))
-                  for var, value in env.items())
+  if env:
+    env = ('%s=%s' % (var, pipes.quote(str(env(value))))
+           for var in sorted(env.keys()))
+    if PRETTY:
+      env = ' \\\n  '.join(env) + ' \\\n'
+    else:
+      env = ' '.join(chain(env)) + ' '
   else:
-    output_env = ()
-  return ' '.join(chain(output_env,
-                        (pipes.quote(str(a)) for a in command)))
+    env = ''
+  return env + ' '.join(pipes.quote(str(a)) for a in command)
 
 class Builder:
 
