@@ -30,159 +30,152 @@ namespace elle
   {
     namespace network
     {
-      static
-      uint64
-      on_firewall(utp_callback_arguments *a)
+      namespace
       {
-        return 0;
-      }
-
-      static inline
-      UTPSocket::Impl*
-      get(utp_callback_arguments* args)
-      {
-        return reinterpret_cast<UTPSocket::Impl*>(
-          utp_get_userdata(args->socket));
-      }
-
-      static inline
-      UTPServer::Impl*
-      get_server(utp_callback_arguments* args)
-      {
-        return reinterpret_cast<UTPServer::Impl*>(
-          utp_context_get_userdata(args->context));
-      }
-
-      static
-      uint64
-      on_sendto(utp_callback_arguments* args)
-      {
-        UTPServer::EndPoint ep;
-        auto *sin = (sockaddr_in*)args->address;
-        if (sin->sin_family == AF_INET)
+        uint64
+        on_firewall(utp_callback_arguments*)
         {
-          ep = UTPServer::EndPoint(
-            boost::asio::ip::address_v4(ntohl(sin->sin_addr.s_addr)),
-            ntohs(sin->sin_port));
+          return 0;
         }
-        else if (sin->sin_family == AF_INET6)
-        {
-          auto *sin = (sockaddr_in6*)args->address;
-          auto addr = std::array<unsigned char, 16>{{0}};
-          memcpy(addr.data(), sin->sin6_addr.s6_addr, 16);
-          ep = UTPServer::EndPoint(boost::asio::ip::address_v6(addr),
-                                   ntohs(sin->sin6_port));
-        }
-        else
-        {
-          elle::err("unknown protocol %s", sin->sin_family);
-        }
-        auto server = get_server(args);
-        ELLE_ASSERT(server);
-        auto buf = elle::ConstWeakBuffer(args->buf, args->len);
-        elle::Buffer copy;
-        if (server->xorify())
-        {
-          copy.append(args->buf, args->len);
-          for (unsigned int i = 0; i < args->len; ++i)
-            copy[i] ^= server->xorify();
-          buf = elle::WeakBuffer(copy.contents(), copy.size());
-        }
-        server->send_to(
-          buf,
-          ep,
-          [
-            ctx=args->context,
-            ep,
-            header = elle::Buffer(args->buf, std::min(args->len, (size_t)20))] (
-              boost::system::error_code const& e
-            )
-          {
-            ELLE_TRACE("UTP send error on %s: %s", ep, e.message());
-            utp_process_icmp_error(ctx, header.contents(),
-                                   header.size(), ep.data(),
-                                   ep.size());
-          });
-        return 0;
-      }
 
-      static
-      uint64
-      on_read(utp_callback_arguments* args)
-      {
-        ELLE_DEBUG("on_read");
-        auto s = get(args);
-        if (s)
-          s->on_read(elle::ConstWeakBuffer(args->buf, args->len));
-        return 0;
-      }
+        inline
+        UTPSocket::Impl*
+        get(utp_callback_arguments* args)
+        {
+          return reinterpret_cast<UTPSocket::Impl*>(
+            utp_get_userdata(args->socket));
+        }
 
-      static
-      uint64
-      on_error(utp_callback_arguments* args)
-      {
-        auto s = get(args);
-        ELLE_DEBUG("on_error %s on %s", utp_error_code_names[args->error_code],
-                   s);
-        if (s)
-          s->on_close();
-        return 0;
-      }
+        inline
+        UTPServer::Impl*
+        get_server(utp_callback_arguments* args)
+        {
+          return reinterpret_cast<UTPServer::Impl*>(
+            utp_context_get_userdata(args->context));
+        }
 
-      static
-      uint64
-      on_state_change(utp_callback_arguments* args)
-      {
-        auto s = get(args);
-        ELLE_DEBUG("on_state_change %s on %s", utp_state_names[args->state], s);
-        if (s)
-          switch (args->state)
+        uint64
+        on_sendto(utp_callback_arguments* args)
+        {
+          auto const ep = [args]() -> UTPServer::EndPoint {
+            auto *sin = (sockaddr_in*)args->address;
+            if (sin->sin_family == AF_INET)
+              return {
+                boost::asio::ip::address_v4(ntohl(sin->sin_addr.s_addr)),
+                ntohs(sin->sin_port)
+              };
+            else if (sin->sin_family == AF_INET6)
             {
-            case UTP_STATE_CONNECT:
-            case UTP_STATE_WRITABLE:
-              s->_write_cont();
-              //s->_write_barrier.open();
-              break;
-            case UTP_STATE_EOF:
-              s->on_close();
-              break;
-            case UTP_STATE_DESTROYING:
-              s->_destroyed();
-              break;
+              auto *sin6 = (sockaddr_in6*)args->address;
+              auto addr = std::array<unsigned char, 16>{{0}};
+              memcpy(addr.data(), sin6->sin6_addr.s6_addr, 16);
+              return {
+                boost::asio::ip::address_v6(addr),
+                ntohs(sin6->sin6_port)
+              };
             }
-        return 0;
-      }
+            else
+              elle::err("unknown protocol %s", sin->sin_family);
+          }();
+          auto server = get_server(args);
+          ELLE_ASSERT(server);
+          auto buf = elle::ConstWeakBuffer(args->buf, args->len);
+          if (server->xorify())
+          {
+            auto copy = elle::Buffer(args->buf, args->len);
+            for (unsigned int i = 0; i < args->len; ++i)
+              copy[i] ^= server->xorify();
+            buf = elle::WeakBuffer(copy.contents(), copy.size());
+          }
+          server->send_to(
+            buf,
+            ep,
+            [
+              ctx=args->context,
+              ep,
+              header = elle::Buffer(args->buf, std::min(args->len, (size_t)20))] (
+                boost::system::error_code const& e
+              )
+            {
+              ELLE_TRACE("UTP send error on %s: %s", ep, e.message());
+              utp_process_icmp_error(ctx, header.contents(),
+                                     header.size(), ep.data(),
+                                     ep.size());
+            });
+          return 0;
+        }
 
-      static
-      uint64
-      on_accept(utp_callback_arguments* args)
-      {
-        ELLE_DEBUG("on_accept");
-        auto server = get_server(args);
-        server->on_accept(args->socket);
-        return 0;
-      }
+        uint64
+        on_read(utp_callback_arguments* args)
+        {
+          ELLE_DEBUG("on_read");
+          if (auto s = get(args))
+            s->on_read(elle::ConstWeakBuffer(args->buf, args->len));
+          return 0;
+        }
 
-      static
-      uint64
-      on_connect(utp_callback_arguments* args)
-      {
-        ELLE_DEBUG("on_connect");
-        auto s = get(args);
-        if (!s)
-          utp_close(args->socket);
-        else
-          s->on_connect();
-        return 0;
-      }
+        uint64
+        on_error(utp_callback_arguments* args)
+        {
+          auto s = get(args);
+          ELLE_DEBUG("on_error %s on %s", utp_error_code_names[args->error_code],
+                     s);
+          if (s)
+            s->on_close();
+          return 0;
+        }
 
-      static
-      uint64
-      on_log(utp_callback_arguments* args)
-      {
-        ELLE_LOG_COMPONENT("elle.reactor.network.UTPServer.backend");
-        ELLE_DEBUG("utp: %s", (const char*)args->buf);
-        return 0;
+        uint64
+        on_state_change(utp_callback_arguments* args)
+        {
+          auto s = get(args);
+          ELLE_DEBUG("on_state_change %s on %s", utp_state_names[args->state], s);
+          if (s)
+            switch (args->state)
+              {
+              case UTP_STATE_CONNECT:
+              case UTP_STATE_WRITABLE:
+                s->_write_cont();
+                //s->_write_barrier.open();
+                break;
+              case UTP_STATE_EOF:
+                s->on_close();
+                break;
+              case UTP_STATE_DESTROYING:
+                s->_destroyed();
+                break;
+              }
+          return 0;
+        }
+
+        uint64
+        on_accept(utp_callback_arguments* args)
+        {
+          ELLE_DEBUG("on_accept");
+          auto server = get_server(args);
+          server->on_accept(args->socket);
+          return 0;
+        }
+
+        uint64
+        on_connect(utp_callback_arguments* args)
+        {
+          ELLE_DEBUG("on_connect");
+          auto s = get(args);
+          if (!s)
+            utp_close(args->socket);
+          else
+            s->on_connect();
+          return 0;
+        }
+
+        uint64
+        on_log(utp_callback_arguments* args)
+        {
+          ELLE_LOG_COMPONENT("elle.reactor.network.UTPServer.backend");
+          ELLE_DEBUG("utp: %s", (const char*)args->buf);
+          return 0;
+        }
       }
 
       /*-------------.
