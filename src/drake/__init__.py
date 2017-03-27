@@ -1749,15 +1749,15 @@ def command(cmd, cwd = None, stdout = None, env = None):
 
 def command_flatten(command, env = None):
   if env:
-    env = ('%s=%s' % (var, pipes.quote(str(env(value))))
-           for var in sorted(env.keys()))
+    env_ = ['%s=%s' % (var, pipes.quote(str(env[var])))
+            for var in sorted(env.keys())]
     if PRETTY:
-      env = ' \\\n  '.join(env) + ' \\\n'
+      env_ = ' \\\n  '.join(env_) + ' \\\n'
     else:
-      env = ' '.join(chain(env)) + ' '
+      env_ = ' '.join(env_) + ' '
   else:
-    env = ''
-  return env + ' '.join(pipes.quote(str(a)) for a in command)
+    env_ = ''
+  return env_ + ' '.join(pipes.quote(str(a)) for a in command)
 
 class Builder:
 
