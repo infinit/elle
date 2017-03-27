@@ -2706,12 +2706,14 @@ class _Module:
   def __init__(self, globals):
     self.globals = globals
 
-  def __getattr__(self, name):
+  def __getattr__(self, name, default = None):
+    return self.globals.get(name, default)
+
+  def __getitem__(self, name):
     return self.globals[name]
 
   def __contains__(self, key):
     return key in self.globals
-
 
 def include(path, *args, **kwargs):
     """Include a sub-drakefile.
