@@ -59,6 +59,7 @@ x86_64-ubuntu-gcc4:
     - python3 drake -j $(nproc) //build
     - python3 drake -j $(($(nproc) / 4)) //check
     - python3 drake -j $(nproc) //install
+    - python3 drake -j $(nproc) //docker
     - TARBALL="$BUILD_DIR/elle-x86_64-ubuntu-gcc4-$DESC.tbz"
     - tar -cvjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
     - scp "$TARBALL" buildslave@packages.infinit.sh:tmp
