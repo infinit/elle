@@ -336,12 +336,12 @@ def configure(openssl_config,
     test_libs += drake.copy([boost.test_dynamic],
                             lib_path, strip_prefix = True)
   else:
-    test_libs += boost.test_static
+    test_libs += [boost.test_static]
   if not use_boost_filesystem_static_library:
     test_libs += drake.copy([boost.filesystem_dynamic],
                             lib_path, strip_prefix = True)
   else:
-    test_libs += boost.filesystem_static
+    test_libs += [boost.filesystem_static]
   for test in tests:
     config_test_local = drake.cxx.Config(config_tests)
     path = drake.Path(tests_path / test)

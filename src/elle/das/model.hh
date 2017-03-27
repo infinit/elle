@@ -16,9 +16,12 @@ namespace elle
     ///
     /// \code{.cc}
     ///
-    /// ELLE_DAS_SYMBOL(i);
-    /// ELLE_DAS_SYMBOL(s);
-    /// ELLE_DAS_SYMBOL(b);
+    /// namespace symbs
+    /// {
+    ///   ELLE_DAS_SYMBOL(i);
+    ///   ELLE_DAS_SYMBOL(s);
+    ///   ELLE_DAS_SYMBOL(b);
+    /// }
     ///
     /// struct Foo
     /// {
@@ -26,31 +29,39 @@ namespace elle
     ///   std::string s;
     ///   bool b;
     ///
-    ///   using Model = elle::das::Model<Foo,
-    ///                                  elle::meta::List<Symbol_i,
-    ///                                                   Symbol_s,
-    ///                                                   Symbol_s>>;
+    ///   using Model = elle::das::Model<
+    ///     Foo,
+    ///     decltype(elle::meta::list(symbs::i,
+    ///                               symbs::s,
+    ///                               symbs::b))>;
     /// };
     ///
     /// // You can also use the non-intrusive way.
-    /// // using FooModel = elle::das::Model<Foo,
-    ///                                      elle::meta::List<Symbol_i,
-    ///                                                       Symbol_s,
-    ///                                                       Symbol_s>>;
+    /// // using FooModel = elle::das::Model<
+    /// //   Foo,
+    /// //   decltype(elle::meta::list(symbs::i,
+    /// //                             symbs::s,
+    /// //                             symbs::b))>;
     /// // ELLE_DAS_MODEL_DEFAULT(Foo, FooModel);
     ///
     /// auto f = Foo{};
     /// // Class with a Model offers:
-    ///
     /// // - Serialization.
-    /// std::stringstream output;
-    /// elle::serialization::json::SerializerOut serializer(output, false);
-    /// elle::das::serialize(f, serializer);
-    /// assert(output.str() == R"JSON({"i":0,"s":"","b":false})JSON");
-    ///
+    /// {
+    ///   std::stringstream output;
+    ///   {
+    ///     elle::serialization::json::SerializerOut serializer(output, false);
+    ///     elle::das::serialize(f, serializer);
+    ///   }
+    ///   assert(output.str() == "{\"b\":false,\"i\":0,\"s\":\"\"}\n");
+    /// }
     /// // - Default printer
     /// using elle::das::operator <<;
-    /// assert(elle::sprintf("%s", f) ==
+    /// {
+    ///   std::stringstream output;
+    ///   output << f;
+    ///   assert(output.str() == "Foo(i = 0, s = "", b = false)");
+    /// }
     ///
     /// \endcode
     template <typename T, typename Fields_>
