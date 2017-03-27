@@ -440,6 +440,7 @@ def configure(curl_config,
   miniupnp = drake.include('modules/miniupnp', cxx_toolkit, archs = archs)
   miniupnpc = miniupnp.miniupnpc
   local_cxx_config += miniupnpc.config
+  miniupnpc_lib = miniupnpc.library
 
   # UTP
   utp = drake.include('modules/libutp', cxx_toolkit, archs = archs)
@@ -688,13 +689,13 @@ def configure(curl_config,
   lib_dynamic_link_libs = [
     curl_lib,
     elle.library,
-    miniupnpc.library,
+    miniupnpc_lib,
     utp_lib,
   ]
   lib_static_link_libs = [
     curl_lib,
     elle.library,
-    miniupnpc.library,
+    miniupnpc_lib,
     utp_lib,
   ]
   if backend == Backends.io:
@@ -716,7 +717,7 @@ def configure(curl_config,
   lib_dynamic_link_libs = [
     curl_lib,
     elle.library,
-    miniupnpc.library,
+    miniupnpc_lib,
     utp_lib,
   ]
   if backend == Backends.io:
@@ -841,9 +842,15 @@ def configure(curl_config,
     static = use_boost_filesystem_static_library or None,
     link = use_boost_filesystem_static_library)
   if boost.prefer_shared:
-    test_libs += [boost.timer_dynamic, boost.test_dynamic]
-    if not use_boost_filesystem_static_library:
-      test_libs += [boost.filesystem_dynamic]
+    test_libs += drake.copy([boost.timer_dynamic, boost.test_dynamic],
+                            lib_path, strip_prefix = True)
+  else:
+    test_libs += [boost.timer_static, boost.test_static]
+  if not use_boost_filesystem_static_library:
+    test_libs += drake.copy([boost.filesystem_dynamic],
+                            lib_path, strip_prefix = True)
+  else:
+    test_libs += [boost.filesystem_static]
   if cxx_toolkit.os == drake.os.android:
     cxx_config_tests.lib('stdc++')
     cxx_config_tests.lib('atomic')

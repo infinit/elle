@@ -605,7 +605,10 @@ def configure(zlib_lib,
     static = not boost.prefer_shared or None,
     link = not boost.prefer_shared)
   if boost.prefer_shared:
-    test_libs += [boost.timer_dynamic, boost.test_dynamic]
+    test_libs += drake.copy([boost.timer_dynamic, boost.test_dynamic],
+                            lib_path, strip_prefix = True)
+  else:
+    test_libs += [boost.timer_static, boost.test_static]
   for test in tests:
     if isinstance(test, tuple):
       test, dependencies, valgrind_this_test = test
