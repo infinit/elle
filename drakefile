@@ -3,6 +3,7 @@
 import collections
 import drake
 import drake.cxx
+import drake.docker
 import drake.cxx.boost
 import os
 import sys
@@ -1133,13 +1134,13 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
       drake.node('boost/%s/%s' % (boost_basename, f))
         for f in boost_attributes['patched_sources']
     ]
-    boost_headers = [
+    boost_headers_ = [
       drake.node('boost/%s/%s' % (boost_version, n))
         for n in boost_attributes['headers']
     ]
     BoostBuilder(
       sources = [boost_bjam, boost_user_config] + boost_patched_sources,
-      targets = boost_libraries + boost_headers)
+      targets = boost_libraries + boost_headers_)
     if windows and python3:
       python_version_tuple = \
         (python3.prefix, python_version.major, python_version.minor)
@@ -1153,7 +1154,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
       prefer_shared = cxx_toolkit.os not in [drake.os.windows, drake.os.ios],
     )
     boost_rule = drake.Rule('boost')
-    boost_rule << boost_headers
+    boost_rule << boost_headers_
     boost_rule << boost_libraries
     # Fix ::hypot issues on windows.
   #if windows and python3:
@@ -1400,9 +1401,6 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
 
   if prefix is not False:
     rule_install = drake.Rule('install')
-    rule_install << drake.install(
-      (node for node in sources if isinstance(node, drake.cxx.Header)),
-      prefix / 'include', strip_prefix = True)
 
   config += cryptography.config
   config += elle.config
@@ -1443,8 +1441,99 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
   rule_examples = drake.Rule('examples')
   recurse(rule_examples, 'rule_examples')
 
+  class Tar(drake.Builder):
+
+    def __init__(self, sources, tarball, strip = None):
+      super().__init__(srcs = sources,
+                       dsts = [tarball])
+      self.__strip = strip
+
+    @property
+    def tarball(self):
+      return self.targets()[0]
+
+    def execute(self):
+      self.output('Tar %s' % self.tarball)
+      try:
+        os.remove(str(self.tarball))
+      except FileNotFoundError:
+        pass
+      import tarfile
+      with tarfile.TarFile(str(self.tarball), mode = 'w') as tar:
+        for source, node in self.sources().items():
+          dest = source
+          if self.__strip:
+            dest = source.without_prefix(self.__strip)
+          tar.add(str(node.path()),
+                  arcname = str(dest))
+      return True
+
+  ## ------- ##
+  ## Install ##
+  ## ------- ##
+
+  def headers():
+    yield from (node for node in sources
+                if isinstance(node, drake.cxx.Header))
+
+  def recurse_headers():
+    for m in submodules:
+      yield from getattr(m, 'headers', ())
+
+  def boost_headers():
+    yield from (node for node in boost_headers_
+                if isinstance(node, drake.cxx.Header))
+
+  def symlink_versionned_libs(node):
+    import copy
+    import re
+    for dep in copy.copy(node.dependencies):
+      if isinstance(dep, drake.cxx.DynLib):
+        if re.compile(".*\.so\..+").match(str(dep.path())):
+          yield from [
+            drake.Symlink(dep.path().with_extension('so'), dep, relative = True)
+          ]
+      yield from symlink_versionned_libs(dep)
+
+  def install(prefix, recurse = False):
+    prefix = drake.Path(prefix)
+    yield from drake.install(
+      headers(), prefix / 'include', strip_prefix = True)
+    yield from drake.install(
+      recurse_headers(), prefix / 'include', strip_prefix = 'src')
+    yield from drake.install(
+      boost_headers(), prefix / 'include',
+      strip_prefix = 'boost/%s/include' % boost_version)
+    if recurse:
+      for m in submodules:
+        lib = getattr(m, 'library', None)
+        if lib:
+          libs = [lib] + list(filter(
+            lambda lib: not isinstance(lib, drake.cxx.StaticLib),
+            lib.dependencies_recursive))
+          libs += list(chain(*map(symlink_versionned_libs, libs)))
+          yield from drake.install(
+            libs,
+            prefix / 'lib',
+            strip_prefix = True,
+            follow_symlinks = False)
+
+  if prefix:
+    rule_install << install(prefix)
+
+  elle_tarball = drake.Node('elle.tar.gz')
+  tarball_prefix = 'tarball'
+  Tar(sources = install(tarball_prefix, recurse = True),
+      tarball = elle_tarball,
+      strip = tarball_prefix)
+
+  ## -------- ##
+  ## Examples ##
+  ## -------- ##
+
   example_config = drake.cxx.Config(cxx_config)
-  example_config += das.config + elle.config + reactor.config + cryptography.config
+  example_config += das.config + elle.config + reactor.config + \
+                    cryptography.config
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
     example_config += boost.config_system(static = True)
   else:
@@ -1470,37 +1559,22 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
       list(chain(examples, elle.examples, reactor.examples,
                  [x[0] for x in cryptography.examples], das.examples))
     ])
+
+  with drake.templating.Context(content = {
+      'prefix': '/usr/elle',
+  }):
+    drake.nodes(
+      'examples/drakefile.tmpl',
+      'examples/Makefile.tmpl',
+      'examples/CMakeLists.txt.tmpl',
+    )
   examples += drake.nodes(
     'examples/drakefile',
     'examples/Makefile',
     'examples/CMakeLists.txt',
     'examples/example.key'
   )
-
-  class Tar(drake.Builder):
-
-    def __init__(self, sources, tarball):
-      super().__init__(srcs = sources,
-                       dsts = [tarball])
-
-    @property
-    def tarball(self):
-      return self.targets()[0]
-
-    def execute(self):
-      self.output('Tar %s' % self.tarball)
-      try:
-        os.remove(str(self.tarball))
-      except FileNotFoundError:
-        pass
-      import tarfile
-      with tarfile.TarFile(str(self.tarball), mode = 'w') as tar:
-        for source in self.sources().values():
-          tar.add(str(source.path()),
-                  arcname = str(source.path().basename()))
-      return True
-
-  tarball = drake.Node('examples.tar.gz')
+  examples_tarball = drake.Node('examples.tar.gz')
   Tar(sources = examples,
-      tarball = tarball)
-  rule_examples << tarball
+      tarball = examples_tarball)
+  rule_examples << examples_tarball
