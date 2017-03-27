@@ -1749,8 +1749,8 @@ def command(cmd, cwd = None, stdout = None, env = None):
 
 def command_flatten(command, env = None):
   if env:
-    env_ = ['%s=%s' % (var, pipes.quote(str(env[var])))
-            for var in sorted(env.keys())]
+    env_ = ['%s=%s' % (var, pipes.quote(str(val)))
+            for var, val in sorted(env.items())]
     if PRETTY:
       env_ = ' \\\n  '.join(env_) + ' \\\n'
     else:
