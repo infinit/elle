@@ -58,9 +58,10 @@ namespace elle
     using Self = Option<Types ...>;
     using Super =  _details::OptionHelper<0u, 0u, 0, Types ...>;
     using Super::Super;
-    /// Create an Option.
+    /// Move-construct an Option<Types...> initialized from an rvalue-ref to
+    /// 'value' of type 'T'.
     ///
-    /// @tparam T A type.
+    /// @tparam T The type of the given value, that must be part of Types.
     /// @param value An r-value reference.
     template <typename T>
     Option(T&& value);
