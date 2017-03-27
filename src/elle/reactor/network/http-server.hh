@@ -5,8 +5,6 @@
 #include <string>
 #include <unordered_map>
 
-#include <boost/algorithm/string.hpp>
-#include <boost/lexical_cast.hpp>
 #include <boost/optional.hpp>
 
 #include <elle/Buffer.hh>
@@ -24,7 +22,6 @@
 #include <elle/reactor/network/tcp-server.hh>
 #include <elle/reactor/network/tcp-socket.hh>
 #include <elle/reactor/Thread.hh>
-#include <elle/string/algorithm.hh>
 #include <elle/utility/Move.hh>
 
 namespace elle
@@ -123,9 +120,8 @@ namespace elle
             method() const;
             http::Version const&
             version() const;
-            virtual
             void
-            print(std::ostream& output) const;
+            print(std::ostream& output) const override;
           };
           void
           _accept();

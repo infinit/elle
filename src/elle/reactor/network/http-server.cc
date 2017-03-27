@@ -1,6 +1,27 @@
+#include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/join.hpp>
+#include <boost/lexical_cast.hpp>
+
 #include <elle/os/environ.hh>
 #include <elle/reactor/network/exception.hh>
 #include <elle/reactor/network/http-server.hh>
+
+ELLE_LOG_COMPONENT("elle.reactor.network.http");
+
+namespace
+{
+  // FIXME: most callers do not need fresh strings, string_views would
+  // suffice.  Or even simply some range such as with Boost Tokenizer.
+  template <typename String>
+  std::vector<std::string>
+  split(String const& str, std::string const& sep)
+  {
+    auto res = std::vector<std::string>{};
+    boost::algorithm::split(res, str,
+                            boost::algorithm::is_any_of(sep));
+    return res;
+  }
+}
 
 namespace elle
 {
@@ -13,7 +34,6 @@ namespace elle
         , _port(0)
         , _accepter()
       {
-        ELLE_LOG_COMPONENT("elle.reactor.test.http");
         if (!this->_server)
         {
           auto server = std::make_unique<TCPServer>();
@@ -25,13 +45,11 @@ namespace elle
         this->_accepter.reset(
           new reactor::Thread(*reactor::Scheduler::scheduler(),
                               "accepter",
-                              std::bind(&HttpServer::_accept,
-                                std::ref(*this))));
+                              [this] { this->_accept(); }));
       }
 
       HttpServer::HttpServer(int port)
       {
-        ELLE_LOG_COMPONENT("elle.reactor.test.http");
         auto server = std::make_unique<TCPServer>();
         server->listen(port);
         this->_port = server->port();
@@ -40,13 +58,11 @@ namespace elle
         this->_accepter.reset(
           new reactor::Thread(*reactor::Scheduler::scheduler(),
                               "accepter",
-                              std::bind(&HttpServer::_accept,
-                                std::ref(*this))));
+                              [this] { this->_accept(); }));
       }
 
       HttpServer::~HttpServer()
       {
-        ELLE_LOG_COMPONENT("elle.reactor.test.http");
         ELLE_TRACE_SCOPE("%s: destruction", *this);
         this->_finalize();
       }
@@ -68,30 +84,23 @@ namespace elle
         , _method()
         , _version()
       {
-         ELLE_LOG_COMPONENT("elle.reactor.test.http");
-         std::vector<std::string> words;
-         boost::algorithm::split(words, buffer,
-                                 boost::algorithm::is_any_of(" "));
+         auto const words = split(buffer, " ");
          if (words.size() != 3)
            throw HttpServer::Exception(
-             elle::join(words.begin(), words.end(), " "),
+             boost::algorithm::join(words, " "),
              http::StatusCode::Bad_Request,
-             "request command line sould have 3 members");
-         std::vector<std::string> path_and_args;
-         boost::algorithm::split(path_and_args, words[1],
-                                 boost::algorithm::is_any_of("?"));
+             "request command line should have 3 members");
+         auto const path_and_args = split(words[1], "?");
          this->_path = path_and_args[0];
          if (path_and_args.size() > 1)
          {
-           std::vector<std::string> parameters;
-           boost::algorithm::split(parameters, path_and_args[1],
-                                   boost::algorithm::is_any_of("&"));
+           auto const parameters = split(path_and_args[1], "&");
            ELLE_DEBUG("%s", parameters);
            for (auto const& param: parameters)
            {
-             std::vector<std::string> key_value;
+             // FIXME: this is wrong, we should split exactly once.
+             auto const key_value = split(param, "=");
              ELLE_DEBUG("%s", key_value);
-             boost::algorithm::split(key_value, param, boost::algorithm::is_any_of("="));
              this->_params[key_value[0]] = key_value[1];
            }
          }
@@ -137,7 +146,6 @@ namespace elle
       void
       HttpServer::_accept()
       {
-        ELLE_LOG_COMPONENT("elle.reactor.test.http");
         elle::With<reactor::Scope>() << [&] (reactor::Scope& scope)
         {
           while (true)
@@ -177,9 +185,8 @@ namespace elle
       void
       HttpServer::_serve(std::unique_ptr<reactor::network::Socket> socket)
       {
-        ELLE_LOG_COMPONENT("elle.reactor.test.http");
         auto headers = this->_headers;
-        Cookies cookies;
+        auto cookies = Cookies{};
         try
         {
           CommandLine cmd(socket->read_until("\r\n"));
@@ -204,9 +211,7 @@ namespace elle
               break;
             buffer.size(buffer.size() - 2);
             ELLE_TRACE("%s: get header: %s", *this, buffer.string());
-            std::vector<std::string> words;
-            boost::algorithm::split(words, buffer,
-                                    boost::algorithm::is_any_of(" "));
+            auto const words = split(buffer, " ");
             auto expected_length = [&] (unsigned int length) {
               if (words.size() != length)
                 throw Exception(cmd.path(),
@@ -237,9 +242,7 @@ namespace elle
             }
             else if (words[0] == "Set-Cookie:" || words[0] == "Cookie:")
             {
-              std::vector<std::string> chunks;
-              boost::algorithm::split(chunks, words[1],
-                                      boost::algorithm::is_any_of("="));
+              auto const chunks = split(words[1], "=");
               if (chunks.size() != 2)
                 throw Exception(cmd.path(),
                                 reactor::http::StatusCode::Bad_Request,
@@ -333,7 +336,6 @@ namespace elle
                                  http::Method method,
                                  Function const& function)
       {
-        ELLE_LOG_COMPONENT("elle.reactor.test.http");
         ELLE_TRACE("%s: register %s on %s", *this, route, method);
         this->_routes[route][method] = function;
       }
@@ -351,7 +353,6 @@ namespace elle
                     elle::ConstWeakBuffer content,
                     Cookies const& cookies)
       {
-        ELLE_LOG_COMPONENT("elle.reactor.test.http");
         Headers headers = this->_headers;
         {
           std::string response;
@@ -378,7 +379,6 @@ namespace elle
       HttpServer::read_sized_content(reactor::network::Socket& socket,
                                      unsigned int length)
       {
-        ELLE_LOG_COMPONENT("elle.reactor.test.http");
         ELLE_TRACE_SCOPE("%s: read sized content of size %s", *this, length);
         auto content = elle::Buffer(length);
         content.size(length);
