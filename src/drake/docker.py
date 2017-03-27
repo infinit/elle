@@ -161,7 +161,7 @@ class DockerFile(drake.Node):
               chain(*(parents(n.path().without_prefix(root))
                       for n in installed_files(nodes)
                       if n is not drake.Path.dot))):
-            print('ADD %s %s/%s'  % (add, p, add), file = f)
+            print('ADD %s %s'  % (add, p), file = f)
         for p in self.__dockerfile.ports_:
           print('EXPOSE %s' % p, file = f)
         if self.__dockerfile.volumes_:
