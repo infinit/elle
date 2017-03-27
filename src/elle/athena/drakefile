@@ -6,6 +6,7 @@ rule_check = None
 rule_install = None
 rule_tests = None
 rule_examples = None
+headers = None
 
 lib_dynamic = None
 lib_static  = None
@@ -123,11 +124,14 @@ def configure(cxx_toolkit,
   ## Install ##
   ## ------- ##
 
+  global headers
+  headers = (node for node in sources if isinstance(node, drake.cxx.Header))
+
   if prefix is not False:
     rule_install = drake.Rule('install')
     if cxx_toolkit.os not in [drake.os.windows, drake.os.ios]:
       rule_install << drake.install(lib_dynamic, prefix / 'lib', strip_prefix = True)
     rule_install << drake.install(lib_static, prefix / 'lib', strip_prefix = True)
     rule_install << drake.install(
-      (node for node in sources if isinstance(node, drake.cxx.Header)),
+      headers,
       prefix / 'include' / 'elle' / 'athena')

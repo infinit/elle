@@ -56,6 +56,9 @@ def configure(cxx_toolkit,
   ## Install ##
   ## ------- ##
 
+  global headers
+  headers = (node for node in sources if isinstance(node, drake.cxx.Header))
+
   if prefix is not False:
     global rule_install
     rule_install = drake.Rule('install')
@@ -63,5 +66,5 @@ def configure(cxx_toolkit,
       rule_install << drake.install(lib_dynamic, prefix / 'lib', strip_prefix = True)
     rule_install << drake.install(lib_static, prefix / 'lib', strip_prefix = True)
     rule_install << drake.install(
-      list(filter(lambda n: isinstance(n, drake.cxx.Header), sources)),
+      headers,
       prefix / 'include' / 'elle' / 'service' / 'dropbox')

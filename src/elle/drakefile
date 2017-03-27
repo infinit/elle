@@ -10,6 +10,7 @@ config = None
 lib_static = None
 lib_dynamic = None
 library = None
+headers = None
 python = None
 ldap = None
 examples = None
@@ -675,6 +676,9 @@ def configure(zlib_lib,
   ## Install ##
   ## ------- ##
 
+  global headers
+  headers = (node for node in sources if isinstance(node, drake.cxx.Header))
+
   if prefix is not False:
     rule_install = drake.Rule('install')
     prefix = drake.Path(prefix)
@@ -684,7 +688,7 @@ def configure(zlib_lib,
     rule_install << drake.install(lib_static, prefix / 'lib',
                                   strip_prefix = True)
     rule_install << drake.install(
-      (node for node in sources if isinstance(node, drake.cxx.Header)),
+      headers,
       prefix / 'include' / 'elle')
 
 # Local Variables:

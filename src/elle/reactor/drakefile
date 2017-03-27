@@ -6,18 +6,19 @@ import drake.cxx.boost
 import drake.templating
 import sys
 import os
+from itertools import chain
 
 config = None
 lib_static = None
 lib_dynamic = None
 library = None
+headers = None
 examples = None
 python_lib = None
 dokan_lib = None
 cxx_lib = None
 connectivity = None
 fnetusermount_binaries = None
-
 library_coroutine = None
 
 rule_build = None
@@ -929,12 +930,15 @@ def configure(curl_config,
   ## Install ##
   ## ------- ##
 
+  global headers
+  headers = (node for node in chain(sources, backend_sources)
+             if isinstance(node, drake.cxx.Header))
+
   if prefix is not False:
     rule_install = drake.Rule('install')
     if cxx_toolkit.os not in [drake.os.windows, drake.os.ios]:
-      rule_install << drake.install(lib_dynamic, prefix / 'lib')
-    rule_install << drake.install(lib_static, prefix / 'lib')
-    for s in [sources, backend_sources]:
-      rule_install << drake.install(
-        (node for node in s if isinstance(node, drake.cxx.Header)),
-        prefix / 'include' / 'elle' / 'reactor')
+      rule_install << drake.install(lib_dynamic, prefix / 'lib', strip_prefix = True)
+    rule_install << drake.install(lib_static, prefix / 'lib', strip_prefix = True)
+    rule_install << drake.install(
+      headers,
+      prefix / 'include' / 'elle' / 'reactor')

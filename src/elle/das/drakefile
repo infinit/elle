@@ -9,6 +9,7 @@ rule_check = None
 rule_install = None
 rule_tests = None
 rule_examples = None
+headers = None
 
 examples = None
 config = None
@@ -123,6 +124,9 @@ def configure(cxx_toolkit,
   ## ------- ##
   ## Install ##
   ## ------- ##
+
+  global headers
+  headers = (node for node in sources if isinstance(node, drake.cxx.Header))
 
   if prefix is not False:
     rule_install = drake.Rule('install')

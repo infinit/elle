@@ -12,6 +12,7 @@ lib_static = None
 lib_dynamic = None
 library = None
 python_module = None
+headers = None
 examples = None
 
 rule_build = None
@@ -397,6 +398,9 @@ def configure(openssl_config,
   ## Install ##
   ## ------- ##
 
+  global headers
+  headers = (node for node in sources if isinstance(node, drake.cxx.Header))
+
   if prefix is not False:
     rule_install = drake.Rule('install')
     prefix = drake.Path(prefix)
@@ -404,5 +408,5 @@ def configure(openssl_config,
       rule_install << drake.install(lib_dynamic, prefix / 'lib', strip_prefix = True)
     rule_install << drake.install(lib_static, prefix / 'lib', strip_prefix = True)
     rule_install << drake.install(
-      (node for node in sources if isinstance(node, drake.cxx.Header)),
+      headers,
       prefix / 'include' / 'elle' / 'cryptography')
