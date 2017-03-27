@@ -4311,7 +4311,7 @@ class PythonModule(Builder):
 
 class Symlinker(ShellCommand):
 
-  def __init__(self, link, linked, build_linked = True):
+  def __init__(self, link, linked, build_linked = True, relative = False):
     self.__target = link
     self.__linked = linked
     self.__path = self.__linked.path()
@@ -4320,9 +4320,14 @@ class Symlinker(ShellCommand):
       [self.__target],
       None,
       'Symlink %s' % self.__target)
-    if not self.__path.absolute():
+    if relative:
+      self.__path = drake.Path(_OS.path.relpath(
+        str(self.__path.dirname()),
+        str(self.__target.path().dirname()))) / self.__linked.path().basename()
+    elif not self.__path.absolute():
       self.__path = self.__path.without_prefix(
         self.__target.path().dirname())
+
 
   @property
   def target(self):
@@ -4358,16 +4363,19 @@ class Symlinker(ShellCommand):
 
 class Symlink(Node):
 
-  def __init__(self, path, target, build_target = True):
+  def __init__(self, path, target,
+               build_target = True,
+               relative = False):
     '''Create a Symlink node.
 
     path         -- Path of the symlink
     target       -- Target node the symlink should point to.
     build_target -- Whether to build the target node first when built.
+    relative     -- Set the symlink to a relative path to the target.
     '''
     super().__init__(path)
     self.__target = target
-    Symlinker(self, target, build_linked = build_target)
+    Symlinker(self, target, build_linked = build_target, relative = relative)
 
   @property
   def target(self):
