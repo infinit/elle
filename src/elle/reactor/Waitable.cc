@@ -1,12 +1,14 @@
+#include <utility>
+
+#include <boost/algorithm/string/join.hpp>
+
 #include <elle/Backtrace.hh>
 #include <elle/assert.hh>
 #include <elle/log.hh>
 #include <elle/make-vector.hh>
-#include <elle/reactor/scheduler.hh>
 #include <elle/reactor/Thread.hh>
 #include <elle/reactor/Waitable.hh>
-#include <elle/string/algorithm.hh>
-#include <utility>
+#include <elle/reactor/scheduler.hh>
 
 ELLE_LOG_COMPONENT("elle.reactor.Thread");
 
@@ -45,7 +47,7 @@ namespace elle
                       [](auto& t){ return elle::sprintf("%s", *t.first); });
         ELLE_ABORT("%s destroyed while waited by %s at %s",
                    *this,
-                   elle::join(threads.begin(), threads.end(), ", "),
+                   boost::algorithm::join(threads, ", "),
                    elle::Backtrace::current());
       }
     }
