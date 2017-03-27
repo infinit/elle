@@ -11,6 +11,8 @@
 # include <sys/socket.h>
 #endif
 
+#include <boost/range/algorithm_ext/erase.hpp>
+
 #include <elle/Buffer.hh>
 #include <elle/log.hh>
 #include <elle/os/environ.hh>
@@ -333,7 +335,7 @@ namespace elle
       UTPServer::Impl::_check_icmp()
       {
         ELLE_LOG_COMPONENT("elle.reactor.network.UTPServer.ICMP");
-  #if defined(INFINIT_MACOSX)
+#if defined INFINIT_MACOSX
         if (this->_icmp_fd == -1)
         {
           this->_icmp_fd = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_ICMP);
@@ -346,11 +348,11 @@ namespace elle
         struct sockaddr_in sa;
         socklen_t sasz = sizeof(sa);
         int res =
-          recvfrom(this->_icmp_fd, buf, 4096, 0, (struct sockaddr*)&sa, &sasz);
-        if (res == -1 && (errno == EWOULDBLOCK || errno == EAGAIN))
-          return;
+          recvfrom(this->_icmp_fd, buf, sizeof buf, 0, (struct sockaddr*)&sa, &sasz);
         if (res == -1)
         {
+          if (errno != EAGAIN && errno != EWOULDBLOCK)
+            ELLE_DEBUG("recvfrom error: %s", errno);
           return;
         }
         ELLE_DUMP("%x", elle::Buffer(buf, res));
@@ -360,10 +362,10 @@ namespace elle
           ELLE_DUMP("Not ICMP: %s", (unsigned int)buf[9]);
           return;
         }
-        static const int offset_icmp = 20;
-        static const int offset_payload_ip_dest = 44;
-        static const int offset_payload_udp_dport = 50;
-        static const int offset_udp_payload = 56;
+        auto constexpr offset_icmp = 20;
+        auto constexpr offset_payload_ip_dest = 44;
+        auto constexpr offset_payload_udp_dport = 50;
+        auto constexpr offset_udp_payload = 56;
         if (res < offset_udp_payload)
         {
           ELLE_DUMP("Payload too short (%s)", res);
@@ -371,8 +373,8 @@ namespace elle
         }
         sa.sin_addr.s_addr = *(uint32_t*)(buf + offset_payload_ip_dest);
         sa.sin_port = *(uint16_t*)(buf + offset_payload_udp_dport);
-        int type = buf[offset_icmp];
-        int code = buf[offset_icmp+1];
+        int const type = buf[offset_icmp];
+        int const code = buf[offset_icmp+1];
         ELLE_DEBUG("icmp type %s code %s ip %s port %s payload %s",
                    type, code, inet_ntoa(sa.sin_addr), ntohs(sa.sin_port),
                    res - offset_udp_payload);
@@ -386,18 +388,14 @@ namespace elle
             res - offset_udp_payload,
             (struct sockaddr*)&sa,
             sizeof(sa));
-  #endif
-        // Code comming straight from ucat libutp example.
-  #if defined(INFINIT_LINUX)
+#endif
+        // Code coming straight from ucat libutp example.
+#if defined INFINIT_LINUX
         int fd = this->_socket->socket()->native_handle();
         unsigned char vec_buf[4096], ancillary_buf[4096];
-        struct iovec iov = { vec_buf, sizeof(vec_buf) };
+        struct iovec iov = { vec_buf, sizeof vec_buf };
         struct sockaddr_storage remote;
         struct msghdr msg;
-        ssize_t len;
-        struct cmsghdr* cmsg;
-        struct sock_extended_err* e;
-        struct sockaddr* icmp_addr;
         memset(&msg, 0, sizeof(msg));
         msg.msg_name = &remote;
         msg.msg_namelen = sizeof(remote);
@@ -406,12 +404,14 @@ namespace elle
         msg.msg_flags = 0;
         msg.msg_control = ancillary_buf;
         msg.msg_controllen = sizeof(ancillary_buf);
-        len = recvmsg(fd, &msg, MSG_ERRQUEUE);
-        if (len < 0 && errno != EAGAIN && errno != EWOULDBLOCK)
-          ELLE_DEBUG("recvmsg error: %s", errno);
+        auto len = recvmsg(fd, &msg, MSG_ERRQUEUE);
         if (len < 0)
+        {
+          if (errno != EAGAIN && errno != EWOULDBLOCK)
+            ELLE_DEBUG("recvmsg error: %s", errno);
           return;
-        for (cmsg = CMSG_FIRSTHDR(&msg); cmsg; cmsg = CMSG_NXTHDR(&msg, cmsg))
+        }
+        for (auto* cmsg = CMSG_FIRSTHDR(&msg); cmsg; cmsg = CMSG_NXTHDR(&msg, cmsg))
         {
           ELLE_DEBUG("Handling one!");
           if (cmsg->cmsg_type != IP_RECVERR && cmsg->cmsg_type != IPV6_RECVERR)
@@ -433,18 +433,18 @@ namespace elle
           }
           if (remote.ss_family == AF_INET)
           {
-            struct sockaddr_in* si = (sockaddr_in*)&remote;
+            auto const* si = (sockaddr_in*)&remote;
             ELLE_DEBUG("Remote host: %s:%s",
                        inet_ntoa(si->sin_addr), ntohs(si->sin_port));
           }
           else
           {
-            struct sockaddr_in6* si = (sockaddr_in6*)&remote;
+            auto const* si = (sockaddr_in6*)&remote;
             char buf[INET6_ADDRSTRLEN];
             inet_ntop(AF_INET6, &si->sin6_addr, buf, INET6_ADDRSTRLEN);
             ELLE_DEBUG("Remote host: %s:%s", buf, ntohs(si->sin6_port));
           }
-          e = (struct sock_extended_err*)CMSG_DATA(cmsg);
+          auto const* e = (struct sock_extended_err*)CMSG_DATA(cmsg);
           if (!e)
           {
             ELLE_DEBUG("errqueue: sock_extended_err is NULL?");
@@ -464,7 +464,7 @@ namespace elle
           ELLE_DEBUG("    ee_data:   %s", e->ee_data);
           // "Node that caused the error"
           // "Node that generated the error"
-          icmp_addr = (struct sockaddr*)SO_EE_OFFENDER(e);
+          auto const* icmp_addr = (struct sockaddr*)SO_EE_OFFENDER(e);
           if (icmp_addr->sa_family != AF_INET &&
               icmp_addr->sa_family != AF_INET6)
           {
@@ -490,7 +490,7 @@ namespace elle
                                    (struct sockaddr *)&remote, sizeof(remote));
           }
         }
-  #endif
+#endif
       }
 
       void
@@ -499,12 +499,12 @@ namespace elle
         this->_socket = std::make_unique<RDVSocket>();
         this->_socket->close();
         this->_socket->bind(ep);
-  #ifdef INFINIT_LINUX
+#ifdef INFINIT_LINUX
         int on = 1;
         /* Set the option, so we can receive errors */
         setsockopt(this->_socket->socket()->native_handle(), SOL_IP, IP_RECVERR,
                    (char*)&on, sizeof(on));
-  #endif
+#endif
         this->_listener = std::make_unique<Thread>(
           elle::sprintf("UTPServer(%s)", this->_socket->local_endpoint().port()),
           [this]
@@ -514,7 +514,6 @@ namespace elle
             {
               buf.size(20000);
               EndPoint source;
-              int sz = 0;
               try
               {
                 if (!this->_socket->socket()->is_open())
@@ -522,12 +521,12 @@ namespace elle
                   ELLE_DEBUG("Socket closed, exiting");
                   return;
                 }
-                sz = this->_socket->receive_from
+                auto sz = this->_socket->receive_from
                   (elle::WeakBuffer(buf.mutable_contents(), buf.size()), source);
                 buf.size(sz);
                 if (this->_xorify)
                 {
-                  for (int i= 0; i < sz; ++i)
+                  for (auto i= 0u; i < sz; ++i)
                     buf[i] ^= this->_xorify;
                 }
                 auto* raw = source.data();
@@ -549,19 +548,16 @@ namespace elle
               }
             }
           });
-        this->_checker.reset(new Thread("checker", [this] {
+        this->_checker.reset(new Thread("UTP checker", [this] {
               try
               {
                 while (true)
                 {
-                  auto& sst = this->_socket_shutdown_threads;
-                  auto it = std::remove_if(sst.begin(), sst.end(),
+                  boost::remove_erase_if(this->_socket_shutdown_threads,
                     [](Thread::unique_ptr const& t)
                     {
                       return !t || t->done();
                     });
-                  sst.erase(it, sst.end());
-
                   utp_check_timeouts(this->_ctx);
                   reactor::sleep(50_ms);
                   this->_check_icmp();
@@ -607,7 +603,7 @@ namespace elle
         ELLE_TRACE_SCOPE("%s: accept", this);
         this->_accept_barrier.wait();
         ELLE_ASSERT(this->_accept_barrier.opened());
-        std::unique_ptr<UTPSocket> sock(this->_accept_queue.back().release());
+        auto sock = std::move(this->_accept_queue.back());
         this->_accept_queue.pop_back();
         if (this->_accept_queue.empty())
           this->_accept_barrier.close();
