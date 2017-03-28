@@ -138,7 +138,8 @@ namespace elle
           continue;
         }
   #ifndef INFINIT_WINDOWS
-        ELLE_DEBUG("%s: terminate %s", *this, *t)
+        ELLE_DEBUG("%s: terminate %s%s", *this, *t,
+                   !t->interruptible() ? " (non interruptible)" : "")
   #endif
           t->terminate();
         join.push_back(t);
