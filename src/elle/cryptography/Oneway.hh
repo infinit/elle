@@ -1,11 +1,10 @@
-#ifndef ELLE_CRYPTOGRAPHY_ONEWAY_HH
-# define ELLE_CRYPTOGRAPHY_ONEWAY_HH
+#pragma once
 
-# include <elle/cryptography/fwd.hh>
+#include <iosfwd>
 
-# include <elle/serialization/Serializer.hh>
+#include <elle/cryptography/fwd.hh>
 
-# include <iosfwd>
+#include <elle/serialization/Serializer.hh>
 
 namespace elle
 {
@@ -72,5 +71,3 @@ namespace elle
     };
   }
 }
-
-#endif

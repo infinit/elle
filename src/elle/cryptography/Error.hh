@@ -1,7 +1,6 @@
-#ifndef ELLE_CRYPTOGRAPHY_ERROR_HH
-# define ELLE_CRYPTOGRAPHY_ERROR_HH
+#pragma once
 
-# include <elle/Error.hh>
+#include <elle/Error.hh>
 
 namespace elle
 {
@@ -20,5 +19,3 @@ namespace elle
     };
   }
 }
-
-#endif

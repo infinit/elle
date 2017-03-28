@@ -2,7 +2,7 @@
 #include <elle/cryptography/Error.hh>
 #include <elle/log.hh>
 
-# include <openssl/evp.h>
+#include <openssl/evp.h>
 
 namespace elle
 {
@@ -18,47 +18,22 @@ namespace elle
     {
       switch (oneway)
       {
-        case Oneway::md5:
-        {
-          stream << "md5";
-          break;
-        }
-        case Oneway::sha:
-        {
-          stream << "sha";
-          break;
-        }
-        case Oneway::sha1:
-        {
-          stream << "sha1";
-          break;
-        }
-        case Oneway::sha224:
-        {
-          stream << "sha224";
-          break;
-        }
-        case Oneway::sha256:
-        {
-          stream << "sha256";
-          break;
-        }
-        case Oneway::sha384:
-        {
-          stream << "sha384";
-          break;
-        }
-        case Oneway::sha512:
-        {
-          stream << "sha512";
-          break;
-        }
-        default:
-          throw Error(elle::sprintf("unknown one-way algorithm '%s'",
-                                    static_cast<int>(oneway)));
+      case Oneway::md5:
+        return stream << "md5";
+      case Oneway::sha:
+        return stream << "sha";
+      case Oneway::sha1:
+        return stream << "sha1";
+      case Oneway::sha224:
+        return stream << "sha224";
+      case Oneway::sha256:
+        return stream << "sha256";
+      case Oneway::sha384:
+        return stream << "sha384";
+      case Oneway::sha512:
+        return stream << "sha512";
       }
-
-      return (stream);
+      elle::unreachable();
     }
 
     namespace oneway
@@ -72,32 +47,29 @@ namespace elle
       {
         switch (name)
         {
-          case Oneway::md5:
-            return (::EVP_md5());
-          case Oneway::sha:
-            return (::EVP_sha());
-          case Oneway::sha1:
-            return (::EVP_sha1());
-          case Oneway::sha224:
-            return (::EVP_sha224());
-          case Oneway::sha256:
-            return (::EVP_sha256());
-          case Oneway::sha384:
-            return (::EVP_sha384());
-          case Oneway::sha512:
-            return (::EVP_sha512());
-          default:
-            throw Error(elle::sprintf("unable to resolve the given one-way "
-                                      "function name '%s'", name));
+        case Oneway::md5:
+          return (::EVP_md5());
+        case Oneway::sha:
+          return (::EVP_sha());
+        case Oneway::sha1:
+          return (::EVP_sha1());
+        case Oneway::sha224:
+          return (::EVP_sha224());
+        case Oneway::sha256:
+          return (::EVP_sha256());
+        case Oneway::sha384:
+          return (::EVP_sha384());
+        case Oneway::sha512:
+          return (::EVP_sha512());
         }
-
         elle::unreachable();
       }
 
       Oneway
       resolve(::EVP_MD const* function)
       {
-        static std::map< ::EVP_MD const*, Oneway > const functions =
+        static auto const functions =
+          std::map< ::EVP_MD const*, Oneway>
           {
             { ::EVP_md5(), Oneway::md5 },
             { ::EVP_sha(), Oneway::sha },
@@ -108,14 +80,12 @@ namespace elle
             { ::EVP_sha512(), Oneway::sha512 },
           };
 
-        for (auto const& iterator: functions)
-        {
-          if (function == iterator.first)
-            return (iterator.second);
-        }
-
-        throw Error(elle::sprintf("unable to resolve the given one-way "
-                                  "function '%s'", function));
+        auto it = functions.find(function);
+        if (it == functions.end())
+          throw Error(elle::sprintf("unable to resolve the given one-way "
+                                    "function '%s'", function));
+        else
+          return it->second;
       }
     }
   }
@@ -133,14 +103,14 @@ namespace elle
     Serialize<elle::cryptography::Oneway>::convert(
       elle::cryptography::Oneway const& value)
     {
-      return (static_cast<uint8_t>(value));
+      return static_cast<uint8_t>(value);
     }
 
     elle::cryptography::Oneway
     Serialize<elle::cryptography::Oneway>::convert(
       uint8_t const& representation)
     {
-      return (static_cast<elle::cryptography::Oneway>(representation));
+      return static_cast<elle::cryptography::Oneway>(representation);
     }
   }
 }

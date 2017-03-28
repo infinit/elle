@@ -19,32 +19,16 @@ namespace elle
     {
       switch (cryptosystem)
       {
-        case Cryptosystem::rsa:
-        {
-          stream << "rsa";
-          break;
-        }
-        case Cryptosystem::dh:
-        {
-          stream << "dh";
-          break;
-        }
-        case Cryptosystem::dsa:
-        {
-          stream << "dsa";
-          break;
-        }
-        case Cryptosystem::ec:
-        {
-          stream << "ec";
-          break;
-        }
-        default:
-          throw Error(elle::sprintf("unknown asymmetric cryptosystem '%s'",
-                                    static_cast<int>(cryptosystem)));
+      case Cryptosystem::rsa:
+        return stream << "rsa";
+      case Cryptosystem::dh:
+        return stream << "dh";
+      case Cryptosystem::dsa:
+        return stream << "dsa";
+      case Cryptosystem::ec:
+        return stream << "ec";
       }
-
-      return (stream);
+      elle::unreachable();
     }
   }
 }
@@ -61,14 +45,14 @@ namespace elle
     Serialize<elle::cryptography::Cryptosystem>::convert(
       elle::cryptography::Cryptosystem const& value)
     {
-      return (static_cast<uint8_t>(value));
+      return static_cast<uint8_t>(value);
     }
 
     elle::cryptography::Cryptosystem
     Serialize<elle::cryptography::Cryptosystem>::convert(
       uint8_t const& representation)
     {
-      return (static_cast<elle::cryptography::Cryptosystem>(representation));
+      return static_cast<elle::cryptography::Cryptosystem>(representation);
     }
   }
 }
