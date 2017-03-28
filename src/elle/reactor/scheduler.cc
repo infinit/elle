@@ -462,36 +462,39 @@ namespace elle
     bool
     Scheduler::_terminate(Thread* thread)
     {
-      ELLE_TRACE_SCOPE("%s: terminate %s", *this, *thread);
+      ELLE_TRACE_SCOPE("%s: terminate %s", this, thread);
       if (current() == thread)
       {
-        ELLE_DEBUG("%s: terminating the current thread %s, throwing directly",
-                   *this, *thread);
+        ELLE_DEBUG(
+          "terminating the current thread, throwing directly");
         throw Terminate(thread->name());
       }
       // If the underlying coroutine was never run, nothing to do.
       if (this->_starting.erase(thread))
       {
-        ELLE_DEBUG("%s: %s was starting, discard it", *this, *thread);
+        ELLE_DEBUG("thread was starting, discard it");
         thread->_state = Thread::State::done;
         thread->Waitable::_signal();
         thread->_scheduler_release();
         return true;
       }
       if (thread->_terminating)
-        ELLE_DEBUG("%s: %s already terminating", *this, *thread);
+        ELLE_DEBUG("thread already terminating");
       else
       {
         thread->_terminating = true;
         thread->raise<Terminate>(thread->name());
         if (thread->state() == Thread::State::frozen && thread->interruptible())
         {
+          ELLE_DEBUG("abort thread wait");
           if (thread->state() == Thread::State::frozen)
           {
             thread->_wait_abort("thread termination");
             ELLE_ASSERT_EQ(thread->state(), Thread::State::running);
           }
         }
+        else if (!thread->interruptible())
+          ELLE_DEBUG("thread is not interruptible");
       }
       return thread->state() == Thread::State::done;
     }
