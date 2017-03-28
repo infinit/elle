@@ -1,8 +1,7 @@
-#ifndef ELLE_CRYPTOGRAPHY_CIPHER_HH
-# define ELLE_CRYPTOGRAPHY_CIPHER_HH
+#pragma once
 
-# include <elle/cryptography/fwd.hh>
-# include <elle/serialization/Serializer.hh>
+#include <elle/cryptography/fwd.hh>
+#include <elle/serialization/Serializer.hh>
 
 namespace elle
 {
@@ -103,5 +102,3 @@ namespace elle
     };
   }
 }
-
-#endif

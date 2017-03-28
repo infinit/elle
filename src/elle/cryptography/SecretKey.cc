@@ -19,30 +19,30 @@ namespace elle
     | Construction |
     `-------------*/
 
-    SecretKey::SecretKey(std::string const& password):
-      _password(reinterpret_cast<uint8_t const*>(password.c_str()),
-                password.length())
+    SecretKey::SecretKey(std::string const& password)
+      : _password(reinterpret_cast<uint8_t const*>(password.c_str()),
+                  password.length())
     {
       // Make sure the cryptographic system is set up.
       cryptography::require();
     }
 
-    SecretKey::SecretKey(elle::Buffer&& password):
-      _password(std::move(password))
+    SecretKey::SecretKey(elle::Buffer&& password)
+      : _password(std::move(password))
     {
       // Make sure the cryptographic system is set up.
       cryptography::require();
     }
 
-    SecretKey::SecretKey(SecretKey const& other):
-      _password(other._password.contents(), other._password.size())
+    SecretKey::SecretKey(SecretKey const& other)
+      : _password(other._password.contents(), other._password.size())
     {
       // Make sure the cryptographic system is set up.
       cryptography::require();
     }
 
-    SecretKey::SecretKey(SecretKey&& other):
-      _password(std::move(other._password))
+    SecretKey::SecretKey(SecretKey&& other)
+      : _password(std::move(other._password))
     {
       // Make sure the cryptographic system is set up.
       cryptography::require();
@@ -60,13 +60,9 @@ namespace elle
     {
       elle::IOStream _plain(plain.istreambuf());
       std::stringstream _code;
-
       this->encipher(_plain, _code,
                      cipher, mode, oneway);
-
-      elle::Buffer code(_code.str().data(), _code.str().length());
-
-      return (code);
+      return elle::Buffer{_code.str().data(), _code.str().length()};
     }
 
     elle::Buffer
@@ -77,13 +73,9 @@ namespace elle
     {
       elle::IOStream _code(code.istreambuf());
       std::stringstream _plain;
-
       this->decipher(_code, _plain,
                      cipher, mode, oneway);
-
-      elle::Buffer plain(_plain.str().data(), _plain.str().length());
-
-      return (plain);
+      return elle::Buffer{_plain.str().data(), _plain.str().length()};
     }
 
     void
@@ -95,7 +87,6 @@ namespace elle
     {
       ::EVP_CIPHER const* function_cipher = cipher::resolve(cipher, mode);
       ::EVP_MD const* function_oneway = oneway::resolve(oneway);
-
       raw::symmetric::encipher(this->_password,
                                function_cipher,
                                function_oneway,
@@ -112,7 +103,6 @@ namespace elle
     {
       ::EVP_CIPHER const* function_cipher = cipher::resolve(cipher, mode);
       ::EVP_MD const* function_oneway = oneway::resolve(oneway);
-
       raw::symmetric::decipher(this->_password,
                                function_cipher,
                                function_oneway,
@@ -123,13 +113,13 @@ namespace elle
     uint32_t
     SecretKey::size() const
     {
-      return (this->_password.size());
+      return this->_password.size();
     }
 
     uint32_t
     SecretKey::length() const
     {
-      return (this->_password.size() * 8);
+      return this->_password.size() * 8;
     }
 
     /*----------.
@@ -139,7 +129,7 @@ namespace elle
     bool
     SecretKey::operator ==(SecretKey const& other) const
     {
-      return (this->_password == other._password);
+      return this->_password == other._password;
     }
 
     /*----------.
@@ -195,7 +185,7 @@ namespace elle
         elle::Buffer password(random::generate<elle::Buffer>(size));
 
         // Return a new secret key.
-        return (SecretKey(std::move(password)));
+        return SecretKey(std::move(password));
       }
     }
   }

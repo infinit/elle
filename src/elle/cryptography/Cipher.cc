@@ -19,72 +19,32 @@ namespace elle
     {
       switch (cipher)
       {
-        case Cipher::null:
-        {
-          stream << "null";
-          break;
-        }
-        case Cipher::des:
-        {
-          stream << "des";
-          break;
-        }
-        case Cipher::des2:
-        {
-          stream << "des2";
-          break;
-        }
-        case Cipher::des3:
-        {
-          stream << "des3";
-          break;
-        }
-        case Cipher::desx:
-        {
-          stream << "desx";
-          break;
-        }
-        case Cipher::idea:
-        {
-          stream << "idea";
-          break;
-        }
-        case Cipher::rc2:
-        {
-          stream << "rc2";
-          break;
-        }
-        case Cipher::blowfish:
-        {
-          stream << "blowfish";
-          break;
-        }
-        case Cipher::cast5:
-        {
-          stream << "cast5";
-          break;
-        }
-        case Cipher::aes128:
-        {
-          stream << "aes128";
-          break;
-        }
-        case Cipher::aes192:
-        {
-          stream << "aes192";
-          break;
-        }
-        case Cipher::aes256:
-        {
-          stream << "aes256";
-          break;
-        }
-        default:
-          throw Error(elle::sprintf("unknown cipher '%s'",
-                                    static_cast<int>(cipher)));
+      case Cipher::null:
+        return stream << "null";
+      case Cipher::des:
+        return stream << "des";
+      case Cipher::des2:
+        return stream << "des2";
+      case Cipher::des3:
+        return stream << "des3";
+      case Cipher::desx:
+        return stream << "desx";
+      case Cipher::idea:
+        return stream << "idea";
+      case Cipher::rc2:
+        return stream << "rc2";
+      case Cipher::blowfish:
+        return stream << "blowfish";
+      case Cipher::cast5:
+        return stream << "cast5";
+      case Cipher::aes128:
+        return stream << "aes128";
+      case Cipher::aes192:
+        return stream << "aes192";
+      case Cipher::aes256:
+        return stream << "aes256";
       }
-
-      return (stream);
+      elle::unreachable();
     }
 
     std::ostream&
@@ -93,37 +53,18 @@ namespace elle
     {
       switch (mode)
       {
-        case Mode::none:
-        {
-          stream << "none";
-          break;
-        }
-        case Mode::cbc:
-        {
-          stream << "cbc";
-          break;
-        }
-        case Mode::ecb:
-        {
-          stream << "ecb";
-          break;
-        }
-        case Mode::cfb:
-        {
-          stream << "cfb";
-          break;
-        }
-        case Mode::ofb:
-        {
-          stream << "ofb";
-          break;
-        }
-        default:
-          throw Error(elle::sprintf("unknown operation mode '%s'",
-                                    static_cast<int>(mode)));
+      case Mode::none:
+        return stream << "none";
+      case Mode::cbc:
+        return stream << "cbc";
+      case Mode::ecb:
+        return stream << "ecb";
+      case Mode::cfb:
+        return stream << "cfb";
+      case Mode::ofb:
+        return stream << "ofb";
       }
-
-      return (stream);
+      elle::unreachable();
     }
 
     namespace cipher
@@ -143,7 +84,7 @@ namespace elle
             switch (mode)
             {
               case Mode::none:
-                return (::EVP_enc_null());
+                return ::EVP_enc_null();
               default:
                 break;
             }
@@ -155,13 +96,13 @@ namespace elle
             switch (mode)
             {
               case Mode::cbc:
-                return (::EVP_des_cbc());
+                return ::EVP_des_cbc();
               case Mode::ecb:
-                return (::EVP_des_ecb());
+                return ::EVP_des_ecb();
               case Mode::cfb:
-                return (::EVP_des_cfb());
+                return ::EVP_des_cfb();
               case Mode::ofb:
-                return (::EVP_des_ofb());
+                return ::EVP_des_ofb();
               default:
                 break;
             }
@@ -172,34 +113,33 @@ namespace elle
           {
             switch (mode)
             {
-              case Mode::cbc:
-                return (::EVP_des_ede_cbc());
-              case Mode::ecb:
-                return (::EVP_des_ede_ecb());
-              case Mode::cfb:
-                return (::EVP_des_ede_cfb());
-              case Mode::ofb:
-                return (::EVP_des_ede_ofb());
+            case Mode::cbc:
+              return ::EVP_des_ede_cbc();
+            case Mode::ecb:
+              return ::EVP_des_ede_ecb();
+            case Mode::cfb:
+              return ::EVP_des_ede_cfb();
+            case Mode::ofb:
+              return ::EVP_des_ede_ofb();
               default:
                 break;
             }
-
             break;
           }
           case Cipher::des3:
           {
             switch (mode)
             {
-              case Mode::cbc:
-                return (::EVP_des_ede3_cbc());
-              case Mode::ecb:
-                return (::EVP_des_ede3_ecb());
-              case Mode::cfb:
-                return (::EVP_des_ede3_cfb());
-              case Mode::ofb:
-                return (::EVP_des_ede3_ofb());
-              default:
-                break;
+            case Mode::cbc:
+              return ::EVP_des_ede3_cbc();
+            case Mode::ecb:
+              return ::EVP_des_ede3_ecb();
+            case Mode::cfb:
+              return ::EVP_des_ede3_cfb();
+            case Mode::ofb:
+              return ::EVP_des_ede3_ofb();
+            default:
+              break;
             }
 
             break;
@@ -208,10 +148,10 @@ namespace elle
           {
             switch (mode)
             {
-              case Mode::cbc:
-                return (::EVP_desx_cbc());
-              default:
-                break;
+            case Mode::cbc:
+              return ::EVP_desx_cbc();
+            default:
+              break;
             }
 
             break;
@@ -220,16 +160,16 @@ namespace elle
           {
             switch (mode)
             {
-              case Mode::cbc:
-                return (::EVP_idea_cbc());
-              case Mode::ecb:
-                return (::EVP_idea_ecb());
-              case Mode::cfb:
-                return (::EVP_idea_cfb());
-              case Mode::ofb:
-                return (::EVP_idea_ofb());
-              default:
-                break;
+            case Mode::cbc:
+              return ::EVP_idea_cbc();
+            case Mode::ecb:
+              return ::EVP_idea_ecb();
+            case Mode::cfb:
+              return ::EVP_idea_cfb();
+            case Mode::ofb:
+              return ::EVP_idea_ofb();
+            default:
+              break;
             }
 
             break;
@@ -238,16 +178,16 @@ namespace elle
           {
             switch (mode)
             {
-              case Mode::cbc:
-                return (::EVP_rc2_cbc());
-              case Mode::ecb:
-                return (::EVP_rc2_ecb());
-              case Mode::cfb:
-                return (::EVP_rc2_cfb());
-              case Mode::ofb:
-                return (::EVP_rc2_ofb());
-              default:
-                break;
+            case Mode::cbc:
+              return ::EVP_rc2_cbc();
+            case Mode::ecb:
+              return ::EVP_rc2_ecb();
+            case Mode::cfb:
+              return ::EVP_rc2_cfb();
+            case Mode::ofb:
+              return ::EVP_rc2_ofb();
+            default:
+              break;
             }
 
             break;
@@ -256,16 +196,16 @@ namespace elle
           {
             switch (mode)
             {
-              case Mode::cbc:
-                return (::EVP_bf_cbc());
-              case Mode::ecb:
-                return (::EVP_bf_ecb());
-              case Mode::cfb:
-                return (::EVP_bf_cfb());
-              case Mode::ofb:
-                return (::EVP_bf_ofb());
-              default:
-                break;
+            case Mode::cbc:
+              return ::EVP_bf_cbc();
+            case Mode::ecb:
+              return ::EVP_bf_ecb();
+            case Mode::cfb:
+              return ::EVP_bf_cfb();
+            case Mode::ofb:
+              return ::EVP_bf_ofb();
+            default:
+              break;
             }
 
             break;
@@ -274,16 +214,16 @@ namespace elle
           {
             switch (mode)
             {
-              case Mode::cbc:
-                return (::EVP_cast5_cbc());
-              case Mode::ecb:
-                return (::EVP_cast5_ecb());
-              case Mode::cfb:
-                return (::EVP_cast5_cfb());
-              case Mode::ofb:
-                return (::EVP_cast5_ofb());
-              default:
-                break;
+            case Mode::cbc:
+              return ::EVP_cast5_cbc();
+            case Mode::ecb:
+              return ::EVP_cast5_ecb();
+            case Mode::cfb:
+              return ::EVP_cast5_cfb();
+            case Mode::ofb:
+              return ::EVP_cast5_ofb();
+            default:
+              break;
             }
 
             break;
@@ -292,16 +232,16 @@ namespace elle
           {
             switch (mode)
             {
-              case Mode::cbc:
-                return (::EVP_aes_128_cbc());
-              case Mode::ecb:
-                return (::EVP_aes_128_ecb());
-              case Mode::cfb:
-                return (::EVP_aes_128_cfb());
-              case Mode::ofb:
-                return (::EVP_aes_128_ofb());
-              default:
-                break;
+            case Mode::cbc:
+              return ::EVP_aes_128_cbc();
+            case Mode::ecb:
+              return ::EVP_aes_128_ecb();
+            case Mode::cfb:
+              return ::EVP_aes_128_cfb();
+            case Mode::ofb:
+              return ::EVP_aes_128_ofb();
+            default:
+              break;
             }
 
             break;
@@ -310,16 +250,16 @@ namespace elle
           {
             switch (mode)
             {
-              case Mode::cbc:
-                return (::EVP_aes_192_cbc());
-              case Mode::ecb:
-                return (::EVP_aes_192_ecb());
-              case Mode::cfb:
-                return (::EVP_aes_192_cfb());
-              case Mode::ofb:
-                return (::EVP_aes_192_ofb());
-              default:
-                break;
+            case Mode::cbc:
+              return ::EVP_aes_192_cbc();
+            case Mode::ecb:
+              return ::EVP_aes_192_ecb();
+            case Mode::cfb:
+              return ::EVP_aes_192_cfb();
+            case Mode::ofb:
+              return ::EVP_aes_192_ofb();
+            default:
+              break;
             }
 
             break;
@@ -328,16 +268,16 @@ namespace elle
           {
             switch (mode)
             {
-              case Mode::cbc:
-                return (::EVP_aes_256_cbc());
-              case Mode::ecb:
-                return (::EVP_aes_256_ecb());
-              case Mode::cfb:
-                return (::EVP_aes_256_cfb());
-              case Mode::ofb:
-                return (::EVP_aes_256_ofb());
-              default:
-                break;
+            case Mode::cbc:
+              return ::EVP_aes_256_cbc();
+            case Mode::ecb:
+              return ::EVP_aes_256_ecb();
+            case Mode::cfb:
+              return ::EVP_aes_256_cfb();
+            case Mode::ofb:
+              return ::EVP_aes_256_ofb();
+            default:
+              break;
             }
 
             break;
@@ -355,8 +295,8 @@ namespace elle
       std::pair<Cipher, Mode>
       resolve(::EVP_CIPHER const* function)
       {
-        static std::map< ::EVP_CIPHER const*,
-                         std::pair<Cipher, Mode> > const functions =
+        static auto const functions =
+          std::map<::EVP_CIPHER const*, std::pair<Cipher, Mode>>
           {
             // null
             { ::EVP_enc_null(),
@@ -456,13 +396,11 @@ namespace elle
               std::pair<Cipher, Mode>(Cipher::aes256, Mode::ofb) }
           };
 
-        for (auto const& iterator: functions)
-        {
-          if (function == iterator.first)
-            return (iterator.second);
-        }
-
-        throw Error(elle::sprintf("unknown function '%s'", function));
+        auto it = functions.find(function);
+        if (it == functions.end())
+          throw Error(elle::sprintf("unknown function '%s'", function));
+        else
+          return it->second;
       }
     }
   }
@@ -481,14 +419,14 @@ namespace elle
     Serialize<elle::cryptography::Cipher>::convert(
       elle::cryptography::Cipher const& value)
     {
-      return (static_cast<uint8_t>(value));
+      return static_cast<uint8_t>(value);
     }
 
     elle::cryptography::Cipher
     Serialize<elle::cryptography::Cipher>::convert(
       uint8_t const& representation)
     {
-      return (static_cast<elle::cryptography::Cipher>(representation));
+      return static_cast<elle::cryptography::Cipher>(representation);
     }
 
     // Mode
@@ -496,14 +434,14 @@ namespace elle
     Serialize<elle::cryptography::Mode>::convert(
       elle::cryptography::Mode const& value)
     {
-      return (static_cast<uint8_t>(value));
+      return static_cast<uint8_t>(value);
     }
 
     elle::cryptography::Mode
     Serialize<elle::cryptography::Mode>::convert(
       uint8_t const& representation)
     {
-      return (static_cast<elle::cryptography::Mode>(representation));
+      return static_cast<elle::cryptography::Mode>(representation);
     }
   }
 }
