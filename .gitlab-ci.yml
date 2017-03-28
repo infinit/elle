@@ -59,11 +59,14 @@ x86_64-ubuntu-gcc4:
     - python3 drake -j $(nproc) //build
     - python3 drake -j $(($(nproc) / 4)) //check
     - python3 drake -j $(nproc) //install
-    - python3 drake -j $(nproc) //docker
     - TARBALL="$BUILD_DIR/elle-x86_64-ubuntu-gcc4-$DESC.tbz"
     - tar -cvjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
     - scp "$TARBALL" buildslave@packages.infinit.sh:tmp
     - rm "$TARBALL"
+    - python3 drake -j $(nproc) //docker
+    - docker tag elle:${DESC} mefyl/elle:${DESC}
+    - docker push mefyl/elle:${DESC}
+    - docker rmi {,mefyl/}elle:${DESC}
     - cd "$SOURCE_DIR"
     - time ./buildenv --cache-upload-build-tree --exclude='*.deb,*.rpm,*.tbz' --branch "$CI_BUILD_REF_NAME" --build-trees-root "/cache/$CI_PROJECT_NAME" --cache-namespace "$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME" --cache-id "$CI_RUNNER_ID" --verbose
   tags:
