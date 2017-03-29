@@ -22,9 +22,9 @@ namespace elle
     class Waitable:
       public elle::Printable
     {
-    /*---------.
-    | Typedefs |
-    `---------*/
+    /*------.
+    | Types |
+    `------*/
     public:
       /// Self
       using Self = Waitable;

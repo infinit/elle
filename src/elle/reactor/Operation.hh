@@ -7,18 +7,23 @@ namespace elle
 {
   namespace reactor
   {
+    /// A background operation.
     class Operation
       : public Waitable
     {
     public:
-      using Self = elle::reactor::Operation;
-      using Super = elle::reactor::Waitable;
+      using Self = Operation;
+      using Super = Waitable;
       Operation();
       Operation(Scheduler& scheduler);
       Scheduler&
       scheduler();
+      /// Run the operation, and wait for its completion.
+      ///
+      /// @returns  whether it succeeded.
       bool
       run(DurationOpt timeout = DurationOpt());
+      /// Start the operation.
       void
       start();
 
@@ -27,6 +32,7 @@ namespace elle
     protected:
       void
       abort();
+      /// Signal completion.
       void
       done();
       virtual
