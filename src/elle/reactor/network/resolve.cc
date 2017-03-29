@@ -19,6 +19,7 @@ namespace elle
     {
       namespace
       {
+        /// DNS lookup implementation.
         template <typename Protocol>
         class Resolution: public Operation
         {
@@ -45,6 +46,17 @@ namespace elle
                           "resolution of %s: %s", this->_hostname, this->_service);
           }
 
+          /// Exception thrown when DNS invited us to retry.
+          class TryAgain
+            : public Exception
+          {
+          public:
+            using Super = Exception;
+            TryAgain()
+              : Super{"Host not found (non-authoritative), try again later"}
+            {}
+          };
+
         protected:
           void
           _abort() override
@@ -60,7 +72,7 @@ namespace elle
           {
             ELLE_TRACE("resolve %s:%s", this->_hostname, this->_service);
             using Query = typename Resolver::query;
-            auto query =
+            auto const query =
               this->ipv4_only()
               ? Query(Protocol::v4(), this->_hostname, this->_service)
               : Query(this->_hostname, this->_service);
@@ -84,6 +96,12 @@ namespace elle
             {
               ELLE_TRACE_SCOPE("%s: canceled", *this);
             }
+            else if (error == boost::asio::error::host_not_found_try_again
+                     || getenv("ELLE_REACTOR_RESOLVE_TRY_AGAIN"))
+            {
+              ELLE_TRACE_SCOPE("%s: ended with error: %s", *this, error.message());
+              this->_raise<TryAgain>();
+            }
             else if (error)
             {
               ELLE_TRACE_SCOPE("%s: ended with error: %s", *this, error.message());
@@ -91,7 +109,7 @@ namespace elle
             }
             else if (it == end)
             {
-              // From the boost documentation:
+              // From the Boost documentation:
               //   A successful resolve operation is guaranteed to pass at least
               //   one entry to the handler.
               // This is false on wine.
@@ -125,13 +143,28 @@ namespace elle
         std::vector<typename Protocol::resolver::endpoint_type>
         resolve(std::string const& hostname,
                 std::string const& service,
-                bool ipv4_only)
+                ResolveOptions opt)
         {
-          Resolution<Protocol> resolution(hostname, service, ipv4_only);
-          resolution.run();
-          return resolution.end_points();
+          while (0 < opt.num_attempts)
+            try
+            {
+              Resolution<Protocol> resolution(hostname, service, opt.ipv4_only);
+              resolution.run();
+              return resolution.end_points();
+            }
+            catch (typename Resolution<Protocol>::TryAgain)
+            {
+              ELLE_DUMP("trying again to resolve %s:%s", hostname, service);
+              --opt.num_attempts;
+            }
+
+          throw ResolutionError(
+            hostname,
+            sprintf("host not found: too many attempts: %s",
+                    make_error_code(boost::asio::error::host_not_found_try_again).message()));
         }
 
+        /// "www.infinit.sh:80" -> pair("www.infinit.sh", "80").
         auto
         host_port(std::string const& repr)
         {
@@ -149,24 +182,24 @@ namespace elle
       std::vector<boost::asio::ip::tcp::endpoint>
       resolve_tcp(std::string const& hostname,
                   std::string const& service,
-                  bool ipv4_only)
+                  ResolveOptions opt)
       {
-        return resolve<boost::asio::ip::tcp>(hostname, service, ipv4_only);
+        return resolve<boost::asio::ip::tcp>(hostname, service, opt);
       }
 
       std::vector<boost::asio::ip::tcp::endpoint>
       resolve_tcp(std::string const& hostname,
                   int port,
-                  bool ipv4_only)
+                  ResolveOptions opt)
       {
-        return resolve<boost::asio::ip::tcp>(hostname, std::to_string(port), ipv4_only);
+        return resolve<boost::asio::ip::tcp>(hostname, std::to_string(port), opt);
       }
 
       std::vector<boost::asio::ip::tcp::endpoint>
-      resolve_tcp_repr(std::string const& repr, bool ipv4_only)
+      resolve_tcp_repr(std::string const& repr, ResolveOptions opt)
       {
         auto hp = host_port(repr);
-        return resolve<boost::asio::ip::tcp>(std::get<0>(hp), std::get<1>(hp), ipv4_only);
+        return resolve<boost::asio::ip::tcp>(std::get<0>(hp), std::get<1>(hp), opt);
       }
 
       /*------.
@@ -176,25 +209,25 @@ namespace elle
       std::vector<boost::asio::ip::udp::endpoint>
       resolve_udp(std::string const& hostname,
                   std::string const& service,
-                  bool ipv4_only)
+                  ResolveOptions opt)
       {
-        return resolve<boost::asio::ip::udp>(hostname, service, ipv4_only);
+        return resolve<boost::asio::ip::udp>(hostname, service, opt);
       }
 
       std::vector<boost::asio::ip::udp::endpoint>
       resolve_udp(std::string const& hostname,
                   int port,
-                  bool ipv4_only)
+                  ResolveOptions opt)
       {
-        return resolve<boost::asio::ip::udp>(hostname, std::to_string(port), ipv4_only);
+        return resolve<boost::asio::ip::udp>(hostname, std::to_string(port), opt);
       }
 
       std::vector<boost::asio::ip::udp::endpoint>
       resolve_udp_repr(std::string const& repr,
-                       bool ipv4_only)
+                       ResolveOptions opt)
       {
         auto hp = host_port(repr);
-        return resolve<boost::asio::ip::udp>(std::get<0>(hp), std::get<1>(hp), ipv4_only);
+        return resolve<boost::asio::ip::udp>(std::get<0>(hp), std::get<1>(hp), opt);
       }
     }
   }

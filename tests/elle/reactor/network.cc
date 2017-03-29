@@ -1,10 +1,12 @@
 #include <memory>
+#include <utility>
 
 #include <boost/bind.hpp>
 
 #include <elle/Buffer.hh>
 #include <elle/log.hh>
 #include <elle/memory.hh>
+#include <elle/os/environ.hh>
 #include <elle/test.hh>
 #include <elle/utility/Move.hh>
 
@@ -22,7 +24,6 @@
 #endif
 #include <elle/reactor/signal.hh>
 #include <elle/reactor/Thread.hh>
-#include <utility>
 
 #include "reactor.hh"
 
@@ -50,7 +51,7 @@ public:
     this->listen();
     this->_server_thread.reset(
       new elle::reactor::Thread(elle::sprintf("%s: serve", this),
-                          [this] { this->silent_server(); }));
+                                [this] { this->silent_server(); }));
   }
 
   void
@@ -366,7 +367,8 @@ socket_close()
 | Resolution failure |
 `-------------------*/
 
-static
+namespace
+{
 void
 resolution_failure()
 {
@@ -375,6 +377,7 @@ resolution_failure()
     sched, "resolver",
     [&]
     {
+      elle::os::unsetenv("ELLE_REACTOR_RESOLVE_TRY_AGAIN");
       BOOST_CHECK_THROW(
         elle::reactor::network::resolve_tcp("does.not.exist", "http"),
         elle::reactor::network::ResolutionError);
@@ -390,14 +393,20 @@ resolution_failure()
       BOOST_CHECK_THROW(
         elle::reactor::network::TCPSocket("does.not.exist", "http"),
         elle::reactor::network::ResolutionError);
+
+      elle::os::setenv("ELLE_REACTOR_RESOLVE_TRY_AGAIN", "1", true);
+      BOOST_CHECK_THROW(
+        elle::reactor::network::resolve_tcp_repr("localhost:80"),
+        elle::reactor::network::ResolutionError);
+      elle::os::unsetenv("ELLE_REACTOR_RESOLVE_TRY_AGAIN");
     });
   sched.run();
+}
 }
 
 /*-----------.
 | Read until |
 `-----------*/
-
 
 class Server
 {
