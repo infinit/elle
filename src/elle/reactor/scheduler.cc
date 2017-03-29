@@ -486,12 +486,9 @@ namespace elle
         thread->raise<Terminate>(thread->name());
         if (thread->state() == Thread::State::frozen && thread->interruptible())
         {
-          ELLE_DEBUG("abort thread wait");
-          if (thread->state() == Thread::State::frozen)
-          {
-            thread->_wait_abort("thread termination");
-            ELLE_ASSERT_EQ(thread->state(), Thread::State::running);
-          }
+          ELLE_DEBUG_SCOPE("abort thread wait");
+          thread->_wait_abort("thread termination");
+          ELLE_ASSERT_EQ(thread->state(), Thread::State::running);
         }
         else if (!thread->interruptible())
           ELLE_DEBUG("thread is not interruptible");
