@@ -83,7 +83,8 @@ namespace elle
       | Read |
       `-----*/
 
-      class UDPRead: public SocketOperation<boost::asio::ip::udp::socket>
+      class UDPRead
+        : public SocketOperation<boost::asio::ip::udp::socket>
       {
         public:
           using AsioSocket = boost::asio::ip::udp::socket;
@@ -110,8 +111,8 @@ namespace elle
           }
 
         protected:
-
-          void _start() override
+          void
+          _start() override
           {
             // FIXME: be synchronous if enough bytes are available
             EndPoint peer;
@@ -121,17 +122,12 @@ namespace elle
           }
 
         private:
-          void _wakeup(const boost::system::error_code& error,
-                       std::size_t read)
+          void
+          _wakeup(const boost::system::error_code& error,
+                  std::size_t read)
           {
-            if (error == boost::system::errc::operation_canceled)
-              return;
-            _read = read;
-            if (error == boost::asio::error::eof)
-              this->_raise<ConnectionClosed>();
-            else if (error)
-              this->_raise<Exception>(error.message());
-            this->_signal();
+            this->_read = read;
+            Super::_wakeup(error);
           }
 
         elle::WeakBuffer& _buffer;
@@ -156,8 +152,8 @@ namespace elle
         return read.read();
       }
 
-
-      class UDPRecvFrom: public DataOperation<boost::asio::ip::udp::socket>
+      class UDPRecvFrom
+        : public DataOperation<boost::asio::ip::udp::socket>
       {
         public:
           using AsioSocket = boost::asio::ip::udp::socket;
@@ -187,7 +183,8 @@ namespace elle
 
         protected:
 
-          void _start() override
+          void
+          _start() override
           {
             auto wake = [&] (boost::system::error_code const e, std::size_t w) {
               this->_wakeup(e, w);
@@ -200,20 +197,11 @@ namespace elle
           }
 
         private:
-          void _wakeup(const boost::system::error_code& error,
+          void
+          _wakeup(const boost::system::error_code& error,
                        std::size_t read)
           {
-            if (error == boost::system::errc::operation_canceled)
-            {
-              Super::_wakeup(error);
-              return;
-            }
-            _read = read;
-            if (error == boost::asio::error::eof)
-              this->_raise<ConnectionClosed>();
-            else if (error)
-              this->_raise<Exception>(error.message());
-            this->_signal();
+            this->_read = read;
             Super::_wakeup(error);
           }
 
@@ -244,47 +232,46 @@ namespace elle
       | Write |
       `------*/
 
-      class UDPWrite: public DataOperation<boost::asio::ip::udp::socket>
+      class UDPWrite
+        : public DataOperation<boost::asio::ip::udp::socket>
       {
-        public:
-          using AsioSocket = boost::asio::ip::udp::socket;
-          using EndPoint = boost::asio::ip::udp::endpoint;
-          using Super = DataOperation<AsioSocket>;
-          UDPWrite(Scheduler& scheduler,
-                   PlainSocket<AsioSocket>* socket,
-                   elle::ConstWeakBuffer& buffer):
-            Super(*socket->socket()),
-            _buffer(buffer),
-            _written(0)
-          {}
+      public:
+        using AsioSocket = boost::asio::ip::udp::socket;
+        using EndPoint = boost::asio::ip::udp::endpoint;
+        using Super = DataOperation<AsioSocket>;
+        UDPWrite(Scheduler& scheduler,
+                 PlainSocket<AsioSocket>* socket,
+                 elle::ConstWeakBuffer& buffer):
+          Super(*socket->socket()),
+          _buffer(buffer),
+          _written(0)
+        {}
 
-        protected:
-          void _start() override
-          {
-            this->socket().async_send(
-              boost::asio::buffer(this->_buffer.contents(),
-                                  this->_buffer.size()),
-              boost::bind(&UDPWrite::_wakeup, this, _1, _2));
-          }
+      protected:
+        void
+        _start() override
+        {
+          this->socket().async_send(
+            boost::asio::buffer(this->_buffer.contents(),
+                                this->_buffer.size()),
+            boost::bind(&UDPWrite::_wakeup, this, _1, _2));
+        }
 
-        private:
-          void _wakeup(const boost::system::error_code& error,
-                       std::size_t written)
-          {
-            _written = written;
-            if (error == boost::asio::error::eof)
-              this->_raise<ConnectionClosed>();
-            else if (error)
-              this->_raise<Exception>(error.message());
-            this->_signal();
-            Super::_wakeup(error);
-          }
+      private:
+        void
+        _wakeup(const boost::system::error_code& error,
+                std::size_t written)
+        {
+          this->_written = written;
+          Super::_wakeup(error);
+        }
 
-          elle::ConstWeakBuffer _buffer;
-          Size _written;
+        elle::ConstWeakBuffer _buffer;
+        Size _written;
       };
 
-      class UDPSendTo: public DataOperation<boost::asio::ip::udp::socket>
+      class UDPSendTo
+        : public DataOperation<boost::asio::ip::udp::socket>
       {
         public:
           using AsioSocket = boost::asio::ip::udp::socket;
@@ -301,7 +288,8 @@ namespace elle
           {}
 
         protected:
-          void _start() override
+          void
+          _start() override
           {
             auto wake = [&] (boost::system::error_code const e, std::size_t w)
               {
@@ -313,15 +301,11 @@ namespace elle
           }
 
         private:
-          void _wakeup(const boost::system::error_code& error,
-                       std::size_t written)
+          void
+          _wakeup(const boost::system::error_code& error,
+                  std::size_t written)
           {
-            _written = written;
-            if (error == boost::asio::error::eof)
-              this->_raise<ConnectionClosed>();
-            else if (error)
-              this->_raise<Exception>(error.message());
-            this->_signal();
+            this->_written = written;
             Super::_wakeup(error);
           }
 

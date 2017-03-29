@@ -59,13 +59,18 @@ namespace elle
       template <typename AsioSocket>
       void
       SocketOperation<AsioSocket>::_handle_error(
-        const boost::system::error_code& error)
+        boost::system::error_code const& error)
       {
         if (error == boost::asio::error::connection_refused
             || error.value() == EADDRNOTAVAIL)
           this->_raise<ConnectionRefused>();
+        else if (error == boost::asio::error::eof)
+          this->_raise<ConnectionClosed>();
         else
+        {
+          ELLE_ASSERT_NEQ(error, boost::system::errc::operation_canceled);
           this->_raise<Exception>(error.message());
+        }
       }
 
       template class SocketOperation<boost::asio::ip::tcp::socket>;
