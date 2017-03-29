@@ -62,7 +62,10 @@ namespace elle
     Operation::abort()
     {
       if (this->running())
-        this->_abort();
+      {
+        ELLE_TRACE("%s: abort", this)
+          this->_abort();
+      }
     }
 
     void

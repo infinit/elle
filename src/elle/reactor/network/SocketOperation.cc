@@ -28,7 +28,6 @@ namespace elle
       void
       SocketOperation<AsioSocket>::_abort()
       {
-        ELLE_TRACE_SCOPE("%s: abort", *this);
         this->_canceled = true;
         boost::system::error_code ec;
         this->_socket.cancel(ec);
