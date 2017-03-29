@@ -33,7 +33,7 @@ namespace elle
     }
 
     std::string
-    setenv(std::string const& key, std::string const& val, bool mode);
+    setenv(std::string const& key, std::string const& val, bool override);
 
     /// Get a specific value from environment. If value is not found,
     /// KeyError Exception is thrown

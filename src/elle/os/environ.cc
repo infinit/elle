@@ -31,9 +31,9 @@ namespace elle
     std::string
     setenv(std::string const& key,
            std::string const& val,
-           bool mode)
+           bool override)
     {
-      if (mode == false)
+      if (!override)
         if (char const* old_value = ::getenv(key.c_str()))
           return std::string{old_value};
 
