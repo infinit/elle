@@ -42,7 +42,16 @@ namespace elle
         ELLE_TRACE("%s: aborted by exception: %s",
                    *this, elle::exception_string());
         auto e = std::current_exception();
-        this->abort();
+        try
+        {
+          this->abort();
+        }
+        catch (...)
+        {
+          ELLE_ERR("%s: dropping abort exception: %s",
+                   this, elle::exception_string());
+          throw;
+        }
         std::rethrow_exception(e);
       }
       ELLE_TRACE("%s: done", *this);
