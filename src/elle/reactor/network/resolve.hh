@@ -12,7 +12,7 @@ namespace elle
     {
       struct ResolveOptions
       {
-        ResolveOptions(bool v4_only = false, int num = 10)
+        ResolveOptions(bool v4_only = true, int num = 10)
           : ipv4_only{v4_only}
           , num_attempts{num}
         {}
