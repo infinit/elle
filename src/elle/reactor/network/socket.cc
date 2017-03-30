@@ -301,7 +301,7 @@ namespace elle
         boost::system::error_code e;
         socket.cancel(e);
         if (e && e != boost::asio::error::bad_descriptor)
-          throw Exception(e.message());
+          throw Error(e.message());
         socket.close();
       }
 
@@ -331,7 +331,7 @@ namespace elle
             {
               ELLE_TRACE("%s: disconnection error: %s (%s)",
                          *this, error.message(), error);
-              throw Exception(error.message());
+              throw Error(error.message());
             }
           }
           Spe::socket(*this->_socket).close();
@@ -389,7 +389,7 @@ namespace elle
         boost::system::error_code erc;
         auto res = Spe::socket(*this->_socket).local_endpoint(erc);
         if (erc)
-          throw Exception(erc.message());
+          throw Error(erc.message());
         return res;
       }
 

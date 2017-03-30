@@ -175,7 +175,7 @@ namespace elle
           {
             utp_close(this->_socket);
           }
-          catch(Exception const& e)
+          catch (Error const& e)
           {
             // utp_close() tries to flush, which might fail if the UTPServer
             // closed before us

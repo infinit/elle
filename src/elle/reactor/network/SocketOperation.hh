@@ -2,7 +2,7 @@
 
 #include <boost/asio.hpp>
 
-#include <elle/reactor/network/exception.hh>
+#include <elle/reactor/network/Error.hh>
 #include <elle/reactor/network/socket.hh>
 #include <elle/reactor/Operation.hh>
 

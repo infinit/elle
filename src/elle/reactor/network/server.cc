@@ -47,7 +47,8 @@ namespace elle
             elle::sprintf("unable to listen on %s: %s", end_point, e.what());
           if (e.code() == boost::system::errc::permission_denied)
             throw PermissionDenied(message);
-          throw Exception(message);
+          else
+            throw Error(message);
         }
       }
 
@@ -100,9 +101,10 @@ namespace elle
         {
           if (error == boost::system::errc::operation_canceled)
             return;
-          if (error)
-            _raise<Exception>(error.message());
-          this->_signal();
+          else if (error)
+            _raise<Error>(error.message());
+          else
+            this->_signal();
         }
 
       private:
@@ -138,8 +140,9 @@ namespace elle
       ProtoServer<Socket, EndPoint, Acceptor>::local_endpoint() const
       {
         if (this->_acceptor == nullptr)
-          throw Exception("server is not listening");
-        return this->_acceptor->local_endpoint();
+          throw Error("server is not listening");
+        else
+          return this->_acceptor->local_endpoint();
       }
 
       /*----------.
@@ -152,9 +155,7 @@ namespace elle
       {
         stream << "Server";
         if (this->_acceptor)
-        {
           stream << "(" << this->_acceptor->local_endpoint() << ")";
-        }
       }
 
       /*------------------------.

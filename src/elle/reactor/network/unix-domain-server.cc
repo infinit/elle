@@ -51,7 +51,8 @@ namespace elle
             elle::sprintf("unable to listen on %s: %s", path, e.what());
           if (e.code() == boost::asio::error::name_too_long)
             throw InvalidEndpoint(message);
-          throw Exception(message);
+          else
+            throw Error(message);
         }
       }
 

@@ -101,7 +101,7 @@ add_library(elle ${LINK_METHOD}
   reactor/src/reactor/exception.cc
   reactor/src/reactor/lockable.cc
   reactor/src/reactor/mutex.cc
-  reactor/src/reactor/network/exception.cc
+  reactor/src/reactor/network/Error.cc
   reactor/src/reactor/network/resolve.cc
   reactor/src/reactor/network/server.cc
   reactor/src/reactor/network/socket.cc

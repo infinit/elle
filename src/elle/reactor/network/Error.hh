@@ -18,6 +18,9 @@ namespace elle
         Error(std::string const& message);
       };
 
+      using Exception [[deprecated("use elle::reactor::Error instead")]]
+      = Error;
+
       class SocketClosed
         : public Error
       {

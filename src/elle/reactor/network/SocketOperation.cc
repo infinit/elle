@@ -69,7 +69,7 @@ namespace elle
         else
         {
           ELLE_ASSERT_NEQ(error, boost::system::errc::operation_canceled);
-          this->_raise<Exception>(error.message());
+          this->_raise<Error>(error.message());
         }
       }
 

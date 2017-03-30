@@ -365,7 +365,7 @@ namespace elle
         {
           send_to(buffer, endpoint);
         }
-        catch (Exception const&e)
+        catch (Error const& e)
         {
           ELLE_DEBUG("send_to failed with %s", e);
         }
