@@ -95,25 +95,6 @@ namespace elle
       ELLE_ATTRIBUTE(elle::reactor::Mutex, lock_read, protected);
     };
 
-    struct Version010Impl
-      : public Serializer::pImpl
-    {
-    public:
-      Version010Impl(std::iostream& stream,
-                     elle::Buffer::Size chunk_size,
-                     bool checksum)
-        :  Serializer::pImpl(stream, chunk_size, checksum,
-                             elle::Version(0, 1, 0))
-      {}
-
-    public:
-      elle::Buffer
-      _read() final;
-
-      void
-      _write(elle::Buffer const&) final;
-    };
-
     struct Impl
       : public Serializer::pImpl
     {
@@ -176,12 +157,8 @@ namespace elle
         }
       }
       ELLE_TRACE("using version: '%s'", this->version());
-      if (this->version() < elle::Version(0, 2, 0))
-        this->_impl.reset(
-          new Version010Impl(stream, this->_chunk_size, checksum));
-      else
-        this->_impl.reset(
-          new Impl(stream, this->_chunk_size, checksum, version));
+      this->_impl.reset(
+        new Impl(stream, this->_chunk_size, checksum, version));
     }
 
     Serializer::~Serializer()
@@ -342,57 +319,6 @@ namespace elle
         to_send);
     }
 
-    /*--------------.
-    | Version 0.1.0 |
-    `--------------*/
-
-    elle::Buffer
-    Version010Impl::_read()
-    {
-      // Make sure the stream isn't terminated.
-      if (elle::With<elle::reactor::Thread::Interruptible>() << [&]
-         {
-           return this->_stream.peek();
-         } == std::iostream::traits_type::eof())
-        throw Serializer::EOF();
-      elle::Buffer hash;
-      if (this->_checksum)
-      {
-        ELLE_DEBUG("read checksum")
-          hash = elle::protocol::read(this->_stream, {});
-      }
-      ELLE_DEBUG("read actual data");
-      auto packet = elle::protocol::read(this->_stream, {});
-      ELLE_DUMP("packet content: '%f'", packet);
-      // Check checksums match.
-      if (this->_checksum)
-        enforce_checksums_equal(packet, hash);
-      return packet;
-    }
-
-    void
-    Version010Impl::_write(elle::Buffer const& packet)
-    {
-      // The write must not be interrupted, otherwise it will break
-      // the serialization protocol.
-      elle::With<elle::reactor::Thread::NonInterruptible>() << [&]
-      {
-        if (this->_checksum)
-        {
-          auto hash = compute_checksum(packet);
-          ELLE_DEBUG("send checksum %x", hash)
-            elle::protocol::write(this->_stream, this->version(), hash);
-        }
-        ELLE_DEBUG("send actual data")
-          elle::protocol::write(this->_stream, this->version(), packet);
-        this->_stream.flush();
-      };
-    }
-
-    /*--------------.
-    | Version 0.2.0 |
-    `--------------*/
-
     enum Control: unsigned char
     {
       keep_going = 0,
@@ -453,101 +379,127 @@ namespace elle
       if (this->_checksum)
       {
         ELLE_DEBUG("read checksum")
-          hash = elle::protocol::read(this->_stream, this->version(), {});
+          if (this->version() >= elle::Version(0, 2, 0))
+            hash = elle::protocol::read(this->_stream, this->version(), {});
+          else
+            hash = elle::protocol::read(this->_stream, {});
       }
-      // Get the total size.
-      uint32_t total_size(Serializer::Super::uint32_get(this->_stream,
-                                                        this->version()));
-      ELLE_DEBUG("packet size: %s", total_size);
-      elle::Buffer packet(static_cast<std::size_t>(total_size));
-      elle::Buffer::Size offset = 0;
-      while (true)
+      auto packet = [&]
       {
-        uint32_t size = std::min(total_size - offset, this->_chunk_size);
-        ELLE_DEBUG("read chunk of size %s", size);
-        elle::protocol::read(this->_stream, packet, size, offset);
-        offset += size;
-        ELLE_ASSERT_LTE(offset, total_size);
-        if (offset >= total_size)
-          break;
-        while (true)
-          switch (read_control(this->_stream))
+        if (this->version() >= elle::Version(0, 2, 0))
+        {
+          // Get the total size.
+          uint32_t total_size(Serializer::Super::uint32_get(this->_stream,
+                                                            this->version()));
+          ELLE_DEBUG("packet size: %s", total_size);
+          elle::Buffer packet(static_cast<std::size_t>(total_size));
+          elle::Buffer::Size offset = 0;
+          while (true)
           {
-            case Control::keep_going:
-              goto keep_going;
-            case Control::interrupt:
-              throw InterruptionError();
-            case Control::message:
-              ignore_message(this->_stream, this->version());
+            uint32_t size = std::min(total_size - offset, this->_chunk_size);
+            ELLE_DEBUG("read chunk of size %s", size);
+            elle::protocol::read(this->_stream, packet, size, offset);
+            offset += size;
+            ELLE_ASSERT_LTE(offset, total_size);
+            if (offset >= total_size)
               break;
+            while (true)
+              switch (read_control(this->_stream))
+              {
+                case Control::keep_going:
+                  goto keep_going;
+                case Control::interrupt:
+                  throw InterruptionError();
+                case Control::message:
+                  ignore_message(this->_stream, this->version());
+                  break;
+              }
+            keep_going:;
           }
-        keep_going:;
-      }
-      ELLE_DUMP("packet content: '%f'", packet);
-      // Check hash.
+          return packet;
+        }
+        else
+          return elle::protocol::read(this->_stream, {});
+      }();
+      ELLE_DUMP("packet content: %s", packet);
+      // Check checksums match.
       if (this->_checksum)
         enforce_checksums_equal(packet, hash);
-      ELLE_TRACE("%s: got packet of size %s", this, total_size);
       return packet;
     }
 
     void
     Impl::_write(elle::Buffer const& packet)
     {
-      elle::Buffer::Size offset = 0;
-      try
-      {
-        auto send = [&]
+      if (this->_checksum)
+        elle::With<elle::reactor::Thread::NonInterruptible>() << [&]
+        {
+          // Compute and send checksum.
           {
-            auto to_send = std::min(this->_chunk_size, packet.size() - offset);
-            ELLE_DEBUG("send actual data: %s", to_send)
-            elle::protocol::write(
-              this->_stream,
-              this->version(), packet, false, offset, to_send);
-            offset += to_send;
+            auto hash = compute_checksum(packet);
+            ELLE_DEBUG("send checksum: 0x%x", hash)
+              elle::protocol::write(this->_stream, this->version(), hash);
+          }
+        };
+      if (this->version() >= elle::Version(0, 2, 0))
+      {
+        elle::Buffer::Size offset = 0;
+        try
+        {
+          auto send = [&]
+            {
+              auto to_send = std::min(this->_chunk_size, packet.size() - offset);
+              ELLE_DEBUG("send actual data: %s", to_send)
+              elle::protocol::write(
+                this->_stream,
+                this->version(), packet, false, offset, to_send);
+              offset += to_send;
+              this->_stream.flush();
+            };
+          {
+            elle::With<elle::reactor::Thread::NonInterruptible>() << [&]
+            {
+              // Send the size.
+              {
+                auto size = packet.size();
+                ELLE_DEBUG("send packet size %s", size)
+                  Serializer::Super::uint32_put(this->_stream, size, this->version());
+              }
+              // Send first chunk
+              send();
+            };
+          }
+          while (offset < packet.size())
+          {
+            ELLE_DEBUG("writing control: o=%s, size=%s", offset, packet.size());
+            elle::With<elle::reactor::Thread::NonInterruptible>() << [&]
+            {
+              write_control(this->_stream, Control::keep_going);
+              send();
+            };
+          }
+        }
+        catch (elle::reactor::Terminate const&)
+        {
+          if (offset < packet.size())
+          {
+            ELLE_DEBUG("interrupted after sending %s bytes over %s",
+                       offset, packet.size());
+            write_control(this->_stream, Control::interrupt);
             this->_stream.flush();
-          };
-        {
-          elle::With<elle::reactor::Thread::NonInterruptible>() << [&]
-          {
-            if (this->_checksum)
-            // Compute the hash and send it first.
-            {
-              auto hash = compute_checksum(packet);
-              ELLE_DEBUG("send checksum %x", hash)
-                elle::protocol::write(this->_stream, this->version(), hash);
-            }
-            // Send the size.
-            {
-              auto size = packet.size();
-              ELLE_DEBUG("send packet size %s", size)
-                Serializer::Super::uint32_put(this->_stream, size, this->version());
-            }
-            // Send first chunk
-            send();
-          };
-        }
-        while (offset < packet.size())
-        {
-          ELLE_DEBUG("writing control: o=%s, size=%s", offset, packet.size());
-          elle::With<elle::reactor::Thread::NonInterruptible>() << [&]
-          {
-            write_control(this->_stream, Control::keep_going);
-            send();
-          };
+          }
+          throw;
         }
       }
-      catch (elle::reactor::Terminate const&)
-      {
-        if (offset < packet.size())
+      else
+        // The write must not be interrupted, otherwise it will break
+        // the serialization protocol.
+        elle::With<elle::reactor::Thread::NonInterruptible>() << [&]
         {
-          ELLE_DEBUG("interrupted after sending %s bytes over %s",
-                     offset, packet.size());
-          write_control(this->_stream, Control::interrupt);
+          ELLE_DEBUG("send actual data")
+            elle::protocol::write(this->_stream, this->version(), packet);
           this->_stream.flush();
-        }
-        throw;
-      }
+        };
     }
   }
 }
