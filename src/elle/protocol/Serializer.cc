@@ -496,8 +496,6 @@ namespace elle
     void
     Impl::_write(elle::Buffer const& packet)
     {
-      ELLE_DEBUG_SCOPE("chunk writer, sz=%s, chunk=%s", packet.size(),
-                       this->_chunk_size);
       elle::Buffer::Size offset = 0;
       try
       {
