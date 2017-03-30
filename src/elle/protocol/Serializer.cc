@@ -403,14 +403,7 @@ namespace elle
     Serializer::Serializer(std::iostream& stream,
                            elle::Version const& version,
                            bool checksum)
-      : Serializer(*elle::reactor::Scheduler::scheduler(), stream, version, checksum)
-    {}
-
-    Serializer::Serializer(elle::reactor::Scheduler& scheduler,
-                           std::iostream& stream,
-                           elle::Version const& version,
-                           bool checksum)
-      : Super(scheduler)
+      : Super(*elle::reactor::Scheduler::scheduler())
       , _stream(stream)
       , _version(version)
       , _chunk_size(2 << 16)

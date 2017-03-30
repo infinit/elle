@@ -67,19 +67,6 @@ namespace elle
       Serializer(std::iostream& stream,
                  elle::Version const& version = elle::Version(0, 1, 0),
                  bool checksum = true);
-      /// Construct a Serializer.
-      ///
-      /// @param scheduler The Scheduler to use.
-      /// @param stream The underlying std::iostream.
-      /// @param version The version of the protocol.
-      /// @param checksum Whether it should read and write the checksum of
-      ///                 packets sent.
-      Serializer(elle::reactor::Scheduler& scheduler,
-                 std::iostream& stream,
-                 elle::Version const& version  = elle::Version(0, 1, 0),
-                 bool checksum = true);
-
-    public:
       ~Serializer();
 
     /*----------.
