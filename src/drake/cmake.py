@@ -5,6 +5,13 @@ import os
 class CMakeBuilder(drake.Builder):
   def __init__(self, cxx_toolkit, srcs, dsts, vars,
                targets = None, path_to_cmake_source = None):
+    '''
+    `srcs`: what we depend upon.
+    `dsts`: what will be built.
+    `vars`: dict variables passed to cmake via `-D`.
+    `targets`: list of Makefile targets.
+    `path_to_cmake_source`: path to the direction containing the CMakeFile.
+    '''
     self.__vars = vars
     self.__prefix = drake.Drake.current.prefix
     self.__path_to_cmake_source = \
