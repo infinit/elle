@@ -27,34 +27,19 @@ namespace elle
   {
     namespace aws
     {
-      static
-      boost::posix_time::time_duration
-      default_timeout()
+      namespace
       {
-        static boost::optional<boost::posix_time::time_duration> v;
-        if (!v)
+        auto const default_timeout = []
         {
-          v = 500_sec;
-          std::string opt = elle::os::getenv("INFINIT_S3_TIMEOUT", "");
-          if (!opt.empty())
-            v = boost::posix_time::seconds(boost::lexical_cast<int>(opt));
-        }
-        return v.get();
-      }
+          auto const opt = elle::os::getenv("INFINIT_S3_TIMEOUT", "500");
+          return boost::posix_time::seconds(boost::lexical_cast<int>(opt));
+        }();
 
-      static
-      boost::posix_time::time_duration
-      default_stall_timeout()
-      {
-        static boost::optional<boost::posix_time::time_duration> v;
-        if (!v)
+        auto const default_stall_timeout = []
         {
-          v = 300_sec;
-          std::string opt = elle::os::getenv("INFINIT_S3_STALL_TIMEOUT", "");
-          if (!opt.empty())
-            v = boost::posix_time::seconds(boost::lexical_cast<int>(opt));
-        }
-        return v.get();
+          auto const opt = elle::os::getenv("INFINIT_S3_STALL_TIMEOUT", "300");
+          return boost::posix_time::seconds(boost::lexical_cast<int>(opt));
+        }();
       }
 
       // Stay as close as possible to reference java implementation from amazon
@@ -806,11 +791,10 @@ namespace elle
         boost::optional<std::function<void (int)>> const& progress_callback
         )
       {
-        boost::posix_time::time_duration timeout = (kind == RequestKind::control)
-                                                 ? default_timeout()
-                                                 : default_stall_timeout();
-        if (timeout_opt)
-          timeout = timeout_opt.get();
+        auto const timeout
+          = timeout_opt.value_or(kind == RequestKind::control
+                                 ? default_timeout
+                                 : default_stall_timeout);
         // Transient errors on requests is perfectly reasonable
         int attempt = 0;
         static int max_attempts = -1;
