@@ -192,9 +192,8 @@ namespace elle
     `----------*/
 
     elle::Buffer
-    Serializer::read()
+    Serializer::_read()
     {
-      ELLE_TRACE_SCOPE("%s: read packet", this);
       return this->_impl->read();
     }
 

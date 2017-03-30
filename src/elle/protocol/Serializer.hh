@@ -85,12 +85,12 @@ namespace elle
     /*----------.
     | Receiving |
     `----------*/
-    public:
+    protected:
       /// Read a complete packet from the underlying stream.
       ///
       /// @returns A buffer containing the data sent by the peer.
       elle::Buffer
-      read() override;
+      _read() override;
 
     /*--------.
     | Sending |

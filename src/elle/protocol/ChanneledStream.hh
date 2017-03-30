@@ -77,15 +77,14 @@ namespace elle
     | Receiving |
     `----------*/
     public:
-      ///
-      elle::Buffer
-      read() override;
-
       /// Wait for an incoming connection.
       ///
       /// The Channel
       Channel
       accept();
+    protected:
+      elle::Buffer
+      _read() override;
 
     private:
       /// Read and dispatch packets until one that fit our needs is found.

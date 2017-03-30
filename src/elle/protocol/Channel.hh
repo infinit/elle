@@ -84,7 +84,7 @@ namespace elle
       ///
       /// @see Stream::read.
       elle::Buffer
-      read() override;
+      _read() override;
 
     /*--------.
     | Sending |

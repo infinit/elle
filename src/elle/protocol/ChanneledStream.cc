@@ -96,7 +96,7 @@ namespace elle
     `----------*/
 
     elle::Buffer
-    ChanneledStream::read()
+    ChanneledStream::_read()
     {
       return this->_default.read();
     }

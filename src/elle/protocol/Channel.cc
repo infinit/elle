@@ -83,7 +83,7 @@ namespace elle
     `----------*/
 
     elle::Buffer
-    Channel::read()
+    Channel::_read()
     {
       return this->_backend._read(this);
     }

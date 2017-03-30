@@ -14,6 +14,8 @@
 
 #include <elle/serialization/binary.hh>
 
+ELLE_LOG_COMPONENT("elle.protocol.Stream");
+
 namespace elle
 {
   namespace protocol
@@ -34,6 +36,17 @@ namespace elle
 
     Stream::~Stream()
     {}
+
+    /*----------.
+    | Receiving |
+    `----------*/
+
+    elle::Buffer
+    Stream::read()
+    {
+      ELLE_TRACE_SCOPE("%s: read packet", this);
+      return this->_read();
+    }
 
     /*--------.
     | Sending |

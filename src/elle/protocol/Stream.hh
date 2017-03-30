@@ -50,9 +50,12 @@ namespace elle
       /// Read a buffer.
       ///
       /// @returns A Buffer.
+      elle::Buffer
+      read();
+    protected:
       virtual
       elle::Buffer
-      read() = 0;
+      _read() = 0;
 
     /*--------.
     | Sending |
