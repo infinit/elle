@@ -194,7 +194,7 @@ namespace elle
     elle::Buffer
     Serializer::read()
     {
-      ELLE_TRACE_SCOPE("%s: read packet", *this);
+      ELLE_TRACE_SCOPE("%s: read packet", this);
       return this->_impl->read();
     }
 
@@ -440,7 +440,6 @@ namespace elle
     elle::Buffer
     Impl::_read()
     {
-      ELLE_TRACE_SCOPE("%s: read packet", this);
       // Make sure the stream isn't terminated.
       if (elle::With<elle::reactor::Thread::Interruptible>() << [&]
          {
