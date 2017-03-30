@@ -204,7 +204,6 @@ namespace elle
     void
     Serializer::_write(elle::Buffer const& packet)
     {
-      ELLE_TRACE_SCOPE("%s: write packet (%s bytes)", *this, packet.size());
       this->_impl->write(packet);
     }
 

@@ -55,6 +55,7 @@ namespace elle
     void
     Stream::write(elle::Buffer const& packet)
     {
+      ELLE_TRACE_SCOPE("%s: write packet (%s bytes)", this, packet.size());
       this->_write(packet);
     }
 
