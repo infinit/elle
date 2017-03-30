@@ -48,10 +48,10 @@ namespace elle
 
           /// Exception thrown when DNS invited us to retry.
           class TryAgain
-            : public Exception
+            : public Error
           {
           public:
-            using Super = Exception;
+            using Super = Error;
             TryAgain()
               : Super{"Host not found (non-authoritative), try again later"}
             {}
