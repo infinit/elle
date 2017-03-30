@@ -159,36 +159,6 @@ namespace elle
       max = message,
     };
 
-    // Check control byte.
-    static
-    Control
-    read_control(std::istream& stream)
-    {
-      ELLE_DUMP_SCOPE("read control");
-      char control = static_cast<char>(Control::max + 1);
-      stream.read(&control, 1);
-      if (control > Control::max)
-      {
-        ELLE_ERR("%s: invalid control byte: 0x%x",
-                 stream, static_cast<int>(control));
-        elle::err<protocol::Error>(
-          "invalid control byte: 0x%x", static_cast<int>(control));
-      }
-      else
-        ELLE_DUMP("control: '%x'", (int) control);
-      return (Control) control;
-    }
-
-    static
-    void
-    write_control(std::ostream& stream,
-                  Control control)
-    {
-      ELLE_DUMP_SCOPE("send control %s", (int) control);
-      char c = static_cast<char>(control);
-      stream.write(&c, 1);
-    }
-
     static
     void
     ignore_message(std::istream& stream, elle::Version const& version)
@@ -247,18 +217,8 @@ namespace elle
           throw Serializer::EOF();
         if (this->version() >= elle::Version(0, 3, 0))
         {
-          while (true)
-            switch (read_control(this->_stream))
-            {
-              case Control::keep_going:
-                goto read_packet;
-              case Control::interrupt:
-                break;
-              case Control::message:
-                ignore_message(this->_stream, this->version());
-                break;
-            }
-          read_packet:;
+          while (!this->read_control())
+            ;
         }
         elle::Buffer hash;
         if (this->_checksum)
@@ -288,18 +248,8 @@ namespace elle
               ELLE_ASSERT_LTE(offset, total_size);
               if (offset >= total_size)
                 break;
-              while (true)
-                switch (read_control(this->_stream))
-                {
-                  case Control::keep_going:
-                    goto keep_going;
-                  case Control::interrupt:
-                    throw InterruptionError();
-                  case Control::message:
-                    ignore_message(this->_stream, this->version());
-                    break;
-                }
-              keep_going:;
+              if (!this->read_control())
+                throw InterruptionError();
             }
             return packet;
           }
@@ -322,10 +272,48 @@ namespace elle
       }
 
       void
+      write_control(Control control)
+      {
+        ELLE_DUMP_SCOPE("send control %s", (int) control);
+        char c = static_cast<char>(control);
+        this->_stream.write(&c, 1);
+      }
+
+      bool
+      read_control()
+      {
+        while (true)
+        {
+          ELLE_DUMP_SCOPE("read control");
+          char control = static_cast<char>(Control::max + 1);
+          this->_stream.read(&control, 1);
+          if (control > Control::max)
+          {
+            ELLE_ERR("%s: invalid control byte: 0x%x",
+                     this, static_cast<int>(control));
+            elle::err<protocol::Error>(
+              "invalid control byte: 0x%x", static_cast<int>(control));
+          }
+          else
+            ELLE_DUMP("control: '%x'", (int) control);
+          switch (static_cast<Control>(control))
+          {
+            case Control::keep_going:
+              return true;
+            case Control::interrupt:
+              return false;
+            case Control::message:
+              ignore_message(this->_stream, this->version());
+              break;
+          }
+        }
+      }
+
+      void
       _write(elle::Buffer const& packet)
       {
         if (this->version() >= elle::Version(0, 3, 0))
-          write_control(this->_stream, Control::keep_going);
+          this->write_control(Control::keep_going);
         if (this->_checksum)
         {
           // Compute and send checksum.
@@ -369,7 +357,7 @@ namespace elle
               ELLE_DEBUG("writing control: o=%s, size=%s", offset, packet.size());
               elle::With<elle::reactor::Thread::NonInterruptible>() << [&]
               {
-                write_control(this->_stream, Control::keep_going);
+                this->write_control(Control::keep_going);
                 send();
               };
             }
@@ -380,7 +368,7 @@ namespace elle
             {
               ELLE_DEBUG("interrupted after sending %s bytes over %s",
                          offset, packet.size());
-              write_control(this->_stream, Control::interrupt);
+              this->write_control(Control::interrupt);
               this->_stream.flush();
             }
             throw;
