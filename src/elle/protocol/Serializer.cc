@@ -413,7 +413,8 @@ namespace elle
       stream.read(&control, 1);
       ELLE_DUMP("control: '%x'", (int) control);
       if (control > Control::max)
-        throw protocol::Error("invalid control byte");
+        elle::err<protocol::Error>(
+          "invalid control byte: 0x%x", static_cast<int>(control));
       return (Control) control;
     }
 
