@@ -411,10 +411,15 @@ namespace elle
       ELLE_DUMP_SCOPE("read control");
       char control = static_cast<char>(Control::max + 1);
       stream.read(&control, 1);
-      ELLE_DUMP("control: '%x'", (int) control);
       if (control > Control::max)
+      {
+        ELLE_ERR("%s: invalid control byte: 0x%x",
+                 stream, static_cast<int>(control));
         elle::err<protocol::Error>(
           "invalid control byte: 0x%x", static_cast<int>(control));
+      }
+      else
+        ELLE_DUMP("control: '%x'", (int) control);
       return (Control) control;
     }
 
