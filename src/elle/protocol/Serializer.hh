@@ -46,7 +46,6 @@ namespace elle
     `------*/
     public:
       using Super = Stream;
-      using Inner = std::iostream;
       class EOF
         : public elle::Error
       {

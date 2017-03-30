@@ -37,7 +37,7 @@ namespace elle
     // - the content: $size bytes.
     static
     void
-    read(Serializer::Inner& stream,
+    read(std::istream& stream,
          elle::Buffer& content,
          uint32_t size,
          uint32_t offset = 0)
@@ -84,7 +84,7 @@ namespace elle
 
     static
     elle::Buffer
-    read(Serializer::Inner& stream,
+    read(std::istream& stream,
          elle::Version const& version,
          boost::optional<uint32_t> size = boost::none)
     {
@@ -129,7 +129,7 @@ namespace elle
 
     static
     void
-    write(Serializer::Inner& stream,
+    write(std::ostream& stream,
           elle::Version const& version,
           elle::Buffer const& content,
           bool write_size = true,
@@ -162,7 +162,7 @@ namespace elle
     // Check control byte.
     static
     Control
-    read_control(Serializer::Inner& stream)
+    read_control(std::istream& stream)
     {
       ELLE_DUMP_SCOPE("read control");
       char control = static_cast<char>(Control::max + 1);
@@ -181,7 +181,7 @@ namespace elle
 
     static
     void
-    write_control(Serializer::Inner& stream,
+    write_control(std::ostream& stream,
                   Control control)
     {
       ELLE_DUMP_SCOPE("send control %s", (int) control);
@@ -191,7 +191,7 @@ namespace elle
 
     static
     void
-    ignore_message(Serializer::Inner& stream, elle::Version const& version)
+    ignore_message(std::istream& stream, elle::Version const& version)
     {
       // Version 0.2.0 handle but ignores messages.
       auto res = elle::protocol::read(stream, version);
