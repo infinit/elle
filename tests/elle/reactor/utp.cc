@@ -1,7 +1,7 @@
 #include <elle/assert.hh>
 #include <elle/test.hh>
 
-#include <elle/reactor/network/exception.hh>
+#include <elle/reactor/network/Error.hh>
 #include <elle/reactor/network/udp-socket.hh>
 #include <elle/reactor/network/utp-server.hh>
 #include <elle/reactor/network/utp-socket.hh>
@@ -39,7 +39,7 @@ ELLE_TEST_SCHEDULED(not_connected)
 {
   UTPServer s;
   UTPSocket sock(s);
-  BOOST_CHECK_THROW(sock.read(1), elle::reactor::network::Exception);
+  BOOST_CHECK_THROW(sock.read(1), elle::reactor::network::Error);
 }
 
 ELLE_TEST_SCHEDULED(basic)

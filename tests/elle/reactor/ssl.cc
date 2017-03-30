@@ -12,7 +12,7 @@
 
 #include <elle/reactor/Barrier.hh>
 #include <elle/reactor/Scope.hh>
-#include <elle/reactor/network/exception.hh>
+#include <elle/reactor/network/Error.hh>
 #include <elle/reactor/network/fingerprinted-socket.hh>
 #include <elle/reactor/network/ssl-server.hh>
 #include <elle/reactor/network/ssl-socket.hh>
@@ -543,7 +543,7 @@ ELLE_TEST_SCHEDULED(shutdown_asynchronous)
                     }
                   }
                 }
-                catch (elle::reactor::network::Exception const&)
+                catch (elle::reactor::network::Error const&)
                 {}
               };
             scope.run_background("forward", [=] { forward(socket, backend); });

@@ -4,7 +4,7 @@
 #include <elle/reactor/network/rdv-socket.hh>
 #include <elle/reactor/network/resolve.hh>
 #include <elle/reactor/network/rdv.hh>
-#include <elle/reactor/network/exception.hh>
+#include <elle/reactor/network/Error.hh>
 #include <elle/reactor/scheduler.hh>
 
 ELLE_LOG_COMPONENT("rdv.socket");

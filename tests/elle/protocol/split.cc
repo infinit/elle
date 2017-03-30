@@ -7,7 +7,7 @@
 
 #include <elle/reactor/Scope.hh>
 #include <elle/reactor/asio.hh>
-#include <elle/reactor/network/exception.hh>
+#include <elle/reactor/network/Error.hh>
 #include <elle/reactor/network/tcp-server.hh>
 #include <elle/reactor/network/tcp-socket.hh>
 #include <elle/reactor/scheduler.hh>

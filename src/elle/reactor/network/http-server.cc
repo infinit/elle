@@ -3,7 +3,7 @@
 #include <boost/lexical_cast.hpp>
 
 #include <elle/os/environ.hh>
-#include <elle/reactor/network/exception.hh>
+#include <elle/reactor/network/Error.hh>
 #include <elle/reactor/network/http-server.hh>
 
 ELLE_LOG_COMPONENT("elle.reactor.network.http");

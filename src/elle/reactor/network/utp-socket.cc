@@ -5,7 +5,7 @@
 #include <elle/log.hh>
 #include <elle/reactor/exception.hh>
 #include <elle/reactor/mutex.hh>
-#include <elle/reactor/network/exception.hh>
+#include <elle/reactor/network/Error.hh>
 #include <elle/reactor/network/fwd.hh>
 #include <elle/reactor/network/utp-server-impl.hh>
 #include <elle/reactor/scheduler.hh>

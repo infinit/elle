@@ -7,7 +7,7 @@
 #include <elle/log.hh>
 #include <elle/reactor/lockable.hh>
 #include <elle/reactor/network/SocketOperation.hh>
-#include <elle/reactor/network/exception.hh>
+#include <elle/reactor/network/Error.hh>
 #include <elle/reactor/network/socket.hh>
 #include <elle/reactor/network/tcp-socket.hh>
 #include <elle/reactor/scheduler.hh>

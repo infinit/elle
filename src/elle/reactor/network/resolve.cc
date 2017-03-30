@@ -5,7 +5,7 @@
 #include <elle/log.hh>
 #include <elle/printf.hh>
 
-#include <elle/reactor/network/exception.hh>
+#include <elle/reactor/network/Error.hh>
 #include <elle/reactor/Operation.hh>
 #include <elle/reactor/scheduler.hh>
 

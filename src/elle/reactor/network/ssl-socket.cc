@@ -1,6 +1,6 @@
 #include <elle/log.hh>
 #include <elle/reactor/network/SocketOperation.hh>
-#include <elle/reactor/network/exception.hh>
+#include <elle/reactor/network/Error.hh>
 #include <elle/reactor/network/ssl-socket.hh>
 #include <elle/reactor/scheduler.hh>
 #include <elle/utility/Move.hh>

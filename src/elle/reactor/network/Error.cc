@@ -1,5 +1,5 @@
 #include <elle/printf.hh>
-#include <elle/reactor/network/exception.hh>
+#include <elle/reactor/network/Error.hh>
 
 namespace elle
 {
@@ -7,7 +7,7 @@ namespace elle
   {
     namespace network
     {
-      Exception::Exception(const std::string& message):
+      Error::Error(const std::string& message):
         Super(message)
       {}
 

@@ -7,7 +7,7 @@
 #include <boost/asio/ip/udp.hpp>
 
 #include <elle/memory.hh>
-#include <elle/reactor/network/exception.hh>
+#include <elle/reactor/network/Error.hh>
 #include <elle/reactor/network/nat.hh>
 #include <elle/reactor/network/resolve.hh>
 #include <elle/reactor/sleep.hh>

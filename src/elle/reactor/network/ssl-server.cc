@@ -1,6 +1,6 @@
 #include <elle/With.hh>
 #include <elle/reactor/Scope.hh>
-#include <elle/reactor/network/exception.hh>
+#include <elle/reactor/network/Error.hh>
 #include <elle/reactor/network/ssl-server.hh>
 #include <elle/utility/Move.hh>
 #include <utility>

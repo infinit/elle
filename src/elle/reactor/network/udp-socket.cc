@@ -4,7 +4,7 @@
 #include <elle/memory.hh>
 #include <elle/optional.hh>
 #include <elle/reactor/network/SocketOperation.hh>
-#include <elle/reactor/network/exception.hh>
+#include <elle/reactor/network/Error.hh>
 #include <elle/reactor/network/resolve.hh>
 #include <elle/reactor/network/udp-socket.hh>
 #include <elle/reactor/scheduler.hh>

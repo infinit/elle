@@ -13,7 +13,7 @@
 #include <elle/service/aws/S3.hh>
 #include <elle/service/aws/SigningKey.hh>
 
-#include <elle/reactor/network/exception.hh>
+#include <elle/reactor/network/Error.hh>
 #include <elle/reactor/http/exceptions.hh>
 #include <elle/reactor/http/EscapedString.hh>
 #include <elle/reactor/http/Request.hh>
@@ -888,7 +888,7 @@ namespace elle
             }
             elle::reactor::wait(*request);
           }
-          catch (elle::reactor::network::Exception const& e)
+          catch (elle::reactor::network::Error const& e)
           {
             ++attempt;
             // we have nothing better to do, so keep retrying

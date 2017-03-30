@@ -1,5 +1,5 @@
 #include <elle/log.hh>
-#include <elle/reactor/network/exception.hh>
+#include <elle/reactor/network/Error.hh>
 #include <elle/reactor/network/unix-domain-server.hh>
 #include <elle/reactor/network/unix-domain-socket.hh>
 

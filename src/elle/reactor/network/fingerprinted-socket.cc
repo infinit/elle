@@ -3,7 +3,7 @@
 #include <openssl/evp.h>
 
 #include <elle/reactor/network/fingerprinted-socket.hh>
-#include <elle/reactor/network/exception.hh>
+#include <elle/reactor/network/Error.hh>
 #include <elle/reactor/scheduler.hh>
 #include <utility>
 
