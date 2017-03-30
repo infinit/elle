@@ -400,24 +400,21 @@ namespace elle
       keep_going = 0,
       interrupt = 1,
       message = 2,
-      // Unknown.
-      unknown = 3
+      max = message,
     };
 
     // Check control byte.
     static
     Control
-    check_control(Serializer::Inner& stream)
+    read_control(Serializer::Inner& stream)
     {
       ELLE_DUMP_SCOPE("read control");
-      char control = (char) Control::unknown;
+      char control = static_cast<char>(Control::max + 1);
       stream.read(&control, 1);
       ELLE_DUMP("control: '%x'", (int) control);
-      if (control == Control::interrupt)
-        throw InterruptionError();
-      if (control < Control::unknown)
-        return (Control) control;
-      throw protocol::Error("invalid control byte");
+      if (control > Control::max)
+        throw protocol::Error("invalid control byte");
+      return (Control) control;
     }
 
     static
@@ -470,8 +467,18 @@ namespace elle
         ELLE_ASSERT_LTE(offset, total_size);
         if (offset >= total_size)
           break;
-        while (check_control(this->_stream) == Control::message)
-          ignore_message(this->_stream, this->version());
+        while (true)
+          switch (read_control(this->_stream))
+          {
+            case Control::keep_going:
+              goto keep_going;
+            case Control::interrupt:
+              throw InterruptionError();
+            case Control::message:
+              ignore_message(this->_stream, this->version());
+              break;
+          }
+        keep_going:;
       }
       ELLE_DUMP("packet content: '%f'", packet);
       // Check hash.
