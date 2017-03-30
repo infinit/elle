@@ -27,173 +27,6 @@ namespace elle
 {
   namespace protocol
   {
-    /*--------------------------.
-    | Implementation definition |
-    `--------------------------*/
-
-    class Serializer::pImpl
-    {
-    protected:
-      pImpl(std::iostream& stream,
-            elle::Buffer::Size chunk_size,
-            bool checksum,
-            elle::Version const& version)
-        : _stream(stream)
-        , _chunk_size(chunk_size)
-        , _checksum(checksum)
-        , _version(version)
-        , _lock_write()
-        , _lock_read()
-      {}
-
-    public:
-      virtual
-      ~pImpl() = default;
-
-    public:
-      elle::Buffer
-      read()
-      {
-        while (true)
-        {
-          try
-          {
-            elle::reactor::Lock lock(this->_lock_read);
-            elle::IOStreamClear clearer(this->_stream);
-            return this->_read();
-          }
-          catch (InterruptionError const&)
-          {
-          }
-        }
-        ELLE_ERR("exit reading")
-          elle::unreachable();
-      }
-
-      virtual
-      elle::Buffer
-      _read() = 0;
-
-      void
-      write(elle::Buffer const& packet)
-      {
-        elle::reactor::Lock lock(this->_lock_write);
-        elle::IOStreamClear clearer(this->_stream);
-        this->_write(packet);
-      }
-
-      virtual
-      void
-      _write(elle::Buffer const&) = 0;
-
-    private:
-      ELLE_ATTRIBUTE_RX(std::iostream&, stream, protected);
-      ELLE_ATTRIBUTE(elle::Buffer::Size, chunk_size, protected);
-      ELLE_ATTRIBUTE(bool, checksum, protected);
-      ELLE_ATTRIBUTE_R(elle::Version, version);
-      ELLE_ATTRIBUTE(elle::reactor::Mutex, lock_write, protected);
-      ELLE_ATTRIBUTE(elle::reactor::Mutex, lock_read, protected);
-    };
-
-    struct Impl
-      : public Serializer::pImpl
-    {
-    public:
-      Impl(std::iostream& stream,
-                     elle::Buffer::Size chunk_size,
-                     bool checksum,
-                     elle::Version const& version)
-        :  Serializer::pImpl(stream, chunk_size, checksum, version)
-      {}
-
-    public:
-      elle::Buffer
-      _read() final;
-
-      void
-      _write(elle::Buffer const&) final;
-    };
-
-    /*------.
-    | Types |
-    `------*/
-
-    Serializer::EOF::EOF()
-      : elle::Error("end of serializer stream")
-    {}
-
-    /*-------------.
-    | Construction |
-    `-------------*/
-
-    Serializer::Serializer(std::iostream& stream,
-                           elle::Version const& version,
-                           bool checksum)
-      : Serializer(*elle::reactor::Scheduler::scheduler(), stream, version, checksum)
-    {}
-
-    Serializer::Serializer(elle::reactor::Scheduler& scheduler,
-                           std::iostream& stream,
-                           elle::Version const& version,
-                           bool checksum)
-      : Super(scheduler)
-      , _stream(stream)
-      , _version(version)
-      , _chunk_size(2 << 16)
-      , _checksum(checksum)
-    {
-      if (this->version() >= elle::Version(0, 2, 0))
-      {
-        ELLE_TRACE("%s: send local version '%s'", *this, this->version())
-          elle::serialization::binary::serialize(this->version(), stream);
-        stream.flush();
-        ELLE_TRACE("%s: read peer version", *this)
-        {
-          auto peer_version
-            = elle::serialization::binary::deserialize<elle::Version>(
-              stream);
-          ELLE_DEBUG("peer version: %s", peer_version);
-          this->_version = std::min(peer_version, this->version());
-        }
-      }
-      ELLE_TRACE("using version: '%s'", this->version());
-      this->_impl.reset(
-        new Impl(stream, this->_chunk_size, checksum, version));
-    }
-
-    Serializer::~Serializer()
-    {}
-
-    /*----------.
-    | Receiving |
-    `----------*/
-
-    elle::Buffer
-    Serializer::_read()
-    {
-      return this->_impl->read();
-    }
-
-    /*--------.
-    | Sending |
-    `--------*/
-
-    void
-    Serializer::_write(elle::Buffer const& packet)
-    {
-      this->_impl->write(packet);
-    }
-
-    /*----------.
-    | Printable |
-    `----------*/
-
-    void
-    Serializer::print(std::ostream& stream) const
-    {
-      stream << "Serializer " << this;
-    }
-
     /*---------------.
     | Implementation |
     `---------------*/
@@ -263,7 +96,6 @@ namespace elle
       read(stream, content, *size);
       return content;
     }
-
     // Return the sha1 of a given buffer.
     static
     elle::Buffer
@@ -361,145 +193,279 @@ namespace elle
     void
     ignore_message(Serializer::Inner& stream, elle::Version const& version)
     {
-      // Version 0.2.0 handle but ignore messages.
+      // Version 0.2.0 handle but ignores messages.
       auto res = elle::protocol::read(stream, version);
       ELLE_WARN("%f was ignored", res);
     }
 
-    elle::Buffer
-    Impl::_read()
+    class Serializer::Impl
     {
-      // Make sure the stream isn't terminated.
-      if (elle::With<elle::reactor::Thread::Interruptible>() << [&]
-         {
-           return this->_stream.peek();
-         } == std::iostream::traits_type::eof())
-        throw Serializer::EOF();
-      elle::Buffer hash;
-      if (this->_checksum)
+    public:
+      Impl(std::iostream& stream,
+           elle::Buffer::Size chunk_size,
+           bool checksum,
+           elle::Version const& version)
+        : _stream(stream)
+        , _chunk_size(chunk_size)
+        , _checksum(checksum)
+        , _version(version)
+        , _lock_write()
+        , _lock_read()
+      {}
+
+      virtual
+      ~Impl() = default;
+
+    public:
+      elle::Buffer
+      read()
       {
-        ELLE_DEBUG("read checksum")
-          if (this->version() >= elle::Version(0, 2, 0))
-            hash = elle::protocol::read(this->_stream, this->version(), {});
-          else
-            hash = elle::protocol::read(this->_stream, {});
+        while (true)
+        {
+          try
+          {
+            elle::reactor::Lock lock(this->_lock_read);
+            elle::IOStreamClear clearer(this->_stream);
+            return this->_read();
+          }
+          catch (InterruptionError const&)
+          {
+          }
+        }
+        ELLE_ERR("exit reading")
+          elle::unreachable();
       }
-      auto packet = [&]
+
+      elle::Buffer
+      _read()
       {
+        // Make sure the stream isn't terminated.
+        if (elle::With<elle::reactor::Thread::Interruptible>() << [&]
+           {
+             return this->_stream.peek();
+           } == std::iostream::traits_type::eof())
+          throw Serializer::EOF();
+        elle::Buffer hash;
+        if (this->_checksum)
+        {
+          ELLE_DEBUG("read checksum")
+            if (this->version() >= elle::Version(0, 2, 0))
+              hash = elle::protocol::read(this->_stream, this->version(), {});
+            else
+              hash = elle::protocol::read(this->_stream, {});
+        }
+        auto packet = [&]
+        {
+          if (this->version() >= elle::Version(0, 2, 0))
+          {
+            // Get the total size.
+            uint32_t total_size(Serializer::Super::uint32_get(this->_stream,
+                                                              this->version()));
+            ELLE_DEBUG("packet size: %s", total_size);
+            elle::Buffer packet(static_cast<std::size_t>(total_size));
+            elle::Buffer::Size offset = 0;
+            while (true)
+            {
+              uint32_t size = std::min(total_size - offset, this->_chunk_size);
+              ELLE_DEBUG("read chunk of size %s", size);
+              elle::protocol::read(this->_stream, packet, size, offset);
+              offset += size;
+              ELLE_ASSERT_LTE(offset, total_size);
+              if (offset >= total_size)
+                break;
+              while (true)
+                switch (read_control(this->_stream))
+                {
+                  case Control::keep_going:
+                    goto keep_going;
+                  case Control::interrupt:
+                    throw InterruptionError();
+                  case Control::message:
+                    ignore_message(this->_stream, this->version());
+                    break;
+                }
+              keep_going:;
+            }
+            return packet;
+          }
+          else
+            return elle::protocol::read(this->_stream, {});
+        }();
+        ELLE_DUMP("packet content: %s", packet);
+        // Check checksums match.
+        if (this->_checksum)
+          enforce_checksums_equal(packet, hash);
+        return packet;
+      }
+
+      void
+      write(elle::Buffer const& packet)
+      {
+        elle::reactor::Lock lock(this->_lock_write);
+        elle::IOStreamClear clearer(this->_stream);
+        this->_write(packet);
+      }
+
+      void
+      _write(elle::Buffer const& packet)
+      {
+        if (this->_checksum)
+          elle::With<elle::reactor::Thread::NonInterruptible>() << [&]
+          {
+            // Compute and send checksum.
+            {
+              auto hash = compute_checksum(packet);
+              ELLE_DEBUG("send checksum: 0x%x", hash)
+                elle::protocol::write(this->_stream, this->version(), hash);
+            }
+          };
         if (this->version() >= elle::Version(0, 2, 0))
         {
-          // Get the total size.
-          uint32_t total_size(Serializer::Super::uint32_get(this->_stream,
-                                                            this->version()));
-          ELLE_DEBUG("packet size: %s", total_size);
-          elle::Buffer packet(static_cast<std::size_t>(total_size));
           elle::Buffer::Size offset = 0;
-          while (true)
+          try
           {
-            uint32_t size = std::min(total_size - offset, this->_chunk_size);
-            ELLE_DEBUG("read chunk of size %s", size);
-            elle::protocol::read(this->_stream, packet, size, offset);
-            offset += size;
-            ELLE_ASSERT_LTE(offset, total_size);
-            if (offset >= total_size)
-              break;
-            while (true)
-              switch (read_control(this->_stream))
+            auto send = [&]
               {
-                case Control::keep_going:
-                  goto keep_going;
-                case Control::interrupt:
-                  throw InterruptionError();
-                case Control::message:
-                  ignore_message(this->_stream, this->version());
-                  break;
-              }
-            keep_going:;
+                auto to_send = std::min(this->_chunk_size, packet.size() - offset);
+                ELLE_DEBUG("send actual data: %s", to_send)
+                elle::protocol::write(
+                  this->_stream,
+                  this->version(), packet, false, offset, to_send);
+                offset += to_send;
+                this->_stream.flush();
+              };
+            {
+              elle::With<elle::reactor::Thread::NonInterruptible>() << [&]
+              {
+                // Send the size.
+                {
+                  auto size = packet.size();
+                  ELLE_DEBUG("send packet size %s", size)
+                    Serializer::Super::uint32_put(this->_stream, size, this->version());
+                }
+                // Send first chunk
+                send();
+              };
+            }
+            while (offset < packet.size())
+            {
+              ELLE_DEBUG("writing control: o=%s, size=%s", offset, packet.size());
+              elle::With<elle::reactor::Thread::NonInterruptible>() << [&]
+              {
+                write_control(this->_stream, Control::keep_going);
+                send();
+              };
+            }
           }
-          return packet;
+          catch (elle::reactor::Terminate const&)
+          {
+            if (offset < packet.size())
+            {
+              ELLE_DEBUG("interrupted after sending %s bytes over %s",
+                         offset, packet.size());
+              write_control(this->_stream, Control::interrupt);
+              this->_stream.flush();
+            }
+            throw;
+          }
         }
         else
-          return elle::protocol::read(this->_stream, {});
-      }();
-      ELLE_DUMP("packet content: %s", packet);
-      // Check checksums match.
-      if (this->_checksum)
-        enforce_checksums_equal(packet, hash);
-      return packet;
-    }
-
-    void
-    Impl::_write(elle::Buffer const& packet)
-    {
-      if (this->_checksum)
-        elle::With<elle::reactor::Thread::NonInterruptible>() << [&]
-        {
-          // Compute and send checksum.
+          // The write must not be interrupted, otherwise it will break
+          // the serialization protocol.
+          elle::With<elle::reactor::Thread::NonInterruptible>() << [&]
           {
-            auto hash = compute_checksum(packet);
-            ELLE_DEBUG("send checksum: 0x%x", hash)
-              elle::protocol::write(this->_stream, this->version(), hash);
-          }
-        };
+            ELLE_DEBUG("send actual data")
+              elle::protocol::write(this->_stream, this->version(), packet);
+            this->_stream.flush();
+          };
+      }
+    private:
+      ELLE_ATTRIBUTE_RX(std::iostream&, stream, protected);
+      ELLE_ATTRIBUTE(elle::Buffer::Size, chunk_size, protected);
+      ELLE_ATTRIBUTE(bool, checksum, protected);
+      ELLE_ATTRIBUTE_R(elle::Version, version);
+      ELLE_ATTRIBUTE(elle::reactor::Mutex, lock_write, protected);
+      ELLE_ATTRIBUTE(elle::reactor::Mutex, lock_read, protected);
+    };
+
+    /*------.
+    | Types |
+    `------*/
+
+    Serializer::EOF::EOF()
+      : elle::Error("end of serializer stream")
+    {}
+
+    /*-------------.
+    | Construction |
+    `-------------*/
+
+    Serializer::Serializer(std::iostream& stream,
+                           elle::Version const& version,
+                           bool checksum)
+      : Serializer(*elle::reactor::Scheduler::scheduler(), stream, version, checksum)
+    {}
+
+    Serializer::Serializer(elle::reactor::Scheduler& scheduler,
+                           std::iostream& stream,
+                           elle::Version const& version,
+                           bool checksum)
+      : Super(scheduler)
+      , _stream(stream)
+      , _version(version)
+      , _chunk_size(2 << 16)
+      , _checksum(checksum)
+    {
       if (this->version() >= elle::Version(0, 2, 0))
       {
-        elle::Buffer::Size offset = 0;
-        try
+        ELLE_TRACE("%s: send local version '%s'", *this, this->version())
+          elle::serialization::binary::serialize(this->version(), stream);
+        stream.flush();
+        ELLE_TRACE("%s: read peer version", *this)
         {
-          auto send = [&]
-            {
-              auto to_send = std::min(this->_chunk_size, packet.size() - offset);
-              ELLE_DEBUG("send actual data: %s", to_send)
-              elle::protocol::write(
-                this->_stream,
-                this->version(), packet, false, offset, to_send);
-              offset += to_send;
-              this->_stream.flush();
-            };
-          {
-            elle::With<elle::reactor::Thread::NonInterruptible>() << [&]
-            {
-              // Send the size.
-              {
-                auto size = packet.size();
-                ELLE_DEBUG("send packet size %s", size)
-                  Serializer::Super::uint32_put(this->_stream, size, this->version());
-              }
-              // Send first chunk
-              send();
-            };
-          }
-          while (offset < packet.size())
-          {
-            ELLE_DEBUG("writing control: o=%s, size=%s", offset, packet.size());
-            elle::With<elle::reactor::Thread::NonInterruptible>() << [&]
-            {
-              write_control(this->_stream, Control::keep_going);
-              send();
-            };
-          }
-        }
-        catch (elle::reactor::Terminate const&)
-        {
-          if (offset < packet.size())
-          {
-            ELLE_DEBUG("interrupted after sending %s bytes over %s",
-                       offset, packet.size());
-            write_control(this->_stream, Control::interrupt);
-            this->_stream.flush();
-          }
-          throw;
+          auto peer_version
+            = elle::serialization::binary::deserialize<elle::Version>(
+              stream);
+          ELLE_DEBUG("peer version: %s", peer_version);
+          this->_version = std::min(peer_version, this->version());
         }
       }
-      else
-        // The write must not be interrupted, otherwise it will break
-        // the serialization protocol.
-        elle::With<elle::reactor::Thread::NonInterruptible>() << [&]
-        {
-          ELLE_DEBUG("send actual data")
-            elle::protocol::write(this->_stream, this->version(), packet);
-          this->_stream.flush();
-        };
+      ELLE_TRACE("using version: '%s'", this->version());
+      this->_impl.reset(
+        new Impl(stream, this->_chunk_size, checksum, version));
+    }
+
+    Serializer::~Serializer()
+    {}
+
+    /*----------.
+    | Receiving |
+    `----------*/
+
+    elle::Buffer
+    Serializer::_read()
+    {
+      return this->_impl->read();
+    }
+
+    /*--------.
+    | Sending |
+    `--------*/
+
+    void
+    Serializer::_write(elle::Buffer const& packet)
+    {
+      this->_impl->write(packet);
+    }
+
+    /*----------.
+    | Printable |
+    `----------*/
+
+    void
+    Serializer::print(std::ostream& stream) const
+    {
+      stream << "Serializer " << this;
     }
   }
 }

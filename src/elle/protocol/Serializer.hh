@@ -117,9 +117,9 @@ namespace elle
       ELLE_ATTRIBUTE_R(elle::Buffer::Size, chunk_size);
       ELLE_ATTRIBUTE_R(bool, checksum);
     public:
-      class pImpl;
+      class Impl;
     private:
-      ELLE_ATTRIBUTE(std::unique_ptr<pImpl>, impl);
+      ELLE_ATTRIBUTE(std::unique_ptr<Impl>, impl);
     };
   }
 }
