@@ -741,6 +741,11 @@ _termination(elle::Version const& version,
       ELLE_TRACE("waitinng for thread")
         elle::reactor::wait(tready);
       auto& backend = s.stream();
+      if (version >= elle::Version(0, 3, 0))
+      {
+        char c = 0;
+        backend.write(&c, 1);
+      }
       elle::protocol::Stream::uint32_put(backend, 6, version);
       backend.write("foo", 3);
       backend.flush();
@@ -749,6 +754,11 @@ _termination(elle::Version const& version,
         t->terminate();
       elle::reactor::sleep(valgrind(10_ms, 10));
       backend.write("baz", 3);
+      if (version >= elle::Version(0, 3, 0))
+      {
+        char c = 0;
+        backend.write(&c, 1);
+      }
       elle::protocol::Stream::uint32_put(backend, 6, version);
       backend.write("foobar", 6);
       backend.flush();
@@ -836,6 +846,8 @@ ELLE_TEST_SCHEDULED(message)
           unsigned char keep_going = 0;
           connector._alice_buffer.append(&keep_going, 1);
         };
+        if (version >= elle::Version(0, 3, 0))
+          keep_going();
         // Send the size.
         {
           elle::protocol::Stream::uint32_put(
@@ -847,7 +859,6 @@ ELLE_TEST_SCHEDULED(message)
         {
           unsigned char message_control = 2;
           std::string message = "this should be ignored";
-
           connector._alice_buffer.append(&message_control, 1);
           elle::protocol::Stream::uint32_put(
             connector._alice_buffer, message.length(), version);
@@ -870,6 +881,7 @@ ELLE_TEST_SCHEDULED(interruption2)
 
   for (auto version: {elle::Version{0, 2, 0}, elle::Version{0, 3, 0}})
   {
+    ELLE_LOG("test version %s", version);
     elle::reactor::Barrier pinger_block;
     dialog<Connector>(
       version,
@@ -887,14 +899,20 @@ ELLE_TEST_SCHEDULED(interruption2)
           auto buf = c.read();
           // Forge a packet in `message`.
           elle::Buffer message;
-          // 1. the channel id.
+          // the channel id.
           elle::protocol::Stream::uint32_put(message, c.id(), version);
-          // 2. the content.
+          // the content.
           {
             elle::IOStream m(message.ostreambuf());
             m.write((const char*)buf.contents(), buf.size());
           }
-          // First send the size of `message`.
+          // Send control char
+          if (version >= elle::Version(0, 3, 0))
+          {
+            char c = 0;
+            s.stream().write(&c, 1);
+          }
+          // Send the size of `message`.
           elle::protocol::Stream::uint32_put(s.stream(), message.size(), version);
           {
             // Send `message`, but lacking the end.

@@ -245,6 +245,21 @@ namespace elle
              return this->_stream.peek();
            } == std::iostream::traits_type::eof())
           throw Serializer::EOF();
+        if (this->version() >= elle::Version(0, 3, 0))
+        {
+          while (true)
+            switch (read_control(this->_stream))
+            {
+              case Control::keep_going:
+                goto read_packet;
+              case Control::interrupt:
+                break;
+              case Control::message:
+                ignore_message(this->_stream, this->version());
+                break;
+            }
+          read_packet:;
+        }
         elle::Buffer hash;
         if (this->_checksum)
         {
@@ -309,6 +324,8 @@ namespace elle
       void
       _write(elle::Buffer const& packet)
       {
+        if (this->version() >= elle::Version(0, 3, 0))
+          write_control(this->_stream, Control::keep_going);
         if (this->_checksum)
           elle::With<elle::reactor::Thread::NonInterruptible>() << [&]
           {
