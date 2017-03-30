@@ -14,8 +14,6 @@ namespace elle
   namespace protocol
   {
     /// An abstract stream, with two basic entry points: read and write.
-    ///
-    /// XXX: Shouldn't Stream inherit from IOStream?
     class Stream
       : public elle::Printable
     {
