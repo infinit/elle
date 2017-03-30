@@ -327,15 +327,15 @@ namespace elle
         if (this->version() >= elle::Version(0, 3, 0))
           write_control(this->_stream, Control::keep_going);
         if (this->_checksum)
+        {
+          // Compute and send checksum.
+          auto hash = compute_checksum(packet);
           elle::With<elle::reactor::Thread::NonInterruptible>() << [&]
           {
-            // Compute and send checksum.
-            {
-              auto hash = compute_checksum(packet);
-              ELLE_DEBUG("send checksum: 0x%x", hash)
-                elle::protocol::write(this->_stream, this->version(), hash);
-            }
+            ELLE_DEBUG("send checksum: 0x%x", hash)
+              elle::protocol::write(this->_stream, this->version(), hash);
           };
+        }
         if (this->version() >= elle::Version(0, 2, 0))
         {
           elle::Buffer::Size offset = 0;
