@@ -1,8 +1,8 @@
 #pragma once
 
-# include <elle/Error.hh>
-# include <elle/attribute.hh>
-# include <elle/reactor/exception.hh>
+#include <elle/Error.hh>
+#include <elle/attribute.hh>
+#include <elle/reactor/exception.hh>
 
 namespace elle
 {

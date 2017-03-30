@@ -20,7 +20,7 @@ namespace elle
       scheduler();
       /// Run the operation, and wait for its completion.
       ///
-      /// @returns  whether it succeeded.
+      /// @returns  whether it did not time out.
       bool
       run(DurationOpt timeout = DurationOpt());
       /// Start the operation.
