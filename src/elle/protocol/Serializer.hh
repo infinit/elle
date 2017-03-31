@@ -1,5 +1,6 @@
 #pragma once
 
+#include <chrono>
 #include <iostream>
 
 #include <elle/reactor/mutex.hh>
@@ -65,7 +66,9 @@ namespace elle
       ///                 packets sent.
       Serializer(std::iostream& stream,
                  elle::Version const& version = elle::Version(0, 1, 0),
-                 bool checksum = true);
+                 bool checksum = true,
+                 boost::optional<std::chrono::milliseconds> ping_period = {},
+                 boost::optional<std::chrono::milliseconds> ping_timeout = {});
       ~Serializer();
 
     /*----------.
@@ -102,6 +105,7 @@ namespace elle
       ELLE_ATTRIBUTE_R(elle::Version, version, override);
       ELLE_ATTRIBUTE_R(elle::Buffer::Size, chunk_size);
       ELLE_ATTRIBUTE_R(bool, checksum);
+      ELLE_ATTRIBUTE_RX(boost::signals2::signal<void ()>, ping_timeout);
     public:
       class Impl;
     private:

@@ -191,6 +191,8 @@ public:
     , _alice_routed(0)
     , _bob_routed(0)
   {
+    this->_alice_barrier.open();
+    this->_bob_barrier.open();
     this->_a_server.listen();
     this->_b_server.listen();
     this->_alice.reset(
@@ -248,6 +250,7 @@ private:
     {
       auto route = [&] (elle::reactor::network::Socket* sender,
                         elle::reactor::network::Socket* recipient,
+                        elle::reactor::Barrier& barrier,
                         int64_t& routed,
                         Conf& conf)
         {
@@ -259,8 +262,7 @@ private:
               char buffer[1024];
               ELLE_DEBUG("reading");
               int64_t size =
-                sender->read_some(elle::WeakBuffer(buffer),
-                                  valgrind(250_ms, 10));
+                sender->read_some(elle::WeakBuffer(buffer));
               ELLE_DEBUG("read %s", size);
               conf(elle::ConstWeakBuffer(buffer, size));
               if (conf.corrupt_offset >= 0
@@ -281,6 +283,7 @@ private:
                 routed = conf.quota;
               }
               ELLE_DEBUG("%s: route %s bytes", *this, size);
+              elle::reactor::wait(barrier);
               recipient->write(elle::ConstWeakBuffer(buffer, size));
             }
           }
@@ -291,16 +294,20 @@ private:
         };
       scope.run_background("A to B",
                            std::bind(route, a.get(), b.get(),
+                                     std::ref(this->_alice_barrier),
                                      std::ref(this->_alice_routed),
                                      std::ref(*this->alice_conf)));
       scope.run_background("B to A",
                            std::bind(route, b.get(), a.get(),
+                                     std::ref(this->_bob_barrier),
                                      std::ref(this->_bob_routed),
                                      std::ref(*this->bob_conf)));
       scope.wait();
     };
   }
 
+  ELLE_ATTRIBUTE_RX(elle::reactor::Barrier, alice_barrier);
+  ELLE_ATTRIBUTE_RX(elle::reactor::Barrier, bob_barrier);
   elle::reactor::network::TCPServer _a_server;
   elle::reactor::network::TCPServer _b_server;
   std::unique_ptr<elle::reactor::network::TCPSocket> _alice;
@@ -348,7 +355,9 @@ dialog(elle::Version const& version,
        std::function<void (elle::protocol::Serializer&)> const& a,
        std::function<void (elle::protocol::Serializer&)> const& b,
        std::function<void (elle::reactor::Thread&, elle::reactor::Thread&,
-                           SocketProvider&)> const& f = {})
+                           SocketProvider&)> const& f = {},
+       boost::optional<std::chrono::milliseconds> ping_period = {},
+       boost::optional<std::chrono::milliseconds> ping_timeout = {})
 {
   SocketProvider sockets;
   std::unique_ptr<elle::protocol::Serializer> alice;
@@ -360,14 +369,16 @@ dialog(elle::Version const& version,
       [&]
       {
         alice.reset(new elle::protocol::Serializer(
-                      sockets.alice(), version, checksum));
+                      sockets.alice(), version, checksum,
+                      ping_period, ping_timeout));
       });
     scope.run_background(
       "setup bob's serializer",
       [&]
       {
         bob.reset(new elle::protocol::Serializer(
-                    sockets.bob(), version, checksum));
+                    sockets.bob(), version, checksum,
+                    ping_period, ping_timeout));
       });
     scope.wait();
   };
@@ -878,7 +889,6 @@ ELLE_TEST_SCHEDULED(interruption2)
   // Check that terminating a Channel.read() call does not lose an unrelated
   // packet.
   namespace ip = elle::protocol;
-
   for (auto version: {elle::Version{0, 2, 0}, elle::Version{0, 3, 0}})
   {
     ELLE_LOG("test version %s", version);
@@ -954,7 +964,6 @@ ELLE_TEST_SCHEDULED(interruption2)
         ELLE_TRACE("read on %s", c.id());
         auto buf = c.read();
         BOOST_CHECK_EQUAL(buf.string(), "foo");
-
         // just read some more to check we're still on
         ip::Channel c3(stream);
         c3.write(elle::Buffer("baz"));
@@ -964,7 +973,6 @@ ELLE_TEST_SCHEDULED(interruption2)
         ELLE_TRACE("read c3");
         buf = c3.read();
         BOOST_CHECK_EQUAL(buf.string(), "baz");
-
         // check killing reader thread before any data is read
         b.close();
         elle::reactor::Thread t2("read nothing", [&] {
@@ -995,6 +1003,55 @@ ELLE_TEST_SCHEDULED(interruption2)
   }
 }
 
+ELLE_TEST_SCHEDULED(ping)
+{
+  elle::reactor::Barrier alice;
+  elle::reactor::Barrier bob;
+  bool timeout_expected = false;
+  int timeouts = 0;
+  dialog<SocketInstrumentation>(
+    elle::Version(0, 3, 0),
+    true,
+    [] (SocketInstrumentation& socket)
+    {},
+    [&] (elle::protocol::Serializer& s)
+    {
+      s.ping_timeout().connect(
+        [&] { ++timeouts; BOOST_TEST(timeout_expected); });
+      s.write(elle::Buffer("alice"));
+      BOOST_TEST(s.read() == elle::Buffer("bob"));
+      alice.open();
+      BOOST_TEST(s.read() == elle::Buffer("bob"));
+    },
+    [&] (elle::protocol::Serializer& s)
+    {
+      s.ping_timeout().connect(
+        [&] { ++timeouts; BOOST_TEST(timeout_expected); });
+      s.write(elle::Buffer("bob"));
+      BOOST_TEST(s.read() == elle::Buffer("alice"));
+      bob.open();
+      BOOST_TEST(s.read() == elle::Buffer("alice"));
+    },
+    [&] (elle::reactor::Thread& a,
+         elle::reactor::Thread& b,
+         SocketInstrumentation& socket)
+    {
+      elle::reactor::wait(elle::reactor::Waitables{&alice, &bob});
+      // Let some pings go through
+      elle::reactor::sleep(500_ms);
+      timeout_expected = true;
+      socket.alice_barrier().close();
+      socket.bob_barrier().close();
+      // Let some timeouts go through
+      elle::reactor::sleep(500_ms);
+      a.terminate();
+      b.terminate();
+      BOOST_TEST(timeouts >= 2);
+    },
+    std::chrono::milliseconds(200),
+    std::chrono::milliseconds(100));
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -1008,4 +1065,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(termination), 0, valgrind(3, 10));
   suite.add(BOOST_TEST_CASE(eof), 0, valgrind(3));
   suite.add(BOOST_TEST_CASE(message), 0, valgrind(3));
+  suite.add(BOOST_TEST_CASE(ping), 0, valgrind(3));
 }

@@ -156,7 +156,9 @@ namespace elle
       keep_going = 0,
       interrupt = 1,
       message = 2,
-      max = message,
+      ping = 3,
+      pong = 4,
+      max = pong,
     };
 
     static
@@ -174,14 +176,39 @@ namespace elle
       Impl(std::iostream& stream,
            elle::Buffer::Size chunk_size,
            bool checksum,
-           elle::Version const& version)
-        : _stream(stream)
+           elle::Version const& version,
+           boost::optional<std::chrono::milliseconds> ping_period,
+           boost::optional<std::chrono::milliseconds> ping_timeout)
+        : _scheduler(reactor::scheduler())
+        , _pings(0)
+        , _pongs(0)
+        , _ping_period(std::move(ping_period))
+        , _ping_delay(std::move(ping_timeout))
+        , _pinger(this->_scheduler.io_service())
+        , _pinger_handler(
+          [this] (boost::system::error_code const& error)
+          {
+            if (error == boost::system::errc::operation_canceled)
+              return;
+            else if (error)
+              ELLE_ABORT("%s: unexpected timer error: %s", this, error);
+            this->ping();
+            this->_pinger.expires_from_now(
+              boost::posix_time::milliseconds(this->_ping_period->count()));
+            this->_pinger.async_wait(this->_pinger_handler);
+          })
+        , _stream(stream)
         , _chunk_size(chunk_size)
         , _checksum(checksum)
         , _version(version)
         , _lock_write()
         , _lock_read()
-      {}
+      {
+        if (bool(this->_ping_period) != bool(this->_ping_delay))
+          elle::err("specify either both ping period and timeout or neither");
+        if (this->_ping_period)
+          this->_pinger_handler({});
+      }
 
       virtual
       ~Impl() = default;
@@ -274,9 +301,29 @@ namespace elle
       void
       write_control(Control control)
       {
+        if (control != Control::pong && control != Control::ping)
+          this->write_pings_pongs();
         ELLE_DUMP_SCOPE("send control %s", (int) control);
         char c = static_cast<char>(control);
         this->_stream.write(&c, 1);
+      }
+
+      void
+      write_pings_pongs()
+      {
+        while (this->_pongs || this->_pings)
+        {
+          while (this->_pongs)
+          {
+            --this->_pongs;
+            this->write_control(Control::pong);
+          }
+          while (this->_pings)
+          {
+            --this->_pings;
+            this->write_control(Control::ping);
+          }
+        }
       }
 
       bool
@@ -305,9 +352,69 @@ namespace elle
             case Control::message:
               ignore_message(this->_stream, this->version());
               break;
+            case Control::ping:
+              this->pinged();
+              break;
+            case Control::pong:
+              if (this->_ping_timers.empty())
+                ELLE_ERR("%s: unexpected pong", this);
+              else
+                this->_ping_timers.pop_front();
+              break;
           }
         }
       }
+
+      void
+      ping()
+      {
+        ++this->_pings;
+        if (!this->_lock_write.locked())
+        {
+          new reactor::Thread(
+            this->_scheduler,
+            elle::sprintf("%s pinger", this),
+            [this]
+            {
+              elle::reactor::Lock lock(this->_lock_write);
+              this->write_pings_pongs();
+              this->_stream.flush();
+            },
+            true);
+        }
+        this->_ping_timers.emplace_back(this->_scheduler.io_service());
+        this->_ping_timers.back().expires_from_now(
+          boost::posix_time::milliseconds(this->_ping_delay->count()));
+        this->_ping_timers.back().async_wait(
+          [this] (boost::system::error_code const& error)
+          {
+            if (!error)
+              this->_ping_timeout();
+          });
+      }
+
+      void
+      pinged()
+      {
+        ++this->_pongs;
+        if (!this->_lock_write.locked())
+        {
+          elle::reactor::Lock lock(this->_lock_write);
+          this->write_pings_pongs();
+          this->_stream.flush();
+        }
+      }
+
+      ELLE_ATTRIBUTE(elle::reactor::Scheduler&, scheduler);
+      ELLE_ATTRIBUTE(int, pings);
+      ELLE_ATTRIBUTE(int, pongs);
+      ELLE_ATTRIBUTE(boost::optional<std::chrono::milliseconds>, ping_period);
+      ELLE_ATTRIBUTE(boost::optional<std::chrono::milliseconds>, ping_delay);
+      ELLE_ATTRIBUTE(boost::asio::deadline_timer, pinger);
+      ELLE_ATTRIBUTE(std::function<void (boost::system::error_code const&)>,
+                     pinger_handler);
+      ELLE_ATTRIBUTE(std::list<boost::asio::deadline_timer>, ping_timers);
+      ELLE_ATTRIBUTE_RX(boost::signals2::signal<void ()>, ping_timeout);
 
       void
       _write(elle::Buffer const& packet)
@@ -360,6 +467,8 @@ namespace elle
                 this->write_control(Control::keep_going);
                 send();
               };
+              this->write_pings_pongs();
+              this->_stream.flush();
             }
           }
           catch (elle::reactor::Terminate const&)
@@ -369,6 +478,7 @@ namespace elle
               ELLE_DEBUG("interrupted after sending %s bytes over %s",
                          offset, packet.size());
               this->write_control(Control::interrupt);
+              this->write_pings_pongs();
               this->_stream.flush();
             }
             throw;
@@ -405,9 +515,12 @@ namespace elle
     | Construction |
     `-------------*/
 
-    Serializer::Serializer(std::iostream& stream,
-                           elle::Version const& version,
-                           bool checksum)
+    Serializer::Serializer(
+      std::iostream& stream,
+      elle::Version const& version,
+      bool checksum,
+      boost::optional<std::chrono::milliseconds> ping_period,
+      boost::optional<std::chrono::milliseconds> ping_timeout)
       : Super(*elle::reactor::Scheduler::scheduler())
       , _stream(stream)
       , _version(version)
@@ -430,7 +543,9 @@ namespace elle
       }
       ELLE_TRACE("using version: '%s'", this->version());
       this->_impl.reset(
-        new Impl(stream, this->_chunk_size, checksum, version));
+        new Impl(stream, this->_chunk_size, checksum, version,
+                 std::move(ping_period), std::move(ping_timeout)));
+      this->_impl->ping_timeout().connect(this->_ping_timeout);
     }
 
     Serializer::~Serializer()
