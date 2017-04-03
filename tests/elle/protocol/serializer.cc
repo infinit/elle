@@ -1038,18 +1038,19 @@ ELLE_TEST_SCHEDULED(ping)
     {
       elle::reactor::wait(elle::reactor::Waitables{&alice, &bob});
       // Let some pings go through
-      elle::reactor::sleep(500_ms);
+      elle::reactor::sleep(1_sec);
       timeout_expected = true;
       socket.alice_barrier().close();
       socket.bob_barrier().close();
       // Let some timeouts go through
-      elle::reactor::sleep(500_ms);
+      elle::reactor::sleep(1_sec);
+
       a.terminate();
       b.terminate();
       BOOST_TEST(timeouts >= 2);
     },
-    std::chrono::milliseconds(200),
-    std::chrono::milliseconds(100));
+    std::chrono::milliseconds(400),
+    std::chrono::milliseconds(200));
 }
 
 ELLE_TEST_SUITE()
