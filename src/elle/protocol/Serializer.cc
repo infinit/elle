@@ -302,14 +302,14 @@ namespace elle
       write_control(Control control)
       {
         if (control != Control::pong && control != Control::ping)
-          this->write_pings_pongs();
+          this->write_pings_pongs(false);
         ELLE_DUMP_SCOPE("send control %s", (int) control);
         char c = static_cast<char>(control);
         this->_stream.write(&c, 1);
       }
 
       void
-      write_pings_pongs()
+      write_pings_pongs(bool flush)
       {
         while (this->_pongs || this->_pings)
         {
@@ -323,6 +323,8 @@ namespace elle
             --this->_pings;
             this->write_control(Control::ping);
           }
+         if (flush)
+           this->_stream.flush();
         }
       }
 
@@ -377,8 +379,7 @@ namespace elle
             [this]
             {
               elle::reactor::Lock lock(this->_lock_write);
-              this->write_pings_pongs();
-              this->_stream.flush();
+              this->write_pings_pongs(true);
             },
             true);
         }
@@ -400,8 +401,7 @@ namespace elle
         if (!this->_lock_write.locked())
         {
           elle::reactor::Lock lock(this->_lock_write);
-          this->write_pings_pongs();
-          this->_stream.flush();
+          this->write_pings_pongs(true);
         }
       }
 
@@ -467,8 +467,7 @@ namespace elle
                 this->write_control(Control::keep_going);
                 send();
               };
-              this->write_pings_pongs();
-              this->_stream.flush();
+              this->write_pings_pongs(true);
             }
           }
           catch (elle::reactor::Terminate const&)
@@ -478,8 +477,7 @@ namespace elle
               ELLE_DEBUG("interrupted after sending %s bytes over %s",
                          offset, packet.size());
               this->write_control(Control::interrupt);
-              this->write_pings_pongs();
-              this->_stream.flush();
+              this->write_pings_pongs(true);
             }
             throw;
           }
