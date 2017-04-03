@@ -206,7 +206,7 @@ namespace elle
       {
         if (bool(this->_ping_period) != bool(this->_ping_delay))
           elle::err("specify either both ping period and timeout or neither");
-        if (this->_ping_period)
+        if (this->_ping_period && this->version() >= elle::Version(0, 3, 0))
           this->_pinger_handler({});
       }
 
