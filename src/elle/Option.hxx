@@ -131,7 +131,19 @@ namespace elle
 
       template <typename T, typename A>
       std::enable_if_t<
-        !std::is_same<std::remove_cv_reference_t<T>, Head>::value,
+        std::is_same<std::remove_cv_reference_t<T>, std::nullptr_t>::value &&
+        std::is_same<Head, void>::value,
+        void>
+      _emplace(A&& value)
+      {
+        this->_index = Index;
+      }
+
+      template <typename T, typename A>
+      std::enable_if_t<
+        !std::is_same<std::remove_cv_reference_t<T>, Head>::value &&
+        (!std::is_same<std::remove_cv_reference_t<T>, std::nullptr_t>::value ||
+         !std::is_same<Head, void>::value),
         void>
       _emplace(A&& value)
       {

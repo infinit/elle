@@ -390,10 +390,17 @@ static
 void
 void_member()
 {
-  elle::Option<void, int> x(42);
-  BOOST_TEST(x.is<int>());
-  BOOST_TEST(!x.is<void>());
-  BOOST_TEST(x.get<int>() == 42);
+  {
+    elle::Option<void, int> x(42);
+    BOOST_TEST(x.is<int>());
+    BOOST_TEST(!x.is<void>());
+    BOOST_TEST(x.get<int>() == 42);
+  }
+  {
+    elle::Option<void, int> x(nullptr);
+    BOOST_TEST(!x.is<int>());
+    BOOST_TEST(x.is<void>());
+  }
 }
 
 ELLE_TEST_SUITE()
