@@ -140,17 +140,12 @@ namespace elle
            std::istream& plain,
            std::function<void (::EVP_MD_CTX*)> prolog = nullptr,
            std::function<void (::EVP_MD_CTX*)> epilog = nullptr);
-      /// Initialize a hash manually.
-      ::EVP_MD_CTX
-      hash_init(::EVP_MD const* oneway,
-                std::function<void (::EVP_MD_CTX*)> prolog = nullptr);
-      /// Update a manual hash with data.
-      void
-      hash_update(::EVP_MD_CTX* context, elle::Buffer const& buffer);
-      /// Finalize a manual hash.
+      /// Hash blocks of data (last block empty) and return a digest message.
       elle::Buffer
-      hash_finalize(::EVP_MD_CTX* context,
-                    std::function<void (::EVP_MD_CTX*)> epilog = nullptr);
+      hash(::EVP_MD const* oneway,
+           std::function<elle::ConstWeakBuffer (void)> next_block,
+           std::function<void (::EVP_MD_CTX*)> prolog = nullptr,
+           std::function<void (::EVP_MD_CTX*)> epilog = nullptr);
     }
   }
 }

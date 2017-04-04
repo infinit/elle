@@ -121,37 +121,40 @@ test_serialize()
 }
 
 /*-------.
-| Update |
+| Blocks |
 `-------*/
 
 template <elle::cryptography::Oneway O>
 void
-test_update_x()
+test_blocks_x()
 {
-  std::string str = "123abcxyz";
-  elle::Buffer all(str);
+  elle::Buffer all("123abcxyz");
+  std::vector<elle::Buffer> blocks;
+  for (int i = 0; i < 3; i++)
+    blocks.push_back(elle::Buffer(all.contents() + (i * 3), 3));
+  unsigned last_block = 0;
+  auto next_block = [&] () {
+    if (last_block == blocks.size())
+      return elle::ConstWeakBuffer();
+    elle::ConstWeakBuffer res = blocks[last_block++];
+    return res;
+  };
   auto all_digest = elle::cryptography::hash(all, O);
-  std::vector<elle::Buffer> chunks;
-  for (int i = 0; unsigned(i) < str.size() / 3; i++)
-    chunks.emplace_back(elle::Buffer(str.data() + (i * 3), 3));
-  auto context = elle::cryptography::hash_init(O);
-  for (auto const& b: chunks)
-    elle::cryptography::hash_update(&context, b);
-  auto chunks_digest = elle::cryptography::hash_finalize(&context);
-  BOOST_CHECK_EQUAL(all_digest, chunks_digest);
+  auto blocks_digest = elle::cryptography::hash(next_block, O);
+  BOOST_CHECK_EQUAL(all_digest, blocks_digest);
 }
 
 static
 void
-test_update()
+test_blocks()
 {
-  test_update_x<elle::cryptography::Oneway::md5>();
-  test_update_x<elle::cryptography::Oneway::sha>();
-  test_update_x<elle::cryptography::Oneway::sha1>();
-  test_update_x<elle::cryptography::Oneway::sha224>();
-  test_update_x<elle::cryptography::Oneway::sha256>();
-  test_update_x<elle::cryptography::Oneway::sha384>();
-  test_update_x<elle::cryptography::Oneway::sha512>();
+  test_blocks_x<elle::cryptography::Oneway::md5>();
+  test_blocks_x<elle::cryptography::Oneway::sha>();
+  test_blocks_x<elle::cryptography::Oneway::sha1>();
+  test_blocks_x<elle::cryptography::Oneway::sha224>();
+  test_blocks_x<elle::cryptography::Oneway::sha256>();
+  test_blocks_x<elle::cryptography::Oneway::sha384>();
+  test_blocks_x<elle::cryptography::Oneway::sha512>();
 }
 
 /*-----.
@@ -165,7 +168,7 @@ ELLE_TEST_SUITE()
   suite->add(BOOST_TEST_CASE(test_represent));
   suite->add(BOOST_TEST_CASE(test_operate));
   suite->add(BOOST_TEST_CASE(test_serialize));
-  suite->add(BOOST_TEST_CASE(test_update));
+  suite->add(BOOST_TEST_CASE(test_blocks));
 
   boost::unit_test::framework::master_test_suite().add(suite);
 }

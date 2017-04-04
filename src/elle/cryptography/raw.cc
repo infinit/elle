@@ -847,15 +847,12 @@ namespace elle
            std::function<void (::EVP_MD_CTX*)> prolog,
            std::function<void (::EVP_MD_CTX*)> epilog)
       {
-        auto context = hash_init(oneway, prolog);
-
-        ELLE_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_DIGEST_CONTEXT(context);
-
         // Hash the plain's stream.
         unsigned char* _input = buffers().first;
-
-        while (!plain.eof())
-        {
+        elle::Buffer buffer;
+        auto next_block = [&] () -> elle::ConstWeakBuffer {
+          if (plain.eof())
+            return elle::ConstWeakBuffer();
           // Read the plain's input stream and put a block of data in a
           // temporary buffer.
           plain.read(reinterpret_cast<char*>(_input),
@@ -864,83 +861,68 @@ namespace elle
             throw Error(
               elle::sprintf("unable to read the plain's input stream: %s",
                             plain.rdstate()));
-
-          hash_update(&context, elle::Buffer(_input, plain.gcount()));
-        }
-
-        auto digest = hash_finalize(&context, epilog);
-
-        ELLE_CRYPTOGRAPHY_FINALLY_ABORT(context);
-
-        return digest;
+          buffer = elle::Buffer(_input, plain.gcount());
+          return buffer;
+        };
+        return (hash(oneway, next_block, prolog, epilog));
       }
 
-      ::EVP_MD_CTX
-      hash_init(::EVP_MD const* oneway,
-                std::function<void (::EVP_MD_CTX*)> prolog)
+      elle::Buffer
+      hash(::EVP_MD const* oneway,
+           std::function<elle::ConstWeakBuffer (void)> next_block,
+           std::function<void (::EVP_MD_CTX*)> prolog,
+           std::function<void (::EVP_MD_CTX*)> epilog)
       {
         // Make sure the cryptographic system is set up.
         cryptography::require();
-
         // Initialise the context.
         ::EVP_MD_CTX context;
-
         ::EVP_MD_CTX_init(&context);
-
+        ELLE_CRYPTOGRAPHY_FINALLY_ACTION_CLEANUP_DIGEST_CONTEXT(context);
         // Initialise the digest.
         if (::EVP_DigestInit_ex(&context, oneway, nullptr) <= 0)
           throw Error(
             elle::sprintf("unable to initialize the digest process: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
-
         if (prolog)
           prolog(&context);
-
-        return context;
-      }
-
-      void
-      hash_update(::EVP_MD_CTX* context, elle::Buffer const& buffer)
-      {
-        // Update the digest context.
-        if (::EVP_DigestUpdate(context,
-                               buffer.contents(),
-                               buffer.size()) <= 0)
-          throw Error(
-            elle::sprintf("unable to apply the digest function: %s",
-                          ::ERR_error_string(ERR_get_error(), nullptr)));
-      }
-
-      elle::Buffer
-      hash_finalize(::EVP_MD_CTX* context,
-                    std::function<void (::EVP_MD_CTX*)> epilog)
-      {
+        unsigned read = 0;
+        while (true)
+        {
+          auto const& buffer = next_block();
+          read += buffer.size();
+          if (buffer.size() == 0)
+            break;
+          // Update the digest context.
+          if (::EVP_DigestUpdate(&context,
+                                 buffer.contents(),
+                                 buffer.size()) <= 0)
+            throw Error(
+              elle::sprintf("unable to apply the digest function: %s",
+                            ::ERR_error_string(ERR_get_error(), nullptr)));
+        }
         // Allocate the output digest.
-        elle::Buffer digest(EVP_MAX_MD_SIZE);
-
+        elle::Buffer digest(EVP_MD_size(oneway));
         if (epilog)
-          epilog(context);
-
+          epilog(&context);
         // Finalize the digest.
         unsigned int size(0);
-
-        if (::EVP_DigestFinal_ex(context,
+        if (::EVP_DigestFinal_ex(&context,
                                  digest.mutable_contents(),
                                  &size) <= 0)
           throw Error(
             elle::sprintf("unable to finalize the digest process: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
-
         // Update the digest final size.
         digest.size(size);
         digest.shrink_to_fit();
-
         // Clean the context.
-        if (::EVP_MD_CTX_cleanup(context) <= 0)
+        if (::EVP_MD_CTX_cleanup(&context) <= 0)
           throw Error(
             elle::sprintf("unable to clean the digest context: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
-        return digest;
+        ELLE_CRYPTOGRAPHY_FINALLY_ABORT(context);
+        return (digest);
       }
     }
   }

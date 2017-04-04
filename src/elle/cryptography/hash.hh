@@ -17,19 +17,14 @@ namespace elle
     elle::Buffer
     hash(elle::ConstWeakBuffer const& plain,
          Oneway const oneway);
+    /// Hash blocks of data (last block empty) and return a digest message.
+    elle::Buffer
+    hash(std::function<elle::ConstWeakBuffer (void)> next_block,
+         Oneway const oneway);
     /// Hash an input stream and return a digest message.
     elle::Buffer
     hash(std::istream& plain,
          Oneway const oneway);
-    /// Initialize a hash manually.
-    ::EVP_MD_CTX
-    hash_init(Oneway const oneway);
-    /// Update a manual hash with data.
-    void
-    hash_update(::EVP_MD_CTX* context, elle::Buffer const& buffer);
-    /// Finalize a manual hash.
-    elle::Buffer
-    hash_finalize(::EVP_MD_CTX* context);
   }
 }
 
