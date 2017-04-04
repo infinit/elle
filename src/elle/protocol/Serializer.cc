@@ -372,17 +372,7 @@ namespace elle
       {
         ++this->_pings;
         if (!this->_lock_write.locked())
-        {
-          new reactor::Thread(
-            this->_scheduler,
-            elle::sprintf("%s pinger", this),
-            [this]
-            {
-              elle::reactor::Lock lock(this->_lock_write);
-              this->write_pings_pongs(true);
-            },
-            true);
-        }
+          this->write_pings_pongs(true);
         this->_ping_timers.emplace_back(this->_scheduler.io_service());
         this->_ping_timers.back().expires_from_now(
           boost::posix_time::milliseconds(this->_ping_delay->count()));
