@@ -23,11 +23,18 @@ namespace elle
       , _sched(sched)
     {}
 
-    bool
-    Operation::run(DurationOpt timeout)
+    void
+    Operation::start()
     {
-      ELLE_TRACE_SCOPE("%s: run", *this);
-      this->start();
+      ELLE_TRACE_SCOPE("%s: start", this);
+      this->_running = true;
+      this->_start();
+    }
+
+    bool
+    Operation::join(DurationOpt timeout)
+    {
+      ELLE_TRACE_SCOPE("%s: wait for completion", this);
       try
       {
         if (!reactor::wait(*this, timeout))
@@ -58,6 +65,13 @@ namespace elle
       return true;
     }
 
+    bool
+    Operation::run(DurationOpt timeout)
+    {
+      this->start();
+      return this->join(timeout);
+    }
+
     void
     Operation::abort()
     {
@@ -66,14 +80,6 @@ namespace elle
         ELLE_TRACE("%s: abort", this)
           this->_abort();
       }
-    }
-
-    void
-    Operation::start()
-    {
-      ELLE_TRACE_SCOPE("%s: start", *this);
-      this->_running = true;
-      this->_start();
     }
 
     void
