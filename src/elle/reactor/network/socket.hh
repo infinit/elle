@@ -255,7 +255,10 @@ namespace elle
         void
         _final_flush();
       private:
+        void
+        _async_write();
         ELLE_ATTRIBUTE(Mutex, write_mutex);
+        ELLE_ATTRIBUTE(std::list<elle::Buffer>, async_writes);
 
       /*-----------------.
       | Concrete sockets |

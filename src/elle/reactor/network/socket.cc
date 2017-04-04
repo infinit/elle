@@ -713,10 +713,51 @@ namespace elle
       void
       StreamSocket<AsioSocket, EndPoint>::write(elle::ConstWeakBuffer buffer)
       {
-        Lock lock(this->_write_mutex);
-        ELLE_TRACE_SCOPE("%s: write %s bytes", *this, buffer.size());
-        Write<Self, AsioSocket> write(*this, *this->socket(), buffer);
-        write.run();
+        if (reactor::scheduler().current())
+        {
+          {
+            Lock lock(this->_write_mutex);
+            ELLE_TRACE_SCOPE("%s: write %s bytes", this, buffer.size());
+            Write<Self, AsioSocket> write(*this, *this->socket(), buffer);
+            write.run();
+          }
+          this->_async_write();
+        }
+        else
+        {
+          this->_async_writes.emplace_back(buffer.contents(), buffer.size());
+          this->_async_write();
+        }
+      }
+
+      template <typename AsioSocket, typename EndPoint>
+      void
+      StreamSocket<AsioSocket, EndPoint>::_async_write()
+      {
+        if (!this->_async_writes.empty() && !this->_write_mutex.locked())
+        {
+          this->_write_mutex.acquire();
+          auto& buffer = this->_async_writes.front();
+          ELLE_TRACE_SCOPE(
+            "%s: write %s bytes asynchronously", this, buffer.size());
+          auto asio_buffer =
+            boost::asio::buffer(buffer.contents(), buffer.size());
+          boost::asio::async_write(
+            *this->socket(),
+            asio_buffer,
+            [this]
+            (const boost::system::error_code& error, std::size_t written)
+            {
+              this->_async_writes.pop_front();
+              if (error == boost::system::errc::operation_canceled)
+                return;
+              // FIXME: what do with other errors ?
+              ELLE_TRACE_SCOPE(
+                "%s: %s bytes written asynchronously", this, written);
+              this->_write_mutex.release();
+              this->_async_write();
+            });
+        }
       }
 
       /*------------------------.

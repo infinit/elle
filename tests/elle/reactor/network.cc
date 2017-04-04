@@ -764,6 +764,41 @@ ELLE_TEST_SCHEDULED(read_terminate_deadlock)
   accept.terminate_now();
 }
 
+ELLE_TEST_SCHEDULED(async_write)
+{
+  elle::reactor::network::TCPServer server;
+  server.listen();
+  elle::reactor::Barrier read;
+  elle::reactor::Barrier written;
+  elle::reactor::Thread accept(
+    "accept",
+    [&]
+    {
+      auto socket = server.accept();
+      auto buffer = socket->read(9);
+      BOOST_TEST(buffer == "foobarbaz");
+      read.open();
+    });
+  elle::reactor::network::TCPSocket socket(
+    "localhost", server.local_endpoint().port());
+  boost::asio::deadline_timer t(elle::reactor::scheduler().io_service());
+  t.expires_from_now(boost::posix_time::milliseconds(100));
+  t.async_wait([&] (boost::system::error_code const& e)
+               {
+                 BOOST_TEST(!e);
+                 socket.write("foo");
+               });
+  t.async_wait([&] (boost::system::error_code const& e)
+               {
+                 written.open();
+                 BOOST_TEST(!e);
+                 socket.write("bar");
+               });
+  elle::reactor::wait(written);
+  socket.write("baz");
+  elle::reactor::wait(read);
+}
+
 /*-----------.
 | Test suite |
 `-----------*/
@@ -802,4 +837,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(read_terminate_recover), 0, 1);
   suite.add(BOOST_TEST_CASE(read_terminate_recover_iostream), 0, 1);
   suite.add(BOOST_TEST_CASE(read_terminate_deadlock), 0, 1);
+  suite.add(BOOST_TEST_CASE(async_write), 0, 10);
 }
