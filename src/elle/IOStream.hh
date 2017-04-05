@@ -138,14 +138,12 @@ namespace elle
     virtual
     void
     write(char* buffer, Size size) = 0;
-    /// Return a WeakBuffer to the underlying _obuf.
+
+  protected:
     WeakBuffer
     write_buffer() override;
-    /// Return a WeakBuffer to the data read (calling StreamBuffer::read).
     WeakBuffer
     read_buffer() override;
-    /// Synchronize the StreamBuffer by writing (calling StreamBuffer::write)
-    /// the _ibuf.
     void
     flush(Size size) override;
 
