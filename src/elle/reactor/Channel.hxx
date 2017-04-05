@@ -62,6 +62,7 @@ namespace elle
         ELLE_DEBUG("open");
         this->_read_barrier.open();
       }
+      this->_on_put();
     }
 
     namespace details
@@ -113,6 +114,7 @@ namespace elle
       }
       if (signed(this->_queue.size()) < this->_max_size)
         this->_write_barrier.open();
+      this->_on_get();
       return res;
     }
 

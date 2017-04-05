@@ -133,6 +133,8 @@ namespace elle
       /// Maximum size, will block writers *after* insertion if reached
       ELLE_ATTRIBUTE_Rw(int, max_size);
       ELLE_ATTRIBUTE_r(int, size);
+      ELLE_ATTRIBUTE_RX(boost::signals2::signal<void ()>, on_get);
+      ELLE_ATTRIBUTE_RX(boost::signals2::signal<void ()>, on_put);
       enum
       {
         SizeUnlimited = std::numeric_limits<int>::max()
