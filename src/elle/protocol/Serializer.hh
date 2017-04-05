@@ -68,7 +68,8 @@ namespace elle
                  elle::Version const& version = elle::Version(0, 1, 0),
                  bool checksum = true,
                  boost::optional<std::chrono::milliseconds> ping_period = {},
-                 boost::optional<std::chrono::milliseconds> ping_timeout = {});
+                 boost::optional<std::chrono::milliseconds> ping_timeout = {},
+                 elle::Buffer::Size chunk_size = 2 << 16);
       ~Serializer();
 
     /*----------.

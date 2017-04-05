@@ -508,11 +508,12 @@ namespace elle
       elle::Version const& version,
       bool checksum,
       boost::optional<std::chrono::milliseconds> ping_period,
-      boost::optional<std::chrono::milliseconds> ping_timeout)
+      boost::optional<std::chrono::milliseconds> ping_timeout,
+      elle::Buffer::Size chunk_size)
       : Super(*elle::reactor::Scheduler::scheduler())
       , _stream(stream)
       , _version(version)
-      , _chunk_size(2 << 16)
+      , _chunk_size(chunk_size)
       , _checksum(checksum)
     {
       if (this->version() >= elle::Version(0, 2, 0))
