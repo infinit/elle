@@ -104,7 +104,7 @@ Because Elle was designed to be modular, you can build specific parts of Elle by
 ```
 It will result on `<module>/lib/libelle_<module>.so` and its dependencies on GNU/Linux, `<module>/lib/lib<module>.dylib` on macOS, ...
 
-### Dependencies
+## Dependencies
 
 Elle depends on a few libraries which are automatically downloaded and built for your system by Drake if needed.
 
@@ -119,6 +119,10 @@ Elle depends on a few libraries which are automatically downloaded and built for
 ## List of projects using Elle
 
 - [Infinit](https://github.com/infinit/infinit)
+
+## Wiki
+
+Consult [Elle's wiki](https://github.com/infinit/elle/wiki) for more information about Elle.
 
 ## Maintainers
 
