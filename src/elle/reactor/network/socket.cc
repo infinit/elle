@@ -751,7 +751,10 @@ namespace elle
               this->_async_writes.pop_front();
               if (error == boost::system::errc::operation_canceled)
                 return;
-              // FIXME: what do with other errors ?
+              else if (error)
+                // FIXME: what do with other errors ?
+                ELLE_WARN("asynchronous write error on %s: %s",
+                          this, error.message());
               ELLE_TRACE_SCOPE(
                 "%s: %s bytes written asynchronously", this, written);
               this->_write_mutex.release();
