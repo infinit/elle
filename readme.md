@@ -52,8 +52,8 @@ As mentioned earlier, Elle is composed of a set of sub-libraries, designed to ea
 - [protocol](src/elle/protocol): Network communication designed to support RPCs
 - [das](src/elle/das): Symbol-based introspection
 - [athena](src/elle/athena): Byzantine environment algorithms (Paxos)
-- [aws](src/elle/service/aws): *reactorified* AWS API wrapper
-- [dropbox](src/elle/service/dropbox): *reactorified* Dropbox API wrapper
+- service/[aws](src/elle/service/aws): *reactorified* AWS API wrapper
+- service/[dropbox](src/elle/service/dropbox): *reactorified* Dropbox API wrapper
 
 ## How to build Elle (or parts of Elle)
 
@@ -67,6 +67,8 @@ As mentioned earlier, Elle is composed of a set of sub-libraries, designed to ea
 Elle uses [Drake](https://github.com/infinit/drake) and has it as a submodule.
 
 ### How to compile
+
+For a detailed procedure, visit our [wiki: How to build](https://github.com/infinit/elle/wiki/How-to-build).
 
 First you need to install drakes requirements.
 
