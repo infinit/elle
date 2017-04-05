@@ -27,5 +27,10 @@ namespace elle
 
     using Signals = std::vector<Signal*>;
     using Waitables = std::vector<Waitable*>;
+
+    namespace filesystem
+    {
+      class FileSystem;
+    }
   }
 }

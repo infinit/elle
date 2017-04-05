@@ -12,12 +12,13 @@
 #include <elle/Buffer.hh>
 #include <elle/Exception.hh>
 #include <elle/filesystem.hh>
+#include <elle/reactor/fwd.hh>
 #include <elle/reactor/Waitable.hh>
 
 static_assert(sizeof(off_t) == 8,
               "off_t is 32 bits long, define _FILE_OFFSET_BITS to 64");
 
-# if defined(INFINIT_WINDOWS) || defined(INFINIT_ANDROID)
+#if defined INFINIT_WINDOWS || defined INFINIT_ANDROID
 struct statvfs {
   unsigned long  f_bsize;    /* filesystem block size */
   unsigned long  f_frsize;   /* fragment size */
@@ -31,9 +32,9 @@ struct statvfs {
   unsigned long  f_flag;     /* mount flags */
   unsigned long  f_namemax;  /* maximum filename length */
 };
-# else
-#  include <sys/statvfs.h>
-# endif
+#else
+# include <sys/statvfs.h>
+#endif
 
 struct stat;
 struct statvfs;
@@ -77,11 +78,11 @@ namespace elle
 
         virtual
         int
-        read(elle::WeakBuffer buffer, size_t size, off_t offset)=0;
+        read(elle::WeakBuffer buffer, size_t size, off_t offset) = 0;
 
         virtual
         int
-        write(elle::ConstWeakBuffer buffer, size_t size, off_t offset)=0;
+        write(elle::ConstWeakBuffer buffer, size_t size, off_t offset) = 0;
 
         virtual
         void
@@ -98,7 +99,6 @@ namespace elle
         virtual
         void
         close() = 0;
-
       };
 
       class Path
@@ -209,7 +209,6 @@ namespace elle
         }
       };
 
-      class FileSystem;
       class Operations
       {
       public:
@@ -304,8 +303,7 @@ namespace elle
       class BindHandle: public Handle
       {
       public:
-        BindHandle(int fd, boost::filesystem::path );
-
+        BindHandle(int fd, boost::filesystem::path);
         int
         read(elle::WeakBuffer buffer, size_t size, off_t offset) override;
         int
@@ -324,7 +322,7 @@ namespace elle
         : public Operations
       {
       public:
-        BindOperations(boost::filesystem::path  source);
+        BindOperations(boost::filesystem::path source);
 
         std::shared_ptr<Path>
         path(std::string const& path) override;
