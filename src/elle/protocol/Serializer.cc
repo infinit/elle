@@ -137,13 +137,6 @@ namespace elle
           boost::optional<elle::Buffer::Size> size = boost::none)
     {
       elle::Buffer::Size to_send = size ? size.get() : content.size();
-      ELLE_DEBUG_SCOPE("write %s '%f' at offset %s (write size: %s)",
-                       to_send == content.size()
-                       ? std::string{"whole"}
-                       : elle::sprintf("%s bytes from", to_send),
-                       content,
-                       offset,
-                       write_size);
       if (write_size)
         Serializer::Super::uint32_put(stream, to_send, version);
       stream.write(
@@ -303,7 +296,7 @@ namespace elle
       {
         if (control != Control::pong && control != Control::ping)
           this->write_pings_pongs(false);
-        ELLE_DUMP_SCOPE("send control %s", (int) control);
+        ELLE_DEBUG_SCOPE("send control %s", (int) control);
         char c = static_cast<char>(control);
         this->_stream.write(&c, 1);
       }
@@ -429,7 +422,8 @@ namespace elle
             auto send = [&]
               {
                 auto to_send = std::min(this->_chunk_size, packet.size() - offset);
-                ELLE_DEBUG("send actual data: %s", to_send)
+                ELLE_DEBUG_SCOPE("send %s bytes of data at offset %s",
+                                 to_send, offset);
                 elle::protocol::write(
                   this->_stream,
                   this->version(), packet, false, offset, to_send);
@@ -451,7 +445,6 @@ namespace elle
             }
             while (offset < packet.size())
             {
-              ELLE_DEBUG("writing control: o=%s, size=%s", offset, packet.size());
               elle::With<elle::reactor::Thread::NonInterruptible>() << [&]
               {
                 this->write_control(Control::keep_going);
