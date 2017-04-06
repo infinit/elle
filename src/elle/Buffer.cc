@@ -522,34 +522,60 @@ namespace elle
     return this->_contents[i];
   }
 
+  template <typename B>
+  B
+  _range(B& b, int start, int end)
+  {
+    if (start < 0)
+      start = b.size() + start;
+    if (end < 0)
+      end = b.size() + end;
+    ELLE_ASSERT_LTE(start, end);
+    ELLE_ASSERT_LTE(end, signed(b.size()));
+    return B(const_cast<Buffer::Byte*>(b.contents()) + start, end - start);
+  }
+
+  template <typename B>
+  B
+  _range(B& b, int start)
+  {
+    return _range<B>(b, start, b.size());
+  }
+
+  Buffer
+  Buffer::range(int start) const
+  {
+    return _range(*this, start);
+  }
+
+  Buffer
+  Buffer::range(int start, int end) const
+  {
+    return _range(*this, start, end);
+  }
+
   WeakBuffer
   WeakBuffer::range(int start) const
   {
-    return this->range(start, this->size());
-  }
-
-  ConstWeakBuffer
-  ConstWeakBuffer::range(int start) const
-  {
-    return this->range(start, this->size());
+    return _range(*this, start);
   }
 
   WeakBuffer
   WeakBuffer::range(int start, int end) const
   {
-    if (start < 0)
-      start = this->size() + start;
-    if (end < 0)
-      end = this->size() + end;
-    ELLE_ASSERT_LTE(start, end);
-    ELLE_ASSERT_LTE(end, signed(this->size()));
-    return WeakBuffer(this->mutable_contents() + start, end - start);
+    return _range(*this, start, end);
+  }
+
+  ConstWeakBuffer
+  ConstWeakBuffer::range(int start) const
+  {
+    return _range(*this, start);
   }
 
   ConstWeakBuffer
   ConstWeakBuffer::range(int start, int end) const
   {
-    return static_cast<WeakBuffer const*>(this)->range(start, end);
+    return _range(*this, start, end);
   }
 
   bool

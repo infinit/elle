@@ -117,6 +117,12 @@ namespace elle
     /// Costly, as it memmoves the remaing bytes.
     void
     pop_front(Size size = 1);
+    /// A subset of this buffer.
+    Buffer
+    range(int start) const;
+    /// A subset of this buffer.
+    Buffer
+    range(int start, int end) const;
 
   /*---------------------.
   | Relational Operators |

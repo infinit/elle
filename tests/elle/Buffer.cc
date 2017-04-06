@@ -284,15 +284,27 @@ hash()
                  hash(elle::ConstWeakBuffer("snthdiueoa")));
 }
 
+template <typename B>
 static
 void
-range()
+_range()
 {
-  elle::ConstWeakBuffer buffer("0123456789");
+  auto data = strdup("0123456789");
+  B buffer(data, strlen(data));
   BOOST_CHECK_EQUAL(buffer.range(3), "3456789");
   BOOST_CHECK_EQUAL(buffer.range(1, 6), "12345");
   BOOST_CHECK_EQUAL(buffer.range(5, -1), "5678");
   BOOST_CHECK_EQUAL(buffer.range(-5, -3), "56");
+  free(data);
+}
+
+static
+void
+range()
+{
+  _range<elle::ConstWeakBuffer>();
+  _range<elle::WeakBuffer>();
+  _range<elle::Buffer>();
 }
 
 static
