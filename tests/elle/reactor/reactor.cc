@@ -2885,6 +2885,31 @@ namespace channel
     elle::reactor::wait(s);
     };
   }
+
+  ELLE_TEST_SCHEDULED(exception)
+  {
+    {
+      elle::reactor::Channel<int> c;
+      c.put(42);
+      c.raise<BeaconException>();
+      BOOST_TEST(c.get() == 42);
+      BOOST_CHECK_THROW(c.get(), BeaconException);
+    }
+    {
+      elle::reactor::Barrier getting;
+      elle::reactor::Channel<int> c;
+      elle::reactor::Thread t(
+        "get",
+        [&]
+        {
+          getting.open();
+          BOOST_CHECK_THROW(c.get(), BeaconException);
+        });
+      elle::reactor::wait(getting);
+      c.raise<BeaconException>();
+      elle::reactor::wait(t);
+    }
+  }
 }
 
 ELLE_TEST_SCHEDULED(test_released_signal)
@@ -3356,6 +3381,8 @@ ELLE_TEST_SUITE()
     channels->add(BOOST_TEST_CASE(wake_clear), 0, valgrind(1, 5));
     auto open_close = &channel::open_close;
     channels->add(BOOST_TEST_CASE(open_close), 0, valgrind(1, 5));
+    auto exception = &channel::exception;
+    channels->add(BOOST_TEST_CASE(exception), 0, valgrind(1, 5));
   }
 
   {

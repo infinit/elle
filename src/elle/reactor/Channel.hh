@@ -106,10 +106,20 @@ namespace elle
       /// Empty the Channel.
       void
       clear();
+      /// Raise an exception when empty and getting an element.
+      void
+      raise(std::exception_ptr e);
+      /// Raise an exception when empty and getting an element.
+      template <typename E = elle::Error, typename ... Args>
+      void
+      raise(Args&& ... args);
+    private:
+      void
+      _exhausted();
 
-      /*--------.
-      | Control |
-      `--------*/
+    /*--------.
+    | Control |
+    `--------*/
     public:
       /// Open the Channel for reading.
       void
@@ -128,6 +138,7 @@ namespace elle
     private:
       ELLE_ATTRIBUTE(Barrier, read_barrier);
       ELLE_ATTRIBUTE(Barrier, write_barrier);
+      ELLE_ATTRIBUTE(std::exception_ptr, exception);
       ELLE_ATTRIBUTE(Container, queue);
       ELLE_ATTRIBUTE_R(bool, opened);
       /// Maximum size, will block writers *after* insertion if reached

@@ -92,30 +92,69 @@ namespace elle
     {
       ELLE_LOG_COMPONENT("elle.reactor.Channel");
       ELLE_TRACE_SCOPE("%s: get", this);
-      /// In case of the barrier was opened
-      /// with a last element, and closed immediatly
-      /// Be sure the barrier is clearly opened before
-      /// get element.
       if (!this->_read_barrier.opened())
       {
         ELLE_TRACE_SCOPE("wait for data");
+        // Loop in case the channel was exhausted by another reader.
         while(!this->_read_barrier.opened())
           reactor::wait(this->_read_barrier);
       }
+      else if (this->_queue.empty() && this->_exception)
+        std::rethrow_exception(this->_exception);
       ELLE_ASSERT(!this->_queue.empty());
       T res(std::move(details::queue_front(this->_queue)));
       this->_queue.pop();
       ELLE_DEBUG("got data")
         ELLE_DUMP("value: %s", res);
       if (this->_queue.empty())
-      {
-        ELLE_DEBUG("exhausted all data, close");
-        this->_read_barrier.close();
-      }
+        this->_exhausted();
       if (signed(this->_queue.size()) < this->_max_size)
         this->_write_barrier.open();
       this->_on_get();
       return res;
+    }
+
+    template <typename T, typename Container>
+    void
+    Channel<T, Container>::_exhausted()
+    {
+      ELLE_LOG_COMPONENT("elle.reactor.Channel");
+      ELLE_DEBUG_SCOPE("exhausted all data, close");
+      ELLE_ASSERT(this->_queue.empty());
+      this->_read_barrier.close();
+      if (this->_exception)
+      {
+        ELLE_TRACE("raise %s", elle::exception_string(this->_exception));
+        this->_read_barrier.raise(this->_exception);
+      }
+    }
+
+    template <typename T, typename Container>
+    void
+    Channel<T, Container>::raise(std::exception_ptr e)
+    {
+      ELLE_LOG_COMPONENT("elle.reactor.Channel");
+      this->_exception = e;
+      if (this->_queue.empty())
+        ELLE_TRACE("%s: raise %s", this, elle::exception_string(e))
+          this->_read_barrier.raise(e);
+      else
+        ELLE_TRACE("%s: raise %s when empty", this, elle::exception_string(e));
+    }
+
+    template <typename T, typename Container>
+    template <typename E, typename ... Args>
+    void
+    Channel<T, Container>::raise(Args&& ... args)
+    {
+      try
+      {
+        throw E(std::forward<Args>(args)...);
+      }
+      catch (...)
+      {
+        this->raise(std::current_exception());
+      }
     }
 
     template <typename T, typename Container>
@@ -160,10 +199,7 @@ namespace elle
       if (this->_max_size < signed(this->_queue.size()))
         this->_write_barrier.open();
       if (this->_read_barrier.opened())
-      {
-        ELLE_DEBUG("close");
-        this->_read_barrier.close();
-      }
+        this->_exhausted();
     }
 
     /*--------.
