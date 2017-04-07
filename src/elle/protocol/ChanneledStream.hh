@@ -54,10 +54,19 @@ namespace elle
     public:
       ChanneledStream(elle::reactor::Scheduler& scheduler, Stream& backend);
       ChanneledStream(Stream& backend);
+      virtual
+      ~ChanneledStream();
+    private:
+      void
+      _read_thread();
+      ELLE_ATTRIBUTE(Stream&, backend);
+      ELLE_ATTRIBUTE(reactor::Thread::unique_ptr, thread);
+      ELLE_ATTRIBUTE(std::exception_ptr, exception);
 
     /*--------.
     | Version |
     `--------*/
+    public:
       ELLE_attribute_r(elle::Version, version, override);
 
     /*----.
@@ -69,7 +78,6 @@ namespace elle
     private:
       int
       _id_generate();
-
       bool
       _handshake(Stream& backend);
 
@@ -85,21 +93,6 @@ namespace elle
     protected:
       elle::Buffer
       _read() override;
-
-    private:
-      /// Read and dispatch packets until one that fit our needs is found.
-      ///
-      /// @param new_channel Whether to return when and only when a new channel
-      ///                    is opened.
-      /// @param channel Id of the channel receiving a packet on will cause the
-      ///                function to return. Ignored if new_channel is true.
-      void
-      _read(bool new_channel, int channel);
-
-      elle::Buffer
-      _read(Channel* channel);
-
-      ELLE_ATTRIBUTE(bool, reading);
 
     /*--------.
     | Sending |
@@ -123,10 +116,8 @@ namespace elle
     `--------*/
     private:
       friend class Channel;
-
-      ELLE_ATTRIBUTE(Stream&, backend);
       ELLE_ATTRIBUTE(Channels, channels);
-      ELLE_ATTRIBUTE(std::list<Channel>, channels_new);
+      ELLE_ATTRIBUTE(reactor::Channel<Channel>, channels_new);
       ELLE_ATTRIBUTE(elle::reactor::Signal, channel_available);
       ELLE_ATTRIBUTE(Channel, default);
     };

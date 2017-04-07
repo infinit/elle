@@ -107,6 +107,7 @@ def configure(cryptography,
   tests_path = elle_tests_path / 'elle/protocol'
 
   tests = [
+    'channel',
     'serializer',
     'split',
     'stream',

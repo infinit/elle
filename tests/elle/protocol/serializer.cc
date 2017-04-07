@@ -1,22 +1,25 @@
-#include <elle/protocol/exceptions.hh>
 #include <elle/protocol/Serializer.hh>
-#include <elle/protocol/ChanneledStream.hh>
-#include <elle/protocol/Channel.hh>
+
+#include <elle/IOStream.hh>
+#include <elle/ScopedAssignment.hh>
+#include <elle/With.hh>
+#include <elle/cast.hh>
+#include <elle/test.hh>
 
 #include <elle/cryptography/random.hh>
 
-#include <elle/reactor/asio.hh>
+#include <elle/protocol/Channel.hh>
+#include <elle/protocol/ChanneledStream.hh>
+#include <elle/protocol/exceptions.hh>
+
 #include <elle/reactor/Barrier.hh>
+#include <elle/reactor/Channel.hh>
 #include <elle/reactor/Scope.hh>
+#include <elle/reactor/asio.hh>
 #include <elle/reactor/network/Error.hh>
 #include <elle/reactor/network/tcp-server.hh>
 #include <elle/reactor/network/tcp-socket.hh>
 #include <elle/reactor/scheduler.hh>
-
-#include <elle/test.hh>
-#include <elle/cast.hh>
-#include <elle/IOStream.hh>
-#include <elle/With.hh>
 
 ELLE_LOG_COMPONENT("elle.protocol.test");
 
@@ -710,80 +713,6 @@ ELLE_TEST_SCHEDULED(interruption)
   CASES(_interruption);
 }
 
-static
-void
-_termination(elle::Version const& version,
-            bool checksum)
-{
-  elle::reactor::Thread::unique_ptr t;
-  elle::reactor::Barrier tready;
-  dialog<SocketInstrumentation>(
-    version,
-    checksum,
-    [] (SocketInstrumentation& sockets)
-    {
-    },
-    [&] (elle::protocol::Serializer& s)
-    {
-      t.reset(new elle::reactor::Thread("reader", [&] {
-          try
-          {
-            ELLE_TRACE("read from thread");
-            tready.open();
-            s.read();
-            BOOST_CHECK(false);
-          }
-          catch (elle::reactor::Terminate const& t)
-          {
-            ELLE_TRACE("terminating first reader");
-            throw;
-          }
-      }));
-      elle::reactor::wait(*t);
-      ELLE_TRACE("second read")
-      {
-        auto buf = s.read();
-        ELLE_TRACE("reader done");
-        BOOST_CHECK_EQUAL(buf.string(), "foobar");
-      }
-    },
-    [&] (elle::protocol::Serializer& s)
-    {
-      ELLE_TRACE("waitinng for thread")
-        elle::reactor::wait(tready);
-      auto& backend = s.stream();
-      if (version >= elle::Version(0, 3, 0))
-      {
-        char c = 0;
-        backend.write(&c, 1);
-      }
-      elle::protocol::Stream::uint32_put(backend, 6, version);
-      backend.write("foo", 3);
-      backend.flush();
-      elle::reactor::sleep(valgrind(10_ms, 10));
-      ELLE_TRACE("killing thread")
-        t->terminate();
-      elle::reactor::sleep(valgrind(10_ms, 10));
-      backend.write("baz", 3);
-      if (version >= elle::Version(0, 3, 0))
-      {
-        char c = 0;
-        backend.write(&c, 1);
-      }
-      elle::protocol::Stream::uint32_put(backend, 6, version);
-      backend.write("foobar", 6);
-      backend.flush();
-      ELLE_TRACE("writer done");
-    });
-}
-
-ELLE_TEST_SCHEDULED(termination)
-{
-  _termination(elle::Version{0, 1, 0}, false);
-  _termination(elle::Version{0, 2, 0}, false);
-  _termination(elle::Version{0, 3, 0}, false);
-}
-
 ELLE_TEST_SCHEDULED(eof)
 {
   static std::string const data(
@@ -1044,13 +973,122 @@ ELLE_TEST_SCHEDULED(ping)
       socket.bob_barrier().close();
       // Let some timeouts go through
       elle::reactor::sleep(1_sec);
-
       a.terminate();
       b.terminate();
       BOOST_TEST(timeouts >= 2);
     },
     std::chrono::milliseconds(400),
     std::chrono::milliseconds(200));
+}
+
+class YAStream:
+  public elle::IOStream
+{
+  struct StreamBuffer
+    : public elle::PlainStreamBuffer
+  {
+  public:
+    StreamBuffer(YAStream& owner)
+      : _owner(owner)
+    {}
+
+  protected:
+    Size
+    read(char* buffer, Size size) override
+    {
+      auto data = this->_owner.input().get();
+      ELLE_ASSERT_LTE(data.size(), size);
+      memcpy(buffer, data.contents(), data.size());
+      this->_owner._read();
+      return data.size();
+    }
+
+    void
+    write(char* buffer, Size size) override
+    {
+      this->_owner.output().put(elle::Buffer(buffer, size));
+    }
+
+    ELLE_ATTRIBUTE(YAStream&, owner);
+  };
+
+public:
+  YAStream(elle::reactor::Channel<elle::Buffer>& input,
+           elle::reactor::Channel<elle::Buffer>& output)
+    : elle::IOStream(this->_streambuf = new StreamBuffer(*this))
+    , _input(input)
+    , _output(output)
+  {}
+
+  ELLE_ATTRIBUTE(StreamBuffer*, streambuf);
+  ELLE_ATTRIBUTE_RX(elle::reactor::Channel<elle::Buffer>&, input);
+  ELLE_ATTRIBUTE_RX(elle::reactor::Channel<elle::Buffer>&, output);
+  ELLE_ATTRIBUTE_RX(boost::signals2::signal<void ()>, read);
+};
+
+// Interrupt a packet read mid-way, check the packet is not lost and the stream
+// is not corrupted.
+ELLE_TEST_SCHEDULED(read_interruption, (elle::Version, version))
+{
+  static const elle::Buffer data("cherie ca va trancher");
+  elle::reactor::Channel<elle::Buffer> write, read;
+  YAStream write_stream(read, write);
+  YAStream read_stream(write, read);
+  elle::reactor::Barrier blocked;
+  elle::reactor::Barrier carry_on;
+  elle::reactor::Thread writer(
+    "writer",
+    [&]
+    {
+      // Make the beginning data available until carry_on is opened.
+      auto count = 0;
+      write.on_put().connect(
+        [&]
+        {
+          static bool recurse = false;
+          if (recurse)
+            return;
+          auto recursed = elle::scoped_assignment(recurse, true);
+          if (version <= elle::Version(0, 1, 0))
+          {
+            // Version 0.1 does not split packets, do it manually
+            elle::Buffer data = write.get();
+            write.put(data.range(0, data.size() / 2));
+            blocked.open();
+            elle::reactor::wait(carry_on);
+            write.put(data.range(data.size() / 2));
+          }
+          else
+            if (count++ >= 3)
+            {
+              blocked.open();
+              elle::reactor::wait(carry_on);
+            }
+        });
+      elle::protocol::Serializer s(write_stream, version, false, {}, {}, 4);
+      s.write(data);
+    });
+  elle::reactor::Thread reader(
+    "reader",
+    [&]
+    {
+      elle::protocol::Serializer s(read_stream, version, false, {}, {}, 4);
+      elle::reactor::Thread fake(
+        "fake reader",
+        [&]
+        {
+          BOOST_TEST(s.read() == data);
+          BOOST_FAIL("should not have finished");
+        });
+      // Wait until the fake reader consumed some data, kill it and resume.
+      elle::reactor::wait(read_stream.input().on_get());
+      elle::reactor::wait(blocked);
+      fake.terminate_now();
+      carry_on.open();
+      elle::reactor::wait(write_stream.output().on_put());
+      BOOST_CHECK_THROW(s.read(), elle::Error);
+    });
+  elle::reactor::wait(elle::reactor::Waitables({&writer, &reader}));
 }
 
 ELLE_TEST_SUITE()
@@ -1062,8 +1100,18 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(connection_lost_sender), 0, valgrind(3, 10));
   suite.add(BOOST_TEST_CASE(corruption), 0, valgrind(3, 10));
   suite.add(BOOST_TEST_CASE(interruption), 0, valgrind(6, 15));
-  suite.add(BOOST_TEST_CASE(interruption2), 0, valgrind(3, 10));
-  suite.add(BOOST_TEST_CASE(termination), 0, valgrind(3, 10));
+  suite.add(BOOST_TEST_CASE(interruption2), 0, valgrind(6, 15));
+  {
+    auto sub = BOOST_TEST_SUITE("read_interruption");
+    suite.add(sub);
+    for (auto const& version: {
+        elle::Version(0, 1, 0),
+        elle::Version(0, 2, 0),
+        elle::Version(0, 3, 0),
+          })
+      sub->add(ELLE_TEST_CASE(std::bind(read_interruption, version),
+                              elle::sprintf("%s", version)), 0, valgrind(1));
+  }
   suite.add(BOOST_TEST_CASE(eof), 0, valgrind(3));
   suite.add(BOOST_TEST_CASE(message), 0, valgrind(3));
   suite.add(BOOST_TEST_CASE(ping), 0, valgrind(3));

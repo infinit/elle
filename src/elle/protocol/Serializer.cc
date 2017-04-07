@@ -51,34 +51,11 @@ namespace elle
       while (nread < signed(size))
       {
         char* where = beginning + nread;
-        try
-        {
-          ELLE_DUMP_SCOPE("read from %s", nread);
-          elle::IOStreamClear clearer(stream);
-          nread += std::readsome(stream, where, size - nread);
-          if (stream.eof())
-            throw Serializer::EOF();
-        }
-        catch (Serializer::EOF const&)
-        {
-          throw;
-        }
-        catch (...)
-        {
-          ELLE_TRACE("reading %s interrupted", stream);
-          while (nread < signed(size))
-          {
-            ELLE_DUMP_SCOPE("read from %s", nread);
-            char* where = beginning + nread;
-            if (stream.eof())
-              throw;
-            stream.clear();
-            std::streamsize r = std::readsome(stream, where, size - nread);
-            ELLE_DEBUG("read: %sB", r);
-            nread += r;
-          }
-          throw;
-        }
+        ELLE_DUMP_SCOPE("read from %s", nread);
+        elle::IOStreamClear clearer(stream);
+        nread += std::readsome(stream, where, size - nread);
+        if (stream.eof())
+          throw Serializer::EOF();
       }
     }
 
@@ -96,6 +73,7 @@ namespace elle
       read(stream, content, *size);
       return content;
     }
+
     // Return the sha1 of a given buffer.
     static
     elle::Buffer
@@ -172,7 +150,8 @@ namespace elle
            elle::Version const& version,
            boost::optional<std::chrono::milliseconds> ping_period,
            boost::optional<std::chrono::milliseconds> ping_timeout)
-        : _scheduler(reactor::scheduler())
+        : _broken(false)
+        , _scheduler(reactor::scheduler())
         , _pings(0)
         , _pongs(0)
         , _ping_period(std::move(ping_period))
@@ -212,75 +191,88 @@ namespace elle
       {
         while (true)
         {
+          if (this->_broken)
+            elle::err("stream is broken by a previous interrupted read");
           try
           {
             elle::reactor::Lock lock(this->_lock_read);
+            if (this->_broken)
+              elle::err("stream is broken by a previous interrupted read");
             elle::IOStreamClear clearer(this->_stream);
             return this->_read();
           }
           catch (InterruptionError const&)
-          {
-          }
+          {}
         }
-        ELLE_ERR("exit reading")
-          elle::unreachable();
       }
+
+      /// Whether the stream is broken by a previous interrupted read.
+      ELLE_ATTRIBUTE_R(bool, broken);
 
       elle::Buffer
       _read()
       {
-        // Make sure the stream isn't terminated.
-        if (elle::With<elle::reactor::Thread::Interruptible>() << [&]
-           {
-             return this->_stream.peek();
-           } == std::iostream::traits_type::eof())
-          throw Serializer::EOF();
         if (this->version() >= elle::Version(0, 3, 0))
-        {
           while (!this->read_control())
             ;
-        }
-        elle::Buffer hash;
-        if (this->_checksum)
+        try
         {
-          ELLE_DEBUG("read checksum")
-            if (this->version() >= elle::Version(0, 2, 0))
-              hash = elle::protocol::read(this->_stream, this->version(), {});
-            else
-              hash = elle::protocol::read(this->_stream, {});
-        }
-        auto packet = [&]
-        {
-          if (this->version() >= elle::Version(0, 2, 0))
+        // return elle::With<elle::reactor::Thread::NonInterruptible>() << [&]
+        // {
+          elle::Buffer hash;
+          if (this->_checksum)
           {
-            // Get the total size.
-            uint32_t total_size(Serializer::Super::uint32_get(this->_stream,
-                                                              this->version()));
-            ELLE_DEBUG("packet size: %s", total_size);
-            elle::Buffer packet(static_cast<std::size_t>(total_size));
-            elle::Buffer::Size offset = 0;
-            while (true)
-            {
-              uint32_t size = std::min(total_size - offset, this->_chunk_size);
-              ELLE_DEBUG("read chunk of size %s", size);
-              elle::protocol::read(this->_stream, packet, size, offset);
-              offset += size;
-              ELLE_ASSERT_LTE(offset, total_size);
-              if (offset >= total_size)
-                break;
-              if (!this->read_control())
-                throw InterruptionError();
-            }
-            return packet;
+            ELLE_DEBUG("read checksum")
+              if (this->version() >= elle::Version(0, 2, 0))
+                hash = elle::protocol::read(this->_stream, this->version(), {});
+              else
+                hash = elle::protocol::read(this->_stream, {});
           }
-          else
-            return elle::protocol::read(this->_stream, {});
-        }();
-        ELLE_DUMP("packet content: %s", packet);
-        // Check checksums match.
-        if (this->_checksum)
-          enforce_checksums_equal(packet, hash);
-        return packet;
+          auto packet = [&]
+          {
+            if (this->version() >= elle::Version(0, 2, 0))
+            {
+              // Get the total size.
+              uint32_t total_size =
+                Serializer::Super::uint32_get(this->_stream, this->version());
+              ELLE_DEBUG("packet size: %s", total_size);
+              elle::Buffer packet(static_cast<std::size_t>(total_size));
+              elle::Buffer::Size offset = 0;
+              while (true)
+              {
+                uint32_t size =
+                  std::min(total_size - offset, this->_chunk_size);
+                ELLE_DEBUG("read chunk of size %s", size);
+                elle::protocol::read(this->_stream, packet, size, offset);
+                offset += size;
+                ELLE_ASSERT_LTE(offset, total_size);
+                if (offset >= total_size)
+                  break;
+                if (!this->read_control())
+                  throw InterruptionError();
+              }
+              return packet;
+            }
+            else
+              return elle::protocol::read(this->_stream, {});
+          }();
+          ELLE_DUMP("packet content: %s", packet);
+          // Check checksums match.
+          if (this->_checksum)
+            enforce_checksums_equal(packet, hash);
+          return packet;
+        }
+        catch (InterruptionError const&)
+        {
+          throw;
+        }
+        catch (...)
+        {
+          ELLE_TRACE("read interrupted, switching to broken state: %s",
+                     elle::exception_string());
+          this->_broken = true;
+          throw;
+        }
       }
 
       void
@@ -327,6 +319,8 @@ namespace elle
         while (true)
         {
           ELLE_DUMP_SCOPE("read control");
+          if (this->_stream.peek() == std::iostream::traits_type::eof())
+            throw Serializer::EOF();
           char control = static_cast<char>(Control::max + 1);
           this->_stream.read(&control, 1);
           if (control > Control::max)

@@ -1,5 +1,7 @@
+#include <iostream>
 #include <boost/foreach.hpp>
 
+#include <elle/find.hh>
 #include <elle/log.hh>
 
 #include <elle/reactor/scheduler.hh>
@@ -23,19 +25,80 @@ namespace elle
     ChanneledStream::ChanneledStream(elle::reactor::Scheduler& scheduler,
                                      Stream& backend)
       : Super(scheduler)
+      , _backend(backend)
+      , _thread()
+      , _exception()
       , _master(this->_handshake(backend))
       , _id_current(0)
-      , _reading(false)
-      , _backend(backend)
       , _channels()
       , _channels_new()
       , _channel_available()
       , _default(*this)
-    {}
+    {
+      this->_thread.reset(
+        new reactor::Thread(
+          elle::sprintf("%s", this), [this] { this->_read_thread(); }));
+    }
 
     ChanneledStream::ChanneledStream(Stream& backend)
       : ChanneledStream(*elle::reactor::Scheduler::scheduler(), backend)
     {}
+
+    ChanneledStream::~ChanneledStream()
+    {
+      try
+      {
+        this->_thread->terminate_now();
+      }
+      catch (...)
+      {
+        ELLE_ABORT("exception escaping %s destructor: %s",
+                   this, elle::exception_string());
+      }
+    }
+
+    void
+    ChanneledStream::_read_thread()
+    {
+      ELLE_TRACE_SCOPE("%s: read packets", this);
+      try
+      {
+        while (true)
+        {
+          auto p = this->_backend.read();
+          int channel_id = this->uint32_get(p, this->version());
+          // FIXME: The size of the packet isn't adjusted. This is cosmetic
+          // though.
+          if (auto it = elle::find(this->_channels, channel_id))
+          {
+            ELLE_DEBUG("received %f on channel %s", p, *it->second);
+            it->second->_packets.put(std::move(p));
+          }
+          else
+          {
+            if (this->_master && channel_id > 0 ||
+                !this->_master && channel_id < 0)
+            {
+              ELLE_TRACE("discard orphaned packet on channel %s", channel_id);
+              continue;
+            }
+            Channel res(*this, channel_id);
+            ELLE_DEBUG("received %f on new channel %s", p, channel_id);
+            res._packets.put(std::move(p));
+            this->_channels_new.put(std::move(res));
+          }
+        }
+      }
+      catch (elle::Error const&)
+      {
+        ELLE_TRACE("%s: read failed: %s", this, elle::exception_string());
+        this->_channels_new.raise(std::current_exception());
+        this->_default._packets.raise(std::current_exception());
+        for (auto& c: this->_channels)
+          c.second->_packets.raise(std::current_exception());
+        this->_exception = std::current_exception();
+      }
+    }
 
     bool
     ChanneledStream::_handshake(Stream& backend)
@@ -101,137 +164,11 @@ namespace elle
       return this->_default.read();
     }
 
-    elle::Buffer
-    ChanneledStream::_read(Channel* channel)
-    {
-      ELLE_TRACE_SCOPE("%s: read packet on channel %s", *this, channel->_id);
-      int requested_channel = channel->_id;
-      elle::reactor::Thread* current = scheduler().current();
-      while (true)
-        {
-          if (!channel->_packets.empty())
-            {
-              // FIXME: use helper to pop
-              auto packet = std::move(channel->_packets.front());
-              channel->_packets.pop_front();
-              ELLE_TRACE("%s: %f available.", *this, packet);
-              return packet;
-            }
-          ELLE_DEBUG("%s: no packet available.", *this);
-          if (!_reading)
-            this->_read(false, requested_channel);
-          else
-            ELLE_DEBUG("%s: reader already present, waiting.", *this)
-              current->wait(channel->_available);
-        }
-    }
-
-    void
-    ChanneledStream::_read(bool new_channel, int requested_channel)
-    {
-      ELLE_TRACE_SCOPE("%s: reading packets.", *this);
-      ELLE_ASSERT(!_reading);
-      try
-      {
-        bool goon = true;
-        while (goon)
-        {
-          elle::With<elle::reactor::Thread::NonInterruptible>() << [&]
-          {
-            this->_reading = true;
-            elle::Buffer p(this->_backend.read());
-            int channel_id = this->uint32_get(p, this->version());
-            // FIXME: The size of the packet isn't
-            // adjusted. This is cosmetic though.
-            auto it = this->_channels.find(channel_id);
-            if (it != this->_channels.end())
-            {
-              ELLE_DEBUG("%s: received %f on existing %s (requested %s).",
-                         *this, p, *it->second, requested_channel);
-              it->second->_packets.push_back(std::move(p));
-              if (channel_id == requested_channel)
-                {
-                  goon = false;
-                  return;
-                }
-              else
-                it->second->_available.signal_one();
-            }
-            else
-            {
-              ELLE_ASSERT(channel_id != requested_channel);
-              Channel res(*this, channel_id);
-              ELLE_DEBUG("%s: received %f on brand new %s (requested %s).",
-                         *this, p, res, requested_channel);
-              res._packets.push_back(std::move(p));
-              this->_channels_new.push_back(std::move(res));
-              if (new_channel)
-                {
-                  goon = false;
-                  return;
-                }
-              else
-                this->_channel_available.signal_one();
-            }
-          };
-        }
-        // Exited loop, Wake another thread so it can read future packets.
-        this->_reading = false;
-        for (auto channel: this->_channels)
-          if (channel.second->_available.signal_one())
-            return;
-        this->_channel_available.signal_one();
-      }
-      catch (std::exception const& ex)
-      {
-        auto e = std::current_exception();
-        // Wake another thread so it fails too.
-        ELLE_DEBUG_SCOPE("%s: read failed, wake next thread: %s.", *this,
-                         ex.what());
-        /* If we wake only one thread and it gets terminated rigth at this
-         * moment, we won't have any reader on this ChanneledStream.
-         * So play it safe and wake them all.
-         */
-        this->_reading = false;
-        for (auto channel: this->_channels)
-          channel.second->_available.signal();
-        this->_channel_available.signal();
-        std::rethrow_exception(e);
-      }
-    }
-
     Channel
     ChanneledStream::accept()
     {
-      ELLE_TRACE_SCOPE("%s: wait for incoming channel", *this);
-      while (true)
-      {
-        if (this->_channels_new.empty())
-        {
-          ELLE_DEBUG("%s: no channel available, waiting", *this);
-          if (!this->_reading)
-            this->_read(true, 0);
-          else
-          {
-            ELLE_DEBUG("%s: reader already present, waiting.", *this);
-            elle::reactor::Thread* current = scheduler().current();
-            current->wait(this->_channel_available);
-          }
-        }
-        if (this->_channels_new.empty())
-          continue;
-        // FIXME: use helper to pop
-        Channel res = std::move(this->_channels_new.front());
-        this->_channels_new.pop_front();
-        if (this->_master && res.id() > 0 || !this->_master && res.id() < 0)
-        {
-          ELLE_TRACE("%s: discard orphaned packet on channel %s",
-                     this, res.id());
-          continue;
-        }
-        ELLE_TRACE("%s: got %s", this, res);
-        return res;
-      }
+      ELLE_TRACE_SCOPE("%s: accept channel", this);
+      return this->_channels_new.get();
     }
 
     /*--------.
@@ -258,12 +195,12 @@ namespace elle
     /*--------.
     | Version |
     `--------*/
+
     const elle::Version&
     ChanneledStream::version() const
     {
       return this->_backend.version();
     }
-
 
     /*----------.
     | Printable |
@@ -272,7 +209,7 @@ namespace elle
     void
     ChanneledStream::print(std::ostream& stream) const
     {
-      stream << "ChanneledStream " << this;
+      elle::fprintf(stream, "%s(%s)", elle::type_info(*this), this->_backend);
     }
   }
 }
