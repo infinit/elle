@@ -14,6 +14,7 @@
 
 #include <elle/Error.hh>
 #include <elle/log.hh>
+#include <elle/reactor/scheduler.hh>
 
 /// This header includes boost Unit Test Framework and provides a simple macro
 /// to customize the creation of your test suite.
