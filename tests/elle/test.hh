@@ -47,6 +47,12 @@
 
 static std::string test_binary;
 
+#define ELLE_TEST_CASE(F, ...)                                          \
+  boost::unit_test::make_test_case(                                     \
+    boost::function<void ()>(F),                                        \
+    BOOST_PP_SEQ_HEAD(BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__)(#F)),       \
+    __FILE__, __LINE__ )                                                \
+
 #if defined(BOOST_TEST_DYN_LINK)
 
 # define ELLE_TEST_SUITE()                              \
