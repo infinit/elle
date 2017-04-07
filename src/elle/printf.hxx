@@ -132,6 +132,22 @@ namespace elle
         fmt % "nullptr";
     }
 
+    template <typename T>
+    void
+    feed(boost::format& fmt, std::weak_ptr<T>& value)
+    {
+      auto p = value.lock();
+      feed(fmt, p);
+    }
+
+    template <typename T>
+    void
+    feed(boost::format& fmt, std::weak_ptr<T> const& value)
+    {
+      auto p = value.lock();
+      feed(fmt, p);
+    }
+
     inline
     void
     feed(boost::format& fmt, void* value)

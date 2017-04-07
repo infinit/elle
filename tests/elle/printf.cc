@@ -100,6 +100,23 @@ function_pointer()
   BOOST_CHECK_EQUAL(elle::sprintf("%s", &foo), "<function>");
 }
 
+static
+void
+pointers()
+{
+  auto u = std::make_unique<int>(107);
+  auto s = std::make_shared<int>(107);
+  auto w = std::weak_ptr<int>(s);
+  BOOST_CHECK_EQUAL(elle::sprintf("%s", u), "107");
+  BOOST_CHECK_EQUAL(elle::sprintf("%s", s), "107");
+  BOOST_CHECK_EQUAL(elle::sprintf("%s", w), "107");
+  u.reset();
+  s.reset();
+  BOOST_CHECK_EQUAL(elle::sprintf("%s", u), "nullptr");
+  BOOST_CHECK_EQUAL(elle::sprintf("%s", s), "nullptr");
+  BOOST_CHECK_EQUAL(elle::sprintf("%s", w), "nullptr");
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -113,4 +130,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(no_param));
   suite.add(BOOST_TEST_CASE(boolean));
   suite.add(BOOST_TEST_CASE(function_pointer));
+  suite.add(BOOST_TEST_CASE(pointers));
 }
