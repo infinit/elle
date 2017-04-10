@@ -64,7 +64,7 @@ class CMakeBuilder(drake.Builder):
   @lru_cache(maxsize=1)
   def cmake_cmd(self):
     cmd = ['cmake']
-    for (k, v) in sorted(self.__vars.items()):
+    for k, v in sorted(self.__vars.items()):
       cmd.append('-D%s=%s' % (k, v))
     cmd.append(str(self.__path_to_cmake_source))
     return cmd

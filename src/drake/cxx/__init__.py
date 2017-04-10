@@ -696,7 +696,8 @@ class GccToolkit(Toolkit):
 
   def cppflags(self, cfg):
       res = []
-      for name, v in cfg.defines().items():
+      # Make it nicer to the human reader: sort.
+      for name, v in sorted(cfg.defines().items()):
           if v is None:
               res.append('-D%s' % name)
           else:
