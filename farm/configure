@@ -4,6 +4,7 @@ import os
 import os.path
 import shutil
 import subprocess
+import stat
 import sys
 import platform
 
@@ -175,5 +176,7 @@ with open('%s/.drake.tmp' % options.build_dir, 'w') as drake:
 build_dir = options.build_dir
 tmp = '%s/.drake.tmp' % build_dir
 drake = '%s/drake' % build_dir
-diff = subprocess.call(['diff', '-u', drake, tmp])
+subprocess.check_call(['diff', '-u', drake if os.path.isfile(drake) else '/dev/null', tmp])
 shutil.move(tmp, drake)
+# chmod +x
+os.chmod(drake, os.stat(drake).st_mode | stat.S_IEXEC)
