@@ -321,12 +321,14 @@ namespace elle
     void
     Logger::component_push(std::string const& name)
     {
+      std::lock_guard<std::recursive_mutex> lock(_mutex);
       this->_component_stack.emplace_back(name);
     }
 
     void
     Logger::component_pop()
     {
+      std::lock_guard<std::recursive_mutex> lock(_mutex);
       assert(!this->_component_stack.empty());
       this->_component_stack.pop_back();
     }
@@ -373,7 +375,7 @@ namespace elle
       std::string                                               \
       content()                                                 \
       {                                                         \
-        return Content;                                         \
+        return boost::lexical_cast<std::string>(Content);       \
       }                                                         \
                                                                 \
       virtual                                                   \
@@ -386,10 +388,8 @@ namespace elle
                                                                 \
     elle::Plugin<Tag>::Register<Name##Tag> register_tag_##Name; \
 
-    ELLE_LOGGER_TAG(
-      PID, boost::lexical_cast<std::string>(elle::system::getpid()));
-    ELLE_LOGGER_TAG(
-      TID, boost::lexical_cast<std::string>(std::this_thread::get_id()));
+    ELLE_LOGGER_TAG(PID, elle::system::getpid());
+    ELLE_LOGGER_TAG(TID, std::this_thread::get_id());
 
 #undef ELLE_LOGGER_TAG
   }
