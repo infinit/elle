@@ -64,6 +64,15 @@ namespace elle
         return default_;
     }
 
+    int
+    getenv(std::string const& key, int default_)
+    {
+      if (auto val = ::getenv(key.c_str()))
+        return std::stoi(val);
+      else
+        return default_;
+    }
+
     bool
     inenv(std::string const& key)
     {

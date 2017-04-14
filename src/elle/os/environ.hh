@@ -45,6 +45,11 @@ namespace elle
     std::string
     getenv(std::string const& key, std::string const& default_);
 
+    /// Get a specific value from environment. If value is not found,
+    /// default_ is returned
+    int
+    getenv(std::string const& key, int default_);
+
     /// Whether a key is defined in environment.
     bool
     inenv(std::string const& key);

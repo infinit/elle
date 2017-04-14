@@ -1,4 +1,5 @@
 #include <elle/Exception.hh>
+#include <elle/algorithm.hh>
 #include <elle/os/environ.hh>
 #include <elle/test.hh>
 
@@ -11,50 +12,41 @@ environ1()
   std::string key = "hello";
   std::string val = "world";
 
-  os::setenv(key, val, 1);
+  os::setenv(key, val, true);
   auto environ = os::environ();
-  BOOST_CHECK(environ.find(key) != end(environ));
-  auto it = environ.find(key);
-  BOOST_CHECK(it->second == val);
+  BOOST_TEST(elle::contains(environ, key));
+  BOOST_TEST(environ.find(key)->second == val);
+  BOOST_TEST(environ.at(key) == val);
 }
 
 static
 void
 environ2()
 {
-
   std::string key = "hello";
   std::string val = "world";
 
-  os::setenv(key, val, 1);
-  BOOST_CHECK(os::getenv(key) == val);
+  os::setenv(key, val, true);
+  BOOST_TEST(os::getenv(key) == val);
   os::unsetenv(key);
-  auto environ = os::environ();
-  BOOST_CHECK_THROW(environ.at(key), std::out_of_range);
+  BOOST_CHECK_THROW(os::environ().at(key), std::out_of_range);
 }
 
 static
 void
-getenv1()
+getenv_()
 {
-  std::string prog = elle::os::getenv("PATH");
-  BOOST_CHECK(!prog.empty());
-}
+  BOOST_TEST(!elle::os::getenv("PATH").empty());
 
-static
-void
-getenv_missing()
-{
   BOOST_REQUIRE_THROW(elle::os::getenv("hahaha not existing key="),
                                        elle::Exception);
-}
 
-static
-void
-getenv_default()
-{
-  std::string def = elle::os::getenv("cetteclefn'existepaslol", "(none)");
-  BOOST_CHECK(def == "(none)");
+  {
+    auto const k = "cetteclefn'existepaslol";
+    BOOST_TEST(elle::os::getenv(k, "(none)") == "(none)");
+    BOOST_TEST(elle::os::getenv(k, "42") == "42");
+    BOOST_TEST(elle::os::getenv(k, 42) == 42);
+  }
 }
 
 static
@@ -63,10 +55,8 @@ setenv1()
 {
   std::string key = "hello";
   std::string val = "world";
-  elle::os::setenv(key, val, 1);
-
-  std::string res = elle::os::getenv(key);
-  BOOST_CHECK(res == val);
+  elle::os::setenv(key, val, true);
+  BOOST_TEST(elle::os::getenv(key) == val);
 }
 
 static
@@ -75,11 +65,10 @@ setenv2()
 {
   std::string key = "hello";
   std::string val = "world";
-  std::string val2 = "world";
-  elle::os::setenv(key, val, 0);
-  elle::os::setenv(key, val2, 0);
-  std::string res = elle::os::getenv(key);
-  BOOST_CHECK(res == val);
+  std::string val2 = "WORLD";
+  elle::os::setenv(key, val, false);
+  elle::os::setenv(key, val2, false);
+  BOOST_TEST(elle::os::getenv(key) == val);
 }
 
 ELLE_TEST_SUITE()
@@ -88,9 +77,7 @@ ELLE_TEST_SUITE()
 
   suite.add(BOOST_TEST_CASE(environ1));
   suite.add(BOOST_TEST_CASE(environ2));
-  suite.add(BOOST_TEST_CASE(getenv1));
-  suite.add(BOOST_TEST_CASE(getenv_missing));
-  suite.add(BOOST_TEST_CASE(getenv_default));
+  suite.add(BOOST_TEST_CASE(getenv_));
   suite.add(BOOST_TEST_CASE(setenv1));
   suite.add(BOOST_TEST_CASE(setenv2));
 }
