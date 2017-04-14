@@ -163,6 +163,7 @@ def configure(zlib_lib,
     cxx_config.define('ELLE_DISABLE_VISIBILITY')
 
   sources = drake.nodes(
+    '../string.cc',
     'AtomicFile.cc',
     'AtomicFile.hh',
     'Backtrace.cc',

@@ -34,3 +34,7 @@ operator "" _bits() noexcept
                 "invalid digit in binary string");
   return std::bitset<sizeof...(Bits)>{(char const []){Bits..., '\0'}};
 }
+
+// Local Variables:
+// mode: c++
+// End:

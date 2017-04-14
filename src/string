@@ -1,0 +1,13 @@
+#pragma once
+
+#include_next <string>
+
+namespace std
+{
+  unsigned
+  stou(std::string const& str, size_t* idx = 0, int base = 10);
+}
+
+// Local Variables:
+// mode: c++
+// End:
