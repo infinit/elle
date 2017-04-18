@@ -39,7 +39,7 @@ c_string()
 {
   char const* s1 = "foo";
   char* s2 = const_cast<char*>("bar");
-  BOOST_CHECK_EQUAL(elle::sprintf("%s %s", s1, s2), "foo bar");
+  BOOST_TEST(elle::sprintf("%s %s", s1, s2) == "foo bar");
 }
 
 static
@@ -107,14 +107,18 @@ pointers()
   auto u = std::make_unique<int>(107);
   auto s = std::make_shared<int>(107);
   auto w = std::weak_ptr<int>(s);
+  auto a = std::ambivalent_ptr<int>(s);
   BOOST_CHECK_EQUAL(elle::sprintf("%s", u), "107");
   BOOST_CHECK_EQUAL(elle::sprintf("%s", s), "107");
   BOOST_CHECK_EQUAL(elle::sprintf("%s", w), "107");
+  BOOST_CHECK_EQUAL(elle::sprintf("%s", a), "107");
   u.reset();
   s.reset();
+  a.reset();
   BOOST_CHECK_EQUAL(elle::sprintf("%s", u), "nullptr");
   BOOST_CHECK_EQUAL(elle::sprintf("%s", s), "nullptr");
   BOOST_CHECK_EQUAL(elle::sprintf("%s", w), "nullptr");
+  BOOST_CHECK_EQUAL(elle::sprintf("%s", a), "nullptr");
 }
 
 ELLE_TEST_SUITE()

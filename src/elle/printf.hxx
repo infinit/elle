@@ -6,6 +6,7 @@
 #include <boost/format.hpp>
 
 #include <elle/TypeInfo.hh>
+#include <elle/utils.hh> // as_const
 
 // Work around Clang 3.5.0 bug where having this helper in the elle namespace
 // will find a << overload for elle::serialization::Serializer::SerializerIn
@@ -44,15 +45,17 @@ namespace elle
   namespace
   {
     template <typename T>
-    std::enable_if_t<_elle_printf_details::is_streamable<T>(), void>
-    feed(boost::format& fmt, T&& value)
+    auto
+    feed(boost::format& fmt, T const& value)
+      -> std::enable_if_t<_elle_printf_details::is_streamable<T>(), void>
     {
-      fmt % std::forward<T>(value);
+      fmt % value;
     }
 
     template <typename T>
-    std::enable_if_t<!_elle_printf_details::is_streamable<T>(), void>
-    feed(boost::format& fmt, T&& value)
+    auto
+    feed(boost::format& fmt, T const& value)
+      -> std::enable_if_t<!_elle_printf_details::is_streamable<T>(), void>
     {
       static const auto parsed = boost::format("%f(%x)");
       auto format = parsed;
@@ -82,6 +85,20 @@ namespace elle
       fmt % (value ? value : "");
     }
 
+    /*-----------------.
+    | Smart pointers.  |
+    `-----------------*/
+
+    template <typename T>
+    void
+    feed(boost::format& fmt, std::shared_ptr<T> const& value)
+    {
+      if (value)
+        feed(fmt, *value);
+      else
+        fmt % "nullptr";
+    }
+
     template <typename T>
     void
     feed(boost::format& fmt, std::unique_ptr<T> const& value)
@@ -96,61 +113,19 @@ namespace elle
     void
     feed(boost::format& fmt, std::ambivalent_ptr<T> const& value)
     {
-      if (auto p = value.lock())
-        feed(fmt, *p);
-      else
-        fmt % "nullptr";
-    }
-
-    template <typename T>
-    void
-    feed(boost::format& fmt, std::unique_ptr<T>& value)
-    {
-      if (value)
-        feed(fmt, *value);
-      else
-        fmt % "nullptr";
-    }
-
-    template <typename T>
-    void
-    feed(boost::format& fmt, std::shared_ptr<T> const& value)
-    {
-      if (value)
-        feed(fmt, *value);
-      else
-        fmt % "nullptr";
-    }
-
-    template <typename T>
-    void
-    feed(boost::format& fmt, std::shared_ptr<T>& value)
-    {
-      if (value)
-        feed(fmt, *value);
-      else
-        fmt % "nullptr";
-    }
-
-    template <typename T>
-    void
-    feed(boost::format& fmt, std::weak_ptr<T>& value)
-    {
-      auto p = value.lock();
-      feed(fmt, p);
+      feed(fmt, value.lock());
     }
 
     template <typename T>
     void
     feed(boost::format& fmt, std::weak_ptr<T> const& value)
     {
-      auto p = value.lock();
-      feed(fmt, p);
+      feed(fmt, value.lock());
     }
 
     inline
     void
-    feed(boost::format& fmt, void* value)
+    feed(boost::format& fmt, void const* value)
     {
       if (value)
         fmt % value;
@@ -160,7 +135,7 @@ namespace elle
 
     inline
     void
-    feed(boost::format& fmt, void const* value)
+    feed(boost::format& fmt, void* value)
     {
       if (value)
         fmt % value;
@@ -185,6 +160,14 @@ namespace elle
       // FIXME: we could print more, but it would complexify this header quite a
       // bit.
       fmt % "<function>";
+    }
+
+    template <typename T>
+    auto
+    feed(boost::format& fmt, T& value)
+      -> std::enable_if_t<!std::is_const<T>{}>
+    {
+      feed(fmt, as_const(value));
     }
 
     /// Create, feed and return a boost::format.
