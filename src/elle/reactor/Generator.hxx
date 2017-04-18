@@ -1,4 +1,4 @@
-#pragma once
+#include <type_traits>
 
 namespace elle
 {
@@ -18,10 +18,11 @@ namespace elle
     `-------------*/
 
     template <typename T>
-    Generator<T>::Generator(std::function<void (yielder const&)> const& driver)
-      : _results()
-      , _thread()
+    template <typename Driver>
+    Generator<T>::Generator(Driver driver)
     {
+      using Signature = std::function<auto (yielder const&) -> void>;
+      static_assert(std::is_constructible<Signature, Driver>::value, "");
       ELLE_LOG_COMPONENT("elle.reactor.Generator");
       auto yield = [this] (T elt) { this->_results.put(std::move(elt)); };
       this->_thread.reset(
@@ -75,7 +76,6 @@ namespace elle
     template <typename T>
     Generator<T>::iterator::iterator()
       : _generator(nullptr)
-      , _value()
       , _fetch(true)
     {}
 
@@ -97,11 +97,10 @@ namespace elle
       }
       if (this->_value)
         return true;
+      else if (this->_generator->_exception)
+        std::rethrow_exception(this->_generator->_exception);
       else
-        if (this->_generator->_exception)
-          std::rethrow_exception(this->_generator->_exception);
-        else
-          return false;
+        return false;
     }
 
     template <typename T>
@@ -117,8 +116,7 @@ namespace elle
     T
     Generator<T>::next()
     {
-      auto res = this->_results.get();
-      if (res)
+      if (auto res = this->_results.get())
         return *res;
       else
         throw End(*this);
@@ -127,8 +125,7 @@ namespace elle
 
     template <typename T>
     Generator<T>
-    generator(
-      std::function<void (typename yielder<T>::type const&)> const& driver)
+    generator(std::function<void (yielder<T> const&)> const& driver)
     {
       return Generator<T>(driver);
     }

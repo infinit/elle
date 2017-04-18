@@ -10,17 +10,14 @@ namespace elle
   namespace reactor
   {
     template <typename T>
-    struct yielder
-    {
-      using type = std::function<void (T)>;
-    };
+    using yielder = std::function<void (T)>;
 
-    /// Creates an iterable object over a function. This is powerful in
-    /// asynchronous environment when need to wait for at least n values
+    /// Create an iterable object over a function. This is powerful in
+    /// asynchronous environments when one needs to wait for at least n values
     /// (see example).
     ///
-    /// Results being put in a Channel, you can get all the benefits of the
-    /// Channel (mostly waiting for result).
+    /// Since the results are put in a Channel, you can get all the
+    /// benefits of the Channel (mostly waiting for result).
     ///
     /// \code{.cc}
     ///
@@ -28,7 +25,7 @@ namespace elle
     ///   {
     ///     elle::With<elle::reactor::Scope>() << [&](elle::reactor::Scope &s)
     ///     {
-    ///       // Lets consider sources, a list of sources you want to check to
+    ///       // Lets consider `sources`, a list of sources you want to check to
     ///       // make sure some information is relevant.
     ///       for (auto const& source: sources)
     ///       {
@@ -66,11 +63,15 @@ namespace elle
     | Construction |
     `-------------*/
     public:
-      using yielder = typename yielder<T>::type;
-      using Driver = std::function<void (yielder const&)>;
+      /// A consumer of the generated values.
+      using yielder = elle::reactor::yielder<T>;
+
       /// Create a generator on a driver.
-      Generator(Driver const& driver);
-      Generator(Generator&&b);
+      ///
+      /// The signature of the Driver must be auto `(yielder const&) -> void`.
+      template <typename Driver>
+      Generator(Driver driver);
+      Generator(Generator&& b);
       ~Generator();
 
     /*--------.
@@ -122,8 +123,7 @@ namespace elle
     /// Construct a generator from a Driver.
     template <typename T>
     Generator<T>
-    generator(
-      std::function<void (typename yielder<T>::type const&)> const& driver);
+    generator(std::function<void (yielder<T> const&)> const& driver);
 
     /// Return an iterator to the beginning of the given Generator.
     template <typename T>

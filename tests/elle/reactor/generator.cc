@@ -7,7 +7,7 @@ ELLE_LOG_COMPONENT("elle.reactor.generator.test");
 
 ELLE_TEST_SCHEDULED(empty)
 {
-  auto f = [] (elle::reactor::yielder<int>::type const&) {};
+  auto f = [] (elle::reactor::yielder<int> const&) {};
   for (int i: elle::reactor::generator<int>(f))
     BOOST_FAIL(elle::sprintf("empty generator yielded a value: %s", i));
 }
@@ -15,7 +15,7 @@ ELLE_TEST_SCHEDULED(empty)
 ELLE_TEST_SCHEDULED(simple)
 {
   std::vector<int> results({0, 1, 3});
-  auto f = [&] (elle::reactor::yielder<int>::type const& yield)
+  auto f = [&] (elle::reactor::yielder<int> const& yield)
     {
       for (auto i: results)
         yield(i);
@@ -28,7 +28,7 @@ ELLE_TEST_SCHEDULED(simple)
 
 ELLE_TEST_SCHEDULED(move)
 {
-  auto f = [] (elle::reactor::yielder<std::unique_ptr<int>>::type const& yield)
+  auto f = [] (elle::reactor::yielder<std::unique_ptr<int>> const& yield)
     {
       yield(std::make_unique<int>(42));
     };
@@ -46,7 +46,7 @@ ELLE_TEST_SCHEDULED(interleave)
 {
   elle::reactor::Barrier sync;
   bool beacon = false;
-  auto f = [&] (elle::reactor::yielder<bool>::type const& yield)
+  auto f = [&] (elle::reactor::yielder<bool> const& yield)
     {
       yield(false);
       elle::reactor::wait(sync);
@@ -77,7 +77,7 @@ public:
 
 ELLE_TEST_SCHEDULED(exception)
 {
-  auto f = [&] (elle::reactor::yielder<int>::type const& yield)
+  auto f = [&] (elle::reactor::yielder<int> const& yield)
     {
       yield(0);
       yield(1);
@@ -100,7 +100,7 @@ ELLE_TEST_SCHEDULED(exception)
 
 ELLE_TEST_SCHEDULED(destruct)
 {
-  auto f = [&] (elle::reactor::yielder<int>::type const& yield)
+  auto f = [&] (elle::reactor::yielder<int> const& yield)
     {
       elle::reactor::yield();
       yield(0);
