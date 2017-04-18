@@ -175,6 +175,9 @@ namespace elle
         /// End point type for the asio socket type.
         using EndPoint = EndPoint_;
 
+        using SocketPtr =
+          std::unique_ptr<AsioSocket, std::function<void (AsioSocket*)>>;
+
       /*-------------.
       | Construction |
       `-------------*/
@@ -183,7 +186,7 @@ namespace elle
         /// AsioSocket.
         ///
         /// \param socket A Socket.
-        PlainSocket(std::unique_ptr<AsioSocket> socket);
+        PlainSocket(SocketPtr socket);
         /// Create and connect a PlainSocket.
         ///
         /// \param socket A Socket.
@@ -258,7 +261,7 @@ namespace elle
         friend class TCPSocket;
         template <typename AsioSocket>
         friend class SocketOperation;
-        ELLE_ATTRIBUTE_R(std::unique_ptr<AsioSocket>, socket);
+        ELLE_ATTRIBUTE_R(SocketPtr, socket);
         EndPoint _peer;
       };
 
@@ -284,6 +287,12 @@ namespace elle
         using Super::Super;
         StreamSocket(Self&& socket)
           : Super(std::move(socket))
+        {}
+
+        StreamSocket(AsioSocket* socket)
+          : Super(std::unique_ptr<
+              AsioSocket, std::function<void (AsioSocket*)>
+            >(socket, [] (AsioSocket*) {} ))
         {}
 
         ~StreamSocket() override;
