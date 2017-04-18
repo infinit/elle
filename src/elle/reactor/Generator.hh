@@ -109,10 +109,10 @@ namespace elle
         ELLE_ATTRIBUTE(boost::optional<T>, value);
         ELLE_ATTRIBUTE(bool, fetch);
       };
-      /// Return an iterator to the beginning of the Generator.
+      /// An iterator to the beginning of the Generator.
       iterator
       begin();
-      /// Return an iterator to the end of the Generator.
+      /// An iterator to the end of the Generator.
       iterator
       end() const;
       ELLE_ATTRIBUTE(reactor::Channel<boost::optional<T>>, results);
@@ -124,16 +124,6 @@ namespace elle
     template <typename T>
     Generator<T>
     generator(std::function<void (yielder<T> const&)> const& driver);
-
-    /// Return an iterator to the beginning of the given Generator.
-    template <typename T>
-    typename Generator<T>::iterator
-    begin(Generator<T>& g);
-
-    /// Return an iterator to the end of the given Generator.
-    template <typename T>
-    typename Generator<T>::iterator
-    end(Generator<T> const& g);
   }
 }
 

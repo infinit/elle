@@ -44,6 +44,8 @@ ELLE_TEST_SCHEDULED(move)
 
 ELLE_TEST_SCHEDULED(interleave)
 {
+  using std::begin;
+  using std::end;
   elle::reactor::Barrier sync;
   bool beacon = false;
   auto f = [&] (elle::reactor::yielder<bool> const& yield)

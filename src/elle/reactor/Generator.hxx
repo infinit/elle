@@ -143,19 +143,5 @@ namespace elle
     {
       return typename Generator<T>::iterator();
     }
-
-    template <typename T>
-    typename Generator<T>::iterator
-    begin(Generator<T>& g)
-    {
-      return g.begin();
-    }
-
-    template <typename T>
-    typename Generator<T>::iterator
-    end(Generator<T> const& g)
-    {
-      return g.end();
-    }
   }
 }
