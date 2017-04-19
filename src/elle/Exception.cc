@@ -1,6 +1,7 @@
 #include <elle/Exception.hh>
 
 #include <elle/assert.hh>
+#include <elle/os/environ.hh>
 #include <elle/serialization/Serializer.hh>
 
 namespace elle
@@ -54,6 +55,8 @@ namespace elle
               Exception const& e)
   {
     s << e.what();
+    if (os::getenv("ELLE_DEBUG_BACKTRACE", false))
+      s << e.backtrace();
     return s;
   }
 
