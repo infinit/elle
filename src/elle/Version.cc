@@ -12,10 +12,8 @@ namespace elle
   | Construction |
   `-------------*/
 
-  Version::Version():
-    _major(0),
-    _minor(0),
-    _subminor(0)
+  Version::Version()
+    : Version{0, 0, 0}
   {}
 
   /*----------.
@@ -39,19 +37,15 @@ namespace elle
   bool
   Version::operator ==(Version const& other) const
   {
-    return ((this->_major == other._major)
-            && (this->_minor == other._minor)
-            && (this->_subminor == other._subminor));
+    return std::tie(this->_major, this->_minor, this->_subminor)
+      == std::tie(other._major, other._minor, other._subminor);
   }
 
   bool
   Version::operator <(Version const& other) const
   {
-    if (this->_major != other._major)
-      return this->_major < other._major;
-    if (this->_minor != other._minor)
-      return this->_minor < other._minor;
-    return this->_subminor < other._subminor;
+    return std::tie(this->_major, this->_minor, this->_subminor)
+      < std::tie(other._major, other._minor, other._subminor);
   }
 
   bool
@@ -70,10 +64,8 @@ namespace elle
     ELLE_DEBUG("Version: serialize");
     if (s.text())
     {
-      ELLE_DEBUG("Version: is text(json,xml,etc.)");
-      std::stringstream ss;
-      print(ss);
-      std::string str = ss.str();
+      ELLE_DEBUG("Version: is text (json, xml, etc.)");
+      auto str = elle::sprintf("%s", *this);
       s.serialize_forward(str);
       if (s.in())
       {
@@ -95,26 +87,24 @@ namespace elle
   Version
   Version::from_string(std::string const& repr)
   {
-    if (repr.size() == 0)
+    if (repr.empty())
       throw elle::serialization::Error("version format error: empty");
 
-    std::vector<std::string> strs;
+    auto strs = std::vector<std::string>{};
     boost::split(strs, repr, boost::is_any_of("."));
-    std::string major = strs.size() > 0 ? strs[0] : "0";
-    std::string minor = strs.size() > 1 ? strs[1] : "0";
-    std::string sub_minor = strs.size() > 2 ? strs[2] : "0";
+    auto const major    = strs.size() > 0 ? strs[0] : "0";
+    auto const minor    = strs.size() > 1 ? strs[1] : "0";
+    auto const subminor = strs.size() > 2 ? strs[2] : "0";
 
     try
     {
-      Version v(std::stoi(major),
-              std::stoi(minor),
-              std::stoi(sub_minor));
-      return v;
+      // FIXME: not checking it fits in int8.
+      return Version(std::stoi(major), std::stoi(minor), std::stoi(subminor));
     }
     catch (std::invalid_argument const& e)
     {
       throw elle::serialization::Error(
-        elle::sprintf("version format error: %s", e.what()));
+       elle::sprintf("version format error: %s (%s)", e.what(), repr));
     }
   }
 

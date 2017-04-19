@@ -1,6 +1,3 @@
-#ifndef ELLE_VERSION_HXX
-# define ELLE_VERSION_HXX
-
 namespace elle
 {
   constexpr
@@ -12,5 +9,3 @@ namespace elle
     , _subminor(subminor)
   {}
 }
-
-#endif
