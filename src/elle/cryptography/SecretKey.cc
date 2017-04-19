@@ -62,7 +62,7 @@ namespace elle
       std::stringstream _code;
       this->encipher(_plain, _code,
                      cipher, mode, oneway);
-      return elle::Buffer{_code.str().data(), _code.str().length()};
+      return elle::Buffer{_code.str()};
     }
 
     elle::Buffer
@@ -75,7 +75,7 @@ namespace elle
       std::stringstream _plain;
       this->decipher(_code, _plain,
                      cipher, mode, oneway);
-      return elle::Buffer{_plain.str().data(), _plain.str().length()};
+      return elle::Buffer{_plain.str()};
     }
 
     void

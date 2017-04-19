@@ -15,7 +15,52 @@
 
 ELLE_LOG_COMPONENT("elle.Buffer");
 
-#define ELLE_BUFFER_INITIAL_SIZE (sizeof(void*))
+static constexpr auto elle_buffer_initial_size = sizeof(void*);
+
+namespace
+{
+  // FIXME: std::string_view.
+  // FIXME: make sure uint32_t is large enough.
+  void
+  dump_hexa(std::ostream& os, const uint32_t margin,
+            uint8_t const* data, int len)
+  {
+    auto const alignment = std::string(margin, ' ');
+    auto const saver = boost::io::ios_all_saver(std::cout);
+    auto const shift = std::string(' ', 2);
+
+    // Two characters per byte.
+    uint32_t space = (78 - margin - shift.length()) / 2;
+
+    // set the fill to '0'.
+    os.fill('0');
+
+    // Display the region.
+    auto i = 0u;
+    for (; i < len / space; ++i)
+    {
+      os << alignment << shift;
+      for (auto j = 0u; j < space; j++)
+        os << std::nouppercase
+           << std::hex
+           << std::setw(2)
+           << (int)data[i * space + j];
+      os << '\n';
+    }
+
+    if (len % space)
+    {
+      os << alignment << shift;
+
+      for (auto j = 0u; j < len % space; ++j)
+        os << std::nouppercase
+           << std::hex
+           << std::setw(2)
+           << (int)data[i * space + j];
+      os << '\n';
+    }
+  }
+}
 
 namespace elle
 {
@@ -25,8 +70,8 @@ namespace elle
 
   /// A StreamBuffer to write into a Buffer.
   template <typename BufferType>
-  class OutputStreamBuffer:
-    public StreamBuffer
+  class OutputStreamBuffer
+    : public StreamBuffer
   {
   public:
     explicit
@@ -48,9 +93,9 @@ namespace elle
     BufferType& _buffer;
   };
 
-  template<>
-  class OutputStreamBuffer<WeakBuffer>:
-    public StreamBuffer
+  template <>
+  class OutputStreamBuffer<WeakBuffer>
+    : public StreamBuffer
   {
   public:
     OutputStreamBuffer(WeakBuffer& buffer);
@@ -105,8 +150,8 @@ namespace elle
   // a size of zero.
   Buffer::Buffer()
     : _size(0)
-    , _capacity(ELLE_BUFFER_INITIAL_SIZE)
-    , _contents(static_cast<Byte*>(malloc(ELLE_BUFFER_INITIAL_SIZE)))
+    , _capacity(elle_buffer_initial_size)
+    , _contents(static_cast<Byte*>(malloc(elle_buffer_initial_size)))
   {
     if (this->_contents == nullptr)
       throw std::bad_alloc();
@@ -119,7 +164,7 @@ namespace elle
   {
     if (size == 0)
     {
-      this->_capacity = ELLE_BUFFER_INITIAL_SIZE;
+      this->_capacity = elle_buffer_initial_size;
       if ((this->_contents =
            static_cast<Byte*>(::malloc(_capacity))) == nullptr)
         throw std::bad_alloc();
@@ -133,7 +178,7 @@ namespace elle
   {}
 
   Buffer::Buffer(std::string const& data)
-    : Buffer(data.c_str(), data.size())
+    : Buffer(data.data(), data.size())
   {}
 
   Buffer::Buffer(Buffer&& other)
@@ -166,9 +211,9 @@ namespace elle
     this->_capacity = other._capacity;
     this->_contents = other._contents;
     // XXX: this cost a lot !
-    other._contents = static_cast<Byte*>(malloc(ELLE_BUFFER_INITIAL_SIZE));
+    other._contents = static_cast<Byte*>(malloc(elle_buffer_initial_size));
     other._size = 0;
-    other._capacity = ELLE_BUFFER_INITIAL_SIZE;
+    other._capacity = elle_buffer_initial_size;
     return *this;
   }
 
@@ -181,8 +226,8 @@ namespace elle
   Buffer::capacity(boost::call_traits<Buffer::Size>::param_type capacity_)
   {
     Buffer::Size capacity = capacity_;
-    if (capacity < ELLE_BUFFER_INITIAL_SIZE)
-      capacity = ELLE_BUFFER_INITIAL_SIZE;
+    if (capacity < elle_buffer_initial_size)
+      capacity = elle_buffer_initial_size;
     void* tmp = ::realloc(this->_contents, capacity);
     if (tmp == nullptr)
       throw std::bad_alloc();
@@ -237,7 +282,7 @@ namespace elle
   Buffer::ContentPair
   Buffer::release()
   {
-    Byte* new_contents = static_cast<Byte*>(::malloc(ELLE_BUFFER_INITIAL_SIZE));
+    Byte* new_contents = static_cast<Byte*>(::malloc(elle_buffer_initial_size));
     if (new_contents == nullptr)
         throw std::bad_alloc{};
 
@@ -245,7 +290,7 @@ namespace elle
 
     this->_contents = new_contents;
     this->_size = 0;
-    this->_capacity = ELLE_BUFFER_INITIAL_SIZE;
+    this->_capacity = elle_buffer_initial_size;
     return res;
   }
 
@@ -276,51 +321,14 @@ namespace elle
   void
   Buffer::dump(const uint32_t margin) const
   {
-    auto const Shift = std::string(' ', 2);
-    uint32_t space = 78 - margin - Shift.length();
-    std::string alignment(margin, ' ');
-
     auto saver = boost::io::ios_all_saver(std::cout);
-    std::cout << alignment
+    std::cout << std::string(margin, ' ')
               << "[Buffer] "
               << "address(" << static_cast<void const*>(this->_contents) << ") "
               << "size(" << std::dec << this->_size << ") "
               << "capacity(" << std::dec << this->_capacity << ")"
               << '\n';
-
-    // since a byte is represented by two characters.
-    space = space / 2;
-
-    // set the fill to '0'.
-    std::cout.fill('0');
-
-    // display the region.
-    auto i = 0u;
-    for (; i < this->_size / space; i++)
-    {
-      std::cout << alignment << Shift;
-
-      for (auto j = 0u; j < space; j++)
-        std::cout << std::nouppercase
-                  << std::hex
-                  << std::setw(2)
-                  << (int)this->_contents[i * space + j];
-
-      std::cout << '\n';
-    }
-
-    if (this->_size % space)
-    {
-      std::cout << alignment << Shift;
-
-      for (auto j = 0u; j < (this->_size % space); j++)
-        std::cout << std::nouppercase
-                  << std::hex
-                  << std::setw(2)
-                  << (int)this->_contents[i * space + j];
-
-      std::cout << std::endl;
-    }
+    dump_hexa(std::cout, margin, this->_contents, this->_size);
   }
 
   Buffer::Size
@@ -399,7 +407,7 @@ namespace elle
   Buffer::shrink_to_fit()
   {
     auto size =
-      std::max(static_cast<Buffer::Size>(ELLE_BUFFER_INITIAL_SIZE),
+      std::max(static_cast<Buffer::Size>(elle_buffer_initial_size),
                this->_size);
     if (size < this->_capacity)
     {
@@ -470,49 +478,13 @@ namespace elle
   void
   ConstWeakBuffer::dump(const uint32_t margin) const
   {
-    auto const Shift = std::string(' ', 2);
-    uint32_t space = 78 - margin - Shift.length();
-    std::string alignment(margin, ' ');
-
-    std::cout << alignment
+    auto saver = boost::io::ios_all_saver(std::cout);
+    std::cout << std::string(margin, ' ')
               << "[Buffer] "
               << "address(" << static_cast<void const*>(this->_contents) << ") "
               << "size(" << std::dec << this->_size << ")"
               << std::endl;
-
-    // since a byte is represented by two characters.
-    space = space / 2;
-
-    // set the fill to '0'.
-    std::cout.fill('0');
-
-    // display the region.
-    auto i = 0u;
-    for (; i < (this->_size / space); i++)
-    {
-      std::cout << alignment << Shift;
-
-      for (auto j = 0u; j < space; j++)
-        std::cout << std::nouppercase
-                  << std::hex
-                  << std::setw(2)
-                  << (int)this->_contents[i * space + j];
-
-      std::cout << std::endl;
-    }
-
-    if ((this->_size % space) != 0)
-    {
-      std::cout << alignment << Shift;
-
-      for (auto j = 0u; j < (this->_size % space); j++)
-        std::cout << std::nouppercase
-                  << std::hex
-                  << std::setw(2)
-                  << (int)this->_contents[i * space + j];
-
-      std::cout << std::endl;
-    }
+    dump_hexa(std::cout, margin, this->_contents, this->_size);
   }
 
   Buffer::Byte
