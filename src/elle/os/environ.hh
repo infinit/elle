@@ -33,7 +33,7 @@ namespace elle
     }
 
     std::string
-    setenv(std::string const& key, std::string const& val, bool override);
+    setenv(std::string const& key, std::string const& val, bool overwrite);
 
     /// Get a specific value from environment. If value is not found,
     /// KeyError Exception is thrown
@@ -47,8 +47,18 @@ namespace elle
 
     /// Get a specific value from environment. If value is not found,
     /// default_ is returned
+    std::string
+    getenv(std::string const& key, char const* default_);
+
+    /// Get a specific value from environment. If value is not found,
+    /// default_ is returned
     int
     getenv(std::string const& key, int default_);
+
+    /// Get a specific value from environment. If value is not found,
+    /// default_ is returned
+    bool
+    getenv(std::string const& key, bool default_);
 
     /// Whether a key is defined in environment.
     bool

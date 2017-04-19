@@ -7,7 +7,6 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
-#include <boost/lexical_cast.hpp>
 
 #include <elle/Exception.hh>
 #include <elle/assert.hh>
@@ -22,20 +21,21 @@ namespace elle
     | Type |
     `-----*/
 
-    static
-    std::string
-    _type_to_string(elle::log::Logger::Type type)
+    namespace
     {
-      switch (type)
+      std::string
+      _type_to_string(Logger::Type type)
       {
-        case elle::log::Logger::Type::info:
+        switch (type)
+        {
+        case Logger::Type::info:
           return "info";
-        case elle::log::Logger::Type::warning:
+        case Logger::Type::warning:
           return "warning";
-        case elle::log::Logger::Type::error:
+        case Logger::Type::error:
           return "error";
-        default:
-          throw elle::Exception(elle::sprintf("unknown log type: %s", type));
+        }
+        elle::unreachable();
       }
     }
 
@@ -47,93 +47,27 @@ namespace elle
                            bool enable_time,
                            bool universal_time,
                            bool microsec_time,
-                           bool warn_err_only):
-      Logger(log_level),
-      _output(out),
-      _warn_err_only(warn_err_only)
+                           bool warn_err_only)
+      : Logger(log_level)
+      , _output(out)
+      , _display_type(os::getenv("ELLE_LOG_DISPLAY_TYPE", display_type))
+      , _enable_pid(os::getenv("ELLE_LOG_PID", enable_pid))
+      , _enable_tid(os::getenv("ELLE_LOG_TID", enable_tid))
+      , _enable_time(os::getenv("ELLE_LOG_TIME", enable_time))
+      , _warn_err_only(warn_err_only)
     {
-      if (elle::os::inenv("ELLE_LOG_DISPLAY_TYPE"))
-      {
-        this->_display_type =
-          boost::lexical_cast<bool>(elle::os::getenv("ELLE_LOG_DISPLAY_TYPE"));
-      }
-      else
-      {
-        this->_display_type = display_type;
-      }
-      if (elle::os::inenv("ELLE_LOG_PID"))
-      {
-        this->_enable_pid =
-          boost::lexical_cast<bool>(elle::os::getenv("ELLE_LOG_PID"));
-      }
-      else
-      {
-        this->_enable_pid = enable_pid;
-      }
-      if (elle::os::inenv("ELLE_LOG_TID"))
-      {
-        this->_enable_tid =
-          boost::lexical_cast<bool>(elle::os::getenv("ELLE_LOG_TID"));
-      }
-      else
-      {
-        this->_enable_tid = enable_tid;
-      }
-      if (elle::os::inenv("ELLE_LOG_TIME"))
-      {
-        this->_enable_time =
-          boost::lexical_cast<bool>(elle::os::getenv("ELLE_LOG_TIME"));
-      }
-      else
-      {
-        this->_enable_time = enable_time;
-      }
-      if (elle::os::inenv("ELLE_LOG_TIME_UNIVERSAL"))
-      {
-        this->time_universal(boost::lexical_cast<bool>(
-          elle::os::getenv("ELLE_LOG_TIME_UNIVERSAL")));
-      }
-      else
-      {
-        this->time_universal(universal_time);
-      }
-      if (elle::os::inenv("ELLE_LOG_TIME_MICROSEC"))
-      {
-        this->time_microsec(boost::lexical_cast<bool>(
-          elle::os::getenv("ELLE_LOG_TIME_MICROSEC")));
-      }
-      else
-      {
-        this->time_microsec(microsec_time);
-      }
+      this->time_universal(os::getenv("ELLE_LOG_TIME_UNIVERSAL",
+                                            universal_time));
+      this->time_microsec(os::getenv("ELLE_LOG_TIME_MICROSEC",
+                                           microsec_time));
     }
 
     namespace
     {
-      /// Whether to use colors.
-      bool
-      color()
-      {
-        static const char* color_env_name = "ELLE_LOG_COLOR";
-        if (char* color_env = ::getenv(color_env_name))
-        {
-          std::string c(color_env);
-          if (c == "0")
-            return false;
-          else if (c == "1")
-            return true;
-          else
-            throw elle::Exception(elle::sprintf("invalid value for %s: %s",
-                                                color_env_name, c));
-        }
-        else
-          return true;
-      }
-
       std::string
       get_color_code(Logger::Level level, Logger::Type type)
       {
-        static bool c = color();
+        static bool c = os::getenv("ELLE_LOG_COLOR", true);
         if (c)
           switch (type)
           {

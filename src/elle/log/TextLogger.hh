@@ -1,9 +1,8 @@
-#ifndef ELLE_LOG_TEXTLOGGER_HH
-# define ELLE_LOG_TEXTLOGGER_HH
+#pragma once
 
-# include <iosfwd>
+#include <iosfwd>
 
-# include <elle/log/Logger.hh>
+#include <elle/log/Logger.hh>
 
 namespace elle
 {
@@ -45,5 +44,3 @@ namespace elle
     };
   }
 }
-
-#endif

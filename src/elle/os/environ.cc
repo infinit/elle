@@ -12,6 +12,8 @@
 #include <cstdlib>
 #include <cstring>
 
+#include <boost/lexical_cast.hpp>
+
 #ifdef environ
 # undef environ
 #endif
@@ -31,9 +33,9 @@ namespace elle
     std::string
     setenv(std::string const& key,
            std::string const& val,
-           bool override)
+           bool overwrite)
     {
-      if (!override)
+      if (!overwrite)
         if (char const* old_value = ::getenv(key.c_str()))
           return std::string{old_value};
 
@@ -60,6 +62,23 @@ namespace elle
     {
       if (auto val = ::getenv(key.c_str()))
         return val;
+      else
+        return default_;
+    }
+
+    // Exists only because `bool` case takes precedence over
+    // `std::string const&`.
+    std::string getenv(std::string const& key,
+                       char const* default_)
+    {
+      return getenv(key, std::string(default_));
+    }
+
+    bool
+    getenv(std::string const& key, bool default_)
+    {
+      if (auto val = ::getenv(key.c_str()))
+        return boost::lexical_cast<bool>(val);
       else
         return default_;
     }
