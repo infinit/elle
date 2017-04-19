@@ -1,7 +1,6 @@
 #include <elle/serialization/binary/SerializerIn.hh>
 
-#include <elle/serialization/json/Overflow.hh>
-#include <elle/serialization/json/FieldError.hh>
+#include <elle/serialization/json/Error.hh>
 
 ELLE_LOG_COMPONENT("elle.serialization.binary.SerializerIn")
 
@@ -106,9 +105,9 @@ namespace elle
         int64_t value;
         this->_serialize(value);
         if (value > std::numeric_limits<T>::max())
-          throw json::Overflow(this->current_name(), sizeof(T) * 8, true);
+          throw json::Overflow(this->current_name(), sizeof(T) * 8, true, value);
         if (value < std::numeric_limits<T>::min())
-          throw json::Overflow(this->current_name(), sizeof(T) * 8, false);
+          throw json::Overflow(this->current_name(), sizeof(T) * 8, false, value);
         v = value;
       }
 
@@ -123,9 +122,9 @@ namespace elle
       {
         int val;
         _serialize(val);
-        if (val !=0 && val != 1)
-          throw json::Overflow(this->current_name(), 1, true);
-        v = val ? true:false;
+        if (val != 0 && val != 1)
+          throw json::Overflow(this->current_name(), 1, true, val);
+        v = val ? true : false;
       }
 
       void

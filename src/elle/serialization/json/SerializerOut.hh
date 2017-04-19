@@ -1,12 +1,11 @@
-#ifndef ELLE_SERIALIZATION_JSON_SERIALIZEROUT_HH
-# define ELLE_SERIALIZATION_JSON_SERIALIZEROUT_HH
+#pragma once
 
-# include <vector>
+#include <vector>
 
-# include <boost/any.hpp>
+#include <boost/any.hpp>
 
-# include <elle/attribute.hh>
-# include <elle/serialization/SerializerOut.hh>
+#include <elle/attribute.hh>
+#include <elle/serialization/SerializerOut.hh>
 
 namespace elle
 {
@@ -143,5 +142,3 @@ namespace elle
     }
   }
 }
-
-#endif

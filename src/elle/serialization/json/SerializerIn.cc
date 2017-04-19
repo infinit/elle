@@ -10,10 +10,7 @@
 #include <elle/memory.hh>
 #include <elle/printf.hh>
 #include <elle/serialization/Error.hh>
-#include <elle/serialization/json/MissingKey.hh>
-#include <elle/serialization/json/Overflow.hh>
-#include <elle/serialization/json/TypeError.hh>
-#include <elle/serialization/json/FieldError.hh>
+#include <elle/serialization/json/Error.hh>
 
 ELLE_LOG_COMPONENT("elle.serialization.json.SerializerIn");
 
@@ -134,9 +131,9 @@ namespace elle
         int64_t value;
         this->_serialize(value);
         if (value > std::numeric_limits<T>::max())
-          throw Overflow(this->current_name(), sizeof(T) * 8, true);
+          throw Overflow(this->current_name(), sizeof(T) * 8, true, value);
         if (value < std::numeric_limits<T>::min())
-          throw Overflow(this->current_name(), sizeof(T) * 8, false);
+          throw Overflow(this->current_name(), sizeof(T) * 8, false, value);
         v = value;
       }
 

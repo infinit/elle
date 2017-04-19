@@ -10,9 +10,7 @@
 #include <elle/filesystem/path.hh>
 #include <elle/serialization/binary.hh>
 #include <elle/serialization/json.hh>
-#include <elle/serialization/json/MissingKey.hh>
-#include <elle/serialization/json/Overflow.hh>
-#include <elle/serialization/json/TypeError.hh>
+#include <elle/serialization/json/Error.hh>
 #include <elle/test.hh>
 
 ELLE_LOG_COMPONENT("elle.serialization.test");
