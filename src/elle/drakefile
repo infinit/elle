@@ -126,7 +126,7 @@ def configure(zlib_lib,
   if cxx_toolkit.os == drake.os.macos:
     config.define('HAVE_STATFS')
 
-  cxx_config = cxx_config + config
+  cxx_config += config
   cxx_config.lib_path_runtime('.')
 
   openssl_libs = None
@@ -137,7 +137,7 @@ def configure(zlib_lib,
     openssl_libs = drake.copy([openssl_lib_crypto, openssl_lib_ssl],
                              lib_path, strip_prefix = True)
 
-    cxx_config = cxx_config + ldap_config
+    cxx_config += ldap_config
     cxx_config.define('HAVE_LDAP=1')
     config.define('HAVE_LDAP=1')
 
