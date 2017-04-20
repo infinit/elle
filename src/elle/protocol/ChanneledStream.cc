@@ -1,5 +1,4 @@
 #include <iostream>
-#include <boost/foreach.hpp>
 
 #include <elle/find.hh>
 #include <elle/log.hh>

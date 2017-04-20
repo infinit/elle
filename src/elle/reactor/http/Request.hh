@@ -26,10 +26,11 @@ namespace elle
       /*--------.
       | Request |
       `--------*/
-      /// A HTTP request.
+
+      /// An HTTP request.
       ///
-      /// A Request performs a HTTP request according to the configuration it is
-      /// given and handle the server response.  It interfaces the outgoing and
+      /// A Request performs an HTTP request according to the configuration it is
+      /// given and handles the server response.  It interfaces the outgoing and
       /// incoming body with a stream interface.  The HTTP request starts when
       /// the object is created and will progress as soon as possible, only
       /// waiting when data is required from the user or the server.
@@ -54,9 +55,9 @@ namespace elle
       /// As a Waitable, the Request will block waiting threads until
       /// completion. Waiting a request automatically signals end of input as if
       /// finalize had been called.
-      class Request:
-        public reactor::Waitable,
-        public elle::IOStream
+      class Request
+        : public reactor::Waitable
+        , public elle::IOStream
       {
       /*--------------.
       | Configuration |
@@ -69,8 +70,8 @@ namespace elle
         public:
           /// Create a configuration.
           ///
-          /// \param timeout Initial value of the timeout attribute.
-          /// \param version Initial value of the version attribute.
+          /// @param timeout Initial value of the timeout attribute.
+          /// @param version Initial value of the version attribute.
           Configuration(DurationOpt timeout = 30_sec,
                         DurationOpt stall_timeout = DurationOpt(),
                         Version version = Version::v11,
@@ -84,13 +85,13 @@ namespace elle
           ~Configuration();
           /// Add a custom header to be sent to the server.
           ///
-          /// \param name    Name of the header.
-          /// \param content Content of the header.
+          /// @param name    Name of the header.
+          /// @param content Content of the header.
           void
           header_add(std::string const& header, std::string const& content);
           /// Remove a header previously set with .
           ///
-          /// \param name Name of the header to remove.
+          /// @param name Name of the header to remove.
           void
           header_remove(std::string const& name);
 
@@ -152,8 +153,8 @@ namespace elle
         /// The request will start as soon as possible. It will not send a body
         /// and using the output stream interface will yield an error.
         ///
-        /// \param url The URL to query.  \param method The HTTP method to use.
-        /// \param conf The Configuration to apply.
+        /// @param url The URL to query.  @param method The HTTP method to use.
+        /// @param conf The Configuration to apply.
         ///
         /// @throw RequestError if the request cannot be created and started.
         Request(std::string const& url,
@@ -165,10 +166,10 @@ namespace elle
         /// and fed trough the output stream interface and whose end is signaled
         /// by a call to the finalize() method.
         ///
-        /// \param url          The URL to query.
-        /// \param method       The HTTP method to use.
-        /// \param content_type The MIME type of the uploded body.
-        /// \param conf         The Configuration to apply.
+        /// @param url          The URL to query.
+        /// @param method       The HTTP method to use.
+        /// @param content_type The MIME type of the uploded body.
+        /// @param conf         The Configuration to apply.
         ///
         /// @throw RequestError if the request cannot be created and started.
         Request(std::string const& url,
@@ -314,8 +315,8 @@ namespace elle
       /// This function stores the whole response in memory and should only be
       /// used for short, simple servers answers or when no body is expected.
       ///
-      /// \param url  The URL to query.
-      /// \param conf The Configuration for the request.
+      /// @param url  The URL to query.
+      /// @param conf The Configuration for the request.
       /// \returns The server response body.
       elle::Buffer
       get(std::string const& url,

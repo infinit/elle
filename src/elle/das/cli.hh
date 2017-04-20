@@ -74,7 +74,7 @@ namespace elle
         ELLE_ATTRIBUTE_R(std::string, option);
       };
 
-      /// Error on a value
+      /// Error on a value, e.g., unexpect argument.
       class ValueError
         : public virtual Error
       {
@@ -84,11 +84,11 @@ namespace elle
           , _value(std::move(value))
         {}
 
-        /// The erroneous option
+        /// The erroneous value.
         ELLE_ATTRIBUTE_R(std::string, value);
       };
 
-      /// Error on an option value
+      /// Error on the value given to an option, e.g., invalid type.
       class OptionValueError
         : public OptionError
         , public ValueError
@@ -141,8 +141,8 @@ namespace elle
       /// Unrecognized left over value
       ELLE_DAS_CLI_VALUE_ERROR(Unrecognized, "extra unrecognized argument");
 
-  #undef ELLE_DAS_CLI_OPTION_ERROR
-  #undef ELLE_DAS_CLI_VALUE_ERROR
+#undef ELLE_DAS_CLI_OPTION_ERROR
+#undef ELLE_DAS_CLI_VALUE_ERROR
 
       /// Base tag for cli symbols
       class CLI_Symbol

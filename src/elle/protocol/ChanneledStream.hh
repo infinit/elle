@@ -22,7 +22,7 @@ namespace elle
     ///
     /// \code{.cc}
     ///
-    /// // Consider two peer, connected by an arbitrary socket s.
+    /// // Consider two peers, connected by an arbitrary socket s.
     ///
     /// // Bob creates two Channels.
     /// elle::protocol::Serializer serializer(s);
