@@ -41,8 +41,8 @@ namespace elle
       Server<T, Version, ClientId, ServerId>::Proposal::operator ==(
         Proposal const& rhs) const
       {
-        return this->version == rhs.version && this->round == rhs.round
-               && this->sender == rhs.sender;
+        return std::tie(this->version, this->round, this->sender)
+          == std::tie(rhs.version, rhs.round, rhs.sender);
       }
 
       template <
@@ -51,12 +51,8 @@ namespace elle
       Server<T, Version, ClientId, ServerId>::Proposal::operator <(
         Proposal const& rhs) const
       {
-        if (this->version != rhs.version)
-          return this->version < rhs.version;
-        else if (this->round != rhs.round)
-          return this->round < rhs.round;
-        else
-          return this->sender < rhs.sender;
+        return std::tie(this->version, this->round, this->sender)
+          < std::tie(rhs.version, rhs.round, rhs.sender);
       }
 
       template <
@@ -166,7 +162,7 @@ namespace elle
         s.serialize("effective", this->_effective);
         if (version < elle::Version(0, 1, 0))
         {
-          Version dummy = Version();
+          auto dummy = Version();
           s.serialize("version", dummy);
         }
       }
@@ -384,7 +380,7 @@ namespace elle
         {
           ELLE_WARN("%s: someone malicious sent an accept before propose",
                     this);
-          throw elle::Error("propose before accepting");
+          elle::err("propose before accepting");
         }
         if (p < this->_state->proposal)
         {
@@ -428,7 +424,7 @@ namespace elle
         {
           ELLE_WARN("%s: someone malicious sent a confirm before propose/accept",
                     this);
-          throw elle::Error("propose and accept before confirming");
+          elle::err("propose and accept before confirming");
         }
         auto& accepted = *this->_state->accepted;
         if (!accepted.confirmed)
@@ -461,9 +457,9 @@ namespace elle
       {
         if (!this->_state)
           return {};
-        if (this->_state->accepted &&
-            this->_state->accepted->confirmed &&
-            this->_state->accepted->value.template is<T>())
+        else if (this->_state->accepted
+                 && this->_state->accepted->confirmed
+                 && this->_state->accepted->value.template is<T>())
           return this->_state->accepted;
         else if (this->_value)
           return Accepted(this->_state->proposal, *this->_value, true);
@@ -561,14 +557,14 @@ namespace elle
         s.serialize("quorum", this->_quorum);
         if (v >= elle::Version(0, 1, 0))
           s.serialize("value", this->_value);
-      using VersionsState = boost::multi_index::multi_index_container<
+        using VersionsState = boost::multi_index::multi_index_container<
           VersionState,
           boost::multi_index::indexed_by<
             boost::multi_index::ordered_unique<
               boost::multi_index::const_mem_fun<
                 VersionState, Version, &VersionState::version>>
             >
-        >;
+          >;
         if (s.out())
         {
           VersionsState states;

@@ -60,13 +60,13 @@ namespace elle
           Version version;
           int round;
           ClientId sender;
-          /// Check if this proposal is equal to \a given one.
+          /// Check if this proposal is equal to @a given one.
           ///
           /// @param rhs Another proposal.
           /// @returns Whether proposals are equal.
           bool
           operator ==(Proposal const& rhs) const;
-          /// Check if this proposal is lesser than \a given one.
+          /// Check if this proposal is lesser than @a given one.
           ///
           /// @param rhs Another proposal.
           /// @returns Whether this proposal is lesser than the given proposal.
@@ -95,7 +95,7 @@ namespace elle
         {
           /// Deserialize an Accepted proposal.
           Accepted(elle::serialization::SerializerIn& s, elle::Version const& v);
-          /// Construct a Accepted from \a proposal and \a value.
+          /// Construct a Accepted from @a proposal and @a value.
           ///
           /// @param proposal The proposal accepted.
           /// @param value The value agreed.
@@ -193,7 +193,7 @@ namespace elle
         | Consensus |
         `----------*/
       public:
-        /// Propose \a Proposal to \a Quorum.
+        /// Propose @a Proposal to @a Quorum.
         ///
         /// If the Proposal is already outdated, return the newest Proposal.
         ///
