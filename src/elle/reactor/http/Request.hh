@@ -89,7 +89,15 @@ namespace elle
           /// @param content Content of the header.
           void
           header_add(std::string const& header, std::string const& content);
-          /// Remove a header previously set with .
+          /// Add a bunch of headers from a container of pairs
+          /// (header, content).
+          template <typename Headers_>
+          void
+          header_add(Headers_ const& h)
+          {
+            this->_headers.insert(h.begin(), h.end());
+          }
+          /// Remove a header previously set.
           ///
           /// @param name Name of the header to remove.
           void
