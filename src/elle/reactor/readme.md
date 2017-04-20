@@ -47,7 +47,7 @@ elle::reactor::Thread acceptor(sched, "acceptor", [&]
     };
   });
 ```
-See [full example](examples/echo_server.cc).
+See [full example](../../../examples/demo/elle/reactor/echo_server.cc).
 
 ## How to compile
 
