@@ -77,7 +77,7 @@ namespace elle
           // serialize_forward is used.
           if (name == ".version" && object.find(name) != object.end())
             return false;
-          auto it = object.insert(std::make_pair(name, boost::any()));
+          auto it = object.emplace(name, boost::any());
           this->_current.push_back(&it.first->second);
         }
         else if (current.type() == typeid(elle::json::Array))

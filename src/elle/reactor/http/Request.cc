@@ -86,7 +86,7 @@ namespace elle
       Request::Configuration::header_add(std::string const& header,
                                          std::string const& content)
       {
-        this->_headers.insert(std::make_pair(header, content));
+        this->_headers.emplace(header, content);
       }
 
       void
@@ -380,14 +380,12 @@ namespace elle
           auto proto = address->family == AF_INET ?
             boost::asio::ip::tcp::v4(): boost::asio::ip::tcp::v6();
           auto& service = self._curl.get_io_service();
-          auto socket =
-            std::make_shared<Service::Socket>(service, proto);
+          auto socket = std::make_shared<Service::Socket>(service, proto);
           auto fd = socket->native_handle();
           ELLE_TRACE_SCOPE("%s: open socket %s for %s", self._curl, fd, self);
-          Service::Socket::_sockets.insert(
-            std::make_pair(fd, socket));
+          Service::Socket::_sockets.emplace(fd, socket);
           ELLE_ASSERT_NCONTAINS(self._curl._sockets, fd);
-          self._curl._sockets.insert(std::make_pair(fd, socket));
+          self._curl._sockets.emplace(fd, socket);
           return fd;
         }
         else

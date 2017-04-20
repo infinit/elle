@@ -104,7 +104,7 @@ namespace elle
         ELLE_TRACE_SCOPE("%s: start %s", *this, request);
         CURL* handle = request._impl->_handle;
         ELLE_ASSERT_NCONTAINS(this->_requests, handle);
-        this->_requests.insert(std::make_pair(handle, request._impl));
+        this->_requests.emplace(handle, request._impl);
         auto res = curl_multi_add_handle(this->_curl, handle);
         if (res != CURLM_OK)
           throw RequestError(request.url(),

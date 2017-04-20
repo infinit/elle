@@ -6,7 +6,7 @@ namespace elle
   int
   Factory<T>::register_(std::string const& name, Builder builder)
   {
-    Factory<T>::_items().insert(std::make_pair(name, builder));
+    Factory<T>::_items().emplace(name, builder);
     return 0;
   }
 
@@ -17,7 +17,8 @@ namespace elle
     auto it = Factory<T>::_items().find(name);
     if (it == Factory<T>::_items().end())
       throw KeyError(name);
-    return it->second(args);
+    else
+      return it->second(args);
   }
 
   template <typename T>

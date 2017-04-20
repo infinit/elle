@@ -30,9 +30,10 @@ namespace elle
             auto res = Object{};
             for (auto const& element: value.getObject())
             {
+              // Enforce evulation order.
               auto key = Config::get_name(element);
               auto value = from_spirit(Config::get_value(element));
-              res.insert(std::make_pair(key, value));
+              res.emplace(key, value);
             }
             return res;
           }
