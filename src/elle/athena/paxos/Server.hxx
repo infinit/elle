@@ -167,16 +167,25 @@ namespace elle
         }
       }
 
+      // We used to name this "athena::...".  For backward
+      // compatibility, remove the "elle:" prefix we recently
+      // introduced.
       template <
         typename T, typename Version, typename ClientId, typename ServerId>
       const elle::serialization::Hierarchy<elle::Exception>::Register<
         typename Server<T, Version, ClientId, ServerId>::WrongQuorum>
       Server<T, Version, ClientId, ServerId>::
-        _register_wrong_quorum_serialization;
+      _register_wrong_quorum_serialization{
+        boost::replace_all_copy(
+            elle::serialization::Hierarchy<elle::Exception>::Register<
+        typename Server<T, Version, ClientId, ServerId>::WrongQuorum>
+            ::default_name(),
+                                "elle::athena", "athena")
+          };
 
-      /*------------.
+      /*-------------.
       | PartialState |
-      `------------*/
+      `-------------*/
 
       template <
         typename T, typename Version, typename ClientId, typename ServerId>
@@ -216,7 +225,13 @@ namespace elle
       const elle::serialization::Hierarchy<elle::Exception>::Register<
         typename Server<T, Version, ClientId, ServerId>::PartialState>
       Server<T, Version, ClientId, ServerId>::
-        _register_partial_state_serialization;
+        _register_partial_state_serialization{
+        boost::replace_all_copy(
+            elle::serialization::Hierarchy<elle::Exception>::Register<
+        typename Server<T, Version, ClientId, ServerId>::PartialState>
+            ::default_name(),
+                                "elle::athena", "athena")
+          };
 
       /*-------------.
       | Construction |

@@ -3,6 +3,7 @@
 #ifndef ELLE_SERIALIZATION_SERIALIZER_HXX
 # define ELLE_SERIALIZATION_SERIALIZER_HXX
 
+# include <boost/algorithm/string/replace.hpp>
 # include <boost/optional.hpp>
 
 # include <elle/Backtrace.hh>
@@ -36,7 +37,7 @@ namespace elle
 
 # define ELLE_SERIALIZATION_STATIC_PREDICATE(Name, Test)                \
   template <typename T, typename S>                                     \
-  inline constexpr                                                      \
+  constexpr                                                             \
   std::enable_if_exists_t<ELLE_ATTRIBUTE_STRIP_PARENS(Test), bool>      \
   BOOST_PP_CAT(_, Name)(int)                                            \
   {                                                                     \
@@ -44,7 +45,7 @@ namespace elle
   }                                                                     \
                                                                         \
   template <typename T, typename S>                                     \
-  inline constexpr                                                      \
+  constexpr                                                             \
   bool                                                                  \
   BOOST_PP_CAT(_, Name)(...)                                            \
   {                                                                     \
@@ -52,7 +53,7 @@ namespace elle
   }                                                                     \
                                                                         \
   template <typename T, typename S>                                     \
-  inline constexpr                                                      \
+  constexpr                                                             \
   bool                                                                  \
   Name()                                                                \
   {                                                                     \
@@ -84,6 +85,9 @@ namespace elle
                       std::declval<elle::serialization::SerializerOut&>())),
            decltype(serialization_api<T, S>::deserialize(
                       std::declval<elle::serialization::SerializerIn&>()))>));
+
+
+# undef ELLE_SERIALIZATION_STATIC_PREDICATE
 
       template <typename T>
       struct recurse
@@ -185,26 +189,21 @@ namespace elle
 
       struct current_name
       {
-        inline
         current_name(Serializer& s)
           : _serializer(s)
         {}
 
         friend
         std::ostream&
-        operator <<(std::ostream& s, current_name& c);
+        operator <<(std::ostream& s, current_name& c)
+        {
+          auto name = c._serializer.current_name();
+          if (!name.empty())
+            s << " \"" << name << "\"";
+          return s;
+        }
         ELLE_ATTRIBUTE(Serializer&, serializer);
       };
-
-      inline
-      std::ostream&
-      operator <<(std::ostream& s, current_name& c)
-      {
-        auto name = c._serializer.current_name();
-        if (!name.empty())
-          s << " \"" << name << "\"";
-        return s;
-      }
     }
 
     class Serializer::Details
@@ -234,9 +233,12 @@ namespace elle
             ELLE_WARN("%s", message);
             throw Error(message);
           }
-          auto type_name = it->second;
-          s.serialize(T::virtually_serializable_key, type_name);
-          s.serialize_object(*ptr);
+          else
+          {
+            auto type_name = it->second;
+            s.serialize(T::virtually_serializable_key, type_name);
+            s.serialize_object(*ptr);
+          }
         }
         else
         {
@@ -1362,20 +1364,8 @@ namespace elle
         Register(std::string const& name_ = "")
         {
           ELLE_LOG_COMPONENT("elle.serialization");
-          auto id = type_info<U>();
-          std::string name = name_;
-          if (name.empty())
-          {
-            name = id.name();
-            // Normalize stuff between different stdlibs
-            while (true)
-            {
-              auto pos = name.find("std::__1::");
-              if (pos == name.npos)
-                break;
-              name = name.substr(0, pos) + "std::" + name.substr(pos + 10);
-            }
-          }
+          auto const id = type_info<U>();
+          auto const name = name_.empty() ? default_name() : name_;
           ELLE_TRACE_SCOPE("register dynamic type %s as %s", id, name);
           Hierarchy<T>::_map() [name] =
             [] (SerializerIn& s)
@@ -1384,6 +1374,15 @@ namespace elle
             };
           Hierarchy<T>::_rmap()[id] = name;
           ExceptionMaker<T>::template add<U>();
+        }
+
+        /// The name that would be used unless there is a specific case.
+        static std::string
+        default_name()
+        {
+          auto const id = type_info<U>();
+          // Normalize stuff between different stdlibs.
+          return boost::replace_all_copy(id.name(), "std::__1::", "std::");
         }
 
         void
