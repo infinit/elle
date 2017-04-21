@@ -1,10 +1,11 @@
 #include <elle/Buffer.hh>
 
-#include <algorithm> // std::count_if
 #include <bitset>
 #include <iomanip>
 #include <iostream>
 #include <locale> // std::isprint
+
+#include <boost/range/algorithm/count_if.hpp>
 
 #include <elle/Exception.hh>
 #include <elle/IOStream.hh>
@@ -611,36 +612,31 @@ namespace elle
   | Operators |
   `----------*/
 
-  static
-  void
-  put(std::ostream& stream,
-      ConstWeakBuffer const& buffer,
-      bool hex)
+  namespace
   {
-    if (hex)
+    void
+    put(std::ostream& stream,
+        ConstWeakBuffer const& buffer,
+        bool hex)
     {
-      stream << "0x" << format::hexadecimal::encode(buffer);
+      if (hex)
+        stream << "0x" << format::hexadecimal::encode(buffer);
+      else
+        stream.write(reinterpret_cast<const char*>(buffer.contents()),
+                     buffer.size());
     }
-    else
-      stream.write(reinterpret_cast<const char*>(buffer.contents()),
-                   buffer.size());
   }
 
   std::ostream&
   operator <<(std::ostream& stream,
               ConstWeakBuffer const& buffer)
   {
-    static int const max_length = 20;
-    bool hex = stream.flags() & std::ios::hex;
-    bool fixed = stream.flags() & std::ios::fixed;
-    int printable = std::count_if(buffer.begin(), buffer.end(),
-                                  [] (char c) { return std::isprint(c); });
-    std::ios state(nullptr);
-    state.copyfmt(stream);
-    elle::SafeFinally restore_stream_state([&] { std::cout.copyfmt(state); });
-    if (float(printable) / buffer.size() < 0.9)
-      hex = true;
-    if (fixed && signed(buffer.size()) > max_length)
+    auto const saver = boost::io::ios_all_saver(stream);
+    auto const max_length = 20;
+    auto const hex =
+      stream.flags() & std::ios::hex
+      || float(boost::count_if(buffer, ::isprint)) / buffer.size() < 0.9;
+    if (is_fixed(stream) && signed(buffer.size()) > max_length)
     {
       put(stream, buffer.range(0, max_length / 2), hex);
       stream << "...";
