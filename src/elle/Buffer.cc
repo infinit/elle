@@ -336,21 +336,22 @@ namespace elle
   {
     if (size < 32)
       return 32;
-    if (size < 4096)
+    else if (size < 4096)
       return size *= 2;
-    return (size + size / 2);
+    else
+      return size + size / 2;
   }
 
   bool
-  Buffer::operator ==(Buffer const& ot) const
+  Buffer::operator ==(Buffer const& other) const
   {
-    return *this == ConstWeakBuffer(ot._contents, ot._size);
+    return *this == ConstWeakBuffer(other);
   }
 
   bool
   Buffer::operator ==(ConstWeakBuffer const& other) const
   {
-    return WeakBuffer(_contents, _size) == other;
+    return ConstWeakBuffer(*this) == other;
   }
 
   bool
@@ -366,9 +367,9 @@ namespace elle
   }
 
   bool
-  Buffer::operator <(Buffer const& ot) const
+  Buffer::operator <(Buffer const& other) const
   {
-    return WeakBuffer(_contents, _size) < WeakBuffer(ot._contents, ot._size);
+    return ConstWeakBuffer(*this) < WeakBuffer(other);
   }
 
   /*-----------.
@@ -553,9 +554,8 @@ namespace elle
   bool
   ConstWeakBuffer::operator ==(ConstWeakBuffer const& other) const
   {
-    if (this->_size != other.size())
-      return false;
-    return ::memcmp(this->_contents, other.contents(), this->_size) == 0;
+    return this->_size == other.size()
+      && memcmp(this->_contents, other.contents(), this->_size) == 0;
   }
 
   bool
@@ -563,7 +563,8 @@ namespace elle
   {
     if (this->_size == other.size())
       return ::memcmp(this->_contents, other.contents(), this->_size) < 0;
-    return this->_size < other.size();
+    else
+      return this->_size < other.size();
   }
 
   bool
@@ -663,8 +664,7 @@ namespace elle
   std::string
   ConstWeakBuffer::string() const
   {
-    return std::string(reinterpret_cast<char const*>(this->contents()),
-                       this->size());
+    return {reinterpret_cast<char const*>(this->contents()), this->size()};
   }
 
 
@@ -673,8 +673,8 @@ namespace elle
   `------------------*/
 
   template <typename BufferType>
-  InputStreamBuffer<BufferType>::InputStreamBuffer(BufferType const& buffer):
-    _pos(0)
+  InputStreamBuffer<BufferType>::InputStreamBuffer(BufferType const& buffer)
+    : _pos(0)
   {
     _buffers.push_back(&buffer);
     ELLE_DEBUG("create an InputStreamBuffer on a buffer of size %s",
@@ -727,9 +727,9 @@ namespace elle
   `-------------------*/
 
   template <typename BufferType>
-  OutputStreamBuffer<BufferType>::OutputStreamBuffer(BufferType& buffer):
-    _old_size(buffer.size()),
-    _buffer(buffer)
+  OutputStreamBuffer<BufferType>::OutputStreamBuffer(BufferType& buffer)
+    : _old_size(buffer.size())
+    , _buffer(buffer)
   {}
 
   template <typename BufferType>
@@ -739,10 +739,8 @@ namespace elle
     _buffer.capacity(this->_old_size + 512);
     ELLE_DEBUG("%s: grow buffer capacity from %s to %s bytes",
                *this, this->_old_size, this->_buffer.capacity());
-    return WeakBuffer(
-      (char*)_buffer.mutable_contents() + this->_old_size,
-      512
-      );
+    return {(char*)_buffer.mutable_contents() + this->_old_size,
+            512};
   }
 
   template <typename BufferType>
