@@ -52,11 +52,11 @@ test_ctor_move(size_t size)
   BOOST_CHECK_EQUAL(source.size(), size);
   for (unsigned i = 0; i < size; ++i)
     source.mutable_contents()[i] = 0xaa;
-  elle::Buffer dest(std::move(source));
+  auto dest = elle::Buffer(std::move(source));
   for (unsigned i = 0; i < size; ++i)
     BOOST_CHECK_EQUAL(dest.contents()[i], 0xaa);
   BOOST_CHECK_EQUAL(source.size(), 0);
-  BOOST_CHECK(source.contents());
+  BOOST_CHECK(!source.contents());
 }
 
 static

@@ -211,10 +211,9 @@ namespace elle
     this->_size = other._size;
     this->_capacity = other._capacity;
     this->_contents = other._contents;
-    // XXX: this cost a lot !
-    other._contents = static_cast<Byte*>(malloc(elle_buffer_initial_size));
+    other._contents = nullptr;
     other._size = 0;
-    other._capacity = elle_buffer_initial_size;
+    other._capacity = 0;
     return *this;
   }
 
