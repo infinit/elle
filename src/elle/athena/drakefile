@@ -135,3 +135,7 @@ def configure(cxx_toolkit,
     rule_install << drake.install(
       headers,
       prefix / 'include' / 'elle' / 'athena')
+
+# Local Variables:
+# mode: python
+# End:

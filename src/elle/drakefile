@@ -487,7 +487,7 @@ def configure(zlib_lib,
     if cxx_toolkit.os is drake.os.macos:
       python_cxx_config.framework_add('CoreServices')
     python_cxx_config += python3
-    python_cxx_config.lib_path_runtime('../..')
+    python_cxx_config.lib_path_runtime('../..') # FIXME: Antony: really ../..?
     python_lib_sources = [drake.node('log/python.cc')]
     python_cxx_config += boost_python
     python_log_lib = drake.cxx.Module(

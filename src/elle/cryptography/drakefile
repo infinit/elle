@@ -227,7 +227,7 @@ def configure(openssl_config,
     ) + [dopenssl_library]
 
   cxx_config_lib = drake.cxx.Config(cxx_config)
-  cxx_config_lib.lib_path_runtime(lib_path)
+  cxx_config_lib.lib_path_runtime('.')
 
   lib_static = drake.cxx.StaticLib(lib_path + '/elle_cryptography',
                                    sources + [elle.lib_static] + openssl_libs,
