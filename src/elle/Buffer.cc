@@ -243,12 +243,7 @@ namespace elle
 
     Buffer::Size old_size = this->_size;
     this->size(this->_size + size);
-    /// XXX some implementations of memmove does not check for memory overlap
     memmove(this->_contents + old_size, data, size);
-    // std::uninitialized_copy(
-    //   static_cast<Byte const*>(data),
-    //   static_cast<Byte const*>(data) + size,
-    //   this->_contents + old_size
   }
 
   void Buffer::pop_front(Size size)
