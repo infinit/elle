@@ -31,8 +31,8 @@ namespace elle
   /// The Buffer owns the pointed memory at every moment.
   ///
   /// @see WeakBuffer for a buffer that doesn't own the memory.
-  class ELLE_API Buffer:
-    private boost::totally_ordered<Buffer>
+  class ELLE_API Buffer
+    : private boost::totally_ordered<Buffer>
   {
   /*------.
   | Types |
@@ -40,6 +40,8 @@ namespace elle
   public:
     /// Size of a Buffer.
     using Size = uint64_t;
+    /// The type Size when used as an argument.
+    using SizeArg = boost::call_traits<Buffer::Size>::param_type;
     /// Byte.
     using Byte = uint8_t;
     /// Data owned by a Buffer:

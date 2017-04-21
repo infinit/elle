@@ -16,10 +16,10 @@
 
 ELLE_LOG_COMPONENT("elle.Buffer");
 
-static constexpr auto elle_buffer_initial_size = sizeof(void*);
-
 namespace
 {
+  constexpr auto elle_buffer_initial_size = elle::Buffer::Size(sizeof(void*));
+
   // FIXME: std::string_view.
   // FIXME: make sure uint32_t is large enough.
   void
@@ -224,12 +224,10 @@ namespace elle
   }
 
   void
-  Buffer::capacity(boost::call_traits<Buffer::Size>::param_type capacity_)
+  Buffer::capacity(SizeArg capacity_)
   {
-    Buffer::Size capacity = capacity_;
-    if (capacity < elle_buffer_initial_size)
-      capacity = elle_buffer_initial_size;
-    void* tmp = ::realloc(this->_contents, capacity);
+    auto const capacity = std::max(capacity_, elle_buffer_initial_size);
+    auto tmp = ::realloc(this->_contents, capacity);
     if (tmp == nullptr)
       throw std::bad_alloc();
     this->_contents = static_cast<Byte*>(tmp);
@@ -239,9 +237,8 @@ namespace elle
 
   void Buffer::append(void const* data, Buffer::Size size)
   {
-    ELLE_ASSERT(data != nullptr || size == 0);
-
-    Buffer::Size old_size = this->_size;
+    ELLE_ASSERT(data || !size);
+    auto const old_size = this->_size;
     this->size(this->_size + size);
     memmove(this->_contents + old_size, data, size);
   }
@@ -254,17 +251,16 @@ namespace elle
   }
 
   void
-  Buffer::size(boost::call_traits<Buffer::Size>::param_type size_)
+  Buffer::size(SizeArg size)
   {
-    Buffer::Size size = size_;
     if (this->_capacity < size)
     {
-      Buffer::Size next_size = Buffer::_next_size(size);
-      void* tmp = ::realloc(_contents, next_size);
+      auto capacity = Buffer::_next_size(size);
+      auto tmp = ::realloc(_contents, capacity);
       if (tmp == nullptr)
         throw std::bad_alloc();
       this->_contents = static_cast<Byte*>(tmp);
-      this->_capacity = next_size;
+      this->_capacity = capacity;
     }
     this->_size = size;
   }
@@ -280,10 +276,9 @@ namespace elle
   {
     Byte* new_contents = static_cast<Byte*>(::malloc(elle_buffer_initial_size));
     if (new_contents == nullptr)
-        throw std::bad_alloc{};
+      throw std::bad_alloc{};
 
-    ContentPair res{ContentPtr{this->_contents}, this->_size};
-
+    auto res = ContentPair{ContentPtr{this->_contents}, this->_size};
     this->_contents = new_contents;
     this->_size = 0;
     this->_capacity = elle_buffer_initial_size;
@@ -403,16 +398,14 @@ namespace elle
   void
   Buffer::shrink_to_fit()
   {
-    auto size =
-      std::max(static_cast<Buffer::Size>(elle_buffer_initial_size),
-               this->_size);
-    if (size < this->_capacity)
+    auto capacity = std::max(elle_buffer_initial_size, this->_size);
+    if (capacity < this->_capacity)
     {
-      void* tmp = ::realloc(_contents, size);
+      void* tmp = ::realloc(_contents, capacity);
       if (tmp == nullptr)
         throw std::bad_alloc();
       this->_contents = static_cast<Byte*>(tmp);
-      this->_capacity = size;
+      this->_capacity = capacity;
     }
   }
 
