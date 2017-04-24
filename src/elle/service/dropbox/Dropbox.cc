@@ -1,41 +1,47 @@
 #include <elle/IntRange.hh>
+#include <elle/find.hh>
 #include <elle/log.hh>
 #include <elle/reactor/Barrier.hh>
 #include <elle/reactor/Scope.hh>
+#include <elle/reactor/Thread.hh>
 #include <elle/reactor/http/url.hh>
 #include <elle/reactor/scheduler.hh>
-#include <elle/reactor/Thread.hh>
 #include <elle/serialization/json.hh>
 #include <elle/service/dropbox/Dropbox.hh>
 
 ELLE_LOG_COMPONENT("elle.services.dropbox.Dropbox");
 
+namespace bfs = boost::filesystem;
+
 std::string
-lower_path(boost::filesystem::path const& p)
+to_lower(bfs::path const& p)
 {
-  auto repr = p.string();
-  std::transform(repr.begin(), repr.end(), repr.begin(), ::tolower);
-  return repr;
+  return boost::to_lower_copy(p.string());
 }
 
 struct HashPath
 {
   size_t
-  operator()(boost::filesystem::path const& p) const
+  operator()(bfs::path const& p) const
   {
-    return std::hash<std::string>()(lower_path(p));
+    return std::hash<std::string>()(to_lower(p));
   }
 };
 
 struct ComparePath
 {
   size_t
-  operator()(boost::filesystem::path const& lhs,
-             boost::filesystem::path const& rhs) const
+  operator()(bfs::path const& lhs,
+             bfs::path const& rhs) const
   {
-    return lower_path(lhs) == lower_path(rhs);
+    return to_lower(lhs) == to_lower(rhs);
   }
 };
+
+/// A case insensitive map of paths.
+template <typename Value>
+using PathMap
+  = std::unordered_map<bfs::path, Value, HashPath, ComparePath>;
 
 ELLE_DAS_SERIALIZE(elle::service::dropbox::Longpoll);
 ELLE_DAS_SERIALIZE(elle::service::dropbox::Delta);
@@ -55,19 +61,19 @@ namespace elle
 
         virtual
         boost::optional<Metadata>
-        metadata(boost::filesystem::path const& path)
+        metadata(bfs::path const& path)
         {
           return {};
         }
 
         virtual
         void
-        metadata_update(boost::filesystem::path const&, Metadata)
+        metadata_update(bfs::path const&, Metadata)
         {}
 
         virtual
         void
-        metadata_delete(boost::filesystem::path const& path)
+        metadata_delete(bfs::path const& path)
         {}
       };
 
@@ -91,10 +97,9 @@ namespace elle
         }
 
         boost::optional<Metadata>
-        metadata(boost::filesystem::path const& path) override
+        metadata(bfs::path const& path) override
         {
-          auto it = this->_metadata.find(path);
-          if (it != this->_metadata.end())
+          if (auto it = elle::find(this->_metadata, path))
           {
             ELLE_DEBUG_SCOPE("%s: retreive metadata for %s", *this, path);
             ELLE_DUMP("%s: %s", *this, it->second);
@@ -112,25 +117,22 @@ namespace elle
         }
 
         void
-        metadata_update(boost::filesystem::path const&,
+        metadata_update(bfs::path const&,
                         Metadata value) override
         {
-          boost::filesystem::path path(value.path);
+          bfs::path path(value.path);
           ELLE_DEBUG_SCOPE("%s: store metadata for %s", *this, path);
           ELLE_DUMP("%s: %s", *this, value);
           // Update metadata
           {
             // Preserve previously registered folder content.
             if (value.is_dir && !value.contents)
-            {
-              auto it = this->_metadata.find(path);
-              if (it != this->_metadata.end())
+              if (auto it = elle::find(this->_metadata, path))
               {
                 ELLE_DEBUG("%s: preserve contents: %s",
                            *this, it->second.contents);
                 value.contents = std::move(it->second.contents);
               }
-            }
             this->_metadata[path] = value;
           }
           // Update parent metadata
@@ -178,13 +180,12 @@ namespace elle
         }
 
         void
-        metadata_delete(boost::filesystem::path const& path) override
+        metadata_delete(bfs::path const& path) override
         {
           ELLE_DEBUG_SCOPE("%s: delete metadata for %s", *this, path);
           this->_metadata.erase(path);
           auto parent_path = path.parent_path();
-          auto it = this->_metadata.find(parent_path);
-          if (it != this->_metadata.end())
+          if (auto it = elle::find(this->_metadata, parent_path))
           {
             auto& parent_metadata = it->second;
             if (parent_metadata.is_dir && parent_metadata.contents)
@@ -266,9 +267,7 @@ namespace elle
         ELLE_ATTRIBUTE(Dropbox&, dropbox);
         ELLE_ATTRIBUTE(bool, full);
         ELLE_ATTRIBUTE_RX(elle::reactor::Barrier, initialized);
-        ELLE_ATTRIBUTE((std::unordered_map<boost::filesystem::path, Metadata,
-                        HashPath, ComparePath>),
-                       metadata);
+        ELLE_ATTRIBUTE(PathMap<Metadata>, metadata);
         ELLE_ATTRIBUTE(elle::reactor::Thread, poll_thread);
         ELLE_ATTRIBUTE(std::string, cursor);
       };
@@ -276,7 +275,7 @@ namespace elle
       class Dropbox::FileCache
       {
       public:
-        FileCache(Dropbox& dropbox, boost::filesystem::path path, int size)
+        FileCache(Dropbox& dropbox, bfs::path path, int size)
           : _dropbox(dropbox)
           , _path(std::move(path))
           , _contents(size)
@@ -286,7 +285,7 @@ namespace elle
         void
         sync(int offset, int size)
         {
-          elle::IntRange range(offset, size);
+          auto range = elle::IntRange(offset, size);
           if (range.end() > signed(this->_contents.size()))
             range.end(this->_contents.size());
           ELLE_DEBUG_SCOPE("%s: sync %s", *this, range);
@@ -304,7 +303,8 @@ namespace elle
                 "preemptive cache",
                 [this, next]
                 {
-                  elle::IntRange next_range(next, this->_dropbox.block_size());
+                  auto next_range
+                    = elle::IntRange(next, this->_dropbox.block_size());
                   if (next_range.end() > signed(this->_contents.size()))
                     next_range.end(this->_contents.size());
                   if (!this->_ranges_fetching.contains(next_range))
@@ -334,13 +334,15 @@ namespace elle
             }
             else
               ELLE_DEBUG("%s: already fetched", *this);
-            return;
           }
-          ELLE_DUMP("%s: not being fetched (fetching: %s)",
+          else
+          {
+            ELLE_DUMP("%s: not being fetched (fetching: %s)",
                     *this, this->_ranges_fetching);
-          // Always download at least a block
-          range.size(std::max(range.size(), this->_dropbox.block_size()));
-          this->_get(range);
+            // Always download at least a block
+            range.size(std::max(range.size(), this->_dropbox.block_size()));
+            this->_get(range);
+          }
         }
 
         void
@@ -366,7 +368,7 @@ namespace elle
         }
 
         ELLE_ATTRIBUTE(Dropbox&, dropbox);
-        ELLE_ATTRIBUTE(boost::filesystem::path, path);
+        ELLE_ATTRIBUTE(bfs::path, path);
         ELLE_ATTRIBUTE(elle::Buffer, contents);
         ELLE_ATTRIBUTE(elle::IntRanges, ranges_read);
         ELLE_ATTRIBUTE(elle::IntRanges, ranges_fetching);
@@ -375,19 +377,18 @@ namespace elle
       };
 
       // FIXME
-      static std::unordered_map<boost::filesystem::path, Dropbox::FileCache,
-                                HashPath, ComparePath> _caches;
+      static auto _caches = PathMap<Dropbox::FileCache>{};
 
-      Error::Error(boost::filesystem::path const& path,
+      Error::Error(bfs::path const& path,
                    std::string const& reason)
         : elle::Error(elle::sprintf("%s: %s", path, reason))
       {}
 
-      DestinationExists::DestinationExists(boost::filesystem::path const& path)
+      DestinationExists::DestinationExists(bfs::path const& path)
         : Error(path, "destination already exists")
       {}
 
-      NoSuchFile::NoSuchFile(boost::filesystem::path const& path)
+      NoSuchFile::NoSuchFile(bfs::path const& path)
         : Error(path, "no such file")
       {}
 
@@ -419,33 +420,35 @@ namespace elle
       }
 
       std::string
-      Dropbox::escape_path(boost::filesystem::path const& path)
+      Dropbox::escape_path(bfs::path const& path)
       {
         if (path == "/")
           return "/";
-
-        std::string res;
-        for (auto const& chunk: path)
+        else
         {
-          res += "/";
-          res += elle::reactor::http::url_encode(chunk.string());
+          std::string res;
+          for (auto const& chunk: path)
+          {
+            res += "/";
+            res += elle::reactor::http::url_encode(chunk.string());
+          }
+          return res;
         }
-        return res;
       }
 
       boost::optional<Metadata>
-      Dropbox::local_metadata(boost::filesystem::path const& path) const
+      Dropbox::local_metadata(bfs::path const& path) const
       {
         return this->_cache->metadata(path);
       }
 
       Metadata
-      Dropbox::metadata(boost::filesystem::path const& path) const
+      Dropbox::metadata(bfs::path const& path) const
       {
         ELLE_TRACE_SCOPE("%s: fetch metadata for %s", *this, path.string());
         if (auto metadata = this->_cache->metadata(path))
           return metadata.get();
-        static boost::format url_fmt(
+        static auto const url_fmt = boost::format(
           "https://api.dropbox.com/1/metadata/auto%s");
         this->_check_path(path);
         auto r = this->_request(
@@ -480,13 +483,13 @@ namespace elle
       }
 
       elle::Buffer
-      Dropbox::get(boost::filesystem::path const& path) const
+      Dropbox::get(bfs::path const& path) const
       {
         return this->_get(path, elle::reactor::http::Request::Configuration());
       }
 
       elle::Buffer
-      Dropbox::get(boost::filesystem::path const& path,
+      Dropbox::get(bfs::path const& path,
                    int offset, int size) const
       {
         auto it = _caches.find(path);
@@ -502,13 +505,13 @@ namespace elle
       }
 
       elle::Buffer
-      Dropbox::_get(boost::filesystem::path const& path,
+      Dropbox::_get(bfs::path const& path,
                     elle::reactor::http::Request::Configuration conf) const
       {
         ELLE_TRACE_SCOPE("%s: fetch file %s", *this, path.string());
-        static boost::format url_fmt
-          ("https://api-content.dropbox.com/1/files/auto%s");
         this->_check_path(path);
+        static auto const url_fmt = boost::format
+          ("https://api-content.dropbox.com/1/files/auto%s");
         auto r = this->_request(
           str(boost::format(url_fmt) % this->escape_path(path)),
           elle::reactor::http::Method::GET,
@@ -538,23 +541,21 @@ namespace elle
       }
 
       bool
-      Dropbox::put(boost::filesystem::path const& path,
+      Dropbox::put(bfs::path const& path,
                    elle::WeakBuffer const& content,
                    bool overwrite)
       {
         ELLE_TRACE_SCOPE("%s: put file: %s (overwrite: %s)",
                          *this, path.string(), overwrite);
-        static boost::format url_fmt
-          ("https://api-content.dropbox.com/1/files_put/auto%s");
         if (this->_ignored(path))
           return false;
         this->_check_path(path);
-        elle::reactor::http::Request::QueryDict query;
+        auto query = elle::reactor::http::Request::QueryDict{};
         if (!overwrite)
-        {
-          query["overwrite"] = "false";
-          query["autorename"] = "false";
-        }
+          query.insert({{"overwrite", "false"},
+                        {"autorename", "false"}});
+        static auto const url_fmt = boost::format
+          ("https://api-content.dropbox.com/1/files_put/auto%s");
         auto r = this->_request(
           str(boost::format(url_fmt) % this->escape_path(path)),
           elle::reactor::http::Method::PUT,
@@ -581,7 +582,7 @@ namespace elle
       }
 
       void
-      Dropbox::create_folder(boost::filesystem::path const& path)
+      Dropbox::create_folder(bfs::path const& path)
       {
         auto r = this->_fileop(path, "create_folder");
         this->_check_status("create_folder", r);
@@ -594,7 +595,7 @@ namespace elle
       }
 
       void
-      Dropbox::delete_(boost::filesystem::path const& path)
+      Dropbox::delete_(bfs::path const& path)
       {
         auto r = this->_fileop(path, "delete",
                                {elle::reactor::http::StatusCode::Not_Found});
@@ -613,8 +614,8 @@ namespace elle
       }
 
       void
-      Dropbox::move(boost::filesystem::path const& from,
-                    boost::filesystem::path const& to)
+      Dropbox::move(bfs::path const& from,
+                    bfs::path const& to)
       {
         ELLE_TRACE_SCOPE("%s: move %s to %s", *this, from, to);
         elle::reactor::http::Request::QueryDict query;
@@ -686,14 +687,14 @@ namespace elle
         }
       }
 
-      static
-      elle::reactor::Duration
-      delay(int attempt)
+      namespace
       {
-        if (attempt > 8)
-          attempt = 8;
-        unsigned int factor = pow(2, attempt);
-        return boost::posix_time::milliseconds(factor * 100);
+        elle::reactor::Duration
+        delay(int attempt)
+        {
+          unsigned int factor = pow(2, std::max(8, attempt));
+          return boost::posix_time::milliseconds(factor * 100);
+        }
       }
 
       elle::reactor::http::Request
@@ -734,16 +735,16 @@ namespace elle
       }
 
       elle::reactor::http::Request
-      Dropbox::_fileop(boost::filesystem::path const& path,
+      Dropbox::_fileop(bfs::path const& path,
                        std::string const& op,
                        std::vector<elle::reactor::http::StatusCode> expected_codes,
                        std::string const& path_arg,
                        elle::reactor::http::Request::QueryDict query)
       {
         ELLE_TRACE_SCOPE("%s: %s: %s", *this, op, path.string());
-        static boost::format url_fmt("https://api.dropbox.com/1/fileops/%s");
-        query["root"] = "auto";
-        query[path_arg] = path.string();
+        static auto const url_fmt = boost::format("https://api.dropbox.com/1/fileops/%s");
+        query.insert({{"root", "auto"},
+                      {path_arg, path.string()}});
         auto r =
           this->_request(str(boost::format(url_fmt) % op),
                          elle::reactor::http::Method::POST, std::move(query),
@@ -764,17 +765,14 @@ namespace elle
       }
 
       bool
-      Dropbox::_ignored(boost::filesystem::path const& path) const
+      Dropbox::_ignored(bfs::path const& path) const
       {
-        auto name = path.filename().string();
-        std::transform(name.begin(), name.end(), name.begin(), ::tolower);
-        if (name == ".ds_store")
-          return true;
-        return false;
+        auto const name = to_lower(path);
+        return name == ".ds_store";
       }
 
       void
-      Dropbox::_check_path(boost::filesystem::path const& path) const
+      Dropbox::_check_path(bfs::path const& path) const
       {
         // Dropbox doesn't support certain characters in file names and will
         // yield 400 bad requests if requests are attempted on those path.
