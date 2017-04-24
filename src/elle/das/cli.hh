@@ -254,17 +254,28 @@ namespace elle
 
       namespace _details
       {
+        /// Type of default values for flags that don't have a default value.
+        struct NoDefault
+        {
+          friend std::ostream& operator<<(std::ostream& os, NoDefault)
+          {
+            return os << "NoDefault";
+          };
+        };
+
         /// A value not found on the CLI
-        template <typename Default = void>
+        template <typename Default = NoDefault>
         class Value
         {
         public:
           /// Whether a default value was specified.
-          static bool constexpr default_has = !std::is_same<Default, void>::value;
+          static bool constexpr default_has
+             = !std::is_same<Default, NoDefault>::value;
 
           ELLE_LOG_COMPONENT("das.cli");
 
-          Value(std::conditional_t<default_has, Default, int> const& d,
+          /// @param set  whether the option was passed on the command line.
+          Value(Default const& d,
                 std::string option,
                 bool positional,
                 std::vector<std::string>& args,
@@ -282,7 +293,7 @@ namespace elle
           {}
 
           /// A value not found on the CLI.
-          Value(std::conditional_t<default_has, Default, int> const& d,
+          Value(Default const& d,
                 std::string option,
                 bool positional,
                 std::vector<std::string>& args,
@@ -302,10 +313,11 @@ namespace elle
             auto i = std::stoll(v, &end);
             if (end != v.size())
               throw OptionValueError(option, v, "invalid integer");
-            if (i < std::numeric_limits<I>::min()
+            else if (i < std::numeric_limits<I>::min()
                 || i > std::numeric_limits<I>::max())
               throw OptionValueError(option, v, "integer out of range");
-            return i;
+            else
+              return i;
           }
 
           template <typename I>
@@ -328,9 +340,10 @@ namespace elle
             auto i = std::stoull(v, &end);
             if (end != v.size())
               throw OptionValueError(option, v, "invalid integer");
-            if (i > std::numeric_limits<I>::max())
+            else if (i > std::numeric_limits<I>::max())
               throw OptionValueError(option, v, "integer out of range");
-            return i;
+            else
+              return i;
           }
 
           template <typename I>
@@ -341,7 +354,8 @@ namespace elle
               return true;
             else if (v == "false")
               return false;
-            throw OptionValueError(this->_option, v, "invalid boolean ");
+            else
+              throw OptionValueError(this->_option, v, "invalid boolean");
           }
 
           template <typename I>
@@ -357,9 +371,10 @@ namespace elle
           {
             if (this->_values.empty())
               return boost::none;
-            if (this->_values.size() > 1)
+            else if (this->_values.size() > 1)
               throw DuplicateOption(this->_option);
-            return convert<typename I::value_type>(this->_values[0], 0);
+            else
+              return convert<typename I::value_type>(this->_values[0], 0);
           }
 
           template <typename I>
@@ -373,13 +388,11 @@ namespace elle
             }
             catch (std::invalid_argument)
             {
-              throw OptionValueError(
-                this->_option, v, "invalid integer");
+              throw OptionValueError(this->_option, v, "invalid integer");
             }
             catch (std::out_of_range)
             {
-              throw OptionValueError(
-                this->_option, v, "integer out of range");
+              throw OptionValueError(this->_option, v, "integer out of range");
             }
           }
 
@@ -427,6 +440,7 @@ namespace elle
                 auto it = this->_args.begin();
                 while (it != this->_args.end() && is_option(*it))
                 {
+                  // Skip option and possibly argument.
                   ++it;
                   if (it != this->_args.end())
                     ++it;
@@ -514,39 +528,31 @@ namespace elle
             }
           }
 
+          friend
+          std::ostream&
+          operator <<(std::ostream& out, Value<Default> const& v)
+          {
+            elle::fprintf(
+              out, "Value(\"%s\", flag=%s, value=%s, def=%s, set=%s)",
+              v.option(), v.flag(), v.values(), v.def(), v.set());
+            return out;
+          }
         private:
-          ELLE_ATTRIBUTE_R(
-            (std::conditional_t<default_has, Default, int> const&), def);
+          ELLE_ATTRIBUTE_R(Default const&, def);
           ELLE_ATTRIBUTE_R(std::string, option);
           ELLE_ATTRIBUTE_R(std::vector<std::string>, values, mutable);
           ELLE_ATTRIBUTE_R(bool, flag);
           ELLE_ATTRIBUTE(bool, positional);
           ELLE_ATTRIBUTE(std::vector<std::string>&, args);
           ELLE_ATTRIBUTE(int&, remaining);
-          /// Whether was explicit set on the command line.
+          /// Whether the option was explicit set on the command line.
           ELLE_ATTRIBUTE_R(bool, set);
         };
-
-        template <typename Default>
-        std::ostream&
-        operator <<(std::ostream& out, Value<Default> const& v)
-        {
-          elle::fprintf(
-            out, "Value(\"%s\", %s%s, %s)",
-            v.option(),
-            v.values(),
-            Value<Default>::default_has ?
-              elle::sprintf(", %s", v.def()) : std::string(""),
-            v.set() ? "explicit" : "implicit");
-          return out;
-        }
 
         template <typename Default, typename Formal>
         struct parse_arg
         {
           using Symbol = elle::das::named::make_formal<Formal>;
-          using V = typename std::conditional_t<
-            Default::has, Default, std::identity<void>>::type;
           static inline
           auto
           value(Default const& d,
@@ -647,14 +653,15 @@ namespace elle
               },
               [&] (auto)
               {
-                using V = Value<void>;
+                using V = Value<NoDefault>;
                 if (flag)
-                  return V(0, Symbol::name(), pos, args, {"true"}, counter, set);
+                  return V(NoDefault{}, Symbol::name(), pos, args,
+                           {"true"}, counter, set);
                 else
                 {
                   if (value.empty())
                     ELLE_DEBUG("no occurences and no default value");
-                  return V(0, Symbol::name(), pos, args,
+                  return V(NoDefault{}, Symbol::name(), pos, args,
                            std::move(value), counter, set);
                 }
               })(d);
