@@ -49,13 +49,13 @@ void
 test_ctor_move(size_t size)
 {
   elle::Buffer source(size);
-  BOOST_CHECK_EQUAL(source.size(), size);
+  BOOST_TEST(source.size() == size);
   for (unsigned i = 0; i < size; ++i)
     source.mutable_contents()[i] = 0xaa;
   auto dest = elle::Buffer(std::move(source));
   for (unsigned i = 0; i < size; ++i)
-    BOOST_CHECK_EQUAL(dest.contents()[i], 0xaa);
-  BOOST_CHECK_EQUAL(source.size(), 0);
+    BOOST_TEST(dest.contents()[i] == 0xaa);
+  BOOST_TEST(source.size() == 0);
   BOOST_CHECK(!source.contents());
 }
 
@@ -91,11 +91,11 @@ test_ctor_weak_copy_move()
   BOOST_CHECK_EQUAL(wb2.contents(), wb1.contents());
   BOOST_CHECK_EQUAL(wb2.size(), wb1.size());
 
-  elle::WeakBuffer wb3(std::move(wb2));
-  BOOST_CHECK_EQUAL(wb3.contents(), raw);
-  BOOST_CHECK_EQUAL(wb3.size(), 7);
-  BOOST_CHECK_EQUAL(wb2.contents(), (elle::Buffer::Byte*)(nullptr));
-  BOOST_CHECK_EQUAL(wb2.size(), 0);
+  auto wb3 = elle::WeakBuffer(std::move(wb2));
+  BOOST_TEST(wb3.contents() == raw);
+  BOOST_TEST(wb3.size() == 7);
+  BOOST_TEST(!wb2.contents());
+  BOOST_TEST(wb2.size() == 0);
 
   delete[] raw;
 }
@@ -109,12 +109,12 @@ template <>
 elle::Buffer
 mkbuf<elle::Buffer>(size_t size)
 {
-  elle::Buffer buffer(size);
+  auto res = elle::Buffer(size);
 
   for (size_t i = 0; i < size; ++i)
-    buffer.mutable_contents()[i] = ((elle::Buffer::Byte) i);
+    res.mutable_contents()[i] = ((elle::Buffer::Byte) i);
 
-  return buffer;
+  return res;
 }
 
 template <>
@@ -122,12 +122,12 @@ elle::WeakBuffer
 mkbuf<elle::WeakBuffer>(size_t size)
 {
   auto* raw = new elle::Buffer::Byte[size];
-  elle::WeakBuffer buffer(raw, size);
+  auto res = elle::WeakBuffer(raw, size);
 
   for (size_t i = 0; i < size; ++i)
-    buffer.mutable_contents()[i] = ((elle::Buffer::Byte) i);
+    res.mutable_contents()[i] = ((elle::Buffer::Byte) i);
 
-  return buffer;
+  return res;
 }
 
 template <typename Buffer, void (*Delete) (elle::Buffer::Byte*)>
@@ -136,10 +136,10 @@ void
 test_cmp()
 {
   {
-    Buffer b1(mkbuf<Buffer>(16));
-    Buffer b2(mkbuf<Buffer>(16));
+    auto b1 = Buffer(mkbuf<Buffer>(16));
+    auto b2 = Buffer(mkbuf<Buffer>(16));
 
-    BOOST_CHECK_EQUAL(b1, b2);
+    BOOST_TEST(b1 == b2);
     BOOST_CHECK_GE(b1, b2);
     BOOST_CHECK_LE(b1, b2);
 
@@ -158,24 +158,24 @@ test_cmp()
   }
 
   {
-    Buffer b1(mkbuf<Buffer>(4));
-    Buffer b2(mkbuf<Buffer>(8));
+    auto b1 = Buffer(mkbuf<Buffer>(4));
+    auto b2 = Buffer(mkbuf<Buffer>(8));
 
-    BOOST_CHECK_NE(b1, b2);
-    BOOST_CHECK_LT(b1, b2);
-    BOOST_CHECK_LE(b1, b2);
+    BOOST_TEST(b1 != b2);
+    BOOST_TEST(b1 < b2);
+    BOOST_TEST(b1 <= b2);
 
     Delete(b1.mutable_contents());
     Delete(b2.mutable_contents());
   }
 
   {
-    Buffer b1(mkbuf<Buffer>(8));
-    Buffer b2(mkbuf<Buffer>(4));
+    auto b1 = Buffer(mkbuf<Buffer>(8));
+    auto b2 = Buffer(mkbuf<Buffer>(4));
 
-    BOOST_CHECK_NE(b1, b2);
-    BOOST_CHECK_GT(b1, b2);
-    BOOST_CHECK_GE(b1, b2);
+    BOOST_TEST(b1 != b2);
+    BOOST_TEST(b1 > b2);
+    BOOST_TEST(b1 >= b2);
 
     Delete(b1.mutable_contents());
     Delete(b2.mutable_contents());
@@ -197,9 +197,9 @@ test_capacity()
 
   auto prev = b.capacity();
   b.size(8);
-  BOOST_CHECK_EQUAL(b.capacity(), prev);
+  BOOST_TEST(b.capacity() == prev);
   b.shrink_to_fit();
-  BOOST_CHECK_EQUAL(b.capacity(), 8);
+  BOOST_TEST(b.capacity() == 8);
 }
 
 static
@@ -210,7 +210,7 @@ test_release()
   BOOST_CHECK_GE(b.capacity(), 256);
   b.release();
   BOOST_CHECK_LT(b.capacity(), 256);
-  BOOST_CHECK_EQUAL(b.size(), 0);
+  BOOST_TEST(b.size() == 0);
 }
 
 static
@@ -219,11 +219,11 @@ test_assign()
 {
   elle::Buffer b1(8);
   elle::Buffer b2(16);
-  BOOST_CHECK_EQUAL(b1.size(), 8);
-  BOOST_CHECK_EQUAL(b2.size(), 16);
+  BOOST_TEST(b1.size() == 8);
+  BOOST_TEST(b2.size() == 16);
   b1 = std::move(b2);
-  BOOST_CHECK_EQUAL(b1.size(), 16);
-  BOOST_CHECK_EQUAL(b2.size(), 0);
+  BOOST_TEST(b1.size() == 16);
+  BOOST_TEST(b2.size() == 0);
 }
 
 static
