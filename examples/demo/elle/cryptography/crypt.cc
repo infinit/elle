@@ -1,4 +1,4 @@
-#if !defined(INFINIT_WINDOWS)
+#if !defined INFINIT_WINDOWS
 # include <termios.h>
 #endif
 
@@ -9,67 +9,69 @@
 #include <elle/cryptography/SecretKey.hh>
 #include <elle/cryptography/Error.hh>
 
-static
-void
-echo_mode(bool enable)
+namespace
 {
-#if defined(INFINIT_WINDOWS)
-  HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
-  DWORD mode;
-  GetConsoleMode(hStdin, &mode);
-  if (!enable)
-    mode &= ~ENABLE_ECHO_INPUT;
-  else
-    mode |= ENABLE_ECHO_INPUT;
-  SetConsoleMode(hStdin, mode );
-#else
-  struct termios tty;
-  tcgetattr(STDIN_FILENO, &tty);
-  if(!enable)
-    tty.c_lflag &= ~ECHO;
-  else
-    tty.c_lflag |= ECHO;
-  (void)tcsetattr(STDIN_FILENO, TCSANOW, &tty);
-#endif
-}
-
-static
-elle::cryptography::SecretKey
-key(bool verify, boost::optional<std::string> passphrase = {})
-{
-  using namespace elle::cryptography;
-  std::array<std::string, 2> passphrases;
+  void
+  echo_mode(bool enable)
   {
-    auto get_key = [&] (std::string& p) {
-      std::cout << "Enter passphrase: ";
-      std::cout.flush();
-      std::getline(std::cin, p);
-      std::cout << std::endl;
-    };
-    if (passphrase)
-      passphrases = {*passphrase, *passphrase};
+#if defined INFINIT_WINDOWS
+    HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
+    DWORD mode;
+    GetConsoleMode(hStdin, &mode);
+    if (!enable)
+      mode &= ~ENABLE_ECHO_INPUT;
     else
+      mode |= ENABLE_ECHO_INPUT;
+    SetConsoleMode(hStdin, mode );
+#else
+    struct termios tty;
+    tcgetattr(STDIN_FILENO, &tty);
+    if(!enable)
+      tty.c_lflag &= ~ECHO;
+    else
+      tty.c_lflag |= ECHO;
+    (void)tcsetattr(STDIN_FILENO, TCSANOW, &tty);
+#endif
+  }
+
+  elle::cryptography::SecretKey
+  key(bool verify, boost::optional<std::string> passphrase = {})
+  {
+    using namespace elle::cryptography;
+    std::array<std::string, 2> passphrases;
     {
-      elle::SafeFinally restore_echo([] { echo_mode(true); });
-      echo_mode(false);
-      std::cout << "Please use a combination of upper and lower case letters and numbers." << std::endl;
-    }
-    if (!passphrase)
-    {
-      if (verify)
-      {
-        for (std::string& p: passphrases)
-          get_key(p);
-        if (passphrases[0] != passphrases[1])
-          elle::err("Passphrases do not match");
-      }
+      auto get_key = [&] (std::string& p) {
+        std::cout << "Enter passphrase: ";
+        std::cout.flush();
+        std::getline(std::cin, p);
+        std::cout << std::endl;
+      };
+      if (passphrase)
+        passphrases = {{*passphrase, *passphrase}};
       else
       {
-        get_key(passphrases[0]);
+        elle::SafeFinally restore_echo([] { echo_mode(true); });
+        echo_mode(false);
+        std::cout << "Please use a combination of upper and lower case letters and numbers."
+                  << std::endl;
+      }
+      if (!passphrase)
+      {
+        if (verify)
+        {
+          for (std::string& p: passphrases)
+            get_key(p);
+          if (passphrases[0] != passphrases[1])
+            elle::err("Passphrases do not match");
+        }
+        else
+        {
+          get_key(passphrases[0]);
+        }
       }
     }
+    return passphrases[0];
   }
-  return SecretKey(passphrases[0]);
 }
 
 int
