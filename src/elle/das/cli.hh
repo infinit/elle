@@ -138,6 +138,8 @@ namespace elle
       /// Option used as a flag and passed arguments
       ELLE_DAS_CLI_OPTION_ERROR(
         Mixed, "option can't be used both as a flag and with arguments");
+      /// Option without argument.
+      ELLE_DAS_CLI_OPTION_ERROR(Valueless, "option requires an argument");
       /// Unrecognized left over value
       ELLE_DAS_CLI_VALUE_ERROR(Unrecognized, "extra unrecognized argument");
 
@@ -274,6 +276,8 @@ namespace elle
 
           ELLE_LOG_COMPONENT("das.cli");
 
+          /// An option with a value.
+          ///
           /// @param set  whether the option was passed on the command line.
           Value(Default const& d,
                 std::string option,
@@ -292,14 +296,15 @@ namespace elle
             , _set(set)
           {}
 
-          /// A value not found on the CLI.
+          /// An option whose value was not given from the CLI, aka a flag.
           Value(Default const& d,
                 std::string option,
                 bool positional,
                 std::vector<std::string>& args,
                 int& remaining,
                 bool set)
-            : Value(d, std::move(option), positional, args, {}, remaining, set)
+            : Value(d, std::move(option), positional, args, {},
+                    remaining, set)
           {
             this->_flag = true;
           }
@@ -431,8 +436,9 @@ namespace elle
           I
           convert() const
           {
+            ELLE_TRACE("convert: %s", this);
             if (this->_flag)
-              throw OptionValueError(this->_option, "true", "unexpected flag");
+              throw ValuelessOption(this->_option);
             if (this->_values.empty())
             {
               if (this->_positional)
@@ -537,15 +543,19 @@ namespace elle
               v.option(), v.flag(), v.values(), v.def(), v.set());
             return out;
           }
+
         private:
           ELLE_ATTRIBUTE_R(Default const&, def);
           ELLE_ATTRIBUTE_R(std::string, option);
           ELLE_ATTRIBUTE_R(std::vector<std::string>, values, mutable);
+          /// Whether had no value given on the CLI.
+          /// E.g. `--foo` => is-flag and value = true,
+          /// but `--foo=true` => not-is-flag, and value = true.
           ELLE_ATTRIBUTE_R(bool, flag);
           ELLE_ATTRIBUTE(bool, positional);
           ELLE_ATTRIBUTE(std::vector<std::string>&, args);
           ELLE_ATTRIBUTE(int&, remaining);
-          /// Whether the option was explicit set on the command line.
+          /// Whether the option was given on the command line.
           ELLE_ATTRIBUTE_R(bool, set);
         };
 
@@ -655,8 +665,7 @@ namespace elle
               {
                 using V = Value<NoDefault>;
                 if (flag)
-                  return V(NoDefault{}, Symbol::name(), pos, args,
-                           {"true"}, counter, set);
+                  return V(NoDefault{}, Symbol::name(), pos, args, counter, set);
                 else
                 {
                   if (value.empty())

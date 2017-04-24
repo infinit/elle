@@ -42,6 +42,10 @@ basics()
   BOOST_TEST(cli::call(proto, f, {"--foo=", "--baz="})
              == "");
   CHECK_THROW(
+    cli::call(proto, f, {"--foo", "foo", "--baz"}),
+    cli::ValuelessOption,
+    "option requires an argument: --baz");
+  CHECK_THROW(
     cli::call(proto, f, {"--foo", "bar", "--baz", "x", "--bar", "quux"}),
     cli::UnknownOption,
     "unknown option: --bar");
@@ -239,10 +243,17 @@ flag()
   auto const f =
     [] (std::string const& foo, int bar) { return foo + std::to_string(bar); };
   auto const proto = elle::das::named::prototype(foo, bar);
-  BOOST_CHECK_THROW(elle::das::cli::call(proto, f, {"--foo", "--bar", "bar"}),
-                    elle::das::cli::OptionValueError);
-  BOOST_CHECK_THROW(elle::das::cli::call(proto, f, {"--foo", "foo", "--bar"}),
-                    elle::das::cli::OptionValueError);
+  // Beware that the order of parsing options and of conversion of
+  // their argument values in undefined.  So be sure to have a single
+  // type of error, to avoid error messages that differ depending on
+  // the platform.
+  namespace cli = elle::das::cli;
+  BOOST_CHECK_THROW(cli::call(proto, f, {"--foo", "--bar", "12"}),
+                    cli::ValuelessOption);
+  BOOST_CHECK_THROW(cli::call(proto, f, {"--foo", "foo", "--bar"}),
+                    cli::ValuelessOption);
+  BOOST_CHECK_THROW(cli::call(proto, f, {"--foo", "foo", "--bar", "bar"}),
+                    cli::OptionValueError);
 }
 
 ELLE_DAS_SYMBOL(composite_option);
