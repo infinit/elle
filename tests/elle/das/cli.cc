@@ -18,8 +18,7 @@ ELLE_DAS_SYMBOL(quux);
     }                                                   \
     catch (Exception const& e)                          \
     {                                                   \
-      BOOST_CHECK_EQUAL(elle::sprintf("%s", e),         \
-                        Message);                       \
+      BOOST_TEST(elle::sprintf("%s", e) == Message);    \
     }                                                   \
   } while (false)
 
@@ -30,37 +29,33 @@ basics()
   auto const f =
     [] (std::string const& a, std::string const& b) { return a + b; };
   auto const proto = elle::das::named::prototype(foo, baz);
+  namespace cli = elle::das::cli;
 
-  BOOST_CHECK_EQUAL(
-    elle::das::cli::call(proto, f, {"--foo", "bar", "--baz", "quux"}),
-    "barquux");
-  BOOST_CHECK_EQUAL(
-    elle::das::cli::call(proto, f, {"--foo=bar", "--baz", "quux"}),
-    "barquux");
-  BOOST_CHECK_EQUAL(
-    elle::das::cli::call(proto, f, {"--foo=bar", "--baz=--quux"}),
-    "bar--quux");
-  BOOST_CHECK_EQUAL(
-    elle::das::cli::call(proto, f, {"--foo=", "--baz="}),
-    "");
+  BOOST_TEST(cli::call(proto, f, {"--foo", "bar", "--baz", "quux"})
+             == "barquux");
+  BOOST_TEST(cli::call(proto, f, { "--baz", "quux", "--foo", "bar"})
+             == "barquux");
+  BOOST_TEST(cli::call(proto, f, {"--foo=bar", "--baz", "quux"})
+             == "barquux");
+  BOOST_TEST(cli::call(proto, f, {"--foo=bar", "--baz=--quux"})
+             == "bar--quux");
+  BOOST_TEST(cli::call(proto, f, {"--foo=", "--baz="})
+             == "");
   CHECK_THROW(
-    elle::das::cli::call(proto, f,
-                         {"--foo", "bar", "--baz", "x", "--bar", "quux"}),
-    elle::das::cli::UnknownOption,
+    cli::call(proto, f, {"--foo", "bar", "--baz", "x", "--bar", "quux"}),
+    cli::UnknownOption,
     "unknown option: --bar");
   CHECK_THROW(
-    elle::das::cli::call(proto, f,
-                         {"--foo", "bar", "garbage", "--baz", "quux"}),
-    elle::das::cli::UnrecognizedValue,
+    cli::call(proto, f, {"--foo", "bar", "garbage", "--baz", "quux"}),
+    cli::UnrecognizedValue,
     "extra unrecognized argument: garbage");
   CHECK_THROW(
-    elle::das::cli::call(proto, f, {"--foo", "bar"}),
-    elle::das::cli::MissingOption,
+    cli::call(proto, f, {"--foo", "bar"}),
+    cli::MissingOption,
     "missing option: --baz");
   CHECK_THROW(
-    elle::das::cli::call(proto, f,
-                         {"--foo", "bar", "--baz", "quux", "--foo", "foo"}),
-    elle::das::cli::DuplicateOption,
+    cli::call(proto, f, {"--foo", "bar", "--baz", "quux", "--foo", "foo"}),
+    cli::DuplicateOption,
     "duplicate option: --foo");
 }
 

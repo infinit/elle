@@ -463,9 +463,12 @@ namespace elle
             ELLE_TRACE_SCOPE("convert %s to boolean", this->_option);
             if (this->_flag)
               return true;
-            auto res = this->convert<bool>();
-            this->_check_remaining();
-            return res;
+            else
+            {
+              auto res = this->convert<bool>();
+              this->_check_remaining();
+              return res;
+            }
           }
 
           template <typename T>
