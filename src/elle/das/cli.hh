@@ -214,7 +214,7 @@ namespace elle
                 return this->_arg.substr(2) == option_name_from_c(F::name());
               else
               {
-                using Formal = elle::das::named::make_formal<F>;
+                using Formal = named::make_formal<F>;
                 auto res =
                   elle::meta::static_if<std::is_base_of<CLI_Symbol,
                                                         Formal>::value>(
@@ -559,10 +559,13 @@ namespace elle
           ELLE_ATTRIBUTE_R(bool, set);
         };
 
-        template <typename Default, typename Formal>
+        template <typename Formal>
         struct parse_arg
         {
-          using Symbol = elle::das::named::make_formal<Formal>;
+          /// The type of the default value.
+          using Default
+            = typename named::DefaultStore<Formal>::template default_for<Formal>;
+          using Symbol = named::make_formal<Formal>;
           static inline
           auto
           value(Default const& d,
@@ -678,9 +681,15 @@ namespace elle
         };
       }
 
+      /// The type of the object functions in charge of parsing
+      /// arguments of type `Formal`.
+      template <typename Formal>
+      using ParseArg
+        = _details::parse_arg<std::remove_cv_reference_t<Formal>>;
+
       template <typename F, typename ... Formals, typename ... Raw>
       auto
-      _call(elle::das::named::Prototype<Formals...> const& p,
+      _call(named::Prototype<Formals...> const& p,
             F const& f,
             std::vector<std::string>& args,
             Raw&& ... raw,
@@ -688,19 +697,15 @@ namespace elle
       {
         ELLE_LOG_COMPONENT("das.cli");
         int counter = sizeof ... (Formals);
-        return f(
-          _details::parse_arg<
-            typename named::DefaultStore<Formals...>::
-              template default_for<std::remove_cv_reference_t<Formals>>,
-            std::remove_cv_reference_t<Formals>>::value(
-              p.defaults, args, opts, counter)..., std::forward<Raw>(raw)...);
+        return f(ParseArg<Formals>::value(p.defaults, args, opts, counter)...,
+                 std::forward<Raw>(raw)...);
       }
 
       template <typename F,
                 typename ... Formals,
                 typename ... Raw>
       auto
-      call(elle::das::named::Prototype<Formals...> const& p,
+      call(named::Prototype<Formals...> const& p,
            F const& f,
            std::vector<std::string>& args,
            Raw&& ... raw,
@@ -714,7 +719,7 @@ namespace elle
                 typename ... Args,
                 typename ... Raw>
       auto
-      call(elle::das::named::Prototype<Formals...> const& p,
+      call(named::Prototype<Formals...> const& p,
            F const& f,
            std::vector<std::string> const& args,
            Raw&& ... raw,
@@ -744,7 +749,7 @@ namespace elle
            Raw&& ... raw,
            Options const& opts = Options())
       {
-        std::vector<std::string> copy = args;
+        auto copy = args;
         return _call(f.prototype(), f.function(), copy,
                      std::forward<Raw>(raw)..., opts);
       }
@@ -762,7 +767,7 @@ namespace elle
         else
           elle::fprintf(s, "      ");
         elle::fprintf(s, "--%-18s",
-                      elle::das::cli::option_name_from_c(name)
+                      cli::option_name_from_c(name)
                       + (with_argument ? " arg" : ""));
         if (!help.empty())
           elle::fprintf(s, "  %s", help);
@@ -776,7 +781,7 @@ namespace elle
         bool
         value(std::ostream& s, Options const& opts, Default const& def)
         {
-          using Symbol = elle::das::named::make_formal<Formal>;
+          using Symbol = named::make_formal<Formal>;
           // Whether expects an argument.
           bool with_argument
             = elle::meta::static_if<Default::has>
@@ -820,8 +825,8 @@ namespace elle
       };
 
       template <typename ... T>
-      class Help:
-        public elle::Printable::as<Help<T ...>>
+      class Help
+        : public elle::Printable::as<Help<T ...>>
       {
       public:
         Help(named::Prototype<T...> const& p,
@@ -842,7 +847,7 @@ namespace elle
           };
         }
 
-        ELLE_ATTRIBUTE(elle::das::named::Prototype<T...> const&, prototype);
+        ELLE_ATTRIBUTE(named::Prototype<T...> const&, prototype);
         ELLE_ATTRIBUTE(Options, options);
       };
 
