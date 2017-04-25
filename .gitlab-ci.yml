@@ -6,6 +6,7 @@ variables:
   DRAKE_EXPLAIN: "1"
   DRAKE_MTIME: "0" # rsync and mtime comparisons don't play along very well
   PYTHONUNBUFFERED: "1"
+  TARFLAGS: "" # Additional flags, e.g., -v.
 
 x86_64-centos6-gcc4:
   stage: build
@@ -27,7 +28,7 @@ x86_64-centos6-gcc4:
     - scl enable devtoolset-4 rh-python34 "python3 drake -j $(nproc) //check"
     - scl enable devtoolset-4 rh-python34 "python3 drake -j $(nproc) //install"
     - TARBALL="elle-x86_64-centos6-gcc4-$DESC.tbz"
-    - tar -cvjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
+    - tar $TARFLAGS -cjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
     - scp "$TARBALL" buildslave@packages.infinit.sh:tmp
     - rm "$TARBALL"
     - cd "$SOURCE_DIR"
@@ -58,7 +59,7 @@ x86_64-ubuntu-gcc4:
     - python3 drake -j $(($(nproc) / 4)) //check
     - python3 drake -j $(nproc) //install
     - TARBALL="$BUILD_DIR/elle-x86_64-ubuntu-gcc4-$DESC.tbz"
-    - tar -cvjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
+    - tar $TARFLAGS -cjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
     - scp "$TARBALL" buildslave@packages.infinit.sh:tmp
     - rm "$TARBALL"
     - python3 drake -j $(nproc) //docker
@@ -92,7 +93,7 @@ x86_64-jessie-gcc4:
     - python3 drake -j $(nproc) //check
     - python3 drake -j $(nproc) //install
     - TARBALL="$BUILD_DIR/elle-x86_64-jessie-gcc4-$DESC.tbz"
-    - tar -cvjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
+    - tar $TARFLAGS -cjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
     - scp "$TARBALL" buildslave@packages.infinit.sh:tmp
     - rm "$TARBALL"
     - cd "$SOURCE_DIR"
@@ -122,7 +123,7 @@ x86_64-alpine-gcc:
     - python3 drake -j $(nproc) //check
     - python3 drake -j $(nproc) //install
     - TARBALL="$BUILD_DIR/elle-x86_64-alpine-gcc-$DESC.tbz"
-    - tar -cvjf "$TARBALL -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
+    - tar $TARFLAGS -cjf "$TARBALL -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
     - scp "$TARBALL" buildslave@packages.infinit.sh:tmp
     - rm "$TARBALL"
     - cd "$SOURCE_DIR"
@@ -153,7 +154,7 @@ i386-jessie-gcc4:
     - python3 drake -j $(nproc) //check
     - python3 drake -j $(nproc) //install
     - TARBALL="$BUILD_DIR/elle-i386-jessie-gcc4-$DESC.tbz"
-    - tar -cvjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
+    - tar $TARFLAGS -cjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
     - scp "$TARBALL" buildslave@packages.infinit.sh:tmp
     - rm "$TARBALL"
     - cd "$SOURCE_DIR"
@@ -183,7 +184,7 @@ x86_64-windows-mingw4:
     - python3 drake -j $(nproc) //check
     - python3 drake -j $(nproc) //install
     - TARBALL="$BUILD_DIR/elle-x86_64-windows-mingw4-$DESC.tbz"
-    - tar -cvjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
+    - tar $TARFLAGS -cjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
     - scp "$TARBALL" buildslave@packages.infinit.sh:tmp
     - rm "$TARBALL"
     - cd "$SOURCE_DIR"
@@ -226,7 +227,7 @@ x86_64-osx-clang:
     - cd $BUILD_DIR && python3 drake -j 4 //check
     - cd $BUILD_DIR && python3 drake -j 4 //install
     - TARBALL=elle-x86_64-osx-clang3-$DESC.tbz
-    - gtar -cvjf "../$TARBALL" -C $INSTALL_DIR . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
+    - gtar $TARFLAGS -cjf "../$TARBALL" -C $INSTALL_DIR . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
     - scp "../$TARBALL" buildslave@packages.infinit.sh:tmp
     - rm "../$TARBALL"
   tags:
