@@ -5,14 +5,14 @@ variables:
   DRAKE_DEBUG_BACKTRACE: "1"
   DRAKE_EXPLAIN: "1"
   DRAKE_MTIME: "0" # rsync and mtime comparisons don't play along very well
+  GET_SOURCES_ATTEMPTS: "3"  # gitlab
+  GIT_SUBMODULE_STRATEGY: "recursive"  # gitlab
   PYTHONUNBUFFERED: "1"
   TARFLAGS: "" # Additional flags, e.g., -v.
 
 x86_64-centos6-gcc4:
   stage: build
   script:
-    - git submodule sync
-    - git submodule update --init --recursive --force
     - git fetch origin --tags
     - pip3 install -r drake/requirements.txt
     - SOURCE_DIR="${CI_PROJECT_DIR}"
@@ -41,8 +41,6 @@ x86_64-centos6-gcc4:
 x86_64-ubuntu-gcc4:
   stage: build
   script:
-    - git submodule sync --recursive
-    - git submodule update --init --recursive --force
     - git fetch origin --tags
     - pip3 install -r drake/requirements.txt
     - SOURCE_DIR="${CI_PROJECT_DIR}"
@@ -76,8 +74,6 @@ x86_64-ubuntu-gcc4:
 x86_64-jessie-gcc4:
   stage: build
   script:
-    - git submodule sync --recursive
-    - git submodule update --init --recursive --force
     - git fetch origin --tags
     - pip3 install -r drake/requirements.txt
     - SOURCE_DIR="${CI_PROJECT_DIR}"
@@ -106,8 +102,6 @@ x86_64-jessie-gcc4:
 x86_64-alpine-gcc:
   stage: build
   script:
-    - git submodule sync --recursive
-    - git submodule update --init --recursive --force
     - git fetch origin --tags
     - pip3 install -r drake/requirements.txt
     - SOURCE_DIR="${CI_PROJECT_DIR}"
@@ -137,8 +131,6 @@ x86_64-alpine-gcc:
 i386-jessie-gcc4:
   stage: build
   script:
-    - git submodule sync --recursive
-    - git submodule update --init --recursive --force
     - git fetch origin --tags
     - pip3 install -r drake/requirements.txt
     - SOURCE_DIR="${CI_PROJECT_DIR}"
@@ -167,8 +159,6 @@ i386-jessie-gcc4:
 x86_64-windows-mingw4:
   stage: build
   script:
-    - git submodule sync --recursive
-    - git submodule update --init --recursive --force
     - git fetch origin --tags
     - pip3 install -r drake/requirements.txt
     - SOURCE_DIR="${CI_PROJECT_DIR}"
@@ -197,8 +187,6 @@ x86_64-windows-mingw4:
 #i686-windows-mingw4:
 #  stage: build
 #  script:
-#    - git submodule sync --recursive
-#    - git submodule update --init --recursive --force
 #    - git fetch origin --tags
 #    - mkdir -p ../elle-build ../elle-install
 #    - farm/configure --arch i686 --os windows --compiler mingw4 --project Elle --source-dir . --build-dir ../elle-build --install-dir ../elle-install
@@ -213,8 +201,6 @@ x86_64-windows-mingw4:
 x86_64-osx-clang:
   stage: build
   script:
-    - git submodule sync --recursive
-    - git submodule update --init --recursive --force
     - git fetch origin --tags
     - SOURCE_DIR=$PWD
     - BUILD_DIR=$SOURCE_DIR/../elle-build
