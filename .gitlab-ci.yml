@@ -117,7 +117,7 @@ x86_64-alpine-gcc:
     - python3 drake -j $(nproc) //check
     - python3 drake -j $(nproc) //install
     - TARBALL="$BUILD_DIR/elle-x86_64-alpine-gcc-$DESC.tbz"
-    - tar $TARFLAGS -cjf "$TARBALL -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
+    - tar $TARFLAGS -cjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
     - scp "$TARBALL" buildslave@packages.infinit.sh:tmp
     - rm "$TARBALL"
     - cd "$SOURCE_DIR"
