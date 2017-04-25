@@ -128,7 +128,7 @@ x86_64-alpine-gcc:
     - python3 drake -j $(nproc) //check
     - python3 drake -j $(nproc) //install
     - TARBALL="$BUILD_DIR/elle-x86_64-alpine-gcc-$DESC.tbz"
-    - tar -cvjf $TARBALL -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
+    - tar -cvjf "$TARBALL -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
     - scp "$TARBALL" buildslave@packages.infinit.sh:tmp
     - rm "$TARBALL"
     - cd "$SOURCE_DIR"
@@ -230,14 +230,15 @@ x86_64-osx-clang:
     - SOURCE_DIR=$PWD
     - BUILD_DIR=$SOURCE_DIR/../elle-build
     - INSTALL_DIR=$SOURCE_DIR/../elle-install
+    - DESC=$(git describe)
     - if test -n "$FROM_SCRATCH"; then rm -rf $BUILD_DIR; fi
     - mkdir -p $BUILD_DIR $INSTALL_DIR
     - farm/configure --arch x86_64 --os osx --compiler clang --project Elle --source-dir $SOURCE_DIR --build-dir $BUILD_DIR --install-dir $INSTALL_DIR
     - cd $BUILD_DIR && python3 drake -j 4 //build
     - cd $BUILD_DIR && python3 drake -j 4 //check
     - cd $BUILD_DIR && python3 drake -j 4 //install
-    - TARBALL=elle-x86_64-osx-clang3-$(GIT_DIR=$SOURCE_DIR/.git git describe).tbz
-    - gtar -cvjf "../$TARBALL" -C $INSTALL_DIR . --show-transformed-names --transform "s,^\\./,elle-$(GIT_DIR=$SOURCE_DIR/.git git describe)/,"
+    - TARBALL=elle-x86_64-osx-clang3-$DESC.tbz
+    - gtar -cvjf "../$TARBALL" -C $INSTALL_DIR . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
     - scp "../$TARBALL" buildslave@packages.infinit.sh:tmp
     - rm "../$TARBALL"
   tags:
