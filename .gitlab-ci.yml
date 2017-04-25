@@ -226,10 +226,10 @@ x86_64-osx-clang:
     - cd $BUILD_DIR && python3 drake -j 4 //build
     - cd $BUILD_DIR && python3 drake -j 4 //check
     - cd $BUILD_DIR && python3 drake -j 4 //install
-    - TARBALL=elle-x86_64-osx-clang3-$DESC.tbz
-    - gtar $TARFLAGS -cjf "../$TARBALL" -C $INSTALL_DIR . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
-    - scp "../$TARBALL" buildslave@packages.infinit.sh:tmp
-    - rm "../$TARBALL"
+    - TARBALL=../elle-x86_64-osx-clang3-$DESC.tbz
+    - gtar $TARFLAGS -cjf "$TARBALL" -C $INSTALL_DIR . --show-transformed-names --transform "s,^\\./,elle-$DESC/,"
+    - scp "$TARBALL" buildslave@packages.infinit.sh:tmp
+    - rm "$TARBALL"
   tags:
     - x86_64
     - osx
