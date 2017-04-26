@@ -51,12 +51,12 @@ namespace elle
         ~Socket() override;
         /// Create a Socket for the given protocol.
         ///
-        /// \param protocol The transport protocl to use.
-        /// \param hostname The host name.
-        /// \param port The The port the host is listen to.
-        /// \param connection_timeout The maximum duration before the connection
+        /// @param protocol The transport protocl to use.
+        /// @param hostname The host name.
+        /// @param port The The port the host is listen to.
+        /// @param connection_timeout The maximum duration before the connection
         ///                           attempt times out.
-        /// \returns Freshly connected Socket.
+        /// @returns Freshly connected Socket.
         static
         std::unique_ptr<Socket>
         create(Protocol protocol,
@@ -82,7 +82,7 @@ namespace elle
       public:
         /// Write the given buffer to the Socket.
         ///
-        /// \param buffer The payload to write.
+        /// @param buffer The payload to write.
         virtual
         void
         write(elle::ConstWeakBuffer buffer) = 0;
@@ -93,10 +93,10 @@ namespace elle
       public:
         /// Read data from the socket.
         ///
-        /// \param buffer The destination buffer.
-        /// \param timeout The maximum duration before reading times out because
+        /// @param buffer The destination buffer.
+        /// @param timeout The maximum duration before reading times out because
         ///                no data is available.
-        /// \param bytes_read If not null, filled with the number of bytes read.
+        /// @param bytes_read If not null, filled with the number of bytes read.
         virtual
         void
         read(elle::WeakBuffer buffer,
@@ -104,39 +104,39 @@ namespace elle
              int* bytes_read = nullptr);
         /// Read some data and return the number of bytes read.
         ///
-        /// \param buffer The Destination buffer.
-        /// \param timeout The maximum duration before reading times out because
+        /// @param buffer The Destination buffer.
+        /// @param timeout The maximum duration before reading times out because
         ///                no data is available.
-        /// \param bytes_read If not null, filled with the number of bytes read.
-        /// \returns The number of bytes read.
+        /// @param bytes_read If not null, filled with the number of bytes read.
+        /// @returns The number of bytes read.
         virtual
         Size
         read_some(elle::WeakBuffer buffer, DurationOpt timeout = DurationOpt(),
                   int* bytes_read = nullptr) = 0;
         /// Convenience wrapper around ::read returning an elle::Buffer.
         ///
-        /// \param size The number of bytes to read.
-        /// \param timeout The maximum duration before reading times out because
+        /// @param size The number of bytes to read.
+        /// @param timeout The maximum duration before reading times out because
         ///                not enough data is available.
-        /// \returns An elle::Buffer containing the data.
+        /// @returns An elle::Buffer containing the data.
         elle::Buffer
         read(Size size, DurationOpt timeout = DurationOpt());
         /// Convenience wrapper around ::read_some returning an elle::Buffer.
         ///
-        /// \param size The maximum number of byte to read.
-        /// \param timeout The maximum duration before reading times out because
+        /// @param size The maximum number of byte to read.
+        /// @param timeout The maximum duration before reading times out because
         ///                no data is available.
-        /// \returns An elle::Buffer containing the data.
+        /// @returns An elle::Buffer containing the data.
         elle::Buffer
         read_some(Size size, DurationOpt timeout = DurationOpt());
         /// Read until the delimiter is found.
         ///
         /// Delimiter is included in the resulting Buffer.
         ///
-        /// \param delimiter The delimiter.
-        /// \param timeout The maximum duration before reading times out because
+        /// @param delimiter The delimiter.
+        /// @param timeout The maximum duration before reading times out because
         ///                the delimiter wasn't found.
-        /// \returns An elle::Buffer containing the data.
+        /// @returns An elle::Buffer containing the data.
         virtual
         elle::Buffer
         read_until(std::string const& delimiter,
@@ -185,13 +185,13 @@ namespace elle
         /// Create an unbound PlainSocket, taking the ownership of a given
         /// AsioSocket.
         ///
-        /// \param socket A Socket.
+        /// @param socket A Socket.
         PlainSocket(SocketPtr socket);
         /// Create and connect a PlainSocket.
         ///
-        /// \param socket A Socket.
-        /// \param peer The EndPoint of the peer.
-        /// \param timeout The maximum duration before the connection attempt
+        /// @param socket A Socket.
+        /// @param peer The EndPoint of the peer.
+        /// @param timeout The maximum duration before the connection attempt
         ///                times out.
         PlainSocket(std::unique_ptr<AsioSocket> socket,
                     EndPoint const& peer,
@@ -201,8 +201,8 @@ namespace elle
         ///
         /// _connect is not called.
         ///
-        /// \param An AsioSocket.
-        /// \param The EndPoint of the peer.
+        /// @param An AsioSocket.
+        /// @param The EndPoint of the peer.
         PlainSocket(std::unique_ptr<AsioSocket> socket,
                     EndPoint const& peer);
         /// Move socket
@@ -220,8 +220,8 @@ namespace elle
       private:
         /// Perform the connection, according to the AsioSocket type.
         ///
-        /// \param peer The EndPoint of the peer.
-        /// \param timeout The maximum duration before the connection attempt
+        /// @param peer The EndPoint of the peer.
+        /// @param timeout The maximum duration before the connection attempt
         ///                times out.
         void
         _connect(EndPoint const& peer, DurationOpt timeout);
@@ -320,12 +320,12 @@ namespace elle
       private:
         /// Read data from the Socket.
         ///
-        /// \param buffer The destination buffer.
-        /// \param timeout The maximum duration before reading times out because
+        /// @param buffer The destination buffer.
+        /// @param timeout The maximum duration before reading times out because
         ///                no data is available.
-        /// \param some Whether we are performing a read_some or a read.
-        /// \param bytes_read If not null, filled with the number of bytes read.
-        /// \returns The number of bytes read.
+        /// @param some Whether we are performing a read_some or a read.
+        /// @param bytes_read If not null, filled with the number of bytes read.
+        /// @returns The number of bytes read.
         virtual
         Size
         _read(elle::WeakBuffer buffer,

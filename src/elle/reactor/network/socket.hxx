@@ -1,5 +1,3 @@
-#include <boost/bind.hpp>
-
 #include <elle/reactor/network/SocketOperation.hxx>
 
 namespace elle
@@ -116,7 +114,11 @@ namespace elle
         _start() override
         {
           this->socket().async_connect(
-            this->_endpoint, boost::bind(&Connection::_wakeup, this, _1));
+            this->_endpoint,
+            [this](const boost::system::error_code& error)
+            {
+              this->_wakeup(error);
+            });
         }
 
       private:
@@ -289,13 +291,21 @@ namespace elle
             this->_socket.socket()->async_read_some(
               boost::asio::buffer(this->_buffer.mutable_contents(),
                                   this->_buffer.size()),
-              boost::bind(&Read::_wakeup, this, _1, _2));
+              [this](const boost::system::error_code& error,
+                     std::size_t read)
+              {
+                this->_wakeup(error, read);
+              });
           else
             boost::asio::async_read(
               *this->_socket.socket(),
               boost::asio::buffer(this->_buffer.mutable_contents(),
                                   this->_buffer.size()),
-              boost::bind(&Read::_wakeup, this, _1, _2));
+              [this](const boost::system::error_code& error,
+                     std::size_t read)
+              {
+                this->_wakeup(error, read);
+              });
         }
 
       private:
@@ -427,10 +437,11 @@ namespace elle
             *this->_socket.socket(),
             this->_streambuffer,
             this->_delimiter,
-            std::bind(&Self::_wakeup,
-                      std::ref(*this),
-                      std::placeholders::_1,
-                      std::placeholders::_2));
+            [this](const boost::system::error_code& error,
+                   std::size_t read)
+            {
+              this->_wakeup(error, read);
+            });
         }
 
         void
@@ -515,7 +526,11 @@ namespace elle
           boost::asio::async_write(
             *this->_socket.socket(),
             boost::asio::buffer(this->_buffer.contents(), this->_buffer.size()),
-            boost::bind(&Write::_wakeup, this, _1, _2));
+            [this](const boost::system::error_code& error,
+                   std::size_t written)
+            {
+              this->_wakeup(error, written);
+            });
         }
 
       private:

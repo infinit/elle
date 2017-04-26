@@ -41,8 +41,6 @@ namespace elle
 
       namespace
       {
-        size_t constexpr buffer_size = 1 << 16;
-
         class StreamBuffer
           : public std::streambuf
         {
@@ -55,7 +53,7 @@ namespace elle
             setp(nullptr, nullptr);
           }
 
-          char read_buffer[buffer_size];
+          char read_buffer[Socket::buffer_size];
           int
           underflow() override
           {
@@ -75,7 +73,7 @@ namespace elle
             }
             catch (...)
             {
-              if (size != 0)
+              if (size)
               {
                 ELLE_TRACE("exception after %s bytes: %s",
                            size, elle::exception_string());
@@ -89,7 +87,7 @@ namespace elle
             return static_cast<unsigned char>(this->read_buffer[0]);
           }
 
-          char write_buffer[buffer_size];
+          char write_buffer[Socket::buffer_size];
           int
           overflow(int c) override
           {
