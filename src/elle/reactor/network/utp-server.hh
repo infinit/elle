@@ -21,7 +21,6 @@ namespace elle
         ///
         /// XXX: Add xorify to the constructor?
         UTPServer();
-        ~UTPServer();
 
       /*-----------.
       | Attributes |

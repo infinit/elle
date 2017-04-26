@@ -37,13 +37,13 @@ namespace elle
       public:
         /// Listen on the given port.
         ///
-        /// \param port The port to listen to.
-        /// \param enable_ipv6 Whether it accepts IPv6 connections.
+        /// @param port The port to listen to.
+        /// @param enable_ipv6 Whether it accepts IPv6 connections.
         void
         listen(int port, bool enable_ipv6=false);
         /// Listen on the given EndPoint.
         ///
-        /// \param endpoint The EndPoint.
+        /// @param endpoint The EndPoint.
         void
         listen(const EndPoint& endpoint);
 
@@ -56,8 +56,7 @@ namespace elle
         accept();
       private:
         friend class UDPServerSocket;
-        /// XXX: Why a raw pointer?
-        boost::asio::ip::udp::socket* _acceptor;
+        std::unique_ptr<boost::asio::ip::udp::socket> _acceptor;
 
       /*---------------.
       | Demultiplexing |

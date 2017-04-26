@@ -20,13 +20,8 @@ namespace elle
 
       UDPServer::UDPServer(Scheduler& sched)
         : Super(sched)
-        , _acceptor(0)
       {}
 
-      UDPServer::~UDPServer()
-      {
-        delete this->_acceptor;
-      }
 
       /*----------.
       | Listening |
@@ -62,7 +57,7 @@ namespace elle
           scheduler().current()->wait(_accept);
         }
         ELLE_ASSERT(!this->_accepted.empty());
-        UDPServerSocket* res = this->_accepted.back();
+        auto res = this->_accepted.back();
         this->_accepted.pop_back();
         // ELLE_TRACE("%s: got client: %s", *this, *res);
         return res;
@@ -77,11 +72,15 @@ namespace elle
       {
         this->_acceptor->async_receive_from(
           boost::asio::buffer(this->_buffer, sizeof(this->_buffer)),
-          this->_peer, boost::bind(&UDPServer::_receive_handle, this, _1, _2));
+          this->_peer,
+          [](boost::system::error_code const& error, std::size_t bytes)
+          {
+            this->_receive_handle, this, error, bytes);
+          });
       }
 
       std::size_t
-      HashEndpoint::operator()(const boost::asio::ip::udp::endpoint& e) const
+      HashEndpoint::operator()(boost::asio::ip::udp::endpoint const& e) const
       {
         // FIXME: this kinda sucks.
         std::size_t res = boost::hash_value(e.address().to_string());
@@ -90,7 +89,7 @@ namespace elle
       }
 
       std::size_t
-      HashEndpoint::operator()(const boost::asio::ip::tcp::endpoint& e) const
+      HashEndpoint::operator()(boost::asio::ip::tcp::endpoint const& e) const
       {
         // FIXME: this kinda sucks.
         std::size_t res = boost::hash_value(e.address().to_string());
@@ -99,7 +98,7 @@ namespace elle
       }
 
       void
-      UDPServer::_receive_handle(const boost::system::error_code& error,
+      UDPServer::_receive_handle(boost::system::error_code const& error,
                                  std::size_t bytes)
       {
         if (error == boost::system::errc::operation_canceled)
@@ -107,13 +106,14 @@ namespace elle
         else if (error)
         {
           // FIXME
+          ELLE_ERR("_receive_handle: error: %s", error);
           std::cerr << error << std::endl;
           std::abort();
         }
         ELLE_TRACE("%s: %s bytes available from %s",
-                       *this, bytes, this->_peer);
+                   *this, bytes, this->_peer);
         auto elt = this->_clients.find(this->_peer);
-        UDPServerSocket* socket = 0;
+        UDPServerSocket* socket = nullptr;
         if (elt == this->_clients.end())
         {
           socket = new UDPServerSocket(scheduler(), this, _peer);
@@ -134,8 +134,7 @@ namespace elle
         Size free = socket->_read_buffer_capacity - socket->_read_buffer_size;
         while (bytes > free)
         {
-          ELLE_TRACE("%s: grow client buffer (free: %s)",
-                         *this, free);
+          ELLE_TRACE("%s: grow client buffer (free: %s)", *this, free);
           socket->_read_buffer = reinterpret_cast<Byte*>
             (realloc(socket->_read_buffer, socket->_read_buffer_capacity * 2));
           socket->_read_buffer_capacity *= 2;
@@ -157,7 +156,7 @@ namespace elle
       void
       UDPServer::print(std::ostream& s) const
       {
-        s << "UDP Server " << this->_acceptor->local_endpoint();
+        elle::fprintf(s, "UDP Server %s", this->_acceptor->local_endpoint());
       }
 
       std::ostream& operator << (std::ostream& s, const UDPServer& server)

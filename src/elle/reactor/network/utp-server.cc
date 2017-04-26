@@ -163,11 +163,10 @@ namespace elle
         on_connect(utp_callback_arguments* args)
         {
           ELLE_DEBUG("on_connect");
-          auto s = get(args);
-          if (!s)
-            utp_close(args->socket);
-          else
+          if (auto s = get(args))
             s->on_connect();
+          else
+            utp_close(args->socket);
           return 0;
         }
 
@@ -188,8 +187,6 @@ namespace elle
         : _impl(std::make_shared<UTPServer::Impl>())
       {}
 
-      UTPServer::~UTPServer()
-      = default;
 
       /*-----------.
       | Attributes |
@@ -221,7 +218,7 @@ namespace elle
       UTPServer::local_endpoint()
       {
         auto ep = this->_impl->_socket->local_endpoint();
-        return EndPoint(ep.address(), ep.port());
+        return {ep.address(), static_cast<unsigned short>(ep.port())};
       }
 
       bool
@@ -233,10 +230,9 @@ namespace elle
       void
       UTPServer::listen(int port, bool ipv6)
       {
-        if (ipv6)
-          this->listen(EndPoint(boost::asio::ip::address_v6::any(), port));
-        else
-          this->listen(EndPoint(boost::asio::ip::address_v4::any(), port));
+        this->listen(ipv6
+                     ? EndPoint(boost::asio::ip::address_v6::any(), port)
+                     : EndPoint(boost::asio::ip::address_v4::any(), port));
       }
 
       void
@@ -259,6 +255,7 @@ namespace elle
       UTPServer::rdv_connect(
         std::string const& id, std::string const& address, DurationOpt timeout)
       {
+        // FIXME: factored elsewhere (see `resolve`).
         int port = 7890;
         std::string host = address;
         auto p = host.find_first_of(':');

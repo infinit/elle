@@ -74,7 +74,6 @@ namespace elle
       | Printable |
       `----------*/
       public:
-        virtual
         void
         print(std::ostream& output) const override;
 
