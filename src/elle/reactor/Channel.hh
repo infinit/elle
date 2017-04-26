@@ -15,7 +15,7 @@ namespace elle
     /// data in a Channel already full will force the Thread to wait. Trying
     /// to get data from an empty Channel will block Thread.
     ///
-    /// \code{.cc}
+    /// @code{.cc}
     ///
     /// Channel<int> c;
     /// c.max_size(2);
@@ -70,34 +70,34 @@ namespace elle
       | Content |
       `--------*/
     public:
-      /// Put a data.
+      /// Put data.
       ///
       /// If _size >= _max_size, yields until _size < _max_size.
       ///
-      /// \tparam T The type of data stored by the Channel.
-      /// \param data The data to store.
+      /// @tparam T The type of data stored by the Channel.
+      /// @param data The data to store.
       ///
-      /// \post _read_barrier is opened if opened == true.
-      /// \post _size <= _max_size.
+      /// @post _read_barrier is opened if opened == true.
+      /// @post _size <= _max_size.
       void
       put(T data);
       /// Get data and pop it from the Channel.
       ///
       /// If _read_barrier is not opened, wait until it is.
       ///
-      /// \tparam T Type stored by the Channel.
-      /// \returns Queued data.
+      /// @tparam T Type stored by the Channel.
+      /// @returns Queued data.
       ///
-      /// \post _write_barrier.
-      /// \post _read_barrier is closed if _size == 0.
+      /// @post _write_barrier.
+      /// @post _read_barrier is closed if _size == 0.
       T
       get();
       /// Get data from the Channel without altering it.
       ///
       /// If _read_barrier is not opened, wait until it is.
       ///
-      /// \tparam T Type stored by the Channel.
-      /// \returns Queued data.
+      /// @tparam T Type stored by the Channel.
+      /// @returns Queued data.
       const T&
       peek() const;
       /// Whether the Channel is empty.
