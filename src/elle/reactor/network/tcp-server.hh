@@ -10,7 +10,7 @@ namespace elle
     {
       /// A specialized ProtoServer for TCP connections.
       ///
-      /// \code{.cc}
+      /// @code{.cc}
       ///
       /// elle::With<elle::reactor::Scope>() << [&](elle::reactor::Scope &s)
       /// {
@@ -42,7 +42,7 @@ namespace elle
       /// };
       /// // Result: "12AB3C".
       ///
-      /// \endcode
+      /// @endcode
       class TCPServer
         : public ProtoServer<boost::asio::ip::tcp::socket,
                              boost::asio::ip::tcp::endpoint,
@@ -57,10 +57,9 @@ namespace elle
                                   boost::asio::ip::tcp::acceptor>;
         /// Construct a TCPServer.
         ///
-        /// \param no_delay Disable Nagle's algorithm.
+        /// @param no_delay Disable Nagle's algorithm.
         TCPServer(bool no_delay = false);
-        virtual
-        ~TCPServer();
+
         /// Get a TCPSocket bound to a peer.
         ///
         /// Wait until one is available.
@@ -74,27 +73,26 @@ namespace elle
         using Super::listen;
         /// Listen on the given port.
         ///
-        /// \param port The port to listen to.
-        /// \param enable_ipv6 Whether it accepts IPv6 connections.
+        /// @param port The port to listen to.
+        /// @param enable_ipv6 Whether it accepts IPv6 connections.
         void
-        listen(int port, bool enable_ipv6=false);
+        listen(int port, bool enable_ipv6 = false);
         /// Listen at the given tuple host / port.
         ///
-        /// \param host The host.
-        /// \param port The port to listen to.
-        /// \param enable_ipv6 Whether if it accepts IPv6 connections.
+        /// @param host The host.
+        /// @param port The port to listen to.
+        /// @param enable_ipv6 Whether if it accepts IPv6 connections.
         void
         listen(boost::asio::ip::address host, int port = 0,
                bool enable_ipv6 = false);
         /// Port the TCPServer is listening to.
         int
         port() const;
+
       protected:
-        virtual
         EndPoint
         _default_endpoint() const override;
         using Super::_accept;
-        virtual
         std::unique_ptr<Socket>
         _accept() override;
         ELLE_ATTRIBUTE_RX(bool, no_delay);

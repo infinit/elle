@@ -15,7 +15,7 @@ namespace elle
       /// A non-owning zone of memory.
       ///
       /// Typically used with an automatic array for network buffers.
-      /// Of course, the given memory must survice these buffers.
+      /// Of course, the given memory must survive to these buffers.
       class Buffer
       {
       public:

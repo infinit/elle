@@ -18,9 +18,6 @@ namespace elle
         , _no_delay(no_delay)
       {}
 
-      TCPServer::~TCPServer()
-      = default;
-
       /*----------.
       | Accepting |
       `----------*/
@@ -43,10 +40,11 @@ namespace elle
         this->listen(EndPoint(host, port));
       }
 
-      TCPServer::EndPoint
+      auto
       TCPServer::_default_endpoint() const
+        -> EndPoint
       {
-        return EndPoint(boost::asio::ip::tcp::v4(), 0);
+        return {boost::asio::ip::tcp::v4(), 0};
       }
 
       int
