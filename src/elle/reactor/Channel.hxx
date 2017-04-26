@@ -14,7 +14,6 @@ namespace elle
     Channel<T, Container>::Channel()
       : _read_barrier("channel read")
       , _write_barrier("channel write")
-      , _queue(Container())
       , _opened(true)
       , _max_size(SizeUnlimited)
     {}
@@ -63,6 +62,14 @@ namespace elle
         this->_read_barrier.open();
       }
       this->_on_put();
+    }
+
+    template <typename T, typename Container>
+    template <typename... Args>
+    void
+    Channel<T, Container>::emplace(Args&&... args)
+    {
+      put(T(std::forward<Args>(args)...));
     }
 
     namespace details

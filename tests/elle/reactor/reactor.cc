@@ -2735,7 +2735,7 @@ namespace background
 | Signals |
 `--------*/
 
-#if !defined(INFINIT_WINDOWS) && !defined(INFINIT_IOS)
+#if !defined INFINIT_WINDOWS && !defined INFINIT_IOS
 namespace system_signals
 {
   static
@@ -2756,20 +2756,26 @@ namespace system_signals
 
 ELLE_TEST_SCHEDULED(test_simple_channel)
 {
-
-  elle::reactor::Channel<int> channel;
-
-  elle::With<elle::reactor::Scope>() << [&](elle::reactor::Scope &s)
+  for (auto use_emplace: {false, true})
   {
-    s.run_background("producer", [&]() { channel.put(42); });
+    auto chan = elle::reactor::Channel<std::pair<int, int>>{};
 
-    s.run_background("consumer", [&]() {
-               int final = channel.get();
-               BOOST_CHECK_EQUAL(final, 42);
-            });
+    elle::With<elle::reactor::Scope>() << [&](auto &s)
+    {
+      s.run_background("producer", [&]() {
+          if (use_emplace)
+            chan.emplace(42, 51);
+          else
+            chan.put(std::make_pair(42, 51));
+        });
 
-    elle::reactor::wait(s);
-  };
+      s.run_background("consumer", [&]() {
+          BOOST_TEST(chan.get() == std::make_pair(42, 51));
+        });
+
+      elle::reactor::wait(s);
+    };
+  }
 }
 
 ELLE_TEST_SCHEDULED(test_multiple_channel)

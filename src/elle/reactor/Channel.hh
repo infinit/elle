@@ -81,6 +81,12 @@ namespace elle
       /// @post _size <= _max_size.
       void
       put(T data);
+
+      /// Convienence wrapper around put.
+      template <typename... Args>
+      void
+      emplace(Args&&... args);
+
       /// Get data and pop it from the Channel.
       ///
       /// If _read_barrier is not opened, wait until it is.
