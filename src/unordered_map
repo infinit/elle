@@ -24,13 +24,6 @@ namespace std
     return out;
   }
 
-  template <typename... Args, typename E>
-  bool
-  contains(std::unordered_map<Args...> const& map, E const& e)
-  {
-    return map.find(e) != map.end();
-  }
-
   template <typename... Args>
   class keys_iterator
     : public std::unordered_map<Args...>::iterator
