@@ -405,7 +405,10 @@ namespace elle
           , _prototype(DefaultStore<make_default<Args>...>(
                          std::forward<CArgs>(args)...))
         {
-          static_assert(sizeof ... (Args) == sizeof ... (args), "LOLEUH");
+          static_assert(sizeof ... (Args) <= sizeof ... (args),
+                        "too few effective arguments compared to signature");
+          static_assert(sizeof ... (Args) >= sizeof ... (args),
+                        "too many effective arguments compared to signature");
         }
 
         template <typename ... Effective>
