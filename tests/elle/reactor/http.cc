@@ -14,7 +14,7 @@
 #include <elle/reactor/http/Request.hh>
 #include <elle/reactor/http/exceptions.hh>
 #include <elle/reactor/network/Error.hh>
-#include <elle/reactor/network/tcp-server.hh>
+#include <elle/reactor/network/TCPServer.hh>
 #include <elle/reactor/scheduler.hh>
 #include <elle/reactor/semaphore.hh>
 #include <elle/reactor/signal.hh>

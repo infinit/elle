@@ -3,7 +3,7 @@
 
 #include <elle/reactor/network/Error.hh>
 #include <elle/reactor/network/resolve.hh>
-#include <elle/reactor/network/tcp-socket.hh>
+#include <elle/reactor/network/TCPSocket.hh>
 #include <elle/reactor/scheduler.hh>
 #include <elle/reactor/Thread.hh>
 

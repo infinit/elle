@@ -16,7 +16,7 @@
 #include <elle/reactor/network/fingerprinted-socket.hh>
 #include <elle/reactor/network/ssl-server.hh>
 #include <elle/reactor/network/ssl-socket.hh>
-#include <elle/reactor/network/tcp-server.hh>
+#include <elle/reactor/network/TCPServer.hh>
 #include <elle/reactor/Thread.hh>
 #include <utility>
 

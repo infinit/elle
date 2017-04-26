@@ -4,8 +4,8 @@
 
 #include <elle/reactor/asio.hh>
 #include <elle/reactor/network/Error.hh>
-#include <elle/reactor/network/tcp-server.hh>
-#include <elle/reactor/network/tcp-socket.hh>
+#include <elle/reactor/network/TCPServer.hh>
+#include <elle/reactor/network/TCPSocket.hh>
 #include <elle/reactor/scheduler.hh>
 #include <elle/reactor/scheduler.hh>
 #include <elle/reactor/semaphore.hh>

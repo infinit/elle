@@ -2,7 +2,7 @@
 
 #include <boost/lexical_cast.hpp>
 
-#include <elle/reactor/network/tcp-socket.hh>
+#include <elle/reactor/network/TCPSocket.hh>
 #include <elle/reactor/scheduler.hh>
 
 #include <elle/protocol/ChanneledStream.hh>

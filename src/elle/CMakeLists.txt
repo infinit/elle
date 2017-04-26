@@ -105,8 +105,8 @@ add_library(elle ${LINK_METHOD}
   reactor/src/reactor/network/resolve.cc
   reactor/src/reactor/network/server.cc
   reactor/src/reactor/network/socket.cc
-  reactor/src/reactor/network/tcp-server.cc
-  reactor/src/reactor/network/tcp-socket.cc
+  reactor/src/reactor/network/TCPServer.cc
+  reactor/src/reactor/network/TCPSocket.cc
   # reactor/src/reactor/network/udp-server-socket.cc
   # reactor/src/reactor/network/udp-server.cc
   reactor/src/reactor/network/udp-socket.cc

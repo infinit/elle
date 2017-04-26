@@ -7,8 +7,8 @@ ELLE_LOG_COMPONENT("elle.protocol.Channel.test");
 #include <elle/protocol/ChanneledStream.hh>
 #include <elle/protocol/Serializer.hh>
 #include <elle/reactor/network/Error.hh>
-#include <elle/reactor/network/tcp-server.hh>
-#include <elle/reactor/network/tcp-socket.hh>
+#include <elle/reactor/network/TCPServer.hh>
+#include <elle/reactor/network/TCPSocket.hh>
 
 static
 void

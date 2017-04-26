@@ -2,7 +2,7 @@
 
 #include <elle/reactor/network/socket.hh>
 #include <elle/reactor/network/resolve.hh>
-#include <elle/reactor/network/tcp-socket.hh>
+#include <elle/reactor/network/TCPSocket.hh>
 
 // Do not include asio first, this will result on errors on mingw (at least),
 // related to WinSock.h already included.

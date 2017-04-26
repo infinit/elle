@@ -19,8 +19,8 @@
 #include <elle/reactor/http/StatusCode.hh>
 #include <elle/reactor/http/Version.hh>
 #include <elle/reactor/network/socket.hh>
-#include <elle/reactor/network/tcp-server.hh>
-#include <elle/reactor/network/tcp-socket.hh>
+#include <elle/reactor/network/TCPServer.hh>
+#include <elle/reactor/network/TCPSocket.hh>
 #include <elle/reactor/Thread.hh>
 #include <elle/utility/Move.hh>
 
