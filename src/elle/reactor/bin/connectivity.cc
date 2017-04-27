@@ -3,6 +3,7 @@
 #include <vector>
 
 #include <elle/Exception.hh>
+#include <elle/algorithm.hh>
 #include <elle/network/Interface.hh>
 
 #include <elle/reactor/network/upnp.hh>
@@ -15,17 +16,12 @@ std::string
 nated(std::vector<std::string> public_ips,
       elle::reactor::connectivity::Result const& res)
 {
-  auto direct = std::find(
-    public_ips.begin(), public_ips.end(), res.host) != public_ips.end();
-  std::string output = direct ? "direct" : "nated";
+  std::string output = elle::contains(public_ips, res.host) ? "direct" : "nated";
   if (res.local_port)
   {
     output += " ";
-    if (res.local_port)
-    {
-      auto same_port = res.local_port == res.remote_port;
-      output += same_port ? "on same port" : "on changed port";
-    }
+    auto same_port = res.local_port == res.remote_port;
+    output += same_port ? "on same port" : "on changed port";
   }
   return output;
 }
@@ -39,33 +35,28 @@ run(int argc, char** argv)
     std::cerr << "Usage: connectivity server_host [port]" << std::endl;
     return;
   }
-  std::string host = argv[1];
-  int port = 5456;
-  if (argc >= 3)
-    port = std::stoi(argv[2]);
+  auto const host = argv[1];
+  auto const port = argc < 3 ? 5456 : std::stoi(argv[2]);
 
   auto interfaces = elle::network::Interface::get_map(
     elle::network::Interface::Filter::no_loopback);
-  std::cerr << "Local IP Addresses:" << std::endl;
-  std::vector<std::string> public_ips;
-  for (auto i: interfaces)
+  std::cerr << "Local IP Addresses:\n";
+  auto public_ips = std::vector<std::string>{};
+  for (auto const& i: interfaces)
   {
-    if (i.second.ipv4_address.empty())
-      continue;
-    std::cerr << "  " << i.second.ipv4_address << std::endl;
-    for (auto const& ip: i.second.ipv4_address)
-      public_ips.push_back(ip);
-    for (auto const& ip: i.second.ipv6_address)
-      public_ips.push_back(ip);
+    elle::push_back(public_ips, i.second.ipv4_address);
+    elle::push_back(public_ips, i.second.ipv6_address);
   }
+  for (auto const& i: public_ips)
+    std::cerr << i << std::endl;
 
-  std::cerr << "\nConnectivity:" << std::endl;
-  auto report = [&] (
-    std::string name,
-    std::function<elle::reactor::connectivity::Result(
+  std::cerr << "\nConnectivity:\n";
+  std::cerr.flush();
+  using Func
+    = std::function<elle::reactor::connectivity::Result(
                        std::string const& host,
-                       uint16_t port)> const& func,
-    int deltaport = 0)
+                       uint16_t port)>;
+  auto report = [&] (std::string name, Func const& func, int deltaport = 0)
   {
     std::cerr << "  " << name << " ";
     try
@@ -87,22 +78,22 @@ run(int argc, char** argv)
   };
   report("TCP", elle::reactor::connectivity::tcp);
   report("UDP", elle::reactor::connectivity::udp);
-  report("UTP-XOR", std::bind(elle::reactor::connectivity::utp,
-                              std::placeholders::_1,
-                              std::placeholders::_2,
-                              0xFF), 2);
-  report("UTP", std::bind(elle::reactor::connectivity::utp,
-                              std::placeholders::_1,
-                              std::placeholders::_2,
-                              0), 1);
-  report("RDV UTP XOR", std::bind(elle::reactor::connectivity::rdv_utp,
-                                  std::placeholders::_1,
-                                  std::placeholders::_2,
-                                  0xFF), 2);
-  report("RDV UTP", std::bind(elle::reactor::connectivity::rdv_utp,
-                                  std::placeholders::_1,
-                                  std::placeholders::_2,
-                                  0), 1);
+  report("UTP-XOR", [](std::string const& host, int port)
+         {
+           return elle::reactor::connectivity::utp(host, port, 0xFF);
+         }, 2);
+  report("UTP",  [](std::string const& host, int port)
+         {
+           return elle::reactor::connectivity::utp(host, port, 0);
+         }, 1);
+  report("RDV UTP XOR", [](std::string const& host, int port)
+         {
+           return elle::reactor::connectivity::rdv_utp(host, port, 0xFF);
+         }, 2);
+  report("RDV UTP", [](std::string const& host, int port)
+         {
+           return elle::reactor::connectivity::rdv_utp(host, port, 0);
+         }, 1);
   std::cerr << "  NAT ";
   try
   {
@@ -113,7 +104,7 @@ run(int argc, char** argv)
     std::cerr << elle::exception_string() << std::endl;
   }
 
-  std::cerr << std::endl << "UPNP:" << std::endl;
+  std::cerr << "\nUPNP:\n";
   auto upnp = elle::reactor::network::UPNP::make();
   try
   {
