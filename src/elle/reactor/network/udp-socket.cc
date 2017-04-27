@@ -118,7 +118,11 @@ namespace elle
           EndPoint peer;
           this->socket().async_receive(
             boost::asio::buffer(_buffer.mutable_contents(), _buffer.size()),
-            boost::bind(&UDPRead::_wakeup, this, _1, _2));
+            [this](const boost::system::error_code& error,
+                   std::size_t read)
+            {
+              this->_wakeup(error, read);
+            });
         }
 
       private:
@@ -254,7 +258,11 @@ namespace elle
           this->socket().async_send(
             boost::asio::buffer(this->_buffer.contents(),
                                 this->_buffer.size()),
-            boost::bind(&UDPWrite::_wakeup, this, _1, _2));
+            [this](const boost::system::error_code& error,
+                   std::size_t written)
+            {
+              this->_wakeup(error, written);
+            });
         }
 
       private:

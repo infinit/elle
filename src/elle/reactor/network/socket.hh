@@ -162,9 +162,9 @@ namespace elle
         : public Socket
         , public elle::Printable
       {
-      /*---------.
-      | Typedefs |
-      `---------*/
+      /*--------.
+      | Types.  |
+      `--------*/
       public:
         /// Self type.
         using Self = PlainSocket<AsioSocket_, EndPoint_>;
@@ -276,7 +276,7 @@ namespace elle
       `------*/
       public:
         /// Self type.
-        using Self = StreamSocket<AsioSocket, EndPoint>;
+        using Self = StreamSocket;
         /// Super type.
         using Super = PlainSocket<AsioSocket, EndPoint>;
 
@@ -331,7 +331,7 @@ namespace elle
         _read(elle::WeakBuffer buffer,
               DurationOpt timeout,
               bool some,
-              int* bytes_read=nullptr);
+              int* bytes_read = nullptr);
 
         ELLE_ATTRIBUTE(boost::asio::streambuf, streambuffer);
 

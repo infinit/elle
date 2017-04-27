@@ -1,9 +1,10 @@
+#include <utility>
+
 #include <elle/With.hh>
 #include <elle/reactor/Scope.hh>
 #include <elle/reactor/network/Error.hh>
 #include <elle/reactor/network/ssl-server.hh>
 #include <elle/utility/Move.hh>
-#include <utility>
 
 ELLE_LOG_COMPONENT("elle.reactor.network.SSLServer");
 
@@ -24,8 +25,7 @@ namespace elle
         , _handshake_timeout(std::move(handshake_timeout))
         , _sockets()
         , _handshake_thread(elle::sprintf("%s handshake", *this),
-                            std::bind(&SSLServer::_handshake,
-                                      std::ref(*this)))
+                            [this] { this->_handshake(); })
         , _shutdown_asynchronous(false)
       {}
 

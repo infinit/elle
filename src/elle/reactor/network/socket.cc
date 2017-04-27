@@ -123,8 +123,8 @@ namespace elle
       | Construction |
       `-------------*/
 
-      Socket::Socket():
-        elle::IOStream(new StreamBuffer(this))
+      Socket::Socket()
+        : elle::IOStream(new StreamBuffer(this))
       {}
 
       Socket::~Socket()
@@ -138,11 +138,10 @@ namespace elle
       {
         switch (protocol)
         {
-          case Protocol::tcp:
-            return std::unique_ptr<Socket>(
-              new TCPSocket(hostname, port, timeout));
-          default:
-            elle::unreachable();
+        case Protocol::tcp:
+          return std::make_unique<TCPSocket>(hostname, port, timeout);
+        default:
+          elle::unreachable();
         }
       }
 

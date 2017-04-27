@@ -174,9 +174,10 @@ namespace elle
         {
           this->_socket.socket()->async_handshake(
             this->_type,
-            std::bind(&SSLHandshake::_wakeup,
-                      this,
-                      std::placeholders::_1));
+            [this](const boost::system::error_code& error)
+            {
+              this->_wakeup(error);
+            });
         }
 
       private:
@@ -231,9 +232,10 @@ namespace elle
         _start() override
         {
           this->_socket.socket()->async_shutdown(
-            std::bind(&SSLShutdown::_wakeup,
-                      this,
-                      std::placeholders::_1));
+            [this](const boost::system::error_code& error)
+            {
+              this->_wakeup(error);
+            });
         }
 
         ELLE_ATTRIBUTE(SSLSocket&, socket);

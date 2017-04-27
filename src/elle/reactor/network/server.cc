@@ -93,7 +93,10 @@ namespace elle
           this->_acceptor.async_accept(
             this->_socket,
             this->_peer,
-            boost::bind(&Accept::_wakeup, this, _1));
+            [this](const boost::system::error_code& error)
+            {
+              this->_wakeup(error);
+            });
         }
 
         void

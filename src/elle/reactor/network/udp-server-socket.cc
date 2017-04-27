@@ -98,8 +98,11 @@ namespace elle
           {
             this->socket()->async_send(boost::asio::buffer(_buffer.contents(),
                                                            _buffer.size()),
-                                       boost::bind(&UDPWrite::_wakeup,
-                                                   this, _1, _2));
+                                       [this](const boost::system::error_code& error,
+                                              std::size_t written)
+                                       {
+                                         this->_wakeup(error, written);
+                                       });
           }
 
         private:
