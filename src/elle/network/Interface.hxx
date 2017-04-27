@@ -1,11 +1,7 @@
-#ifndef  ELLE_NETWORK_INTERFACE_HXX
-# define ELLE_NETWORK_INTERFACE_HXX
-
 namespace elle
 {
   namespace network
   {
-
     inline
     bool
     operator &(Interface::Filter const lhs,
@@ -23,8 +19,5 @@ namespace elle
           static_cast<int>(lhs) | static_cast<int>(rhs)
       );
     }
-
   }
 }
-#endif
-
