@@ -175,7 +175,8 @@ Name(ELLE_TEST_PROTOTYPE(Args))                                       \
     [&]                                                               \
     {                                                                 \
       ELLE_LOG_COMPONENT("elle.Test");                                \
-      ELLE_LOG("starting test: %s", BOOST_PP_STRINGIZE(Name))         \
+      ELLE_LOG("starting test: %s(%s)", BOOST_PP_STRINGIZE(Name),     \
+               boost::unit_test::framework::current_test_case().full_name())\
         BOOST_PP_CAT(Name,_impl)(ELLE_TEST_CALL(Args));               \
     });                                                               \
   try                                                                 \
@@ -211,7 +212,8 @@ Name()                                                                \
     [&]                                                               \
     {                                                                 \
       ELLE_LOG_COMPONENT("elle.Test")                                 \
-      ELLE_LOG("starting test: %s", BOOST_PP_STRINGIZE(Name));        \
+      ELLE_LOG("starting test: %s(%s)", BOOST_PP_STRINGIZE(Name),     \
+        boost::unit_test::framework::current_test_case().full_name());\
       Name##_impl();                                                  \
     });                                                               \
   BOOST_CHECK_THROW(sched.run(), _exception_type_);                   \
