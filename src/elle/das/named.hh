@@ -393,6 +393,61 @@ namespace elle
         using get_type = typename get_type_impl<T>::type;
       }
 
+      namespace
+      {
+        template <typename T>
+        struct result_type_impl
+        {
+          using type = elle::Option<T, std::exception_ptr>;
+          using mapped_type = T;
+        };
+        template <>
+        struct result_type_impl<void>
+        {
+          using type = elle::Option<int, std::exception_ptr>;
+          using mapped_type = int;
+        };
+
+        template <typename T>
+        using result_type = typename result_type_impl<T>::type;
+      }
+
+      namespace
+      {
+        template<typename T, typename D>
+        class Builder
+        {
+        public:
+          Builder(D&& val)
+          : _default(std::move(val))
+          {
+          }
+          T result()
+          {
+            if (_content)
+              return std::move(*_content);
+            else
+              return T(std::move(_default));
+          }
+          template<typename V>
+          void
+          operator , (V&& b)
+          {
+            _content = T(std::move(b));
+          }
+        private:
+          D _default;
+          boost::optional<T> _content;
+        };
+
+        template<typename T, typename D>
+        Builder<T, D>
+        make_builder(D &&v)
+        {
+          return Builder<T, D>(std::move(v));
+        }
+      }
+
       template <typename R, typename ... Args>
       class Function<R (Args...)>
         : public Printable::as<Function<R (Args...)>>
@@ -450,16 +505,18 @@ namespace elle
         };
 
         class Result
-          : public elle::Option<R, std::exception_ptr>
+          : public result_type<R>
         {
         public:
-          using Super = elle::Option<R, std::exception_ptr>;
-          using elle::Option<R, std::exception_ptr>::Option;
+          using Super = result_type<R>;
+          using Super::Option;
+          using is_void = std::is_same<R, void>;
           R
           operator()()
           {
-            if (this->template is<R>())
-              return this->template get<R>();
+            using M = typename result_type_impl<R>::mapped_type;
+            if (this->template is<M>())
+              return (R)this->template get<M>();
             else
               std::rethrow_exception(this->template get<std::exception_ptr>());
           }
@@ -483,7 +540,10 @@ namespace elle
         {
           try
           {
-            return Result(this->_function(std::move(c.make_effective<Args>::value)...));
+            using M = typename result_type_impl<R>::mapped_type;
+            auto builder = make_builder<Result>(M());
+            builder, this->_function(std::move(c.make_effective<Args>::value)...);
+            return builder.result();
           }
           catch (elle::Exception const& e)
           {
