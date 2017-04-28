@@ -512,7 +512,6 @@ namespace elle
         public:
           using Super = result_type<R>;
           using Super::Super;
-          using Option = typename Super::Option;
           using is_void = std::is_same<R, void>;
           R
           operator()()
