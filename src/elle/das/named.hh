@@ -370,8 +370,7 @@ namespace elle
       Prototype<Args...>
       prototype(Args&& ... args)
       {
-        return Prototype<Args...>
-          (DefaultStore<Args...>(std::forward<Args>(args)...));
+        return {DefaultStore<Args...>(std::forward<Args>(args)...)};
       }
 
       /*---------.
@@ -401,13 +400,14 @@ namespace elle
           using type = elle::Option<T, std::exception_ptr>;
           using mapped_type = T;
         };
+
+        /// To make `void` a regular type, make it an int.
         template <>
         struct result_type_impl<void>
-        {
-          using type = elle::Option<int, std::exception_ptr>;
-          using mapped_type = int;
-        };
+          : result_type_impl<int>
+        {};
 
+        /// The result type of a function: return value and exception.
         template <typename T>
         using result_type = typename result_type_impl<T>::type;
       }
@@ -419,22 +419,24 @@ namespace elle
         {
         public:
           Builder(D&& val)
-          : _default(std::move(val))
-          {
-          }
+            : _default(std::move(val))
+          {}
+
           T result()
           {
             if (_content)
               return std::move(*_content);
             else
-              return T(std::move(_default));
+              return std::move(_default);
           }
+
           template<typename V>
           void
           operator , (V&& b)
           {
             _content = T(std::move(b));
           }
+
         private:
           D _default;
           boost::optional<T> _content;
@@ -444,7 +446,7 @@ namespace elle
         Builder<T, D>
         make_builder(D &&v)
         {
-          return Builder<T, D>(std::move(v));
+          return std::move(v);
         }
       }
 
@@ -509,6 +511,7 @@ namespace elle
         {
         public:
           using Super = result_type<R>;
+          using Super::Super;
           using Option = typename Super::Option;
           using is_void = std::is_same<R, void>;
           R
@@ -542,27 +545,36 @@ namespace elle
           {
             using M = typename result_type_impl<R>::mapped_type;
             auto builder = make_builder<Result>(M());
+            // Clang thinks we're not use `builder`.  The point if the
+            // `operator,` trick to deal with `void`.
+#ifdef __clang__
+# pragma clang diagnostic push
+# pragma clang diagnostic ignored "-Wunused-value"
+#endif
             builder, this->_function(std::move(c.make_effective<Args>::value)...);
+#ifdef __clang__
+# pragma clang diagnostic pop
+#endif
             return builder.result();
           }
           catch (elle::Exception const& e)
           {
-            return Result(std::current_exception());
+            return std::current_exception();
           }
         }
 
         template <typename C>
         std::enable_if_t<
-        std::is_same<std::remove_cv_reference_t<C>, Call>::value, Result>
+          std::is_same<std::remove_cv_reference_t<C>, Call>::value, Result>
         operator() (C const& c) const
         {
           try
           {
-            return Result(this->_function(c.make_effective<Args>::value...));
+            return this->_function(c.make_effective<Args>::value...);
           }
           catch (elle::Exception const& e)
           {
-            return Result(std::current_exception());
+            return std::current_exception();
           }
         }
         ELLE_ATTRIBUTE_R(F, function);
