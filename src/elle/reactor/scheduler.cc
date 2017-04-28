@@ -429,7 +429,7 @@ namespace elle
     {
       ELLE_TRACE_SCOPE("%s: terminate", *this);
       Threads terminated;
-      for(Thread* t: this->_starting)
+      for (Thread* t: this->_starting)
       {
         // Threads expect to be done when deleted. For this very
         // particuliar case, hack the state before deletion.
@@ -437,13 +437,13 @@ namespace elle
         t->_scheduler_release();
       }
       this->_starting.clear();
-      for(Thread* t: Threads(this->_running))
+      for (Thread* t: Threads(this->_running))
         if (t != this->_current)
         {
           t->terminate();
           terminated.insert(t);
         }
-      for(Thread* t: Threads(this->_frozen))
+      for (Thread* t: Threads(this->_frozen))
       {
         t->terminate();
         terminated.insert(t);
@@ -552,25 +552,17 @@ namespace elle
       new Thread(*this, name, f, true);
     }
 
-    namespace
-    {
-      void
-      _call_later_helper(Scheduler* sched,
-                         std::function<void ()> const& f,
-                         Duration delay)
-      {
-        sched->current()->sleep(delay);
-        f();
-      }
-    }
-
     void
     Scheduler::call_later(std::string const& name,
                           std::function<void ()> const&  f,
                           Duration delay)
     {
-      new Thread(*this, name,
-                 std::bind(&_call_later_helper, this, f, delay), true);
+      run_later(name,
+                [this, f, delay]
+                {
+                  this->current()->sleep(delay);
+                  f();
+                });
     }
 
     /*----------------.
@@ -641,13 +633,12 @@ namespace elle
       {
         if (error == boost::asio::error::operation_aborted)
           return;
-        new reactor::Thread(sched, "signal handler", handler, true);
-        set.async_wait(std::bind(&signal_callback,
-                                 std::ref(sched),
-                                 std::ref(set),
-                                 handler,
-                                 std::placeholders::_1,
-                                 std::placeholders::_2));
+        sched.run_later("signal handler", handler);
+        set.async_wait([&sched, &set, handler]
+                       (boost::system::error_code const& error, int dummy)
+                       {
+                         signal_callback(sched, set, handler, error, dummy);
+                       });
       }
 
       std::string signal_string(int const signal)
@@ -666,13 +657,12 @@ namespace elle
     {
       ELLE_TRACE_SCOPE("%s: handle signal %s", *this, signal_string(signal));
       auto set = std::make_unique<boost::asio::signal_set>(this->io_service(),
-                                                            signal);
-      set->async_wait(std::bind(&signal_callback,
-                                std::ref(*this),
-                                std::ref(*set),
-                                handler,
-                                std::placeholders::_1,
-                                std::placeholders::_2));
+                                                           signal);
+      set->async_wait([this, &set=*set, handler]
+                      (boost::system::error_code const& error, int dummy)
+                      {
+                        signal_callback(*this, set, handler, error, dummy);
+                      });
       this->_signal_handlers.emplace_back(std::move(set));
     }
 
