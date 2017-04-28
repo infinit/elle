@@ -9,6 +9,21 @@
 #include <elle/reactor/network/utp-socket.hh>
 #include <elle/reactor/scheduler.hh>
 
+namespace
+{
+  /// "www.infinit.sh:80" -> pair("www.infinit.sh", "80").
+  // duplicate from reactor/network/resolve.cc, should be put
+  // somewhere.
+  auto
+  host_port(std::string const& repr)
+  {
+    auto const sep = repr.find_last_of(':');
+    if (sep == std::string::npos || sep == repr.length())
+      elle::err("invalid endpoint: %s", repr);
+    return std::make_pair(repr.substr(0, sep), repr.substr(sep + 1));
+  }
+}
+
 namespace elle
 {
   namespace reactor
@@ -17,10 +32,11 @@ namespace elle
     {
       Result::Result(std::string res,
                      uint16_t local_port)
-        : host(res.substr(0, res.find(":")))
-        , remote_port(std::stoi(res.substr(res.find(":") + 1)))
-        , local_port(local_port)
+        : local_port(local_port)
       {
+        auto hp = host_port(res);
+        host = hp.first;
+        remote_port = std::stoi(hp.second);
       }
 
       Result
@@ -33,9 +49,7 @@ namespace elle
         auto p = line.find(' ');
         if (line.substr(p+1) != "foo")
           throw std::runtime_error("Unexpected output: " + line);
-        return {
-          line.substr(0, p), s.local_endpoint().port()
-            };
+        return {line.substr(0, p), s.local_endpoint().port()};
       }
 
       Result
@@ -44,18 +58,18 @@ namespace elle
         elle::reactor::network::UDPSocket s;
         s.close();
         s.bind(boost::asio::ip::udp::endpoint(boost::asio::ip::udp::v4(), 0));
-        auto server_ep
-          = elle::reactor::network::resolve_udp(host, port);
+        auto server_ep = elle::reactor::network::resolve_udp(host, port);
         s.send_to(std::string("foo\n"), server_ep[0]);
         boost::asio::ip::udp::endpoint ep;
         char buffer[5000];
         auto sz = s.receive_from(elle::WeakBuffer(buffer, sizeof buffer),
                                  ep, 5_sec);
-        std::string line(buffer, sz);
+        auto const line = std::string(buffer, sz);
         auto p = line.find(' ');
-        if (line.substr(p+1) != "foo\n")
+        if (line.substr(p+1) == "foo\n")
+          return {line.substr(0, p), s.local_endpoint().port()};
+        else
           throw std::runtime_error("Unexpected output: " + line);
-        return {line.substr(0, p), s.local_endpoint().port()};
       }
 
       std::string
@@ -82,12 +96,7 @@ namespace elle
               buf.size(sz);
               std::string line(buf.string());
               auto p = line.find(' ');
-              if (line.substr(p+1) != "foo\n")
-              {
-                success = false;
-                result = "Unexpected output: " + line;
-              }
-              else
+              if (line.substr(p+1) == "foo\n")
               {
                 bool cone
                   = line.substr(0, p) == elle::sprintf("%s",
@@ -99,6 +108,11 @@ namespace elle
                   result += elle::sprintf(
                     "NOT_CONE NAT %s %s", line.substr(0, p),
                     socket.public_endpoint());
+              }
+              else
+              {
+                success = false;
+                result = "Unexpected output: " + line;
               }
               break;
             }
@@ -114,9 +128,10 @@ namespace elle
         socket.send_to(std::string("foo\n"), ep[0]);
         elle::reactor::wait(poller);
         spoll.abort();
-        if (!success)
+        if (success)
+          return result;
+        else
           throw std::runtime_error(result);
-        return result;
       }
 
       Result
@@ -129,8 +144,8 @@ namespace elle
         elle::reactor::network::UTPSocket s(server);
         s.connect("connectivity-server" + std::to_string(port), {}, 5_sec);
         s << "foo" << std::endl;
-        elle::Buffer reply = s.read_until("\n", 5_sec);
-        std::string line = reply.string();
+        auto const reply = s.read_until("\n", 5_sec);
+        auto const line = reply.string();
         auto p = line.find(' ');
         if (line.substr(p+1) != "foo\n")
           throw std::runtime_error("Unexpected output: " + line);

@@ -493,6 +493,7 @@ namespace elle
       void
       UTPServer::Impl::listen(EndPoint const& ep)
       {
+        ELLE_TRACE("%s: listen to %s", this, ep);
         this->_socket = std::make_unique<RDVSocket>();
         this->_socket->close();
         this->_socket->bind(ep);

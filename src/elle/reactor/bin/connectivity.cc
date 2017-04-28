@@ -40,13 +40,13 @@ run(int argc, char** argv)
 
   auto interfaces = elle::network::Interface::get_map(
     elle::network::Interface::Filter::no_loopback);
-  std::cerr << "Local IP Addresses:\n";
   auto public_ips = std::vector<std::string>{};
   for (auto const& i: interfaces)
   {
     elle::push_back(public_ips, i.second.ipv4_address);
     elle::push_back(public_ips, i.second.ipv6_address);
   }
+  std::cerr << "Local IP Addresses:\n";
   for (auto const& i: public_ips)
     std::cerr << i << std::endl;
 
