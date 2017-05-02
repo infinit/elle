@@ -100,7 +100,8 @@ namespace elle
           //
           size_t cchUTF16Max = 10000 - 1;
           size_t cchUTF16;
-          HRESULT hr = ::StringCchLengthW( pszTextUTF16, cchUTF16Max, &cchUTF16 );
+          if (FAILED(::StringCchLengthW( pszTextUTF16, cchUTF16Max, &cchUTF16)))
+            ELLE_DEBUG("StringCchLengthW failed");
           // Consider also terminating
           ++cchUTF16;
           //
@@ -140,16 +141,17 @@ namespace elle
           //
           // Do the conversion from UTF-16 to UTF-8
           //
-          int result = ::WideCharToMultiByte(
-            CP_UTF8,                // convert to UTF-8
-            dwConversionFlags,      // specify conversion behavior
-            pszTextUTF16,           // source UTF-16 string
-            static_cast<int>( cchUTF16 ),   // total source string length, in WCHAR’s,
-                                            // including end-of-string
-            pszUTF8,                // destination buffer
-            cbUTF8,                 // destination buffer size, in bytes
-            NULL, NULL              // unused
-            );
+          if (::WideCharToMultiByte(
+              CP_UTF8,                // convert to UTF-8
+              dwConversionFlags,      // specify conversion behavior
+              pszTextUTF16,           // source UTF-16 string
+              static_cast<int>( cchUTF16 ),   // total source string length, in WCHAR’s,
+                                              // including end-of-string
+              pszUTF8,                // destination buffer
+              cbUTF8,                 // destination buffer size, in bytes
+              NULL, NULL              // unused
+            ))
+            ELLE_LOG("WideCharToMultiByte failed: %s", GetLastError())
 
           // Return resulting UTF-8 string
           strUTF8 = strUTF8.substr(0, strUTF8.size()-1);
@@ -873,7 +875,7 @@ namespace elle
         __attribute__((__stdcall__))
         NTSTATUS Unmount(PDOKAN_FILE_INFO	context)
         {
-          ELLE_LOG("Filesystem umonut notification received.");
+          ELLE_LOG("Filesystem umount notification received.");
           return STATUS_SUCCESS;
         }
 
