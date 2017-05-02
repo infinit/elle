@@ -545,15 +545,15 @@ namespace elle
           {
             using M = typename result_type_impl<R>::mapped_type;
             auto builder = make_builder<Result>(M());
-            // Clang thinks we're not use `builder`.  The point if the
-            // `operator,` trick to deal with `void`.
-#ifdef __clang__
-# pragma clang diagnostic push
-# pragma clang diagnostic ignored "-Wunused-value"
+            // Clang/GCC think we're not use `builder`.  The point of
+            // the `operator,` trick to deal with `void`.
+#if defined __GCC__ || defined __clang__
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wunused-value"
 #endif
             builder, this->_function(std::move(c.make_effective<Args>::value)...);
-#ifdef __clang__
-# pragma clang diagnostic pop
+#if defined __GCC__ || defined __clang__
+# pragma GCC diagnostic pop
 #endif
             return builder.result();
           }
