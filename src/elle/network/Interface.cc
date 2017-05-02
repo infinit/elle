@@ -33,6 +33,7 @@
 #include <elle/Exception.hh>
 #include <elle/printf.hh>
 #include <elle/network/Interface.hh>
+#include <elle/os/environ.hh>
 
 #ifdef AF_PACKET
 # define hw_addr_family AF_PACKET
@@ -134,6 +135,19 @@ namespace elle
       {
         return ifa_name.find("awdl") == 0;
       }
+
+      /// Whether a link-scope ipv6 address.
+      bool
+      is_linklocal(struct sockaddr const* addr)
+      {
+        if (addr->sa_family == AF_INET6)
+        {
+          auto const& inet_addr = *reinterpret_cast<sockaddr_in6 const*>(addr);
+          return IN6_IS_ADDR_LINKLOCAL(&inet_addr.sin6_addr);
+        }
+        else
+          return false;
+      }
     }
 
     std::map<std::string, Interface>
@@ -144,6 +158,9 @@ namespace elle
       ifaddrs* ifap = nullptr;
       if (getifaddrs(&ifap) != 0)
         return map;
+
+      if (os::getenv("ELLE_NO_LINKLOCAL", false))
+        filter |= Filter::no_linklocal;
 
       for (ifaddrs* iter = ifap; iter != nullptr; iter = iter->ifa_next)
       {
@@ -165,6 +182,10 @@ namespace elle
 
         if ((filter & Filter::no_awdl)
             && check_awdl(iter->ifa_name))
+          continue;
+
+        if ((filter & Filter::no_linklocal)
+            && is_linklocal(iter->ifa_addr))
           continue;
 
         switch (iter->ifa_addr->sa_family)

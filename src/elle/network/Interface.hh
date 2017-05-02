@@ -26,6 +26,7 @@ namespace elle
         only_up      = 1<<2, /// Exclude down interfaces.
         no_autoip    = 1<<3, /// Exclude autoip interfaces.
         no_awdl      = 1<<4, /// Exclude Apple Wireless Direct Link interfaces.
+        no_linklocal = 1<<5, /// Exclude scope-link addresses.
       };
     public:
       /// Retreive a map of local interfaces, indexed by interface name.
