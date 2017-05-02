@@ -1,10 +1,9 @@
-#ifndef ELLE_SERIALIZATION_BINARY_SERIALIZERIN_HH
-# define ELLE_SERIALIZATION_BINARY_SERIALIZERIN_HH
+#pragma once
 
-# include <vector>
+#include <vector>
 
-# include <elle/attribute.hh>
-# include <elle/serialization/SerializerIn.hh>
+#include <elle/attribute.hh>
+#include <elle/serialization/SerializerIn.hh>
 
 namespace elle
 {
@@ -106,7 +105,4 @@ namespace elle
     };
   }
 }
-
 }
-
-#endif

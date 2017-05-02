@@ -35,8 +35,8 @@ namespace elle
         if (input.gcount() != 1)
           err<Error>("unable to read magic");
         if (magic != 0)
-          err<Error>("wrong magic for binary serialization: 0x%2x",
-                     int(magic));
+          err<Error>("wrong magic for binary serialization: 0x%2x (expected 0)",
+                     int(static_cast<unsigned char>(magic)));
       }
 
       bool
@@ -65,37 +65,37 @@ namespace elle
       void
       SerializerIn::_serialize(int32_t& v)
       {
-        this->_serialize_int<int32_t>(v);
+        this->_serialize_int(v);
       }
 
       void
       SerializerIn::_serialize(uint32_t& v)
       {
-        this->_serialize_int<uint32_t>(v);
+        this->_serialize_int(v);
       }
 
       void
       SerializerIn::_serialize(int16_t& v)
       {
-        this->_serialize_int<int16_t>(v);
+        this->_serialize_int(v);
       }
 
       void
       SerializerIn::_serialize(uint16_t& v)
       {
-        this->_serialize_int<uint16_t>(v);
+        this->_serialize_int(v);
       }
 
       void
       SerializerIn::_serialize(int8_t& v)
       {
-        this->_serialize_int<int8_t>(v);
+        this->_serialize_int(v);
       }
 
       void
       SerializerIn::_serialize(uint8_t& v)
       {
-        this->_serialize_int<uint8_t>(v);
+        this->_serialize_int(v);
       }
 
       template <typename T>

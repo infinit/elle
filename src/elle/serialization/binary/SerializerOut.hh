@@ -1,10 +1,9 @@
-#ifndef ELLE_SERIALIZATION_BINARY_SERIALIZEROUT_HH
-# define ELLE_SERIALIZATION_BINARY_SERIALIZEROUT_HH
+#pragma once
 
-# include <vector>
+#include <vector>
 
-# include <elle/attribute.hh>
-# include <elle/serialization/SerializerOut.hh>
+#include <elle/attribute.hh>
+#include <elle/serialization/SerializerOut.hh>
 
 namespace elle
 {
@@ -27,7 +26,7 @@ namespace elle
       | Types |
       `------*/
       public:
-        using Self = elle::serialization::binary::SerializerOut;
+        using Self = SerializerOut;
         using Super = serialization::SerializerOut;
 
       /*-------------.
@@ -113,5 +112,3 @@ namespace elle
     }
   }
 }
-
-#endif
