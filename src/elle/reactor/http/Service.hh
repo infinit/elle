@@ -2,7 +2,7 @@
 
 #include <unordered_map>
 
-#include <boost/asio.hpp>
+#include <elle/reactor/asio.hh>
 
 #include <elle/Printable.hh>
 #include <elle/reactor/http/Request.hh>

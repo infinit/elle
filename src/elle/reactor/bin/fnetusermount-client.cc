@@ -1,5 +1,5 @@
 #include <unistd.h>
-#include <boost/asio.hpp>
+#include <elle/reactor/asio.hh>
 
 #define HAVE_MSGHDR_MSG_CONTROL 1
 static

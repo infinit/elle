@@ -1,5 +1,5 @@
 #include <boost/optional.hpp>
-#include <boost/asio.hpp>
+#include <elle/reactor/asio.hh>
 
 #include <elle/serialization/json.hh>
 

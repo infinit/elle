@@ -6,7 +6,7 @@
 
 // Do not include asio first, this will result on errors on mingw (at least),
 // related to WinSock.h already included.
-#include <boost/asio.hpp>
+#include <elle/reactor/asio.hh>
 #include <boost/asio/ssl.hpp>
 
 namespace elle

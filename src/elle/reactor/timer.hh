@@ -1,6 +1,6 @@
 #pragma once
 
-#include <boost/asio.hpp>
+#include <elle/reactor/asio.hh>
 
 #include <elle/Printable.hh>
 #include <elle/reactor/fwd.hh>

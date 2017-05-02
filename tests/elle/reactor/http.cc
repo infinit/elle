@@ -1,5 +1,5 @@
 #include <boost/algorithm/string.hpp>
-#include <boost/asio.hpp>
+#include <elle/reactor/asio.hh>
 #include <boost/test/unit_test.hpp>
 
 #include <elle/Buffer.hh>

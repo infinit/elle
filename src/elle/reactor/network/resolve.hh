@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include <boost/asio.hpp>
+#include <elle/reactor/asio.hh>
 
 namespace elle
 {

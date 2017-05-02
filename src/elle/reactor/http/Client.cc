@@ -4,7 +4,7 @@
 
 #include <curl/curl.h>
 
-#include <boost/asio.hpp>
+#include <elle/reactor/asio.hh>
 
 #include <elle/log.hh>
 #include <elle/memory.hh>

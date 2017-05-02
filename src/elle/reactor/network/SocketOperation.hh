@@ -1,6 +1,6 @@
 #pragma once
 
-#include <boost/asio.hpp>
+#include <elle/reactor/asio.hh>
 
 #include <elle/reactor/network/Error.hh>
 #include <elle/reactor/network/socket.hh>

@@ -3,19 +3,19 @@
 #include <string>
 #include <unordered_map>
 
-#include <boost/asio.hpp>
 #include <boost/signals2.hpp>
 
 #include <elle/Buffer.hh>
 #include <elle/IOStream.hh>
 #include <elle/Printable.hh>
+#include <elle/reactor/asio.hh>
 #include <elle/attribute.hh>
+#include <elle/reactor/Operation.hh>
 #include <elle/reactor/http/Method.hh>
 #include <elle/reactor/http/StatusCode.hh>
 #include <elle/reactor/http/Version.hh>
 #include <elle/reactor/http/fwd.hh>
 #include <elle/reactor/network/proxy.hh>
-#include <elle/reactor/Operation.hh>
 
 namespace elle
 {

@@ -1,7 +1,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <boost/asio.hpp>
+#include <elle/reactor/asio.hh>
 #include <boost/algorithm/string.hpp>
 
 /* Listen on an unix socket, forward mount requests to fusermount

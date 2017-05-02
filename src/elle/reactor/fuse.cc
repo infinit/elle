@@ -12,7 +12,7 @@
 #include <fuse/fuse.h>
 #include <fuse/fuse_lowlevel.h>
 
-#include <boost/asio.hpp>
+#include <elle/reactor/asio.hh>
 
 #include <elle/Buffer.hh>
 #include <elle/log.hh>
