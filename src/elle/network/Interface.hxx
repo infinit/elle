@@ -2,22 +2,25 @@ namespace elle
 {
   namespace network
   {
-    inline
     bool
-    operator &(Interface::Filter const lhs,
-               Interface::Filter const rhs)
+    operator &(Interface::Filter lhs, Interface::Filter rhs)
     {
       return static_cast<int>(lhs) & static_cast<int>(rhs);
     }
 
-    inline
     Interface::Filter
-    operator |(Interface::Filter const lhs,
-               Interface::Filter const rhs)
+    operator |(Interface::Filter lhs, Interface::Filter rhs)
     {
       return static_cast<Interface::Filter>(
           static_cast<int>(lhs) | static_cast<int>(rhs)
       );
+    }
+
+    Interface::Filter&
+    operator |=(Interface::Filter& lhs, Interface::Filter rhs)
+    {
+      lhs = lhs | rhs;
+      return lhs;
     }
   }
 }

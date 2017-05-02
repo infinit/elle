@@ -21,11 +21,11 @@ namespace elle
     public:
       enum class Filter : int
       {
-        none        = 0x00,
-        no_loopback = 0x01, /// Exclude loopback interface.
-        only_up     = 0x02, /// Exclude down interfaces.
-        no_autoip   = 0x04, /// Exclude autoip interfaces.
-        no_awdl     = 0x08, /// Exclude Apple Wireless Direct Link interfaces.
+        none         = 0x00,
+        no_loopback  = 1<<1, /// Exclude loopback interface.
+        only_up      = 1<<2, /// Exclude down interfaces.
+        no_autoip    = 1<<3, /// Exclude autoip interfaces.
+        no_awdl      = 1<<4, /// Exclude Apple Wireless Direct Link interfaces.
       };
     public:
       /// Retreive a map of local interfaces, indexed by interface name.
@@ -42,14 +42,17 @@ namespace elle
     // Check whether or not a flag is enabled.
     inline
     bool
-    operator &(Interface::Filter const lhs,
-               Interface::Filter const rhs);
+    operator &(Interface::Filter lhs, Interface::Filter rhs);
 
     // Mix two filters.
     inline
     Interface::Filter
-    operator |(Interface::Filter const lhs,
-               Interface::Filter const rhs);
+    operator |(Interface::Filter lhs, Interface::Filter rhs);
+
+    // Augment a filter.
+    inline
+    Interface::Filter&
+    operator |=(Interface::Filter& lhs, Interface::Filter rhs);
   }
 }
 

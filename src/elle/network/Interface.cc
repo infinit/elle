@@ -123,7 +123,7 @@ namespace elle
         if (sock->sa_family != AF_INET)
           return false;
 
-        struct sockaddr_in* sin = (struct sockaddr_in*) sock;
+        auto sin = (struct sockaddr_in*) sock;
         auto addr_bits = std::bitset<32>(ntohl(sin->sin_addr.s_addr));
 
         return autoip_addr == (autoip_netmask & addr_bits);
@@ -137,11 +137,11 @@ namespace elle
     }
 
     std::map<std::string, Interface>
-    Interface::get_map(Interface::Filter filter)
+    Interface::get_map(Filter filter)
     {
       auto map = std::map<std::string, Interface>{};
 
-      ifaddrs* ifap = 0;
+      ifaddrs* ifap = nullptr;
       if (getifaddrs(&ifap) != 0)
         return map;
 
@@ -151,20 +151,20 @@ namespace elle
           continue;
 
         // Apply filters
-        if (filter & Interface::Filter::no_loopback &&
-            bool(iter->ifa_flags & IFF_LOOPBACK))
+        if (filter & Filter::no_loopback
+            && bool(iter->ifa_flags & IFF_LOOPBACK))
           continue;
 
-        if (filter & Interface::Filter::only_up &&
-            !(iter->ifa_flags & IFF_UP))
+        if (filter & Filter::only_up
+            && !(iter->ifa_flags & IFF_UP))
           continue;
 
-        if ((filter & Interface::Filter::no_autoip) &&
-            check_ipv4_autoip(iter->ifa_addr))
+        if ((filter & Filter::no_autoip)
+            && check_ipv4_autoip(iter->ifa_addr))
           continue;
 
-        if ((filter & Interface::Filter::no_awdl) &&
-            check_awdl(iter->ifa_name))
+        if ((filter & Filter::no_awdl)
+            && check_awdl(iter->ifa_name))
           continue;
 
         switch (iter->ifa_addr->sa_family)
@@ -185,19 +185,15 @@ namespace elle
           break;
         case AF_INET6:
           {
-            auto inet_addr = reinterpret_cast<sockaddr_in6*>(iter->ifa_addr);
-            auto tab = reinterpret_cast<uint8_t*>(&inet_addr->sin6_addr.s6_addr);
+            auto const& inet_addr = *reinterpret_cast<sockaddr_in6 const*>(iter->ifa_addr);
+            auto const& sin6_addr = inet_addr.sin6_addr;
+            auto const tab = reinterpret_cast<uint8_t const*>(&sin6_addr.s6_addr);
             std::ostringstream oss;
-            oss << std::hex << std::setfill('0') << std::setw(2);
-            for (size_t i = 0; i < sizeof(inet_addr->sin6_addr.s6_addr); i+=2)
-            {
-              if (i)
-                oss << ':';
-              oss << std::setfill('0') << std::setw(2) << std::hex
-                  << static_cast<unsigned int>(tab[i])
-                  << std::setfill('0') << std::setw(2) << std::hex
-                  << static_cast<unsigned int>(tab[i+1]) ;
-            }
+            for (size_t i = 0; i < sizeof(sin6_addr.s6_addr); i+=2)
+              elle::fprintf(oss, "%s%02x%02x",
+                            i ? ":" : "",
+                            static_cast<unsigned int>(tab[i]),
+                            static_cast<unsigned int>(tab[i+1]));
             map[iter->ifa_name].ipv6_address.push_back(oss.str());
           }
           break;
@@ -209,8 +205,8 @@ namespace elle
             {
               if (i)
                 oss << ':';
-              oss << std::setfill('0') << std::setw(2) << std::hex
-                  << static_cast<unsigned int>((uint8_t)hw_addr_data(hw_addr)[i]);
+              elle::fprintf(oss, "%02x",
+                            static_cast<unsigned int>((uint8_t)hw_addr_data(hw_addr)[i]));
             }
             map[iter->ifa_name].mac_address = oss.str();
           }
