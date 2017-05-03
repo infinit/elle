@@ -371,6 +371,16 @@ namespace elle
     ///
     void
     run_later(std::string const& name, std::function<void ()> const& f);
+
+    /// Run the given operation now, or in the next cycle.
+    ///
+    /// @param async  Whether to run later.
+    /// @param name   A descriptive name of the operation, for debugging.
+    /// @param f      Operation to run later.
+    ///
+    template <typename Fun>
+    void
+    run(bool later, std::string const& name, Fun f);
   }
 }
 

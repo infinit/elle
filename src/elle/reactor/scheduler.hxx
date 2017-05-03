@@ -139,5 +139,15 @@ namespace elle
       auto w = waiter(signal, std::forward<Args>(args)...);
       reactor::wait(w);
     }
+
+    template <typename Fun>
+    void
+    run(bool later, std::string const& name, Fun f)
+    {
+      if (later)
+        run_later(name, f);
+      else
+        f();
+    }
   }
 }
