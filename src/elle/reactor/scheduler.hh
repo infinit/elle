@@ -43,7 +43,7 @@ namespace elle
     /// A Thread (which inherits from Waitable) can be frozen and wait until a
     /// Waitable signals them to wake up.
     ///
-    /// \code{.cc}
+    /// @code{.cc}
     ///
     /// auto sheduler = Scheduler{};
     /// auto t1 = Thread{
@@ -66,9 +66,9 @@ namespace elle
     ///   }};
     /// // Scheduler::run will result on 1A23B.
     /// scheduler.run();
-    /// \endcode
-    class Scheduler:
-      public elle::Printable
+    /// @endcode
+    class Scheduler
+      : public elle::Printable
     {
     /*-------------.
     | Construction |
@@ -88,7 +88,7 @@ namespace elle
       /// currently in.
       /// If you are not in a Thread, return a null pointer.
       ///
-      /// \returns Pointer to current Scheduler.
+      /// @returns Pointer to current Scheduler.
       static
       Scheduler*
       scheduler();
@@ -135,9 +135,9 @@ namespace elle
       >;
       /// Return a pointer to the current Thread.
       ///
-      /// \pre Being called from a Thread managed by a scheduler.
+      /// @pre Being called from a Thread managed by a scheduler.
       ///
-      /// \returns Pointer the the current Thread.
+      /// @returns Pointer the the current Thread.
       Thread*
       current() const;
       /// Mark for termination all running Threads and return the list of
@@ -167,8 +167,8 @@ namespace elle
     private:
       /// Terminate the given Thread.
       ///
-      /// \param thread Pointer to the Thread to terminate.
-      /// \returns Whether the Thread is done.
+      /// @param thread Pointer to the Thread to terminate.
+      /// @returns Whether the Thread is done.
       bool
       _terminate(Thread* thread);
       /// Terminate the given Thread and wait until it's done.
@@ -176,8 +176,8 @@ namespace elle
       /// If the given Thread is the current Thread and suicide is false, this
       /// is a noop.
       ///
-      /// \param thread A pointer to the Thread to terminate.
-      /// \param suicide Whether the Thread should suicide if trying to
+      /// @param thread A pointer to the Thread to terminate.
+      /// @param suicide Whether the Thread should suicide if trying to
       ///        terminate itself.
       void
       _terminate_now(Thread* thread,
@@ -200,10 +200,10 @@ namespace elle
     public:
       /// Allow for using the Scheduler in a multi-threaded environment.
       ///
-      /// \tparam R The return-type of the given function.
-      /// \param name A descriptive name of Thread to be spawn.
-      /// \param action The function to be run.
-      /// \returns The result of invoking `action`.
+      /// @tparam R The return-type of the given function.
+      /// @param name A descriptive name of Thread to be spawn.
+      /// @param action The function to be run.
+      /// @returns The result of invoking `action`.
       template <typename R>
       R
       mt_run(std::string const& name,
@@ -211,8 +211,8 @@ namespace elle
     private:
       /// Same as mt_run<void>.
       ///
-      /// \param name A descriptive name of Thread to be spawn.
-      /// \param action The function to be run.
+      /// @param name A descriptive name of Thread to be spawn.
+      /// @param action The function to be run.
       void
       _mt_run_void(std::string const& name,
                    std::function<void ()> const& action);
@@ -230,16 +230,16 @@ namespace elle
     public:
       /// Run the given operation in the next cycle.
       ///
-      /// \param name A descriptive name of the operation, for debugging.
-      /// \param f The operation to run later.
+      /// @param name A descriptive name of the operation, for debugging.
+      /// @param f The operation to run later.
       void
       run_later(std::string const& name,
                 std::function<void ()> const& f);
       /// Run the given operation after a given delay.
       ///
-      /// \param name A descriptive name of the operation, for debugging.
-      /// \param f The operation to run later.
-      /// \param delay The delay before running the operation.
+      /// @param name A descriptive name of the operation, for debugging.
+      /// @param f The operation to run later.
+      /// @param delay The delay before running the operation.
       void
       call_later(std::string const& name,
                  std::function<void ()> const& f,
@@ -267,7 +267,7 @@ namespace elle
       /// removing the possibility of any race condition, and run the
       /// potentially non-pure epilogue in the non-parallel scheduler context.
       ///
-      /// \param action The Action to run in a system thread.
+      /// @param action The Action to run in a system thread.
       void
       _run_background(std::function<std::function<void ()> ()> action);
       ELLE_ATTRIBUTE(boost::asio::io_service, background_service);
@@ -284,8 +284,8 @@ namespace elle
     public:
       /// Connect the given handler to a signal.
       ///
-      /// \param signal  The macro constant identifying the signal.
-      /// \param handler The operation to run if the signal is triggered.
+      /// @param signal  The macro constant identifying the signal.
+      /// @param handler The operation to run if the signal is triggered.
       void
       signal_handle(int signal, std::function<void()> const& handler);
     private:
@@ -305,7 +305,7 @@ namespace elle
     public:
       /// Get the backend::Backend used to manage coroutines.
       ///
-      /// \returns Non-const reference to the manager.
+      /// @returns Non-const reference to the manager.
       backend::Backend&
       manager();
     private:
@@ -323,36 +323,36 @@ namespace elle
     scheduler();
     /// Run an action in a system thread and yield until completion.
     ///
-    /// \param action The action to run in background.
+    /// @param action The action to run in background.
     void
     background(std::function<void()> const& action);
     /// Yield execution for this scheduler round.
     void
     yield();
-    /// Yield for \a duration.
+    /// Yield for @a duration.
     void
     sleep(Duration duration);
     /// Yield forever.
     void
     sleep();
-    /// Wait for \a waitable.
+    /// Wait for @a waitable.
     bool
-    wait(Waitable& waitable, DurationOpt timeout = DurationOpt());
-    /// Wait for \a waitables.
+    wait(Waitable& waitable, DurationOpt timeout = {});
+    /// Wait for @a waitables.
     bool
-    wait(Waitables const& waitables, DurationOpt timeout = DurationOpt());
-    /// Wait for \a waitables.
+    wait(Waitables const& waitables, DurationOpt timeout = {});
+    /// Wait for @a waitables.
     bool
     wait(std::vector<std::reference_wrapper<Waitable>> const& waitables,
-         DurationOpt timeout = DurationOpt());
-    /// Wait until \a signal is emitted.
+         DurationOpt timeout = {});
+    /// Wait until @a signal is emitted.
     void
     wait(boost::signals2::signal<void ()>& signal);
 
     /// A barrier waiting for a signal.
     class Waiter;
 
-    /// A barrier opened when \a signal is triggered, validated either
+    /// A barrier opened when @a signal is triggered, validated either
     /// by a predicate, or by a comparison to a reference value.
     template <typename Prototype, typename ... Args>
     Waiter
@@ -366,8 +366,8 @@ namespace elle
 
     /// Run the given operation in the next cycle.
     ///
-    /// \param name A descriptive name of the operation, for debugging.
-    /// \param f    Operation to run later.
+    /// @param name A descriptive name of the operation, for debugging.
+    /// @param f    Operation to run later.
     ///
     void
     run_later(std::string const& name, std::function<void ()> const& f);
