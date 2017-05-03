@@ -8,7 +8,7 @@
 # include <winsock2.h>
 #endif
 
-#if defined __GNUC__
+#if defined __GNUC__ && ! defined __clang__
 # pragma GCC diagnostic push
 
 // /usr/include/sys/poll.h:1:2: warning: #warning redirecting incorrect #include <sys/poll.h> to <poll.h> [-Wcpp]
@@ -20,6 +20,6 @@
 
 #include <boost/asio.hpp>
 
-#if defined __GCC__
+#if defined __GCC__ && ! defined __clang__
 # pragma GCC diagnostic pop
 #endif
