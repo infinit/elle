@@ -6,6 +6,7 @@
 #include <elle/serialization/SerializerOut.hh>
 
 #include <elle/das/model.hh>
+#include <elle/das/tuple.hh>
 
 namespace elle
 {
@@ -177,6 +178,15 @@ namespace elle
     {
       Serializer<T, Model>::serialize(name, o, s);
     }
+  }
+
+  // Serialize das tuples.
+  namespace serialization
+  {
+    template <typename ... Formals>
+    struct Serialize<das::tuple<Formals...>>
+      : public elle::das::Serializer<das::tuple<Formals...>>
+    {};
   }
 }
 

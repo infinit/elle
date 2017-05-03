@@ -4,6 +4,8 @@
 #include <type_traits>
 #include <utility>
 
+#include <elle/das/model.hh>
+
 namespace elle
 {
   namespace das
@@ -13,11 +15,14 @@ namespace elle
       : public Formal::Symbol::template Field<std::decay_t<std::remove_reference_t<typename Formal::Type>>>...
     {
     public:
-      template <typename ... Args>
+      template <typename ... Args,
+                typename = std::tuple<std::enable_if_t<std::is_convertible<Args, typename Formal::Type>::value, int>...>>
       tuple(Args&& ... args)
         : Formal::Symbol::template Field<std::decay_t<std::remove_reference_t<typename Formal::Type>>>{
             std::forward<Args>(args)}...
       {}
+
+      using Model = das::Model<tuple, meta::List<typename Formal::Symbol...>>;
     };
 
     namespace
@@ -36,7 +41,6 @@ namespace elle
         elle::fprintf(out, "%s = %s", S::name(), S::attr_get(t));
       };
     }
-
 
     template <typename ... Args>
     std::ostream&
