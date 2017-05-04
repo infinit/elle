@@ -6,6 +6,8 @@
 #include <boost/range/adaptor/filtered.hpp>
 #include <boost/range/empty.hpp>
 #include <boost/range/size.hpp>
+#include <boost/range/algorithm/sort.hpp>
+#include <boost/range/algorithm_ext/iota.hpp>
 
 namespace elle
 {
@@ -51,5 +53,35 @@ namespace elle
   {
     auto&& filtered = boost::adaptors::filter(r, pred);
     return pick_one(filtered, gen).base();
+  }
+
+  /// A (sorted) range of n numbers to choose in [0, size - 1].
+  ///
+  /// @pre n < size(r).
+  template <typename Gen = std::mt19937>
+  auto
+  pick_n(int count, int size, Gen& gen = random_engine())
+  {
+    assert(count <= size);
+    auto res = std::vector<int>{};
+    if (count < size)
+    {
+      while (res.size() < static_cast<unsigned int>(count))
+      {
+        auto random = std::uniform_int_distribution<>(0, size - 1 - res.size());
+        int v = random(gen);
+        for (auto r: res)
+          if (v >= r)
+            ++v;
+        res.push_back(v);
+        boost::sort(res);
+      }
+    }
+    else
+    {
+      res.resize(size);
+      boost::iota(res, 0);
+    }
+    return res;
   }
 }

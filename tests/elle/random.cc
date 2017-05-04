@@ -1,3 +1,6 @@
+#include <boost/algorithm/cxx11/is_sorted.hpp>
+#include <boost/range/algorithm_ext/is_sorted.hpp>
+
 #include <elle/log.hh>
 #include <elle/random.hh>
 #include <elle/test.hh>
@@ -54,6 +57,26 @@ namespace
     }
     check_histo(histo);
   }
+
+  void
+  pick_n()
+  {
+    auto histo = std::vector<int>(10, 0);
+    for (int i = 0; i < 1000; ++i)
+    {
+      auto nums = elle::pick_n(3, 10);
+      ELLE_LOG("nums = %s", nums);
+      BOOST_TEST(boost::algorithm::is_strictly_increasing(nums));
+      for (auto n: nums)
+        ++histo[n];
+    }
+    ELLE_LOG("histo: %s", histo);
+    for (auto i = 0u; i < histo.size(); ++i)
+    {
+      BOOST_TEST(250 <= histo[i]);
+      BOOST_TEST(histo[i] <= 350);
+    }
+  }
 }
 
 ELLE_TEST_SUITE()
@@ -61,4 +84,5 @@ ELLE_TEST_SUITE()
   auto& suite = boost::unit_test::framework::master_test_suite();
   suite.add(BOOST_TEST_CASE(pick_one));
   suite.add(BOOST_TEST_CASE(pick_one_filtered));
+  suite.add(BOOST_TEST_CASE(pick_n));
 }
