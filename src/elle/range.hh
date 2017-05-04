@@ -1,5 +1,9 @@
 #pragma once
 
+#include <ostream>
+
+#include <elle/printf-fwd.hh>
+
 namespace elle
 {
   namespace detail
@@ -15,6 +19,23 @@ namespace elle
       It end() const { return _end; }
       It _begin, _end;
     };
+
+    // FIXME: code duplication for these routines.
+    template <typename It>
+    std::ostream&
+    operator << (std::ostream& out, range<It> const& r)
+    {
+      auto const format = is_fixed(out) ? "%s%f" : "%s%s";
+      out << '[';
+      auto* sep = "";
+      for (auto const& e: r)
+      {
+        elle::fprintf(out, format, sep, e);
+        sep = ", ";
+      }
+      out << ']';
+      return out;
+    }
   }
 
   /// Turn a pair of iterator into a for-loop compatible range.
