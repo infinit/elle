@@ -1,6 +1,6 @@
 #pragma once
 
-#include_next <cassert>
+#include <cassert>
 #include_next <memory>
 
 namespace std
