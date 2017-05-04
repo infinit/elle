@@ -9,8 +9,8 @@ static
 void
 test_ctor_empty()
 {
-  elle::Buffer b;
-  BOOST_CHECK_EQUAL(b.size(), 0);
+  auto b = elle::Buffer{};
+  BOOST_TEST(b.size() == 0);
   BOOST_CHECK(b.contents());
 }
 
@@ -18,12 +18,12 @@ static
 void
 test_ctor_size(size_t size)
 {
-  elle::Buffer b(size);
-  BOOST_CHECK_EQUAL(b.size(), size);
+  auto b = elle::Buffer(size);
+  BOOST_TEST(b.size() == size);
   for (unsigned i = 0; i < size; ++i)
     b.mutable_contents()[i] = 0xaa;
   for (unsigned i = 0; i < size; ++i)
-    BOOST_CHECK_EQUAL(b.contents()[i], 0xaa);
+    BOOST_TEST(b.contents()[i] == 0xaa);
 }
 
 static
@@ -33,22 +33,22 @@ test_ctor_raw(size_t size)
   auto* raw = new elle::Buffer::Byte[size];
   for (unsigned i = 0; i < size; ++i)
     raw[i] = 0xaa;
-  elle::Buffer b(raw, size);
-  BOOST_CHECK_EQUAL(b.size(), size);
+  auto b = elle::Buffer(raw, size);
+  BOOST_TEST(b.size() == size);
   if (size > 0) // malloc(0) can legitimately return the same address twice.
-    BOOST_CHECK_NE(static_cast<void*>(b.contents()), static_cast<void*>(raw));
+    BOOST_TEST(static_cast<void*>(b.contents()) != static_cast<void*>(raw));
   for (unsigned i = 0; i < size; ++i)
     raw[i] = 0;
   delete [] raw;
   for (unsigned i = 0; i < size; ++i)
-    BOOST_CHECK_EQUAL(b.contents()[i], 0xaa);
+    BOOST_TEST(b.contents()[i] == 0xaa);
 }
 
 static
 void
 test_ctor_move(size_t size)
 {
-  elle::Buffer source(size);
+  auto source = elle::Buffer(size);
   BOOST_TEST(source.size() == size);
   for (unsigned i = 0; i < size; ++i)
     source.mutable_contents()[i] = 0xaa;
@@ -56,7 +56,7 @@ test_ctor_move(size_t size)
   for (unsigned i = 0; i < size; ++i)
     BOOST_TEST(dest.contents()[i] == 0xaa);
   BOOST_TEST(source.size() == 0);
-  BOOST_CHECK(!source.contents());
+  BOOST_TEST(source.contents() == nullptr);
 }
 
 static
@@ -65,20 +65,20 @@ test_ctor_weak_raw()
 {
   elle::Buffer::Byte ptr[42];
   elle::WeakBuffer b(ptr, 42);
-  BOOST_CHECK_EQUAL(b.contents(), ptr);
-  BOOST_CHECK_EQUAL(b.mutable_contents(), ptr);
-  BOOST_CHECK_EQUAL(b.size(), 42);
+  BOOST_TEST(b.contents() == ptr);
+  BOOST_TEST(b.mutable_contents() == ptr);
+  BOOST_TEST(b.size() == 42);
 }
 
 static
 void
 test_ctor_weak_buffer()
 {
-  elle::Buffer b(7);
+  auto b = elle::Buffer(7);
   elle::WeakBuffer wb(b);
-  BOOST_CHECK_EQUAL(wb.contents(), b.contents());
-  BOOST_CHECK_EQUAL(wb.mutable_contents(), b.contents());
-  BOOST_CHECK_EQUAL(wb.size(), 7);
+  BOOST_TEST(wb.contents() == b.contents());
+  BOOST_TEST(wb.mutable_contents() == b.contents());
+  BOOST_TEST(wb.size() == 7);
 }
 
 static
@@ -88,8 +88,8 @@ test_ctor_weak_copy_move()
   elle::Buffer::Byte* raw = new elle::Buffer::Byte[7];
   elle::WeakBuffer wb1(raw, 7);;
   elle::WeakBuffer wb2(wb1);
-  BOOST_CHECK_EQUAL(wb2.contents(), wb1.contents());
-  BOOST_CHECK_EQUAL(wb2.size(), wb1.size());
+  BOOST_TEST(wb2.contents() == wb1.contents());
+  BOOST_TEST(wb2.size() == wb1.size());
 
   auto wb3 = elle::WeakBuffer(std::move(wb2));
   BOOST_TEST(wb3.contents() == raw);
@@ -186,7 +186,7 @@ static
 void
 test_capacity()
 {
-  elle::Buffer b(64);
+  auto b = elle::Buffer(64);
   BOOST_CHECK_GE(b.capacity(), 64);
   b.size(128);
   BOOST_CHECK_GE(b.capacity(), 128);
@@ -206,7 +206,7 @@ static
 void
 test_release()
 {
-  elle::Buffer b(256);
+  auto b = elle::Buffer(256);
   BOOST_CHECK_GE(b.capacity(), 256);
   b.release();
   BOOST_CHECK_LT(b.capacity(), 256);
@@ -217,8 +217,8 @@ static
 void
 test_assign()
 {
-  elle::Buffer b1(8);
-  elle::Buffer b2(16);
+  auto b1 = elle::Buffer(8);
+  auto b2 = elle::Buffer(16);
   BOOST_TEST(b1.size() == 8);
   BOOST_TEST(b2.size() == 16);
   b1 = std::move(b2);
@@ -247,7 +247,7 @@ namespace print
   string()
   {
     elle::ConstWeakBuffer buffer(data);
-    BOOST_CHECK_EQUAL(elle::sprintf("%s", buffer), data);
+    BOOST_TEST(elle::sprintf("%s", buffer) == data);
   }
 
   static
@@ -255,7 +255,7 @@ namespace print
   string_fixed()
   {
     elle::ConstWeakBuffer buffer(data);
-    BOOST_CHECK_EQUAL(elle::sprintf("%f", buffer), "somedata s...a somedata");
+    BOOST_TEST(elle::sprintf("%f", buffer) == "somedata s...a somedata");
   }
 
   static
@@ -263,7 +263,7 @@ namespace print
   hexadecimal()
   {
     elle::ConstWeakBuffer buffer(data);
-    BOOST_CHECK_EQUAL(elle::sprintf("%x", buffer),
+    BOOST_TEST(elle::sprintf("%x", buffer) ==
                       "0x736f6d656461746120736f6d656461746120736f6d6564617461");
     boost::format fmt("%s");
   }
@@ -274,14 +274,14 @@ void
 hash()
 {
   std::hash<elle::ConstWeakBuffer> hash;
-  BOOST_CHECK_EQUAL(hash(elle::ConstWeakBuffer("")),
-                    hash(elle::ConstWeakBuffer("")));
-  BOOST_CHECK_EQUAL(hash(elle::ConstWeakBuffer("aeouidhtns")),
-                    hash(elle::ConstWeakBuffer("aeouidhtns")));
-  BOOST_CHECK_NE(hash(elle::ConstWeakBuffer("aeouidhtns")),
-                 hash(elle::ConstWeakBuffer("aeouidhtns-")));
-  BOOST_CHECK_NE(hash(elle::ConstWeakBuffer("aeouidhtns")),
-                 hash(elle::ConstWeakBuffer("snthdiueoa")));
+  BOOST_TEST(hash(elle::ConstWeakBuffer(""))
+             == hash(elle::ConstWeakBuffer("")));
+  BOOST_TEST(hash(elle::ConstWeakBuffer("aeouidhtns"))
+             == hash(elle::ConstWeakBuffer("aeouidhtns")));
+  BOOST_TEST(hash(elle::ConstWeakBuffer("aeouidhtns"))
+             != hash(elle::ConstWeakBuffer("aeouidhtns-")));
+  BOOST_TEST(hash(elle::ConstWeakBuffer("aeouidhtns"))
+             != hash(elle::ConstWeakBuffer("snthdiueoa")));
 }
 
 template <typename B>
@@ -290,11 +290,11 @@ void
 _range()
 {
   auto data = strdup("0123456789");
-  B buffer(data, strlen(data));
-  BOOST_CHECK_EQUAL(buffer.range(3), "3456789");
-  BOOST_CHECK_EQUAL(buffer.range(1, 6), "12345");
-  BOOST_CHECK_EQUAL(buffer.range(5, -1), "5678");
-  BOOST_CHECK_EQUAL(buffer.range(-5, -3), "56");
+  auto buffer = B(data, strlen(data));
+  BOOST_TEST(buffer.range(3) == "3456789");
+  BOOST_TEST(buffer.range(1, 6) == "12345");
+  BOOST_TEST(buffer.range(5, -1) == "5678");
+  BOOST_TEST(buffer.range(-5, -3) == "56");
   free(data);
 }
 
@@ -311,13 +311,13 @@ static
 void
 output()
 {
-  elle::Buffer buffer;
+  auto buffer = elle::Buffer{};
   {
     elle::IOStream stream(buffer.ostreambuf());
     stream << 42;
-    BOOST_CHECK_EQUAL(buffer.size(), 0);
+    BOOST_TEST(buffer.size() == 0);
   }
-  BOOST_CHECK_EQUAL(buffer, "42");
+  BOOST_TEST(buffer == "42");
 }
 
 static
@@ -325,22 +325,22 @@ void
 input()
 {
   {
-    elle::Buffer b("10 11", 5);
+    auto b = elle::Buffer("10 11", 5);
     elle::IOStream stream(b.istreambuf());
     int x, y;
     stream >> x >> y;
-    BOOST_CHECK_EQUAL(x, 10);
-    BOOST_CHECK_EQUAL(y, 11);
+    BOOST_TEST(x == 10);
+    BOOST_TEST(y == 11);
   }
-  elle::Buffer b("10 11 ", 6);
-  elle::Buffer b2("12 13", 5);
+  auto b = elle::Buffer("10 11 ", 6);
+  auto b2 = elle::Buffer("12 13", 5);
   elle::IOStream stream(b.istreambuf_combine(b2));
   int x, y, z, a;
   stream >> x >> y >> z >> a;
-  BOOST_CHECK_EQUAL(x, 10);
-  BOOST_CHECK_EQUAL(y, 11);
-  BOOST_CHECK_EQUAL(z, 12);
-  BOOST_CHECK_EQUAL(a, 13);
+  BOOST_TEST(x == 10);
+  BOOST_TEST(y == 11);
+  BOOST_TEST(z == 12);
+  BOOST_TEST(a == 13);
 }
 
 ELLE_TEST_SUITE()

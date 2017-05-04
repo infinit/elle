@@ -10,6 +10,14 @@ namespace std
   {
     return o.flags() & std::ios::fixed;
   }
+
+  /// Useful with BOOST_TEST(str == nullptr) for instance.
+  inline
+  std::ostream&
+  operator <<(std::ostream& os, std::nullptr_t)
+  {
+    return os << "nullptr";
+  }
 }
 
 // Local Variables:
