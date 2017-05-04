@@ -10,13 +10,23 @@ namespace elle
 {
   namespace das
   {
+    // C++17.
+    template <typename... Ts>
+    struct void_t_impl
+    {
+      using type = void;
+    };
+    template <typename... Ts>
+    using void_t = typename void_t_impl<Ts...>::type;
+
+
     template <typename ... Formal>
     class tuple
       : public Formal::Symbol::template Field<std::decay_t<std::remove_reference_t<typename Formal::Type>>>...
     {
     public:
       template <typename ... Args,
-                typename = std::tuple<std::enable_if_t<std::is_convertible<Args, typename Formal::Type>::value, int>...>>
+                typename = void_t<std::enable_if_t<std::is_convertible<Args, typename Formal::Type>::value, int>...>>
       tuple(Args&& ... args)
         : Formal::Symbol::template Field<std::decay_t<std::remove_reference_t<typename Formal::Type>>>{
             std::forward<Args>(args)}...
