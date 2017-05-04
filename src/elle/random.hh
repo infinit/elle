@@ -10,22 +10,8 @@
 namespace elle
 {
   /// A unique random device.
-  inline
   std::mt19937&
-  random_engine()
-  {
-    static auto res = []
-      {
-        if (getenv("ELLE_SEED"))
-          return std::mt19937{std::mt19937::default_seed};
-        else
-          {
-            std::random_device rd{};
-            return std::mt19937{rd()};
-          }
-      }();
-    return res;
-  }
+  random_engine();
 
   /// A uniform distribution in [0, size(r) - 1].
   ///
