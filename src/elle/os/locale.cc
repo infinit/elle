@@ -1,8 +1,10 @@
+#include <elle/os/locale.hh>
+
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/detail/utf8_codecvt_facet.hpp>
 
-#include <elle/os/locale.hh>
 #include <elle/log.hh>
+#include <elle/printf.hh>
 
 ELLE_LOG_COMPONENT("elle.os.locale");
 

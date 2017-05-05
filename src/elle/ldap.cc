@@ -9,6 +9,7 @@
 #include <elle/Error.hh>
 #include <elle/log.hh>
 #include <elle/make-vector.hh>
+#include <elle/printf.hh>
 
 ELLE_LOG_COMPONENT("elle.ldap");
 

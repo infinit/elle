@@ -1,4 +1,4 @@
-#include <elle/printf-fwd.hh>
+#include <elle/printf.hh>
 
 #include <sstream>
 

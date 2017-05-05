@@ -1,6 +1,7 @@
 #include <elle/bench.hh>
 
 #include <elle/log.hh>
+#include <elle/printf.hh>
 
 namespace elle
 {

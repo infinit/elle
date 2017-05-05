@@ -1,7 +1,9 @@
 #include <elle/IntRange.hh>
-#include <elle/log.hh>
 
 #include <boost/algorithm/cxx11/any_of.hpp>
+
+#include <elle/log.hh>
+#include <elle/printf.hh>
 
 ELLE_LOG_COMPONENT("elle.IntRange");
 

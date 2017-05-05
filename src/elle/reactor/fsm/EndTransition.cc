@@ -1,6 +1,8 @@
-#include <elle/log.hh>
 #include <elle/reactor/fsm/EndTransition.hh>
+
+#include <elle/log.hh>
 #include <elle/reactor/fsm/State.hh>
+#include <elle/printf.hh>
 
 ELLE_LOG_COMPONENT("elle.reactor.fsm.Transition")
 
