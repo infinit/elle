@@ -228,30 +228,13 @@ namespace elle
           std::vector<Argument> const& args,
           NamedArguments const& named);
 
-    template <typename Head, typename ... Args>
-    inline
-    void
-    fill_erasure(std::vector<Argument>& res,
-                 Head const& head,
-                 Args const& ... args)
-
-    {
-      res.emplace_back(head);
-      fill_erasure(res, args...);
-    }
-
-    inline
-    void
-    fill_erasure(std::vector<Argument>&)
-    {}
-
     template <typename ... Args>
     std::vector <Argument>
     erasure(Args const& ... args)
     {
       std::vector<Argument> res;
       res.reserve(sizeof ... (args));
-      fill_erasure(res, args...);
+      int unused[] __attribute__((unused)) = {(res.emplace_back(args), 0)...};
       return res;
     }
   }
