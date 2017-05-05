@@ -127,6 +127,14 @@ conditional_positional()
     "success");
 }
 
+static
+void
+legacy()
+{
+  BOOST_TEST(elle::print("%x %s%%", 134, 134) == "86 134%");
+}
+
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -142,4 +150,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(named));
   suite.add(BOOST_TEST_CASE(conditional));
   suite.add(BOOST_TEST_CASE(conditional_positional));
+  suite.add(BOOST_TEST_CASE(legacy));
 }

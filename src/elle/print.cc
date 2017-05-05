@@ -11,6 +11,7 @@
 #include <elle/Printable.hh>
 #include <elle/assert.hh>
 #include <elle/err.hh>
+#include <elle/finally.hh>
 #include <elle/print.hh>
 
 namespace elle
@@ -125,6 +126,31 @@ namespace elle
       }
     };
 
+    class Legacy
+      : public Expression
+    {
+    public:
+      Legacy(char fmt)
+        : fmt(fmt)
+      {}
+
+      static
+      std::shared_ptr<Legacy>
+      make(char fmt)
+      {
+        return std::make_shared<Legacy>(fmt);
+      }
+
+      virtual
+      void
+      print(std::ostream& s) const override
+      {
+        s << "Legacy(" << this->fmt << ")";
+      }
+
+      char fmt;
+    };
+
     class Name
       : public Expression
     {
@@ -212,9 +238,9 @@ namespace elle
       using Iterator = decltype(input.begin());
       qi::rule<Iterator, std::shared_ptr<Composite>()> phrase;
       qi::rule<Iterator, char()> escape =
-        qi::char_('\\') >> qi::char_("\\{}");
+        qi::char_('\\') >> qi::char_("\\{}%");
       qi::rule<Iterator, std::string()> literal =
-        *(escape | (qi::char_  - '{' - '}' - '\\') );
+        *(escape | (qi::char_  - '{' - '}' - '\\' - '%') );
       qi::rule<Iterator, std::shared_ptr<Expression>()> plain =
         literal[qi::_val = phoenix::bind(&Literal::make, qi::_1)];
       qi::rule<Iterator, std::string()> identifier =
@@ -226,8 +252,12 @@ namespace elle
       qi::rule<Iterator, std::shared_ptr<Expression>()> fmt =
         (var >> -("?" >> phrase))
         [qi::_val = phoenix::bind(&make_fmt, _1, _2)];
+      qi::rule<Iterator, std::shared_ptr<Expression>()> legacy =
+        ("%" >> qi::char_("cdefgiopsuxCEGSX%")[
+          qi::_val = phoenix::bind(&Legacy::make, _1)]);
       phrase = plain[phoenix::bind(&push, qi::_val, _1)] >>
-        *("{" >> fmt[phoenix::bind(&push, qi::_val, _1)] >> "}" >>
+        *(("{" >> fmt[phoenix::bind(&push, qi::_val, _1)] >> "}" |
+           legacy[phoenix::bind(&push, qi::_val, _1)]) >>
           plain[phoenix::bind(&push, qi::_val, _1)]);
       std::shared_ptr<Expression> res;
       auto first = input.begin();
@@ -272,6 +302,45 @@ namespace elle
       {
         if (p)
           nth(count)(s);
+        ++count;
+      }
+      else if (id == &typeid(Legacy))
+      {
+        if (p)
+        {
+          std::ios  state(NULL);
+          state.copyfmt(s);
+          switch (static_cast<Legacy const&>(ast).fmt)
+          {
+            case 'p':
+            case 'x':
+              s << std::hex;
+              break;
+            case 'o':
+              s << std::oct;
+              break;
+            case 'e':
+              s << std::scientific;
+              break;
+            case 'f':
+              s << std::fixed;
+              break;
+            case 'd':
+            case 'i':
+            case 'u':
+              s << std::dec;
+              break;
+            case '%':
+              s << '%';
+              s.copyfmt(state);
+              return;
+            default:
+              // FIXME
+              break;
+          }
+          nth(count)(s);
+          s.copyfmt(state);
+        }
         ++count;
       }
       else if (id == &typeid(Index))
