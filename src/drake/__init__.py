@@ -199,7 +199,7 @@ class Drake:
     foo => (None, None)
 
     '''
-    match = re.match('--(?P<opt>\\w+)(?=(?P<arg>.*))?', arg)
+    match = re.match('--(?P<opt>\\w+)(?:=(?P<arg>.*))?', arg)
     if not match:
       match = re.match('-(?P<opt>\\w)(?P<arg>.+)?', arg)
     if match:
