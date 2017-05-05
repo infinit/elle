@@ -26,20 +26,30 @@ namespace elle
     return std::uniform_int_distribution<>(0, boost::size(r) - 1);
   }
 
+  /// Random integer in [0, size-1].
+  ///
+  /// @return an iterator.
+  template <typename Gen = std::mt19937>
+  auto
+  pick_one(int size, Gen& gen = random_engine())
+  {
+    auto random = std::uniform_int_distribution<>(0, size - 1);
+    return random(gen);
+  }
+
   /// Random selection in a range.
   ///
   /// @return an iterator.
   template <typename Range, typename Gen = std::mt19937>
   auto
   pick_one(Range& r, Gen& gen = random_engine())
+    -> decltype(gen.seed(0),  // sfinae
+                boost::begin(r))
   {
     if (boost::empty(r))
       return r.end();
     else
-    {
-      auto random = uniform_index_distribution(r);
-      return std::next(r.begin(), random(gen));
-    }
+      return std::next(r.begin(), pick_one(boost::size(r), gen));
   }
 
   /// Random selection in a range with a filter.
@@ -48,8 +58,8 @@ namespace elle
   template <typename Range, typename Pred, typename Gen = std::mt19937>
   auto
   pick_one(Range& r, Pred pred, Gen& gen = random_engine())
-    -> decltype(pred(*begin(r)),  // sfinae
-                begin(r))
+    -> decltype(pred(*boost::begin(r)),  // sfinae
+                boost::begin(r))
   {
     auto&& filtered = boost::adaptors::filter(r, pred);
     return pick_one(filtered, gen).base();
