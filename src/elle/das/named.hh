@@ -546,12 +546,12 @@ namespace elle
             auto builder = make_builder<Result>(M());
             // Clang/GCC think we're not use `builder`.  The point of
             // the `operator,` trick to deal with `void`.
-#if defined __GCC__ || defined __clang__
+#if defined __GNUC__ || defined __clang__
 # pragma GCC diagnostic push
 # pragma GCC diagnostic ignored "-Wunused-value"
 #endif
             builder, this->_function(std::move(c.make_effective<Args>::value)...);
-#if defined __GCC__ || defined __clang__
+#if defined __GNUC__ || defined __clang__
 # pragma GCC diagnostic pop
 #endif
             return builder.result();
