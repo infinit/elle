@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iterator>
 #include <ostream>
 
 #include <elle/printf-fwd.hh>
@@ -15,9 +16,10 @@ namespace elle
     {
       using iterator = It;
       using const_iterator = It;
-      It begin() const { return _begin; }
-      It end() const { return _end; }
-      It _begin, _end;
+      using value_type = typename std::iterator_traits<iterator>::value_type;
+      auto begin() const { return _begin; }
+      auto end()   const { return _end; }
+      iterator _begin, _end;
     };
 
     // FIXME: code duplication for these routines.

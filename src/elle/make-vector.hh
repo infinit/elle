@@ -6,6 +6,7 @@
 
 #include <boost/algorithm/cxx11/copy_if.hpp>
 #include <boost/range/algorithm/transform.hpp>
+#include <boost/range/size.hpp>
 
 namespace elle
 {
@@ -31,7 +32,7 @@ namespace elle
     return res;
   }
 
-  /// The content of \a cont as a set.
+  /// The content of @a cont as a set.
   ///
   /// @param c  A container.
   /// @returns  A set.
@@ -63,14 +64,14 @@ namespace elle
   {
     using Res = decltype(fun(*c.begin()));
     auto res = std::vector<Res>{};
-    res.reserve(c.size());
+    res.reserve(boost::size(c));
     boost::transform(c,
                      std::back_inserter(res),
                      std::forward<Fun>(fun));
     return res;
   }
 
-  /// The content of \a cont as a vector.
+  /// The content of @a cont as a vector.
   ///
   /// @param c   A container.
   /// @returns   A set.
