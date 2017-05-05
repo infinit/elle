@@ -3125,6 +3125,14 @@ class Copy(Builder):
   def __str__(self):
     return 'copy of %s' % self.target
 
+  def hash(self):
+    try:
+      # Best effort: if we can hash this, let's do it.  Otherwise no
+      # worse than before.
+      return self.__post_process.hash()
+    except AttributeError:
+      pass
+
 
 class Install(Copy):
   """Builder to install files.
