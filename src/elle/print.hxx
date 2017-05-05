@@ -62,7 +62,8 @@ namespace elle
     bool
     branch_test(T const& t, ...)
     {
-      elle::err("type is not a truth value: %s", elle::type_info<T>());
+      elle::err(elle::print("type is not a truth value: {}",
+                            elle::type_info<T>()));
     }
 
     /*--------------------------.
