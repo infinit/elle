@@ -279,7 +279,8 @@ namespace elle
           std::vector<Argument> const& args,
           int& count,
           bool p,
-          NamedArguments const& named)
+          NamedArguments const& named,
+          bool& full_positional)
     {
       auto const nth = [&] (int n) -> Argument const& {
         if (n >= signed(args.size()))
@@ -291,7 +292,7 @@ namespace elle
       auto* id = &typeid(ast);
       if (id == &typeid(Composite))
         for (auto const& e:static_cast<Composite const&>(ast).expressions)
-          print(s, *e, args, count, p, named);
+          print(s, *e, args, count, p, named, full_positional);
       else if (id == &typeid(Literal))
       {
         if (p)
@@ -345,6 +346,7 @@ namespace elle
       }
       else if (id == &typeid(Index))
       {
+        full_positional = false;
         if (p)
           nth(static_cast<Index const&>(ast).n)(s);
       }
@@ -382,7 +384,7 @@ namespace elle
         }
         else
           elle::err("unexpected condition: %s", elle::type_info(*branch.cond));
-        print(s, *branch.then, args, count, p, named);
+        print(s, *branch.then, args, count, p, named, full_positional);
       }
     }
 
@@ -394,7 +396,10 @@ namespace elle
     {
       auto const ast = _details::parse(fmt);
       int count = 0;
-      _details::print(s, *ast, args, count, true, named);
+      bool full_positional = true;
+      _details::print(s, *ast, args, count, true, named, full_positional);
+      if (full_positional && count < signed(args.size()))
+        elle::err("too many arguments for format: %s", fmt);
     }
   }
 }
