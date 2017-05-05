@@ -2,6 +2,7 @@
 
 #include <cassert>
 #include <random>
+#include <vector>
 
 #include <boost/range/adaptor/filtered.hpp>
 #include <boost/range/empty.hpp>
@@ -93,5 +94,35 @@ namespace elle
       boost::iota(res, 0);
     }
     return res;
+  }
+
+  /// From a list of indexes in r, make a list of iterators.
+  template <typename Range, typename Indexes>
+  auto
+  select(Range& r, Indexes const& is)
+  {
+    using Iterator = decltype(boost::begin(r));
+    auto res = std::vector<Iterator>{};
+    res.reserve(boost::size(is));
+    // Don't require direct access iterators.
+    auto it = r.begin();
+    auto prev = 0;
+    for (auto i: is)
+    {
+      std::advance(it, i - prev);
+      prev = i;
+      res.push_back(it);
+    }
+    return res;
+  }
+
+  /// A (sorted) range of n iterators in a container.
+  ///
+  /// @pre n < size(r).
+  template <typename Range, typename Gen = std::mt19937>
+  auto
+  pick_n(int count, Range& r, Gen& gen = random_engine())
+  {
+    return select(r, pick_n(count, boost::size(r), gen));
   }
 }
