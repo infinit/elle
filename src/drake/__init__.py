@@ -75,6 +75,11 @@ class Drake:
   def configure(self):
     return self.__configure
 
+  @configure.setter
+  def configure(self, value):
+    assert self.__configure is None
+    self.__configure = value
+
   @property
   def scheduler(self):
     return self.__scheduler

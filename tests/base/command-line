@@ -1,0 +1,15 @@
+#!/usr/bin/env python3
+
+'''Check the build chain stops when a builder fails.'''
+
+import drake
+import utils
+import sys
+
+def configure(foo: bool):
+  assert foo is False
+
+with utils.Drake() as d:
+  d.configure = configure
+  sys.argv.append('--foo=false')
+  d.run()
