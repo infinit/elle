@@ -11,7 +11,6 @@ class Drake:
     self.__drake = drake.Drake(*args, **kwargs)
 
   def __enter__(self):
-    print('>>> %s' % self.__dir)
     if self.__dir is None:
       self.__dir = tempfile.mkdtemp()
       self.__delete = True
