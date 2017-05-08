@@ -189,24 +189,6 @@ class Drake:
   def adjust_mtime_second(self):
     return self.__adjust_mtime_second
 
-  def option_and_argument(self, arg):
-    '''Split a command line argument into the option named, and the argument.
-
-    --help => ('help', None)
-    -h => ('h', None)
-    --jobs=4 => ('jobs', '4')
-    -j4 => ('j', '4')
-    foo => (None, None)
-
-    '''
-    match = re.match('--(?P<opt>\\w+)(?:=(?P<arg>.*))?', arg)
-    if not match:
-      match = re.match('-(?P<opt>\\w)(?P<arg>.+)?', arg)
-    if match:
-      return match.group('opt'), match.group('arg')
-    else:
-      return None, None
-
   def run(self, *cfg, **kwcfg):
     try:
       g = self.__globals
@@ -214,43 +196,45 @@ class Drake:
       configure = self.__configure
       # Parse arguments
       options = {
-        'jobs': lambda j: self.jobs_set(j),
-        'j'   : lambda j: self.jobs_set(j),
-        'help': help,
-        'h'   : help,
-        'complete-modes':   complete_modes,
-        'complete-options': complete_options,
-        'complete-nodes':   complete_nodes,
+        '--jobs': lambda j: self.jobs_set(j),
+        '-j'    : lambda j : self.jobs_set(j),
+        '--help': help,
+        '-h'    : help,
+        '--complete-modes': complete_modes,
+        '--complete-options': complete_options,
+        '--complete-nodes': complete_nodes,
       }
+      arguments_re = re.compile('--(\\w+)=(.*)')
       specs = inspect.getfullargspec(configure)
       callbacks = []
       i = 0
       args = sys.argv[1:]
       while i < len(args):
-        opt, arg = self.option_and_argument(args[i])
-        if opt and opt in specs.args:
-          if opt in specs.annotations:
-            t = specs.annotations[opt]
-            if t is bool:
-              if arg.lower() in ['true', 'yes']:
-                value = True
-              elif arg.lower() in ['false', 'no']:
-                value = False
-              else:
-                raise Exception('invalid value for '
-                                'boolean option %s: %s' % (opt, arg))
-          kwcfg[opt] = arg
-          del args[i]
-          continue
-        elif opt and opt in options:
+        match = arguments_re.match(args[i])
+        if match:
+          name = match.group(1)
+          value = match.group(2)
+          if name in specs.args:
+            if name in specs.annotations:
+              t = specs.annotations[name]
+              if t is bool:
+                if value.lower() in ['true', 'yes']:
+                  value = True
+                elif value.lower() in ['false', 'no']:
+                  value = False
+                else:
+                  raise Exception('invalid value for '
+                                  'boolean option %s: %s' % (name, value))
+            kwcfg[name] = value
+            del args[i]
+            continue
+        elif args[i] in options:
+          opt = args[i]
           del args[i]
           opt_args = []
-          if arg:
-            opt_args.append(arg)
-          else:
-            for a in inspect.getfullargspec(options[opt]).args:
-              opt_args.append(args[i])
-              del args[i]
+          for a in inspect.getfullargspec(options[opt]).args:
+            opt_args.append(args[i])
+            del args[i]
           cb = options[opt](*opt_args)
           if cb is not None:
             callbacks.append(cb)
