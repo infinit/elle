@@ -128,7 +128,7 @@ namespace elle
       }
       ::free(symbol);
     */
-#elif !defined(INFINIT_ANDROID) && !defined(NO_EXECINFO)
+#elif !defined INFINIT_ANDROID && !defined NO_EXECINFO
     char** strs = backtrace_symbols(this->_callstack, this->_frame_count);
     for (unsigned i = this->_skip; i < this->_frame_count; ++i)
     {

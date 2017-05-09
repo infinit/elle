@@ -3,9 +3,31 @@
 
 using elle::Backtrace;
 
-#if !defined INFINIT_WINDOWS && !defined INFINIT_ANDROID && !defined NO_EXECINFO
+#if defined INFINIT_WINDOWS || defined INFINIT_ANDROID || defined NO_EXECINFO
+
+/*---------------------.
+| Backtrace disabled.  |
+`---------------------*/
 
 static
+void
+dummy()
+{
+  BOOST_CHECK(true);
+}
+
+ELLE_TEST_SUITE()
+{
+  auto& suite = boost::unit_test::framework::master_test_suite();
+  suite.add(BOOST_TEST_CASE(dummy));
+}
+
+#else
+
+/*--------------------.
+| Backtrace enabled.  |
+`--------------------*/
+
 void
 test_backtrace_empty()
 {
@@ -51,16 +73,16 @@ static
 void
 test_backtrace()
 {
-  Backtrace bt(foo());
-  BOOST_CHECK_GE(bt.frames().size(), 4);
+  auto bt = foo();
+  BOOST_TEST(bt.frames().size() >= 4);
   auto sf = bt.frames().begin();
-  BOOST_CHECK_EQUAL(sf->symbol, "quux()");
+  BOOST_TEST(sf->symbol == "quux()");
   ++sf;
-  BOOST_CHECK_EQUAL(sf->symbol, "baz()");
+  BOOST_TEST(sf->symbol == "baz()");
   ++sf;
-  BOOST_CHECK_EQUAL(sf->symbol, "bar()");
+  BOOST_TEST(sf->symbol == "bar()");
   ++sf;
-  BOOST_CHECK_EQUAL(sf->symbol, "foo()");
+  BOOST_TEST(sf->symbol == "foo()");
   ++sf;
 }
 
@@ -68,31 +90,17 @@ static
 void
 test_strip_base()
 {
-  Backtrace bt(foo());
+  auto bt = foo();
   bt.strip_base(Backtrace::current());
-  BOOST_CHECK_LE(bt.frames().size(), 5);
-  BOOST_CHECK_EQUAL(bt.frames().front().symbol, "quux()");
+  BOOST_TEST(bt.frames().size() <= 5);
+  BOOST_TEST(bt.frames().front().symbol == "quux()");
 }
-
-#else
-
-static
-void
-dummy()
-{
-  BOOST_CHECK(true);
-}
-
-#endif
 
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
-#if !defined INFINIT_WINDOWS && !defined INFINIT_ANDROID && !defined NO_EXECINFO
   suite.add(BOOST_TEST_CASE(test_backtrace_empty));
   suite.add(BOOST_TEST_CASE(test_backtrace));
   suite.add(BOOST_TEST_CASE(test_strip_base));
-#else
-  suite.add(BOOST_TEST_CASE(dummy));
-#endif
 }
+#endif
