@@ -28,6 +28,7 @@ ELLE_TEST_SUITE()
 | Backtrace enabled.  |
 `--------------------*/
 
+static
 void
 test_backtrace_empty()
 {
