@@ -46,8 +46,7 @@ int rpc(std::string const& host, int port, int id,
       elle::protocol::Serializer serializer(sched, socket);
       elle::protocol::ChanneledStream channels(sched, serializer);
       using RPC = elle::protocol::RPC<elle::serialize::InputBinaryArchive,
-                                     elle::serialize::OutputBinaryArchive>
-       ;
+                                     elle::serialize::OutputBinaryArchive>;
       RPC rpcs(channels);
       // FIXME
       if (args.size() != 2)
@@ -62,22 +61,23 @@ int rpc(std::string const& host, int port, int id,
 
 int main(int argc, char** argv)
 {
+  if (argc < 4)
+    return 1;
   self = argv[0];
   try
     {
       elle::reactor::Scheduler& sched(scheduler());
-
-      if (argc < 4)
-        return 1;
-
       std::string host(argv[1]);
       int port(boost::lexical_cast<int>(argv[2]));
       int id(boost::lexical_cast<int>(argv[3]));
-      std::vector<std::string> args;
+      auto args = std::vector<std::string>{}
       for (int i = 4; i < argc; ++i)
         args.push_back(argv[i]);
-      elle::reactor::VThread<int> main(sched, "8rpc", std::bind(&rpc, host, port,
-                                                          id, args));
+      elle::reactor::VThread<int> main(sched, "8rpc",
+                                       [&]
+                                       {
+                                         rpc(host, port, id, args);
+                                       });
       sched.run();
       return main.result();
     }
