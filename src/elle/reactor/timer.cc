@@ -1,13 +1,11 @@
-#include <elle/reactor/asio.hh>
-
 #include <elle/finally.hh>
 #include <elle/log.hh>
 #include <elle/reactor/Barrier.hh>
+#include <elle/reactor/Thread.hh>
+#include <elle/reactor/asio.hh>
 #include <elle/reactor/duration.hh>
 #include <elle/reactor/scheduler.hh>
-#include <elle/reactor/Thread.hh>
 #include <elle/reactor/timer.hh>
-#include <utility>
 
 ELLE_LOG_COMPONENT("elle.reactor.Timer")
 
@@ -33,8 +31,10 @@ namespace elle
     {
       _timer.expires_from_now(d);
       ELLE_TRACE_SCOPE("%s: trigger in %s", *this, d);
-      _timer.async_wait(
-        std::bind(&Timer::_on_timer, this, std::placeholders::_1));
+      _timer.async_wait([this](const boost::system::error_code& erc)
+                        {
+                          this->_on_timer(erc);
+                        });
     }
 
     Timer::~Timer()

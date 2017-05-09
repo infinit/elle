@@ -55,12 +55,11 @@ namespace elle
           auto& res = this->_content[key];
           fun(res);
           if (current)
-          {
-            auto link = current->destructed().connect(
-              std::bind(&Self::_clean, this, current)
-            );
-            this->_links[current] = link;
-          }
+            this->_links[current]
+              = current->destructed().connect([this, current]
+                {
+                  this->_clean(current);
+                });
           return res;
         }
       else
