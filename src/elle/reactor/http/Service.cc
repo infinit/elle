@@ -28,16 +28,16 @@ namespace elle
         {
           switch (what)
           {
-            case CURL_POLL_INOUT:
-              return "read and write";
-            case CURL_POLL_IN:
-              return "read";
-            case CURL_POLL_OUT:
-              return "write";
-            case CURL_POLL_REMOVE:
-              return "be removed";
-            case CURL_POLL_NONE:
-              return "nothing";
+          case CURL_POLL_INOUT:
+            return "read and write";
+          case CURL_POLL_IN:
+            return "read";
+          case CURL_POLL_OUT:
+            return "write";
+          case CURL_POLL_REMOVE:
+            return "be removed";
+          case CURL_POLL_NONE:
+            return "nothing";
           }
           elle::unreachable();
         }
@@ -255,13 +255,15 @@ namespace elle
         ELLE_DEBUG_SCOPE("%s: register %s (fd: %s) for writing",
                          *this, *request._request, socket->native_handle());
         socket->async_write_some(boost::asio::null_buffers(),
-                                 std::bind(&Service::handle_socket_ready,
-                                           std::ref(*this),
-                                           std::ref(request),
-                                           socket,
-                                           CURL_CSELECT_OUT,
-                                           std::placeholders::_1,
-                                           std::placeholders::_2));
+                                 [this, &request, socket]
+                                 (boost::system::error_code const& error, size_t s)
+                                 {
+                                   this->handle_socket_ready(request,
+                                                             socket,
+                                                             CURL_CSELECT_OUT,
+                                                             error,
+                                                             s);
+                                 });
       }
 
       /// Register read event if the request is writing.
@@ -274,13 +276,15 @@ namespace elle
         ELLE_DEBUG_SCOPE("%s: register %s (fd: %s) for reading",
                          *this, *request._request, socket->native_handle());
         socket->async_read_some(boost::asio::null_buffers(),
-                                std::bind(&Service::handle_socket_ready,
-                                          std::ref(*this),
-                                          std::ref(request),
-                                          socket,
-                                          CURL_CSELECT_IN,
-                                          std::placeholders::_1,
-                                          std::placeholders::_2));
+                                [this, &request, socket]
+                                (boost::system::error_code const& error, size_t s)
+                                {
+                                  this->handle_socket_ready(request,
+                                                            socket,
+                                                            CURL_CSELECT_IN,
+                                                            error,
+                                                            s);
+                                });
       }
 
       /*--------.
@@ -306,9 +310,10 @@ namespace elle
         ELLE_DEBUG("%s: set timeout to %s", *this, timeout);
         this->_timer.cancel();
         this->_timer.expires_from_now(timeout);
-        this->_timer.async_wait(std::bind(&Service::handle_timeout,
-                                          std::ref(*this),
-                                          std::placeholders::_1));
+        this->_timer.async_wait([this](const boost::system::error_code& error)
+                                {
+                                  this->handle_timeout(error);
+                                });
       }
 
       void

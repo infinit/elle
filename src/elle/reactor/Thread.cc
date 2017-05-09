@@ -36,7 +36,7 @@ namespace elle
       , _timeout_timer(scheduler.io_service())
       , _thread(scheduler._manager->make_thread(
                   name,
-                  std::bind(&Thread::_action_wrapper, this, std::move(action))))
+                  [this, a=std::move(action)] { this->_action_wrapper(a); }))
       , _scheduler(scheduler)
       , _terminating(false)
       , _interruptible(true)
