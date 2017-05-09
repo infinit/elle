@@ -16,54 +16,39 @@ namespace elle
     `----------------*/
 
     template <typename R>
-    static
-    void
-    wrapper(std::mutex& mutex,
-            std::condition_variable& cond,
-            std::function<R ()> const& action,
-            std::exception_ptr& exn,
-            R& res)
-    {
-      try
-      {
-        res = action();
-      }
-      catch (Terminate const&)
-      {
-        // Ignore
-      }
-      catch (...)
-      {
-        exn = std::current_exception();
-      }
-      std::unique_lock<std::mutex> lock(mutex);
-      cond.notify_one();
-    }
-
-    template <typename R>
     R
     Scheduler::mt_run(const std::string& name,
                       const std::function<R ()>& action)
     {
       ELLE_ASSERT(!this->done());
-      R result;
+      R res;
       std::mutex mutex;
-      std::condition_variable condition;
+      std::condition_variable cond;
       std::exception_ptr exn;
       {
         std::unique_lock<std::mutex> lock(mutex);
-        new reactor::Thread(*this, name,
-                            std::bind(&wrapper<R>,
-                                      std::ref(mutex),
-                                      std::ref(condition),
-                                      action,
-                                      std::ref(exn),
-                                      std::ref(result)), true);
-        condition.wait(lock);
+        this->run_later(name, [&, action]
+                        {
+                          try
+                          {
+                            res = action();
+                          }
+                          catch (Terminate const&)
+                          {
+                            // Ignore
+                          }
+                          catch (...)
+                          {
+                            exn = std::current_exception();
+                          }
+                          std::unique_lock<std::mutex> lock(mutex);
+                          cond.notify_one();
+                        });
+        cond.wait(lock);
         if (exn)
           std::rethrow_exception(exn);
       }
-      return result;
+      return res;
     }
 
     template <>
