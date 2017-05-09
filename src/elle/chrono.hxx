@@ -6,7 +6,7 @@ namespace elle
   namespace chrono
   {
 #define ELLE_CHRONO_DURATION_PARSE(Res)                                 \
-      auto const pos = repr.find_first_not_of("0123456789");            \
+      auto const pos = repr.find_first_not_of("-0123456789");           \
       if (pos == 0)                                                     \
         elle::err("invalid duration: %s", repr);                        \
       if (pos != std::string::npos)                                     \

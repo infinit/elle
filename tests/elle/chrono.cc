@@ -20,6 +20,8 @@ pretty_print()
   CHECK_PRETTY_PRINT((std::chrono::duration<int, std::milli>(1234)), "1.23s");
   CHECK_PRETTY_PRINT((std::chrono::duration<int, std::milli>(12340)), "12.3s");
   CHECK_PRETTY_PRINT((std::chrono::duration<int, std::milli>(123400)), "123s");
+  CHECK_PRETTY_PRINT((std::chrono::duration<int, std::milli>(-12340)), "-12.3s");
+  CHECK_PRETTY_PRINT((std::chrono::duration<int, std::milli>(-123400)), "-123s");
 }
 
 ELLE_TEST_SUITE()

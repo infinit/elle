@@ -18,7 +18,7 @@ namespace std
     operator << (std::ostream& o,
                  std::chrono::duration<T, std::ratio<Num, Denom>> const& t)
     {
-      auto log = std::ceil(std::log10(t.count()));
+      auto log = std::ceil(std::log10(std::abs(t.count())));
       auto significant = int(std::pow(10, std::max(log - 3, 0.)));
       auto pretty = double(t.count() / significant) * significant;
       if (Denom / Num / significant >= 1000000000)
@@ -36,7 +36,7 @@ namespace std
     Duration
     duration_from_string(std::string const& repr)
     {
-      auto const pos = repr.find_first_not_of("0123456789");
+      auto const pos = repr.find_first_not_of("-0123456789");
       if (pos == std::string::npos)
         elle::err("missing duration unit");
       if (pos == 0)
