@@ -1,0 +1,15 @@
+#!/usr/bin/env python3
+
+'''Check that the path of a built node is updated to the build tree.
+
+'''
+
+import drake
+from utils import *
+
+with Drake(root = 'src') as d:
+  target = drake.node('target')
+  print(target.path())
+  assertEq(target.path(), 'src/target')
+  drake.TouchBuilder(target)
+  assertEq(target.path(), 'target')

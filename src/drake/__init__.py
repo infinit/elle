@@ -1688,6 +1688,16 @@ class Node(BaseNode):
       print('Refusing to adjust mtime of %s in the future' % self)
       return False
 
+  @BaseNode.builder.setter
+  def builder(self, builder):
+    # Reset the path cache, as we might have believe that this node
+    # was in the source tree, while it's actually now discovered to
+    # belong to the build tree.
+    self.__path = None
+    # There is no cute syntax to call a super setter.  See
+    # http://bugs.python.org/issue14965 for instance.
+    BaseNode.builder.__set__(self, builder)
+
 def node(path, type = None):
   """Create or get a BaseNode.
 
