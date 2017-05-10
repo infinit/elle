@@ -6,7 +6,7 @@
 #
 # See the LICENSE file for more information.
 
-_OS = __import__('os')
+import os as _OS
 import atexit
 import contextlib
 import drake.debug
