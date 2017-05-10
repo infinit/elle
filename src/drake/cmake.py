@@ -3,7 +3,8 @@ from functools import lru_cache
 import os
 
 class CMakeBuilder(drake.Builder):
-  def __init__(self, cxx_toolkit, srcs, dsts, vars,
+
+  def __init__(self, toolkit, srcs, dsts, vars,
                targets = None, path_to_cmake_source = None):
     '''
     `srcs`: what we depend upon.
@@ -12,6 +13,8 @@ class CMakeBuilder(drake.Builder):
     `targets`: list of Makefile targets.
     `path_to_cmake_source`: path to the direction containing the CMakeFile.
     '''
+    super().__init__(srcs = srcs, dsts = dsts)
+    self.__toolkit = toolkit
     self.__vars = vars
     self.__prefix = drake.Drake.current.prefix
     self.__path_to_cmake_source = \
@@ -19,8 +22,8 @@ class CMakeBuilder(drake.Builder):
         else drake.path_source() / self.__prefix
     self.__env = dict(os.environ)
     self.__env.update({
-      'CC': cxx_toolkit.c,
-      'CXX': cxx_toolkit.cxx,
+      'CC': self.toolkit.c,
+      'CXX': self.toolkit.cxx,
     })
     self.__cmake_cache = drake.node('CMakeCache.txt')
     mdt = self.__env.get('MACOSX_DEPLOYMENT_TARGET', None)
@@ -29,17 +32,20 @@ class CMakeBuilder(drake.Builder):
     if mdt and (mdt == '10.7'or mdt == '10.8'):
       self.__env['MACOSX_DEPLOYMENT_TARGET'] = '10.9'
     self.__targets = targets
-    self.__cxx_toolkit = cxx_toolkit
     # cmake 3 compat
     self.__vars.update({'CMAKE_SYSTEM_PROCESSOR': 'x86_64'})
-    if cxx_toolkit.os is drake.os.windows:
+    if self.toolkit.os is drake.os.windows:
       self.__vars.update({
+        'CMAKE_ASM_NASM_COMPILER': self.toolkit.cxx[0:-3] + 'as',
+        'CMAKE_RC_COMPILER': self.toolkit.cxx[0:-3] + 'windres',
         'CMAKE_SYSTEM_NAME': 'Windows',
-        'CMAKE_RC_COMPILER': cxx_toolkit.cxx[0:-3] + 'windres',
-        'CMAKE_ASM_NASM_COMPILER': cxx_toolkit.cxx[0:-3] + 'as',
       })
     dsts.append(self.__cmake_cache)
-    drake.Builder.__init__(self, srcs = srcs, dsts = dsts)
+
+  @property
+  def toolkit(self):
+    return self.__toolkit
+
   def execute(self):
     # cmake fails if the cache was moved
     cpath = str(self.__cmake_cache.path())
