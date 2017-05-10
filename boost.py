@@ -1,4 +1,5 @@
 patched_sources = [
+  'boost/asio/detail/socket_types.hpp',           # boost_asio_poll.patch
   'boost/asio/ssl/impl/rfc2818_verification.ipp', # boost_asio_ssl.patch
   'boost/detail/winapi/crypt.hpp',                # boost_crypt.patch
   'boost/optional/optional_io.hpp',               # boost_optional.patch
