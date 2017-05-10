@@ -833,7 +833,7 @@ class GccToolkit(Toolkit):
                 found = True
                 break
           if not found:
-            raise Exception('can\'t find static version of %s' % lib)
+            raise Exception('cannot find static version of %s' % lib)
     if self.__recursive_linkage:
       cmd.append('-Wl,-)')
 

@@ -1635,7 +1635,7 @@ class Node(BaseNode):
     >>> n.build()
     Traceback (most recent call last):
         ...
-    Exception: /tmp/.drake.othernode wasn't created by EmptyBuilder
+    Exception: /tmp/.drake.othernode was not created by EmptyBuilder
     """
     super().build()
 
@@ -2044,7 +2044,7 @@ class Builder:
               '%s: error building dynamic dependency: %s', self, e)
             explain(
               self,
-              'some dynamic dependency couldn\'t be built: %s' % e)
+              'some dynamic dependency could not be built: %s' % e)
             execute = True
         # If any non-virtual target is missing, we must rebuild.
         mtime_implemented = True
@@ -2196,7 +2196,7 @@ class Builder:
             '%s: check all targets were built', self):
           for dst in self.__targets:
             if dst.missing():
-              raise Exception('%s wasn\'t created by %s' % (dst, self))
+              raise Exception('%s was not created by %s' % (dst, self))
             if isinstance(dst, Node):
               dst._Node__hash = None
         # Update depfiles
