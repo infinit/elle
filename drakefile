@@ -256,20 +256,16 @@ def configure(cxx_toolkit = None,
     zlib_configure_call = None
     zlib_configure_args = ['--static']
   else:
-    zlib_env['CFLAGS'] = '-fPIC'
+    zlib_env['CC'] = cxx_toolkit.c
+    zlib_env['CFLAGS'] = '-fPIC -w'
     zlib_makefile = None
     zlib_configure_call = zlib_configure
     zlib_configure_args = []
-    if cxx_toolkit.architecture is drake.architecture.arm:
-      zlib_env['CC'] = cxx_toolkit.cxx[:-4] + '-gcc'
     if cxx_toolkit.os is drake.os.macos:
-      zlib_env['CC'] = cxx_toolkit.c
       zlib_lib = drake.cxx.DynLib('zlib/lib/libz.%s.dylib' % zlib_version)
     elif cxx_toolkit.os in [drake.os.linux]:
-      zlib_env['CC'] = cxx_toolkit.c
       zlib_lib = drake.cxx.DynLib('zlib/lib/libz.so.1')
     elif cxx_toolkit.os is drake.os.android:
-      zlib_env['CC'] = cxx_toolkit.c
       zlib_lib = drake.cxx.StaticLib('zlib/lib/libz.a')
       zlib_configure_args = ['--static']
     elif cxx_toolkit.os is drake.os.ios:
@@ -277,16 +273,16 @@ def configure(cxx_toolkit = None,
       zlib_arch_str = ''
       for arch in archs:
         zlib_arch_str += '-arch %s ' % arch
-      zlib_env['CC'] = '%s %s -mios-version-min=7.0' % (cxx_toolkit.c, zlib_arch_str)
+      zlib_env['CC'] += ' %s -mios-version-min=7.0' % (zlib_arch_str)
       zlib_env['SDKROOT'] = os.environ['SDKROOT']
-      zlib_env['CFLAGS'] = '-fPIC -isysroot %s' % os.environ['SDKROOT']
+      zlib_env['CFLAGS'] += ' -isysroot %s' % os.environ['SDKROOT']
   zlib_libs = [zlib_lib,]
 
   zlib_prefix_absolute = drake.path_build(zlib_prefix,
                                           absolute = True)
   zlib_args = [
-    "INCLUDE_PATH='%s/include'" % zlib_prefix_absolute,
     "BINARY_PATH='%s/bin'" % zlib_prefix_absolute,
+    "INCLUDE_PATH='%s/include'" % zlib_prefix_absolute,
     "LIBRARY_PATH='%s/lib'" % zlib_prefix_absolute,
   ]
   if windows:
