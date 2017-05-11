@@ -13,7 +13,6 @@ class CMakeBuilder(drake.Builder):
     `targets`: list of Makefile targets.
     `path_to_cmake_source`: path to the direction containing the CMakeFile.
     '''
-    super().__init__(srcs = srcs, dsts = dsts)
     self.__toolkit = toolkit
     self.__vars = vars
     self.__prefix = drake.Drake.current.prefix
@@ -41,17 +40,23 @@ class CMakeBuilder(drake.Builder):
         'CMAKE_SYSTEM_NAME': 'Windows',
       })
     dsts.append(self.__cmake_cache)
+    # Call __init__ last, make __cmake_cache is declared a dsts, so
+    # that it has a build-tree path, not a source-tree one.
+    super().__init__(srcs = srcs, dsts = dsts)
 
   @property
   def toolkit(self):
     return self.__toolkit
 
   def execute(self):
-    # cmake fails if the cache was moved
+    # cmake fails if the cache was moved.
     cpath = str(self.__cmake_cache.path())
     if os.path.exists(cpath):
       os.unlink(cpath)
-    if not self.cmd(' '.join(self.cmake_cmd), self.cmake_cmd, cwd = self.__prefix, env = self.__env):
+    if not self.cmd(' '.join(self.cmake_cmd),
+                    self.cmake_cmd,
+                    cwd = self.__prefix,
+                    env = self.__env):
       return False
     if self.__targets is None:
       return self.cmd('make', self.make_cmd, cwd = self.__prefix)
