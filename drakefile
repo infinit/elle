@@ -1400,9 +1400,6 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
   ## Install ##
   ## ------- ##
 
-  if prefix is not False:
-    rule_install = drake.Rule('install')
-
   config += cryptography.config
   config += elle.config
   config += protocol.config
@@ -1436,8 +1433,9 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
   rule_check = drake.Rule('check')
   recurse(rule_check, 'rule_check')
 
-  rule_install = drake.Rule('install')
-  recurse(rule_install, 'rule_install')
+  if prefix:
+    rule_install = drake.Rule('install')
+    recurse(rule_install, 'rule_install')
 
   rule_examples = drake.Rule('examples')
   recurse(rule_examples, 'rule_examples')
