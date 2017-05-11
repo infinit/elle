@@ -2120,8 +2120,7 @@ def set_lib_id(path, toolkit):
   if toolkit.os == drake.os.macos:
     subprocess.check_output([
       'install_name_tool',
-      '-id',
-      '@rpath/%s' % os.path.basename(str(path)),
+      '-id', '@rpath/%s' % os.path.basename(str(path)),
       str(path)])
     subprocess.check_output([
       'install_name_tool',
@@ -2153,8 +2152,9 @@ class PatchAndInstall(drake.Install):
       ]
       for l in otool_lines:
         drake.command([
-          'install_name_tool', '-change',
-          l, '@rpath/%s' % (os.path.basename(l)), str(path)
+          'install_name_tool',
+          '-change', l, '@rpath/%s' % (os.path.basename(l)),
+          str(path)
         ])
         dep_dir = os.path.normpath(
           os.path.join(os.path.dirname(str(path)), '..', 'lib'))
@@ -2167,7 +2167,7 @@ class PatchAndInstall(drake.Install):
           shutil.copy(l, dep_dir)
           get_deps_fix_rpaths(drake.Path(dep_file))
           os.chmod(dep_file, 0o755)
-          set_lib_id(dep_file)
+          set_lib_id(dep_file, self.toolkit)
           os.chmod(dep_file, 0o555)
       os.chmod(str(path), 0o555)
 
