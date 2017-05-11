@@ -56,6 +56,10 @@ endif()
 
 
 if (MSVC)
+  if(DEFINED MSVC_VERSION AND MSVC_VERSION LESS 1900)
+    message(FATAL_ERROR "Requires VS 2015 or later")
+  endif()
+
   if (Uri_USE_STATIC_CRT)
     # Replace dynamic MSVCRT linker flags with static version.
     foreach(flag_var

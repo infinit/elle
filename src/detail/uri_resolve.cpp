@@ -75,7 +75,7 @@ std::string merge_paths(const uri& base, const uri& reference) {
   if (reference.has_path()) {
     result.append(reference.path().to_string());
   }
-  return remove_dot_segments(std::move(result));
+  return remove_dot_segments(string_view(result));
 }
 }  // namespace detail
 }  // namespace network
