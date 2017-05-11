@@ -49,6 +49,13 @@ namespace elle
       return val;
     }
 
+    void
+    setenv(Environ const& env, bool overwrite)
+    {
+      for (auto const& e: env)
+        setenv(e.first, e.second, overwrite);
+    }
+
     std::string getenv(std::string const& key)
     {
       if (auto val = ::getenv(key.c_str()))
