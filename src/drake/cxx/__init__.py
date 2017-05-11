@@ -2126,6 +2126,10 @@ def set_lib_id(path, toolkit):
 
 class PatchAndInstall(drake.Install):
 
+  def __init__(self, toolkit, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+    self.__toolkit = toolkit
+
   def get_deps_fix_rpaths(self, path):
     os.chmod(str(path), 0o755)
     if 'dylib' in str(path):
