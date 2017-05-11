@@ -1463,6 +1463,7 @@ class Compiler(_Compiler):
   def hash(self):
     return self.command
 
+# FIXME: a lot of code duplication with DynLibLinker!
 class Linker(Builder):
 
   name = 'executable linkage'
@@ -1539,12 +1540,12 @@ class DynLibLinker(Builder):
   def command(self):
     objects = self.__objects + list(self.__dynamic_libraries)
     cmd = self.toolkit.dynlink(
-        self.config,
-        objects + list(self.sources_dynamic()),
-        self.lib)
+      self.config,
+      objects + list(self.sources_dynamic()),
+      self.lib)
     cmd = (cmd,)
     if self.__strip:
-      cmd = cmd + ( ['%sstrip' % self.toolkit.prefix, self.lib.path()],)
+      cmd = cmd + (['%sstrip' % self.toolkit.prefix, self.lib.path()],)
     if self.config.use_local_libcxx and self.toolkit.os == drake.os.macos:
       cmd = cmd + (['install_name_tool',
                    '-change', '/usr/lib/libc++.1.dylib',
@@ -2115,12 +2116,17 @@ class CompilationDatabase(drake.Node):
 
 
 def set_lib_id(path, toolkit):
-  '''Change the id of a dylib on macOS.'''
+  '''Change the id of a dylib and make sure it uses our libc++ on macOS.'''
   if toolkit.os == drake.os.macos:
     subprocess.check_output([
       'install_name_tool',
       '-id',
       '@rpath/%s' % os.path.basename(str(path)),
+      str(path)])
+    subprocess.check_output([
+      'install_name_tool',
+      '-change', '/usr/lib/libc++.1.dylib',
+      '@rpath/libc++.1.dylib',
       str(path)])
 
 
