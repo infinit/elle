@@ -1095,6 +1095,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
           ]
 
       def execute(self):
+        # FIXME: Code duplication with PatchAndInstall.
         with drake.CWDPrinter(
             drake.path_build('.', absolute = True) / self.__cwd):
           if not self.cmd('Build Boost',
@@ -1536,8 +1537,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
     example_config += boost.config_system(static = True)
   else:
-    example_config.library_add(
-      drake.copy(boost.system_dynamic, 'lib', strip_prefix = True))
+    example_config.library_add(boost.system_dynamic)
   examples = [
     'samples/http_get_signed_json',
     'samples/get_wikipedia',
