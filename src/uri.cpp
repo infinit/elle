@@ -316,7 +316,7 @@ void uri::query_iterator::reset() {
 }
 
 void uri::query_iterator::increment() {
-  if (query_) {
+  if (query_ && !query_->empty()) {
     auto query = query_->to_string_view();
     auto first = query.begin(), last = query.end();
 
@@ -339,11 +339,11 @@ void uri::query_iterator::increment() {
   }
 }
 
-uri::query_iterator uri::query_begin() const {
+uri::query_iterator uri::query_begin() const noexcept {
   return uri::query_iterator{uri_parts_.query};
 }
 
-uri::query_iterator uri::query_end() const {
+uri::query_iterator uri::query_end() const noexcept {
   return uri::query_iterator{};
 }
 

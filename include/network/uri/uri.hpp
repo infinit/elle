@@ -340,9 +340,9 @@ class uri {
 
   };
 
-  query_iterator query_begin() const;
+  query_iterator query_begin() const noexcept;
 
-  query_iterator query_end() const;
+  query_iterator query_end() const noexcept;
 
   /**
    * \brief Tests whether this URI has a fragment component.
