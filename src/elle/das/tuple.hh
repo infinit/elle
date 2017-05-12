@@ -4,6 +4,8 @@
 #include <type_traits>
 #include <utility>
 
+#include <boost/functional/hash.hpp>
+
 #include <elle/das/model.hh>
 
 namespace elle
@@ -64,6 +66,31 @@ namespace elle
       (void) ignore;
       out << ")";
       return out;
+    }
+
+    namespace
+    {
+      // This should be a lambda in hash_value, but GCC 4.8 says no:
+      // "sorry, unimplemented: mangling argument_pack_select"
+      template <typename S, typename T>
+      inline
+      void
+      _hash_tuple(T const& t, std::size_t& seed)
+      {
+        boost::hash_combine(seed, boost::hash_value(S::attr_get(t)));
+      };
+    }
+
+    template <typename ... Args>
+    std::size_t
+    hash_value(tuple<Args...> const& t)
+    {
+      std::size_t seed = 0;
+      int ignore[] = {
+        (_hash_tuple<typename Args::Symbol>(t, seed), 0)...
+      };
+      (void) ignore;
+      return seed;
     }
 
     namespace
