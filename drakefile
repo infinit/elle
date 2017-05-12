@@ -409,12 +409,14 @@ def configure(cxx_toolkit = None,
     targets = ['%s/Configure' % openssl_basename],
     patch_dir = openssl_basename,
   )
+  # This is not a configure from Autoconf.  However it is sufficiently
+  # alike so that our GNUBuilder can be used.
   openssl_configure = drake.node(openssl_build / 'Configure')
   from drake.cxx import DynLib, StaticLib
   openssl_shared = True
   openssl_env = {
+    'CC': cxx_toolkit.c + ' -w',
     'PERL': 'perl',
-    'CC': cxx_toolkit.c,
   }
   if cxx_toolkit.os in [drake.os.linux]:
     openssl_lib_ssl = DynLib(openssl_prefix / 'lib/libssl.so.1.0.0')
