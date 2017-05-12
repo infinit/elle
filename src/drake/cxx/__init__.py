@@ -2115,67 +2115,57 @@ class CompilationDatabase(drake.Node):
     CompilationDatabase.Builder(self)
 
 
-def set_lib_id(path, toolkit):
+def set_lib_id(path):
   '''Change the id of a dylib and make sure it uses our libc++ on macOS.'''
-  if toolkit.os == drake.os.macos:
+  if sys.platform == 'darwin':
     subprocess.check_output([
       'install_name_tool',
       '-id', '@rpath/%s' % os.path.basename(str(path)),
       str(path)])
     subprocess.check_output([
       'install_name_tool',
-      '-change', '/usr/lib/libc++.1.dylib',
-      '@rpath/libc++.1.dylib',
+      '-change', '/usr/lib/libc++.1.dylib', '@rpath/libc++.1.dylib',
       str(path)])
 
 
 class PatchAndInstall(drake.Install):
 
-  def __init__(self, toolkit, *args, **kwargs):
-    super().__init__(*args, **kwargs)
-    self.__toolkit = toolkit
-
-  @property
-  def toolkit(self):
-    return self.__toolkit
-
   def get_deps_fix_rpaths(self, path):
     os.chmod(str(path), 0o755)
     if 'dylib' in str(path):
-      set_lib_id(path, self.toolkit)
-    if self.toolkit.kind is drake.cxx.GccToolkit.Kind.gcc:
-      otool_out = subprocess.check_output(['otool', '-L',  str(path)])
-      otool_lines = otool_out.decode('utf-8').strip().split('\n')
-      otool_lines = [
-        x.replace('\t', '').split(' ')[0]
-        for x in otool_lines[1:] if 'libstdc++' in x or 'libgcc_s' in x
-      ]
-      for l in otool_lines:
-        drake.command([
-          'install_name_tool',
-          '-change', l, '@rpath/%s' % (os.path.basename(l)),
-          str(path)
-        ])
-        dep_dir = os.path.normpath(
-          os.path.join(os.path.dirname(str(path)), '..', 'lib'))
-        dep_file = \
-          os.path.normpath(os.path.join(dep_dir, os.path.basename(l)))
-        if not os.path.exists(dep_dir):
-          os.makedirs(dep_dir)
-        if not os.path.exists(dep_file):
-          import shutil
-          shutil.copy(l, dep_dir)
-          get_deps_fix_rpaths(drake.Path(dep_file))
-          os.chmod(dep_file, 0o755)
-          set_lib_id(dep_file, self.toolkit)
-          os.chmod(dep_file, 0o555)
-      os.chmod(str(path), 0o555)
+      set_lib_id(path)
+    otool_out = subprocess.check_output(['otool', '-L',  str(path)])
+    otool_lines = otool_out.decode('utf-8').strip().split('\n')
+    otool_lines = [
+      x.replace('\t', '').split(' ')[0]
+      for x in otool_lines[1:] if 'libstdc++' in x or 'libgcc_s' in x
+    ]
+    for l in otool_lines:
+      drake.command([
+        'install_name_tool',
+        '-change', l, '@rpath/%s' % (os.path.basename(l)),
+        str(path)
+      ])
+      dep_dir = os.path.normpath(
+        os.path.join(os.path.dirname(str(path)), '..', 'lib'))
+      dep_file = \
+        os.path.normpath(os.path.join(dep_dir, os.path.basename(l)))
+      if not os.path.exists(dep_dir):
+        os.makedirs(dep_dir)
+      if not os.path.exists(dep_file):
+        import shutil
+        shutil.copy(l, dep_dir)
+        get_deps_fix_rpaths(drake.Path(dep_file))
+        os.chmod(dep_file, 0o755)
+        set_lib_id(dep_file)
+        os.chmod(dep_file, 0o555)
+    os.chmod(str(path), 0o555)
 
   def execute(self):
     if not super().execute():
       return False
     if os.path.islink(str(self.target.path())):
       return True
-    if self.toolkit.os == drake.os.macos:
+    if sys.platform == 'darwin':
       self.get_deps_fix_rpaths(self.target.path())
     return True
