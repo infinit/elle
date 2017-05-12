@@ -247,13 +247,15 @@ def configure(curl_config,
            '-id', '@rpath/libc++abi.dylib',
            str(drake.path_build(tgt, True))
           ])
-    lib_cxx = drake.copy(drake.nodes('/usr/lib/libc++.1.dylib'), lib_path, strip_prefix = True,
+    lib_cxx = drake.copy(drake.node('/usr/lib/libc++.1.dylib'), lib_path, strip_prefix = True,
       post_process = rpath_libcxx)
-    lib_cxx_abi = drake.copy(drake.nodes(libcxxabi_lib), lib_path, strip_prefix = True,
+    lib_cxx_abi = drake.copy(drake.node(libcxxabi_lib), lib_path, strip_prefix = True,
       post_process = rpath_libcxxabi)
-    cxx_libs = lib_cxx + lib_cxx_abi
+    cxx_libs = [lib_cxx, lib_cxx_abi]
+    cxx_lib = lib_cxx
   else:
     cxx_libs = []
+    cxx_lib = None
 
   # Boost
   boost = boost or drake.cxx.boost.Boost()
