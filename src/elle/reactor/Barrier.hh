@@ -58,6 +58,9 @@ namespace elle
       /// Close this, stopping future threads waiting it.
       void
       close();
+      /// Clear the exception attached to this Barrier if any.
+      void
+      clear_exception();
     protected:
       /// Stop the thread if and only if this is closed.
       bool

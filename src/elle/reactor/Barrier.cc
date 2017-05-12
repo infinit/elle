@@ -74,6 +74,13 @@ namespace elle
       this->_raise(e);
     }
 
+    void
+    Barrier::clear_exception()
+    {
+      if (this->exception())
+        this->close();
+    }
+
     /*----------.
       | Inversion |
       `----------*/
