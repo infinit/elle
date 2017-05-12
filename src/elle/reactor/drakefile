@@ -236,18 +236,15 @@ def configure(curl_config,
       with drake.WritePermissions(drake.node(tgt)):
         return drake.command([
           'install_name_tool',
-          '-change',
-          '/usr/lib/libc++abi.dylib',
-          '@rpath/libc++abi.dylib',
-          '-id',
-          '@rpath/libc++.1.dylib',
+          '-change', '/usr/lib/libc++abi.dylib', '@rpath/libc++abi.dylib',
+          '-id', '@rpath/libc++.1.dylib',
           str(drake.path_build(tgt, True))
         ])
     def rpath_libcxxabi(tgt):
       with drake.WritePermissions(drake.node(tgt)):
         return drake.command(
-          ['install_name_tool', '-id',
-           '@rpath/libc++abi.dylib',
+          ['install_name_tool',
+           '-id', '@rpath/libc++abi.dylib',
            str(drake.path_build(tgt, True))
           ])
     lib_cxx = drake.copy(drake.nodes('/usr/lib/libc++.1.dylib'), lib_path, strip_prefix = True,
