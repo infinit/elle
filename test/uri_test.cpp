@@ -820,3 +820,70 @@ TEST(uri_test, non_opaque_path_has_double_slash) {
   EXPECT_EQ("/path/to/something/", instance.path());
   EXPECT_FALSE(instance.is_opaque());
 }
+
+TEST(uri_test, query_iterator_with_no_query) {
+  network::uri instance("http://example.com/");
+  ASSERT_FALSE(instance.has_query());
+}
+
+TEST(uri_test, query_iterator_with_empty_query) {
+  network::uri instance("http://example.com/?");
+  ASSERT_TRUE(instance.has_query());
+  EXPECT_EQ(instance.query_begin(), instance.query_end());
+  auto kvp = *instance.query_begin();
+  EXPECT_EQ("", kvp.first);
+  EXPECT_EQ("", kvp.second);
+}
+
+TEST(uri_test, query_iterator_with_single_kvp) {
+  network::uri instance("http://example.com/?a=b");
+  ASSERT_TRUE(instance.has_query());
+  ASSERT_NE(instance.query_begin(), instance.query_end());
+  auto kvp = *instance.query_begin();
+  EXPECT_EQ("a", kvp.first);
+  EXPECT_EQ("b", kvp.second);
+}
+
+TEST(uri_test, query_iterator_with_two_kvps) {
+  network::uri instance("http://example.com/?a=b&c=d");
+  ASSERT_TRUE(instance.has_query());
+  ASSERT_NE(instance.query_begin(), instance.query_end());
+  auto query_it = instance.query_begin();
+  EXPECT_EQ("a", query_it->first);
+  EXPECT_EQ("b", query_it->second);
+  ++query_it;
+  EXPECT_EQ("c", query_it->first);
+  EXPECT_EQ("d", query_it->second);
+}
+
+TEST(uri_test, query_iterator_with_two_kvps_using_semicolon_separator) {
+  network::uri instance("http://example.com/?a=b;c=d");
+  ASSERT_TRUE(instance.has_query());
+  ASSERT_NE(instance.query_begin(), instance.query_end());
+  auto query_it = instance.query_begin();
+  EXPECT_EQ("a", query_it->first);
+  EXPECT_EQ("b", query_it->second);
+  ++query_it;
+  EXPECT_EQ("c", query_it->first);
+  EXPECT_EQ("d", query_it->second);
+}
+
+TEST(uri_test, query_iterator_with_key_and_no_value) {
+  network::uri instance("http://example.com/?query");
+  ASSERT_TRUE(instance.has_query());
+  auto query_it = instance.query_begin();
+  EXPECT_EQ("query", query_it->first);
+  EXPECT_EQ("", query_it->second);
+}
+
+TEST(uri_test, query_iterator_with_fragment) {
+  network::uri instance("http://example.com/?a=b;c=d#fragment");
+  ASSERT_TRUE(instance.has_query());
+  ASSERT_NE(instance.query_begin(), instance.query_end());
+  auto query_it = instance.query_begin();
+  EXPECT_EQ("a", query_it->first);
+  EXPECT_EQ("b", query_it->second);
+  ++query_it;
+  EXPECT_EQ("c", query_it->first);
+  EXPECT_EQ("d", query_it->second);
+}

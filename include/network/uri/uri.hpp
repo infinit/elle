@@ -307,6 +307,43 @@ class uri {
    */
   string_view query() const noexcept;
 
+  class query_iterator
+  {
+  public:
+    using value_type = std::pair<string_view, string_view>;
+    using difference_type = std::ptrdiff_t;
+    using pointer = const value_type *;
+    using reference = const value_type &;
+    using iterator_category = std::forward_iterator_tag;
+
+    query_iterator();
+    explicit query_iterator(optional<detail::uri_part>);
+    query_iterator(const query_iterator &);
+    query_iterator &operator = (const query_iterator &);
+    reference operator ++ ();
+    value_type operator ++ (int);
+    reference operator * () const;
+    pointer operator -> () const;
+    bool operator == (const query_iterator &) const noexcept;
+    inline bool operator != (const query_iterator &other) const noexcept {
+      return !(*this == other);
+    }
+
+  private:
+
+    void swap(query_iterator &) noexcept;
+    void reset();
+    void increment();
+
+    optional<detail::uri_part> query_;
+    value_type kvp_;
+
+  };
+
+  query_iterator query_begin() const;
+
+  query_iterator query_end() const;
+
   /**
    * \brief Tests whether this URI has a fragment component.
    * \return \c true if the URI has a fragment, \c false otherwise.
