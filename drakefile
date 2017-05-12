@@ -588,8 +588,10 @@ def configure(cxx_toolkit = None,
   #   # So curl links its curl binary with the right SSL.
   #   curl_configure_args.append(
   #     'LDFLAGS=-Wl,-rpath-link,%s -ldl' % (openssl_prefix / 'lib'))
-  curl_environment = {}
-  curl_environment['CC'] = cxx_toolkit.c
+  curl_env = {
+    'CC': cxx_toolkit.c,
+    'CFLAGS': '-w',
+  }
   if cxx_toolkit.architecture is drake.architecture.arm:
     curl_configure_args.append('--host=%s' % cxx_toolkit.cxx[:-4])
   else:
@@ -598,17 +600,17 @@ def configure(cxx_toolkit = None,
     path = drake.path_build(zlib_prefix, absolute = True) / 'lib'
     curl_configure_args.append('DYLD_FALLBACK_LIBRARY_PATH=%s' % path)
   elif windows:
-    curl_environment['LIBS'] = '-lcrypt32 -lgdi32'
+    curl_env['LIBS'] = '-lcrypt32 -lgdi32'
     curl_configure_args.append('--build=%s' % cxx_toolkit.prefix[:-1])
   elif cxx_toolkit.os is drake.os.ios:
     curl_configure_args.append('--with-sysroot=%s' % os.environ['SDKROOT'])
   elif cxx_toolkit.os is drake.os.android:
     # configure is making a runtime library availability check
-    curl_environment['LD_LIBRARY_PATH'] = \
+    curl_env['LD_LIBRARY_PATH'] = \
       str(drake.path_build(curl_prefix / 'lib', absolute = True))
   elif cxx_toolkit.os is drake.os.linux:
     path = drake.path_build(zlib_prefix, absolute = True) / 'lib' / 'pkgconfig'
-    curl_environment['PKG_CONFIG_PATH'] = str(path)
+    curl_env['PKG_CONFIG_PATH'] = str(path)
   curl_dependency_libs = curl_openssl_libs + curl_zlib_libs
   curl_headers = [
     'include/curl/typecheck-gcc.h',
@@ -625,12 +627,8 @@ def configure(cxx_toolkit = None,
     for arch in archs:
       curl_configure_arch_args = list(curl_configure_args)
       curl_arch_prefix = curl_prefix / drake.Path('%s' % arch)
-      curl_environment['CC'] = \
-        '%s -arch %s -mios-version-min=7.0' % (cxx_toolkit.c, arch)
-      if arch is 'arm64':
-        arch_str = 'aarch64'
-      else:
-        arch_str = arch
+      curl_env['CC'] += ' -arch %s -mios-version-min=7.0' % (arch)
+      arch_str = 'aarch64' if arch is 'arm64' else arch
       curl_configure_arch_args.append('--host=%s-apple-darwin' % arch_str)
       curl_configure_arch_args.append(
         '--prefix=%s' % drake.path_build(curl_arch_prefix, absolute = True))
@@ -644,7 +642,7 @@ def configure(cxx_toolkit = None,
         configure_args = curl_configure_arch_args,
         sources = curl_dependency_libs + [curl_configure],
         build_args = ['all', 'install', 'distclean'],
-        additional_env = curl_environment,
+        additional_env = curl_env,
       )
     FatLibraryGenerator(curl_arch_libs, curl_lib,
                         headers = curl_headers,
@@ -661,7 +659,7 @@ def configure(cxx_toolkit = None,
       configure_args = curl_configure_args,
       sources = curl_dependency_libs + [curl_configure],
       build_args = ['all', 'install',],
-      additional_env = curl_environment,
+      additional_env = curl_env,
     )
   for lib in curl_dependency_libs:
     curl_lib.dependency_add(lib)
