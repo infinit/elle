@@ -76,6 +76,24 @@ hash()
     hash_value(elle::das::make_tuple(bar = std::string("lol"), foo = 3)));
 }
 
+static
+void
+compare()
+{
+  BOOST_TEST(
+    elle::das::make_tuple() ==
+    elle::das::make_tuple());
+  BOOST_TEST(
+    elle::das::make_tuple(foo = 3, bar = std::string("lol")) ==
+    elle::das::make_tuple(foo = 3, bar = std::string("lol")));
+  BOOST_TEST(
+    elle::das::make_tuple(foo = 3, bar = std::string("lol")) !=
+    elle::das::make_tuple(foo = 4, bar = std::string("lol")));
+  BOOST_TEST(
+    elle::das::make_tuple(foo = 3, bar = std::string("lol")) !=
+    elle::das::make_tuple(foo = 3, bar = std::string("bar")));
+}
+
 /*-------.
 | Driver |
 `-------*/
@@ -88,4 +106,5 @@ ELLE_TEST_SUITE()
   master.add(BOOST_TEST_CASE(print));
   master.add(BOOST_TEST_CASE(serialize));
   master.add(BOOST_TEST_CASE(hash));
+  master.add(BOOST_TEST_CASE(compare));
 }

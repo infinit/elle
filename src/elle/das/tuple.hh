@@ -58,12 +58,11 @@ namespace elle
     std::ostream&
     operator <<(std::ostream& out, tuple<Args...> const& t)
     {
-      bool first = true;
+      bool __attribute__((unused)) first = true;
       out << "(";
-      auto ignore = {
+      int __attribute__((unused)) ignore[] = {
         (_print_tuple<typename Args::Symbol>(t, out, first), 0)...
       };
-      (void) ignore;
       out << ")";
       return out;
     }
@@ -91,6 +90,38 @@ namespace elle
       };
       (void) ignore;
       return seed;
+    }
+
+    namespace
+    {
+      // This should be a lambda in operator ==, but GCC 4.8 says no:
+      // "sorry, unimplemented: mangling argument_pack_select"
+      template <typename S, typename T>
+      inline
+      void
+      _compare_tuple(T const& lhs, T const& rhs, bool& res)
+      {
+        if (res)
+          res = S::attr_get(lhs) == S::attr_get(rhs);
+      };
+    }
+
+    template <typename ... Args>
+    bool
+    operator ==(tuple<Args...> const& lhs, tuple<Args...> const& rhs)
+    {
+      bool res = true;
+      int __attribute__((unused)) ignore[] = {
+        (_compare_tuple<typename Args::Symbol>(lhs, rhs, res), 0)...
+      };
+      return res;
+    }
+
+    template <typename ... Args>
+    bool
+    operator !=(tuple<Args...> const& lhs, tuple<Args...> const& rhs)
+    {
+      return !(lhs == rhs);
     }
 
     namespace
