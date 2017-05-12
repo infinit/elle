@@ -71,12 +71,13 @@ namespace elle
     {
       // This should be a lambda in hash_value, but GCC 4.8 says no:
       // "sorry, unimplemented: mangling argument_pack_select"
+      using boost::hash_value;
       template <typename S, typename T>
       inline
       void
       _hash_tuple(T const& t, std::size_t& seed)
       {
-        boost::hash_combine(seed, boost::hash_value(S::attr_get(t)));
+        boost::hash_combine(seed, hash_value(S::attr_get(t)));
       };
     }
 
