@@ -282,23 +282,23 @@ uri::query_iterator &uri::query_iterator::operator = (const query_iterator &othe
   return *this;
 }
 
-uri::query_iterator::reference uri::query_iterator::operator ++ () {
+uri::query_iterator::reference uri::query_iterator::operator ++ () noexcept {
   increment();
   return kvp_;
 }
 
-uri::query_iterator::value_type uri::query_iterator::operator ++ (int) {
+uri::query_iterator::value_type uri::query_iterator::operator ++ (int) noexcept {
   auto original = kvp_;
   increment();
   return original;
 }
 
-uri::query_iterator::reference uri::query_iterator::operator * () const {
+uri::query_iterator::reference uri::query_iterator::operator * () const noexcept {
   return kvp_;
 }
 
-uri::query_iterator::pointer uri::query_iterator::operator -> () const {
-  return &kvp_;
+uri::query_iterator::pointer uri::query_iterator::operator -> () const noexcept {
+  return std::addressof(kvp_);
 }
 
 bool uri::query_iterator::operator == (const query_iterator &other) const noexcept {
@@ -315,7 +315,7 @@ void uri::query_iterator::reset() {
   increment();
 }
 
-void uri::query_iterator::increment() {
+void uri::query_iterator::increment() noexcept {
   if (query_ && !query_->empty()) {
     auto query = query_->to_string_view();
     auto first = query.begin(), last = query.end();
@@ -335,6 +335,8 @@ void uri::query_iterator::increment() {
     if (sep_it != last) {
       ++sep_it; // skip next separator
     }
+
+    // reassign query to the next element
     query_ = detail::uri_part(sep_it, last);
   }
 }
