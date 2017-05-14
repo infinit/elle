@@ -830,9 +830,6 @@ TEST(uri_test, query_iterator_with_empty_query) {
   network::uri instance("http://example.com/?");
   ASSERT_TRUE(instance.has_query());
   EXPECT_EQ(instance.query_begin(), instance.query_end());
-  auto kvp = *instance.query_begin();
-  EXPECT_EQ("", kvp.first);
-  EXPECT_EQ("", kvp.second);
 }
 
 TEST(uri_test, query_iterator_with_single_kvp) {
