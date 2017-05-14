@@ -332,6 +332,13 @@ TEST(uri_parse_test, test_opaque_uri_with_one_slash) {
   EXPECT_EQ("/path/", uri.path());
 }
 
+TEST(uri_parse_test, test_empty_query) {
+  test::uri uri("http://www.example.com/?");
+  EXPECT_TRUE(uri.parse_uri());
+  ASSERT_TRUE(uri.has_query());
+  EXPECT_EQ("", uri.query());
+}
+
 TEST(uri_parse_test, test_query_with_empty_path) {
   test::uri uri("http://www.example.com?query");
   EXPECT_TRUE(uri.parse_uri());
