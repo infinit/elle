@@ -263,37 +263,35 @@ def configure(curl_config,
   boost = boost or drake.cxx.boost.Boost()
   local_cxx_config += boost.config()
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
-    local_cxx_config += boost.config_signals(link = False, static = True)
-    local_cxx_config.library_add(
-      drake.copy(boost.signals_static, lib_path, strip_prefix = True))
-    local_cxx_config += boost.config_system(link = False, static = True)
-    local_cxx_config.library_add(
-      drake.copy(boost.system_static, lib_path, strip_prefix = True))
-    local_cxx_config += boost.config_thread(link = False, static = True)
-    local_cxx_config.library_add(
-      drake.copy(boost.thread_static, lib_path, strip_prefix = True))
+    def import_lib(l):
+      local_cxx_config.library_add(
+        drake.copy(l, lib_path,
+                   strip_prefix = True))
+
     if backend == Backends.boost:
       local_cxx_config += boost.config_context(link = False, static = True)
-      local_cxx_config.library_add(
-        drake.copy(boost.context_static, lib_path, strip_prefix = True))
+      import_lib(boost.context_static)
+    local_cxx_config += boost.config_signals(link = False, static = True)
+    import_lib(boost.signals_static)
+    local_cxx_config += boost.config_system(link = False, static = True)
+    import_lib(boost.system_static)
+    local_cxx_config += boost.config_thread(link = False, static = True)
+    import_lib(boost.thread_static)
   else:
+    def import_lib(l):
+      local_cxx_config.library_add(
+        drake.copy(l, lib_path,
+                   strip_prefix = True,
+                   post_process = set_local_libcxx(cxx_toolkit)))
     if backend == Backends.boost:
       local_cxx_config += boost.config_context(link = False)
-      local_cxx_config.library_add(
-        drake.copy(boost.context_dynamic, lib_path, strip_prefix = True,
-                   post_process = set_local_libcxx(cxx_toolkit)))
+      import_lib(boost.context_dynamic)
     local_cxx_config += boost.config_signals(link = False)
-    local_cxx_config.library_add(
-      drake.copy(boost.signals_dynamic, lib_path, strip_prefix = True,
-                 post_process = set_local_libcxx(cxx_toolkit)))
+    import_lib(boost.signals_dynamic)
     local_cxx_config += boost.config_system(link = False)
-    local_cxx_config.library_add(
-      drake.copy(boost.system_dynamic, lib_path, strip_prefix = True,
-                 post_process = set_local_libcxx(cxx_toolkit)))
+    import_lib(boost.system_dynamic)
     local_cxx_config += boost.config_thread(link = False)
-    local_cxx_config.library_add(
-      drake.copy(boost.thread_dynamic, lib_path, strip_prefix = True,
-                 post_process = set_local_libcxx(cxx_toolkit)))
+    import_lib(boost.thread_dynamic)
   if backend == Backends.io:
     local_cxx_config.define('REACTOR_CORO_BACKEND_IO')
   else:
