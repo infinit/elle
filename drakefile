@@ -591,6 +591,10 @@ def configure(cxx_toolkit = None,
   curl_env = {
     'CC': cxx_toolkit.c,
     'CFLAGS': '-w',
+    # Be sure to control pkg-config, otherwise, because curl's
+    # configure.ac checks pkg-config *before* --with-zlib, we might
+    # end up using the system's copy instead ours.
+    'PKG_CONFIG_PATH': drake.path_build(zlib_prefix, absolute = True) / 'lib' / 'pkgconfig',
   }
   if cxx_toolkit.architecture is drake.architecture.arm:
     curl_configure_args.append('--host=%s' % cxx_toolkit.cxx[:-4])
@@ -608,9 +612,6 @@ def configure(cxx_toolkit = None,
     # configure is making a runtime library availability check
     curl_env['LD_LIBRARY_PATH'] = \
       str(drake.path_build(curl_prefix / 'lib', absolute = True))
-  elif cxx_toolkit.os is drake.os.linux:
-    path = drake.path_build(zlib_prefix, absolute = True) / 'lib' / 'pkgconfig'
-    curl_env['PKG_CONFIG_PATH'] = str(path)
   curl_dependency_libs = curl_openssl_libs + curl_zlib_libs
   curl_headers = [
     'include/curl/typecheck-gcc.h',
