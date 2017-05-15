@@ -19,19 +19,33 @@ class uri_part {
   typedef string_view::value_type value_type;
   typedef string_view::iterator iterator;
   typedef string_view::const_iterator const_iterator;
+  typedef string_view::const_pointer const_pointer;
+  typedef string_view::size_type size_type;
+  typedef string_view::difference_type difference_type;
 
-  uri_part() {}
+  uri_part() noexcept = default;
 
-  uri_part(const_iterator first, const_iterator last)
+  uri_part(const_iterator first, const_iterator last) noexcept
       : first(first), last(last) {}
 
-  const_iterator begin() const { return first; }
+  const_iterator begin() const noexcept { return first; }
 
-  const_iterator end() const { return last; }
+  const_iterator end() const noexcept { return last; }
 
-  bool empty() const { return first == last; }
+  bool empty() const noexcept { return first == last; }
 
   std::string to_string() const { return std::string(first, last); }
+
+  const_pointer ptr() const noexcept {
+    assert(first != last);
+    return first;
+  }
+
+  difference_type length() const noexcept {
+    return last - first;
+  }
+
+  string_view to_string_view() const noexcept { return string_view(ptr(), length()); }
 
  private:
   const_iterator first, last;

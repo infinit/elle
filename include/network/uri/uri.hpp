@@ -118,7 +118,42 @@ class uri {
    */
   typedef std::iterator_traits<iterator>::value_type value_type;
 
- public:
+  /**
+   *
+   */
+  class query_iterator
+  {
+  public:
+    using value_type = std::pair<string_view, string_view>;
+    using difference_type = std::ptrdiff_t;
+    using pointer = const value_type *;
+    using reference = const value_type &;
+    using iterator_category = std::forward_iterator_tag;
+
+    query_iterator();
+    explicit query_iterator(optional<detail::uri_part>);
+    query_iterator(const query_iterator &);
+    query_iterator &operator = (const query_iterator &);
+    reference operator ++ () noexcept;
+    value_type operator ++ (int) noexcept;
+    reference operator * () const noexcept;
+    pointer operator -> () const noexcept;
+    bool operator == (const query_iterator &) const noexcept;
+    inline bool operator != (const query_iterator &other) const noexcept {
+      return !(*this == other);
+    }
+
+  private:
+
+    void swap(query_iterator &) noexcept;
+    void reset();
+    void increment() noexcept;
+
+    optional<detail::uri_part> query_;
+    value_type kvp_;
+
+  };
+
   /**
    * \brief Default constructor.
    */
@@ -276,7 +311,7 @@ class uri {
   intT port(typename std::is_integral<intT>::type * = 0) const {
     assert(has_port());
     auto p = port();
-    const char* port_first = &(*p.begin());
+    const char* port_first = std::addressof(*p.begin());
     char* port_last = 0;
     return static_cast<intT>(std::strtoul(port_first, &port_last, 10));
   }
@@ -306,6 +341,22 @@ class uri {
    * \pre has_query()
    */
   string_view query() const noexcept;
+
+  /**
+   * \brief Returns an iterator to the first key-value pair in the query
+   *        component.
+   *
+   * \return query_iterator.
+   */
+  query_iterator query_begin() const noexcept;
+
+  /**
+   * \brief Returns an iterator to the last key-value pair in the query
+   *        component.
+   *
+   * \return query_iterator.
+   */
+  query_iterator query_end() const noexcept;
 
   /**
    * \brief Tests whether this URI has a fragment component.

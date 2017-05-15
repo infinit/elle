@@ -258,6 +258,97 @@ uri::string_view uri::query() const noexcept {
   return has_query() ? to_string_view(uri_, *uri_parts_.query) : string_view{};
 }
 
+uri::query_iterator::query_iterator()
+  : query_{}
+  , kvp_{} {
+  reset();
+}
+
+uri::query_iterator::query_iterator(optional<detail::uri_part> query)
+  : query_(query)
+  , kvp_{} {
+  reset();
+}
+
+uri::query_iterator::query_iterator(const query_iterator &other)
+  : query_(other.query_)
+  , kvp_(other.kvp_) {
+
+}
+
+uri::query_iterator &uri::query_iterator::operator = (const query_iterator &other) {
+  auto tmp(other);
+  swap(tmp);
+  return *this;
+}
+
+uri::query_iterator::reference uri::query_iterator::operator ++ () noexcept {
+  increment();
+  return kvp_;
+}
+
+uri::query_iterator::value_type uri::query_iterator::operator ++ (int) noexcept {
+  auto original = kvp_;
+  increment();
+  return original;
+}
+
+uri::query_iterator::reference uri::query_iterator::operator * () const noexcept {
+  return kvp_;
+}
+
+uri::query_iterator::pointer uri::query_iterator::operator -> () const noexcept {
+  return std::addressof(kvp_);
+}
+
+bool uri::query_iterator::operator == (const query_iterator &other) const noexcept {
+  return kvp_.first == kvp_.second;
+}
+
+void uri::query_iterator::swap(query_iterator &other) noexcept {
+  std::swap(query_, other.query_);
+  std::swap(kvp_, other.kvp_);
+}
+
+void uri::query_iterator::reset() {
+  kvp_ = value_type{};
+  increment();
+}
+
+void uri::query_iterator::increment() noexcept {
+  if (query_ && !query_->empty()) {
+    auto query = query_->to_string_view();
+    auto first = query.begin(), last = query.end();
+
+    auto sep_it =
+        std::find_if(std::begin(query), std::end(query),
+                     [](char c) -> bool { return c == '&' || c == ';'; });
+    auto eq_it = std::find_if(std::begin(query), sep_it,
+                              [](char c) -> bool { return c == '='; });
+    
+    kvp_.first = string_view(std::addressof(*first), eq_it - first);
+    if (eq_it != sep_it) {
+      ++eq_it; // skip '=' symbol
+    }
+    kvp_.second = string_view(std::addressof(*eq_it), sep_it - eq_it);
+
+    if (sep_it != last) {
+      ++sep_it; // skip next separator
+    }
+
+    // reassign query to the next element
+    query_ = detail::uri_part(sep_it, last);
+  }
+}
+
+uri::query_iterator uri::query_begin() const noexcept {
+  return uri::query_iterator{uri_parts_.query};
+}
+
+uri::query_iterator uri::query_end() const noexcept {
+  return uri::query_iterator{};
+}
+
 bool uri::has_fragment() const noexcept {
   return static_cast<bool>(uri_parts_.fragment);
 }
