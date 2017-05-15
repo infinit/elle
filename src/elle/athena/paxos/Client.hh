@@ -5,12 +5,19 @@
 #include <elle/attribute.hh>
 #include <elle/reactor/Barrier.hh>
 
+#include <elle/das/Symbol.hh>
+#include <elle/das/tuple.hh>
+
 namespace elle
 {
   namespace athena
   {
     namespace paxos
     {
+      ELLE_DAS_SYMBOL(proposal);
+      ELLE_DAS_SYMBOL(quorum);
+      ELLE_DAS_SYMBOL(value);
+
       /// A client of the Paxos consensus algorithm.
       ///
       /// For more details, on both the terminology and the algorithm:
@@ -118,8 +125,12 @@ namespace elle
         /// Get the latest chosen value.
         boost::optional<T>
         get();
-        std::pair<boost::optional<T>, Quorum>
-        get_quorum();
+        using State = das::tuple<
+          decltype(value)::Formal<boost::optional<T>>,
+          decltype(quorum)::Formal<Quorum>,
+          decltype(proposal)::Formal<boost::optional<Proposal>>>;
+        State
+        state();
         ELLE_ATTRIBUTE(int, round);
 
       private:

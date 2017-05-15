@@ -253,12 +253,12 @@ namespace elle
       boost::optional<T>
       Client<T, Version, ClientId>::get()
       {
-        return this->get_quorum().first;
+        return this->state().value;
       }
 
       template <typename T, typename Version, typename CId>
-      std::pair<boost::optional<T>, typename Client<T, Version, CId>::Quorum>
-      Client<T, Version, CId>::get_quorum()
+      typename Client<T, Version, CId>::State
+      Client<T, Version, CId>::state()
       {
         ELLE_LOG_COMPONENT("athena.paxos.Client");
         ELLE_TRACE_SCOPE("%s: get value", *this);
@@ -288,11 +288,10 @@ namespace elle
           },
           std::string("get quorum"));
         this->_check_headcount(q, reached, true);
-        using Res = std::pair<boost::optional<T>, Quorum>;
         if (res)
-          return Res(res->value.template get<T>(), q);
+          return State(res->value.template get<T>(), q, res->proposal);
         else
-          return Res({}, q);
+          return State(boost::none, q, boost::none);
       }
 
       /*----------.
