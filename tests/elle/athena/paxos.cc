@@ -688,7 +688,7 @@ ELLE_TEST_SCHEDULED(evict_down_lag_behind)
   // 1 |    1    |    1    |    1    | -> 1
   //   |  1:1:1  |  1:1:1  |  1:1:1  |
   //   +---------+---------+---------+
-  ELLE_LOG("choose quorum {11, 12} for version 3")
+  ELLE_LOG("choose quorum \\{11, 12\\} for version 3")
     BOOST_CHECK(!make_partial_client().choose(3, Client::Quorum{11, 12}));
   //        11        12        13
   //   +---------+---------+---------+
@@ -798,7 +798,7 @@ namespace quorum_divergence
     // 1 |    1    |    1    |    1    | -> 1
     //   |  1:1:1  |  1:1:1  |  1:1:1  |
     //   +---------+---------+---------+
-    ELLE_LOG("choose quorum {11,12} for version 2 on server 11 only")
+    ELLE_LOG("choose quorum \\{11, 12\\} for version 2 on server 11 only")
       BOOST_CHECK_THROW(client_1_only.choose(2, Client::Quorum{11, 12}),
                         elle::athena::paxos::TooFewPeers);
     //        11        12        13
@@ -894,9 +894,9 @@ ELLE_TEST_SCHEDULED(partial_state)
     };
   ELLE_LOG("select 0 for version 0")
     BOOST_CHECK(!make_client({true, true, true}).choose(0, 0));
-  ELLE_LOG("select 1 for version 1 on {11, 12}")
+  ELLE_LOG("select 1 for version 1 on \\{11, 12\\}")
     BOOST_CHECK(!make_client({true, true, false}).choose(1, 1));
-  ELLE_LOG("propose 2 for version 2 on {11}")
+  ELLE_LOG("propose 2 for version 2 on \\{11\\}")
     BOOST_CHECK_THROW(make_client({true, false, false}).choose(2, 2),
                       elle::athena::paxos::TooFewPeers);
   //        11        12        13
@@ -910,7 +910,7 @@ ELLE_TEST_SCHEDULED(partial_state)
   // 0 |    0    |    0    |    0    | -> 0
   //   |  0:1:1  |  0:1:1  |  0:1:1  |
   //   +---------+---------+---------+
-  ELLE_LOG("propose 2 for version 1 on {11, 13}")
+  ELLE_LOG("propose 2 for version 1 on \\{11, 13\\}")
     BOOST_CHECK(!make_client({true, false, true}).choose(1, 2));
   //        11        12        13
   //   +---------+---------+---------+
