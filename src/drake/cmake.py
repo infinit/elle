@@ -11,7 +11,7 @@ class CMakeBuilder(drake.Builder):
     `dsts`: what will be built.
     `vars`: dict variables passed to cmake via `-D`.
     `targets`: list of Makefile targets.
-    `path_to_cmake_source`: path to the direction containing the CMakeFile.
+    `path_to_cmake_source`: path to the directory containing the CMakeFile.
     '''
     self.__toolkit = toolkit
     self.__vars = vars

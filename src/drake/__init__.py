@@ -3211,7 +3211,7 @@ def __copy_stripped(source, to, strip_prefix, builder, post_process, follow_syml
     sched.logger.log('drake.copy', drake.log.LogLevel.debug,
                      'copy as: %s', path)
     path_abs = drake.path_build(path)
-    # Break install loops
+    # Break install loops.
     if path_abs in drake.Drake.current.nodes:
       res = drake.Drake.current.nodes[path_abs]
       if Copy._Copy__original(source) is res:
