@@ -25,11 +25,6 @@ class CMakeBuilder(drake.Builder):
       'CXX': self.toolkit.cxx,
     })
     self.__cmake_cache = drake.node('CMakeCache.txt')
-    mdt = self.__env.get('MACOSX_DEPLOYMENT_TARGET', None)
-    # cmake sets the appropriate -isysroot depending on MACOSX_DEPLOYMENT_TARGET
-    # but the STL in SDKS prior to 10.9 are not cxx11 compliant (no std::unique_ptr)
-    if mdt and (mdt == '10.7'or mdt == '10.8'):
-      self.__env['MACOSX_DEPLOYMENT_TARGET'] = '10.9'
     self.__targets = targets
     # cmake 3 compat
     self.__vars.update({'CMAKE_SYSTEM_PROCESSOR': 'x86_64'})
