@@ -2155,7 +2155,7 @@ class PatchAndInstall(drake.Install):
       if not os.path.exists(dep_file):
         import shutil
         shutil.copy(l, dep_dir)
-        get_deps_fix_rpaths(drake.Path(dep_file))
+        self.get_deps_fix_rpaths(drake.Path(dep_file))
         os.chmod(dep_file, 0o755)
         set_lib_id(dep_file)
         os.chmod(dep_file, 0o555)
