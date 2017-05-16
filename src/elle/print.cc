@@ -238,7 +238,7 @@ namespace elle
       using Iterator = decltype(input.begin());
       qi::rule<Iterator, std::shared_ptr<Composite>()> phrase;
       qi::rule<Iterator, char()> escape =
-        qi::char_('\\') >> qi::char_("\\{}%");
+        (qi::char_('\\') >> qi::char_("\\{}%"))[qi::_val = qi::_2];
       qi::rule<Iterator, std::string()> literal =
         *(escape | (qi::char_  - '{' - '}' - '\\' - '%') );
       qi::rule<Iterator, std::shared_ptr<Expression>()> plain =

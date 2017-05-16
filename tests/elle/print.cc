@@ -19,6 +19,13 @@ no_param()
 
 static
 void
+litteral()
+{
+  BOOST_CHECK_EQUAL(elle::print("\\}\\{\\{\\}"), "}{{}");
+}
+
+static
+void
 string()
 {
   BOOST_CHECK_EQUAL(elle::print("foo{}baz", "bar"), "foobarbaz");
@@ -140,6 +147,7 @@ ELLE_TEST_SUITE()
   auto& suite = boost::unit_test::framework::master_test_suite();
   suite.add(BOOST_TEST_CASE(empty));
   suite.add(BOOST_TEST_CASE(no_param));
+  suite.add(BOOST_TEST_CASE(litteral));
   suite.add(BOOST_TEST_CASE(string));
   suite.add(BOOST_TEST_CASE(null_string));
   suite.add(BOOST_TEST_CASE(c_string));
