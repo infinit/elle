@@ -1,5 +1,5 @@
 #include <elle/fwd.hh>
-#include <elle/printf.hh>
+#include <elle/print.hh>
 
 namespace elle
 {
@@ -36,7 +36,7 @@ namespace elle
         try
         {
           this->_send(level, type, indent, component, file, line, function,
-                      elle::sprintf(fmt, std::forward<Args>(args)...));
+                      elle::print(fmt, std::forward<Args>(args)...));
         }
         // Catching ellipsis to avoid header dependencies. AFAICT only
         // elle::print can throw, and it only throws elle::Error.
@@ -49,7 +49,7 @@ namespace elle
                       __FILE__,
                       __LINE__,
                       ELLE_COMPILER_PRETTY_FUNCTION,
-                      elle::sprintf("%s:%s: invalid log: %s", file, line, fmt)
+                      elle::print("%s:%s: invalid log: %s", file, line, fmt)
             );
           if (debug)
             throw;
