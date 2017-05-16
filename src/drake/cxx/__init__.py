@@ -286,9 +286,7 @@ class Config:
       self._includes[path] = None
 
 
-
     def include_path(self):
-
         return list(self._includes)
 
     @property
