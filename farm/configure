@@ -123,6 +123,9 @@ with drake.Drake(%(dir_source)r) as d:
     drake_run()
 '''
 
+if options.os in ['macosx', 'macosx64', 'osx']:
+  options.os = 'macos'
+
 parameters = {
   'compiler': None,
   'environ': {},
@@ -133,6 +136,7 @@ parameters = {
   'valgrind': False,
   'production_build': True,
   'arch': options.arch,
+  'os': options.os,
   'drake_utils': '%s/../drake-utils.py' % os.path.dirname(os.path.realpath(__file__)),
   'project': options.project,
 }
@@ -150,7 +154,7 @@ elif options.os == 'jessie':
   pass
 elif options.os in ['trusty', 'xenial']:
   parameters['valgrind'] = True
-elif options.os in ['macos', 'macosx', 'macosx64', 'osx']:
+elif options.os == 'macos':
   parameters['compiler'] = 'clang++'
   parameters['environ'] = {'MACOSX_DEPLOYMENT_TARGET': '10.7'}
   parameters['flags'] = ('-ftemplate-depth=512', '-stdlib=libc++')
