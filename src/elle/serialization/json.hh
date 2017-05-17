@@ -1,8 +1,7 @@
-#ifndef ELLE_SERIALIZATION_JSON_HH
-# define ELLE_SERIALIZATION_JSON_HH
+#pragma once
 
-# include <elle/serialization/json/SerializerIn.hh>
-# include <elle/serialization/json/SerializerOut.hh>
+#include <elle/serialization/json/SerializerIn.hh>
+#include <elle/serialization/json/SerializerOut.hh>
 
 namespace elle
 {
@@ -19,10 +18,10 @@ namespace elle
     {
       /// Deserialize an instance of T represented in JSON.
       ///
-      /// @tparam T The type expected.
+      /// @tparam T          The expected type.
       /// @tparam Serializer The type of Serializer in use.
-      /// @tparam ...Args The types of other arguments.
-      /// @param ...args The arguments.
+      /// @tparam ...Args    The types of other arguments.
+      /// @param ...args     The arguments.
       /// @returns A instance of T.
       template <typename T, typename Serializer = void, typename ... Args>
       auto
@@ -34,10 +33,10 @@ namespace elle
 
       /// Serialize an instance of T to JSON.
       ///
-      /// @tparam Serializer The type of Serializer in use.
-      /// @tparam ...Args The types of other arguments.
-      /// @param o The object to serialize.
-      /// @param ...args The arguments.
+      /// @tparam Serializer  The type of Serializer in use.
+      /// @tparam ...Args     The types of other arguments.
+      /// @param o            The object to serialize.
+      /// @param ...args      The arguments.
       /// @returns A
       template <typename Serializer = void, typename T, typename ... Args>
       auto
@@ -49,5 +48,3 @@ namespace elle
     }
   }
 }
-
-#endif
