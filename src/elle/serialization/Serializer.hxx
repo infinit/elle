@@ -211,13 +211,8 @@ namespace elle
     public:
       template <typename P, typename T>
       static
-      std::enable_if_t<
-        std::is_base_of<VirtuallySerializableBase, T>::value,
-        void
-      >
-      _smart_virtual_switch(
-        Serializer& s,
-        P& ptr)
+      std::enable_if_t<virtually<T>()>
+      _smart_virtual_switch(Serializer& s, P& ptr)
       {
         if (s.out())
         {
@@ -260,13 +255,8 @@ namespace elle
 
       template <typename P, typename T>
       static
-      std::enable_if_t<
-        !std::is_base_of<VirtuallySerializableBase, T>::value,
-        void
-      >
-      _smart_virtual_switch(
-        Serializer& s,
-        P& ptr)
+      std::enable_if_t<!virtually<T>()>
+      _smart_virtual_switch(Serializer& s, P& ptr)
       {
         if (s.in())
           _details::_set_ptr(
@@ -726,17 +716,18 @@ namespace elle
     void
     Serializer::serialize_switch(Ser& s, T& v)
     {
+      static_assert(!virtually<T>(),
+        "serialize VirtuallySerializable objects through a pointer type");
       ELLE_LOG_COMPONENT("elle.serialization.Serializer");
       if (s.out())
       {
+        // Braces to avoid warnings.
         ELLE_DUMP("value: %s", v);
       }
-      static_assert(
-        !std::is_base_of<VirtuallySerializableBase, T>::value,
-        "serialize VirtuallySerializable objects through a pointer type");
       Details::template Switch<Details::api<T, S>(), T, S>::value(s, v);
       if (s.in())
       {
+        // Braces to avoid warnings.
         ELLE_DUMP("value: %s", v);
       }
     }
@@ -749,8 +740,7 @@ namespace elle
     void
     Serializer::serialize(std::string const& name, T& v)
     {
-      static_assert(
-        !std::is_base_of<VirtuallySerializableBase, T>::value,
+      static_assert(!virtually<T>(),
         "serialize VirtuallySerializable objects through a pointer type");
       if (auto entry = this->enter(name))
       {

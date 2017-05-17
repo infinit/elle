@@ -1,7 +1,8 @@
-#ifndef ELLE_SERIALIZATION_FWD_HH
-# define ELLE_SERIALIZATION_FWD_HH
+#pragma once
 
-# include <elle/fwd.hh>
+#include <type_traits>
+
+#include <elle/fwd.hh>
 
 namespace elle
 {
@@ -57,7 +58,13 @@ namespace elle
       bool
       has_serialize_convert_api();
     }
+
+    /// Whether T is serialized polymorphically.
+    // FIXME: C++17: variable templates.
+    template <typename T>
+    constexpr bool virtually()
+    {
+      return std::is_base_of<VirtuallySerializableBase, T>::value;
+    }
   }
 }
-
-#endif
