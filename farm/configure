@@ -150,7 +150,7 @@ elif options.os == 'jessie':
   pass
 elif options.os in ['trusty', 'xenial']:
   parameters['valgrind'] = True
-elif options.os in ['macos', 'macosx', 'macosx64', 'osx']
+elif options.os in ['macos', 'macosx', 'macosx64', 'osx']:
   parameters['compiler'] = 'clang++'
   parameters['environ'] = {'MACOSX_DEPLOYMENT_TARGET': '10.7'}
   parameters['flags'] = ('-ftemplate-depth=512', '-stdlib=libc++')
