@@ -84,7 +84,7 @@ namespace elle
       struct map_helper<F, List<Head, Tail...>, List<Args...>>
       {
         using type = typename std::conditional<
-          std::is_same<typename F<Head, Args...>::type, void>::value,
+          std::is_void<typename F<Head, Args...>::type>::value,
           typename List<Tail...>::template map<F, Args...>::type,
           typename List<Tail...>::template map<F, Args...>::type
           ::template prepend<typename F<Head, Args...>::type>::type>::type;

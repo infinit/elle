@@ -171,14 +171,14 @@ namespace elle
       }
 
       template<typename P, typename T>
-      std::enable_if_t<std::is_same<P, T>::value, void>
+      std::enable_if_t<std::is_same<P, T>::value>
       _set_ptr(P*& target, T* ptr)
       {
         target = ptr;
       }
 
       template<typename P, typename T>
-      std::enable_if_t<!std::is_same<P, T>::value, void>
+      std::enable_if_t<!std::is_same<P, T>::value>
       _set_ptr(P*& target, T* ptr)
       {
         target = dynamic_cast<P*>(ptr);
@@ -442,7 +442,7 @@ namespace elle
           _details::has_serialize_functions_api<T, S>() ? functions :
           _details::has_serialize_method_api<T, S>() ? method :
           _details::has_serialize_method_versionned_api<T, S>() ? method_versionned :
-          std::is_same<S, void>::value ? pod : pod_api;
+          std::is_void<S>::value ? pod : pod_api;
       }
 
       // New

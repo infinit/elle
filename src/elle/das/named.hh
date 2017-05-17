@@ -512,7 +512,7 @@ namespace elle
         public:
           using Super = result_type<R>;
           using Super::Super;
-          using is_void = std::is_same<R, void>;
+          using is_void = std::is_void<R>;
           R
           operator()()
           {
