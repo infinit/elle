@@ -74,7 +74,7 @@ namespace elle
       __FILE__,
       __LINE__,
       ELLE_COMPILER_PRETTY_FUNCTION,
-      "AVG %12s %16tMIN %16s %32tMAX %12s %48tCNT %12s %64tTOT %8s ms",
+      "AVG %s\tMIN %s\tMAX %s\tCNT %s\tTOT %s ms",
       this->_sum / this->_count,
       this->_min,
       this->_max,
