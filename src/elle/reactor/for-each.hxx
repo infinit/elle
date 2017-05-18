@@ -1,7 +1,6 @@
-#pragma once
-
-# include <elle/reactor/Scope.hh>
-# include <elle/reactor/scheduler.hh>
+#include <elle/With.hh>
+#include <elle/reactor/Scope.hh>
+#include <elle/reactor/scheduler.hh>
 
 namespace elle
 {

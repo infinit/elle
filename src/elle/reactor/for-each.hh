@@ -1,10 +1,7 @@
 #pragma once
 
-# include <elle/Exception.hh>
-# include <elle/With.hh>
-# include <elle/compiler.hh>
-# include <elle/reactor/Scope.hh>
-# include <elle/reactor/scheduler.hh>
+#include <elle/Exception.hh>
+#include <elle/compiler.hh>
 
 namespace elle
 {
@@ -12,15 +9,15 @@ namespace elle
   {
     /// Apply a given function to every item of a given container in parallel.
     ///
-    /// \code{.cc}
+    /// @code{.cc}
     ///
     /// // Consider a webservice that calculates the square of a given integer.
-    /// // web_square makes the HTTP call and return the value.
+    /// // web_square makes the HTTP call and returns the value.
     ///
     /// int
     /// web_square(int t);
     ///
-    /// auto c = std::vector{1, 2, 3, 4};
+    /// auto c = std::vector<int>{1, 2, 3, 4};
     ///
     /// elle::reactor::for_each_parallel(
     ///   c,
@@ -30,7 +27,7 @@ namespace elle
     ///   });
     /// // Result (arbitrary order): 9 16 1 4
     ///
-    /// \endcode
+    /// @endcode
     template <typename C, typename F>
     void
     for_each_parallel(C& c, F const& f, std::string const& name = std::string{});
@@ -49,4 +46,5 @@ namespace elle
     break_parallel();
   }
 }
+
 # include <elle/reactor/for-each.hxx>
