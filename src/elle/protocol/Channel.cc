@@ -1,6 +1,7 @@
-#include <elle/log.hh>
-
 #include <elle/protocol/Channel.hh>
+
+#include <elle/algorithm.hh>
+#include <elle/log.hh>
 #include <elle/protocol/ChanneledStream.hh>
 
 ELLE_LOG_COMPONENT("elle.protocol.Channel");
@@ -19,6 +20,7 @@ namespace elle
       , _id(id)
     {
       ELLE_DEBUG_SCOPE("%s: open %s", this->_backend, *this);
+      ELLE_ASSERT(!elle::contains(this->_backend._channels, this->_id));
       this->_backend._channels[this->_id] = this;
     }
 
@@ -35,14 +37,13 @@ namespace elle
       , _available(std::move(source._available))
     {
       source._id = 0;
-      ELLE_ASSERT_NEQ(this->_backend._channels.find(this->_id),
-                      this->_backend._channels.end());
+      ELLE_ASSERT(elle::contains(this->_backend._channels, this->_id));
       this->_backend._channels[this->_id] = this;
     }
 
     Channel::~Channel()
     {
-      if (this->_id != 0)
+      if (this->_id)
       {
         ELLE_TRACE_SCOPE("%s: close", this);
         if (!this->_packets.empty())
@@ -51,8 +52,7 @@ namespace elle
         if (!this->_available.waiters().empty())
           ELLE_TRACE("closing with %s waiters in line",
                      this->_available.waiters().size());
-        ELLE_ASSERT_NEQ(this->_backend._channels.find(this->_id),
-                        this->_backend._channels.end());
+        ELLE_ASSERT(elle::contains(this->_backend._channels, this->_id));
         this->_backend._channels.erase(this->_id);
       }
     }
@@ -60,7 +60,7 @@ namespace elle
     /*--------.
     | Version |
     `--------*/
-    const elle::Version&
+    elle::Version const&
     Channel::version() const
     {
       return this->_backend.version();
@@ -74,7 +74,8 @@ namespace elle
     void
     Channel::print(std::ostream& s) const
     {
-      s << "channel " << this->_id;
+      elle::fprintf(s, "Channel(%s, %f)",
+                    this->_id, this->_backend);
     }
 
     /*----------.
