@@ -138,6 +138,7 @@ namespace elle
       succeeded = true;
       ELLE_TRACE_("%s: destruct", this)
       this->destroy_it(this->_value);
+      ELLE_TRACE_("%s: return result", this);
       return res.value();
     }
     catch (...)
@@ -163,6 +164,7 @@ namespace elle
                   this, elle::exception_string(e));
       std::rethrow_exception(e);
     }
+    elle::unreachable();
   }
 #undef ELLE_TRACE_
 }
