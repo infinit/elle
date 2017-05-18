@@ -472,12 +472,22 @@ namespace elle
       {
         if (!this->_state)
           return {};
-        else if (this->_state->accepted
-                 && this->_state->accepted->confirmed
-                 && this->_state->accepted->value.template is<T>())
-          return this->_state->accepted;
+        else if (this->_state->accepted && this->_state->accepted->confirmed)
+          if (this->_state->accepted->value.template is<T>())
+            return this->_state->accepted;
+          else
+            return Accepted(this->_state->proposal, *this->_value, true);
         else if (this->_value)
-          return Accepted(this->_state->proposal, *this->_value, true);
+        {
+          // This is slightly hackish: in case the current proposal is not
+          // confirmed, the value is committed for the previous version, and we
+          // use a null round number and node id because nobody probably
+          // cares. The other solution would be to also commit the latest
+          // proposal, but I don't think it's worth the trouble, especially
+          // given it would require a serialization version change.
+          return Accepted(Proposal(this->_state->proposal.version - 1, {}, {}),
+                          *this->_value, true);
+        }
         else
           return {};
       }
