@@ -24,7 +24,6 @@ namespace elle
       this->_backend._channels[this->_id] = this;
     }
 
-    // Factor those two by delegating the constructor.
     Channel::Channel(ChanneledStream& backend)
       : Channel(backend, backend._id_generate())
     {}

@@ -99,7 +99,7 @@ namespace elle
     template <typename IS>
     struct GetRes<IS, void>
     {
-      static inline
+      static
       void
       get_res(IS& input)
       {

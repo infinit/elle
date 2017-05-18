@@ -10,36 +10,35 @@ ELLE_LOG_COMPONENT("elle.protocol.Channel.test");
 #include <elle/reactor/network/TCPServer.hh>
 #include <elle/reactor/network/TCPSocket.hh>
 
-static
+template <typename Server, typename Client>
 void
-_eof(std::function<void (elle::protocol::ChanneledStream&)> server,
-     std::function<void (elle::protocol::ChanneledStream&)> client)
+_eof(Server server, Client client)
 {
-  elle::reactor::network::TCPServer s;
+  auto s = elle::reactor::network::TCPServer{};
   s.listen();
-  elle::reactor::network::TCPSocket socket(
+  auto socket = elle::reactor::network::TCPSocket(
     elle::reactor::network::TCPSocket::EndPoint(
       boost::asio::ip::address::from_string("127.0.0.1"), s.port()));
-  elle::reactor::Thread thread(
-    "server",
-    [&]
+  auto&& thread = elle::reactor::Thread("server", [&]
     {
       while (true)
       {
         auto socket = s.accept();
-        elle::protocol::Serializer ser(*socket);
-        elle::protocol::ChanneledStream channels(ser);
+        auto&& ser = elle::protocol::Serializer(*socket);
+        auto&& channels = elle::protocol::ChanneledStream(ser);
         server(channels);
       }
     });
-  elle::protocol::Serializer ser(socket);
-  elle::protocol::ChanneledStream channels(ser);
+  auto&& ser = elle::protocol::Serializer(socket);
+  auto&& channels = elle::protocol::ChanneledStream(ser);
+  ELLE_LOG("eof: call client on %s", channels);
   client(channels);
+  ELLE_LOG("eof: done");
 }
 
 ELLE_TEST_SCHEDULED(eof_accept)
 {
-  elle::reactor::Barrier accepting;
+  auto accepting = elle::reactor::Barrier{};
   _eof(
     [&] (elle::protocol::ChanneledStream& channels)
     {
@@ -48,29 +47,33 @@ ELLE_TEST_SCHEDULED(eof_accept)
     [&] (elle::protocol::ChanneledStream& channels)
     {
       accepting.open();
-      BOOST_CHECK_THROW(
-        channels.accept(), elle::reactor::network::ConnectionClosed);
+      BOOST_CHECK_THROW(channels.accept(),
+                        elle::reactor::network::ConnectionClosed);
     });
 }
 
 ELLE_TEST_SCHEDULED(eof_read)
 {
-  elle::Buffer data("foo");
-  elle::reactor::Barrier accepting;
+  auto const data = elle::Buffer("foo");
+  auto accepting = elle::reactor::Barrier{};
   _eof(
     [&] (elle::protocol::ChanneledStream& channels)
     {
-      elle::protocol::Channel c(channels);
+      ELLE_LOG("server: create channel");
+      auto c = elle::protocol::Channel(channels);
+      ELLE_LOG("server: created channel: %s, writing data", c);
       c.write(data);
+      ELLE_LOG("server: wrote data, quit");
     },
     [&] (elle::protocol::ChanneledStream& channels)
     {
-      std::cerr << "A" << std::endl;
+      ELLE_LOG("client: accept");
       auto c = channels.accept();
-      std::cerr << "B" << std::endl;
+      ELLE_LOG("client: read");
       BOOST_TEST(c.read() == data);
-      std::cerr << "C" << std::endl;
+      ELLE_LOG("client: read again");
       BOOST_CHECK_THROW(c.read(), elle::reactor::network::ConnectionClosed);
+      ELLE_LOG("client: quit");
     });
 }
 
@@ -80,7 +83,7 @@ ELLE_TEST_SUITE()
   {
     auto eof = BOOST_TEST_SUITE("eof");
     suite.add(eof);
-    eof->add(ELLE_TEST_CASE(eof_accept, "accept"), 0, valgrind(1));
-    eof->add(ELLE_TEST_CASE(eof_read, "read"), 0, valgrind(1));
+    eof->add(ELLE_TEST_CASE(eof_accept, "accept"), 0, valgrind(2));
+    eof->add(ELLE_TEST_CASE(eof_read, "read"), 0, valgrind(2));
   }
 }

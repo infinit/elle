@@ -73,15 +73,12 @@ namespace elle
             ELLE_DEBUG("received %f on channel %s", p, *it->second);
             it->second->_packets.put(std::move(p));
           }
+          else if (this->_master && channel_id > 0
+                   || !this->_master && channel_id < 0)
+            ELLE_TRACE("discard orphaned packet on channel %s", channel_id);
           else
           {
-            if (this->_master && channel_id > 0 ||
-                !this->_master && channel_id < 0)
-            {
-              ELLE_TRACE("discard orphaned packet on channel %s", channel_id);
-              continue;
-            }
-            Channel res(*this, channel_id);
+            auto res = Channel(*this, channel_id);
             ELLE_DEBUG("received %f on new channel %s", p, channel_id);
             res._packets.put(std::move(p));
             this->_channels_new.put(std::move(res));
