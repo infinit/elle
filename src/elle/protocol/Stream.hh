@@ -1,13 +1,12 @@
-#ifndef ELLE_PROTOCOL_STREAM_HH
-# define ELLE_PROTOCOL_STREAM_HH
+#pragma once
 
-# include <iosfwd>
+#include <iosfwd>
 
-# include <elle/Buffer.hh>
-# include <elle/Printable.hh>
-# include <elle/Version.hh>
+#include <elle/Buffer.hh>
+#include <elle/Printable.hh>
+#include <elle/Version.hh>
 
-# include <elle/reactor/fwd.hh>
+#include <elle/reactor/fwd.hh>
 
 namespace elle
 {
@@ -73,7 +72,7 @@ namespace elle
     | Int serialization |
     `------------------*/
     public:
-      /// Write an uint32_t to \a given stream.
+      /// Write an uint32_t to @a given stream.
       ///
       /// The version is for compatibility reasons. From version 0.3.0, the way
       /// the protocol serializes `int`s changed.
@@ -84,7 +83,7 @@ namespace elle
       static
       void
       uint32_put(std::ostream& s, uint32_t i, elle::Version const& v);
-      /// Read an uint32_t from \a given stream.
+      /// Read an uint32_t from @a given stream.
       ///
       /// The version is for compatibility reasons. From version 0.3.0, the way
       /// the protocol serializes `int`s changed.
@@ -94,7 +93,7 @@ namespace elle
       static
       uint32_t
       uint32_get(std::istream& s, elle::Version const& v);
-      /// Write an uint32_t to \a given buffer.
+      /// Write an uint32_t to @a given buffer.
       ///
       /// The version is for compatibility reasons. From version 0.3.0, the way
       /// the protocol serializes `int`s changed.
@@ -105,7 +104,7 @@ namespace elle
       static
       void
       uint32_put(elle::Buffer& buffer, uint32_t i, elle::Version const& v);
-      /// Read an uint32_t from \a given stream.
+      /// Read an uint32_t from @a given stream.
       ///
       /// The version is for compatibility reasons. From version 0.3.0, the way
       /// the protocol serializes `int`s changed.
@@ -118,5 +117,3 @@ namespace elle
     };
   }
 }
-
-#endif

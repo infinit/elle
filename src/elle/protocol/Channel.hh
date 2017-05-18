@@ -1,14 +1,13 @@
-#ifndef ELLE_PROTOCOL_CHANNEL_HH
-# define ELLE_PROTOCOL_CHANNEL_HH
+#pragma once
 
-# include <elle/Printable.hh>
+#include <elle/Printable.hh>
 
-# include <elle/reactor/Channel.hh>
-# include <elle/reactor/Thread.hh>
-# include <elle/reactor/signal.hh>
+#include <elle/reactor/Channel.hh>
+#include <elle/reactor/Thread.hh>
+#include <elle/reactor/signal.hh>
 
-# include <elle/protocol/Stream.hh>
-# include <elle/protocol/fwd.hh>
+#include <elle/protocol/Stream.hh>
+#include <elle/protocol/fwd.hh>
 
 namespace elle
 {
@@ -23,19 +22,19 @@ namespace elle
     ///
     /// @see ChanneledStream for more information.
     ///
-    /// \code{.cc}
+    /// @code{.cc}
     ///
     /// // Consider channeled_stream, a ChanneledStream.
     ///
     /// // Open a Channel.
-    /// elle::protocol::Channel channel1(channeled_stream);
+    /// auto channel1 = elle::protocol::Channel(channeled_stream);
     /// channel1.write({"hello there!"});
     ///
     /// // Wait and connect to a Channel open by the peer.
     /// auto channel2 = channeled_stream.accept();
     /// auto packet = channel2.read();
     ///
-    /// \endcode
+    /// @endcode
     class Channel
       : public Stream
     {
@@ -110,5 +109,3 @@ namespace elle
     };
   }
 }
-
-#endif
