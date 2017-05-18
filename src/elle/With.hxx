@@ -3,7 +3,6 @@
 #include <elle/Exception.hh>
 #include <elle/assert.hh>
 #include <elle/log.hh>
-#include <elle/log.hh>
 
 namespace elle
 {
@@ -57,12 +56,10 @@ namespace elle
   {
   public:
     template <typename F, typename V>
-    inline
     ReturnHolder(F const& f, V& v)
       : _value(f(v))
     {}
 
-    inline
     T&&
     value()
     {
@@ -79,13 +76,11 @@ namespace elle
   {
   public:
     template <typename F, typename V>
-    inline
     ReturnHolder(F const& f, V& v)
     {
       f(v);
     }
 
-    inline
     void
     value()
     {}

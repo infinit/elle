@@ -30,7 +30,7 @@ namespace elle
   ///   cannot be nested (because of the missing information of its concrete
   ///   type), and, therefore is lost.
   ///
-  /// \code{.cc}
+  /// @code{.cc}
   ///
   /// struct DThrower
   /// {
@@ -53,7 +53,7 @@ namespace elle
   ///     auto i = elle::With<DThrower>(destructor_throw) << [] (DThrower& d)
   ///     {
   ///       if (body_throw)
-  ///        throw 2;
+  ///         throw 2;
   ///       return 3;
   ///     };
   ///     std::cout << i;
@@ -64,11 +64,11 @@ namespace elle
   ///   }
   /// }
   /// test(false, false); // Print 3;
-  /// test(true, false); // Print 2;
-  /// test(false, true); // Print 1;
-  /// test(true, true); // Print 1;
+  /// test(true, false);  // Print 2;
+  /// test(false, true);  // Print 1;
+  /// test(true, true);   // Print 1;
   ///
-  /// \endcode
+  /// @endcode
   template <typename T>
   class With
   {
