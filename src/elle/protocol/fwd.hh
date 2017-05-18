@@ -1,5 +1,4 @@
-#ifndef ELLE_PROTOCOL_FWD_HH
-# define ELLE_PROTOCOL_FWD_HH
+#pragma once
 
 namespace elle
 {
@@ -14,5 +13,3 @@ namespace elle
     class Stream;
   }
 }
-
-#endif

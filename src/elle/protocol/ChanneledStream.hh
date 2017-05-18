@@ -20,15 +20,15 @@ namespace elle
     /// the socket to communicate through the same socket. Multiplexing and
     /// demultiplexing will be transparent for the user.
     ///
-    /// \code{.cc}
+    /// @code{.cc}
     ///
     /// // Consider two peers, connected by an arbitrary socket s.
     ///
     /// // Bob creates two Channels.
-    /// elle::protocol::Serializer serializer(s);
-    /// elle::protocol::ChanneledStream channel_stream(serializer);
-    /// elle::protocol::Channel c1(channel_stream);
-    /// elle::protocol::Channel c2(channel_stream);
+    /// auto serializer =elle::protocol::Serializer(s);
+    /// auto channel_stream = elle::protocol::ChanneledStream(serializer);
+    /// auto c1 = elle::protocol::Channel(channel_stream);
+    /// auto c2 = elle::protocol::Channel(channel_stream);
     ///
     /// // Alice, on the other side can get those two Channels, via accept.
     /// elle::protocol::Serializer serializer(s);
@@ -36,7 +36,7 @@ namespace elle
     /// auto channel = channel_stream.accept();
     /// auto channel2 = channel_stream.accept();
     ///
-    /// \endcode
+    /// @endcode
     class ChanneledStream
       : public Stream
     {

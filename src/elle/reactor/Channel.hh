@@ -160,4 +160,4 @@ namespace elle
   }
 }
 
-# include <elle/reactor/Channel.hxx>
+#include <elle/reactor/Channel.hxx>
