@@ -115,7 +115,8 @@ namespace elle
         }
         {
           elle::Buffer p(backend.read());
-          ELLE_ASSERT_EQ(1, (signed)p.size());
+          if (signed(p.size()) != 1)
+            elle::err("invalid hanshake packet size: %s", p.size());
           his = p.contents()[0];
           ELLE_DEBUG("%s: his roll: %d", *this, (int)his);
         }
