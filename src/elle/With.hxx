@@ -113,61 +113,56 @@ namespace elle
     ELLE_TRACE("value destroyed");
   }
 
+// Compiling with mingw gcc 4.8 and 5.3 with -O2 chokes on the traces:
+// it calls log::Send's dtor with this = nullptr.
+#ifdef INFINIT_WINDOWS
+# define ELLE_TRACE_ ELLE_TRACE
+#else
+# define ELLE_TRACE_(...) {}
+#endif
+
   template <typename T>
   template <typename F>
   auto
   With<T>::_run(F const& action) -> decltype(action(std::declval<T&>()))
   {
-    using Value = decltype(action(std::declval<T&>()));
-
     ELLE_LOG_COMPONENT("elle.With");
-
     ELLE_ASSERT(!this->_used);
+
     this->_used = true;
     bool succeeded = false;
     try
     {
-      ReturnHolder<Value> res(action, *this->_value);
+      using Value = decltype(action(std::declval<T&>()));
+      auto res = ReturnHolder<Value>(action, *this->_value);
       succeeded = true;
-      /* Compiling with mingw gcc 4.8 and 5.3 with O2 chokes on the
-      *  traces: it calls log::Send's dtor with this = 0;
-      */
-#ifndef INFINIT_WINDOWS
-      ELLE_TRACE("%s: destruct", *this)
-#endif
+      ELLE_TRACE_("%s: destruct", this)
       this->destroy_it(this->_value);
       return res.value();
     }
     catch (...)
     {
-#ifndef INFINIT_WINDOWS
-      ELLE_TRACE("%s: caught exception with succeeded=%s: %s",
-                 *this, succeeded, elle::exception_string());
-#endif
-      if (succeeded)
-        throw;
+      ELLE_TRACE_("%s: caught exception with succeeded=%s: %s",
+                  this, succeeded, elle::exception_string());
       auto e = std::current_exception();
-      try
+      if (!succeeded)
       {
-#ifndef INFINIT_WINDOWS
-        ELLE_TRACE("%s: destruct", *this)
-#endif
-        this->destroy_it(this->_value);
+        try
+        {
+          ELLE_TRACE_("%s: destruct", this)
+          this->destroy_it(this->_value);
+        }
+        catch (...)
+        {
+          ELLE_ERR("losing exception: %s", elle::exception_string(e));
+          e = std::current_exception();
+          ELLE_ERR("overriden by: %s", elle::exception_string(e));
+        }
       }
-      catch (...)
-      {
-        ELLE_ERR("losing exception: %s", elle::exception_string(e));
-        ELLE_ERR("overriden by: %s", elle::exception_string());
-        throw;
-      }
-#ifndef INFINIT_WINDOWS
-      ELLE_TRACE("%s: rethrowing exception '%s'",
-                 *this, elle::exception_string(e));
-#endif
-      /* Do not use 'throw;' here! ~T might have yielded and current_exception
-       * might not be coroutine-safe (observed on gcc 4.8.0 linux)
-       */
+      ELLE_TRACE_("%s: rethrowing exception: %s",
+                  this, elle::exception_string(e));
       std::rethrow_exception(e);
     }
   }
+#undef ELLE_TRACE_
 }
