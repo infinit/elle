@@ -60,17 +60,17 @@ def configure(cryptography,
   # local_cxx_config += boost.config_thread()
 
   sources = drake.nodes(
-    'ChanneledStream.hh',
-    'RPC.hxx',
-    'Stream.hh',
-    'Serializer.hh',
     'Channel.cc',
-    'RPC.hh',
-    'ChanneledStream.cc',
-    'Stream.cc',
     'Channel.hh',
-    'Serializer.cc',
+    'ChanneledStream.cc',
+    'ChanneledStream.hh',
     'RPC.cc',
+    'RPC.hh',
+    'RPC.hxx',
+    'Serializer.cc',
+    'Serializer.hh',
+    'Stream.cc',
+    'Stream.hh',
     'exceptions.cc',
     'exceptions.hh',
     'fwd.hh',
@@ -172,3 +172,7 @@ def configure(cryptography,
     rule_install << drake.install(
       headers,
       prefix / 'include' / 'elle' / 'protocol')
+
+# Local Variables:
+# mode: python
+# End:
