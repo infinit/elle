@@ -62,6 +62,7 @@ sys.path.insert(0, os.path.realpath(%(dir_source)r '/drake/src'))
 import drake
 import drake.cxx
 import drake.cxx.boost
+import drake.go
 
 os.environ.update(%(environ)r)
 
@@ -76,6 +77,9 @@ if cxx_toolkit.os == drake.os.macos:
 
 for f in %(flags)r:
   cxx_config.flag(f)
+
+go_toolkit = drake.go.Toolkit(path = %(go_path)r)
+go_config = drake.go.Config()
 
 extra_args = {}
 
@@ -95,6 +99,10 @@ if %(beyond_public)r and %(project)r == 'Filesystem':
 
 if %(project)r == 'Elle':
   extra_args['enable_cryptographic_rotation'] = False
+
+if %(project)r == 'Filesystem':
+  extra_args['go_toolkit'] = go_toolkit
+  extra_args['go_config'] = go_config
 
 with drake.Drake(%(dir_source)r) as d:
   python = %(python)r
@@ -139,6 +147,7 @@ parameters = {
   'os': options.os,
   'drake_utils': '%s/../drake-utils.py' % os.path.dirname(os.path.realpath(__file__)),
   'project': options.project,
+  'go_path': '%s/go-dependencies' % os.path.realpath(options.build_dir)
 }
 
 parameters['beyond_public'] = options.public_beyond
