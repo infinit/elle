@@ -249,12 +249,11 @@ class Toolkit:
     """
     if self.__env is not False:
       return self.__env
-    self.__env = {
-      'GO%s' % k.upper(): getattr(self, k)
-      for k in Toolkit.properties
-      if getattr(self, k) is not None
-    }
-    self.__env['PATH'] = os.environ['PATH']
+    self.__env = dict(os.environ)
+    for k in Toolkit.properties:
+      v = getattr(self, k)
+      if v is not None:
+        self.__env['GO%s' % k.upper()] = v
     return self.__env
 
   def run(self, cmd):
