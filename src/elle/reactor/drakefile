@@ -702,41 +702,29 @@ def configure(curl_config,
     utp_lib,
   ]
   if backend == Backends.io:
+    lib_dynamic_link_libs.append(libcoroutine)
     lib_dynamic_link_libs.append(backend_coro_io)
+    lib_static_link_libs.append(libcoroutine)
     lib_static_link_libs.append(backend_coro_io)
   elif backend == Backends.boost:
     lib_dynamic_link_libs.append(backend_boost_context)
     lib_dynamic_link_libs.append(backend_lib)
     lib_static_link_libs.append(backend_boost_context)
     lib_static_link_libs.append(backend_lib)
+  if fuse_lib is not None:
+    lib_dynamic_link_libs.append(fuse_lib)
   if dokan_lib is not None:
     lib_static_link_libs.append(dokan_lib)
-  if fuse_lib is not None:
-    lib_dynamic_link_libs.append(fuse_lib)
-  lib_static = drake.cxx.StaticLib(
-    lib_path + '/elle_reactor',
-    sources + lib_static_link_libs + openssl_libs,
-    cxx_toolkit, lib_cxx_config)
-  lib_dynamic_link_libs = [
-    curl_lib,
-    elle.library,
-    miniupnpc_lib,
-    utp_lib,
-  ]
-  if backend == Backends.io:
-    lib_dynamic_link_libs.append(libcoroutine)
-    lib_dynamic_link_libs.append(backend_coro_io)
-  elif backend == Backends.boost:
-    lib_dynamic_link_libs.append(backend_boost_context)
-    lib_dynamic_link_libs.append(backend_lib)
-  if fuse_lib is not None:
-    lib_dynamic_link_libs.append(fuse_lib)
   if cxx_toolkit.os in [drake.os.macos]:
     lib_cxx_config.framework_add('DiskArbitration')
     pass #lib_cxx_config.use_local_libcxx = True
   lib_dynamic = drake.cxx.DynLib(
     lib_path + '/elle_reactor',
     sources + lib_dynamic_link_libs + openssl_libs + cxx_libs,
+    cxx_toolkit, lib_cxx_config)
+  lib_static = drake.cxx.StaticLib(
+    lib_path + '/elle_reactor',
+    sources + lib_static_link_libs + openssl_libs,
     cxx_toolkit, lib_cxx_config)
   rule_build << lib_static
   if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
