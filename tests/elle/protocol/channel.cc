@@ -49,6 +49,8 @@ ELLE_TEST_SCHEDULED(eof_accept)
       accepting.open();
       BOOST_CHECK_THROW(channels.accept(),
                         elle::reactor::network::ConnectionClosed);
+      BOOST_CHECK_THROW(elle::protocol::Channel{channels},
+                        elle::reactor::network::ConnectionClosed);
     });
 }
 
