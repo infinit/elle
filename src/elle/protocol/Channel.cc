@@ -21,6 +21,11 @@ namespace elle
     {
       ELLE_DEBUG_SCOPE("%s: open %s", this->_backend, *this);
       ELLE_ASSERT(!elle::contains(this->_backend._channels, this->_id));
+      if (auto e = this->_backend._exception)
+      {
+        ELLE_DEBUG("%s: rethrow: %s", this, elle::exception_string(e));
+        std::rethrow_exception(e);
+      }
       this->_backend._channels[this->_id] = this;
     }
 
@@ -37,6 +42,11 @@ namespace elle
     {
       source._id = 0;
       ELLE_ASSERT(elle::contains(this->_backend._channels, this->_id));
+      if (auto e = this->_backend._exception)
+      {
+        ELLE_DEBUG("%s: rethrow: %s", this, elle::exception_string(e));
+        std::rethrow_exception(e);
+      }
       this->_backend._channels[this->_id] = this;
     }
 
