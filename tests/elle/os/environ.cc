@@ -9,8 +9,8 @@ static
 void
 environ1()
 {
-  std::string key = "hello";
-  std::string val = "world";
+  std::string const key = "hello";
+  std::string const val = "world";
 
   os::setenv(key, val);
   auto environ = os::environ();
@@ -23,8 +23,8 @@ static
 void
 environ2()
 {
-  std::string key = "hello";
-  std::string val = "world";
+  std::string const key = "hello";
+  std::string const val = "world";
 
   os::setenv(key, val);
   BOOST_TEST(os::getenv(key) == val);
@@ -53,8 +53,8 @@ static
 void
 setenv1()
 {
-  std::string key = "hello";
-  std::string val = "world";
+  std::string const key = "hello";
+  std::string const val = "world";
   elle::os::setenv(key, val, true);
   BOOST_TEST(elle::os::getenv(key) == val);
 }
@@ -63,9 +63,9 @@ static
 void
 setenv2()
 {
-  std::string key = "hello";
-  std::string val = "world";
-  std::string val2 = "WORLD";
+  std::string const key = "hello";
+  std::string const val = "world";
+  std::string const val2 = "WORLD";
   elle::os::setenv(key, val, false);
   elle::os::setenv(key, val2, false);
   BOOST_TEST(elle::os::getenv(key) == val);
