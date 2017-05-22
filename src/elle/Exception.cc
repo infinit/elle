@@ -18,7 +18,6 @@ namespace elle
                        std::string const& message)
     : std::runtime_error(message)
     , _backtrace(bt)
-    , _inner_exception(nullptr)
   {}
 
   Exception::~Exception() noexcept (true)
@@ -69,14 +68,10 @@ namespace elle
       eptr = cur;
     }
     if (!eptr)
-      throw Exception{"no current exception present"};
+      throw Exception{"no current exception"};
     try
     {
       std::rethrow_exception(eptr);
-    }
-    catch (Exception const& e)
-    {
-      return e.what();
     }
     catch (std::exception const& e)
     {
