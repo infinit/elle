@@ -12,7 +12,7 @@ environ1()
   std::string key = "hello";
   std::string val = "world";
 
-  os::setenv(key, val, true);
+  os::setenv(key, val);
   auto environ = os::environ();
   BOOST_TEST(elle::contains(environ, key));
   BOOST_TEST(environ.find(key)->second == val);
@@ -26,7 +26,7 @@ environ2()
   std::string key = "hello";
   std::string val = "world";
 
-  os::setenv(key, val, true);
+  os::setenv(key, val);
   BOOST_TEST(os::getenv(key) == val);
   os::unsetenv(key);
   BOOST_CHECK_THROW(os::environ().at(key), std::out_of_range);
@@ -69,6 +69,8 @@ setenv2()
   elle::os::setenv(key, val, false);
   elle::os::setenv(key, val2, false);
   BOOST_TEST(elle::os::getenv(key) == val);
+  elle::os::setenv(key, val2);
+  BOOST_TEST(elle::os::getenv(key) == val2);
 }
 
 ELLE_TEST_SUITE()
