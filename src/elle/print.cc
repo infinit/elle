@@ -365,17 +365,18 @@ namespace elle
       else if (id == &typeid(Branch))
       {
         auto const& branch = static_cast<Branch const&>(ast);
-        auto* cid = &typeid(*branch.cond);
+        auto const& cond = *branch.cond;
+        auto const* cid = &typeid(cond);
         if (cid == &typeid(Next))
         {
           p = p && bool(nth(count));
           ++count;
         }
         else if (cid == &typeid(Index))
-          p = p && bool(nth(static_cast<Index const&>(*branch.cond).n));
+          p = p && bool(nth(static_cast<Index const&>(cond).n));
         else if (cid == &typeid(Name))
         {
-          auto const& name = static_cast<Name const&>(*branch.cond).n;
+          auto const& name = static_cast<Name const&>(cond).n;
           auto it = named.find(name);
           if (it != named.end())
             p = bool(it->second);
@@ -383,7 +384,7 @@ namespace elle
             elle::err("missing named format argument: %s", name);
         }
         else
-          elle::err("unexpected condition: %s", elle::type_info(*branch.cond));
+          elle::err("unexpected condition: %s", elle::type_info(cond));
         print(s, *branch.then, args, count, p, named, full_positional);
       }
     }
