@@ -26,8 +26,8 @@ _message_test(bool env)
   elle::log::TextLogger* logger;
   if (env)
   {
-    elle::os::setenv("ELLE_LOG_LEVEL", "DUMP", 1);
-    elle::os::setenv("ELLE_LOG_DISPLAY_TYPE", "1", 1);
+    elle::os::setenv("ELLE_LOG_LEVEL", "DUMP");
+    elle::os::setenv("ELLE_LOG_DISPLAY_TYPE", "1");
     logger = new elle::log::TextLogger(ss);
   }
   else
@@ -312,7 +312,7 @@ _environment_format_test(bool env)
   clear_env();
   if (env)
   {
-    elle::os::setenv("ELLE_LOG_DISPLAY_TYPE", "1", 1);
+    elle::os::setenv("ELLE_LOG_DISPLAY_TYPE", "1");
     BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_DISPLAY_TYPE"), "1");
     logger = new elle::log::TextLogger(ss);
   }
@@ -337,7 +337,7 @@ _environment_format_test(bool env)
   ELLE_ERR("Test 6")
   res << "[33;01;33m"
       << "[Test] [error] Test 6\n[0m";
-  elle::os::setenv("ELLE_LOG_DISPLAY_TYPE", "0", 1);
+  elle::os::setenv("ELLE_LOG_DISPLAY_TYPE", "0");
 
   elle::log::logger(std::unique_ptr<elle::log::Logger>(nullptr));
 }
@@ -394,7 +394,7 @@ void
 multiline()
 {
   std::stringstream output;
-  elle::os::setenv("ELLE_LOG_LEVEL", "DUMP", 1);
+  elle::os::setenv("ELLE_LOG_LEVEL", "DUMP");
   elle::log::logger(std::make_unique<elle::log::TextLogger>(output));
   ELLE_LOG_COMPONENT("multiline");
   ELLE_TRACE("This message\nis\nsplitted\n\ninto\r\n5 lines\n\n\r\n\r\r");
@@ -431,7 +431,7 @@ component_width()
     return output.str();
   };
 
-  elle::os::setenv("ELLE_LOG_LEVEL", "DUMP", 1);
+  elle::os::setenv("ELLE_LOG_LEVEL", "DUMP");
   BOOST_CHECK_EQUAL(generate_log(),
                     "[foo] foo.1\n"
                     "[bar]   bar.1\n"
@@ -439,7 +439,7 @@ component_width()
                     "[  bar  ]   bar.2\n"
                     "[  foo  ] foo.2\n");
 
-  elle::os::setenv("ELLE_LOG_LEVEL", "TRACE", 1);
+  elle::os::setenv("ELLE_LOG_LEVEL", "TRACE");
   BOOST_CHECK_EQUAL(generate_log(),
                     "[foo] foo.1\n"
                     "[bar]   bar.1\n"
@@ -479,7 +479,7 @@ nested()
     return output.str();
   };
 
-  elle::os::setenv("ELLE_LOG_LEVEL", "TRACE", 1);
+  elle::os::setenv("ELLE_LOG_LEVEL", "TRACE");
   BOOST_CHECK_EQUAL(generate_log(),
                     "[foo] foo.1\n"
                     "[bar]   bar.1\n"
@@ -491,14 +491,14 @@ nested()
                     "[baz]   baz.4\n"
                     "[foo] foo.3\n");
 
-  elle::os::setenv("ELLE_LOG_LEVEL", "baz:TRACE", 1);
+  elle::os::setenv("ELLE_LOG_LEVEL", "baz:TRACE");
   BOOST_CHECK_EQUAL(generate_log(),
                     "[baz]     baz.1\n"
                     "[baz]     baz.2\n"
                     "[baz]   baz.3\n"
                     "[baz]   baz.4\n");
 
-  elle::os::setenv("ELLE_LOG_LEVEL", "bar baz:TRACE", 1);
+  elle::os::setenv("ELLE_LOG_LEVEL", "bar baz:TRACE");
   BOOST_CHECK_EQUAL(generate_log(),
                     "[baz]     baz.1\n"
                     "[baz]     baz.2\n");
@@ -509,7 +509,7 @@ void
 trim()
 {
   std::stringstream output;
-  elle::os::setenv("ELLE_LOG_LEVEL", "DUMP", 1);
+  elle::os::setenv("ELLE_LOG_LEVEL", "DUMP");
   elle::log::logger(std::make_unique<elle::log::TextLogger>(output));
   ELLE_LOG_COMPONENT("trim");
   ELLE_TRACE("   \n\t\t\tThis message is trimmed !    \n\n\r\n\r\r\t ");

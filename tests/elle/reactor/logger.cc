@@ -40,7 +40,7 @@ static
 void
 scheduler_log_test()
 {
-  elle::os::setenv("ELLE_LOG_LEVEL", "NONE,Test:DUMP,in:DUMP,out:DUMP", true);
+  elle::os::setenv("ELLE_LOG_LEVEL", "NONE,Test:DUMP,in:DUMP,out:DUMP");
   logger = new elle::log::TextLogger(ss);
   elle::log::logger(std::unique_ptr<elle::log::Logger>(logger));
 
