@@ -394,7 +394,7 @@ resolution_failure()
         elle::reactor::network::TCPSocket("does.not.exist", "http"),
         elle::reactor::network::ResolutionError);
 
-      elle::os::setenv("ELLE_REACTOR_RESOLVE_TRY_AGAIN", "1", true);
+      elle::os::setenv("ELLE_REACTOR_RESOLVE_TRY_AGAIN", "1");
       BOOST_CHECK_THROW(
         elle::reactor::network::resolve_tcp_repr("localhost:80"),
         elle::reactor::network::ResolutionError);
