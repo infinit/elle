@@ -37,7 +37,7 @@ namespace elle
     ///
     /// @return `val`, even if that's not the current value of `$key`.
     std::string
-    setenv(std::string const& key, std::string const& val, bool overwrite);
+    setenv(std::string const& key, std::string const& val, bool overwrite = true);
 
     /// Import all the variables from env to the (real) environment.
     void
