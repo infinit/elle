@@ -269,7 +269,7 @@ namespace elle
     ConstWeakBuffer
     range(int start, int end) const;
     /// Size of the buffer.
-    ELLE_ATTRIBUTE_R(Size, size);
+    ELLE_ATTRIBUTE_RW(Size, size);
     /// Buffer constant data.
     ELLE_ATTRIBUTE_R(const Buffer::Byte*, contents);
 
