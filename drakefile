@@ -10,6 +10,8 @@ import sys
 
 from itertools import chain
 
+MACOSX_DEPLOYMENT_TARGET = '10.7'
+
 archs = None
 athena = None
 aws = None
@@ -1060,7 +1062,8 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
         elif cxx_toolkit.os is drake.os.macos and \
             cxx_toolkit.kind == drake.cxx.GccToolkit.Kind.clang:
           self.__command += [
-            'cxxflags=-stdlib=libc++ -std=c++11',
+            'cxxflags=-stdlib=libc++ -std=c++11 -mmacosx-version-min={}'
+            .format(MACOSX_DEPLOYMENT_TARGET),
             'linkflags=-stdlib=libc++ -std=c++11',
             '--layout=infinit_osx',
           ]
