@@ -2,6 +2,7 @@
 
 ELLE_LOG_COMPONENT("elle.protocol.Channel.test");
 
+#include <elle/compiler.hh>
 #include <elle/test.hh>
 
 #include <elle/protocol/ChanneledStream.hh>
@@ -19,16 +20,16 @@ _eof(Server server, Client client)
   auto socket = elle::reactor::network::TCPSocket(
     elle::reactor::network::TCPSocket::EndPoint(
       boost::asio::ip::address::from_string("127.0.0.1"), s.port()));
-  auto&& thread = elle::reactor::Thread("server", [&]
-    {
-      while (true)
-      {
-        auto socket = s.accept();
-        auto&& ser = elle::protocol::Serializer(*socket);
-        auto&& channels = elle::protocol::ChanneledStream(ser);
-        server(channels);
-      }
-    });
+  auto&& thread ELLE_COMPILER_ATTRIBUTE_MAYBE_UNUSED
+    = elle::reactor::Thread("server", [&] {
+        while (true)
+        {
+          auto socket = s.accept();
+          auto&& ser = elle::protocol::Serializer(*socket);
+          auto&& channels = elle::protocol::ChanneledStream(ser);
+          server(channels);
+        }
+      });
   auto&& ser = elle::protocol::Serializer(socket);
   auto&& channels = elle::protocol::ChanneledStream(ser);
   ELLE_LOG("eof: call client on %s", channels);
