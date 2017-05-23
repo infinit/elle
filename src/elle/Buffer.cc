@@ -268,16 +268,11 @@ namespace elle
   Buffer::ContentPair
   Buffer::release()
   {
-    if (auto contents = static_cast<Byte*>(::malloc(elle_buffer_initial_size)))
-    {
-      auto res = ContentPair{ContentPtr{this->_contents}, this->_size};
-      this->_contents = contents;
-      this->_size = 0;
-      this->_capacity = elle_buffer_initial_size;
-      return res;
-    }
-    else
-      throw std::bad_alloc{};
+    auto res = ContentPair{ContentPtr{this->_contents}, this->_size};
+    this->_contents = nullptr;
+    this->_size = 0;
+    this->_capacity = 0;
+    return res;
   }
 
   Buffer::const_iterator
