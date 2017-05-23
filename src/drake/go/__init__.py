@@ -232,6 +232,13 @@ class Toolkit:
     return self.__path
 
   @property
+  def package_path(self):
+    """
+    Path used by `go get`.
+    """
+    return self.__path.split(':')[0]
+
+  @property
   def os(self):
     return self.__os
 
@@ -256,7 +263,12 @@ class Toolkit:
         self.__env['GO%s' % k.upper()] = v
     return self.__env
 
-  def run(self, cmd):
+  @property
+  def host_env(self):
+    exclude_env = ['GOARCH', 'GOOS']
+    return dict((k, v) for k, v in self.env.items() if k not in exclude_env)
+
+  def run(self, cmd, host = False):
     """
     Run the given command in the toolkit environment.
 
@@ -266,8 +278,13 @@ class Toolkit:
     :return: Same as __run
     :rtype: Same as __run
     """
+    env = self.host_env if host else self.env
     return subprocess.check_output([self.go] + cmd,
-                                   env = self.env).decode('utf-8').strip()
+                                   env = env).decode('utf-8').strip()
+
+  def platform_str(self, host = False):
+    vars = self.run(['env', 'GOOS', 'GOARCH'], host = host).splitlines()
+    return '%s_%s' % (vars[0], vars[1])
 
   def dependencies(self, node):
     """
@@ -276,24 +293,15 @@ class Toolkit:
     :arg node: The node.
     :type node: Source.
 
-    :return: Imports and missing dependencies from go list -json.
-    :rtype: Tuple list of str
+    :return: Dependencies from go list -json.
+    :rtype: List of str
     """
     assert isinstance(node, Source)
     import json
     res = json.loads(self.run(['list', '-json', str(node.path())]))
-    imports = set()
-    missing_deps = set()
-    test_imports = res.get('TestImports', [])
-    for i in res.get('Imports', []):
-      imports.add(i)
-    for e in res.get('DepsErrors', []):
-      missing_deps.add(e['ImportStack'][-1])
-    # `go list` has a different output for tests and normal files.
-    # In the case of tests, we have to return all imports as missing deps.
-    imports.update(test_imports)
-    missing_deps.update(test_imports)
-    return list(imports), list(missing_deps)
+    deps = res['Deps']
+    deps.extend(res.get('TestImports', []))
+    return deps
 
   @property
   def version(self):
@@ -308,16 +316,14 @@ class Toolkit:
       self.__version = re.sub('^go version', '', self.run(['version'])).strip()
     return self.__version
 
-  def command_fetch_deps(self, deps):
-    # Filter for dependencies that can be fetched, i.e.: URLs.
-    url_deps = list(filter(lambda d: '/' in d and '.' in d.split('/')[0], deps))
-    if len(url_deps) == 0:
-      return None
-    if len(url_deps) > 0 and not self.path:
+  def command_fetch_dep(self, dep):
+    # Check dependency that can be fetched, i.e.: is URL.
+    if '/' not in dep or '.' not in dep.split('/')[0]:
+      raise Exception('Unable to fetch dependency, %s is not a URL' % dep)
+    if not self.path:
       raise Exception('Automatic dependency fetching failed, '
                       'require a toolkit GOPATH')
-    # `go get -u` only fetches missing dependencies and will not update existing
-    return [self.go, 'get', '-u'] + url_deps
+    return [self.go, 'get', dep]
 
   def command_build(self, config, source, target, is_test):
     """
@@ -384,6 +390,31 @@ class Source(drake.Node):
 # Assign ".go" files to Source automatically.
 drake.Node.extensions['go'] = Source
 
+class FetchPackage(drake.Builder):
+
+  def package_target(url, toolkit, build_host = False):
+    return drake.node('%s/pkg/%s/%s.a' %
+        (toolkit.package_path, toolkit.platform_str(build_host), url))
+
+  def __init__(self, url, toolkit, targets = [], build_host = False):
+    self.__targets = targets if targets else [FetchPackage.package_target(
+      url, toolkit, build_host)]
+    self.__url = url
+    self.__toolkit = toolkit
+    self.__build_host = build_host
+    super().__init__([], self.__targets)
+
+  def execute(self):
+    env = self.__toolkit.host_env if self.__build_host else self.__toolkit.env
+    cmd = self.__toolkit.command_fetch_dep(self.__url)
+    res = self.cmd('Fetch %s' % self.__url, cmd, env = env)
+    return res
+
+  def hash(self):
+    return {
+      'toolkit': self.__toolkit.hash(),
+    }
+
 class Builder(drake.Builder):
   """
   Builder to transform a Go source to an Executable using the given Toolkit and
@@ -402,7 +433,7 @@ class Builder(drake.Builder):
   Executable(Source("main.go"), Toolkit(), Config())
   """
   def __init__(self, node, toolkit, config, target, dependencies,
-               is_test = False):
+               is_test = False, build_host = False):
     """
     Create a Builder from a Source, a Toolkit and a Config that creates
     a Executable.
@@ -423,22 +454,21 @@ class Builder(drake.Builder):
     self.__target = target
     self.__toolkit = toolkit
     self.__config = config
-    self.__imports = set()
     self.__dependencies = dependencies
-    self.__missing_dependencies = set()
+    self.__url_dependencies = \
+      list(filter(lambda d: '/' in d and '.' in d.split('/')[0],
+                  toolkit.dependencies(node)))
+    for d in self.__url_dependencies:
+      target = FetchPackage.package_target(d, toolkit, build_host)
+      if not target.builder:
+        FetchPackage(d, toolkit, build_host = build_host)
+      self.__dependencies.append(target)
     self.__is_test = is_test
+    self.__build_host = build_host
     super().__init__(self.__dependencies + [node], [self.__target])
 
   def dependencies(self):
     return self.__dependencies + [self.__source]
-
-  def compute_dependencies(self):
-    # Add depencencies to the builder.
-    for node in self.dependencies():
-      if isinstance(node, Source):
-        res = self.__toolkit.dependencies(node)
-        self.__imports.update(res[0])
-        self.__missing_dependencies.update(res[1])
 
   def execute(self):
     """
@@ -448,19 +478,11 @@ class Builder(drake.Builder):
     :return: Whether the build was successful.
     :rtype: bool
     """
-    self.compute_dependencies()
-    cmd_deps = self.__toolkit.command_fetch_deps(self.__missing_dependencies)
-    if cmd_deps:
-      deps_status = self.cmd('Check Go dependencies %s' % self.__target,
-                             cmd_deps,
-                             env = self.__toolkit.env)
-      if not deps_status:
-        return deps_status
     cmd = self.__toolkit.command_build(self.__config,
                                        self.__source,
                                        self.__target,
                                        self.__is_test)
-    env = self.__toolkit.env
+    env = self.__toolkit.host_env if self.__build_host else self.__toolkit.env
     # Add the include paths to GOPATH so that Go can find dependencies.
     if self.__config.include_paths:
       include_paths = list(self.__config.include_paths)
@@ -495,7 +517,7 @@ class Executable(drake.Node):
   Executable(Source("main.go"), Toolkit(), Config())
   """
   def __init__(self, source, toolkit = None, config = None, target = None,
-               sources = [], create_builder = True):
+               sources = [], create_builder = True, build_host = False):
     """
     Create an Executable from a given Source, Toolkit and Config.
 
@@ -509,12 +531,14 @@ class Executable(drake.Node):
     :type sources: list of nodes
     :param create_builder: Whether if the Builder should be declared.
     :type create_builder: bool
+    :param build_host: Build for host architecture and OS.
+    :type build_host: bool
     """
     target = target or source.name().without_last_extension()
     super().__init__(target)
     if create_builder:
       Builder(node = source, toolkit = toolkit, config = config, target = self,
-              dependencies = sources)
+              dependencies = sources, build_host = build_host)
     else:
       if toolkit:
         print("toolkit argument for %s was ignored" % self)
@@ -524,31 +548,8 @@ class Executable(drake.Node):
 class TestExecutable(drake.Node):
 
   def __init__(self, source, toolkit = None, config = None, target = None,
-               sources = []):
+               sources = [], build_host = False):
     target = target or source.name().without_last_extension()
     super().__init__(target)
     Builder(node = source, toolkit = toolkit, config = config, target = self,
-            dependencies = sources, is_test = True)
-
-class GoPackage(drake.Node):
-
-  class Fetch(drake.Builder):
-
-    def __init__(self, package, toolkit, target):
-      self.__package = package
-      self.__toolkit = toolkit
-      self.__target = target
-      super().__init__([], [self.__target])
-
-    def execute(self):
-      cmd = self.__toolkit.command_fetch_deps([self.__package])
-      return self.cmd('Fetch %s' % self.__target, cmd, env = self.__toolkit.env)
-
-    def hash(self):
-      return {
-        'toolkit': self.__toolkit.hash(),
-      }
-
-  def __init__(self, package, target, toolkit = None):
-    super().__init__(target)
-    GoPackage.Fetch(package = package, toolkit = toolkit, target = self)
+            dependencies = sources, is_test = True, build_host = build_host)
