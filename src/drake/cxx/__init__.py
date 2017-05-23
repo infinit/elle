@@ -2166,6 +2166,7 @@ class PatchAndInstall(drake.Install):
       return False
     if os.path.islink(str(self.target.path())):
       return True
-    if sys.platform == 'darwin':
+    if sys.platform == 'darwin' \
+       and isinstance(self.target, (DynLib, Executable)):
       self.get_deps_fix_rpaths(self.target.path())
     return True
