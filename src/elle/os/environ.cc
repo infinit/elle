@@ -36,8 +36,8 @@ namespace elle
            bool overwrite)
     {
       if (!overwrite)
-        if (char const* old_value = ::getenv(key.c_str()))
-          return std::string{old_value};
+        if (auto value = ::getenv(key.c_str()))
+          return value;
 
 #ifdef INFINIT_WINDOWS
       if (::_putenv((key + "=" + val).c_str()) != 0)

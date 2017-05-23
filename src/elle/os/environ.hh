@@ -35,13 +35,13 @@ namespace elle
     /// Set `key=val` in the environment, unless $key is already
     /// defined and overwrite is false.
     ///
-    /// @return `val`, even if that's not the current value of `$key`.
+    /// @return the resulting value of `$key`.
     std::string
     setenv(std::string const& key, std::string const& val, bool overwrite = true);
 
     /// Import all the variables from env to the (real) environment.
     void
-    setenv(Environ const& env, bool overwrite);
+    setenv(Environ const& env, bool overwrite = true);
 
     /// Get a specific value from environment. If value is not found,
     /// KeyError Exception is thrown
