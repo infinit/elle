@@ -56,8 +56,11 @@ import os
 import os.path
 import sys
 
+source_dir = %(source_dir)r
+install_dir = %(install_dir)r
+
 # Add drake in the Python path.
-sys.path.insert(0, os.path.realpath(%(dir_source)r '/drake/src'))
+sys.path.insert(0, os.path.realpath(source_dir + '/drake/src'))
 
 import drake
 import drake.cxx
@@ -103,7 +106,7 @@ if %(project)r == 'Filesystem':
   extra_args['go_toolkit'] = go_toolkit
   extra_args['go_config'] = go_config
 
-with drake.Drake(%(dir_source)r) as d:
+with drake.Drake(source_dir) as d:
   python = %(python)r
   import drake.valgrind
   valgrind = %(valgrind)r
@@ -116,7 +119,7 @@ with drake.Drake(%(dir_source)r) as d:
           valgrind = valgrind,
           valgrind_tests = valgrind_tests,
           production_build = %(production_build)r,
-          prefix = %(dir_install)r,
+          prefix = install_dir,
           codesign = codesign,
           **extra_args)
 
@@ -179,8 +182,8 @@ else:
   raise Exception('invalid OS: %s' % options.os)
 
 with open('%s/.drake.tmp' % options.build_dir, 'w') as drake:
-  parameters['dir_source'] = os.path.realpath(options.source_dir)
-  parameters['dir_install'] = os.path.realpath(options.install_dir)
+  parameters['source_dir'] = os.path.realpath(options.source_dir)
+  parameters['install_dir'] = os.path.realpath(options.install_dir)
   content = template % parameters
   print(content, file = drake)
 
