@@ -70,20 +70,16 @@ namespace elle
       encode(ConstWeakBuffer buffer,
              std::string& string)
       {
-        static char const* chars = "0123456789abcdef";
-        if (buffer.size() == 0)
-          return;
-        Buffer::Size i = string.size();
-        string.resize(i + buffer.size() * 2);
-        uint8_t const* ptr = buffer.contents();
-        uint8_t const* end = ptr + buffer.size();
-        while (ptr != end)
+        if (!buffer.empty())
         {
-          uint8_t c = *ptr++;
-          string[i++] = chars[(c >> 4) & 0xf];
-          string[i++] = chars[c & 0xf];
+          static char const* chars = "0123456789abcdef";
+          string.reserve(string.size() + buffer.size() * 2);
+          for (auto c: buffer)
+          {
+            string.push_back(chars[(c >> 4) & 0xf]);
+            string.push_back(chars[c & 0xf]);
+          }
         }
-        ELLE_ASSERT(string.length() == i);
       }
     }
   }

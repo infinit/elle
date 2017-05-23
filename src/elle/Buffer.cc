@@ -226,12 +226,14 @@ namespace elle
   Buffer::capacity(SizeArg capacity_)
   {
     auto const capacity = std::max(capacity_, elle_buffer_initial_size);
-    auto tmp = ::realloc(this->_contents, capacity);
-    if (tmp == nullptr)
+    if (auto tmp = ::realloc(this->_contents, capacity))
+    {
+      this->_contents = static_cast<Byte*>(tmp);
+      this->_capacity = capacity;
+      this->_size = std::min(this->_size, capacity);
+    }
+    else
       throw std::bad_alloc();
-    this->_contents = static_cast<Byte*>(tmp);
-    this->_capacity = capacity;
-    this->_size = std::min(this->_size, capacity);
   }
 
   void Buffer::append(void const* data, Buffer::Size size)
@@ -253,14 +255,7 @@ namespace elle
   Buffer::size(SizeArg size)
   {
     if (this->_capacity < size)
-    {
-      auto capacity = Buffer::_next_size(size);
-      auto tmp = ::realloc(_contents, capacity);
-      if (tmp == nullptr)
-        throw std::bad_alloc();
-      this->_contents = static_cast<Byte*>(tmp);
-      this->_capacity = capacity;
-    }
+      this->capacity(Buffer::_next_size(size));
     this->_size = size;
   }
 
@@ -273,15 +268,16 @@ namespace elle
   Buffer::ContentPair
   Buffer::release()
   {
-    Byte* new_contents = static_cast<Byte*>(::malloc(elle_buffer_initial_size));
-    if (new_contents == nullptr)
+    if (auto contents = static_cast<Byte*>(::malloc(elle_buffer_initial_size)))
+    {
+      auto res = ContentPair{ContentPtr{this->_contents}, this->_size};
+      this->_contents = contents;
+      this->_size = 0;
+      this->_capacity = elle_buffer_initial_size;
+      return res;
+    }
+    else
       throw std::bad_alloc{};
-
-    auto res = ContentPair{ContentPtr{this->_contents}, this->_size};
-    this->_contents = new_contents;
-    this->_size = 0;
-    this->_capacity = elle_buffer_initial_size;
-    return res;
   }
 
   Buffer::const_iterator
@@ -375,8 +371,7 @@ namespace elle
   std::string
   Buffer::string() const
   {
-    return std::string(reinterpret_cast<char const*>(this->contents()),
-                       this->size());
+    return {reinterpret_cast<char const*>(this->contents()), this->size()};
   }
 
   /// Get byte at position \a i.
