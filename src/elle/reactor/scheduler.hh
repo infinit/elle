@@ -208,14 +208,6 @@ namespace elle
       R
       mt_run(std::string const& name,
              std::function<R ()> const& action);
-    private:
-      /// Same as mt_run<void>.
-      ///
-      /// @param name A descriptive name of Thread to be spawn.
-      /// @param action The function to be run.
-      void
-      _mt_run_void(std::string const& name,
-                   std::function<void ()> const& action);
 
     /*----------.
     | Printable |
