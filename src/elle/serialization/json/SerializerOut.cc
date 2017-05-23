@@ -5,6 +5,7 @@
 #include <elle/format/base64.hh>
 #include <elle/json/json.hh>
 #include <elle/log.hh>
+#include <elle/meta.hh>
 
 ELLE_LOG_COMPONENT("elle.serialization.json.SerializerOut")
 
@@ -145,6 +146,22 @@ namespace elle
       {
         auto& current = this->_get_current();
         current = v;
+      }
+
+      void
+      SerializerOut::_serialize(ulong& v)
+      {
+        meta::static_if<need_unsigned_long>
+          ([this](unsigned long& v)
+           {
+             auto& current = this->_get_current();
+             current = v;
+           },
+           [](auto& v)
+           {
+             unreachable();
+           })
+          (v);
       }
 
       void

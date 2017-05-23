@@ -1311,6 +1311,7 @@ static
 void
 json_overflows()
 {
+  // size_t support relies on unsigned long support on macOS.
   std::stringstream stream(
     "{"
     "  \"8_overflow\": 128,"
@@ -1331,6 +1332,10 @@ json_overflows()
     "  \"32u_nunderflow\": 0,"
     "  \"64u_min\": " + std::to_string(lim<uint64_t>::min()) + ","
     "  \"64u_max\": " + std::to_string(lim<uint64_t>::max()) + ","
+    "  \"ulong_min\": " + std::to_string(lim<unsigned long>::min()) + ","
+    "  \"ulong_max\": " + std::to_string(lim<unsigned long>::max()) + ","
+    "  \"size_t_min\": " + std::to_string(lim<size_t>::min()) + ","
+    "  \"size_t_max\": " + std::to_string(lim<size_t>::max()) + ","
     "}"
     );
   auto input = typename elle::serialization::json::SerializerIn(stream);
@@ -1363,6 +1368,8 @@ json_overflows()
   BOOST_TEST(ui32 == 0);
 
   check_min_max<uint64_t>(input, "64u");
+  check_min_max<unsigned long>(input, "ulong");
+  check_min_max<size_t>(input, "size_t");
 }
 
 static

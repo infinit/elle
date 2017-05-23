@@ -48,6 +48,8 @@ namespace elle
         void
         _serialize(uint64_t& v) override;
         void
+        _serialize(ulong& v) override;
+        void
         _serialize(int32_t& v) override;
         void
         _serialize(uint32_t& v) override;

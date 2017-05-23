@@ -1,5 +1,7 @@
 #include <elle/serialization/binary/SerializerIn.hh>
 
+#include <elle/meta.hh> // static_if
+
 #include <elle/serialization/json/Error.hh>
 
 ELLE_LOG_COMPONENT("elle.serialization.binary.SerializerIn")
@@ -57,6 +59,27 @@ namespace elle
         int64_t value;
         this->_serialize(value);
         v = static_cast<uint64_t>(value);
+      }
+
+      void
+      SerializerIn::_serialize(ulong& v)
+      {
+        meta::static_if<need_unsigned_long>
+          ([this](unsigned long& v)
+           {
+             uint64_t value;
+             this->_serialize(value);
+             using type = unsigned long;
+             using limits = std::numeric_limits<type>;
+             if (value > limits::max())
+               throw json::Overflow(this->current_name(), sizeof(type) * 8, true, value);
+             v = value;
+           },
+           [](auto& v)
+           {
+             unreachable();
+           })
+          (v);
       }
 
       void

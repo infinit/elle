@@ -10,8 +10,10 @@ namespace elle
   {
     Serializer::Serializer(bool versioned)
       : _versioned(versioned)
-      , _versions()
-    {}
+    {
+      static_assert(Details::api<int>() == Details::pod, "");
+      static_assert(Details::api<unsigned long>() == Details::pod, "");
+    }
 
     Serializer::Serializer(Versions versions, bool versioned)
       : _versioned(versioned)

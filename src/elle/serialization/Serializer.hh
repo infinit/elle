@@ -637,7 +637,29 @@ namespace elle
       virtual
       void
       _serialize(uint64_t& v) = 0;
-      /// Serialize or deserialize an int32_t;
+
+      /// Whether unsigned long differs from uint32_t and uint64_t.
+      ///
+      /// On macOS at least, size_t is `unsigned long`, which is
+      /// neither `uint32_t` which is `unsigned int`, nor `uint64_t`
+      /// which is `unsigned long long`.
+      constexpr static auto need_unsigned_long
+        = (!std::is_same<unsigned long, uint32_t>()
+           && !std::is_same<unsigned long, uint64_t>());
+      /// Because of some platforms unsigned long is the same as
+      /// uint32_t or uint64_t, adding support would lead to multiple
+      /// definitions.  Using enable_if with virtual is not too good
+      /// an idea.  So let's use a useless stub on these platforms.
+      struct ulong_dummy {};
+      /// Either `unsigned long` if needed, or a stub.
+      using ulong = std::conditional_t<need_unsigned_long,
+                                       unsigned long, ulong_dummy>;
+      /// Serialize or deserialize an `unsigned long`.
+      virtual
+      void
+      _serialize(ulong& v) = 0;
+
+      /// Serialize or deserialize an int32_t.
       virtual
       void
       _serialize(int32_t& v) = 0;

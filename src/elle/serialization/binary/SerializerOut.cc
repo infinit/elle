@@ -4,6 +4,7 @@
 #include <elle/finally.hh>
 #include <elle/format/base64.hh>
 #include <elle/json/json.hh>
+#include <elle/meta.hh>
 
 ELLE_LOG_COMPONENT("elle.serialization.binary.SerializerOut")
 
@@ -142,6 +143,21 @@ namespace elle
       SerializerOut::_serialize(uint64_t& v)
       {
         _serialize_number(v);
+      }
+
+      void
+      SerializerOut::_serialize(ulong& v)
+      {
+        meta::static_if<need_unsigned_long>
+          ([this](unsigned long& v)
+           {
+             _serialize_number(v);
+           },
+           [](auto&)
+           {
+             unreachable();
+           })
+          (v);
       }
 
       void

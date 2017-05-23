@@ -8,6 +8,7 @@
 #include <elle/format/base64.hh>
 #include <elle/json/exceptions.hh>
 #include <elle/memory.hh>
+#include <elle/meta.hh>
 #include <elle/printf.hh>
 #include <elle/serialization/Error.hh>
 #include <elle/serialization/json/Error.hh>
@@ -77,6 +78,27 @@ namespace elle
         int64_t value;
         this->_serialize(value);
         v = static_cast<uint64_t>(value);
+      }
+
+      void
+      SerializerIn::_serialize(ulong& v)
+      {
+        meta::static_if<need_unsigned_long>
+          ([this](unsigned long& v)
+           {
+             uint64_t value;
+             this->_serialize(value);
+             using type = unsigned long;
+             using limits = std::numeric_limits<type>;
+             if (value > limits::max())
+               throw Overflow(this->current_name(), sizeof(type) * 8, true, value);
+             v = value;
+           },
+           [](auto& v)
+           {
+             unreachable();
+           })
+          (v);
       }
 
       void

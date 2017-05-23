@@ -13,6 +13,15 @@ namespace elle
       struct filter_helper;
     }
 
+    /// Always map to false, but in a lazy way.  Useful for
+    /// static_assert, by making a type-dependent false.
+    template <typename... Args>
+    constexpr auto
+    lazy_false(Args&&...)
+    {
+      return false;
+    }
+
     template <typename ... Elts>
     struct List
     {
