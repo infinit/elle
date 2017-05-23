@@ -2127,7 +2127,12 @@ class Builder:
                 if dst.touch(res):
                   print('Adjust mtime of %s' % dst)
         if execute:
+          import time, datetime
+          self.__start_time = time.time()
           self._execute(depfile_builder)
+          self.__end_time = time.time()
+          d = round(self.__end_time - self.__start_time)
+          print('Finished {} ({})'.format(node, datetime.timedelta(seconds=d)))
         else:
             self.__executed = True
             logger.log('drake.Builder',
