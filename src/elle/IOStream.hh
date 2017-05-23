@@ -201,7 +201,7 @@ namespace elle
 
 namespace std
 {
-  // Read up to \a n bytes, but at least one, unlike std::istream::readsome.
+  // Read up to @a n bytes, but at least one, unlike std::istream::readsome.
   ELLE_API
   streamsize
   readsome(std::istream& i, char* s, streamsize n);

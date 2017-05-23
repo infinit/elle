@@ -151,10 +151,10 @@ namespace elle
     /// The content of the buffer as a string.
     std::string
     string() const;
-    /// Get byte at position \a i.
+    /// Get byte at position @a i.
     Byte&
     operator [](unsigned i);
-    /// Get byte at position \a i.
+    /// Get byte at position @a i.
     Byte
     operator [](unsigned i) const;
 
@@ -238,9 +238,9 @@ namespace elle
 
     /// WeakBuffer for the given memory segment.
     ConstWeakBuffer(const void* data, Size size);
-    /// WeakBuffer with \a data content.
+    /// WeakBuffer with @a data content.
     ConstWeakBuffer(std::string const& data) /* implicit */;
-    /// WeakBuffer with \a data content.
+    /// WeakBuffer with @a data content.
     ConstWeakBuffer(char const* data) /* implicit */;
     /// From a C array.
     template <typename Char, std::size_t S,
@@ -259,7 +259,7 @@ namespace elle
   | Content |
   `--------*/
   public:
-    /// Get byte at position \a i.
+    /// Get byte at position @a i.
     Buffer::Byte
     operator[] (unsigned i) const;
     /// A subset of this buffer.
@@ -373,7 +373,9 @@ namespace elle
   | Content |
   `--------*/
   public:
-    /// Get byte at position \a i.
+    /// Get byte at position @a i.
+    ///
+    /// \pre i < size().
     Buffer::Byte&
     operator[] (unsigned i);
     Buffer::Byte*
