@@ -101,7 +101,12 @@ if %(project)r == 'Elle':
   extra_args['enable_cryptographic_rotation'] = False
 
 if %(project)r == 'Filesystem':
-  go_toolkit = drake.go.Toolkit(path = %(go_path)r)
+  if %(os)r == 'windows':
+    go_toolkit = drake.go.Toolkit(os = 'windows',
+                                  arch = 'amd64',
+                                  path = %(go_path)r)
+  else:
+    go_toolkit = drake.go.Toolkit(path = %(go_path)r)
   go_config = drake.go.Config()
   extra_args['go_toolkit'] = go_toolkit
   extra_args['go_config'] = go_config
