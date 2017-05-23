@@ -39,9 +39,11 @@ namespace elle
   `------*/
   public:
     /// Size of a Buffer.
-    using Size = uint64_t;
-    /// The type Size when used as an argument.
-    using SizeArg = boost::call_traits<Buffer::Size>::param_type;
+    ///
+    /// There's no reason to use something like uint64_t, as on 32b
+    /// architecture it's way too much, and will require two registers
+    /// to be passed (or will be passed as const&).
+    using Size = std::size_t;
     /// Byte.
     using Byte = uint8_t;
     /// Data owned by a Buffer:

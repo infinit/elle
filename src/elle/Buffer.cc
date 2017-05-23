@@ -223,7 +223,7 @@ namespace elle
   }
 
   void
-  Buffer::capacity(SizeArg capacity_)
+  Buffer::capacity(Size capacity_)
   {
     auto const capacity = std::max(capacity_, elle_buffer_initial_size);
     if (auto tmp = ::realloc(this->_contents, capacity))
@@ -252,7 +252,7 @@ namespace elle
   }
 
   void
-  Buffer::size(SizeArg size)
+  Buffer::size(Size size)
   {
     if (this->_capacity < size)
       this->capacity(Buffer::_next_size(size));

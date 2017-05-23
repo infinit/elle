@@ -46,7 +46,7 @@ namespace elle
     : public std::streambuf
   {
   public:
-    using Size = uint64_t;
+    using Size = size_t;
     StreamBuffer();
 
     ~StreamBuffer() override;
