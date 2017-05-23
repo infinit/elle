@@ -2132,7 +2132,7 @@ class Builder:
           self._execute(depfile_builder)
           self.__end_time = time.time()
           d = round(self.__end_time - self.__start_time)
-          print('Finished {} ({})'.format(node, datetime.timedelta(seconds=d)))
+          print('Finished {} ({})'.format(self, datetime.timedelta(seconds=d)))
         else:
             self.__executed = True
             logger.log('drake.Builder',
