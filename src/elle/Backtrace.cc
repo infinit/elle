@@ -1,3 +1,5 @@
+#include <elle/Backtrace.hh>
+
 #ifdef INFINIT_WINDOWS
 # include <windows.h>
 # include <dbghelp.h>
@@ -10,18 +12,25 @@
 #include <string>
 #include <sstream>
 
-#include <elle/Backtrace.hh>
 #include <elle/err.hh>
 #include <elle/printf.hh>
 #include <elle/utils.hh>
+
+ELLE_LOG_COMPONENT("elle.Backtrace");
+
+#if defined NO_EXECINFO
+# warning "Backtrace support disabled"
+#endif
 
 namespace elle
 {
   namespace
   {
 #if !defined INFINIT_MACOSX && !defined INFINIT_WINDOWS && !defined INFINIT_ANDROID
+    /// Whether `until` is in `str`.
+    /// If it is, set `str` to the part before, and `chunk` to the part after.
     bool
-    extract(std::string& str, std::string& chunk, unsigned char until)
+    extract(std::string& str, std::string& chunk, char until)
     {
       size_t pos = str.find(until);
       if (pos == std::string::npos)
@@ -35,10 +44,10 @@ namespace elle
     }
 
     bool
-    discard(std::string& str, unsigned char until)
+    discard(std::string& str, char until)
     {
-      std::string ignored;
-      return extract(str, ignored, until);
+      auto _ = std::string{};
+      return extract(str, _, until);
     }
 #endif
 
@@ -51,24 +60,29 @@ namespace elle
 
       switch (status)
       {
-        case 0:
-        {
-          res = demangled;
-          free(demangled);
-          return true;
-        }
-        case -1:
-          error = "memory allocation failure";
-          return false;
-        case -2:
-          error = "not a valid name under the C++ ABI mangling rules";
-          return false;
-        case -3:
-          error = "invalid argument";
-          return false;
-        default:
-          std::abort();
+      case 0:
+        res = demangled;
+        free(demangled);
+        return true;
+      case -1:
+        error = "memory allocation failure";
+        return false;
+      case -2:
+        error = "not a valid name under the C++ ABI mangling rules";
+        return false;
+      case -3:
+        error = "invalid argument";
+        return false;
+      default:
+        std::abort();
       }
+    }
+
+    bool
+    demangle_impl(const std::string& sym, std::string& res)
+    {
+      auto _ = std::string{};
+      return demangle_impl(sym, res, _);
     }
   }
 
@@ -81,7 +95,7 @@ namespace elle
       return res;
     else
       elle::err<std::runtime_error>("%s: demangling failure: %s",
-                                    sym, res);
+                                    sym, error);
   }
 
   Backtrace::Backtrace()
@@ -91,15 +105,16 @@ namespace elle
   {}
 
   Backtrace::Backtrace(std::vector<StackFrame> const& sf)
-  : _frames(sf)
-  , _resolved(true)
-  , _skip(0)
-  , _frame_count(0)
+    : _frames(sf)
+    , _resolved(true)
+    , _skip(0)
+    , _frame_count(0)
   {}
 
   void
   Backtrace::_resolve()
   {
+    ELLE_DEBUG("resolve");
     if (this->_resolved)
       return;
 #if defined INFINIT_WINDOWS
@@ -115,16 +130,15 @@ namespace elle
       void* stack[128];
       long unsigned int hash = 0;
       int frames = CaptureStackBackTrace(0, sizeof(stack), stack, &hash);
-      ::SYMBOL_INFO* symbol;
-      symbol = (SYMBOL_INFO*)calloc(sizeof(SYMBOL_INFO) + 256 * sizeof(char), 1);
+      auto symbol = (SYMBOL_INFO*)calloc(sizeof(SYMBOL_INFO) + 256 * sizeof(char), 1);
       symbol->MaxNameLen = 255;
       symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
 
       for (int i = 0; i < frames; i++)
       {
         ::SymFromAddr(process, (DWORD64)(stack[i]), 0, symbol);
-        res.push_back(StackFrame{symbol->Name, symbol->Name, symbol->Name,
-              symbol->Address, 0});
+        res.emplace_back(symbol->Name, symbol->Name, symbol->Name,
+                         symbol->Address, 0);
       }
       ::free(symbol);
     */
@@ -137,12 +151,13 @@ namespace elle
       std::string addr;
       std::string offset;
       {
-        std::string line(strs[i]);
+        auto line = std::string{strs[i]};
+        ELLE_DUMP("line: %s", line);
 # ifdef INFINIT_MACOSX
         std::string file;
-        std::string discard;
-        std::stringstream stream(line);
-        stream >> discard >> file >> addr >> symbol_mangled >> discard >> offset;
+        std::string _;
+        auto&& s = std::stringstream(line);
+        s >> _ >> file >> addr >> symbol_mangled >> _ >> offset;
 # else
         discard(line, '(');
         if (extract(line, symbol_mangled, '+'))
@@ -152,25 +167,22 @@ namespace elle
 # endif
       }
       frame.symbol_mangled = symbol_mangled;
-      if (!symbol_mangled.empty())
+      if (!symbol_mangled.empty()
+          && !demangle_impl(symbol_mangled, frame.symbol))
+        frame.symbol = symbol_mangled;
       {
-        std::string error;
-        if (!demangle_impl(symbol_mangled, frame.symbol, error))
-          frame.symbol = symbol_mangled;
+        auto&& s = std::stringstream(offset);
+        s >> std::hex >> frame.offset;
       }
       {
-        std::stringstream stream(offset);
-        stream >> std::hex >> frame.offset;
-      }
-      {
-        std::stringstream stream(addr);
+        auto&& s = std::stringstream(addr);
 # ifdef INFINIT_MACOSX
-        stream >> frame.address;
+        s >> frame.address;
 # else
-        stream >> std::hex >> frame.address;
+        s >> std::hex >> frame.address;
 # endif
       }
-      this->_frames.push_back(frame);
+      this->_frames.emplace_back(frame);
     }
     free(strs);
 #endif
@@ -220,10 +232,10 @@ namespace elle
   {
     unsigned i = 0;
     // Visual expects a float ... don't ask.
-    const size_t width = std::log10(float(bt.frames().size())) + 1;
+    size_t const width = std::log10(float(bt.frames().size())) + 1;
+    auto const fmt = "#%-" + std::to_string(width) + "d %s\n";
     for (const auto& f: bt.frames())
-      fprintf(out, "#%-" + std::to_string(width) + "d %s\n",
-              i++, f);
+      fprintf(out, fmt, i++, f);
     return out;
   }
 

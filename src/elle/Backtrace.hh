@@ -21,6 +21,9 @@ namespace elle ELLE_API
     operator std::string() const;
   };
 
+  /// Demangle a C++ symbols.
+  ///
+  /// @throws std::runtime_error if it fails to demangle.
   std::string
   demangle(const std::string& sym);
 
@@ -30,13 +33,18 @@ namespace elle ELLE_API
     Backtrace();
     Backtrace(std::vector<StackFrame> const&);
     using Frame = StackFrame;
+
+    /// The backtrace leading to the call to this function.
     static inline ELLE_COMPILER_ATTRIBUTE_ALWAYS_INLINE
     Backtrace
     current(unsigned skip = 0);
+
     void
     strip_base(const Backtrace& base);
+
     std::vector<StackFrame> const&
     frames() const;
+
   private:
     void _resolve();
     std::vector<StackFrame> _frames;
