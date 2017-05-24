@@ -63,6 +63,25 @@ namespace elle
       return dest.insert(std::end(dest), std::begin(src), std::end(src));
   }
 
+  /// Copy-append values to a vector.
+  ///
+  /// @return iterator to the first inserted value.
+  template <typename T, typename Arg, typename... Args>
+  auto
+  push_back(std::vector<T>& dest, Arg&& arg, Args&&... args)
+    -> typename std::vector<T>::iterator
+  {
+    dest.emplace_back(std::forward<Arg>(arg));
+    auto res = std::prev(dest.end());
+    using swallow = int[];
+    (void) swallow
+      {
+        (dest.emplace_back(std::forward<Args>(args)),
+         0)...
+      };
+    return res;
+  }
+
   /// Move-append the contents of a vector.
   ///
   /// @return iterator to the first inserted value.
