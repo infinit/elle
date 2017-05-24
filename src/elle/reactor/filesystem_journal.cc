@@ -4,10 +4,10 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <fstream>
+#include <utility>
 
 #include <elle/reactor/filesystem.hh>
 #include <elle/serialization/json.hh>
-#include <utility>
 
 ELLE_LOG_COMPONENT("elle.reactor.filesystem.journal");
 

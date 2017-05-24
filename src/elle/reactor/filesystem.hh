@@ -5,21 +5,23 @@
 #include <sys/types.h>
 
 #include <string>
-
 #include <unordered_map>
+
 #include <boost/filesystem.hpp>
 
 #include <elle/Buffer.hh>
 #include <elle/Exception.hh>
 #include <elle/filesystem.hh>
-#include <elle/reactor/fwd.hh>
 #include <elle/reactor/Waitable.hh>
+#include <elle/reactor/exception.hh>
+#include <elle/reactor/fwd.hh>
 
 static_assert(sizeof(off_t) == 8,
               "off_t is 32 bits long, define _FILE_OFFSET_BITS to 64");
 
 #if defined INFINIT_WINDOWS || defined INFINIT_ANDROID
-struct statvfs {
+struct statvfs
+{
   unsigned long  f_bsize;    /* filesystem block size */
   unsigned long  f_frsize;   /* fragment size */
   unsigned long  f_blocks;   /* size of fs in f_frsize units */
@@ -49,26 +51,6 @@ namespace elle
 
       using OnDirectoryEntry =
       std::function<void(std::string const&, struct stat* stbuf)>;
-
-      /** Exception type for filesystem errors. Filesystems should not throw
-       *  anything else.
-       */
-      class Error
-        : public elle::Error
-      {
-      public:
-        Error(int error_code, std::string const& message)
-          : elle::Error(message)
-          , _error_code(error_code)
-        {}
-
-        Error(int error_code, std::string const& message,
-              elle::Backtrace const& bt)
-          : elle::Error(bt, message)
-          , _error_code(error_code)
-        {}
-        ELLE_ATTRIBUTE_R(int, error_code);
-      };
 
       /// Handle to an open file.
       class Handle

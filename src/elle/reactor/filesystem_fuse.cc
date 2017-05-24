@@ -735,10 +735,7 @@ namespace elle
           });
         if (!elle::os::getenv("INFINIT_FUSE_POOL", "").empty())
         {
-          int nt = 5;
-          std::string nthread = elle::os::getenv("INFINIT_FUSE_POOL", "");
-          if (!nthread.empty())
-            nt = std::stoi(nthread);
+          int nt = elle::os::getenv("INFINIT_FUSE_POOL", 5);
           ELLE_TRACE("Pool mode with %s workers", nt);
           _impl->loop_pool(nt);
         }

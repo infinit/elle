@@ -4,7 +4,7 @@
 #include <sys/mount.h>
 
 #include <elle/reactor/fuse.hh>
-#ifdef INFINIT_MACOSX
+#if defined INFINIT_MACOSX
 # include <CoreFoundation/CoreFoundation.h>
 # include <DiskArbitration/DiskArbitration.h>
 #endif
@@ -368,12 +368,12 @@ namespace elle
       for (unsigned int i = 0; i < arguments.size(); ++i)
         args.argv[i] = (char*)arguments[i].c_str();
       args.argv[arguments.size()] = nullptr;
-      fuse_chan* chan = ::fuse_mount(mountpoint.c_str(), &args);
+      auto chan = ::fuse_mount(mountpoint.c_str(), &args);
       if (!chan)
-        throw std::runtime_error("fuse_mount failed");
+        throw filesystem::Error(EPERM, "fuse_mount failed");
       this->_fuse = ::fuse_new(chan, &args, op, op_size, user_data);
       if (!this->_fuse)
-        throw std::runtime_error("fuse_new failed");
+        throw filesystem::Error(EPERM, "fuse_new failed");
     }
 
 #ifdef INFINIT_MACOSX

@@ -52,7 +52,7 @@ namespace elle
       void
       _loop_pool(int threads, Scheduler&);
 
-#ifdef INFINIT_MACOSX
+#if defined INFINIT_MACOSX
       void
       _mac_unmount(DurationOpt grace_time);
 #endif
@@ -66,6 +66,5 @@ namespace elle
       std::vector<reactor::Thread*> _workers;
       std::mutex _mutex;
     };
-
   }
 }
