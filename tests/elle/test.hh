@@ -152,15 +152,21 @@ _test_suite()                                           \
 #if defined INFINIT_WINDOWS
 # define ELLE_TEST_HANDLE_SIGALRM(Sched, Name)
 #else
-# define ELLE_TEST_HANDLE_SIGALRM(Sched, Name)                              \
-  Sched.signal_handle(SIGALRM,                                              \
-                      []                                                    \
-                      {                                                     \
-                        ELLE_ERR("test %s timeout: SIGALRM", #Name);        \
-                        if (auto s = elle::reactor::Scheduler::scheduler()) \
-                          s->dump_state();                                  \
-                        throw elle::Error("test timeout");                  \
-                      });
+namespace
+{
+  ELLE_COMPILER_ATTRIBUTE_MAYBE_UNUSED
+  void alarm_handler(std::string const& name)
+  {
+    ELLE_LOG_COMPONENT("elle.Test");
+    ELLE_ERR("test %s timeout: SIGALRM", name);
+    if (auto s = elle::reactor::Scheduler::scheduler())
+      s->dump_state();
+    throw elle::Error("test timeout");
+  }
+}
+
+# define ELLE_TEST_HANDLE_SIGALRM(Sched, Name)                  \
+  Sched.signal_handle(SIGALRM, [] { alarm_handler(#Name); })
 #endif
 
 
