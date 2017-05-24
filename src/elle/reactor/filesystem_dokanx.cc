@@ -550,7 +550,7 @@ namespace elle
                 struct stat lst;
                 int g2 = 0xefefefef;
                 // Always restat, list_directory stat info is bogus
-                fs->path((boost::filesystem::path(parent_path) / path).string())->stat(&lst);
+                fs->path((bfs::path(parent_path) / path).string())->stat(&lst);
                 ELLE_ASSERT_EQ(g1, (int)0xfefefefe);
                 ELLE_ASSERT_EQ(g2, (int)0xefefefef);
                 WIN32_FIND_DATAW fd;
@@ -564,7 +564,7 @@ namespace elle
                 fd.ftLastAccessTime = to_filetime(lst.st_atime);
                 // FIXME BROKEN fd.nFileSizeHigh = lst.st_size >> 32;
                 fd.nFileSizeLow = lst.st_size & 0xFFFFFFFF;
-                std::string src = boost::filesystem::path(path).filename().string();
+                std::string src = bfs::path(path).filename().string();
                 ELLE_TRACE("converting %s", src);
                 ::MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS,
                   src.data(), src.size(), fd.cFileName, MAX_PATH);
@@ -954,7 +954,7 @@ namespace elle
         ELLE_ERR("terminate not yet implemented for Dokan");
       }
 
-      void FileSystem::mount(boost::filesystem::path const& where,
+      void FileSystem::mount(bfs::path const& where,
                              std::vector<std::string> const& options)
       {
         this->_mount_options = options;

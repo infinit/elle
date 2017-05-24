@@ -692,7 +692,7 @@ namespace elle
       }
 
       void
-      FileSystem::mount(boost::filesystem::path const& where,
+      FileSystem::mount(bfs::path const& where,
                         std::vector<std::string> const& options)
       {
         _where = where.string();

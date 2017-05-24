@@ -400,7 +400,7 @@ namespace elle
           }
           REACTOR_FILESYSTEM_ERROR("unlink");
         }
-        void rename(boost::filesystem::path const& where) override
+        void rename(bfs::path const& where) override
         {
           InOp inop(_owner);
           _owner.push_in(
@@ -413,7 +413,7 @@ namespace elle
           }
           REACTOR_FILESYSTEM_ERROR("rename");
         }
-        boost::filesystem::path readlink() override
+        bfs::path readlink() override
         {
           InOp inop(_owner);
           _owner.push_op(_full_path, "readlink");
@@ -427,7 +427,7 @@ namespace elle
           }
           REACTOR_FILESYSTEM_ERROR("readlink");
         }
-        void symlink(boost::filesystem::path const& where) override
+        void symlink(bfs::path const& where) override
         {
           InOp inop(_owner);
           _owner.push_in(
@@ -440,7 +440,7 @@ namespace elle
           }
           REACTOR_FILESYSTEM_ERROR("symlink");
         }
-        void link(boost::filesystem::path const& where) override
+        void link(bfs::path const& where) override
         {
           ELLE_DEBUG("journal_link");
           InOp inop(_owner);

@@ -17,8 +17,6 @@ namespace elle
   {
     namespace filesystem
     {
-      namespace bfs = boost::filesystem;
-
       static void normalize(std::string& path)
       {
         if (path == "" || path == "\\")
@@ -69,9 +67,8 @@ namespace elle
               _cache[path] = p;
             return p;
           }
-          auto bpath = boost::filesystem::path(path);
-          std::shared_ptr<Path> parent = fetch_recurse(
-            bpath.parent_path().string());
+          auto bpath = bfs::path(path);
+          auto parent = this->fetch_recurse(bpath.parent_path().string());
           auto p = parent->child(bpath.filename().string());
           if (p->allow_cache())
             _cache[path] = p;

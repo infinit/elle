@@ -45,6 +45,8 @@ namespace elle
   {
     namespace filesystem
     {
+      namespace bfs = boost::filesystem;
+
       using OnDirectoryEntry =
       std::function<void(std::string const&, struct stat* stbuf)>;
 
@@ -141,19 +143,19 @@ namespace elle
 
         virtual
         void
-        rename(boost::filesystem::path const& where);
+        rename(bfs::path const& where);
 
         virtual
-        boost::filesystem::path
+        bfs::path
         readlink();
 
         virtual
         void
-        symlink(boost::filesystem::path const& where);
+        symlink(bfs::path const& where);
 
         virtual
         void
-        link(boost::filesystem::path const& where);
+        link(bfs::path const& where);
 
         virtual
         void
@@ -250,7 +252,7 @@ namespace elle
         ~FileSystem();
 
         void
-        mount(boost::filesystem::path const& where,
+        mount(bfs::path const& where,
               std::vector<std::string> const& options);
         /// Unmount waiting gracefully for current operations to end.
         void
@@ -304,7 +306,7 @@ namespace elle
       class BindHandle: public Handle
       {
       public:
-        BindHandle(int fd, boost::filesystem::path);
+        BindHandle(int fd, bfs::path);
         int
         read(elle::WeakBuffer buffer, size_t size, off_t offset) override;
         int
@@ -316,19 +318,19 @@ namespace elle
 
       protected:
         int _fd;
-        boost::filesystem::path _where;
+        bfs::path _where;
       };
 
       class BindOperations
         : public Operations
       {
       public:
-        BindOperations(boost::filesystem::path source);
+        BindOperations(bfs::path source);
 
         std::shared_ptr<Path>
         path(std::string const& path) override;
 
-        ELLE_ATTRIBUTE_R(boost::filesystem::path, source);
+        ELLE_ATTRIBUTE_R(bfs::path, source);
       };
 
       /// Default Path implementation acting on the local filesystem.
@@ -336,7 +338,7 @@ namespace elle
         : public Path
       {
       public:
-        BindPath(boost::filesystem::path const& where,
+        BindPath(bfs::path const& where,
                  BindOperations& ops);
 
         void
@@ -358,16 +360,16 @@ namespace elle
         rmdir() override;
 
         void
-        rename(boost::filesystem::path const& where) override;
+        rename(bfs::path const& where) override;
 
-        boost::filesystem::path
+        bfs::path
         readlink() override;
 
         void
-        symlink(boost::filesystem::path const& where) override;
+        symlink(bfs::path const& where) override;
 
         void
-        link(boost::filesystem::path const& where) override;
+        link(bfs::path const& where) override;
 
         void
         chmod(mode_t mode) override;
@@ -390,10 +392,10 @@ namespace elle
 
         virtual
         std::unique_ptr<BindHandle>
-        make_handle(boost::filesystem::path& where, int fd);
+        make_handle(bfs::path& where, int fd);
 
       private:
-        ELLE_ATTRIBUTE_R(boost::filesystem::path, where);
+        ELLE_ATTRIBUTE_R(bfs::path, where);
         ELLE_ATTRIBUTE_R(BindOperations&, ops);
       };
 
