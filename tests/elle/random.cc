@@ -79,8 +79,9 @@ namespace
     int sum = 0;
     for (auto i = 0u; i < histo.size(); ++i)
     {
-      BOOST_TEST(250 <= histo[i]);
-      BOOST_TEST(histo[i] <= 350);
+      // Errors with 350 were happending too frequently.
+      BOOST_TEST(240 <= histo[i]);
+      BOOST_TEST(histo[i] <= 360);
       sum += histo[i];
     }
     BOOST_TEST(sum == 3000);
