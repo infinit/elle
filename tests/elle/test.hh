@@ -154,11 +154,23 @@ _test_suite()                                           \
 #else
 namespace
 {
+  void die(int)
+  {
+    ELLE_LOG_COMPONENT("elle.Test");
+    ELLE_ERR("failed to teardown cleanly.  Die now!");
+    _exit(70); // EX_SOFTWARE
+  }
+
   ELLE_COMPILER_ATTRIBUTE_MAYBE_UNUSED
   void alarm_handler(std::string const& name)
   {
     ELLE_LOG_COMPONENT("elle.Test");
     ELLE_ERR("test %s timeout: SIGALRM", name);
+    // Give us some time to teardown properly, dump stuff etc., then
+    // exit brutally.  The buildfarm has been stuck several times for
+    // hours because of a signal handling that did not finish.
+    signal(SIGALRM, die);
+    alarm(30);
     if (auto s = elle::reactor::Scheduler::scheduler())
       s->dump_state();
     throw elle::Error("test timeout");
