@@ -53,7 +53,7 @@ static std::string test_binary;
     BOOST_PP_SEQ_HEAD(BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__)(#F)),       \
     __FILE__, __LINE__ )                                                \
 
-#if defined(BOOST_TEST_DYN_LINK)
+#if defined BOOST_TEST_DYN_LINK
 
 # define ELLE_TEST_SUITE()                              \
 static                                                  \
@@ -90,7 +90,7 @@ static                                                  \
 void                                                    \
 _test_suite()
 
-# elif defined(BOOST_TEST_STATIC_LINK)
+# elif defined BOOST_TEST_STATIC_LINK
 
 #  define ELLE_TEST_SUITE()                             \
 static                                                  \
@@ -144,7 +144,12 @@ _test_suite()                                           \
   ELLE_TEST_SCHEDULED_HELPER(BOOST_PP_SEQ_HEAD(Seq),                    \
                              BOOST_PP_SEQ_TAIL(Seq))                    \
 
-#ifdef INFINIT_WINDOWS
+
+/*-----------------.
+| Alarm handling.  |
+`-----------------*/
+
+#if defined INFINIT_WINDOWS
 # define ELLE_TEST_HANDLE_SIGALRM(Sched, Name)
 #else
 # define ELLE_TEST_HANDLE_SIGALRM(Sched, Name)                              \
@@ -157,6 +162,7 @@ _test_suite()                                           \
                         throw elle::Error("test timeout");                  \
                       });
 #endif
+
 
 
 #define ELLE_TEST_SCHEDULED_HELPER(Name, Args)                        \
@@ -175,7 +181,7 @@ Name(ELLE_TEST_PROTOTYPE(Args))                                       \
     [&]                                                               \
     {                                                                 \
       ELLE_LOG_COMPONENT("elle.Test");                                \
-      ELLE_LOG("starting test: %s(%s)", BOOST_PP_STRINGIZE(Name),     \
+      ELLE_LOG("starting test: %s (%s)", BOOST_PP_STRINGIZE(Name),      \
                boost::unit_test::framework::current_test_case().full_name())\
         BOOST_PP_CAT(Name,_impl)(ELLE_TEST_CALL(Args));               \
     });                                                               \
@@ -212,7 +218,7 @@ Name()                                                                \
     [&]                                                               \
     {                                                                 \
       ELLE_LOG_COMPONENT("elle.Test")                                 \
-      ELLE_LOG("starting test: %s(%s)", BOOST_PP_STRINGIZE(Name),     \
+      ELLE_LOG("starting test: %s (%s)", BOOST_PP_STRINGIZE(Name),     \
         boost::unit_test::framework::current_test_case().full_name());\
       Name##_impl();                                                  \
     });                                                               \
