@@ -56,8 +56,11 @@ import os
 import os.path
 import sys
 
+project = %(project)r
+os_ = %(os)r
 source_dir = %(source_dir)r
 install_dir = %(install_dir)r
+go_path = %(go_path)r
 
 # Add drake in the Python path.
 sys.path.insert(0, os.path.realpath(source_dir + '/drake/src'))
@@ -73,7 +76,7 @@ cxx_toolkit = drake.cxx.GccToolkit(compiler = %(compiler)r)
 cxx_config = drake.cxx.Config()
 cxx_config.enable_debug_symbols()
 cxx_config.enable_optimization(True)
-# Needed on OSX ?
+# Needed on macOS?
 # cxx_config.warnings.overloaded_virtual = False
 if cxx_toolkit.os == drake.os.macos:
   cxx_config.use_local_libcxx = True
@@ -83,30 +86,30 @@ for f in %(flags)r:
 
 extra_args = {}
 
-if %(os)r == 'alpine':
+if os_ == 'alpine':
   # inhibit major and minor macros
   cxx_config.define('_SYS_SYSMACROS_H')
 
-if %(os)r == 'alpine' and %(project)r == 'Filesystem':
+if os_ == 'alpine' and project == 'Filesystem':
   extra_args['enable_crash_reporting'] = False
 
 if %(arch)r == 'arm':
   cxx_toolkit_host =  drake.cxx.GccToolkit()
   extra_args['cxx_toolkit_host'] = cxx_toolkit_host
 
-if %(beyond_public)r and %(project)r == 'Filesystem':
+if %(beyond_public)r and project == 'Filesystem':
   extra_args['beyond_public'] = True
 
-if %(project)r == 'Elle':
+if project == 'Elle':
   extra_args['enable_cryptographic_rotation'] = False
 
-if %(project)r == 'Filesystem':
-  if %(os)r == 'windows':
+if project == 'Filesystem':
+  if os_ == 'windows':
     go_toolkit = drake.go.Toolkit(os = 'windows',
                                   arch = 'amd64',
-                                  path = %(go_path)r)
+                                  path = go_path)
   else:
-    go_toolkit = drake.go.Toolkit(path = %(go_path)r)
+    go_toolkit = drake.go.Toolkit(path = go_path)
   go_config = drake.go.Config()
   extra_args['go_toolkit'] = go_toolkit
   extra_args['go_config'] = go_config
