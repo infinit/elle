@@ -249,21 +249,20 @@ operator new(std::size_t n, std::nothrow_t const&) throw()
     return std::malloc(n);
   else
   {
-    char* chunk = reinterpret_cast<char*>(std::malloc(n + _memfry_offset));
+    auto chunk = reinterpret_cast<char*>(std::malloc(n + _memfry_offset));
     *reinterpret_cast<std::size_t*>(chunk) = n;
     std::memset(chunk + _memfry_offset, 0xd0, n);
-    char* res = chunk + _memfry_offset;
-    return res;
+    return chunk + _memfry_offset;
   }
 }
 
 void*
 operator new(std::size_t n) throw(std::bad_alloc)
 {
-  void* res = ::operator new(n, std::nothrow);
-  if (!res)
+  if (void* res = ::operator new(n, std::nothrow))
+    return res;
+  else
     throw std::bad_alloc();
-  return res;
 }
 
 void
@@ -275,8 +274,8 @@ operator delete(void* p) throw()
     std::free(p);
   else
   {
-    char* chunk = reinterpret_cast<char*>(p) - _memfry_offset;
-    std::size_t n = *(reinterpret_cast<std::size_t*>(chunk));
+    auto chunk = reinterpret_cast<char*>(p) - _memfry_offset;
+    auto n = *(reinterpret_cast<std::size_t*>(chunk));
     std::memset(chunk, 0xdf, n + _memfry_offset);
     std::free(chunk);
   }
