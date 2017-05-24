@@ -184,14 +184,14 @@ namespace elle
     std::ostream&
     operator <<(std::ostream& stream, Object const& obj)
     {
-      write(stream, obj);
+      write(stream, obj, false);
       return stream;
     }
 
     std::ostream&
     operator <<(std::ostream& stream, OrderedObject const& obj)
     {
-      write(stream, obj);
+      write(stream, obj, false);
       return stream;
     }
   }
