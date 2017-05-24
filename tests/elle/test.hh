@@ -243,7 +243,7 @@ Name##_impl()                                                         \
 static const int _memfry_offset = 2 * sizeof(std::size_t);
 
 void*
-operator new(std::size_t n, std::nothrow_t const&) throw()
+operator new(std::size_t n, std::nothrow_t const&) noexcept
 {
   if (RUNNING_ON_VALGRIND)
     return std::malloc(n);
@@ -257,7 +257,7 @@ operator new(std::size_t n, std::nothrow_t const&) throw()
 }
 
 void*
-operator new(std::size_t n) throw(std::bad_alloc)
+operator new(std::size_t n) noexcept(false)
 {
   if (void* res = ::operator new(n, std::nothrow))
     return res;
@@ -266,7 +266,7 @@ operator new(std::size_t n) throw(std::bad_alloc)
 }
 
 void
-operator delete(void* p) throw()
+operator delete(void* p) noexcept
 {
   if (!p)
     return;
@@ -275,7 +275,7 @@ operator delete(void* p) throw()
   else
   {
     auto chunk = reinterpret_cast<char*>(p) - _memfry_offset;
-    auto n = *(reinterpret_cast<std::size_t*>(chunk));
+    auto n = *reinterpret_cast<std::size_t*>(chunk);
     std::memset(chunk, 0xdf, n + _memfry_offset);
     std::free(chunk);
   }
