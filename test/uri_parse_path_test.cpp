@@ -71,7 +71,7 @@ TEST(uri_parse_path_test, test_single_slash_with_fragment) {
 
 TEST(uri_parse_path_test, test_double_slash_empty_path_empty_everything) {
   test::uri uri("file://");
-  EXPECT_TRUE(uri.parse_uri());
+  EXPECT_FALSE(uri.parse_uri());
 }
 
 TEST(uri_parse_path_test, test_triple_slash_empty_everything) {
