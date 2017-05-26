@@ -52,6 +52,8 @@ class uri_part {
 };
 
 struct hierarchical_part {
+  hierarchical_part() = default;
+
   optional<uri_part> user_info;
   optional<uri_part> host;
   optional<uri_part> port;
@@ -59,6 +61,8 @@ struct hierarchical_part {
 };
 
 struct uri_parts {
+  uri_parts() = default;
+
   optional<uri_part> scheme;
   hierarchical_part hier_part;
   optional<uri_part> query;

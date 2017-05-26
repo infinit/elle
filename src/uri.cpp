@@ -102,8 +102,8 @@ void uri::initialize(optional<string_type> scheme,
   }
 
   if (path) {
-    // if the URI is hierarchical and the path is not already
-    // prefixed with a '/', add one.
+    // if the URI is not opaque and the path is not already prefixed
+    // with a '/', add one.
     if (host && (!path->empty() && path->front() != '/')) {
       path = "/" + *path;
     }

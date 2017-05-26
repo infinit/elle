@@ -1,4 +1,4 @@
-// Copyright 2016 Glyn Matthews.
+// Copyright 2016-2017 Glyn Matthews.
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt of copy at
 // http://www.boost.org/LICENSE_1_0.txt)
@@ -485,14 +485,52 @@ TEST(uri_parse_test, test_pct_encoded_user_info) {
   EXPECT_EQ("/", uri.path());
 }
 
+TEST(uri_parse_test, test_file_uri_bug_98) {
+  test::uri uri("file:///bin/bash");
+  EXPECT_TRUE(uri.parse_uri());
+  ASSERT_FALSE(uri.has_user_info());
+  ASSERT_TRUE(uri.has_host());
+  EXPECT_EQ("", uri.host());
+  ASSERT_TRUE(uri.has_path());
+  EXPECT_EQ("/bin/bash", uri.path());
+}
+
+TEST(uri_parse_test, test_file_uri_bug_98_2) {
+  test::uri uri("file://localhost/bin");
+  EXPECT_TRUE(uri.parse_uri());
+  ASSERT_FALSE(uri.has_user_info());
+  ASSERT_TRUE(uri.has_host());
+  EXPECT_EQ("localhost", uri.host());
+  ASSERT_TRUE(uri.has_path());
+  EXPECT_EQ("/bin", uri.path());
+}
+
+TEST(uri_parse_test, test_file_uri_bug_98_3) {
+  test::uri uri("file://localhost/bin/bash");
+  EXPECT_TRUE(uri.parse_uri());
+  ASSERT_FALSE(uri.has_user_info());
+  ASSERT_TRUE(uri.has_host());
+  EXPECT_EQ("localhost", uri.host());
+  ASSERT_TRUE(uri.has_path());
+  EXPECT_EQ("/bin/bash", uri.path());
+}
+
+TEST(uri_parse_test, test_file_uri_bug_98_4) {
+  test::uri uri("file://localhost/bin");
+  EXPECT_TRUE(uri.parse_uri());
+  ASSERT_FALSE(uri.has_user_info());
+  ASSERT_TRUE(uri.has_host());
+  EXPECT_EQ("localhost", uri.host());
+  ASSERT_TRUE(uri.has_path());
+  EXPECT_EQ("/bin", uri.path());
+}
+
 // http://formvalidation.io/validators/uri/
 
 std::vector<std::string> create_urls(const std::string &filename) {
   std::vector<std::string> urls;
   std::ifstream ifs(filename);
-  std::cout << filename << std::endl;
   if (!ifs) {
-    std::cout << "Shit." << std::endl;
     throw std::runtime_error("Unable to open file: " + filename);
   }
   for (std::string url; std::getline(ifs, url);) {
