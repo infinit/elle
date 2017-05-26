@@ -102,8 +102,8 @@ void uri::initialize(optional<string_type> scheme,
   }
 
   if (path) {
-    // if the URI is hierarchical and the path is not already
-    // prefixed with a '/', add one.
+    // if the URI is not opaque and the path is not already prefixed
+    // with a '/', add one.
     if (host && (!path->empty() && path->front() != '/')) {
       path = "/" + *path;
     }
@@ -194,10 +194,11 @@ uri &uri::operator=(uri other) {
 }
 
 void uri::swap(uri &other) noexcept {
+  auto parts = uri_parts_;
   advance_parts(other.uri_view_, uri_parts_, other.uri_parts_);
   uri_.swap(other.uri_);
   uri_view_.swap(other.uri_view_);
-  advance_parts(other.uri_view_, other.uri_parts_, uri_parts_);
+  advance_parts(other.uri_view_, other.uri_parts_, parts);
 }
 
 uri::const_iterator uri::begin() const noexcept { return uri_view_.begin(); }

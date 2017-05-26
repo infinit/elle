@@ -1,5 +1,5 @@
 // Copyright 2010 Jeroen Habraken.
-// Copyright 2009-2016 Dean Michael Berris, Glyn Matthews.
+// Copyright 2009-2017 Dean Michael Berris, Glyn Matthews.
 // Copyright 2012 Google, Inc.
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt of copy at
@@ -223,6 +223,17 @@ TEST(uri_test, file_test) {
   EXPECT_EQ("/bin/bash", instance.path());
 }
 
+TEST(uri_test, file_path_has_host_bug_98) {
+  network::uri instance("file:///bin/bash");
+  EXPECT_TRUE(instance.has_scheme());
+  EXPECT_FALSE(instance.has_user_info());
+  EXPECT_TRUE(instance.has_host());
+  EXPECT_FALSE(instance.has_port());
+  EXPECT_TRUE(instance.has_path());
+  EXPECT_FALSE(instance.has_query());
+  EXPECT_FALSE(instance.has_fragment());
+}
+
 TEST(uri_test, xmpp_test) {
   network::uri instance("xmpp:example-node@example.com?message;subject=Hello%20World");
   EXPECT_EQ("xmpp", instance.scheme());
@@ -418,11 +429,23 @@ TEST(uri_test, assignment_test) {
 }
 
 TEST(uri_test, swap_test) {
-  network::uri instance("http://www.example.com/");
-  network::uri copy("http://www.example.org/");
-  network::swap(instance, copy);
-  EXPECT_EQ("http://www.example.org/", instance);
-  EXPECT_EQ("http://www.example.com/", copy);
+  network::uri original("http://example.com/path/to/file.txt");
+  network::uri instance("file:///something/different/");
+  original.swap(instance);
+
+  ASSERT_TRUE(original.has_scheme());
+  ASSERT_TRUE(original.has_host());
+  ASSERT_TRUE(original.has_path());
+  EXPECT_EQ("file", original.scheme());
+  EXPECT_EQ("", original.host());
+  EXPECT_EQ("/something/different", original.path());
+
+  ASSERT_TRUE(instance.has_scheme());
+  ASSERT_TRUE(instance.has_host());
+  ASSERT_TRUE(instance.has_path());
+  EXPECT_EQ("http", instance.scheme());
+  EXPECT_EQ("example.com", instance.host());
+  EXPECT_EQ("/path/to/file.txt", instance.path());
 }
 
 TEST(uri_test, authority_test) {
@@ -531,14 +554,14 @@ TEST(uri_test, mailto_has_no_authority) {
   EXPECT_FALSE(instance.has_authority());
 }
 
-TEST(uri_test, http_is_hierarchical) {
+TEST(uri_test, http_is_not_opaque) {
   network::uri instance("http://www.example.com/");
-  EXPECT_TRUE(!instance.is_opaque());
+  EXPECT_FALSE(instance.is_opaque());
 }
 
-TEST(uri_test, file_is_hierarchical) {
+TEST(uri_test, file_is_not_opaque) {
   network::uri instance("file:///bin/bash");
-  EXPECT_TRUE(!instance.is_opaque());
+  EXPECT_FALSE(instance.is_opaque());
 }
 
 TEST(uri_test, mailto_is_absolute) {
@@ -883,4 +906,97 @@ TEST(uri_test, query_iterator_with_fragment) {
   ++query_it;
   EXPECT_EQ("c", query_it->first);
   EXPECT_EQ("d", query_it->second);
+}
+
+TEST(uri_test, copy_assignment_bug_98) {
+  network::uri original("file:///path/to/file.txt");
+
+  ASSERT_TRUE(original.has_scheme());
+  ASSERT_FALSE(original.is_opaque());
+  ASSERT_TRUE(original.has_host());
+  ASSERT_TRUE(original.has_path());
+
+  network::uri instance;
+  instance = original;
+
+  ASSERT_TRUE(instance.has_scheme());
+  ASSERT_TRUE(instance.has_host());
+  ASSERT_TRUE(instance.has_path());
+  EXPECT_EQ("file", instance.scheme());
+  EXPECT_EQ("", instance.host());
+  EXPECT_EQ("/path/to/file.txt", instance.path());
+}
+
+TEST(uri_test, copy_assignment_bug_98_2) {
+  network::uri original("file:///path/to/file.txt?query=value#foo");
+
+  network::uri instance;
+  instance = original;
+
+  ASSERT_TRUE(instance.has_scheme());
+  ASSERT_TRUE(instance.has_path());
+  ASSERT_TRUE(instance.has_query());
+  ASSERT_TRUE(instance.has_fragment());
+  EXPECT_EQ("file", instance.scheme());
+  EXPECT_EQ("/path/to/file.txt", instance.path());
+  EXPECT_EQ("query=value", instance.query());
+  EXPECT_EQ("foo", instance.fragment());
+}
+
+TEST(uri_test, copy_constructor_bug_98) {
+  network::uri original("file:///path/to/file.txt?query=value#foo");
+
+  network::uri instance(original);
+
+  ASSERT_TRUE(instance.has_scheme());
+  ASSERT_TRUE(instance.has_path());
+  ASSERT_TRUE(instance.has_query());
+  ASSERT_TRUE(instance.has_fragment());
+  EXPECT_EQ("file", instance.scheme());
+  EXPECT_EQ("/path/to/file.txt", instance.path());
+  EXPECT_EQ("query=value", instance.query());
+  EXPECT_EQ("foo", instance.fragment());
+}
+
+TEST(uri_test, move_assignment_bug_98) {
+  network::uri original("file:///path/to/file.txt?query=value#foo");
+
+  network::uri instance;
+  instance = std::move(original);
+
+  ASSERT_TRUE(instance.has_scheme());
+  ASSERT_TRUE(instance.has_path());
+  ASSERT_TRUE(instance.has_query());
+  ASSERT_TRUE(instance.has_fragment());
+  EXPECT_EQ("file", instance.scheme());
+  EXPECT_EQ("/path/to/file.txt", instance.path());
+  EXPECT_EQ("query=value", instance.query());
+  EXPECT_EQ("foo", instance.fragment());
+}
+
+TEST(uri_test, move_constructor_bug_98) {
+  network::uri original("file:///path/to/file.txt?query=value#foo");
+
+  network::uri instance(std::move(original));
+
+  ASSERT_TRUE(instance.has_scheme());
+  ASSERT_TRUE(instance.has_path());
+  ASSERT_TRUE(instance.has_query());
+  ASSERT_TRUE(instance.has_fragment());
+  EXPECT_EQ("file", instance.scheme());
+  EXPECT_EQ("/path/to/file.txt", instance.path());
+  EXPECT_EQ("query=value", instance.query());
+  EXPECT_EQ("foo", instance.fragment());
+}
+
+TEST(uri_test, http_copy_assignment_bug_98) {
+  network::uri original("http://example.com/path/to/file.txt");
+
+  network::uri instance;
+  instance = original;
+
+  ASSERT_TRUE(instance.has_scheme());
+  ASSERT_TRUE(instance.has_path());
+  EXPECT_EQ("http", instance.scheme());
+  EXPECT_EQ("/path/to/file.txt", instance.path());
 }
