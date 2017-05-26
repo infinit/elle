@@ -429,11 +429,23 @@ TEST(uri_test, assignment_test) {
 }
 
 TEST(uri_test, swap_test) {
-  network::uri instance("http://www.example.com/");
-  network::uri copy("http://www.example.org/");
-  network::swap(instance, copy);
-  EXPECT_EQ("http://www.example.org/", instance);
-  EXPECT_EQ("http://www.example.com/", copy);
+  network::uri original("http://example.com/path/to/file.txt");
+  network::uri instance("file:///something/different/");
+  original.swap(instance);
+
+  ASSERT_TRUE(original.has_scheme());
+  ASSERT_TRUE(original.has_host());
+  ASSERT_TRUE(original.has_path());
+  EXPECT_EQ("file", original.scheme());
+  EXPECT_EQ("", original.host());
+  EXPECT_EQ("/something/different", original.path());
+
+  ASSERT_TRUE(instance.has_scheme());
+  ASSERT_TRUE(instance.has_host());
+  ASSERT_TRUE(instance.has_path());
+  EXPECT_EQ("http", instance.scheme());
+  EXPECT_EQ("example.com", instance.host());
+  EXPECT_EQ("/path/to/file.txt", instance.path());
 }
 
 TEST(uri_test, authority_test) {

@@ -24,7 +24,7 @@ uri_part copy_part(const std::string &uri, string_view::const_iterator &it) {
   return copy_part(std::begin(uri), std::end(uri), it);
 }
 
-void advance_parts(string_view &uri_view, uri_parts &parts,
+void advance_parts(string_view uri_view, uri_parts &parts,
                    const uri_parts &existing_parts) {
   auto first = std::begin(uri_view);
 
