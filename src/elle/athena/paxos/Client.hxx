@@ -276,7 +276,8 @@ namespace elle
           q.insert(peer->id());
         ELLE_DUMP("quorum: %s", q);
         auto reached = 0;
-        boost::optional<typename Client<T, Version, CId>::Accepted> res;
+        boost::optional<typename Client::Accepted> res;
+        boost::optional<typename Server::WrongQuorum> wrong_quorum;
         elle::reactor::for_each_parallel(
           this->_peers,
           [&] (std::unique_ptr<Peer> const& peer) -> void
@@ -284,10 +285,33 @@ namespace elle
             try
             {
               ELLE_DEBUG_SCOPE("%s: get from %s", *this, *peer);
-              auto accepted = peer->get(q);
-              if (accepted)
-                if (!res || res->proposal < accepted->proposal)
-                  res.emplace(std::move(accepted.get()));
+              try
+              {
+                auto accepted = peer->get(q);
+                if (accepted)
+                {
+                  if (!res || res->proposal < accepted->proposal)
+                  {
+                    ELLE_DEBUG("accept proposal %f", accepted->proposal);
+                    res.emplace(std::move(accepted.get()));
+                  }
+                  else
+                    ELLE_DEBUG("skip proposal %f", accepted->proposal);
+                }
+              }
+              catch (typename Server::WrongQuorum const& e)
+              {
+                if (!e.proposal())
+                  // Not handled pre 0.4.0.
+                  throw;
+                if (!wrong_quorum || *wrong_quorum->proposal() < *e.proposal())
+                {
+                  ELLE_DEBUG("accept wrong quorum %f", *e.proposal());
+                  wrong_quorum.emplace(e);
+                }
+                else
+                  ELLE_DEBUG("skip wrong quorum %f", *e.proposal());
+              }
               ++reached;
             }
             catch (Unavailable const& e)
@@ -297,7 +321,13 @@ namespace elle
           },
           std::string("get quorum"));
         this->_check_headcount(q, reached, true);
-        if (res)
+        if (wrong_quorum &&
+            (!res || res->proposal < wrong_quorum->proposal()))
+        {
+          ELLE_DEBUG("throw %f", wrong_quorum);
+          throw *wrong_quorum;
+        }
+        else if (res)
           return State(res->value.template get<T>(), q, res->proposal);
         else
           return State(boost::none, q, boost::none);

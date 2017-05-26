@@ -741,7 +741,6 @@ public:
     : Super{id, paxos}
   {}
 
-
   typename Client::Proposal
   accept(typename Client::Quorum const& q,
          typename Client::Proposal const& p,
@@ -753,6 +752,22 @@ public:
   bool fail;
   elle::reactor::Barrier propose_barrier, accept_barrier;
   elle::reactor::Signal propose_signal, accept_signal;
+};
+
+template <typename T, typename Version, typename ServerId>
+class NoConfirmationPeer
+  : public Peer<T, Version, ServerId>
+{
+public:
+  using Super = Peer<T, Version, ServerId>;
+  using Client = paxos::Client<T, Version, ServerId>;
+
+  using Super::Super;
+
+  void
+  confirm(typename paxos::Server<T, Version, ServerId>::Quorum const&,
+          typename Client::Proposal const&) override
+  {}
 };
 
 namespace quorum_divergence
@@ -821,6 +836,61 @@ namespace quorum_divergence
     //   +---------+---------+---------+
     ELLE_LOG("choose 3 for version 3")
       BOOST_CHECK(!client.choose(3, 3));
+  }
+
+  // Check that if one of two peers has the new quorum of 2 commited, but the
+  // other still thinks they are 3, the newest quorum takes precedence.
+  ELLE_TEST_SCHEDULED(one_of_three_knows_quorum_changed)
+  {
+    using Server = paxos::Server<int, int, int>;
+    using Client = paxos::Client<int, int, int>;
+    using Peers = Client::Peers;
+    Server server_1(11, {11, 12, 13});
+    Server server_2(12, {11, 12, 13});
+    Server server_3(13, {11, 12, 13});
+    ELLE_LOG("choose 1 for version 1");
+    {
+      auto peers = Peers{};
+      peers.emplace_back(std::make_unique<Peer<int, int, int>>(11, server_1));
+      peers.emplace_back(std::make_unique<Peer<int, int, int>>(12, server_2));
+      peers.emplace_back(std::make_unique<Peer<int, int, int>>(13, server_3));
+      auto client = paxos::Client<int, int, int>(1, std::move(peers));
+        BOOST_TEST(!client.choose(1, 1));
+    }
+    //        11        12        13
+    //   +---------+---------+---------+
+    // 1 |    1    |    1    |    1    | -> 1
+    //   |  1:1:1  |  1:1:1  |  1:1:1  |
+    //   +---------+---------+---------+
+    ELLE_LOG("choose \\{11,12\\} for version 2, only confirm on 11")
+    {
+      auto peers = Peers{};
+      peers.emplace_back(std::make_unique<Peer<int, int, int>>(11, server_1));
+      peers.emplace_back(
+        std::make_unique<NoConfirmationPeer<int, int, int>>(12, server_2));
+      peers.emplace_back(std::make_unique<Peer<int, int, int>>(13, server_3));
+      auto client = paxos::Client<int, int, int>(2, std::move(peers));
+      client.choose(2, Client::Quorum{11, 12});
+    }
+    //        11        12        13
+    //   +---------+
+    //   |         |
+    //   |         |
+    //   +---------+---------+---------+
+    // 2 | {11,12} | {11,12} | {11,12} | -> {11,12}
+    //   |  2:1:2  |  2:1:2  |  2:1:2  |
+    //   +---------+---------+---------+
+    // 1 |    1    |    1    |    1    | -> 1
+    //   |  1:1:1  |  1:1:1  |  1:1:1  |
+    //   +---------+---------+---------+
+    ELLE_LOG("get value")
+    {
+      auto peers = Peers{};
+      peers.emplace_back(std::make_unique<Peer<int, int, int>>(11, server_1));
+      peers.emplace_back(std::make_unique<Peer<int, int, int>>(12, server_2));
+      auto client = paxos::Client<int, int, int>(3, std::move(peers));
+      BOOST_TEST(*client.get() == 1);
+    }
   }
 }
 
@@ -1003,6 +1073,8 @@ ELLE_TEST_SUITE()
       quorum->add(divergence);
       divergence->add(
         BOOST_TEST_CASE(one_of_three_thinks_quorum_changed), 0, valgrind(1));
+      divergence->add(
+        BOOST_TEST_CASE(one_of_three_knows_quorum_changed), 0, valgrind(1));
     }
   }
 }
