@@ -131,7 +131,9 @@ namespace elle
           ///
           /// @param excepted The expected Quorum.
           /// @param effective The effective Quorum.
-          WrongQuorum(Quorum expected, Quorum effective);
+          WrongQuorum(Quorum expected,
+                      Quorum effective,
+                      boost::optional<Proposal> proposal);
           /// Deserialize a WrongQuorum exception.
           WrongQuorum(elle::serialization::SerializerIn& input,
                       elle::Version const& version);
@@ -141,6 +143,9 @@ namespace elle
                     elle::Version const& version) override;
           ELLE_ATTRIBUTE_R(Quorum, expected);
           ELLE_ATTRIBUTE_R(Quorum, effective);
+          // The last committed proposal that acknowledges the expected quorum.
+          // FIXME: An optional only for backward compatibility.
+          ELLE_ATTRIBUTE_R(boost::optional<Proposal>, proposal);
         private:
           void
           _serialize(elle::serialization::Serializer& s,

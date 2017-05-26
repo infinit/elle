@@ -129,11 +129,14 @@ namespace elle
       template <
         typename T, typename Version, typename ClientId, typename ServerId>
       Server<T, Version, ClientId, ServerId>::WrongQuorum::WrongQuorum(
-        Quorum expected, Quorum effective)
+        Quorum expected,
+        Quorum effective,
+        boost::optional<Proposal> proposal)
         : elle::Error(
-          elle::sprintf("wrong quorum: %f instead of %f", effective, expected))
+          elle::print("wrong quorum: %f instead of %f", effective, expected))
         , _expected(std::move(expected))
         , _effective(std::move(effective))
+        , _proposal(std::move(proposal))
       {}
 
       template <typename T, typename Version, typename CId, typename SId>
@@ -160,7 +163,9 @@ namespace elle
       {
         s.serialize("expected", this->_expected);
         s.serialize("effective", this->_effective);
-        if (version < elle::Version(0, 1, 0))
+        if (version >= elle::Version(0, 4, 0))
+          s.serialize("proposal", this->_proposal);
+        else if (version < elle::Version(0, 1, 0))
         {
           auto dummy = Version();
           s.serialize("version", dummy);
@@ -277,7 +282,10 @@ namespace elle
           if (q != expected)
           {
             ELLE_TRACE("quorum is wrong: %f instead of %f", q, expected);
-            throw WrongQuorum(expected, std::move(q));
+            auto current = self.current_value();
+            throw WrongQuorum(
+              std::move(expected), std::move(q),
+              current ? current->proposal : boost::optional<Proposal>());
           }
         }
 
