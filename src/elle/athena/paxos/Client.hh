@@ -138,11 +138,14 @@ namespace elle
         ///
         /// @param q The quorum we consult.
         /// @param reached The number of member successfully consulted.
-        /// @throws TooFewPeers if a strict majority was not reached.
-        void
+        /// @param reading Whether majority is floor or ceil of `n / 2`.
+        /// @param raise Whether to throw on error.
+        /// @throws TooFewPeers if \a raise and a majority was not reached.
+        bool
         _check_headcount(Quorum const& q,
                          int reached,
-                         bool reading = false) const;
+                         bool reading = false,
+                         bool raise = true) const;
 
         /*----------.
         | Printable |

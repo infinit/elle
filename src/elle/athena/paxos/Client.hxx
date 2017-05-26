@@ -90,19 +90,28 @@ namespace elle
       }
 
       template <typename T, typename Version, typename ClientId>
-      void
+      bool
       Client<T, Version, ClientId>::_check_headcount(Quorum const& q,
                                                      int reached,
-                                                     bool reading) const
+                                                     bool reading,
+                                                     bool raise) const
       {
         ELLE_LOG_COMPONENT("athena.paxos.Client");
         ELLE_DEBUG("reached %s peers", reached);
         auto size = signed(q.size());
         if (reached <= (size - (reading ? 1 : 0)) / 2)
         {
-          ELLE_TRACE("too few peers to reach consensus: %s of %s", reached, size);
-          throw TooFewPeers(reached, size);
+          if (raise)
+          {
+            ELLE_TRACE("too few peers to reach consensus: {} of {}",
+                       reached, size);
+            throw TooFewPeers(reached, size);
+          }
+          else
+            return false;
         }
+        else
+          return true;
       }
 
       template <typename T, typename Version, typename ClientId>
