@@ -516,13 +516,18 @@ TEST(uri_parse_test, test_file_uri_bug_98_3) {
 }
 
 TEST(uri_parse_test, test_file_uri_bug_98_4) {
-  test::uri uri("file://localhost/bin");
+  test::uri uri("file:///bin");
   EXPECT_TRUE(uri.parse_uri());
   ASSERT_FALSE(uri.has_user_info());
   ASSERT_TRUE(uri.has_host());
-  EXPECT_EQ("localhost", uri.host());
+  EXPECT_EQ("", uri.host());
   ASSERT_TRUE(uri.has_path());
   EXPECT_EQ("/bin", uri.path());
+}
+
+TEST(uri_parse_test, test_has_host_bug_88) {
+  test::uri uri("http://user@host");
+  EXPECT_TRUE(uri.parse_uri());
 }
 
 // http://formvalidation.io/validators/uri/

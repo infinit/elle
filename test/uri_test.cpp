@@ -1000,3 +1000,39 @@ TEST(uri_test, http_copy_assignment_bug_98) {
   EXPECT_EQ("http", instance.scheme());
   EXPECT_EQ("/path/to/file.txt", instance.path());
 }
+
+TEST(uri_test, uri_has_host_bug_87) {
+  EXPECT_THROW(network::uri("http://"), network::uri_syntax_error);
+}
+
+TEST(uri_test, uri_has_host_bug_87_2) {
+  EXPECT_THROW(network::uri("http://user@"), network::uri_syntax_error);
+}
+
+TEST(uri_test, uri_has_host_bug_88) {
+  network::uri instance("http://user@host");
+
+  ASSERT_TRUE(instance.has_scheme());
+  ASSERT_TRUE(instance.has_user_info());
+  ASSERT_TRUE(instance.has_host());
+  ASSERT_FALSE(instance.has_port());
+  ASSERT_TRUE(instance.has_path());
+  ASSERT_FALSE(instance.has_query());
+  ASSERT_FALSE(instance.has_fragment());
+
+  EXPECT_EQ("host", instance.host().to_string());
+}
+
+TEST(uri_test, uri_has_host_bug_88_2) {
+  network::uri instance("http://user@example.com");
+
+  ASSERT_TRUE(instance.has_scheme());
+  ASSERT_TRUE(instance.has_user_info());
+  ASSERT_TRUE(instance.has_host());
+  ASSERT_FALSE(instance.has_port());
+  ASSERT_TRUE(instance.has_path());
+  ASSERT_FALSE(instance.has_query());
+  ASSERT_FALSE(instance.has_fragment());
+
+  EXPECT_EQ("example.com", instance.host().to_string());
+}

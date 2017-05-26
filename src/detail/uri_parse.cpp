@@ -70,7 +70,7 @@ bool set_host_and_port(string_view::const_iterator first,
                        string_view::const_iterator last,
                        string_view::const_iterator last_colon,
                        uri_parts &parts) {
-  if (first == last_colon) {
+  if (first >= last_colon) {
     parts.hier_part.host = uri_part(first, last);
   }
   else {
@@ -374,12 +374,20 @@ bool parse(string_view::const_iterator &it, string_view::const_iterator last,
   // we're done!
   if (state == uri_state::hier_part) {
     if (hp_state == hier_part_state::authority) {
+      if (first == last) {
+        return false;
+      }
+
       if (!set_host_and_port(first, last, last_colon, parts)) {
         return false;
       }
       parts.hier_part.path = uri_part(last, last);
     }
     else if (hp_state == hier_part_state::host) {
+      if (first == last) {
+        return false;
+      }
+
       if (!set_host_and_port(first, last, last_colon, parts)) {
         return false;
       }
