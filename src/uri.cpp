@@ -362,7 +362,7 @@ void uri::query_iterator::increment() noexcept {
 }
 
 uri::query_iterator uri::query_begin() const noexcept {
-  return uri::query_iterator{uri_parts_.query};
+  return has_query()? uri::query_iterator{uri_parts_.query} : uri::query_iterator{};
 }
 
 uri::query_iterator uri::query_end() const noexcept {

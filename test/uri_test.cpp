@@ -211,6 +211,12 @@ TEST(uri_test, full_uri_range_fragment_test) {
   EXPECT_EQ("fragment", instance.fragment());
 }
 
+TEST(uri_test, uri_with_empty_query) {
+  network::uri instance("http://example.com/?");
+  ASSERT_TRUE(instance.has_query());
+  EXPECT_EQ("", instance.query());
+}
+
 TEST(uri_test, mailto_test) {
   network::uri instance("mailto:john.doe@example.com");
   EXPECT_EQ("mailto", instance.scheme());
@@ -853,6 +859,7 @@ TEST(uri_test, query_iterator_with_no_query) {
 TEST(uri_test, query_iterator_with_empty_query) {
   network::uri instance("http://example.com/?");
   ASSERT_TRUE(instance.has_query());
+  EXPECT_EQ("", instance.query());
   EXPECT_EQ(instance.query_begin(), instance.query_end());
 }
 
