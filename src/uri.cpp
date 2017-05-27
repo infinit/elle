@@ -1,4 +1,4 @@
-// Copyright 2012-2016 Glyn Matthews.
+// Copyright 2012-2017 Glyn Matthews.
 // Copyright 2012 Google, Inc.
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt or copy at
@@ -259,16 +259,17 @@ uri::string_view uri::query() const noexcept {
   return has_query() ? to_string_view(uri_, *uri_parts_.query) : string_view{};
 }
 
-uri::query_iterator::query_iterator()
-  : query_{}
-  , kvp_{} {
-  reset();
-}
+uri::query_iterator::query_iterator() : query_{}, kvp_{} {}
 
 uri::query_iterator::query_iterator(optional<detail::uri_part> query)
   : query_(query)
   , kvp_{} {
-  reset();
+  if (query_ && query_->empty()) {
+    query_ = nullopt;
+  }
+  else {
+    assign_kvp();
+  }
 }
 
 uri::query_iterator::query_iterator(const query_iterator &other)
@@ -302,8 +303,16 @@ uri::query_iterator::pointer uri::query_iterator::operator -> () const noexcept 
   return std::addressof(kvp_);
 }
 
-bool uri::query_iterator::operator == (const query_iterator &other) const noexcept {
-  return kvp_.first == kvp_.second;
+bool uri::query_iterator::operator==(const query_iterator &other) const noexcept {
+  if (!query_ && !other.query_) {
+    return true;
+  }
+  else if (query_ && other.query_) {
+    // since we're comparing substrings, the address of the first
+    // element in each iterator must be the same
+    return std::addressof(kvp_.first) == std::addressof(other.kvp_.first);
+  }
+  return false;
 }
 
 void uri::query_iterator::swap(query_iterator &other) noexcept {
@@ -311,27 +320,31 @@ void uri::query_iterator::swap(query_iterator &other) noexcept {
   std::swap(kvp_, other.kvp_);
 }
 
-void uri::query_iterator::reset() {
-  kvp_ = value_type{};
-  increment();
+void uri::query_iterator::assign_kvp() noexcept {
+  auto first = std::begin(*query_), last = std::end(*query_);
+
+  auto sep_it =
+    std::find_if(first, last,
+                 [](char c) -> bool { return c == '&' || c == ';'; });
+  auto eq_it = std::find_if(first, sep_it,
+                            [](char c) -> bool { return c == '='; });
+
+  kvp_.first = string_view(std::addressof(*first), eq_it - first);
+  if (eq_it != sep_it) {
+    ++eq_it; // skip '=' symbol
+  }
+  kvp_.second = string_view(std::addressof(*eq_it), sep_it - eq_it);
 }
 
 void uri::query_iterator::increment() noexcept {
-  if (query_ && !query_->empty()) {
-    auto query = query_->to_string_view();
-    auto first = query.begin(), last = query.end();
+  assert(query_);
+
+  if (!query_->empty()) {
+    auto first = std::begin(*query_), last = std::end(*query_);
 
     auto sep_it =
-        std::find_if(std::begin(query), std::end(query),
+        std::find_if(first, last,
                      [](char c) -> bool { return c == '&' || c == ';'; });
-    auto eq_it = std::find_if(std::begin(query), sep_it,
-                              [](char c) -> bool { return c == '='; });
-    
-    kvp_.first = string_view(std::addressof(*first), eq_it - first);
-    if (eq_it != sep_it) {
-      ++eq_it; // skip '=' symbol
-    }
-    kvp_.second = string_view(std::addressof(*eq_it), sep_it - eq_it);
 
     if (sep_it != last) {
       ++sep_it; // skip next separator
@@ -339,6 +352,12 @@ void uri::query_iterator::increment() noexcept {
 
     // reassign query to the next element
     query_ = detail::uri_part(sep_it, last);
+
+    assign_kvp();
+  }
+
+  if (query_->empty()) {
+    query_ = nullopt;
   }
 }
 
@@ -562,7 +581,6 @@ uri uri::resolve(const uri &base) const {
   }
 
   optional<uri::string_type> user_info, host, port, path, query, fragment;
-  // const uri &base = *this;
 
   if (has_authority()) {
     // g -> http://g

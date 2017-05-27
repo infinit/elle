@@ -1,5 +1,5 @@
 // Copyright 2009-2010 Jeroen Habraken.
-// Copyright 2009-2016 Dean Michael Berris, Glyn Matthews.
+// Copyright 2009-2017 Dean Michael Berris, Glyn Matthews.
 // Copyright 2012 Google, Inc.
 // Distributed under the Boost Software License, Version 1.0.
 // (See accompanying file LICENSE_1_0.txt or copy at
@@ -29,8 +29,8 @@
 #include <network/uri/detail/translate.hpp>
 
 #ifdef NETWORK_URI_MSVC
-#  pragma warning(push)
-#  pragma warning(disable : 4251 4231 4660)
+#pragma warning(push)
+#pragma warning(disable : 4251 4231 4660)
 #endif
 
 namespace network {
@@ -121,9 +121,8 @@ class uri {
   /**
    *
    */
-  class query_iterator
-  {
-  public:
+  class query_iterator {
+   public:
     using value_type = std::pair<string_view, string_view>;
     using difference_type = std::ptrdiff_t;
     using pointer = const value_type *;
@@ -133,25 +132,23 @@ class uri {
     query_iterator();
     explicit query_iterator(optional<detail::uri_part>);
     query_iterator(const query_iterator &);
-    query_iterator &operator = (const query_iterator &);
-    reference operator ++ () noexcept;
-    value_type operator ++ (int) noexcept;
-    reference operator * () const noexcept;
-    pointer operator -> () const noexcept;
-    bool operator == (const query_iterator &) const noexcept;
-    inline bool operator != (const query_iterator &other) const noexcept {
+    query_iterator &operator=(const query_iterator &);
+    reference operator++() noexcept;
+    value_type operator++(int) noexcept;
+    reference operator*() const noexcept;
+    pointer operator->() const noexcept;
+    bool operator==(const query_iterator &) const noexcept;
+    inline bool operator!=(const query_iterator &other) const noexcept {
       return !(*this == other);
     }
 
-  private:
-
+   private:
     void swap(query_iterator &) noexcept;
-    void reset();
+    void assign_kvp() noexcept;
     void increment() noexcept;
 
     optional<detail::uri_part> query_;
     value_type kvp_;
-
   };
 
   /**
@@ -311,8 +308,8 @@ class uri {
   intT port(typename std::is_integral<intT>::type * = 0) const {
     assert(has_port());
     auto p = port();
-    const char* port_first = std::addressof(*p.begin());
-    char* port_last = 0;
+    const char *port_first = std::addressof(*p.begin());
+    char *port_last = 0;
     return static_cast<intT>(std::strtoul(port_first, &port_last, 10));
   }
 
