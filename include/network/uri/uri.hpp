@@ -144,6 +144,7 @@ class uri {
 
    private:
     void swap(query_iterator &) noexcept;
+    void advance_to_next_kvp() noexcept;
     void assign_kvp() noexcept;
     void increment() noexcept;
 

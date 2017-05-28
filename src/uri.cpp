@@ -320,39 +320,40 @@ void uri::query_iterator::swap(query_iterator &other) noexcept {
   std::swap(kvp_, other.kvp_);
 }
 
+void uri::query_iterator::advance_to_next_kvp() noexcept {
+  auto first = std::begin(*query_), last = std::end(*query_);
+
+  auto sep_it = std::find_if(
+      first, last, [](char c) -> bool { return c == '&' || c == ';'; });
+
+  if (sep_it != last) {
+    ++sep_it; // skip next separator
+  }
+
+  // reassign query to the next element
+  query_ = detail::uri_part(sep_it, last);
+}
+
 void uri::query_iterator::assign_kvp() noexcept {
   auto first = std::begin(*query_), last = std::end(*query_);
 
-  auto sep_it =
-    std::find_if(first, last,
-                 [](char c) -> bool { return c == '&' || c == ';'; });
-  auto eq_it = std::find_if(first, sep_it,
-                            [](char c) -> bool { return c == '='; });
+  auto sep_it = std::find_if(
+      first, last, [](char c) -> bool { return c == '&' || c == ';'; });
+  auto eq_it =
+      std::find_if(first, sep_it, [](char c) -> bool { return c == '='; });
 
-  kvp_.first = string_view(std::addressof(*first), eq_it - first);
+  kvp_.first = string_view(std::addressof(*first), std::distance(first, eq_it));
   if (eq_it != sep_it) {
     ++eq_it; // skip '=' symbol
   }
-  kvp_.second = string_view(std::addressof(*eq_it), sep_it - eq_it);
+  kvp_.second = string_view(std::addressof(*eq_it), std::distance(eq_it, sep_it));
 }
 
 void uri::query_iterator::increment() noexcept {
   assert(query_);
 
   if (!query_->empty()) {
-    auto first = std::begin(*query_), last = std::end(*query_);
-
-    auto sep_it =
-        std::find_if(first, last,
-                     [](char c) -> bool { return c == '&' || c == ';'; });
-
-    if (sep_it != last) {
-      ++sep_it; // skip next separator
-    }
-
-    // reassign query to the next element
-    query_ = detail::uri_part(sep_it, last);
-
+    advance_to_next_kvp();
     assign_kvp();
   }
 
