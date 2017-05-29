@@ -199,6 +199,16 @@ class Drake:
   def adjust_mtime_second(self):
     return self.__adjust_mtime_second
 
+  def notify(self, title, message):
+    '''Notify the user that a run was finished.'''
+    # For some reason, the some first characters (such as open paren
+    # or bracket) must be escaped.  Fortunately, a leading backlash
+    # suffices.
+    if sys.platform == 'darwin':
+      cmd = ('(terminal-notifier -title "\\{title}" -message "\\{message}"'
+             ') 2>/dev/null')
+      _OS.system(cmd.format(title=title, message=message))
+
   def run(self, *cfg, **kwcfg):
     try:
       g = self.__globals
@@ -279,6 +289,7 @@ class Drake:
           if i == len(args):
             break
     except Exception as e:
+      self.notify('failed', str(e))
       print('%s: %s' % (sys.argv[0], e))
       if 'DRAKE_DEBUG_BACKTRACE' in _OS.environ:
         import traceback
@@ -287,6 +298,7 @@ class Drake:
     except KeyboardInterrupt:
       print('%s: interrupted.' % sys.argv[0])
       exit(1)
+    self.notify('done', ' '.join(args))
 
 EXPLAIN = 'DRAKE_EXPLAIN' in _OS.environ
 def explain(node, reason):
