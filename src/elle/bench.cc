@@ -3,6 +3,14 @@
 #include <elle/log.hh>
 #include <elle/printf.hh>
 
+namespace
+{
+  auto now()
+  {
+    return std::chrono::system_clock::now();
+  }
+}
+
 namespace elle
 {
   Bench::~Bench()
@@ -12,7 +20,7 @@ namespace elle
   }
 
   Bench::Bench(std::string const& name,
-               boost::posix_time::time_duration log_interval,
+               Duration log_interval,
                int roundto)
     : _name(name)
     , _sum(0)
@@ -24,7 +32,7 @@ namespace elle
     , _enabled{elle::log::detail::Send::active(elle::log::Logger::Level::trace,
                                                elle::log::Logger::Type::info,
                                                this->_name.c_str())}
-    , _start{boost::posix_time::microsec_clock::universal_time()}
+    , _start{now()}
   {}
 
   void
@@ -36,9 +44,8 @@ namespace elle
     this->_sum += val;
     this->_min = std::min(val, this->_min);
     this->_max = std::max(val, this->_max);
-    if (this->_log_interval != boost::posix_time::time_duration()
-        && boost::posix_time::microsec_clock::universal_time() - this->_start
-        > this->_log_interval)
+    if (this->_log_interval != Duration()
+        && now() - this->_start > this->_log_interval)
     {
       log();
       reset();
@@ -49,7 +56,7 @@ namespace elle
   Bench::reset()
   {
     this->_sum = this->_count = this->_min = this->_max = 0;
-    this->_start = boost::posix_time::microsec_clock::universal_time();
+    this->_start = now();
   }
 
   void
@@ -85,7 +92,7 @@ namespace elle
   void
   Bench::print(std::ostream& os) const
   {
-    os << elle::sprintf(
+    elle::fprintf(os,
       "AVG %12s %16tMIN %16s %32tMAX %12s %48tCNT %12s %64tTOT %8s ms",
       this->_sum / this->_count,
       this->_min,
@@ -97,12 +104,13 @@ namespace elle
   Bench::BenchScope::BenchScope(Bench& owner)
     : _owner(owner)
   {
-    this->_start = boost::posix_time::microsec_clock::universal_time();
+    this->_start = now();
   }
 
   Bench::BenchScope::~BenchScope()
   {
-    auto d = boost::posix_time::microsec_clock::universal_time() - this->_start;
-    this->_owner.add(d.total_microseconds());
+    using ms = std::chrono::microseconds;
+    auto const d = std::chrono::duration_cast<ms>(now() - this->_start);
+    this->_owner.add(d.count());
   }
 }

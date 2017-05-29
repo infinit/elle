@@ -1,7 +1,6 @@
-#ifndef ELLE_TIME_HH
-# define ELLE_TIME_HH
+#pragma once
 
-# include <elle/windows.h>
-# include <boost/date_time/posix_time/posix_time.hpp>
+#include <chrono>
 
-#endif
+#include <elle/windows.h>
+#include <boost/date_time/posix_time/posix_time.hpp>
