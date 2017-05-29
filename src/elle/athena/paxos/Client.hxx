@@ -53,11 +53,12 @@ namespace elle
       class Unavailable
         : public elle::Error
       {
-        public:
-          Unavailable()
+      public:
+        Unavailable()
           : elle::Error("peer unavailable")
-          {}
-          Unavailable(elle::serialization::SerializerIn& input)
+        {}
+
+        Unavailable(elle::serialization::SerializerIn& input)
           : elle::Error(input)
         {}
       };
