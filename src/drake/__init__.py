@@ -47,6 +47,11 @@ def path_source(path = None):
   else:
     return Drake.current.path_source / Drake.current.prefix / path
 
+def duration(start, stop):
+  '''The duration from start to stop, with nice conversion to string.'''
+  import datetime
+  return datetime.timedelta(seconds=round(stop - start))
+
 PRETTY = 'DRAKE_PRETTY' in os.environ
 PROFILE = 'DRAKE_PROFILE' in os.environ
 
@@ -2127,12 +2132,7 @@ class Builder:
                 if dst.touch(res):
                   print('Adjust mtime of %s' % dst)
         if execute:
-          import time, datetime
-          self.__start_time = time.time()
           self._execute(depfile_builder)
-          self.__end_time = time.time()
-          d = round(self.__end_time - self.__start_time)
-          print('Finished {} ({})'.format(self, datetime.timedelta(seconds=d)))
         else:
             self.__executed = True
             logger.log('drake.Builder',
@@ -2185,7 +2185,12 @@ class Builder:
                           drake.log.LogLevel.trace,
                           '%s: execute', self):
             self._depfile.dirty = True
+            self.__start_time = time.time()
             success = self.execute()
+            self.__end_time = time.time()
+            print('{} {} ({})'.format(
+              "Finished" if success else "Failed",
+              self, duration(self.__start_time, self.__end_time)))
             for dst in self.__targets:
               dst._Node__mtime = None
             logger.log('drake.Builder',
