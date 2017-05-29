@@ -295,12 +295,16 @@ test_xor()
     return;
   }
   std::string text = "coincoin";
+
+  for (int i=0;
+    i<10 && (directory_count(tmpmount) != 1 || directory_count(tmpsource) != 1);
+    ++i)
+  {
 #if INFINIT_WINDOWS
   Sleep(200);
 #else
   ::usleep(200000);
 #endif
-  {
     fs::ofstream ofs(tmpmount / "test");
     ofs << text;
   }
