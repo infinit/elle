@@ -211,6 +211,12 @@ TEST(uri_test, full_uri_range_fragment_test) {
   EXPECT_EQ("fragment", instance.fragment());
 }
 
+TEST(uri_test, uri_with_empty_query) {
+  network::uri instance("http://example.com/?");
+  ASSERT_TRUE(instance.has_query());
+  EXPECT_EQ("", instance.query());
+}
+
 TEST(uri_test, mailto_test) {
   network::uri instance("mailto:john.doe@example.com");
   EXPECT_EQ("mailto", instance.scheme());
@@ -847,45 +853,57 @@ TEST(uri_test, non_opaque_path_has_double_slash) {
 TEST(uri_test, query_iterator_with_no_query) {
   network::uri instance("http://example.com/");
   ASSERT_FALSE(instance.has_query());
+  ASSERT_EQ(instance.query_begin(), instance.query_end());
 }
 
 TEST(uri_test, query_iterator_with_empty_query) {
   network::uri instance("http://example.com/?");
   ASSERT_TRUE(instance.has_query());
+  EXPECT_EQ("", instance.query());
   EXPECT_EQ(instance.query_begin(), instance.query_end());
 }
 
 TEST(uri_test, query_iterator_with_single_kvp) {
   network::uri instance("http://example.com/?a=b");
   ASSERT_TRUE(instance.has_query());
-  ASSERT_NE(instance.query_begin(), instance.query_end());
-  auto kvp = *instance.query_begin();
-  EXPECT_EQ("a", kvp.first);
-  EXPECT_EQ("b", kvp.second);
+  auto query_it = instance.query_begin();
+  ASSERT_NE(query_it, instance.query_end());
+  EXPECT_EQ("a", query_it->first);
+  EXPECT_EQ("b", query_it->second);
+  ++query_it;
+  EXPECT_EQ(query_it, instance.query_end());
 }
 
 TEST(uri_test, query_iterator_with_two_kvps) {
   network::uri instance("http://example.com/?a=b&c=d");
+
   ASSERT_TRUE(instance.has_query());
-  ASSERT_NE(instance.query_begin(), instance.query_end());
   auto query_it = instance.query_begin();
+  ASSERT_NE(query_it, instance.query_end());
   EXPECT_EQ("a", query_it->first);
   EXPECT_EQ("b", query_it->second);
   ++query_it;
+  ASSERT_NE(query_it, instance.query_end());
   EXPECT_EQ("c", query_it->first);
   EXPECT_EQ("d", query_it->second);
+  ++query_it;
+  EXPECT_EQ(query_it, instance.query_end());
 }
 
 TEST(uri_test, query_iterator_with_two_kvps_using_semicolon_separator) {
   network::uri instance("http://example.com/?a=b;c=d");
+
   ASSERT_TRUE(instance.has_query());
-  ASSERT_NE(instance.query_begin(), instance.query_end());
   auto query_it = instance.query_begin();
+  ASSERT_NE(query_it, instance.query_end());
   EXPECT_EQ("a", query_it->first);
   EXPECT_EQ("b", query_it->second);
   ++query_it;
+  ASSERT_NE(query_it, instance.query_end());
   EXPECT_EQ("c", query_it->first);
   EXPECT_EQ("d", query_it->second);
+  ++query_it;
+  EXPECT_EQ(query_it, instance.query_end());
 }
 
 TEST(uri_test, query_iterator_with_key_and_no_value) {
@@ -894,6 +912,8 @@ TEST(uri_test, query_iterator_with_key_and_no_value) {
   auto query_it = instance.query_begin();
   EXPECT_EQ("query", query_it->first);
   EXPECT_EQ("", query_it->second);
+  ++query_it;
+  EXPECT_EQ(query_it, instance.query_end());
 }
 
 TEST(uri_test, query_iterator_with_fragment) {
@@ -906,6 +926,8 @@ TEST(uri_test, query_iterator_with_fragment) {
   ++query_it;
   EXPECT_EQ("c", query_it->first);
   EXPECT_EQ("d", query_it->second);
+  ++query_it;
+  EXPECT_EQ(query_it, instance.query_end());
 }
 
 TEST(uri_test, copy_assignment_bug_98) {
