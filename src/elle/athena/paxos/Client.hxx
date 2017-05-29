@@ -63,6 +63,24 @@ namespace elle
         {}
       };
 
+      class WeakError
+        : public elle::Error
+      {
+      public:
+        WeakError(std::exception_ptr e)
+          : elle::Error(elle::exception_string(e))
+          , _exception(e)
+        {}
+
+        WeakError(elle::serialization::SerializerIn& input)
+          : elle::Error(input)
+        {
+          input.serialize("exception", this->_exception);
+        }
+
+        ELLE_ATTRIBUTE_R(std::exception_ptr, exception);
+      };
+
       class TooFewPeers
         : public elle::Error
       {
@@ -279,6 +297,7 @@ namespace elle
         auto reached = 0;
         boost::optional<typename Client::Accepted> res;
         boost::optional<typename Server::WrongQuorum> wrong_quorum;
+        std::exception_ptr weak_error;
         elle::reactor::for_each_parallel(
           this->_peers,
           [&] (std::unique_ptr<Peer> const& peer) -> void
@@ -323,9 +342,20 @@ namespace elle
             {
               ELLE_TRACE("%s: peer %s unavailable: %s", *this, peer, e.what());
             }
+            catch (WeakError const& e)
+            {
+              ELLE_TRACE("%s: peer %s weak error: %s", *this, peer, e.what());
+              if (!weak_error)
+                weak_error = e.exception();
+            }
           },
           std::string("get quorum"));
-        this->_check_headcount(q, reached, true);
+        if (!this->_check_headcount(q, reached, true, !bool(weak_error)))
+        {
+          ELLE_TRACE("rethrow weak error: {}",
+                     elle::exception_string(weak_error));
+          std::rethrow_exception(weak_error);
+        }
         if (wrong_quorum &&
             (!res || res->proposal < wrong_quorum->proposal()))
         {
