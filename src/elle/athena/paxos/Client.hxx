@@ -302,8 +302,12 @@ namespace elle
               catch (typename Server::WrongQuorum const& e)
               {
                 if (!e.proposal())
+                {
                   // Not handled pre 0.4.0.
+                  ELLE_WARN("throwing wrong quorum error unconditionally "
+                            "because elle version is < 0.4.");
                   throw;
+                }
                 if (!wrong_quorum || *wrong_quorum->proposal() < *e.proposal())
                 {
                   ELLE_DEBUG("accept wrong quorum %f", *e.proposal());
