@@ -42,4 +42,16 @@ def test_suite():
            ]]
   return unittest.TestSuite(tests)
 
+
+# The test suite does not expect the time reports:
+#
+# Expected:
+#     Touch /tmp/.drake.polish
+#     Polishing.
+# Got:
+#     Touch /tmp/.drake.polish
+#     Finished TouchBuilder([/tmp/.drake.polish]) (0:00:00)
+#     Polishing.
+os.environ['DRAKE_NO_TIME_REPORTS'] = '1'
+
 unittest.main(defaultTest='test_suite')

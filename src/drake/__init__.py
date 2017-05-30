@@ -2219,9 +2219,10 @@ class Builder:
             success = self.execute()
             self.__timer.cancel()
             self.__end_time = time.time()
-            print('{} {} ({})'.format(
-              "Finished" if success else "Failed",
-              self, duration(self.__start_time, self.__end_time)))
+            if 'DRAKE_NO_TIME_REPORTS' not in _OS.environ:
+              print('{} {} ({})'.format(
+                "Finished" if success else "Failed",
+                self, duration(self.__start_time, self.__end_time)))
             for dst in self.__targets:
               dst._Node__mtime = None
             logger.log('drake.Builder',
