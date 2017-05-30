@@ -164,7 +164,10 @@ namespace elle
                                    *this, proposal, peer);
                   if (auto p = peer->propose(q, proposal))
                   {
-                    if (!previous || previous->proposal < p->proposal)
+                    if (!previous ||
+                        previous->proposal < p->proposal ||
+                        previous->proposal == p->proposal &&
+                        !previous->confirmed && p->confirmed)
                     {
                       // FIXME: what if previous was accepted and p is not ?
                       ELLE_DEBUG_SCOPE("%s: value already accepted at %f: %f",
