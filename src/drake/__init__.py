@@ -47,8 +47,10 @@ def path_source(path = None):
   else:
     return Drake.current.path_source / Drake.current.prefix / path
 
-def duration(start, stop):
+def duration(start, stop = None):
   '''The duration from start to stop, with nice conversion to string.'''
+  if not stop:
+    stop = time.time()
   import datetime
   return datetime.timedelta(seconds=round(stop - start))
 
@@ -201,8 +203,6 @@ class Drake:
 
   def notify(self, title, message, start, stop=None):
     '''Notify the user that a run was finished.'''
-    if not stop:
-      stop = time.time()
     title += ' ({})'.format(duration(start, stop))
     # For some reason, the some first characters (such as open paren
     # or bracket) must be escaped.  Fortunately, a leading backlash
@@ -2168,6 +2168,19 @@ class Builder:
         self.__executed = True
         self.__executed_signal.signal()
 
+
+  def __timeout(self, first=False):
+    '''Install a timeout function that prints what is currently running,
+    and reinstalls itself, for periodic reports.
+
+    '''
+    if not first:
+      print("{}: running for {} already"
+            .format(self, duration(self.__start_time)))
+    self.__timer = threading.Timer(5 * 60, self.__timeout)
+    self.__timer.start()
+
+
   def _execute(self, depfile_builder):
     with contextlib.ExitStack() as ctx:
       if not Drake.current.kill_builders_on_failure:
@@ -2202,7 +2215,9 @@ class Builder:
                           '%s: execute', self):
             self._depfile.dirty = True
             self.__start_time = time.time()
+            self.__timeout(True)
             success = self.execute()
+            self.__timer.cancel()
             self.__end_time = time.time()
             print('{} {} ({})'.format(
               "Finished" if success else "Failed",
