@@ -2228,8 +2228,10 @@ class Builder:
                        drake.log.LogLevel.trace,
                        '%s: executed', self)
         except sched.Terminate:
+          self.__timer.cancel()
           raise
         except Exception as e:
+          self.__timer.cancel()
           e_pretty = str(e)
           if not e_pretty:
             e_pretty = repr(e)
