@@ -2,7 +2,7 @@
 
 #include <elle/With.hh>
 #include <elle/cryptography/random.hh>
-
+#include <elle/find.hh>
 #include <elle/reactor/Scope.hh>
 #include <elle/reactor/for-each.hh>
 #include <elle/reactor/scheduler.hh>
@@ -150,13 +150,14 @@ namespace elle
         while (true)
         {
           ++this->_round;
+          std::set<Peer*> unavailables;
           Proposal proposal(std::move(version), this->_round, this->_id);
           ELLE_DEBUG("%s: send proposal: %s", *this, proposal)
           {
             int reached = 0;
             elle::reactor::for_each_parallel(
               this->_peers,
-              [&] (std::unique_ptr<Peer> const& peer) -> void
+              [&] (std::unique_ptr<Peer>& peer) -> void
               {
                 try
                 {
@@ -181,6 +182,7 @@ namespace elle
                 {
                   ELLE_TRACE("%s: peer %s unavailable: %s",
                              *this, peer, e.what());
+                  unavailables.emplace(peer.get());
                 }
               },
               std::string("send proposal"));
@@ -208,6 +210,8 @@ namespace elle
               this->_peers,
               [&] (std::unique_ptr<Peer> const& peer) -> void
               {
+                if (elle::find(unavailables, peer.get()))
+                  return;
                 try
                 {
                   ELLE_DEBUG_SCOPE("%s: send acceptation %s to %s",
@@ -231,6 +235,7 @@ namespace elle
                 {
                   ELLE_TRACE("%s: peer %s unavailable: %s",
                              *this, peer, e.what());
+                  unavailables.emplace(peer.get());
                 }
               },
               std::string("send acceptation"));
@@ -259,6 +264,8 @@ namespace elle
               this->_peers,
               [&] (std::unique_ptr<Peer> const& peer) -> void
               {
+                if (elle::find(unavailables, peer.get()))
+                  return;
                 try
                 {
                   ELLE_DEBUG_SCOPE("%s: send confirmation %s to %s",
@@ -270,6 +277,7 @@ namespace elle
                 {
                   ELLE_TRACE("%s: peer %s unavailable: %s",
                              *this, peer, e.what());
+                  unavailables.emplace(peer.get());
                 }
               },
               std::string("send confirmation"));
