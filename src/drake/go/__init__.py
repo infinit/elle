@@ -286,6 +286,22 @@ class Toolkit:
     vars = self.run(['env', 'GOOS', 'GOARCH'], host = host).splitlines()
     return '%s_%s' % (vars[0], vars[1])
 
+  def exec_ext(self, host = False):
+    tos = self.run(['env', 'GOOS'], host = host)
+    if tos == 'windows':
+      return '.exe'
+    return ''
+
+  def dylib_ext(self, host = False):
+    tos = self.run(['env', 'GOOS'], host = host)
+    ext = {
+      'darwin': '.dylib',
+      'linux': '.so',
+      'windows': '.dll',
+    }
+    return ext.get(tos, '')
+
+
   def dependencies(self, node):
     """
     Return dependencies of the given go file.
@@ -315,49 +331,6 @@ class Toolkit:
     if self.__version is None:
       self.__version = re.sub('^go version', '', self.run(['version'])).strip()
     return self.__version
-
-  def command_fetch_dep(self, dep):
-    # Check dependency that can be fetched, i.e.: is URL.
-    if '/' not in dep or '.' not in dep.split('/')[0]:
-      raise Exception('Unable to fetch dependency, %s is not a URL' % dep)
-    if not self.path:
-      raise Exception('Automatic dependency fetching failed, '
-                      'require a toolkit GOPATH')
-    return [self.go, 'get', dep]
-
-  def command_build(self, config, source, target, is_test):
-    """
-    Return the command build for the given config, source and target.
-
-    :param config: A configuration.
-    :type config: Config
-    :param source: A source file.
-    :type source: Source
-    :param target: The target to build.
-    :type target: Executable
-    :param is_test: If the executable is a test
-    :type is_test: bool
-
-    :return: The command to execute.
-    :rtype: list of str.
-    """
-    res = [
-      self.go,
-      'test' if is_test else 'build',
-      '-o', str(target.path()),
-    ]
-    if is_test:
-      res.append('-c')
-    if len(config.tags):
-      res += [
-        '-tags', ' '.join(config.tags),
-      ]
-    if len(config.ldflags):
-      res += [
-        '-ldflags', ' '.join(config.ldflags),
-      ]
-    res.append(str(source.path()))
-    return res
 
   def hash(self):
     """
@@ -404,9 +377,18 @@ class FetchPackage(drake.Builder):
     self.__build_host = build_host
     super().__init__([], self.__targets)
 
+  def command(self):
+    # Check dependency that can be fetched, i.e.: is URL.
+    if '/' not in self.__url or '.' not in self.__url.split('/')[0]:
+      raise Exception('Unable to fetch dependency, %s not a URL' % self.__url)
+    if not self.__toolkit.path:
+      raise Exception('Automatic dependency fetching failed, '
+                      'require a toolkit GOPATH')
+    return [self.__toolkit.go, 'get', self.__url]
+
   def execute(self):
     env = self.__toolkit.host_env if self.__build_host else self.__toolkit.env
-    cmd = self.__toolkit.command_fetch_dep(self.__url)
+    cmd = self.command()
     res = self.cmd('Fetch %s' % self.__url, cmd, env = env)
     return res
 
@@ -414,6 +396,9 @@ class FetchPackage(drake.Builder):
     return {
       'toolkit': self.__toolkit.hash(),
     }
+
+  def __str__(self):
+    return 'Fetch Go package %s' % self.__url
 
 class Builder(drake.Builder):
   """
@@ -470,6 +455,31 @@ class Builder(drake.Builder):
   def dependencies(self):
     return self.__dependencies + [self.__source]
 
+  def command(self):
+    """
+    Return the command build for the given config, source and target.
+
+    :return: The command to execute.
+    :rtype: list of str.
+    """
+    res = [
+      self.__toolkit.go,
+      'test' if self.__is_test else 'build',
+      '-o', str(self.__target.path()),
+    ]
+    if self.__is_test:
+      res.append('-c')
+    if len(self.__config.tags):
+      res += [
+        '-tags', ' '.join(self.__config.tags),
+      ]
+    if len(self.__config.ldflags):
+      res += [
+        '-ldflags', ' '.join(self.__config.ldflags),
+      ]
+    res.append(str(self.__source.path()))
+    return res
+
   def execute(self):
     """
     Generate the target by fetching its dependencies and then running the build
@@ -478,11 +488,8 @@ class Builder(drake.Builder):
     :return: Whether the build was successful.
     :rtype: bool
     """
-    cmd = self.__toolkit.command_build(self.__config,
-                                       self.__source,
-                                       self.__target,
-                                       self.__is_test)
     env = self.__toolkit.host_env if self.__build_host else self.__toolkit.env
+    cmd = self.command()
     # Add the include paths to GOPATH so that Go can find dependencies.
     if self.__config.include_paths:
       include_paths = list(self.__config.include_paths)
@@ -505,6 +512,69 @@ class Builder(drake.Builder):
       'toolkit': self.__toolkit.hash(),
       'config': self.__config.hash(),
     }
+
+  def __str__(self):
+    return 'Go build %s' % self.__target
+
+class LibraryBuilder(drake.Builder):
+
+  def __init__(self, node, toolkit, config, target, dependencies, lib_type,
+               header = None, build_host = False):
+    assert isinstance(node, Source)
+    self.__source = node
+    self.__target = target
+    self.__toolkit = toolkit
+    self.__config = config
+    self.__dependencies = dependencies
+    self.__url_dependencies = \
+      list(filter(lambda d: '/' in d and '.' in d.split('/')[0],
+                  toolkit.dependencies(node)))
+    for d in self.__url_dependencies:
+      t = FetchPackage.package_target(d, toolkit, build_host)
+      if not t.builder:
+        FetchPackage(d, toolkit, build_host = build_host)
+      self.__dependencies.append(t)
+    self.__type = lib_type
+    self.__build_host = build_host
+    targets = [self.__target]
+    if header:
+      targets.append(header)
+    super().__init__(self.__dependencies + [node], targets)
+
+  def command(self):
+    res = [
+      self.__toolkit.go,
+      'build',
+      '-buildmode=%s' % self.__type,
+      '-o', str(self.__target),
+    ]
+    if len(self.__config.tags):
+      res += ['-tags', ' '.join(self.__config.tags)]
+    if len(self.__config.ldflags):
+      res += ['-ldflags', ' '.join(self.__config.ldflags)]
+    res.append(str(self.__source.path()))
+    return res
+
+  def execute(self):
+    cmd = self.command()
+    env = self.__toolkit.host_env if self.__build_host else self.__toolkit.env
+    # Add the include paths to GOPATH so that Go can find dependencies.
+    if self.__config.include_paths:
+      include_paths = list(self.__config.include_paths)
+      if self.__toolkit.path:
+        include_paths.insert(0, self.__toolkit.path)
+      env['GOPATH'] = ':'.join(map(lambda p: os.path.abspath(str(p)),
+                                   include_paths))
+    return self.cmd('Generate %s' % self.__target, cmd, env = env)
+
+  def hash(self):
+    return {
+      'toolkit': self.__toolkit.hash(),
+      'config': self.__config.hash(),
+    }
+
+  def __str__(self):
+    return 'Go library %s' % self.__target
 
 class Executable(drake.Node):
   """
@@ -534,7 +604,8 @@ class Executable(drake.Node):
     :param build_host: Build for host architecture and OS.
     :type build_host: bool
     """
-    target = target or source.name().without_last_extension()
+    target = target or '%s%s' % (source.name().without_last_extension(),
+                                 self.__toolkit.exec_ext(build_host))
     super().__init__(target)
     if create_builder:
       Builder(node = source, toolkit = toolkit, config = config, target = self,
@@ -549,7 +620,39 @@ class TestExecutable(drake.Node):
 
   def __init__(self, source, toolkit = None, config = None, target = None,
                sources = [], build_host = False):
-    target = target or source.name().without_last_extension()
+    target = target or '%s%s' % (source.name().without_last_extension(),
+                                 self.__toolkit.exec_ext(build_host))
     super().__init__(target)
     Builder(node = source, toolkit = toolkit, config = config, target = self,
             dependencies = sources, is_test = True, build_host = build_host)
+
+class CDyLibBuilder(LibraryBuilder):
+
+  def __init__(self, source, toolkit = None, config = None, target = None,
+               sources = [], build_host = False):
+    self.__library = drake.node(
+      target or '%s%s' % (source.name().without_last_extension(),
+                          toolkit.dylib_ext(build_host)))
+    self.__header = drake.node('%s.h' % target.split('.')[0])
+    super().__init__(
+      node = source, toolkit = toolkit, config = config,
+      target = self.__library, dependencies = sources, lib_type = 'c-shared',
+      header = self.__header, build_host = build_host)
+
+  @property
+  def header(self):
+    return self.__header
+
+  @property
+  def library(self):
+    return self.__library
+
+  def execute(self):
+    if not super().execute():
+      return False
+    path = self.library.path()
+    if '.dylib' in str(path.basename()):
+      cmd = ['install_name_tool', '-id', '@rpath/%s' % path.basename(), path]
+      return self.cmd('Set Go library ID %s' % self.library, cmd)
+    else:
+      return True
