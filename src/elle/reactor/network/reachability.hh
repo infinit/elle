@@ -1,6 +1,6 @@
 #pragma once
 
-#if !defined(INFINIT_MACOSX) && !defined(INFINIT_IOS)
+#if !defined INFINIT_MACOSX && !defined INFINIT_IOS
 # error "Unsupported platform"
 #endif
 

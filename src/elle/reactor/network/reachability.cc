@@ -84,7 +84,7 @@ namespace elle
         if (!self->running())
           return;
         // Assume unreachable.
-        NetworkStatus status = NetworkStatus::Unreachable;
+        auto status = NetworkStatus::Unreachable;
         if ((flags & kSCNetworkReachabilityFlagsReachable) == 0)
         { /* Do nothing, we can't reach host. */ }
         else if ((flags & kSCNetworkReachabilityFlagsConnectionRequired) == 0)
@@ -94,9 +94,7 @@ namespace elle
           // WWAN connection.
           if ((flags & kSCNetworkReachabilityFlagsIsWWAN) ==
                 kSCNetworkReachabilityFlagsIsWWAN)
-          {
             status = NetworkStatus::ReachableWWAN;
-          }
 #endif
         }
         self->status(status);
