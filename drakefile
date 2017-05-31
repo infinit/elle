@@ -596,7 +596,7 @@ def configure(cxx_toolkit = None,
     # Be sure to control pkg-config, otherwise, because curl's
     # configure.ac checks pkg-config *before* --with-zlib, we might
     # end up using the system's copy instead ours.
-    'PKG_CONFIG_PATH': drake.path_build(zlib_prefix, absolute = True) / 'lib' / 'pkgconfig',
+    'PKG_CONFIG_PATH': str(drake.path_build(zlib_prefix, absolute = True) / 'lib' / 'pkgconfig'),
   }
   if cxx_toolkit.architecture is drake.architecture.arm:
     curl_configure_args.append('--host=%s' % cxx_toolkit.cxx[:-4])
