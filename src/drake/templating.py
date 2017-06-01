@@ -18,13 +18,17 @@ class Context:
   def __init__(self,
                content = {},
                sources = [],
+               template_dir = [],
                pythonpath = (),
                hooks = {},
+               post_process = None
              ):
     self.content = content
     self.sources = sources
     self.pythonpath = pythonpath
     self.hooks = hooks
+    self.template_dir = template_dir
+    self.post_process = post_process
 
   def __enter__(self):
     self.__previous = Context.current
@@ -43,7 +47,9 @@ class Template(drake.Node):
                content = context.content,
                sources = context.sources,
                pythonpath = context.pythonpath,
-               hooks = context.hooks
+               hooks = context.hooks,
+               lookup = context.template_dir,
+               post_process = context.post_process
              )
 
 drake.Node.extensions['tmpl'] = Template
@@ -56,7 +62,9 @@ class Renderer(drake.Converter):
                content = {},
                sources = [],
                pythonpath = (),
-               hooks = {}):
+               hooks = {},
+               lookup = [],
+               post_process = None):
     self.__template = template
     self.__hooks = hooks
     dst = template.name_relative.without_last_extension()
@@ -65,6 +73,8 @@ class Renderer(drake.Converter):
                      self.__target,
                      additional_sources = sources)
     self.__content = content
+    self.__lookup = lookup
+    self.__post_process = post_process
     self.__pythonpath = []
     for path in pythonpath:
       self.__pythonpath.append(drake.path_source(path))
@@ -74,7 +84,7 @@ class Renderer(drake.Converter):
 
   def execute(self):
     self.output('Render %s' % self.__target)
-    import mako.template
+    import mako.template, mako.lookup
     import mako.runtime
     import sys
     path = str(self.__template.path(absolute = True))
@@ -99,7 +109,8 @@ class Renderer(drake.Converter):
           if Renderer.mako_re.search(line): print_line_number()
           line_number += 1
         content.flush()
-        tpl = mako.template.Template(filename = content.name)
+        lookup = mako.lookup.TemplateLookup(directories = self.__lookup)
+        tpl = mako.template.Template(filename = content.name, lookup = lookup)
         with drake.WritePermissions(self.__target):
           with open(str(self.__target.path()), 'w') as f:
             ctx = mako.runtime.Context(f, **self.__content)
@@ -107,6 +118,8 @@ class Renderer(drake.Converter):
           import shutil
           shutil.copymode(str(self.__template.path()),
                           str(self.__target.path()))
+          if self.__post_process:
+            self.__post_process(self.__target)
         return True
     finally:
       # Restore path.
