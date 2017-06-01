@@ -108,12 +108,19 @@ namespace elle
           void
           serialize(elle::serialization::Serializer& s, elle::Version const& v);
           using serialization_tag = elle::serialization_tag;
+
           friend
           std::ostream&
-          operator <<(std::ostream& output, Accepted const& accepted)
+          operator <<(std::ostream& o, Accepted const& a)
           {
-            elle::fprintf(output, "Accepted(%f)", accepted.proposal);
-            return output;
+            return elle::fprintf(o, "Accepted(%f)", a.proposal);
+          }
+
+          friend bool
+          operator <(Accepted const& a, Accepted const& b)
+          {
+            return std::tie(a.proposal, a.confirmed)
+              < std::tie(b.proposal, b.confirmed);
           }
         };
 
