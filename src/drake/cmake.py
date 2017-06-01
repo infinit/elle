@@ -48,22 +48,21 @@ class CMakeBuilder(drake.Builder):
     cpath = str(self.__cmake_cache.path())
     if os.path.exists(cpath):
       os.unlink(cpath)
-    if not self.cmd(' '.join(self.cmake_cmd),
-                    self.cmake_cmd,
-                    cwd = self.__prefix,
-                    env = self.__env):
-      return False
-    if self.__targets is None:
-      return self.cmd('make', self.make_cmd, cwd = self.__prefix)
-    for t in self.__targets:
-      if isinstance(t, str):
-        tgt = t
-        wd = ''
-      else:
-        tgt = t[1]
-        wd = t[0]
-      if not self.cmd('make %s' % tgt, ['make', tgt], cwd = self.__prefix / wd):
+    with drake.CWDPrinter(self.__prefix):
+      if not self.cmd(' '.join(self.cmake_cmd),
+                      self.cmake_cmd,
+                      cwd = self.__prefix,
+                      env = self.__env):
         return False
+      if self.__targets is None:
+        return self.cmd('make', self.make_cmd, cwd = self.__prefix)
+      for t in self.__targets:
+        if isinstance(t, str):
+          wd, tgt = '', t
+        else:
+          wd, tgt = t[0], t[1]
+        if not self.cmd('make %s' % tgt, ['make', tgt], cwd = self.__prefix / wd):
+          return False
     return True
 
   @property
