@@ -57,6 +57,9 @@ class Git(VirtualNode):
         self.__version    = None
         self.__message     = None
 
+    def run(self, args, raw = False):
+      return self.__cmd(args, raw)
+
     def __cmd(self, args, raw = False):
       cmd = ['git'] + args
       data = subprocess.check_output(cmd, cwd = str(self.__path))
