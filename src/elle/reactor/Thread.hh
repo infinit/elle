@@ -39,7 +39,7 @@ namespace elle
     ///
     /// A frequent pattern to be in a scheduler environment is:
     ///
-    /// \code{.cc}
+    /// @code{.cc}
     ///
     /// int
     /// main(int main (int argc, char *argv[])
@@ -64,7 +64,7 @@ namespace elle
     ///   }
     /// }
     ///
-    /// \endcode
+    /// @endcode
     class Thread:
       public Waitable
     {
@@ -98,33 +98,33 @@ namespace elle
     public:
       /// Create a Thread that will run an Action, using the given Scheduler.
       ///
-      /// \param scheduler The Scheduler in charge of the Thread.
-      /// \param name A descriptive name of Thread to be spawn.
-      /// \param action The Action to execute.
-      /// \param dispose Put the Scheduler in charge of destroying the Thread.
+      /// @param scheduler The Scheduler in charge of the Thread.
+      /// @param name A descriptive name of Thread to be spawn.
+      /// @param action The Action to execute.
+      /// @param dispose Put the Scheduler in charge of destroying the Thread.
       Thread(Scheduler& scheduler,
              const std::string& name,
              Action action,
              bool dispose = false);
       /// Create a Thread that will run an Action, using the current Scheduler.
       ///
-      /// \pre Must be in a invoked from another Thread.
+      /// @pre Must be in a invoked from another Thread.
       ///
-      /// \param scheduler The Scheduler in charge of the Thread.
-      /// \param name A descriptive name of Thread to be spawn.
-      /// \param action The action to execute.
-      /// \param dispose Put the Scheduler in charge of destroying the Thread.
+      /// @param scheduler The Scheduler in charge of the Thread.
+      /// @param name A descriptive name of Thread to be spawn.
+      /// @param action The action to execute.
+      /// @param dispose Put the Scheduler in charge of destroying the Thread.
       Thread(const std::string& name,
              Action action,
              bool dispose = false);
       /// Create a Thread that will run an Action, using the current Scheduler.
       ///
-      /// \pre Must be in a invoked from another Thread.
+      /// @pre Must be in a invoked from another Thread.
       ///
-      /// \param scheduler The Scheduler in charge of the Thread.
-      /// \param name A descriptive name of Thread to be spawn.
-      /// \param action The action to execute.
-      /// \param args The named arguments `dispose` and `managed`.
+      /// @param scheduler The Scheduler in charge of the Thread.
+      /// @param name A descriptive name of Thread to be spawn.
+      /// @param action The action to execute.
+      /// @param args The named arguments `dispose` and `managed`.
       template <typename ... Args>
       Thread(const std::string& name,
              Action action,
@@ -134,10 +134,10 @@ namespace elle
       ///
       /// Returned std::shared_ptr will be kept live until action finished.
       ///
-      /// \param scheduler The Scheduler in charge of managing the Thread.
-      /// \param name A descriptive name.
-      /// \param action The Action to perform.
-      /// \returns A std::shared_ptr managing the created Thread.
+      /// @param scheduler The Scheduler in charge of managing the Thread.
+      /// @param name A descriptive name.
+      /// @param action The Action to perform.
+      /// @returns A std::shared_ptr managing the created Thread.
       static
       ThreadPtr
       make_tracked(Scheduler& scheduler,
@@ -148,9 +148,9 @@ namespace elle
       /// Same as make_tracked(Scheduler&, ...) but uses the current Scheduler.
       /// See reactor::Scheduler::scheduler() for more details.
       ///
-      /// \param name A descriptive name.
-      /// \param action The Action to perform.
-      /// \returns A std::shared_ptr managing the created Thread.
+      /// @param name A descriptive name.
+      /// @param action The Action to perform.
+      /// @returns A std::shared_ptr managing the created Thread.
       static
       ThreadPtr
       make_tracked(const std::string& name,
@@ -221,7 +221,7 @@ namespace elle
     public:
       /// Sleep for a certain duration.
       ///
-      /// \param d The duration the Thread will sleep.
+      /// @param d The duration the Thread will sleep.
       void
       sleep(Duration d);
       /// Yield, allowing other Threads to be executed without changing the
@@ -274,9 +274,9 @@ namespace elle
       ///
       /// @see Waitable.
       ///
-      /// \param waitables The Waitables to wait for.
-      /// \param timeout The maximum delay before aborting the operation.
-      /// \returns Whether the operation finished and didn't timeout.
+      /// @param waitables The Waitables to wait for.
+      /// @param timeout The maximum delay before aborting the operation.
+      /// @returns Whether the operation finished and didn't timeout.
       bool
       wait(Waitables const& waitables,
            DurationOpt timeout = DurationOpt());
@@ -289,7 +289,7 @@ namespace elle
       terminate();
       /// Terminate thread and wait for termination to be effective.
       ///
-      /// \param suicide If true, terminate_now is a noop if this thread is
+      /// @param suicide If true, terminate_now is a noop if this thread is
       ///                the current one.
       void
       terminate_now(bool suicide = true);
@@ -412,8 +412,8 @@ namespace elle
 
     /// Run an operation at a given frequency.
     ///
-    /// Run the \param op operation every \param freq. For now, the
-    /// implementation simply sleeps for \param freq between every action thus
+    /// Run the @param op operation every @param freq. For now, the
+    /// implementation simply sleeps for @param freq between every action thus
     /// inducing a drift. This is suitable for actions that need to be run
     /// in background roughly regularly such as garbage collecting,
     /// notification checking, ... It is not suitable if the frequency must be
@@ -422,11 +422,11 @@ namespace elle
     /// The thread that run the operation is returned, enabling the caller to
     /// stop it at will.
     ///
-    /// \param freq The frequency at which to run the operation.
-    /// \param op The Operation to run.
-    /// \param name The Name of the thread that will run the operation.
-    /// \param dispose Whether to delete the thread when it's done.
-    /// \returns The thread running the operation.
+    /// @param freq The frequency at which to run the operation.
+    /// @param op The Operation to run.
+    /// @param name The Name of the thread that will run the operation.
+    /// @param dispose Whether to delete the thread when it's done.
+    /// @returns The thread running the operation.
     Thread::unique_ptr
     every(Duration freq,
           const std::string& name,
