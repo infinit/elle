@@ -3935,7 +3935,7 @@ class Runner(Builder):
             print(header, file = err, flush = True)
           if self.__env is not None:
             output_env = ('%s=%s ' % (var, pipes.quote(str(value)))
-                          for var, value in self.__env.items())
+                          for var, value in sorted(self.__env.items()))
           else:
             output_env = ()
           output_cmd = (pipes.quote(str(a)) for a in self.command)
