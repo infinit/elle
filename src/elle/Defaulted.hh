@@ -1,6 +1,7 @@
 #pragma once
 
 #include <elle/attribute.hh>
+#include <elle/print.hh>
 
 namespace elle
 {
