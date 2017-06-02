@@ -84,7 +84,7 @@ namespace elle
   operator <<(std::ostream& out, Defaulted<T> const& t)
   {
     elle::fprintf(out, "%s", t.get());
-    if (!t)
+    if (repr(out) && !t)
       elle::fprintf(out, " (default)");
     return out;
   }
