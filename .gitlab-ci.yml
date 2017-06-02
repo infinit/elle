@@ -67,7 +67,7 @@ x86_64-ubuntu-gcc4:
     - ubuntu
     - gcc4
 
-x86_64-jessie-gcc4 build:
+x86_64-jessie-gcc4:
   stage: build
   script:
     - time ./buildenv --pick-build-tree --branch "$CI_BUILD_REF_NAME" --link-build-tree "$BUILD_DIR" --build-trees-root "/cache/$CI_PROJECT_NAME"
