@@ -871,10 +871,10 @@ def configure(curl_config,
     test = drake.cxx.Executable('%s/%s' % (tests_path, test_name),
                                 test_sources + local_test_libs,
                                 cxx_toolkit, cxx_config_tests)
-    rule_tests << test
     # These are not real tests, just binaries.
     if test_name in ['filesystem_git', 'filesystem_bind', 'rdv-cat', 'rdv-utp-cat', 'utp-chat']:
       continue
+    rule_tests << test
     env = {
       'BUILD_DIR': drake.path_build(),
       'BOOST_TEST_COLOR_OUTPUT': '1',
