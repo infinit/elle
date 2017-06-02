@@ -14,6 +14,8 @@
 #include <elle/log.hh>
 #include <elle/finally.hh>
 #include <elle/print.hh>
+#include <elle/utils.hh>
+#include <elle/xalloc.hh>
 
 ELLE_LOG_COMPONENT("elle.print")
 
@@ -21,7 +23,6 @@ namespace elle
 {
   namespace _details
   {
-
     /*----.
     | AST |
     `----*/
@@ -130,6 +131,8 @@ namespace elle
     };
 
     /// A formatting request a la printf: %s, %d, etc.
+    ///
+    /// Also supports %r, like in Python, which is for debugging.
     class Legacy
       : public Expression
     {
@@ -258,7 +261,7 @@ namespace elle
         (var >> -("?" >> phrase))
         [qi::_val = phoenix::bind(&make_fmt, _1, _2)];
       qi::rule<Iterator, std::shared_ptr<Expression>()> legacy =
-        ("%" >> qi::char_("cdefgiopsuxCEGSX%")[
+        ("%" >> qi::char_("cdefgioprsuxCEGSX%")[
           qi::_val = phoenix::bind(&Legacy::make, _1)]);
       phrase = plain[phoenix::bind(&push, qi::_val, _1)] >>
         *(("{" >> fmt[phoenix::bind(&push, qi::_val, _1)] >> "}" |
@@ -316,6 +319,7 @@ namespace elle
         {
           auto&& state = std::ios(nullptr);
           state.copyfmt(s);
+          auto old_repr = repr(s);
           switch (auto c = static_cast<Legacy const&>(ast).fmt)
           {
             case 'd':
@@ -336,11 +340,15 @@ namespace elle
             case 'x':
               s << std::hex;
               break;
+            case 'r':
+              repr(s, true);
+              break;
             case 's':
               break;
             case '%':
               s << '%';
               s.copyfmt(state);
+              repr(s, old_repr);
               return;
             default:
               ELLE_WARN("unsupported legacy format: %s", c)
@@ -349,6 +357,7 @@ namespace elle
           }
           nth(count)(s);
           s.copyfmt(state);
+          repr(s, old_repr);
         }
         ++count;
       }
@@ -407,5 +416,25 @@ namespace elle
       if (full_positional && count < signed(args.size()))
         elle::err("too many arguments for format: %s", fmt);
     }
+  }
+
+
+  namespace
+  {
+    auto const repr_slot = xalloc<bool>{};
+  }
+
+  bool
+  repr(std::ostream const& o)
+  {
+    // FIXME: de-unconst.
+    return repr_slot(elle::unconst(o));
+  }
+
+  /// Set whether a stream is set for debugging output.
+  void
+  repr(std::ostream& o, bool d)
+  {
+    repr_slot(o) = d;
   }
 }

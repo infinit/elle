@@ -23,6 +23,16 @@ namespace elle
   template <typename ... Args>
   std::string
   print(std::string const& fmt, Args&& ... args);
+
+  /// Whether a stream is set for debugging output.
+  ///
+  /// Armed with `%r` in print's format.
+  bool
+  repr(std::ostream const& o);
+
+  /// Set whether a stream is set for debugging output.
+  void
+  repr(std::ostream& o, bool debugging);
 }
 
 #include <elle/print.hxx>

@@ -63,9 +63,7 @@ namespace detail
     int i;
   };
 
-  std::ostream&
-  operator <<(std::ostream& out, foo const& f);
-
+  static
   std::ostream&
   operator <<(std::ostream& out, foo const& f)
   {
@@ -134,11 +132,20 @@ conditional_positional()
     "success");
 }
 
-static
-void
-legacy()
+namespace
 {
-  BOOST_TEST(elle::print("%x %s%%", 134, 134) == "86 134%");
+  struct Foo {};
+  std::ostream& operator << (std::ostream& o, Foo)
+  {
+    return o << (elle::repr(o) ? "Verbose" : "Silent");
+  }
+
+  void
+  legacy()
+  {
+    BOOST_TEST(elle::print("%x %s%%", 134, 134) == "86 134%");
+    BOOST_TEST(elle::print("%r %s", Foo{}, Foo{}) == "Verbose Silent");
+  }
 }
 
 
