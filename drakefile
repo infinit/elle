@@ -712,6 +712,7 @@ def configure(cxx_toolkit = None,
     '--disable-xattr',
     'CPPFLAGS=-I%s/include -I%s/include' % (openssl_prefix_absolute,
                                             zlib_prefix_absolute),
+    'CFLAGS=-w', # No warnings.
     'LDFLAGS=-L%s/lib -L%s/lib' % (openssl_prefix_absolute,
                                    zlib_prefix_absolute),
     '--without-bz2lib',
