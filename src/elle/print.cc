@@ -48,7 +48,7 @@ namespace elle
             s << ", ";
           s << *e;
         }
-        s << ")";
+        s << ')';
       }
 
       std::vector<std::shared_ptr<Expression>> expressions;
@@ -60,8 +60,8 @@ namespace elle
     public:
       Branch(std::shared_ptr<Expression> cond,
              std::shared_ptr<Expression> then)
-        : cond(cond)
-        , then(then)
+        : cond(std::move(cond))
+        , then(std::move(then))
       {}
 
       virtual
@@ -156,7 +156,7 @@ namespace elle
     {
     public:
       Name(std::string n)
-        : n(n)
+        : n(std::move(n))
       {}
 
       static
@@ -170,7 +170,7 @@ namespace elle
       void
       print(std::ostream& s) const override
       {
-        s << "Name(" << n << ")";
+        s << "Name(" << n << ')';
       }
 
       std::string n;
@@ -181,7 +181,7 @@ namespace elle
     {
     public:
       Literal(std::string text)
-        : text(text)
+        : text(std::move(text))
       {}
 
       static
@@ -195,7 +195,7 @@ namespace elle
       void
       print(std::ostream& s) const override
       {
-        s << "Literal(" << text << ")";
+        s << "Literal(" << text << ')';
       }
 
       std::string text;
@@ -219,10 +219,10 @@ namespace elle
     make_fmt(std::shared_ptr<Expression> fmt,
              boost::optional<std::shared_ptr<Composite>> then = boost::none)
     {
-      if (!then)
-        return fmt;
-      else
+      if (then)
         return std::make_shared<Branch>(std::move(fmt), std::move(then.get()));
+      else
+        return fmt;
     }
 
     static
@@ -309,7 +309,7 @@ namespace elle
       {
         if (p)
         {
-          std::ios  state(NULL);
+          auto&& state = std::ios(nullptr);
           state.copyfmt(s);
           switch (static_cast<Legacy const&>(ast).fmt)
           {
@@ -353,14 +353,11 @@ namespace elle
       else if (id == &typeid(Name))
       {
         auto const& name = static_cast<Name const&>(ast).n;
-        auto it = named.find(name);
-        if (it != named.end())
-        {
-          if (p)
-            it->second(s);
-        }
-        else
+        auto const it = named.find(name);
+        if (it == named.end())
           elle::err("missing named format argument: %s", name);
+        else if (p)
+          it->second(s);
       }
       else if (id == &typeid(Branch))
       {
