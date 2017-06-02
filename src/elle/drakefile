@@ -321,6 +321,8 @@ def configure(zlib_lib,
     'utility/Move.hxx',
     'utils.hh',
     'windows.h',
+    'xalloc.hh',
+    'xalloc.hxx',
     )
 
   if ldap_libs:
