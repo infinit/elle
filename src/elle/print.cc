@@ -376,7 +376,7 @@ namespace elle
           auto const& name = static_cast<Name const&>(cond).n;
           auto it = named.find(name);
           if (it != named.end())
-            p = bool(it->second);
+            p = p && bool(it->second);
           else
             elle::err("missing named format argument: %s", name);
         }
