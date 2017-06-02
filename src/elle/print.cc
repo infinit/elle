@@ -11,8 +11,11 @@
 #include <elle/Printable.hh>
 #include <elle/assert.hh>
 #include <elle/err.hh>
+#include <elle/log.hh>
 #include <elle/finally.hh>
 #include <elle/print.hh>
+
+ELLE_LOG_COMPONENT("elle.print")
 
 namespace elle
 {
@@ -98,7 +101,7 @@ namespace elle
       void
       print(std::ostream& s) const override
       {
-        s << "Index(" << n << ")";
+        s << "Index(" << n << ')';
       }
 
       int n;
@@ -126,6 +129,7 @@ namespace elle
       }
     };
 
+    /// A formatting request a la printf: %s, %d, etc.
     class Legacy
       : public Expression
     {
@@ -145,9 +149,10 @@ namespace elle
       void
       print(std::ostream& s) const override
       {
-        s << "Legacy(" << this->fmt << ")";
+        s << "Legacy(" << this->fmt << ')';
       }
 
+      /// The format request: 's' for %s, 'd' for %d, etc.
       char fmt;
     };
 
@@ -311,14 +316,12 @@ namespace elle
         {
           auto&& state = std::ios(nullptr);
           state.copyfmt(s);
-          switch (static_cast<Legacy const&>(ast).fmt)
+          switch (auto c = static_cast<Legacy const&>(ast).fmt)
           {
-            case 'p':
-            case 'x':
-              s << std::hex;
-              break;
-            case 'o':
-              s << std::oct;
+            case 'd':
+            case 'i':
+            case 'u':
+              s << std::dec;
               break;
             case 'e':
               s << std::scientific;
@@ -326,16 +329,21 @@ namespace elle
             case 'f':
               s << std::fixed;
               break;
-            case 'd':
-            case 'i':
-            case 'u':
-              s << std::dec;
+            case 'o':
+              s << std::oct;
+              break;
+            case 'p':
+            case 'x':
+              s << std::hex;
+              break;
+            case 's':
               break;
             case '%':
               s << '%';
               s.copyfmt(state);
               return;
             default:
+              ELLE_WARN("unsupported legacy format: %s", c)
               // FIXME
               break;
           }
