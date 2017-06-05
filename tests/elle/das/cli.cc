@@ -2,6 +2,8 @@
 
 #include <numeric>
 
+#include <elle/Exception.hh>
+#include <elle/printf.hh>
 #include <elle/test.hh>
 
 ELLE_DAS_SYMBOL(foo);
@@ -182,6 +184,46 @@ namespace conversions
           BOOST_CHECK(!b);
         };
       call(elle::das::named::function(f, foo), {});
+    }
+    {
+      auto const f = [] (bool foo, int bar)
+        {
+          return elle::sprintf("%s %s", foo, bar);
+        };
+      auto const named = elle::das::named::function(f, foo = false, bar = 20);
+      BOOST_TEST(call(named, {})                               == "false 20");
+      BOOST_TEST(call(named, {"--foo", "true", "--bar", "33"}) == "true 33");
+      BOOST_TEST(call(named, {"--bar", "33"})                  == "false 33");
+      BOOST_TEST(call(named, {"--foo", "--bar", "33"})         == "true 33");
+      CHECK_THROW(call(named, {"--foo", "--bar", "33", "--BAD"}),
+                  elle::das::cli::UnknownOption,
+                  "unknown option: --BAD");
+      // Because of the way we parse the options and their argument,
+      // we may extract "--bar 33" first, leaving "--foo BAD1 BAD2",
+      // which results in a complaint about BAD1 not being valid for
+      // --foo, instead of being an extra argument.
+      //
+      // FIXME: Of course this pairing of --foo with BAD1 is a
+      // problem.
+      try
+      {
+        call(named, {"--foo", "--bar", "33", "BAD1", "BAD2"});
+        BOOST_FAIL("did not raise an exception");
+      }
+      catch (elle::das::cli::UnrecognizedValue const& e)
+      {
+        BOOST_TEST(elle::sprintf("%s", e)
+                   == "extra unrecognized argument: BAD1");
+      }
+      catch (elle::das::cli::OptionValueError const& e)
+      {
+        BOOST_TEST(elle::sprintf("%s", e)
+                   == "invalid value \"BAD1\" for option --foo: invalid boolean");
+      }
+      catch (...)
+      {
+        BOOST_FAIL("unexpected exception: " + elle::exception_string());
+      }
     }
   }
 

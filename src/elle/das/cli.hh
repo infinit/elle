@@ -479,14 +479,9 @@ namespace elle
           operator bool() const
           {
             ELLE_TRACE_SCOPE("convert %s to boolean", this->_option);
-            if (this->_flag)
-              return true;
-            else
-            {
-              auto res = this->convert<bool>();
-              this->_check_remaining();
-              return res;
-            }
+            auto const res = this->_flag || this->convert<bool>();
+            this->_check_remaining();
+            return res;
           }
 
           template <typename T>
@@ -519,9 +514,15 @@ namespace elle
             return {res, this->_set};
           }
 
+          /// Check if there are still arguments to process.
+          ///
+          /// Must be called once per formal option as it decreased a
+          /// counter of the number of options left to check.
           void
           _check_remaining() const
           {
+            ELLE_DUMP("%s: checking what remains: %s and %s",
+                      this, this->_remaining, this->_args);
             if (!--this->_remaining && !this->_args.empty())
             {
               auto const& arg = *this->_args.begin();
@@ -554,7 +555,11 @@ namespace elle
           /// but `--foo=true` => not-is-flag, and value = true.
           ELLE_ATTRIBUTE_R(bool, flag);
           ELLE_ATTRIBUTE(bool, positional);
+          /// Arguments not processed so far.
           ELLE_ATTRIBUTE(std::vector<std::string>&, args);
+          /// Number of options that are still to process.
+          /// Initialized to the number of (formal) options to
+          /// process, and decreased for each option processed.
           ELLE_ATTRIBUTE(int&, remaining);
           /// Whether the option was given on the command line.
           ELLE_ATTRIBUTE_R(bool, set);
