@@ -2351,9 +2351,10 @@ class Builder:
     try:
       if Drake.current.jobs_lock is not None:
         with Drake.current.jobs_lock:
-            self.__timeout(True)
-            return sched.background(job)
+          self.__timeout(True)
+          return sched.background(job)
       else:
+        self.__timeout(True)
         return job()
     finally:
       self.__timer.cancel()
