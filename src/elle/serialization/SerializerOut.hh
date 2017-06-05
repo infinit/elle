@@ -19,8 +19,8 @@ namespace elle
     | Types |
     `------*/
     public:
-      using Self = elle::serialization::SerializerOut;
-      using Super = elle::serialization::Serializer;
+      using Self = SerializerOut;
+      using Super = Serializer;
 
     /*-------------.
     | Construction |
@@ -103,7 +103,7 @@ namespace elle
   }
 }
 
-# if not defined(ELLE_SERIALIZATION_SERIALIZER_HXX)
+# if not defined ELLE_SERIALIZATION_SERIALIZER_HXX
 #  include <elle/serialization/SerializerOut.hxx>
 # endif
 

@@ -25,7 +25,7 @@ namespace elle
 
     namespace _details
     {
-      template <typename T, typename API = void>
+      template <typename T, typename API>
       struct serialization_api
         : public API
       {};
@@ -369,7 +369,7 @@ namespace elle
 
       template <typename T, typename S = void>
       static
-      typename std::enable_if<_details::has_serialize_convert_api<T, void>(), T>::type
+      std::enable_if_t<_details::has_serialize_convert_api<T, void>(), T>
       deserialize(SerializerIn& self, unsigned)
       {
         // FIXME: convert_api could be factored with the next version if
@@ -418,13 +418,14 @@ namespace elle
       void
       serialize_named_option(Serializer& self, std::string const& name, T& opt);
 
+      /// How serializarion is performed.
       enum API
       {
-        pod,
+        pod,                /// Integers, etc.
         pod_api,
         method,
         method_versionned,
-        convert,
+        convert,            /// Using a Serializer::convert function.
         wrapper,
         functions,
         recurse,
@@ -436,13 +437,14 @@ namespace elle
       api()
       {
         return
-          _details::recurse<T>::value ? recurse :
-          _details::has_serialize_convert_api<T, S>() ? convert :
-          _details::has_serialize_wrapper_api<T>() ? wrapper :
-          _details::has_serialize_functions_api<T, S>() ? functions :
-          _details::has_serialize_method_api<T, S>() ? method :
-          _details::has_serialize_method_versionned_api<T, S>() ? method_versionned :
-          std::is_void<S>::value ? pod : pod_api;
+          _details::recurse<T>::value ? recurse
+          : _details::has_serialize_convert_api<T, S>() ? convert
+          : _details::has_serialize_wrapper_api<T>() ? wrapper
+          : _details::has_serialize_functions_api<T, S>() ? functions
+          : _details::has_serialize_method_api<T, S>() ? method
+          : _details::has_serialize_method_versionned_api<T, S>() ? method_versionned
+          : std::is_void<S>::value ? pod
+          : pod_api;
       }
 
       // New
@@ -819,8 +821,7 @@ namespace elle
     // specialization such as BIGNUM*
 
     template <typename S, typename T>
-    typename std::enable_if<
-      !_details::has_serialize_convert_api<T*, void>(), void>::type
+    std::enable_if_t<!_details::has_serialize_convert_api<T*, void>(), void>
     Serializer::serialize(std::string const& name, T*& opt)
     {
       ELLE_LOG_COMPONENT("elle.serialization.Serializer");
@@ -1029,8 +1030,7 @@ namespace elle
               template <typename, typename> class C,
               typename T,
               typename A>
-    typename
-    std::enable_if<std::is_default_constructible<T>::value, void>::type
+    std::enable_if_t<std::is_default_constructible<T>::value, void>
     Serializer::serialize(std::string const& name, C<T, A>& collection, as<As>)
     {
       if (this->_enter(name))
@@ -1556,7 +1556,7 @@ namespace elle
     deserialize(std::istream& input, bool version = true,
                 boost::optional<Context const&> context = {})
     {
-      typename Serialization::SerializerIn s(input, version);
+      auto s = typename Serialization::SerializerIn(input, version);
       if (context)
         s.set_context(context.get());
       return s.template deserialize<T, Serializer>();

@@ -629,11 +629,11 @@ namespace elle
       void
       _deserialize_dict_key(
       std::function<void (std::string const&)> const& f);
-      /// Serialize or deserialize an int64_t;
+      /// Serialize or deserialize an int64_t.
       virtual
       void
       _serialize(int64_t& v) = 0;
-      /// Serialize or deserialize an uint64_t;
+      /// Serialize or deserialize an uint64_t.
       virtual
       void
       _serialize(uint64_t& v) = 0;
@@ -641,23 +641,23 @@ namespace elle
       virtual
       void
       _serialize(int32_t& v) = 0;
-      /// Serialize or deserialize an uint32_t;
+      /// Serialize or deserialize an uint32_t.
       virtual
       void
       _serialize(uint32_t& v) = 0;
-      /// Serialize or deserialize an int16_t;
+      /// Serialize or deserialize an int16_t.
       virtual
       void
       _serialize(int16_t& v) = 0;
-      /// Serialize or deserialize an uint16_t;
+      /// Serialize or deserialize an uint16_t.
       virtual
       void
       _serialize(uint16_t& v) = 0;
-      /// Serialize or deserialize an int8_t;
+      /// Serialize or deserialize an int8_t.
       virtual
       void
       _serialize(int8_t& v) = 0;
-      /// Serialize or deserialize an uint8_t;
+      /// Serialize or deserialize an uint8_t.
       virtual
       void
       _serialize(uint8_t& v) = 0;

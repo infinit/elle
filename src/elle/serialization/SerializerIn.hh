@@ -11,7 +11,8 @@ namespace elle
 {
   namespace serialization
   {
-    template <typename T> struct is_nullable;
+    template <typename T>
+    struct is_nullable;
 
     /// A Serializer specialized for reading data from a stream and
     /// deserializing object.
@@ -22,8 +23,8 @@ namespace elle
     | Types |
     `------*/
     public:
-      using Self = elle::serialization::SerializerIn;
-      using Super = elle::serialization::Serializer;
+      using Self = SerializerIn;
+      using Super = Serializer;
 
     /*-------------.
     | Construction |

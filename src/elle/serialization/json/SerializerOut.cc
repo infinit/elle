@@ -22,8 +22,6 @@ namespace elle
                                    bool versioned,
                                    bool pretty)
         : Super(versioned)
-        , _json()
-        , _current()
         , _pretty(pretty)
         , _output(output)
       {
@@ -35,8 +33,6 @@ namespace elle
                                    bool versioned,
                                    bool pretty)
         : Super(std::move(versions), versioned)
-        , _json()
-        , _current()
         , _pretty(pretty)
         , _output(output)
       {

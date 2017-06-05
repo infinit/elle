@@ -4,8 +4,8 @@
 
 #include <elle/Backtrace.hh>
 #include <elle/chrono.hh>
-#include <elle/format/base64.hh>
 #include <elle/finally.hh>
+#include <elle/format/base64.hh>
 #include <elle/json/exceptions.hh>
 #include <elle/memory.hh>
 #include <elle/printf.hh>
@@ -28,8 +28,6 @@ namespace elle
                                  bool versioned)
         : Super(versioned)
         , _partial(false)
-        , _json()
-        , _current()
       {
         this->_load_json(input);
       }
@@ -39,8 +37,6 @@ namespace elle
                                  bool versioned)
         : Super(std::move(versions), versioned)
         , _partial(false)
-        , _json()
-        , _current()
       {
         this->_load_json(input);
       }
@@ -49,7 +45,6 @@ namespace elle
         : Super(versioned)
         , _partial(false)
         , _json(std::move(input))
-        , _current()
       {
         this->_current.push_back(&this->_json);
       }
@@ -82,9 +77,8 @@ namespace elle
         int64_t value;
         this->_serialize(value);
         if (value < 0)
-          throw Error(elle::sprintf(
-                        "64-bits unsigned underflow on key \"%s\"",
-                        this->current_name()));
+          elle::err<Error>("64-bits unsigned underflow on key \"%s\"",
+                           this->current_name());
         v = value;
       }
 

@@ -104,9 +104,10 @@ namespace elle
       {
         int64_t value;
         this->_serialize(value);
-        if (value > std::numeric_limits<T>::max())
+        using limits = std::numeric_limits<T>;
+        if (value > limits::max())
           throw json::Overflow(this->current_name(), sizeof(T) * 8, true, value);
-        if (value < std::numeric_limits<T>::min())
+        if (value < limits::min())
           throw json::Overflow(this->current_name(), sizeof(T) * 8, false, value);
         v = value;
       }

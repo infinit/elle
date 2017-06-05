@@ -29,7 +29,7 @@ namespace elle
       | Types |
       `------*/
       public:
-        using Self = elle::serialization::json::SerializerOut;
+        using Self = SerializerOut;
         using Super = serialization::SerializerOut;
 
       /*-------------.

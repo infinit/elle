@@ -23,7 +23,7 @@ namespace elle
       | Types |
       `------*/
       public:
-        using Self = elle::serialization::binary::SerializerIn;
+        using Self = binary::SerializerIn;
         using Super = serialization::SerializerIn;
 
       /*-------------.

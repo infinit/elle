@@ -70,6 +70,13 @@ static
 void
 fundamentals()
 {
+  auto const values =
+    std::vector<int64_t>{0,
+                         1, -1,
+                         63, 64, -63, -64,
+                         65535, 65536, -65535, -65536,
+                         5000000000, -5000000000,
+                         1152921504606846976, 4611686018427387905};
   std::stringstream stream;
   {
     typename Format::SerializerOut output(stream);
@@ -81,7 +88,6 @@ fundamentals()
     output.serialize("double", d);
     double round = 51.;
     output.serialize("round", round);
-    std::vector<int64_t> values({0,1,-1, 63, 64, -63, -64, 65535, 65536,-65535,-65536, 5000000000, -5000000000, 1152921504606846976, 4611686018427387905});
     output.serialize("values", values);
   }
   {
@@ -97,22 +103,16 @@ fundamentals()
     BOOST_CHECK_EQUAL(d, 51.51);
     double round = 0;
     input.serialize("round", round);
-    std::vector<int64_t> values({0,1,-1, 63, 64, -63, -64, 65535, 65536,-65535,-65536, 5000000000, -5000000000, 1152921504606846976, 4611686018427387905});
     std::vector<int64_t> ovalues;
     input.serialize("values", ovalues);
-    BOOST_CHECK_EQUAL(ovalues, values);
+    BOOST_TEST(ovalues == values);
   }
 }
 
 class Point
 {
 public:
-  Point()
-    : _x(0)
-    , _y(0)
-  {}
-
-  Point(int x, int y)
+  Point(int x = 0, int y = 0)
     : _x(x)
     , _y(y)
   {}
@@ -1235,7 +1235,7 @@ void
 in_place()
 {
   std::stringstream stream("{}");
-  elle::serialization::json::SerializerIn input(stream);
+  auto input = elle::serialization::json::SerializerIn(stream);
 
   std::shared_ptr<InPlace> in;
   std::shared_ptr<OutPlace> out;
@@ -1252,7 +1252,7 @@ json_type_error()
     "  \"int\": true"
     "}"
     );
-  typename elle::serialization::json::SerializerIn input(stream);
+  auto input = elle::serialization::json::SerializerIn(stream);
   int v;
   try
   {
@@ -1278,7 +1278,7 @@ json_missing_key()
     "  \"c\": 2"
     "}"
     );
-  typename elle::serialization::json::SerializerIn input(stream);
+  auto input = elle::serialization::json::SerializerIn(stream);
   int v;
   try
   {
@@ -1316,35 +1316,34 @@ json_overflows()
     "  \"32u_nunderflow\": 0"
     "}"
     );
-  typename elle::serialization::json::SerializerIn input(stream);
+  auto input = typename elle::serialization::json::SerializerIn(stream);
+  using Overflow = elle::serialization::json::Overflow;
   int8_t i8;
   uint8_t ui8;
-  BOOST_CHECK_THROW(input.serialize("8_overflow", i8),
-                    elle::serialization::json::Overflow);
-  BOOST_CHECK_THROW(input.serialize("8_underflow", i8),
-                    elle::serialization::json::Overflow);
-  BOOST_CHECK_THROW(input.serialize("8u_overflow", ui8),
-                    elle::serialization::json::Overflow);
-  BOOST_CHECK_THROW(input.serialize("8u_underflow", ui8),
-                    elle::serialization::json::Overflow);
+  BOOST_CHECK_THROW(input.serialize("8_overflow", i8), Overflow);
+  BOOST_CHECK_THROW(input.serialize("8_underflow", i8), Overflow);
+  BOOST_CHECK_THROW(input.serialize("8u_overflow", ui8), Overflow);
+  BOOST_CHECK_THROW(input.serialize("8u_underflow", ui8), Overflow);
   input.serialize("8_noverflow", i8);
   input.serialize("8_nunderflow", i8);
   input.serialize("8u_noverflow", ui8);
   input.serialize("8u_nunderflow", ui8);
   int32_t i32;
   uint32_t ui32;
-  BOOST_CHECK_THROW(input.serialize("32_overflow", i32),
-                    elle::serialization::json::Overflow);
-  BOOST_CHECK_THROW(input.serialize("32_underflow", i32),
-                    elle::serialization::json::Overflow);
-  BOOST_CHECK_THROW(input.serialize("32u_overflow", ui32),
-                    elle::serialization::json::Overflow);
-  BOOST_CHECK_THROW(input.serialize("32u_underflow", ui32),
-                    elle::serialization::json::Overflow);
+  BOOST_CHECK_THROW(input.serialize("32_overflow", i32), Overflow);
+  BOOST_CHECK_THROW(input.serialize("32_underflow", i32), Overflow);
+  BOOST_CHECK_THROW(input.serialize("32u_overflow", ui32), Overflow);
+  BOOST_CHECK_THROW(input.serialize("32u_underflow", ui32), Overflow);
+
   input.serialize("32_noverflow", i32);
+  BOOST_TEST(i32 == 2147483647);
   input.serialize("32_nunderflow", i32);
+  BOOST_TEST(i32 == -2147483648);
+
   input.serialize("32u_noverflow", ui32);
+  BOOST_TEST(ui32 == 4294967295);
   input.serialize("32u_nunderflow", ui32);
+  BOOST_TEST(ui32 == 0);
 }
 
 static
@@ -1366,7 +1365,7 @@ json_iso8601()
       "  \"error-garbage-end\": \"2014-11-05T11:36:10+0200GIGO\""
       "}"
       );
-    typename elle::serialization::json::SerializerIn input(stream);
+    auto input = elle::serialization::json::SerializerIn(stream);
     {
       boost::posix_time::ptime time;
       input.serialize("date", time);
@@ -1423,7 +1422,7 @@ json_optionals()
 {
   boost::optional<std::string> value;
   BOOST_CHECK(!value);
-  ELLE_LOG("deserialize missig option by ref")
+  ELLE_LOG("deserialize missing option by ref")
   {
     std::stringstream stream("{}");
     elle::serialization::json::SerializerIn serializer(stream);
@@ -1629,16 +1628,16 @@ exceptions()
   }
 }
 
-class Convertable
+class Convertible
 {
 public:
-  Convertable(int64_t i)
+  Convertible(int64_t i)
     : _i(i)
   {}
   ELLE_ATTRIBUTE_R(int64_t, i);
 };
 
-struct PConvertable
+struct PConvertible
 {
   int64_t i;
 };
@@ -1648,43 +1647,43 @@ namespace elle
   namespace serialization
   {
     template <>
-    struct Serialize<Convertable>
+    struct Serialize<Convertible>
     {
       using Type = int64_t;
 
       static
       int64_t
-      convert(Convertable const& c)
+      convert(Convertible const& c)
       {
         return c.i();
       }
 
       static
-      Convertable
+      Convertible
       convert(int64_t const& i)
       {
-        return Convertable(i);
+        return Convertible(i);
       }
     };
 
     // Check one can override even pointer serialization. Think BIGNUM*.
     template <>
-    struct Serialize<PConvertable*>
+    struct Serialize<PConvertible*>
     {
       using Type = int64_t;
 
       static
       int64_t
-      convert(PConvertable* c)
+      convert(PConvertible* c)
       {
         return c->i;
       }
 
       static
-      PConvertable*
+      PConvertible*
       convert(int64_t i)
       {
-        return new PConvertable{i};
+        return new PConvertible{i};
       }
     };
   }
@@ -1695,24 +1694,24 @@ static
 void
 convert()
 {
-  Convertable c{1332};
-  std::unique_ptr<PConvertable> pc(new PConvertable{1332});
+  Convertible c{1332};
+  auto pc = std::unique_ptr<PConvertible>(new PConvertible{1332});
   std::stringstream stream;
   {
     typename Format::SerializerOut serializer(stream, false);
-    serializer.serialize("convertable", c);
-    serializer.serialize("convertable_value", c);
-    serializer.serialize("pconvertable", pc.get());
+    serializer.serialize("convertible", c);
+    serializer.serialize("convertible_value", c);
+    serializer.serialize("pconvertible", pc.get());
   }
   {
     typename Format::SerializerIn serializer(stream, false);
-    auto r = serializer.template deserialize<Convertable>("convertable");
+    auto r = serializer.template deserialize<Convertible>("convertible");
     BOOST_CHECK_EQUAL(r.i(), c.i());
-    Convertable rv{1641};
-    serializer.serialize("convertable_value", rv);
+    Convertible rv{1641};
+    serializer.serialize("convertible_value", rv);
     BOOST_CHECK_EQUAL(rv.i(), c.i());
-    std::unique_ptr<PConvertable> pr(
-      serializer.template deserialize<PConvertable*>("pconvertable"));
+    std::unique_ptr<PConvertible> pr(
+      serializer.template deserialize<PConvertible*>("pconvertible"));
     BOOST_CHECK_EQUAL(pr->i, pc->i);
   }
 }
