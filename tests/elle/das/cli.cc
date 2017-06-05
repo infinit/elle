@@ -69,6 +69,7 @@ namespace conversions
   void
   check(std::string too_big, std::string too_little)
   {
+    using elle::das::cli::call;
     auto constexpr max = std::numeric_limits<I>::max();
     auto constexpr min = std::numeric_limits<I>::min();
     auto const proto = elle::das::named::prototype(foo);
@@ -76,30 +77,25 @@ namespace conversions
       {
         return i;
       };
-    BOOST_CHECK_EQUAL(
-      elle::das::cli::call(proto, f, {"--foo", std::to_string(max)}), max);
-    BOOST_CHECK_EQUAL(
-      elle::das::cli::call(proto, f, {"--foo", std::to_string(min)}), min);
-    CHECK_THROW(
-      elle::das::cli::call(proto, f, {"--foo", too_big}),
-      elle::das::cli::ValueError,
-      "invalid value \"" + too_big +
-      "\" for option --foo: integer out of range");
-    CHECK_THROW(
-      elle::das::cli::call(proto, f, {"--foo", too_little}),
-      elle::das::cli::ValueError,
-      "invalid value \"" + too_little +
-      "\" for option --foo: integer out of range");
+    BOOST_TEST(call(proto, f, {"--foo", std::to_string(max)}) == max);
+    BOOST_TEST(call(proto, f, {"--foo", std::to_string(min)}) == min);
+    CHECK_THROW(call(proto, f, {"--foo", too_big}),
+                elle::das::cli::ValueError,
+                "invalid value \"" + too_big +
+                "\" for option --foo: integer out of range");
+    CHECK_THROW(call(proto, f, {"--foo", too_little}),
+                elle::das::cli::ValueError,
+                "invalid value \"" + too_little +
+                "\" for option --foo: integer out of range");
   }
 
   template <typename I>
   void
   check()
   {
-    using Max = typename std::conditional<
-      std::is_signed<I>::value, int64_t, uint64_t>::type;
+    using Max = std::conditional_t<std::is_signed<I>::value,
+                                   int64_t, uint64_t>;
     using Min = int64_t;
-    using elle::sprintf;
     static_assert(std::is_integral<I>::value, "");
     auto constexpr max = Max{std::numeric_limits<I>::max()};
     auto constexpr min = Min{std::numeric_limits<I>::min()};
@@ -149,6 +145,7 @@ namespace conversions
   void
   multiple_strings()
   {
+    using elle::das::cli::call;
     auto const f = [] (std::vector<std::string> const& strings)
       {
         return std::accumulate(
@@ -157,39 +154,34 @@ namespace conversions
           { return a + "-" + b; });
       };
     auto const proto = elle::das::named::prototype(foo);
-    BOOST_CHECK_EQUAL(
-      elle::das::cli::call(proto, f, {}),
-      "");
-    BOOST_CHECK_EQUAL(
-      elle::das::cli::call(proto, f, {"--foo", "foo"}),
-      "-foo");
-    BOOST_CHECK_EQUAL(
-      elle::das::cli::call(proto, f, {"--foo", "foo", "--foo", "bar"}),
-      "-foo-bar");
+    BOOST_TEST(call(proto, f, {}) == "");
+    BOOST_TEST(call(proto, f, {"--foo", "foo"}) == "-foo");
+    BOOST_TEST(call(proto, f, {"--foo", "foo", "--foo", "bar"}) == "-foo-bar");
   }
 
   static
   void
   boolean()
   {
+    using elle::das::cli::call;
     {
       auto const f = [] (int expected, bool enabled)
         {
-          BOOST_CHECK_EQUAL(bool(expected), enabled);
+          BOOST_TEST(bool(expected) == enabled);
         };
       auto const named = elle::das::named::function(f, foo, bar = false);
-      elle::das::cli::call(named, {"--foo", "0"});
-      elle::das::cli::call(named, {"--foo", "1", "--bar"});
-      elle::das::cli::call(named, {"--bar", "--foo", "1"});
-      elle::das::cli::call(named, {"--foo", "1", "--bar", "true"});
-      elle::das::cli::call(named, {"--foo", "0", "--bar", "false"});
+      call(named, {"--foo", "0"});
+      call(named, {"--foo", "1", "--bar"});
+      call(named, {"--bar", "--foo", "1"});
+      call(named, {"--foo", "1", "--bar", "true"});
+      call(named, {"--foo", "0", "--bar", "false"});
     }
     {
       auto const f = [] (bool b)
         {
           BOOST_CHECK(!b);
         };
-      elle::das::cli::call(elle::das::named::function(f, foo), {});
+      call(elle::das::named::function(f, foo), {});
     }
   }
 
@@ -197,15 +189,13 @@ namespace conversions
   void
   multiple_integers()
   {
+    using elle::das::cli::call;
     auto const f = [] (std::vector<int> ints) { return ints; };
     auto const proto = elle::das::named::prototype(foo);
-    BOOST_CHECK_EQUAL(
-      elle::das::cli::call(proto, f, {}), std::vector<int>{});
-    BOOST_CHECK_EQUAL(
-      elle::das::cli::call(proto, f, {"--foo", "2"}), std::vector<int>{2});
-    BOOST_CHECK_EQUAL(
-      elle::das::cli::call(proto, f, {"--foo", "2", "--foo", "3"}),
-      std::vector<int>({2, 3}));
+    BOOST_TEST(call(proto, f, {}) == std::vector<int>{});
+    BOOST_TEST(call(proto, f, {"--foo", "2"}) == std::vector<int>{2});
+    BOOST_TEST(call(proto, f, {"--foo", "2", "--foo", "3"})
+               == std::vector<int>({2, 3}));
   }
 }
 
@@ -213,27 +203,26 @@ static
 void
 defaults()
 {
+  using elle::das::cli::call;
   auto const f =
     [] (std::string const& foo, int baz) { return foo + std::to_string(baz); };
   auto const proto = elle::das::named::prototype(foo = "16", baz = 42);
-  BOOST_CHECK_EQUAL(elle::das::cli::call(proto, f, {}), "1642");
-  BOOST_CHECK_EQUAL(elle::das::cli::call(proto, f, {"--baz", "64"}), "1664");
-  BOOST_CHECK_EQUAL(elle::das::cli::call(proto, f, {"--foo", "51"}), "5142");
-  BOOST_CHECK_EQUAL(
-    elle::das::cli::call(proto, f, {"--baz", "23", "--foo", "01"}), "0123");
+  BOOST_TEST(call(proto, f, {}) == "1642");
+  BOOST_TEST(call(proto, f, {"--baz", "64"}) == "1664");
+  BOOST_TEST(call(proto, f, {"--foo", "51"}) == "5142");
+  BOOST_TEST(call(proto, f, {"--baz", "23", "--foo", "01"}) == "0123");
 }
 
 static
 void
 defaulted()
 {
+  using elle::das::cli::call;
   auto const f = elle::das::named::function(
     [] (elle::Defaulted<bool> b) { return std::make_pair(bool(b), b.get()); },
     foo = elle::defaulted(false));
-  BOOST_CHECK_EQUAL(
-    elle::das::cli::call(f, {}), std::make_pair(false, false));
-  BOOST_CHECK_EQUAL(
-    elle::das::cli::call(f, {"--foo"}), std::make_pair(true, true));
+  BOOST_TEST(call(f, {})        == std::make_pair(false, false));
+  BOOST_TEST(call(f, {"--foo"}) == std::make_pair(true, true));
 }
 
 static
@@ -430,21 +419,17 @@ static
 void
 help()
 {
-  BOOST_CHECK_EQUAL(
-    elle::sprintf("%s", elle::das::cli::help(elle::das::named::prototype(foo))),
-    "      --foo arg           \n");
-  BOOST_CHECK_EQUAL(
-    elle::sprintf(
-      "%s", elle::das::cli::help(elle::das::named::prototype(foo = 42))),
-    "      --foo arg            (default: 42)\n");
-  BOOST_CHECK_EQUAL(
-    elle::sprintf(
-      "%s", elle::das::cli::help(elle::das::named::prototype(foo = false))),
-    "      --foo               \n");
-  BOOST_CHECK_EQUAL(
-    elle::sprintf(
-      "%s", elle::das::cli::help(elle::das::named::prototype(foo = true))),
-    "      --foo               \n");
+  auto const help = [](auto&&... args)
+    {
+      return elle::sprintf("%s",
+        elle::das::cli::help(
+          elle::das::named::prototype(
+            std::forward<decltype(args)>(args)...)));
+    };
+  BOOST_TEST(help(foo)         == "      --foo arg           \n");
+  BOOST_TEST(help(foo = 42)    == "      --foo arg            (default: 42)\n");
+  BOOST_TEST(help(foo = false) == "      --foo               \n");
+  BOOST_TEST(help(foo = true)  == "      --foo               \n");
 }
 
 ELLE_TEST_SUITE()
