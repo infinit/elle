@@ -76,10 +76,7 @@ namespace elle
       {
         int64_t value;
         this->_serialize(value);
-        if (value < 0)
-          elle::err<Error>("64-bits unsigned underflow on key \"%s\"",
-                           this->current_name());
-        v = value;
+        v = static_cast<uint64_t>(value);
       }
 
       void

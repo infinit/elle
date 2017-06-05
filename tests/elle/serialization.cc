@@ -1292,6 +1292,21 @@ json_missing_key()
   BOOST_FAIL("type error expected");
 }
 
+template <typename T>
+void
+check_min_max(elle::serialization::json::SerializerIn& i,
+              std::string const& name)
+{
+  auto v = T{};
+  i.serialize(name + "_min", v);
+  BOOST_TEST(v == std::numeric_limits<T>::min());
+  i.serialize(name + "_max", v);
+  BOOST_TEST(v == std::numeric_limits<T>::max());
+}
+
+template <typename T>
+using lim = std::numeric_limits<T>;
+
 static
 void
 json_overflows()
@@ -1313,7 +1328,9 @@ json_overflows()
     "  \"32u_overflow\": 4294967296,"
     "  \"32u_noverflow\": 4294967295,"
     "  \"32u_underflow\": -1,"
-    "  \"32u_nunderflow\": 0"
+    "  \"32u_nunderflow\": 0,"
+    "  \"64u_min\": " + std::to_string(lim<uint64_t>::min()) + ","
+    "  \"64u_max\": " + std::to_string(lim<uint64_t>::max()) + ","
     "}"
     );
   auto input = typename elle::serialization::json::SerializerIn(stream);
@@ -1344,6 +1361,8 @@ json_overflows()
   BOOST_TEST(ui32 == 4294967295);
   input.serialize("32u_nunderflow", ui32);
   BOOST_TEST(ui32 == 0);
+
+  check_min_max<uint64_t>(input, "64u");
 }
 
 static
