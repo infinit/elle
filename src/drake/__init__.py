@@ -2174,7 +2174,9 @@ class Builder:
     and reinstalls itself, for periodic reports.
 
     '''
-    if not first:
+    if first:
+      self.__start_time = time.time()
+    else:
       print("{}: running for {} already"
             .format(self, duration(self.__start_time)))
     self.__timer = threading.Timer(5 * 60, self.__timeout)
@@ -2214,25 +2216,15 @@ class Builder:
                           drake.log.LogLevel.trace,
                           '%s: execute', self):
             self._depfile.dirty = True
-            self.__start_time = time.time()
-            self.__timeout(True)
             success = self.execute()
-            self.__timer.cancel()
-            self.__end_time = time.time()
-            if 'DRAKE_NO_TIME_REPORTS' not in _OS.environ:
-              print('{} {} ({})'.format(
-                "Finished" if success else "Failed",
-                self, duration(self.__start_time, self.__end_time)))
             for dst in self.__targets:
               dst._Node__mtime = None
             logger.log('drake.Builder',
                        drake.log.LogLevel.trace,
                        '%s: executed', self)
         except sched.Terminate:
-          self.__timer.cancel()
           raise
         except Exception as e:
-          self.__timer.cancel()
           e_pretty = str(e)
           if not e_pretty:
             e_pretty = repr(e)
@@ -2356,11 +2348,19 @@ class Builder:
     return True
 
   def _run_job(self, job):
-    if Drake.current.jobs_lock is not None:
-      with Drake.current.jobs_lock:
-        return sched.background(job)
-    else:
-      return job()
+    try:
+      if Drake.current.jobs_lock is not None:
+        with Drake.current.jobs_lock:
+            self.__timeout(True)
+            return sched.background(job)
+      else:
+        return job()
+    finally:
+      self.__timer.cancel()
+      self.__end_time = time.time()
+      if 'DRAKE_NO_TIME_REPORTS' not in _OS.environ:
+        print('Ran {} in {}'.format(
+          self, duration(self.__start_time, self.__end_time)))
 
   def cleanup_source_directory(self, root_path):
     root_path = drake.Path(root_path)
