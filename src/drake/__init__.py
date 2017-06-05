@@ -1795,6 +1795,23 @@ def command_flatten(command, env = None):
     env_ = ''
   return env_ + ' '.join(pipes.quote(str(a)) for a in command)
 
+@contextlib.contextmanager
+def log_time(runner):
+  start_time = time.time()
+  timer = [None]
+  def start_timer(first = True):
+    if not first:
+      print("{}: running for {} already"
+            .format(runner, duration(start_time)))
+    timer[0] = threading.Timer(5 * 60, lambda: start_timer(False))
+  start_timer()
+  yield
+  timer[0].cancel()
+  end_time = time.time()
+  if 'DRAKE_NO_TIME_REPORTS' not in _OS.environ:
+    print('Ran {} in {}'.format(
+      runner, duration(start_time, end_time)))
+
 class Builder:
 
   """Produces a set of BaseNodes from an other set of BaseNodes."""
@@ -2168,21 +2185,6 @@ class Builder:
         self.__executed = True
         self.__executed_signal.signal()
 
-
-  def __timeout(self, first=False):
-    '''Install a timeout function that prints what is currently running,
-    and reinstalls itself, for periodic reports.
-
-    '''
-    if first:
-      self.__start_time = time.time()
-    else:
-      print("{}: running for {} already"
-            .format(self, duration(self.__start_time)))
-    self.__timer = threading.Timer(5 * 60, self.__timeout)
-    self.__timer.start()
-
-
   def _execute(self, depfile_builder):
     with contextlib.ExitStack() as ctx:
       if not Drake.current.kill_builders_on_failure:
@@ -2348,20 +2350,12 @@ class Builder:
     return True
 
   def _run_job(self, job):
-    try:
-      if Drake.current.jobs_lock is not None:
-        with Drake.current.jobs_lock:
-          self.__timeout(True)
-          return sched.background(job)
-      else:
-        self.__timeout(True)
+    if Drake.current.jobs_lock is not None:
+      with Drake.current.jobs_lock, log_time(self):
+        return sched.background(job)
+    else:
+      with log_time(self):
         return job()
-    finally:
-      self.__timer.cancel()
-      self.__end_time = time.time()
-      if 'DRAKE_NO_TIME_REPORTS' not in _OS.environ:
-        print('Ran {} in {}'.format(
-          self, duration(self.__start_time, self.__end_time)))
 
   def cleanup_source_directory(self, root_path):
     root_path = drake.Path(root_path)
