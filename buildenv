@@ -95,75 +95,38 @@ class State:
     # Parse options
     parser = argparse.ArgumentParser(add_help = False,
                                      description = 'To infinity!')
-    parser.add_argument('-h', '--help',
-                        action = 'help',
-                        default = argparse.SUPPRESS,
-                        help = 'Show this help message and exit',
-    )
-    parser.add_argument('-b', '--branch',
-                        type = str,
-                        help = 'Built branch',
-    )
-    parser.add_argument('-B', '--build-trees-root',
-                        type = str,
-                        default = '%s/_builds' % ROOT,
-                        help = 'Build trees root directory',
-    )
-    parser.add_argument('-p', '--pick-build-tree',
-                        action = 'store_true',
-                        help = 'Pick adequate build tree',
-    )
-    parser.add_argument('-d', '--cache-download-build-tree',
-                        action = 'store_true',
-                        help = 'Download build tree cache',
-    )
-    parser.add_argument('-u', '--cache-upload-build-tree',
-                        action = 'store_true',
-                        help = 'Upload build tree cache',
-    )
-    parser.add_argument('-c', '--cleanup-build-trees',
-                        action = 'store_true',
-                        help = 'Garbage collect unused build trees',
-    )
-    parser.add_argument('-C', '--cleanup-threshold',
-                        type = int,
-                        default = 10,
-                        help = 'Minimum headroom (in GB) below which build'
-                        ' trees are cleaned',
-    )
-    parser.add_argument('-n', '--cache-namespace',
-                        type = str,
-                        help = 'Subdirectory where to locate cache',
-    )
-    parser.add_argument('-i', '--cache-id',
-                        type = str,
-                        help = 'Concurrent cache unique id',
-    )
-    parser.add_argument('-l', '--link-build-tree',
-                        type = str,
-                        help = 'Create symlink to picked build tree',
-    )
-    parser.add_argument('-s', '--show-build-tree',
-                        action = 'store_true',
-                        help = 'Pick adequate build tree',
-    )
-    parser.add_argument('-S', '--source-tree',
-                        type = str,
-                        default = ROOT,
-                        help = 'Source tree location',
-    )
-    parser.add_argument('-D', '--dry-run',
-                        action = 'store_true',
-                        help = 'Do not modify anything',
-    )
-    parser.add_argument('-v', '--verbose',
-                        action = 'store_true',
-                        help = 'Increase verbosity',
-    )
-    parser.add_argument('-e', '--exclude',
-                        type = str,
-                        help = 'Exclude given pattern from rsync',
-    )
+    opt = lambda *a, **kw: parser.add_argument(*a, **kw)
+    opt('-h', '--help', action = 'help', default = argparse.SUPPRESS,
+        help = 'Show this help message and exit',)
+    opt('-b', '--branch', type = str, help = 'Built branch',)
+    opt('-B', '--build-trees-root', type = str, default = '%s/_builds' % ROOT,
+        help = 'Build trees root directory',)
+    opt('-p', '--pick-build-tree', action = 'store_true',
+        help = 'Pick adequate build tree',)
+    opt('-d', '--cache-download-build-tree', action = 'store_true',
+        help = 'Download build tree cache',)
+    opt('-u', '--cache-upload-build-tree', action = 'store_true',
+        help = 'Upload build tree cache',)
+    opt('-c', '--cleanup-build-trees', action = 'store_true',
+        help = 'Garbage collect unused build trees',)
+    opt('-C', '--cleanup-threshold', type = int, default = 10,
+        help = 'Minimum headroom (in GB) below which build trees are cleaned',)
+    opt('-n', '--cache-namespace', type = str,
+        help = 'Subdirectory where to locate cache',)
+    opt('-i', '--cache-id', type = str,
+        help = 'Concurrent cache unique id',)
+    opt('-l', '--link-build-tree', type = str,
+        help = 'Create symlink to picked build tree',)
+    opt('-s', '--show-build-tree', action = 'store_true',
+        help = 'Pick adequate build tree',)
+    opt('-S', '--source-tree', type = str, default = ROOT,
+        help = 'Source tree location',)
+    opt('-D', '--dry-run', action = 'store_true',
+        help = 'Do not modify anything',)
+    opt('-v', '--verbose', action = 'store_true',
+         help = 'Increase verbosity',)
+    opt('-e', '--exclude', type = str,
+        help = 'Exclude given pattern from rsync',)
     return parser
 
   @property
