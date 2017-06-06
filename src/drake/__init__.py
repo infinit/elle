@@ -1764,7 +1764,7 @@ def nodes(*paths, type = None):
     return list(map(lambda p: node(p, type = type), paths))
 
 
-def command(cmd, cwd = None, stdout = None, env = None):
+def command(cmd, cwd = None, stdout = None, stderr = None, env = None):
   """Run the shell command.
 
   cmd -- the shell command.
@@ -1775,7 +1775,8 @@ def command(cmd, cwd = None, stdout = None, env = None):
   try:
     if env:
       env = {k: str(v) for k, v in env.items()}
-    p = subprocess.Popen(cmd, cwd = cwd, stdout = stdout, env = env)
+    p = subprocess.Popen(cmd,
+                         cwd = cwd, stdout = stdout, stderr = stderr, env = env)
     p.wait()
     return p.returncode == 0
   except getattr(__builtins__,'FileNotFoundError', IOError) as e:
@@ -1897,11 +1898,14 @@ class Builder:
           leave_stdout = False,
           env = None,
           throw = False,
-          redirect_stdout = None):
+          redirect_stdout = None,
+          cut_stderr = False):
     """Run a shell command.
 
     pretty  -- A pretty version for output.
     command -- The command.
+    throw -- Whether to throw on error rather than returning False.
+    cut_stderr -- Whether to send stderr to /dev/null.
 
     The expansion handles shell escaping. The pretty version is
     printed, except if drake is in raw mode, in which case the
@@ -1919,6 +1923,10 @@ class Builder:
         out_file = str(redirect_stdout)
     else:
       out_file = str(self.path_stdout)
+    if cut_stderr:
+      stderr = subprocess.DEVNULL
+    else:
+      stderr = None
     if not isinstance(cmd, tuple):
       cmd = (cmd,)
     def fun():
@@ -1938,7 +1946,10 @@ class Builder:
             stdout = stack.enter_context(open(out_file, 'w'))
           else:
             stdout = None
-          if not command(c, cwd = cwd, stdout = stdout, env = env):
+          if not command(c,
+                         cwd = cwd,
+                         stdout = stdout, stderr = stderr,
+                         env = env):
             if throw:
               raise Exception(
                 'command failed: %s' % command_flatten(c, env))
