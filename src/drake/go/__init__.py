@@ -15,6 +15,7 @@
 import collections
 import copy
 import drake
+import drake.cxx
 import os
 import subprocess
 
@@ -169,7 +170,8 @@ class Toolkit:
                path = None,
                root = None,
                os = None,
-               arch = None):
+               arch = None,
+               cxx_toolkit = None):
     """
     Create a toolkit or clone an existing one.
 
@@ -210,6 +212,7 @@ class Toolkit:
       self.__root = root
       self.__version = None
       self.__env = False
+      self.__cxx_toolkit = cxx_toolkit
     if self.go is None:
       raise Exception('go executable is undefined. Check its installation')
     try:
@@ -257,6 +260,10 @@ class Toolkit:
     if self.__env is not False:
       return self.__env
     self.__env = dict(os.environ)
+    self.__env['CGO_ENABLED'] = '1'
+    if self.__cxx_toolkit:
+      self.__env['CC'] = self.__cxx_toolkit.c
+      self.__env['CXX'] = self.__cxx_toolkit.cxx
     for k in Toolkit.properties:
       v = getattr(self, k)
       if v is not None:
