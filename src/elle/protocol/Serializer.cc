@@ -164,10 +164,12 @@ namespace elle
               return;
             else if (error)
               ELLE_ABORT("%s: unexpected timer error: %s", this, error);
-            this->ping();
-            this->_pinger.expires_from_now(
-              boost::posix_time::milliseconds(this->_ping_period->count()));
-            this->_pinger.async_wait(this->_pinger_handler);
+            else
+            {
+              this->ping();
+              this->_pinger.expires_from_now(*this->_ping_period);
+              this->_pinger.async_wait(this->_pinger_handler);
+            }
           })
         , _stream(stream)
         , _chunk_size(chunk_size)
@@ -361,8 +363,7 @@ namespace elle
         if (!this->_lock_write.locked())
           this->write_pings_pongs(true);
         this->_ping_timers.emplace_back(this->_scheduler.io_service());
-        this->_ping_timers.back().expires_from_now(
-          boost::posix_time::milliseconds(this->_ping_delay->count()));
+        this->_ping_timers.back().expires_from_now(*this->_ping_delay);
         this->_ping_timers.back().async_wait(
           [this] (boost::system::error_code const& error)
           {
@@ -382,15 +383,22 @@ namespace elle
         }
       }
 
+      /// A clock.
+      using Clock = std::chrono::high_resolution_clock;
+      /// A reference date.
+      using Time = std::chrono::time_point<Clock>;
+      /// The type of our timers.
+      using Timer = boost::asio::basic_waitable_timer<Clock>;
+
       ELLE_ATTRIBUTE(elle::reactor::Scheduler&, scheduler);
       ELLE_ATTRIBUTE(int, pings);
       ELLE_ATTRIBUTE(int, pongs);
       ELLE_ATTRIBUTE(boost::optional<std::chrono::milliseconds>, ping_period);
       ELLE_ATTRIBUTE(boost::optional<std::chrono::milliseconds>, ping_delay);
-      ELLE_ATTRIBUTE(boost::asio::deadline_timer, pinger);
+      ELLE_ATTRIBUTE(Timer, pinger);
       ELLE_ATTRIBUTE(std::function<void (boost::system::error_code const&)>,
                      pinger_handler);
-      ELLE_ATTRIBUTE(std::list<boost::asio::deadline_timer>, ping_timers);
+      ELLE_ATTRIBUTE(std::list<Timer>, ping_timers);
       ELLE_ATTRIBUTE_RX(boost::signals2::signal<void ()>, ping_timeout);
 
       void
