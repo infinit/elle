@@ -1602,6 +1602,9 @@ class StaticLibLinker(ShellCommand):
     def hash(self):
       return self.command
 
+    def __str__(self):
+      return 'StaticLibLinker(%s)' % self.__library
+
 
 class Source(Node):
 
