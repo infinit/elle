@@ -308,6 +308,8 @@ class Toolkit:
     }
     return ext.get(tos, '')
 
+  def staticlib_ext(self, host = False):
+    return '.a'
 
   def dependencies(self, node):
     """
@@ -663,3 +665,24 @@ class CDyLibBuilder(LibraryBuilder):
       return self.cmd('Set Go library ID %s' % self.library, cmd)
     else:
       return True
+
+class CStaticLibBuilder(LibraryBuilder):
+
+  def __init__(self, source, toolkit = None, config = None, target = None,
+               sources = [], build_host = False):
+    self.__library = drake.node(
+      target or '%s%s' % (source.name().without_last_extension(),
+                          toolkit.staticlib_ext(build_host)))
+    self.__header = drake.node('%s.h' % target.split('.')[0])
+    super().__init__(
+      node = source, toolkit = toolkit, config = config,
+      target = self.__library, dependencies = sources, lib_type = 'c-archive',
+      header = self.__header, build_host = build_host)
+
+  @property
+  def header(self):
+    return self.__header
+
+  @property
+  def library(self):
+    return self.__library
