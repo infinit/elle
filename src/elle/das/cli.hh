@@ -8,9 +8,10 @@
 
 #include <boost/optional.hpp>
 
-#include <elle/Error.hh>
 #include <elle/Defaulted.hh>
+#include <elle/Error.hh>
 #include <elle/assert.hh>
+#include <elle/find.hh>
 #include <elle/log.hh>
 #include <elle/make-vector.hh>
 #include <elle/serialization/json.hh>
@@ -25,7 +26,7 @@ namespace elle
     {
       /// Create a command line interface for a function using symbols.
       ///
-      /// \code{.cc}
+      /// @code{.cc}
       ///
       /// ELLE_DAS_CLI_SYMBOL(prefix, 'p', "The prefix", false);
       /// ELLE_DAS_CLI_SYMBOL(body, 'b', "The body", false);
@@ -47,7 +48,7 @@ namespace elle
       ///   == "  -p, --prefix arg          The prefix\n"
       ///      "  -b, --body arg            The body\n");
       ///
-      /// \endcode
+      /// @endcode
       /*---------.
       | Errors.  |
       `---------*/
@@ -223,11 +224,8 @@ namespace elle
                     return this->_arg[1] == formal.short_name();
                   },
                   [](auto&&) { return false; })(Formal{});
-                {
-                  auto it = opts.find(F::name());
-                  if (it != opts.end())
-                    res = this->_arg[1] == it->second.short_name;
-                }
+                if (auto it = find(opts, F::name()))
+                  res = this->_arg[1] == it->second.short_name;
                 return res;
               }
             }
@@ -473,7 +471,7 @@ namespace elle
           {
             ELLE_TRACE_SCOPE(
               "convert %s to %s", this->_option, elle::type_info<I>());
-            auto res = this->convert<I>();
+            auto const res = this->convert<I>();
             this->_check_remaining();
             return res;
           }
@@ -514,7 +512,7 @@ namespace elle
             ELLE_TRACE_SCOPE("convert %s to %s",
                              this->_option,
                              elle::type_info<elle::Defaulted<I>>());
-            auto res = this->operator I();
+            auto const res = this->operator I();
             ELLE_TRACE_SCOPE(
               "converted %s to %s (%s)",
               this->_option, res, this->_set ? "explicit" : "implicit");
@@ -539,8 +537,11 @@ namespace elle
           operator <<(std::ostream& out, Value<Default> const& v)
           {
             elle::fprintf(
-              out, "Value(\"%s\", flag=%s, value=%s, def=%s, set=%s)",
-              v.option(), v.flag(), v.values(), v.def(), v.set());
+              out,
+              "Value(\"%s\", flag=%s, value=%s, def=%s, args=%s,"
+              " remaining=%s, set=%s)",
+              v.option(), v.flag(), v.values(), v.def(), v._args,
+              v._remaining, v.set());
             return out;
           }
 
