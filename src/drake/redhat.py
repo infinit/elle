@@ -17,6 +17,7 @@ class Packager(drake.Builder):
     self.__top_dir = drake.Path(os.getcwd()) / top_dir
     self.__spec = top_dir / 'SPECS' / ('%s.spec' % basename)
     self.__arch = arch
+    self.__dist = dist
     self.__rpm_name = '%(base)s-%(ver)s-1.%(dist)s.%(arch)s.rpm' % \
       {'base': basename, 'ver': version, 'dist': dist, 'arch': self.__arch}
     self.__destination = drake.Path(destination)
@@ -55,6 +56,7 @@ class Packager(drake.Builder):
     return [
       'rpmbuild', '-bb', str(self.__spec),
       '--define', '_topdir %s' % self.__top_dir,
+      '--define', 'dist .%s' % self.__dist,
       '--buildroot', '%s/BUILDROOT' % self.__top_dir,
     ]
 
@@ -66,4 +68,3 @@ class Packager(drake.Builder):
   @property
   def package(self):
     return self.__target
-
