@@ -39,25 +39,23 @@ namespace elle
       {
         auto syslog = elle::os::getenv("ELLE_LOG_SYSLOG", "");
         if (!syslog.empty())
-        {
-          _logger().reset(new elle::log::SysLogger(
-            syslog + "[" + std::to_string(elle::system::getpid()) + "]"));
-        }
+          _logger() = std::make_unique<elle::log::SysLogger>(
+            elle::sprintf("%s[%s]", syslog, elle::system::getpid()));
         else
         {
           auto path = elle::os::getenv("ELLE_LOG_FILE", "");
-          bool append = !elle::os::getenv("ELLE_LOG_FILE_APPEND", "").empty();
-          if (!path.empty())
+          if (path.empty())
+            _logger() = std::make_unique<elle::log::TextLogger>(std::cerr);
+          else
           {
+            bool append = !elle::os::getenv("ELLE_LOG_FILE_APPEND", false);
             static std::ofstream out{
               path,
                 (append ? std::fstream::app : std::fstream::trunc)
                   | std::fstream::out
                 };
-            _logger().reset(new elle::log::TextLogger(out));
+            _logger() = std::make_unique<elle::log::TextLogger>(out);
           }
-          else
-            _logger().reset(new elle::log::TextLogger(std::cerr));
         }
       }
       return *_logger();
@@ -69,7 +67,7 @@ namespace elle
       std::unique_lock<std::mutex> ulock{log_mutex()};
       if (_logger() != nullptr && logger != nullptr)
         logger->_indentation = _logger()->_indentation->clone();
-      std::unique_ptr<Logger> prev = std::move(_logger());
+      auto prev = std::move(_logger());
       _logger() = std::move(logger);
       return prev;
     }
@@ -129,7 +127,7 @@ namespace elle
         bool&
         _debug_formats()
         {
-          static bool res = elle::os::inenv("ELLE_LOG_CHECK_FORMATS");
+          static bool res = elle::os::getenv("ELLE_LOG_CHECK_FORMATS", false);
           return res;
         }
       }
