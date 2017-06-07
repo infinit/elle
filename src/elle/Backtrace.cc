@@ -1,7 +1,7 @@
 #include <elle/Backtrace.hh>
 
 #ifdef INFINIT_WINDOWS
-# include <windows.h>
+# include <elle/windows.hh>
 # include <dbghelp.h>
 #endif
 #include <cxxabi.h>

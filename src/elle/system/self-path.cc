@@ -6,7 +6,7 @@
 #endif
 
 #include <elle/Exception.hh>
-#include <elle/windows.h>
+#include <elle/windows.hh>
 
 namespace elle
 {

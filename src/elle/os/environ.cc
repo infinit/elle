@@ -3,7 +3,7 @@
 #if defined INFINIT_MACOSX
 # include <crt_externs.h>
 #elif defined INFINIT_WINDOWS
-# include <windows.h>
+# include <elle/windows.hh>
 #else
 # include <sys/types.h>
 # include <unistd.h>

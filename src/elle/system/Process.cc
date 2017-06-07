@@ -11,7 +11,7 @@
 # include <sys/types.h>
 # include <sys/wait.h>
 #else
-# include <elle/windows.h>
+# include <elle/windows.hh>
 #endif
 
 ELLE_LOG_COMPONENT("elle.system.Process");

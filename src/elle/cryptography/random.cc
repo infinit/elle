@@ -3,7 +3,7 @@
 #include <fcntl.h>
 #if defined INFINIT_WINDOWS
 # include <process.h>
-# include <windows.h>
+# include <elle/windows.hh>
 # include <wincrypt.h>
 #elif defined INFINIT_IOS
 # include <Security/Security.h>

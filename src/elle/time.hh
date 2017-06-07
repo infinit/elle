@@ -2,7 +2,7 @@
 
 #include <chrono>
 
-#include <elle/windows.h>
+#include <elle/windows.hh>
 #include <boost/date_time/posix_time/posix_time.hpp>
 
 namespace elle

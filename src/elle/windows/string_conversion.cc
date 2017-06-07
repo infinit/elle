@@ -1,6 +1,6 @@
 #include <boost/locale.hpp>
 #include <elle/windows/string_conversion.hh>
-#include <windows.h>
+#include <elle/windows.hh>
 
 namespace elle
 {

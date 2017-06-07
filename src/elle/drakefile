@@ -320,7 +320,7 @@ def configure(zlib_lib,
     'utility/Move.hh',
     'utility/Move.hxx',
     'utils.hh',
-    'windows.h',
+    'windows.hh',
     'xalloc.hh',
     'xalloc.hxx',
     )

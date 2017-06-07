@@ -1,7 +1,7 @@
 #include <elle/system/getpid.hh>
 
 #ifdef INFINIT_WINDOWS
-# include <windows.h>
+# include <elle/windows.hh>
 #else
 # include <unistd.h>
 #endif
