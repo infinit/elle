@@ -34,10 +34,18 @@ namespace
       BOOST_TEST(v == (Ints{1, 2, 3, 4, 5, 6, 7}));
     }
   }
+
+  void
+  tail()
+  {
+    BOOST_TEST(elle::tail(std::string{"foobar"}, "foo") == std::string{"bar"});
+    BOOST_TEST(!elle::tail(std::string{"foobar"}, "bar"));
+  }
 }
 
 ELLE_TEST_SUITE()
 {
   auto& master = boost::unit_test::framework::master_test_suite();
   master.add(BOOST_TEST_CASE(push_back), 0, 1);
+  master.add(BOOST_TEST_CASE(tail), 0, 1);
 }

@@ -6,6 +6,8 @@
 
 #include <boost/algorithm/cxx11/any_of.hpp>
 #include <boost/algorithm/cxx11/none_of.hpp>
+#include <boost/algorithm/string/predicate.hpp> // starts_with
+#include <boost/optional.hpp>
 
 namespace elle
 {
@@ -100,5 +102,27 @@ namespace elle
       return dest.insert(std::end(dest),
                          std::make_move_iterator(std::begin(src)),
                          std::make_move_iterator(std::end(src)));
+  }
+
+  /// If `range` starts with `prefix`, the remainder of the range,
+  /// otherwise none.
+  template <typename Range, typename Prefix>
+  boost::optional<Range>
+  tail(Range const& range, Prefix const& prefix)
+  {
+    using std::begin;
+    using std::end;
+    using boost::size;
+    if (boost::starts_with(range, prefix))
+      return Range{begin(range) + prefix.size(), end(range)};
+    else
+      return {};
+  }
+
+  template <typename Range>
+  boost::optional<Range>
+  tail(Range const& range, char const prefix[])
+  {
+    return tail(range, std::string{prefix});
   }
 }
