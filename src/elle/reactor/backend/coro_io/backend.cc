@@ -23,12 +23,12 @@ namespace elle
         void
         starter(void* arg);
 
-        class Backend::Thread:
-          public backend::Thread
+        class Backend::Thread
+          : public backend::Thread
         {
-        /*---------.
-        | Typedefs |
-        `---------*/
+        /*--------.
+        | Types.  |
+        `--------*/
         public:
           using Self = Thread;
           using Super = backend::Thread;
@@ -39,12 +39,11 @@ namespace elle
         public:
           Thread(Backend& backend,
                  const std::string& name,
-                 Action action):
-            Super(name, std::move(action)),
-            _backend(backend),
-            _coro(Coro_new()),
-            _caller(nullptr),
-            _root(false)
+                 Action action)
+            : Super(name, std::move(action))
+            , _backend(backend)
+            , _coro(Coro_new())
+            , _root(false)
           {}
 
           ~Thread()
@@ -61,8 +60,8 @@ namespace elle
           }
 
         private:
-          Thread(Backend& backend):
-            Thread(backend, "<root>", Action())
+          Thread(Backend& backend)
+            : Thread(backend, "<root>", Action())
           {
             this->_root = true;
             this->status(Status::running);
@@ -74,7 +73,6 @@ namespace elle
         | Switching |
         `----------*/
         public:
-          virtual
           void
           step() override
           {
@@ -112,7 +110,6 @@ namespace elle
                 std::uncaught_exception());
           }
 
-          virtual
           void
           yield() override
           {
@@ -188,7 +185,7 @@ namespace elle
           /// Underlying IO coroutine.
           struct Coro* _coro;
           /// The thread that stepped us.
-          Thread* _caller;
+          Thread* _caller = nullptr;
           /// Let libcoroutine callback invoke our _run.
           friend void starter(void* arg);
           ELLE_ATTRIBUTE(bool, root);
@@ -206,9 +203,9 @@ namespace elle
         | Backend |
         `--------*/
 
-        Backend::Backend():
-          _self(new Thread(*this)),
-          _current(_self.get())
+        Backend::Backend()
+          : _self(new Thread(*this))
+          , _current(_self.get())
         {}
 
         Backend::~Backend()

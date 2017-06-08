@@ -33,12 +33,14 @@ namespace elle
           {
             return Max;
           }
+
           static
           std::size_t
           default_stack_size()
           {
             return Default;
           }
+
           static
           std::size_t
           minimum_stack_size()
@@ -52,11 +54,10 @@ namespace elle
             ELLE_ASSERT(minimum_stack_size() <= size);
             ELLE_ASSERT(maximum_stack_size() >= size);
 
-            void* limit = std::malloc(size);
-            if (!limit)
+            if (auto limit = std::malloc(size))
+              return static_cast<char*>(limit) + size;
+            else
               throw std::bad_alloc();
-
-            return static_cast<char*>(limit) + size;
           }
 
           void
@@ -86,15 +87,16 @@ namespace elle
         /// Allocator.
         static StackAllocator stack_allocator;
 
+        /// Invoke thread_ptr->_run().
         static
         void
-        wrapped_run(intptr_t arg);
+        wrapped_run(intptr_t thread_ptr);
 
         using boost::context::make_fcontext;
         using boost::context::jump_fcontext;
 
-        class Backend::Thread:
-          public backend::Thread
+        class Backend::Thread
+          : public backend::Thread
         {
         /*---------.
         | Types.   |
@@ -111,11 +113,9 @@ namespace elle
                  Action action)
             : Super(name, std::move(action))
             , _backend(backend)
-            , _stack_size(StackAllocator::default_stack_size())
             , _stack_pointer(stack_allocator.allocate(this->_stack_size))
             , _context(make_fcontext(this->_stack_pointer,
                                      this->_stack_size, wrapped_run))
-            , _caller(nullptr)
             , _root(false)
           {
 #ifdef VALGRIND
@@ -131,12 +131,12 @@ namespace elle
             ELLE_ASSERT(this->status() == Status::done ||
                         this->status() == Status::starting ||
                         this->_root);
-            ELLE_TRACE("%s: die", *this);
+            ELLE_TRACE("%s: die", this);
             if (this->_context)
             {
               this->_context = nullptr;
               stack_allocator.deallocate(this->_stack_pointer,
-                                         StackAllocator::default_stack_size());
+                                         this->_stack_size);
             }
 #ifdef VALGRIND
             VALGRIND_STACK_DEREGISTER(this->_valgrind_stack);
@@ -163,7 +163,7 @@ namespace elle
             ELLE_ASSERT(this->_caller == nullptr);
 
             bool starting = this->status() == Status::starting;
-            Thread* current = this->_backend._current;
+            auto const current = this->_backend._current;
             this->_caller = current;
             this->_backend._current = this;
             current->_unwinding = std::uncaught_exception();
@@ -173,17 +173,17 @@ namespace elle
             {
               this->status(Status::running);
               ELLE_ASSERT(this->_context);
-              ELLE_TRACE("%s: start %s", *current , *this);
+              ELLE_TRACE("%s: start %s", *current , this);
               jump_fcontext(&this->_caller->_context,
                             this->_context,
                             reinterpret_cast<intptr_t>(this));
-              ELLE_TRACE("%s: back from %s", *current, *this);
+              ELLE_TRACE("%s: back from %s", *current, this);
             }
             else
             {
               ELLE_ASSERT_EQ(this->status(), Status::waiting);
               this->status(Status::running);
-              ELLE_TRACE("%s: step from %s", *this, *_caller);
+              ELLE_TRACE("%s: step from %s", this, *_caller);
               jump_fcontext(&current->_context,
                             this->_context,
                             reinterpret_cast<intptr_t>(this));
@@ -211,11 +211,11 @@ namespace elle
             this->_unwinding = std::uncaught_exception();
             this->_exception = std::current_exception();
             this->_backend._current = this->_caller;
-            ELLE_TRACE("%s: yield back to %s", *this, *this->_backend._current);
+            ELLE_TRACE("%s: yield back to %s", this, *this->_backend._current);
             this->_caller = nullptr;
 
             if (this->_unwinding)
-              ELLE_DUMP("yielding %s with in-flight exception", *this);
+              ELLE_DUMP("yielding %s with in-flight exception", this);
             jump_fcontext(&this->_context,
                           this->_backend._current->_context,
                           reinterpret_cast<intptr_t>(this));
@@ -271,7 +271,7 @@ namespace elle
             this->_caller = nullptr;
             this->status(Status::done);
             this->_backend._current = caller;
-            ELLE_TRACE("%s: done", *this);
+            ELLE_TRACE("%s: done", this);
             jump_fcontext(&this->_context,
                           caller->_context,
                           reinterpret_cast<intptr_t>(this));
@@ -280,13 +280,13 @@ namespace elle
           /// Owning backend.
           Backend& _backend;
           /// Context stack size.
-          std::size_t _stack_size;
+          std::size_t const _stack_size = StackAllocator::default_stack_size();
           /// Context stack pointer.
           void* _stack_pointer;
           /// Underlying IO context.
           Context _context;
           /// The thread that stepped us.
-          Thread* _caller;
+          Thread* _caller = nullptr;
           /// Wrap run function so that it can be passed when doing
           /// make_fcontext.
           friend void wrapped_run(intptr_t);
@@ -298,9 +298,9 @@ namespace elle
 
         static
         void
-        wrapped_run(intptr_t arg)
+        wrapped_run(intptr_t thread_ptr)
         {
-          auto* thread = reinterpret_cast<Backend::Thread*>(arg);
+          auto* thread = reinterpret_cast<Backend::Thread*>(thread_ptr);
           thread->_run();
         }
 

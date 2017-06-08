@@ -15,12 +15,11 @@ namespace elle
     {
       class Thread;
 
-      /** Pool of thread that can switch execution.
-       *
-       * All thread are affiliated with a Manager, and can only switch
-       * execution to threads in the same manager. The context which
-       * instantiated the Manager is a valid thread (the root thread).
-       */
+      /// Pool of thread that can switch execution.
+      ///
+      /// All thread are affiliated with a Manager, and can only switch
+      /// execution to threads in the same manager. The context which
+      /// instantiated the Manager is a valid thread (the root thread).
       class Backend
       {
       /*------.
@@ -71,7 +70,7 @@ namespace elle
       | Construction |
       `-------------*/
       public:
-        Thread(std::string  name, Action action);
+        Thread(std::string name, Action action);
         virtual
         ~Thread();
 
@@ -96,23 +95,21 @@ namespace elle
       | Switching |
       `----------*/
       public:
-        /** Start or resume execution.
-         *
-         * Start execution by running the action or resume it at the
-         * point where yield was called. May only be called on a
-         * waiting or starting thread. Switch status to
-         * running. Make this thread the current thread.
-         */
+        /// Start or resume execution.
+        ///
+        /// Start execution by running the action or resume it at the
+        /// point where yield was called. May only be called on a
+        /// waiting or starting thread. Switch status to
+        /// running. Make this thread the current thread.
         virtual
         void
         step() = 0;
-        /** Give execution back to our caller.
-         *
-         * Suspend our execution and give it back to the thread that
-         * called our step method. May only be called on the current
-         * thread (whose status is thus running). Switch status to
-         * waiting. Make the caller the current thread.
-         */
+        /// Give execution back to our caller.
+        ///
+        /// Suspend our execution and give it back to the thread that
+        /// called our step method. May only be called on the current
+        /// thread (whose status is thus running). Switch status to
+        /// waiting. Make the caller the current thread.
         virtual
         void
         yield() = 0;

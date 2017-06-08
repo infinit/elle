@@ -28,24 +28,24 @@ namespace elle
       /// Construct with a plain value. The value is stored directly, no extra
       /// operations are performed.
       ///
-      /// \tparam T The type of value.
-      /// \param value The value to store.
+      /// @tparam T The type of value.
+      /// @param value The value to store.
       BackgroundFuture(T value);
       /// Construct with an Action and start to BackgroundOperation. The value
       /// will be available when the Action is over.
       ///
-      /// \param action The Action to perform.
+      /// @param action The Action to perform.
       BackgroundFuture(Action action);
       ~BackgroundFuture();
       BackgroundFuture(BackgroundFuture<T> const& src);
       /// Return the value. If not yet available, block until it is.
       ///
-      /// \returns A const reference to the value.
+      /// @returns A const reference to the value.
       T const&
       value() const;
       /// Return the value. If not yet available, block until it is.
       ///
-      /// \returns A reference to the value.
+      /// @returns A reference to the value.
       T&
       value();
       /// Update the Action.

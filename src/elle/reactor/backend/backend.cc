@@ -27,13 +27,13 @@ namespace elle
       | Construction |
       `-------------*/
 
-      Thread::Thread(std::string  name,
-                     Action action):
-        _action(std::move(action)),
-        _name(std::move(name)),
-        _status(Status::starting),
-        _unwinding(false),
-        _exception_storage(new __cxxabiv1::__cxa_eh_globals())
+      Thread::Thread(std::string name,
+                     Action action)
+        : _action(std::move(action))
+        , _name(std::move(name))
+        , _status(Status::starting)
+        , _unwinding(false)
+        , _exception_storage(new __cxxabiv1::__cxa_eh_globals())
       {}
 
       Thread::~Thread()

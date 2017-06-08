@@ -14,14 +14,14 @@ namespace elle
       namespace coro_io
       {
         class Backend:
-          public reactor::backend::Backend
+          public backend::Backend
         {
         /*------.
         | Types |
         `------*/
         public:
           using Self = Backend;
-          using Super = reactor::backend::Backend;
+          using Super = backend::Backend;
           class Thread;
 
         /*-------------.
@@ -35,10 +35,8 @@ namespace elle
         | Threads |
         `--------*/
         public:
-          virtual
           std::unique_ptr<backend::Thread>
           make_thread(const std::string& name, Action action) override;
-          virtual
           backend::Thread*
           current() const override;
 
