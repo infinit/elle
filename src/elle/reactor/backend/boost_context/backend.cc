@@ -152,6 +152,14 @@ namespace elle
             ELLE_ASSERT(this->_context);
           }
 
+          void _jump(Thread* from, Thread* to)
+          {
+            jump_fcontext(&from->_context, to->_context,
+                          reinterpret_cast<intptr_t>(this));
+          }
+
+
+
         /*----------.
         | Switching |
         `----------*/
@@ -174,9 +182,7 @@ namespace elle
               this->status(Status::running);
               ELLE_ASSERT(this->_context);
               ELLE_TRACE("%s: start %s", *current , this);
-              jump_fcontext(&this->_caller->_context,
-                            this->_context,
-                            reinterpret_cast<intptr_t>(this));
+              this->_jump(this->_caller, this);
               ELLE_TRACE("%s: back from %s", *current, this);
             }
             else
@@ -184,9 +190,7 @@ namespace elle
               ELLE_ASSERT_EQ(this->status(), Status::waiting);
               this->status(Status::running);
               ELLE_TRACE("%s: step from %s", this, *_caller);
-              jump_fcontext(&current->_context,
-                            this->_context,
-                            reinterpret_cast<intptr_t>(this));
+              this->_jump(current, this);
             }
             // It is unclear whether an uncaught_exception mismatch has any
             // consequence if the code does not explicitly depend on its result.
@@ -216,9 +220,8 @@ namespace elle
 
             if (this->_unwinding)
               ELLE_DUMP("yielding %s with in-flight exception", this);
-            jump_fcontext(&this->_context,
-                          this->_backend._current->_context,
-                          reinterpret_cast<intptr_t>(this));
+            auto& next = this->_backend._current;
+            this->_jump(this, next);
             if (this->_backend._current->_unwinding != std::uncaught_exception())
             {
               ELLE_TRACE("yield %s: unwind mismatch, expect %s, got %s",
@@ -272,9 +275,7 @@ namespace elle
             this->status(Status::done);
             this->_backend._current = caller;
             ELLE_TRACE("%s: done", this);
-            jump_fcontext(&this->_context,
-                          caller->_context,
-                          reinterpret_cast<intptr_t>(this));
+            this->_jump(this, caller);
           }
 
           /// Owning backend.
