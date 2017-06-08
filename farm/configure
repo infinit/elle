@@ -12,39 +12,23 @@ import platform
 def parse_options():
   import argparse
   parser = argparse.ArgumentParser(description = 'Create drake configuration file')
-  parser.add_argument('--arch',
-                      metavar = 'ARCHITECTURE',
-                      type = str,
-                      help = 'CPU architecture (x86_64, i386)',
-                      required = True)
-  parser.add_argument('--os',
-                      metavar = 'OPERATING_SYSTEM',
-                      type = str,
-                      help = 'Target operating system',
-                      required = True)
-  parser.add_argument('--compiler',
-                      metavar = 'COMPILER',
-                      type = str,
-                      help = 'Host compiler',
-                      required = True)
-  parser.add_argument('--project',
-                      metavar = 'PROJECT',
-                      type = str,
-                      help = 'Project name',
-                      required = True)
-  parser.add_argument('--public-beyond',
-                      metavar = 'PUBLIC_BEYOND',
-                      type = bool,
-                      help = 'Strip all credentials from beyond',
-                      required = False,
-                      default = False
-                      )
+  opt = parser.add_argument
+  opt('--arch', metavar = 'ARCHITECTURE', type = str, required = True,
+      help = 'CPU architecture (x86_64, i386)')
+  opt('--os', metavar = 'OPERATING_SYSTEM', type = str, required = True,
+      help = 'Target operating system')
+  opt('--compiler', metavar = 'COMPILER', help = 'Host compiler',
+      type = str, required = True)
+  opt('--project', metavar = 'PROJECT', help = 'Project name',
+      type = str, required = True)
+  opt('--public-beyond', metavar = 'PUBLIC_BEYOND',
+      help = 'Strip all credentials from beyond',
+      type = bool, required = False, default = False)
   for d in ['build', 'install', 'source']:
-    parser.add_argument('--%s-dir' % d,
-                        metavar = '%s_DIR' % d.upper(),
-                        type = str,
-                        help = '%s directory' % d.capitalize(),
-                        required = True)
+    opt('--%s-dir' % d,
+        metavar = '%s_DIR' % d.upper(),
+        help = '%s directory' % d.capitalize(),
+        type = str, required = True)
   return parser.parse_args()
 
 options = parse_options()
@@ -197,6 +181,7 @@ with open('%s/.drake.tmp' % options.build_dir, 'w') as drake:
   print(content, file = drake)
 
 build_dir = options.build_dir
+os.makedirs(build_dir, exist_ok = True)
 tmp = '%s/.drake.tmp' % build_dir
 drake = '%s/drake' % build_dir
 subprocess.call(['diff', '-u', drake if os.path.isfile(drake) else '/dev/null', tmp])
