@@ -12,94 +12,85 @@ using elle::reactor::backend::Thread;
 
 elle::reactor::backend::Backend* m = nullptr;
 
-static
-void
-empty()
-{}
-
-static
-void
-one_yield()
+namespace
 {
-  m->current()->yield();
-}
+  void
+  empty()
+  {}
 
-static
-void
-inc(int* i)
-{
-  ++*i;
-}
-
-template <typename Backend>
-static
-void
-test_die()
-{
-  m = new Backend;
-  int i = 0;
+  void
+  inc(int* i)
   {
-    auto t = m->make_thread("test_die", [&i] { inc(&i); });
+    ++*i;
+  }
+
+  template <typename Backend>
+  void
+  test_die()
+  {
+    auto&& m = Backend{};
+    int i = 0;
+    {
+      auto t = m.make_thread("test_die", [&i] { inc(&i); });
+      t->step();
+      BOOST_TEST(i == 1);
+      BOOST_CHECK(t->status() == Thread::Status::done);
+    }
+    {
+      auto t = m.make_thread("test_die", [&i] { inc(&i); });
+      t->step();
+      BOOST_TEST(i == 2);
+      BOOST_CHECK(t->status() == Thread::Status::done);
+    }
+  }
+
+  template <typename Backend>
+  void
+  test_deadlock_creation()
+  {
+    auto&& m = Backend{};
+    auto t = m.make_thread("test_deadlock_creation", empty);
     t->step();
-    BOOST_CHECK_EQUAL(i, 1);
     BOOST_CHECK(t->status() == Thread::Status::done);
   }
+
+  template <typename Backend>
+  void
+  test_deadlock_switch()
   {
-    auto t = m->make_thread("test_die", [&i] { inc(&i); });
+    auto&& m = Backend{};
+
+    auto one_yield = [&m]
+      {
+        m.current()->yield();
+      };
+
+    auto t = m.make_thread("test_deadlock_switch", one_yield);
     t->step();
-    BOOST_CHECK_EQUAL(i, 2);
+    t->step();
     BOOST_CHECK(t->status() == Thread::Status::done);
   }
-  delete m;
-}
 
-template <typename Backend>
-static
-void
-test_deadlock_creation()
-{
-  m = new Backend;
-  auto t = m->make_thread("test_deadlock_creation", empty);
-  t->step();
-  BOOST_CHECK(t->status() == Thread::Status::done);
-  delete m;
-}
+  template <typename Backend>
+  void
+  test_status()
+  {
+    auto&& m = Backend{};
 
-template <typename Backend>
-static
-void
-test_deadlock_switch()
-{
-  m = new Backend;
-  auto t = m->make_thread("test_deadlock_switch", one_yield);
-  t->step();
-  t->step();
-  BOOST_CHECK(t->status() == Thread::Status::done);
-  delete m;
-}
+    auto status_coro = [&m]
+    {
+      BOOST_CHECK(m.current()->status() == Thread::Status::running);
+      m.current()->yield();
+      BOOST_CHECK(m.current()->status() == Thread::Status::running);
+    };
 
-static
-void
-status_coro()
-{
-  BOOST_CHECK(m->current()->status() == Thread::Status::running);
-  m->current()->yield();
-  BOOST_CHECK(m->current()->status() == Thread::Status::running);
-}
-
-template <typename Backend>
-static
-void
-test_status()
-{
-  m = new Backend;
-  auto t = m->make_thread("status", &status_coro);
-  BOOST_CHECK(t->status() == Thread::Status::starting);
-  t->step();
-  BOOST_CHECK(t->status() == Thread::Status::waiting);
-  t->step();
-  BOOST_CHECK(t->status() == Thread::Status::done);
-  delete m;
+    auto t = m.make_thread("status", status_coro);
+    BOOST_CHECK(t->status() == Thread::Status::starting);
+    t->step();
+    BOOST_CHECK(t->status() == Thread::Status::waiting);
+    t->step();
+    BOOST_CHECK(t->status() == Thread::Status::done);
+  }
 }
 
 ELLE_TEST_SUITE()
