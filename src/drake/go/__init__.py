@@ -621,6 +621,7 @@ class Executable(drake.Node):
     :param build_host: Build for host architecture and OS.
     :type build_host: bool
     """
+    self.__toolkit = toolkit
     target = target or '%s%s' % (source.name().without_last_extension(),
                                  self.__toolkit.exec_ext(build_host))
     super().__init__(target)
