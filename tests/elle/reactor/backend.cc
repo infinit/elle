@@ -10,8 +10,6 @@
 
 using elle::reactor::backend::Thread;
 
-elle::reactor::backend::Backend* m = nullptr;
-
 namespace
 {
   void
