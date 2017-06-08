@@ -34,9 +34,8 @@ with drake.Drake('../..') as d:
   os.environ['MACOSX_DEPLOYMENT_TARGET'] = '10.7' # ensure that build is compatible with 10.7
 
   cxx_config = drake.cxx.Config()
-
-  # XXX[still required but it shouldn't be the case]
-  cxx_config.flag('-stdlib=libc++')
+  cxx_config.flag('-stdlib=libc++')  # XXX[still required but it shouldn't be the case]
+  cxx_config.flag('-fsanitize=undefined')
 
   d.run(cxx_toolkit,
         None,
