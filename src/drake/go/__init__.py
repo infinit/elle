@@ -323,6 +323,14 @@ class Toolkit:
     """
     assert isinstance(node, Source)
     import json
+    if not node.path().is_file():
+      try:
+        # FIXME: is building a node during dependencies ok ?
+        # See drake.cxx._mkdeps for more detail.
+        node.build()
+      except drake.NoBuilder:
+        # If a node is found but cannot be built, let drake fail by itself.
+        pass
     res = json.loads(self.run(['list', '-json', str(node.path())]))
     deps = res['Deps']
     deps.extend(res.get('TestImports', []))
