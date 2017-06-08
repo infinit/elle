@@ -15,17 +15,18 @@ import drake
 import drake.cxx
 import drake.cxx.boost
 
-python3 = None
-for minor in range(9, 0, -1):
-  for dir in ['/usr/local', '/opt/local/Library']:
-    p = '{}/Frameworks/Python.framework/Versions/3.{}'.format(dir, minor)
-    if os.path.isdir(p):
-      python3 = p
-      break
-  # Guido says we don't need multi-level breaks.
-  if python3:
-    break
-print("using python3 =", python3)
+def find_python3():
+  python3 = None
+  for minor in range(9, 0, -1):
+    # /opt/local is MacPorts.
+    # /usr/local/Cellar/ is Brew.
+    for dir in ['/usr/local', '/opt/local/Library', '/usr/local/Cellar/python3/3.5.1']:
+      p = '{}/Frameworks/Python.framework/Versions/3.{}'.format(dir, minor)
+      if os.path.isdir(p):
+        return p
+
+python3 = find_python3()
+print("using python3 =", python3, file=sys.stderr)
 
 with drake.Drake('../..') as d:
   cxx_compiler = os.getenv('CXX', 'clang++')
