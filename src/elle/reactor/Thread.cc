@@ -117,10 +117,16 @@ namespace elle
       return state() == State::done;
     }
 
-    std::string
+    std::string const&
     Thread::name() const
     {
       return _thread->name();
+    }
+
+    void
+    Thread::name(std::string const& name)
+    {
+      _thread->name(name);
     }
 
     void

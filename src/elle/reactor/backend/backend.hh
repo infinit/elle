@@ -81,7 +81,7 @@ namespace elle
         /// Run action.
         ELLE_ATTRIBUTE_R(Action, action);
         /// Pretty name.
-        ELLE_ATTRIBUTE_R(std::string, name);
+        ELLE_ATTRIBUTE_RW(std::string, name);
         /// Current status.
         ELLE_ATTRIBUTE_R(Status, status);
         ELLE_ATTRIBUTE_R(bool, unwinding, protected);

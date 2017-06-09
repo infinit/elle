@@ -206,8 +206,8 @@ namespace elle
       bool
       done() const;
       /// Pretty name.
-      std::string
-      name() const;
+      ELLE_ATTRIBUTE_rw(std::string, name);
+
     /*----------.
     | Printable |
     `----------*/
