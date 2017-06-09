@@ -230,8 +230,8 @@ class Toolkit:
 
   @property
   def path(self):
-    if self.__path and not os.path.exists(self.__path):
-      os.mkdir(self.__path)
+    if self.__path:
+      os.makedirs(self.__path, exist_ok = True)
     return self.__path
 
   @property
