@@ -42,8 +42,8 @@ class Renderer(drake.Builder):
       renderer = renderer,
       parse_inline_html = True,
     )
-    with open(str(self.__source.path())) as input:
-      with open(str(self.__target.path()), 'w') as output:
+    with open(str(self.__source.path()), encoding = 'utf-8') as input:
+      with open(str(self.__target.path()), 'w', encoding = 'utf-8') as output:
         text = input.read()
         for k, v in self.__replace_before.items():
           text = text.replace(k, v)
