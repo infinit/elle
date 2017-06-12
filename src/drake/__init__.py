@@ -1805,6 +1805,7 @@ def log_time(runner):
       print("{}: running for {} already"
             .format(runner, duration(start_time)))
     timer[0] = threading.Timer(5 * 60, lambda: start_timer(False))
+    timer[0].start()
   start_timer()
   yield
   timer[0].cancel()
