@@ -79,7 +79,7 @@ class Config:
             self.__libraries = sched.OrderedSet(model.__libraries)
             self.flags = model.flags[:]
             self.ldflags = model.ldflags[:]
-            self._framework = dict(model._framework)
+            self._framework = sched.OrderedSet(model._framework)
             self.__defines = collections.OrderedDict(model.__defines)
             self.__standard = model.__standard
             self.__rpath = model.__rpath[:]
@@ -263,10 +263,10 @@ class Config:
       self.ldflags.append(f)
 
     def framework_add(self, name):
-        self._framework[name] = None
+        self._framework.add(name)
 
     def frameworks(self):
-        return self._framework.keys()
+        return self._framework
 
     def add_local_include_path(self, path):
       path = drake.Drake.current.prefix / path
