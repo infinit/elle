@@ -155,6 +155,7 @@ namespace elle
           ELLE_DEBUG("%s: send proposal: %s", *this, proposal)
           {
             int reached = 0;
+            std::exception_ptr weak_error;
             elle::reactor::for_each_parallel(
               this->_peers,
               [&] (std::unique_ptr<Peer>& peer)
@@ -181,12 +182,25 @@ namespace elle
                              *this, peer, e.what());
                   unavailables.emplace(peer.get());
                 }
+                catch (WeakError const& e)
+                {
+                  ELLE_TRACE("%s: peer %s weak error: %s",
+                             *this, peer, e.what());
+                  unavailables.emplace(peer.get());
+                  if (!weak_error)
+                    weak_error = e.exception();
+                }
               },
               std::string("send proposal"));
             if (previous && previous->confirmed)
               return previous;
             ELLE_TRACE("check headcount")
-              this->_check_headcount(q, reached);
+              if (!this->_check_headcount(q, reached, false, !bool(weak_error)))
+              {
+                ELLE_TRACE("rethrow weak error: {}",
+                           elle::exception_string(weak_error));
+                std::rethrow_exception(weak_error);
+              }
             if (previous)
             {
               ELLE_DEBUG("replace value with %s", previous->value);
@@ -194,7 +208,8 @@ namespace elle
               {
                 version = previous->proposal.version;
                 this->_round = previous->proposal.round;
-                ELLE_DEBUG("retry at version %s round %s", version, this->_round);
+                ELLE_DEBUG("retry at version %s round %s",
+                           version, this->_round);
                 continue;
               }
             }
@@ -203,6 +218,7 @@ namespace elle
           {
             int reached = 0;
             bool conflicted = false;
+            std::exception_ptr weak_error;
             elle::reactor::for_each_parallel(
               this->_peers,
               [&] (std::unique_ptr<Peer> const& peer) -> void
@@ -234,6 +250,14 @@ namespace elle
                              *this, peer, e.what());
                   unavailables.emplace(peer.get());
                 }
+                catch (WeakError const& e)
+                {
+                  ELLE_TRACE("%s: peer %s weak error: %s",
+                             *this, peer, e.what());
+                  unavailables.emplace(peer.get());
+                  if (!weak_error)
+                    weak_error = e.exception();
+                }
               },
               std::string("send acceptation"));
             if (conflicted)
@@ -251,12 +275,18 @@ namespace elle
               continue;
             }
             else
-              this->_check_headcount(q, reached);
+              if (!this->_check_headcount(q, reached, false, !bool(weak_error)))
+              {
+                ELLE_TRACE("rethrow weak error: {}",
+                           elle::exception_string(weak_error));
+                std::rethrow_exception(weak_error);
+              }
           }
           ELLE_TRACE("%s: chose %f", this, previous ? previous->value : value);
           ELLE_DEBUG("%s: send confirmation", *this)
           {
             auto reached = 0;
+            std::exception_ptr weak_error;
             elle::reactor::for_each_parallel(
               this->_peers,
               [&] (std::unique_ptr<Peer> const& peer) -> void
@@ -276,9 +306,22 @@ namespace elle
                              *this, peer, e.what());
                   unavailables.emplace(peer.get());
                 }
+                catch (WeakError const& e)
+                {
+                  ELLE_TRACE("%s: peer %s weak error: %s",
+                             *this, peer, e.what());
+                  unavailables.emplace(peer.get());
+                  if (!weak_error)
+                    weak_error = e.exception();
+                }
               },
               std::string("send confirmation"));
-            this->_check_headcount(q, reached);
+            if (!this->_check_headcount(q, reached, false, !bool(weak_error)))
+            {
+              ELLE_TRACE("rethrow weak error: {}",
+                         elle::exception_string(weak_error));
+              std::rethrow_exception(weak_error);
+            }
           }
           break;
         }
