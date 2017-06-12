@@ -203,18 +203,23 @@ class Drake:
 
   def notify(self, status, message, start, stop=None):
     '''Notify the user that a run was finished.'''
-    title = '{} ({})'.format(
-      'failed' if status else 'done',
-      duration(start, stop))
+    icon = str(self.path_source / 'logo.png')
+    args = {
+      'title': '{} ({})'.format('failed' if status else 'done',
+                                duration(start, stop)),
+      'icon': icon if _OS.path.exists(icon) else None,
+      'message': message,
+    }
     # For some reason, the some first characters (such as open paren
     # or bracket) must be escaped.  Fortunately, a leading backlash
     # suffices.
     if sys.platform == 'darwin':
+      args['sound'] = 'Basso' if status else 'Glass'
       cmd = ('(terminal-notifier -title "\\{title}" -message "\\{message}"'
-             ' -sound "{sound}"'
-             ') 2>/dev/null')
-      sound = 'Basso' if status else 'Glass'
-      _OS.system(cmd.format(title=title, message=message, sound=sound))
+             + (' -sound "{sound}"')
+             + (' -appIcon "{icon}"' if 'icon' in args else '')
+             + ') 2>/dev/null').format_map(args)
+      _OS.system(cmd)
 
   def run(self, *cfg, **kwcfg):
     start = time.time()
