@@ -1853,10 +1853,8 @@ class Builder:
   def __init__(self, srcs, dsts, create_directories = True):
     """Create a builder.
 
-    srcs -- List of source nodes, or source node if there is
-            only one.
-    dsts -- List of target nodes, or target node if there is
-            only one.
+    srcs -- List of source nodes.
+    dsts -- List of target nodes.
     """
     self.__create_dirs = create_directories
     self.__sources = {}
