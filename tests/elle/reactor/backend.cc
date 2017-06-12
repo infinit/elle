@@ -29,13 +29,13 @@ namespace
     auto&& m = Backend{};
     int i = 0;
     {
-      auto t = m.make_thread("test_die", [&i] { inc(&i); });
+      auto t = m.make_thread("test_die1", [&i] { inc(&i); });
       t->step();
       BOOST_TEST(i == 1);
       BOOST_CHECK(t->status() == Thread::Status::done);
     }
     {
-      auto t = m.make_thread("test_die", [&i] { inc(&i); });
+      auto t = m.make_thread("test_die2", [&i] { inc(&i); });
       t->step();
       BOOST_TEST(i == 2);
       BOOST_CHECK(t->status() == Thread::Status::done);
@@ -91,27 +91,26 @@ namespace
   }
 }
 
+#define BOOST_NAMED_TEST_CASE(Name, Function)   \
+  boost::unit_test::make_test_case(             \
+    Function, Name, __FILE__, __LINE__ )
+
 ELLE_TEST_SUITE()
 {
   boost::unit_test::test_suite* backend = BOOST_TEST_SUITE("Backend");
   boost::unit_test::framework::master_test_suite().add(backend);
-#if defined(REACTOR_CORO_BACKEND_IO)
-# define TEST(Name)                                                     \
-  {                                                                     \
-    backend->add(                                                       \
-      BOOST_TEST_CASE(Name<elle::reactor::backend::coro_io::Backend>),  \
-      0, 10);                                                           \
-  }
-#elif defined(REACTOR_CORO_BACKEND_BOOST_CONTEXT)
-# define TEST(Name)                                                          \
-  {                                                                          \
-    backend->add(                                                            \
-      BOOST_TEST_CASE(Name<elle::reactor::backend::boost_context::Backend>), \
-      0, 10);                                                                \
-  }
+
+#if defined REACTOR_CORO_BACKEND_IO
+  using Backend = elle::reactor::backend::coro_io::Backend;
+#elif defined REACTOR_CORO_BACKEND_BOOST_CONTEXT
+  using Backend = elle::reactor::backend::boost_context::Backend;
 #endif
-  TEST(test_die);
-  TEST(test_deadlock_creation);
-  TEST(test_deadlock_switch);
-  TEST(test_status);
+
+#define TEST(Name)                                                     \
+  backend->add(BOOST_NAMED_TEST_CASE(#Name, test_ ## Name<Backend>), 0, 10)
+
+  TEST(die);
+  TEST(deadlock_creation);
+  TEST(deadlock_switch);
+  TEST(status);
 }
