@@ -109,28 +109,32 @@ namespace elle
       }
 
       template <typename T, typename Version, typename ClientId>
-      bool
-      Client<T, Version, ClientId>::_check_headcount(Quorum const& q,
-                                                     int reached,
-                                                     bool reading,
-                                                     bool raise) const
+      void
+      Client<T, Version, ClientId>::_check_headcount(
+        Quorum const& q,
+        int reached,
+        std::exception_ptr weak_error,
+        bool reading) const
       {
         ELLE_LOG_COMPONENT("athena.paxos.Client");
+        ELLE_TRACE_SCOPE("check headcount");
         ELLE_DEBUG("reached %s peers", reached);
         auto size = signed(q.size());
         if (reached <= (size - (reading ? 1 : 0)) / 2)
         {
-          if (raise)
+          if (weak_error)
+          {
+            ELLE_TRACE("rethrow weak error: {}",
+                       elle::exception_string(weak_error));
+            std::rethrow_exception(weak_error);
+          }
+          else
           {
             ELLE_TRACE("too few peers to reach consensus: {} of {}",
                        reached, size);
             throw TooFewPeers(reached, size);
           }
-          else
-            return false;
         }
-        else
-          return true;
       }
 
       template <typename T, typename Version, typename ClientId>
@@ -194,13 +198,7 @@ namespace elle
               std::string("send proposal"));
             if (previous && previous->confirmed)
               return previous;
-            ELLE_TRACE("check headcount")
-              if (!this->_check_headcount(q, reached, false, !bool(weak_error)))
-              {
-                ELLE_TRACE("rethrow weak error: {}",
-                           elle::exception_string(weak_error));
-                std::rethrow_exception(weak_error);
-              }
+            this->_check_headcount(q, reached, weak_error, false);
             if (previous)
             {
               ELLE_DEBUG("replace value with %s", previous->value);
@@ -275,12 +273,7 @@ namespace elle
               continue;
             }
             else
-              if (!this->_check_headcount(q, reached, false, !bool(weak_error)))
-              {
-                ELLE_TRACE("rethrow weak error: {}",
-                           elle::exception_string(weak_error));
-                std::rethrow_exception(weak_error);
-              }
+              this->_check_headcount(q, reached, weak_error, false);
           }
           ELLE_TRACE("%s: chose %f", this, previous ? previous->value : value);
           ELLE_DEBUG("%s: send confirmation", *this)
@@ -316,12 +309,7 @@ namespace elle
                 }
               },
               std::string("send confirmation"));
-            if (!this->_check_headcount(q, reached, false, !bool(weak_error)))
-            {
-              ELLE_TRACE("rethrow weak error: {}",
-                         elle::exception_string(weak_error));
-              std::rethrow_exception(weak_error);
-            }
+            this->_check_headcount(q, reached, weak_error, false);
           }
           break;
         }
@@ -401,12 +389,7 @@ namespace elle
             }
           },
           std::string("get quorum"));
-        if (!this->_check_headcount(q, reached, true, !bool(weak_error)))
-        {
-          ELLE_TRACE("rethrow weak error: {}",
-                     elle::exception_string(weak_error));
-          std::rethrow_exception(weak_error);
-        }
+        this->_check_headcount(q, reached, weak_error, true);
         if (wrong_quorum &&
             (!res || res->proposal < wrong_quorum->proposal()))
         {
