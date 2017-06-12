@@ -201,16 +201,20 @@ class Drake:
   def adjust_mtime_second(self):
     return self.__adjust_mtime_second
 
-  def notify(self, title, message, start, stop=None):
+  def notify(self, status, message, start, stop=None):
     '''Notify the user that a run was finished.'''
-    title += ' ({})'.format(duration(start, stop))
+    title = '{} ({})'.format(
+      'failed' if status else 'done',
+      duration(start, stop))
     # For some reason, the some first characters (such as open paren
     # or bracket) must be escaped.  Fortunately, a leading backlash
     # suffices.
     if sys.platform == 'darwin':
       cmd = ('(terminal-notifier -title "\\{title}" -message "\\{message}"'
+             ' -sound "{sound}"'
              ') 2>/dev/null')
-      _OS.system(cmd.format(title=title, message=message))
+      sound = 'Basso' if status else 'Glass'
+      _OS.system(cmd.format(title=title, message=message, sound=sound))
 
   def run(self, *cfg, **kwcfg):
     start = time.time()
@@ -293,7 +297,7 @@ class Drake:
           if i == len(args):
             break
     except Exception as e:
-      self.notify('failed', str(e), start)
+      self.notify(1, str(e), start)
       print('%s: %s' % (sys.argv[0], e))
       if 'DRAKE_DEBUG_BACKTRACE' in _OS.environ:
         import traceback
@@ -302,7 +306,7 @@ class Drake:
     except KeyboardInterrupt:
       print('%s: interrupted.' % sys.argv[0])
       exit(1)
-    self.notify('done', ' '.join(args), start)
+    self.notify(0, ' '.join(args), start)
 
 EXPLAIN = 'DRAKE_EXPLAIN' in _OS.environ
 def explain(node, reason):
