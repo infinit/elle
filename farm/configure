@@ -75,7 +75,7 @@ if os_ == 'alpine':
   cxx_config.define('_SYS_SYSMACROS_H')
 
 if os_ == 'alpine' and project == 'Filesystem':
-  extra_args['enable_crash_reporting'] = False
+  extra_args['enable_crash_report'] = False
 
 if %(arch)r == 'arm':
   cxx_toolkit_host =  drake.cxx.GccToolkit()
