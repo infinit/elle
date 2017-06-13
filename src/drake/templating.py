@@ -33,6 +33,7 @@ class Context:
   def __enter__(self):
     self.__previous = Context.current
     Context.current = self
+    return self
 
   def __exit__(self, *args, **kwargs):
     Context.current = self.__previous
