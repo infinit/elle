@@ -624,7 +624,7 @@ namespace elle
             ELLE_TRACE_SCOPE("parsing option %s", Symbol::name());
             ELLE_DUMP("remaining arguments: %s", args);
             for (auto it = next_option(args.begin()); it != args.end();
-                 it = next_option(it))
+                 it = next_option(it + 1))
             {
               // There's a possible explicit argument after `=`.
               auto const eq = it->find('=');
@@ -647,12 +647,11 @@ namespace elle
                 {
                   // `--foo`: no `=`.
                   *it = nothing();
-                  ++it;
-                  if (it != args.end() && !is_option(*it, opts) && *it != nothing())
+                  if (it+1 != args.end() && !is_option(*(it+1), opts) && *(it+1) != nothing())
                   {
+                    ++it;
                     argument_set(*it);
                     *it = nothing();
-                    ++it;
                   }
                   else
                   {
@@ -669,14 +668,7 @@ namespace elle
                   // `--foo=bar`: explicit argument.
                   argument_set(it->substr(eq + 1));
                   *it = nothing();
-                  ++it;
                 }
-              }
-              else
-              {
-                // This is not the option we were looking for.  Skip
-                // it.
-                ++it;
               }
             }
             elle::meta::static_if<std::is_base_of<CLI_Symbol, Symbol>::value>(
