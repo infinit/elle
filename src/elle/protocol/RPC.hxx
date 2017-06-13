@@ -146,7 +146,7 @@ namespace elle
       auto proc = this->_owner._procedures.find(this->_id);
       assert(proc != this->_owner._procedures.end());
       assert(proc->second.second == nullptr);
-      this->_owner._procedures[_id].second =
+      proc->second.second =
         std::make_unique<Procedure<IS, OS, R, Args...>>(
           this->_name, this->_owner, this->_id, f);
     }
@@ -423,26 +423,26 @@ namespace elle
           uint32_t id;
           input >> id;
           ELLE_TRACE_SCOPE("%s: Processing request for %s...", *this, id);
-          auto procedure = this->_procedures.find(id);
+          auto proc = this->_procedures.find(id);
 
           elle::Buffer answer;
           elle::IOStream outs(answer.ostreambuf());
           OS output(outs);
           try
           {
-            if (procedure == this->_procedures.end())
+            if (proc == this->_procedures.end())
               throw Exception(sprintf("call to unknown procedure: %s", id));
-            else if (procedure->second.second == nullptr)
+            else if (proc->second.second == nullptr)
             {
               throw Exception(sprintf("remote call to non-local procedure: %s",
-                                      procedure->second.first));
+                                      proc->second.first));
             }
             else
             {
-              auto const &name = procedure->second.first;
+              auto const &name = proc->second.first;
 
               ELLE_TRACE("%s: remote procedure called: %s", *this, name)
-                procedure->second.second->_call(input, output);
+                proc->second.second->_call(input, output);
               ELLE_TRACE("%s: procedure %s succeeded", *this, name);
             }
           }
@@ -497,26 +497,26 @@ namespace elle
               IS input(ins);
               uint32_t id;
               input >> id;
-              auto procedure = this->_procedures.find(id);
+              auto proc = this->_procedures.find(id);
 
               elle::Buffer answer;
               elle::IOStream outs(answer.ostreambuf());
               OS output(outs);
               try
               {
-                if (procedure == _procedures.end())
+                if (proc == _procedures.end())
                   throw Exception(sprintf("call to unknown procedure: %s", id));
-                else if (procedure->second.second == nullptr)
+                else if (proc->second.second == nullptr)
                 {
                   throw Exception(sprintf("remote call to non-local procedure: %s",
-                                          procedure->second.first));
+                                          proc->second.first));
                 }
                 else
                 {
-                  auto const &name = procedure->second.first;
+                  auto const &name = proc->second.first;
 
                   ELLE_TRACE("%s: remote procedure called: %s", *this, name)
-                    procedure->second.second->_call(input, output);
+                    proc->second.second->_call(input, output);
                   ELLE_TRACE("%s: procedure %s succeeded", *this, name);
                 }
               }
