@@ -3399,7 +3399,7 @@ class EmptyBuilder(Builder):
 
     """Builder which execution does nothing.
 
-    Usefull to create dependencies between nodes.
+    Useful to create dependencies between nodes.
     """
 
     def execute(self):

@@ -62,10 +62,8 @@ class Git(VirtualNode):
 
     def __cmd(self, args, raw = False):
         cmd = ['git', '-C', str(self.__path)] + args
-        p = subprocess.run(cmd, stdout = subprocess.PIPE, stderr = subprocess.PIPE)
-        if p.returncode:
-            raise Exception('failed: {}: {}'.format(' '.join(cmd), p.stderr))
-        return p.stdout if raw else p.stdout.decode('utf-8').strip()
+        stdout = subprocess.check_output(cmd)
+        return stdout if raw else stdout.decode('utf-8').strip()
 
     def ls_files(self, *paths):
         """Run git ls-files and return the list of Paths.
