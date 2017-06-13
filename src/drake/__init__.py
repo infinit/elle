@@ -750,7 +750,7 @@ class Path:
     return id(self)
 
   def exists(self):
-      """Whether the designed file or directory exists.
+      """Whether the designated file or directory exists.
 
       >>> p = Path('/tmp/.drake.foo')
       >>> p.touch()
@@ -766,11 +766,11 @@ class Path:
 
   @property
   def executable(self):
-      """Whether the designed file is executable by the user."""
+      """Whether the designated file is executable by the user."""
       return _OS.access(str(self), _OS.X_OK)
 
   def is_file(self):
-      """Whether the designed file exists and is a regular file.
+      """Whether the designated file exists and is a regular file.
 
       >>> p = Path('/tmp/.drake.foo')
       >>> p.touch()
@@ -825,7 +825,7 @@ class Path:
                   volume = self.__volume)
 
   def touch(self):
-      """Create the designed file if it does not exists.
+      """Create the designated file if it does not exists.
 
       Creates the parent directories if needed first.
 
@@ -853,7 +853,7 @@ class Path:
           pass
 
   def mkpath(self):
-      """Create the designed directory.
+      """Create the designated directory.
 
       Creates the parent directories if needed first.
 
@@ -1911,7 +1911,9 @@ class Builder:
     """Run a shell command.
 
     pretty  -- A pretty version for output.
-    command -- The command.
+    cmd -- The command.  Either a string, a list (which denotes
+           a single command with multiple argvs), or a tuple,
+           in which case each item is run as a distinct command).
     throw -- Whether to throw on error rather than returning False.
     cut_stderr -- Whether to send stderr to /dev/null.
 
