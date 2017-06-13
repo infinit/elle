@@ -2,6 +2,8 @@
 
 #include <numeric>
 
+#include <boost/range/numeric.hpp> // boost::accumulate
+
 #include <elle/Exception.hh>
 #include <elle/printf.hh>
 #include <elle/test.hh>
@@ -150,8 +152,8 @@ namespace conversions
     using elle::das::cli::call;
     auto const f = [] (std::vector<std::string> const& strings)
       {
-        return std::accumulate(
-          strings.begin(), strings.end(), std::string(""),
+        return boost::accumulate(
+          strings, std::string(""),
           [] (std::string const& a, std::string const& b)
           { return a + "-" + b; });
       };
@@ -314,15 +316,13 @@ namespace short_options_ct
   void
   compile_time()
   {
+    using elle::das::cli::call;
     auto const f =
       [] (int foo, int bar) { return foo + bar; };
     auto const proto = elle::das::named::prototype(foo, bar);
-    BOOST_CHECK_EQUAL(
-      elle::das::cli::call(proto, f, {"--foo", "1", "-b", "2"}), 3);
-    BOOST_CHECK_EQUAL(
-      elle::das::cli::call(proto, f, {"-f", "3", "--bar", "4"}), 7);
-    BOOST_CHECK_EQUAL(
-      elle::das::cli::call(proto, f, {"-f", "5", "-b", "6"}), 11);
+    BOOST_CHECK_EQUAL(call(proto, f, {"--foo", "1", "-b", "2"}), 3);
+    BOOST_CHECK_EQUAL(call(proto, f, {"-f", "3", "--bar", "4"}), 7);
+    BOOST_CHECK_EQUAL(call(proto, f, {"-f", "5", "-b", "6"}), 11);
   }
 }
 
@@ -332,6 +332,7 @@ namespace short_options_rt
   void
   run_time()
   {
+    using elle::das::cli::call;
     auto const f =
       [] (int foo, int bar) { return foo + bar; };
     auto const proto = elle::das::named::prototype(foo, bar);
@@ -340,12 +341,9 @@ namespace short_options_rt
         {"foo", {'f', ""}},
         {"bar", {'b', ""}},
       };
-      BOOST_CHECK_EQUAL(
-        elle::das::cli::call(proto, f, {"--foo", "1", "-b", "2"}, opts), 3);
-      BOOST_CHECK_EQUAL(
-        elle::das::cli::call(proto, f, {"-f", "3", "--bar", "4"}, opts), 7);
-      BOOST_CHECK_EQUAL(
-        elle::das::cli::call(proto, f, {"-f", "5", "-b", "6"}, opts), 11);
+      BOOST_CHECK_EQUAL(call(proto, f, {"--foo", "1", "-b", "2"}, opts), 3);
+      BOOST_CHECK_EQUAL(call(proto, f, {"-f", "3", "--bar", "4"}, opts), 7);
+      BOOST_CHECK_EQUAL(call(proto, f, {"-f", "5", "-b", "6"}, opts), 11);
     }
   }
 }
@@ -360,34 +358,30 @@ namespace positional_ct
   void
   compile_time()
   {
+    using elle::das::cli::call;
     auto const f =
       [] (int foo, int bar) { return foo + bar; };
     {
       auto const proto = elle::das::named::prototype(foo, bar);
-      BOOST_CHECK_EQUAL(
-        elle::das::cli::call(proto, f, {"-f", "1", "-b", "2"}), 3);
-      BOOST_CHECK_EQUAL(
-        elle::das::cli::call(proto, f, {"-f", "3", "4"}), 7);
-      BOOST_CHECK_EQUAL(
-        elle::das::cli::call(proto, f, {"6", "-f", "5"}), 11);
+      BOOST_TEST(call(proto, f, {"-f", "1", "-b", "2"}) == 3);
+      BOOST_TEST(call(proto, f, {"-f", "3", "4"}) == 7);
+      BOOST_TEST(call(proto, f, {"6", "-f", "5"}) == 11);
     }
     {
       auto const proto = elle::das::named::prototype(foo = 1, bar = 2);
-      BOOST_CHECK_EQUAL(elle::das::cli::call(proto, f, {"247"}), 248);
+      BOOST_TEST(call(proto, f, {"247"}) == 248);
     }
     {
       auto const f =
         [] (std::vector<int> const& ints)
         {
-          return std::accumulate(ints.begin(), ints.end(), 0);
+          return boost::accumulate(ints, 0);
         };
       auto const proto = elle::das::named::prototype(bar);
-      BOOST_CHECK_EQUAL(
-        elle::das::cli::call(proto, f, {"1", "2", "3"}), 6);
-      CHECK_THROW(
-        elle::das::cli::call(proto, f, {"-b", "1", "2", "3"}),
-        elle::das::cli::UnrecognizedValue,
-        "extra unrecognized argument: 2");
+      BOOST_TEST(call(proto, f, {"1", "2", "3"}) == 6);
+      CHECK_THROW(call(proto, f, {"-b", "1", "2", "3"}),
+                  elle::das::cli::UnrecognizedValue,
+                  "extra unrecognized argument: 2");
     }
     {
       auto const f = elle::das::named::function(
@@ -395,11 +389,9 @@ namespace positional_ct
         {
           return b - q;
         }, bar, quux);
-      BOOST_CHECK_EQUAL(
-        elle::das::cli::call(f, {"-b", "1", "-q", "2"}), -1);
+      BOOST_TEST(call(f, {"-b", "1", "-q", "2"}) == -1);
       // Not handled yet.
-      // BOOST_CHECK_EQUAL(
-      //   elle::das::cli::call(f, {"1", "2"}), -1);
+      // BOOST_CHECK_EQUAL(call(f, {"1", "2"}), -1);
     }
   }
 }
@@ -410,6 +402,7 @@ namespace positional_rt
   void
   run_time()
   {
+    using elle::das::cli::call;
     auto const f =
       [] (int foo, int bar) { return foo + bar; };
     elle::das::cli::Options opts = {
@@ -418,30 +411,25 @@ namespace positional_rt
     };
     {
       auto const proto = elle::das::named::prototype(foo, bar);
-      BOOST_CHECK_EQUAL(
-        elle::das::cli::call(proto, f, {"-f", "1", "-b", "2"}, opts), 3);
-      BOOST_CHECK_EQUAL(
-        elle::das::cli::call(proto, f, {"-f", "3", "4"}, opts), 7);
-      BOOST_CHECK_EQUAL(
-        elle::das::cli::call(proto, f, {"6", "-f", "5"}, opts), 11);
+      BOOST_CHECK_EQUAL(call(proto, f, {"-f", "1", "-b", "2"}, opts), 3);
+      BOOST_CHECK_EQUAL(call(proto, f, {"-f", "3", "4"}, opts), 7);
+      BOOST_CHECK_EQUAL(call(proto, f, {"6", "-f", "5"}, opts), 11);
     }
     {
       auto const proto = elle::das::named::prototype(foo = 1, bar = 2);
-      BOOST_CHECK_EQUAL(elle::das::cli::call(proto, f, {"247"}, opts), 248);
+      BOOST_CHECK_EQUAL(call(proto, f, {"247"}, opts), 248);
     }
     {
       auto const f =
         [] (std::vector<int> const& ints)
         {
-          return std::accumulate(ints.begin(), ints.end(), 0);
+          return boost::accumulate(ints, 0);
         };
       auto const proto = elle::das::named::prototype(bar);
-      BOOST_CHECK_EQUAL(
-        elle::das::cli::call(proto, f, {"1", "2", "3"}, opts), 6);
-      CHECK_THROW(
-        elle::das::cli::call(proto, f, {"-b", "1", "2", "3"}, opts),
-        elle::das::cli::UnrecognizedValue,
-        "extra unrecognized argument: 2");
+      BOOST_CHECK_EQUAL(call(proto, f, {"1", "2", "3"}, opts), 6);
+      CHECK_THROW(call(proto, f, {"-b", "1", "2", "3"}, opts),
+                  elle::das::cli::UnrecognizedValue,
+                  "extra unrecognized argument: 2");
     }
   }
 }
@@ -450,10 +438,10 @@ static
 void
 serialization()
 {
+  using elle::das::cli::call;
   auto const f = [] (elle::Version v) { return v; };
   auto const proto = elle::das::named::prototype(foo);
-    BOOST_CHECK_EQUAL(
-      elle::das::cli::call(proto, f, {"--foo", "0.1.2"}),
+    BOOST_CHECK_EQUAL(call(proto, f, {"--foo", "0.1.2"}),
       elle::Version(0, 1, 2));
 }
 
