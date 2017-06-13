@@ -146,9 +146,9 @@ namespace elle
       auto proc = this->_owner._procedures.find(this->_id);
       assert(proc != this->_owner._procedures.end());
       assert(proc->second.second == nullptr);
-      this->_owner._procedures[_id].second.reset(
-        new Procedure<IS, OS, R, Args...>(
-          this->_name, this->_owner, this->_id, f));
+      this->_owner._procedures[_id].second =
+        std::make_unique<Procedure<IS, OS, R, Args...>>(
+          this->_name, this->_owner, this->_id, f);
     }
 
 
@@ -329,8 +329,8 @@ namespace elle
     {
       uint32_t id = this->_id++;
       using Proc = Procedure<IS, OS, R, Args...>;
-      this->_procedures[id] = std::unique_ptr<Proc>(new Proc(*this, id, f));
-      return RemoteProcedure<R, Args...>(*this, id);
+      this->_procedures[id] = std::make_unique<Proc>(*this, id, f);
+      return {*this, id};
     }
 
     template <typename IS,
@@ -342,7 +342,7 @@ namespace elle
     {
       uint32_t id = this->_id++;
       this->_procedures[id] = NamedProcedure(name, nullptr);
-      return RemoteProcedure<R, Args...>(name, *this, id);
+      return {name, *this, id};
     }
 
     template <typename IS,

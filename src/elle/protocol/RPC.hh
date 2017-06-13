@@ -85,16 +85,15 @@ namespace elle
     {
     public:
       BaseRPC(ChanneledStream& channels);
-      /** Run forever until one of the following:
-      *   - Connection gets closed
-      *   - Thread gets terminated
-      *   - handler throws a LastMessageException.
-      *
-      *   @param handler gets fed with any exception thrown by a RPC procedure.
-      *          handler can throw an exception, in which case that exception gets
-      *          used in place of the one thrown by RPC procedure as base for
-      *          the error reply.
-      */
+      /// Run forever until one of the following:
+      /// - Connection gets closed
+      /// - Thread gets terminated
+      /// - handler throws a LastMessageException.
+      ///
+      /// @param handler gets fed with any exception thrown by a RPC procedure.
+      ///        handler can throw an exception, in which case that exception gets
+      ///        used in place of the one thrown by RPC procedure as base for
+      ///        the error reply.
       virtual
       void
       run(ExceptionHandler handler = {}) = 0;
