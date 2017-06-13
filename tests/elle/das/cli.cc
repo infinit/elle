@@ -61,6 +61,13 @@ basics()
     cli::call(proto, f, {"--foo", "bar"}),
     cli::MissingOption,
     "missing option: --baz");
+  // Regression: at some point our algorithm could first look for
+  // --baz and its argument, leaving --foo and foo together.  We don't
+  // want to support that.
+  CHECK_THROW(
+    cli::call(proto, f, {"--foo", "--baz", "baz", "foo"}),
+    cli::ValuelessOption,
+    "option requires an argument: --foo");
   CHECK_THROW(
     cli::call(proto, f, {"--foo", "bar", "--baz", "quux", "--foo", "foo"}),
     cli::DuplicateOption,

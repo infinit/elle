@@ -7,6 +7,7 @@
 #include <vector>
 
 #include <boost/optional.hpp>
+#include <boost/range/algorithm/find_if.hpp>
 
 #include <elle/Defaulted.hh>
 #include <elle/Error.hh>
@@ -233,7 +234,7 @@ namespace elle
               return false;
           }
 
-          operator bool()
+          operator bool() const
           {
             return this->_option;
           }
@@ -254,6 +255,16 @@ namespace elle
 
       namespace _details
       {
+        /// A unique "impossible" string that will replace parsed
+        /// arguments.
+        static inline std::string const&
+        nothing()
+        {
+          // Quite unlikely with ten \0 characters, but ok in the logs.
+          static auto const res = std::string("NOTHING") + std::string(10, 0);
+          return res;
+        }
+
         /// Type of default values for flags that don't have a default value.
         struct NoDefault
         {
@@ -442,14 +453,22 @@ namespace elle
               if (this->_positional)
               {
                 auto it = this->_args.begin();
-                while (it != this->_args.end() && is_option(*it))
+                while (it != this->_args.end())
                 {
-                  // Skip option and possibly argument.
-                  ++it;
-                  if (it != this->_args.end())
+                  // Skip option and possible argument.
+                  if (is_option(*it))
+                  {
                     ++it;
+                    if (it != this->_args.end() && *it != nothing())
+                      ++it;
+                  }
+                  else if (*it == nothing())
+                    ++it;
+                  else
+                    // A genuine argument.
+                    break;
                 }
-                if (it != this->_args.end())
+                if (it != this->_args.end() && *it != nothing())
                 {
                   ELLE_TRACE("use next positional value: %s", *it);
                   this->_values.emplace_back(std::move(*it));
@@ -463,7 +482,8 @@ namespace elle
             }
             if (this->_values.size() > 1)
               throw DuplicateOption(this->_option);
-            return convert<I>(this->_values[0], 0);
+            else
+              return convert<I>(this->_values[0], 0);
           }
 
           template <typename I>
@@ -523,13 +543,22 @@ namespace elle
           {
             ELLE_DUMP("%s: checking what remains: %s and %s",
                       this, this->_remaining, this->_args);
-            if (!--this->_remaining && !this->_args.empty())
+            if (!--this->_remaining)
             {
-              auto const& arg = *this->_args.begin();
-              if (is_option(arg))
-                throw UnknownOption(strip_dashes(arg));
-              else
-                throw UnrecognizedValue(arg);
+              // This was the last option to be parsed.  Check that
+              // there's nothing left to parse.
+              auto it = boost::find_if(this->_args,
+                                       [](auto const& arg)
+                                       {
+                                         return arg != nothing();
+                                       });
+              if (it != this->_args.end())
+              {
+                if (is_option(*it))
+                  throw UnknownOption(strip_dashes(*it));
+                else
+                  throw UnrecognizedValue(*it);
+              }
             }
           }
 
@@ -565,6 +594,7 @@ namespace elle
           ELLE_ATTRIBUTE_R(bool, set);
         };
 
+        /// Invoked once for each Formal type.
         template <typename Formal>
         struct parse_arg
         {
@@ -572,6 +602,8 @@ namespace elle
           using Default
             = typename named::DefaultStore<Formal>::template default_for<Formal>;
           using Symbol = named::make_formal<Formal>;
+
+          /// Invoked once for each Formal type.
           static inline
           auto
           value(Default const& d,
@@ -614,11 +646,13 @@ namespace elle
                 if (eq == it->npos)
                 {
                   // `--foo`: no `=`.
-                  it = args.erase(it);
-                  if (it != args.end() && !is_option(*it, opts))
+                  *it = nothing();
+                  ++it;
+                  if (it != args.end() && !is_option(*it, opts) && *it != nothing())
                   {
                     argument_set(*it);
-                    it = args.erase(it);
+                    *it = nothing();
+                    ++it;
                   }
                   else
                   {
@@ -634,15 +668,15 @@ namespace elle
                 {
                   // `--foo=bar`: explicit argument.
                   argument_set(it->substr(eq + 1));
-                  it = args.erase(it);
+                  *it = nothing();
+                  ++it;
                 }
               }
               else
               {
-                // Skip option and potential argument
+                // This is not the option we were looking for.  Skip
+                // it.
                 ++it;
-                if (it != args.end() && !is_option(*it, opts))
-                  ++it;
               }
             }
             elle::meta::static_if<std::is_base_of<CLI_Symbol, Symbol>::value>(
