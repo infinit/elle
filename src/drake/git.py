@@ -90,6 +90,15 @@ class Git(VirtualNode):
         cmd += [revision]
         return self.run(cmd)
 
+    def can_commit(self):
+        '''Whether there is something ready to commit.'''
+        try:
+            self.run(['diff', '--cached', '--quiet'])
+        except subprocess.CalledProcessError:
+            return True
+        else:
+            return False
+
     @lru_cache(16)
     def author_date(self):
         """The author date, as given by git %ai format."""
