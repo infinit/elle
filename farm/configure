@@ -174,14 +174,15 @@ elif options.os == 'windows':
 else:
   raise Exception('invalid OS: %s' % options.os)
 
-with open('%s/.drake.tmp' % options.build_dir, 'w') as drake:
+build_dir = options.build_dir
+os.makedirs(build_dir, exist_ok = True)
+
+with open('%s/.drake.tmp' % build_dir, 'w') as drake:
   parameters['source_dir'] = os.path.realpath(options.source_dir)
   parameters['install_dir'] = os.path.realpath(options.install_dir)
   content = template % parameters
   print(content, file = drake)
 
-build_dir = options.build_dir
-os.makedirs(build_dir, exist_ok = True)
 tmp = '%s/.drake.tmp' % build_dir
 drake = '%s/drake' % build_dir
 subprocess.call(['diff', '-u', drake if os.path.isfile(drake) else '/dev/null', tmp])
