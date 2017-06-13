@@ -4,7 +4,6 @@
 #include <memory>
 #include <unordered_map>
 
-#include <boost/function.hpp>
 #include <boost/noncopyable.hpp>
 
 #include <elle/Printable.hh>
@@ -57,7 +56,7 @@ namespace elle
     {
     public:
       using Owner = RPC<ISerializer, OSerializer>;
-      using Function = boost::function<R (Args...)>;
+      using Function = std::function<R (Args...)>;
 
     public:
       virtual
@@ -74,7 +73,7 @@ namespace elle
       Procedure(std::string const& name,
                 RPC<ISerializer, OSerializer>& owner,
                 uint32_t id,
-                boost::function<R (Args...)> const& f);
+                std::function<R (Args...)> const& f);
 
     private:
       ELLE_ATTRIBUTE(uint32_t, id);
@@ -129,7 +128,7 @@ namespace elle
         RemoteProcedure(std::string const& name,
                         RPC<ISerializer, OSerializer>& owner);
         R operator() (Args ...);
-        void operator = (boost::function<R (Args...)> const& implem);
+        void operator = (std::function<R (Args...)> const& implem);
         template <typename I, typename O>
         friend class RPC;
         RemoteProcedure(std::string const& name,
@@ -150,7 +149,7 @@ namespace elle
 
       template <typename R, typename ... Args>
       RemoteProcedure<R, Args...>
-      add(boost::function<R (Args...)> const& f);
+      add(std::function<R (Args...)> const& f);
 
       void
       add(BaseRPC& rpc);

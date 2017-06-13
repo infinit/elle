@@ -49,7 +49,7 @@ namespace elle
     Procedure (std::string const& name,
                RPC<IS, OS>& owner,
                uint32_t id,
-               boost::function<R (Args...)> const& f)
+               std::function<R (Args...)> const& f)
       : BaseProcedure<IS, OS>(name)
       , _id(id)
       , _owner(owner)
@@ -141,7 +141,7 @@ namespace elle
               typename ... Args>
     void
     RPC<IS, OS>::RemoteProcedure<R, Args ...>::
-    operator = (boost::function<R (Args...)> const& f)
+    operator = (std::function<R (Args...)> const& f)
     {
       auto proc = this->_owner._procedures.find(this->_id);
       assert(proc != this->_owner._procedures.end());
@@ -273,7 +273,7 @@ namespace elle
         void
         call(IS& in,
              OS& out,
-             boost::function<R (Args...)> const& f)
+             std::function<R (Args...)> const& f)
         {
           R res(Call<IS, R, Args...>::template call<>(in, f));
           out << true;
@@ -290,7 +290,7 @@ namespace elle
         void
         call(IS& in,
              OS& out,
-             boost::function<void (Args...)> const& f)
+             std::function<void (Args...)> const& f)
         {
           Call<IS, void, Args...>::template call<>(in, f);
           out << true;
@@ -325,7 +325,7 @@ namespace elle
     template <typename R,
               typename ... Args>
     RPC<IS, OS>::RemoteProcedure<R, Args...>
-    RPC<IS, OS>::add(boost::function<R (Args...)> const& f)
+    RPC<IS, OS>::add(std::function<R (Args...)> const& f)
     {
       uint32_t id = this->_id++;
       using Proc = Procedure<IS, OS, R, Args...>;
