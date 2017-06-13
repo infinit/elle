@@ -53,6 +53,10 @@ class Git(VirtualNode):
         self.__name = drake.path_build(path)
         super().__init__(self.__name / 'git')
 
+    def path(self):
+        '''The location of the Git repo.'''
+        return self.__path
+
     def run(self, args, raw = False):
         return self.__cmd(args, raw)
 
