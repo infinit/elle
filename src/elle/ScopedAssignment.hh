@@ -1,11 +1,10 @@
-#ifndef ELLE_SCOPED_ASSIGNMENT_HH
-# define ELLE_SCOPED_ASSIGNMENT_HH
+#pragma once
 
 namespace elle
 {
   /// Set a value and reset it at the end if the scope.
   ///
-  /// \code{.cc}
+  /// @code{.cc}
   ///
   /// void
   /// foo()
@@ -19,7 +18,7 @@ namespace elle
   ///   assert(i == 3);
   /// }
   ///
-  /// \endcode
+  /// @endcode
   template <typename T, typename U>
   struct ScopedAssignment
   {
@@ -33,6 +32,7 @@ namespace elle
     {
       var = std::move(value);
     }
+
     /// Construct a ScopedAssignment from a moved ScopedAssignment.
     ///
     /// N.B. The variable stored by the given ScopedAssignment is lost.
@@ -42,6 +42,7 @@ namespace elle
     {
       assignment._var = nullptr;
     }
+
     /// Destroy a ScopedAssignment, restoring the variable to its original
     /// value.
     ~ScopedAssignment()
@@ -62,12 +63,9 @@ namespace elle
   };
 
   template <typename T, typename U>
-  inline
   ScopedAssignment<T, U>
   scoped_assignment(T& var, U value)
   {
     return ScopedAssignment<T, U>(var, std::move(value));
   }
 }
-
-#endif
