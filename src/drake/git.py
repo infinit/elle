@@ -87,7 +87,7 @@ class Git(VirtualNode):
         cmd = ['rev-parse']
         if short:
             cmd += ['--short']
-            cmd += [revision]
+        cmd += [revision]
         return self.run(cmd)
 
     @lru_cache(16)
