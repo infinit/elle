@@ -1,4 +1,4 @@
-# Copyright (C) 2009-2016, Quentin "mefyl" Hocquet
+# Copyright (C) 2009-2017, Quentin "mefyl" Hocquet
 #
 # This software is provided "as is" without warranty of any kind,
 # either expressed or implied, including but not limited to the
@@ -8,6 +8,7 @@
 
 from datetime import date
 import drake
+from functools import lru_cache
 import os
 import subprocess
 from . import VirtualNode, Path
@@ -50,12 +51,7 @@ class Git(VirtualNode):
             path = '.'
         self.__path = drake.path_source(path)
         self.__name = drake.path_build(path)
-        VirtualNode.__init__(self, self.__name / 'git')
-        self.__author_date = None
-        self.__revision    = None
-        self.__description = None
-        self.__version     = None
-        self.__message     = None
+        super().__init__(self.__name / 'git')
 
     def run(self, args, raw = False):
         return self.__cmd(args, raw)
@@ -79,51 +75,43 @@ class Git(VirtualNode):
         return list(map(drake.Path, out))
 
     def hash(self):
-      import hashlib
-      hasher = hashlib.sha1()
-      hasher.update(self.__cmd(['rev-parse', 'HEAD'], raw = 1))
-      hasher.update(self.version().encode('utf-8'))
-      return hasher.hexdigest()
+        import hashlib
+        hasher = hashlib.sha1()
+        hasher.update(self.rev_parse().encode('utf-8'))
+        hasher.update(self.version().encode('utf-8'))
+        return hasher.hexdigest()
 
     def rev_parse(self, revision = 'HEAD', short = False):
-      cmd = ['rev-parse']
-      if short:
-        cmd += ['--short']
-      cmd += [revision]
-      return self.__cmd(cmd)
+        cmd = ['rev-parse']
+        if short:
+            cmd += ['--short']
+            cmd += [revision]
+        return self.run(cmd)
 
+    @lru_cache(16)
     def author_date(self):
         """The author date, as given by git %ai format."""
-        if self.__author_date is None:
-            self.__author_date = self.__cmd(
-                ['log', '--pretty=format:%ai', '-n', '1'])
-        return self.__author_date
+        return self.run(['log', '--pretty=format:%ai', '-n', '1'])
 
+    @lru_cache(16)
     def description(self):
         """The git describe output."""
-        if self.__description is None:
-            self.__description = self.__cmd(['describe'])
-        return self.__description
+        return self.run(['describe'])
 
+    @lru_cache(16)
     def version(self):
         """The git describe --long output."""
-        if self.__version is None:
-            self.__version = self.__cmd(['describe', '--long'])
-        return self.__version
+        return self.run(['describe', '--long'])
 
+    @lru_cache(16)
     def revision(self):
         """The revision short sha1."""
-        if self.__revision is None:
-            self.__revision = self.__cmd(
-                [ 'log', '--pretty=format:%h', '-n', '1'])
-        return self.__revision
+        return self.run([ 'log', '--pretty=format:%h', '-n', '1'])
 
+    @lru_cache(16)
     def message(self):
         """The commit message."""
-        if self.__message is None:
-            self.__message = self.__cmd(
-                ['log', '--pretty=format:%s', '-n', '1'])
-        return self.__message
+        return self.run(['log', '--pretty=format:%s', '-n', '1'])
 
     def __iter__(self):
 
