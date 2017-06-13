@@ -120,9 +120,8 @@ namespace elle
           {
 #ifdef VALGRIND
             this->_valgrind_stack =
-              VALGRIND_STACK_REGISTER(
-                reinterpret_cast<char*>(this->_stack_pointer) - this->_stack_size,
-                this->_stack_pointer);
+              VALGRIND_STACK_REGISTER(this->_base_pointer(),
+                                      this->_stack_pointer);
 #endif
           }
 
@@ -152,6 +151,13 @@ namespace elle
             ELLE_ASSERT(this->_context);
           }
 
+          /// The bottom of the stack.
+          void* _base_pointer() const
+          {
+            return static_cast<char*>(this->_stack_pointer) - this->_stack_size;
+          }
+
+          /// Pass the execution from @from to @to.
           void _jump(Thread* from, Thread* to)
           {
             jump_fcontext(&from->_context, to->_context,
