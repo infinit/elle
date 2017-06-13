@@ -91,10 +91,6 @@ namespace
   }
 }
 
-#define BOOST_NAMED_TEST_CASE(Name, Function)   \
-  boost::unit_test::make_test_case(             \
-    Function, Name, __FILE__, __LINE__ )
-
 ELLE_TEST_SUITE()
 {
   boost::unit_test::test_suite* backend = BOOST_TEST_SUITE("Backend");
@@ -107,7 +103,7 @@ ELLE_TEST_SUITE()
 #endif
 
 #define TEST(Name)                                                     \
-  backend->add(BOOST_NAMED_TEST_CASE(#Name, test_ ## Name<Backend>), 0, 10)
+  backend->add(ELLE_TEST_CASE(test_ ## Name<Backend>, #Name), 0, 10)
 
   TEST(die);
   TEST(deadlock_creation);
