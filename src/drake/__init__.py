@@ -1740,9 +1740,11 @@ def node(path, type = None):
     the path as argument.
   * If the path as a known extension, a node of the associated type
     is constructed with the path as argument.
+  * If the path is virtual (e.g., //foo on Unix) a simple VirtualNode
+    with that path is constructed.
   * A simple Node with that path is constructed.
   """
-  if path.__class__ is not Path:
+  if not isinstance(path, Path):
     path = Path(path)
   d = Drake.current
   res = d.nodes.get(drake.path_build() / path, None)
@@ -1759,6 +1761,8 @@ def node(path, type = None):
         last_extension_type = Node.extensions.get(last_extension, None)
         if last_extension_type is not None:
           res = last_extension_type(path)
+        elif path.virtual:
+          res = VirtualNode(path)
         else:
           res = Node(path)
   return res
