@@ -15,6 +15,7 @@
 #include <elle/find.hh>
 #include <elle/log.hh>
 #include <elle/make-vector.hh>
+#include <elle/range.hh>
 #include <elle/serialization/json.hh>
 
 #include <elle/das/named.hh>
@@ -452,9 +453,11 @@ namespace elle
             {
               if (this->_positional)
               {
+                ELLE_DEBUG("looking for positional arguments");
                 auto it = this->_args.begin();
                 while (it != this->_args.end())
                 {
+                  ELLE_DUMP("evaluating %s", *it);
                   // Skip option and possible argument.
                   if (is_option(*it))
                   {
@@ -510,7 +513,21 @@ namespace elle
             ELLE_TRACE_SCOPE(
               "convert %s to %s", this->_option, elle::type_info(std::vector<T>{}));
             if (this->_values.empty() && this->_positional)
-              this->_values = std::move(this->_args);
+            {
+              // Take the first contiguous sequence of arguments.
+              auto const begin = boost::find_if(this->_args,
+                                                [] (auto const& a)
+                                                {
+                                                  return a != nothing();
+                                                });
+              auto const end = std::find(begin, this->_args.end(), nothing());
+              this->_values.insert(
+                std::end(this->_values),
+                std::make_move_iterator(begin),
+                std::make_move_iterator(end));
+              for (auto& s: as_range(begin, end))
+                s = nothing();
+            }
             this->_check_remaining();
             return elle::make_vector(this->_values,
                                      [&] (std::string const& v)
