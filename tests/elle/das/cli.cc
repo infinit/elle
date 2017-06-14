@@ -8,6 +8,8 @@
 #include <elle/printf.hh>
 #include <elle/test.hh>
 
+ELLE_LOG_COMPONENT("tests.das.cli");
+
 ELLE_DAS_SYMBOL(foo);
 ELLE_DAS_SYMBOL(bar);
 ELLE_DAS_SYMBOL(baz);
@@ -78,9 +80,10 @@ namespace conversions
 {
   template <typename I>
   void
-  check(std::string too_big, std::string too_little)
+  check(std::string const& too_little, std::string const& too_big)
   {
     using elle::das::cli::call;
+    ELLE_LOG("check %s: %s - %s", typeid(I), too_little, too_big);
     auto constexpr max = std::numeric_limits<I>::max();
     auto constexpr min = std::numeric_limits<I>::min();
     auto const proto = elle::das::named::prototype(foo);
@@ -104,13 +107,13 @@ namespace conversions
   void
   check()
   {
+    static_assert(std::is_integral<I>::value, "");
+    using Min = int64_t;
+    auto constexpr min = Min{std::numeric_limits<I>::min()};
     using Max = std::conditional_t<std::is_signed<I>::value,
                                    int64_t, uint64_t>;
-    using Min = int64_t;
-    static_assert(std::is_integral<I>::value, "");
     auto constexpr max = Max{std::numeric_limits<I>::max()};
-    auto constexpr min = Min{std::numeric_limits<I>::min()};
-    check<I>(std::to_string(max + 1), std::to_string(min - 1));
+    check<I>(std::to_string(min - 1), std::to_string(max + 1));
   }
 
   static
@@ -120,11 +123,11 @@ namespace conversions
     check<int8_t>();
     check<int16_t>();
     check<int32_t>();
-    check<int64_t>("9223372036854775808", "-9223372036854775809");
+    check<int64_t>("-9223372036854775809", "9223372036854775808");
     check<uint8_t>();
     check<uint16_t>();
     check<uint32_t>();
-    check<uint64_t>("18446744073709551616", "-1");
+    check<uint64_t>("-1", "18446744073709551616");
     {
       auto const proto = elle::das::named::prototype(foo);
       {
