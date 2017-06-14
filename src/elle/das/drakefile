@@ -32,6 +32,7 @@ def configure(cxx_toolkit,
   rule_build = drake.Rule('build')
   config = drake.cxx.Config(elle.config)
   local_config = drake.cxx.Config(config) + cxx_config
+  local_config.enable_debug_symbols()
   local_config.warnings.parentheses = False
   lib_path = '../../../lib'
 

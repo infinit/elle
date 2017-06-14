@@ -597,7 +597,6 @@ def configure(zlib_lib,
   config_tests.add_local_include_path(drake.Path('../../tests'))
   config_tests.enable_debug_symbols()
   test_libs = [library, zlib_lib, libarchive_lib]
-  config_tests.enable_debug_symbols()
   config_tests += boost.config_test(
     static = not boost.prefer_shared or None,
     link = not boost.prefer_shared)
