@@ -1,3 +1,6 @@
+#include <boost/range/adaptor/sliced.hpp>
+#include <boost/range/irange.hpp>
+
 #include <elle/serialization/binary.hh>
 #include <elle/serialization/json.hh>
 #include <elle/test.hh>
@@ -12,6 +15,9 @@
 ELLE_LOG_COMPONENT("elle.athena.paxos.test");
 
 namespace paxos = elle::athena::paxos;
+
+using boost::adaptors::sliced;
+using boost::irange;
 
 namespace std
 {
@@ -1044,6 +1050,42 @@ ELLE_TEST_SCHEDULED(non_partial_state)
   };
 }
 
+using Server = paxos::Server<int, int, int>;
+using Client = paxos::Client<int, int, int>;
+using Peers = Client::Peers;
+
+template <typename Servers>
+Client
+make_client(int id, Servers&& servers)
+{
+  auto peers = Peers();
+  for (auto& s: servers)
+    peers.emplace_back(new Peer<int, int, int>(s.id(), s));
+  return Client(id, std::move(peers));
+}
+
+// Proposing on a wrong quorum used to commit the previous value - thus emptying
+// the state - and then throw a WrongQuorum error, leaving an empty state which
+// is intepreted as no value ever having been pushed.
+ELLE_TEST_SCHEDULED(propose_wrong_quorum)
+{
+  std::vector<Server> servers
+  {
+    {11, {11, 12, 13}},
+    {12, {11, 12, 13}},
+    {13, {11, 12, 13}},
+  };
+  auto client = make_client(1, servers);
+  client.choose(0, 1069);
+  // Trigger a proposal with a wrong quorum on all servers.
+  for (int i: irange(0, 3))
+    BOOST_CHECK_THROW(
+      make_client(1, servers | sliced(i, i + 1)).choose(1, 1076),
+      Server::WrongQuorum);
+  // Check the states where not emptied.
+  BOOST_TEST(client.get() == 1069);
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -1076,5 +1118,6 @@ ELLE_TEST_SUITE()
       divergence->add(
         BOOST_TEST_CASE(one_of_three_knows_quorum_changed), 0, valgrind(1));
     }
+    quorum->add(BOOST_TEST_CASE(propose_wrong_quorum), 0, valgrind(5));
   }
 }

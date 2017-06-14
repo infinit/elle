@@ -269,15 +269,18 @@ namespace elle
         void
         check_quorum(Server<T, Version, CId, SId>& self,
                      Quorum q,
-                     bool get = false)
+                     boost::optional<Proposal const&> p = {})
         {
           ELLE_LOG_COMPONENT("athena.paxos.Server");
           auto expected = self._quorum;
-          if (get &&
-              self._state &&
-              self._state->accepted &&
-              self._state->accepted->confirmed &&
-              self._state->accepted->value.template is<Quorum>())
+          // Whether the current state is a confirmed quorum.
+          auto const confirmed_quorum =
+            self._state &&
+            self._state->accepted &&
+            self._state->accepted->confirmed &&
+            self._state->accepted->value.template is<Quorum>();
+          if (confirmed_quorum &&
+              (!p || p->version > self._state->accepted->proposal.version))
             expected = self._state->accepted->value.template get<Quorum>();
           if (q != expected)
           {
@@ -348,6 +351,7 @@ namespace elle
         }
         if (_Details::check_confirmed(*this, p))
         {
+          _Details::check_quorum(*this, q, p);
           if (this->_state && p.version > this->_state->proposal.version)
           {
             auto& accepted = this->_state->accepted;
@@ -359,13 +363,12 @@ namespace elle
             }
             else
             {
-              ELLE_DEBUG("commit previous quorum election");
               this->_quorum =
                 std::move(accepted->value.template get<Quorum>());
+              ELLE_DEBUG("commit previous quorum election: %s", this->_quorum);
             }
             this->_state.reset();
           }
-          _Details::check_quorum(*this, q);
         }
         else
         {
@@ -398,7 +401,7 @@ namespace elle
         ELLE_LOG_COMPONENT("athena.paxos.Server");
         ELLE_TRACE_SCOPE("%s: accept for %f: %f", *this, p, value);
         if (!this->_partial)
-          _Details::check_quorum(*this, q);
+          _Details::check_quorum(*this, q, p);
         if (!this->_state || this->_state->proposal < p)
         {
           ELLE_WARN("%s: someone malicious sent an accept before propose",
@@ -434,7 +437,7 @@ namespace elle
         ELLE_LOG_COMPONENT("athena.paxos.Server");
         ELLE_TRACE_SCOPE("%s: confirm proposal %s", *this, p);
         if (!this->_partial)
-          _Details::check_quorum(*this, q);
+          _Details::check_quorum(*this, q, p);
         if (this->_state && p.version < this->_state->proposal.version)
         {
           ELLE_TRACE("discard obsolete confirm, current proposal is %s",
@@ -522,7 +525,7 @@ namespace elle
       {
         ELLE_LOG_COMPONENT("athena.paxos.Server");
         ELLE_TRACE_SCOPE("%s: get", *this);
-        _Details::check_quorum(*this, q, true);
+        _Details::check_quorum(*this, q);
         return this->current_value();
       }
 
