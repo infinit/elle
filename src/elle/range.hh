@@ -40,13 +40,21 @@ namespace elle
     }
   }
 
-  /// Turn a pair of iterator into a for-loop compatible range.
+  /// Turn a pair of iterators into a for-loop compatible range.
   ///
   /// Especially useful with the return type of std::equal_range.
   template <typename It>
   detail::range<It>
-  as_range(const std::pair<It, It> &p)
+  as_range(const std::pair<It, It>& p)
   {
     return {p.first, p.second};
+  }
+
+  /// Turn two iterators into a for-loop compatible range.
+  template <typename It>
+  detail::range<It>
+  as_range(It begin, It end)
+  {
+    return {begin, end};
   }
 }
