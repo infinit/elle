@@ -21,6 +21,5 @@ namespace elle
   std::unique_ptr<typename Self::_elle_Cloned>                          \
   clone() const override                                                \
   {                                                                     \
-    return                                                              \
-      std::unique_ptr<typename Self::_elle_Cloned>(new Self(*this));    \
+    return std::make_unique<Self>(*this);                               \
   }
