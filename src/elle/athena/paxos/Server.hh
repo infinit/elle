@@ -221,6 +221,8 @@ namespace elle
         get(Quorum q);
         Quorum
         current_quorum() const;
+        boost::optional<Proposal>
+        current_proposal() const;
         boost::optional<Accepted>
         current_value() const;
         Version

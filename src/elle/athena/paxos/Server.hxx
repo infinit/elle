@@ -285,10 +285,8 @@ namespace elle
           if (q != expected)
           {
             ELLE_TRACE("quorum is wrong: %f instead of %f", q, expected);
-            auto current = self.current_value();
             throw WrongQuorum(
-              std::move(expected), std::move(q),
-              current ? current->proposal : boost::optional<Proposal>());
+              std::move(expected), std::move(q), self.current_proposal());
           }
         }
 
@@ -481,24 +479,33 @@ namespace elle
       boost::optional<typename Server<T, Version, CId, SId>::Accepted>
       Server<T, Version, CId, SId>::current_value() const
       {
+        if (this->_state &&
+            this->_state->accepted &&
+            this->_state->accepted->confirmed &&
+            this->_state->accepted->value.template is<T>())
+          return this->_state->accepted;
+        if (this->_value)
+          if (auto p = this->current_proposal())
+            return Accepted(*p, *this->_value, true);
+        return {};
+      }
+
+      template <typename T, typename Version, typename CId, typename SId>
+      boost::optional<typename Server<T, Version, CId, SId>::Proposal>
+      Server<T, Version, CId, SId>::current_proposal() const
+      {
         if (!this->_state)
           return {};
         else if (this->_state->accepted && this->_state->accepted->confirmed)
-          if (this->_state->accepted->value.template is<T>())
-            return this->_state->accepted;
-          else
-            return Accepted(this->_state->proposal, *this->_value, true);
+          return this->_state->proposal;
         else if (this->_value)
-        {
           // This is slightly hackish: in case the current proposal is not
           // confirmed, the value is committed for the previous version, and we
           // use a null round number and node id because nobody probably
           // cares. The other solution would be to also commit the latest
           // proposal, but I don't think it's worth the trouble, especially
           // given it would require a serialization version change.
-          return Accepted(Proposal(this->_state->proposal.version - 1, {}, {}),
-                          *this->_value, true);
-        }
+          return Proposal(this->_state->proposal.version - 1, {}, {});
         else
           return {};
       }

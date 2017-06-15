@@ -1086,6 +1086,19 @@ ELLE_TEST_SCHEDULED(propose_wrong_quorum)
   BOOST_TEST(client.get() == 1069);
 }
 
+// Used to dereference an empty optional (this->_value)
+ELLE_TEST_SCHEDULED(valueless_wrong_quorum)
+{
+  std::vector<Server> servers
+  {
+    {11, {11, 12}},
+    {12, {11, 12}},
+  };
+  make_client(1, servers).choose(0, Server::Quorum{11, 12, 13});
+  BOOST_CHECK_THROW(make_client(1, servers).choose(1, 1098),
+                    Server::WrongQuorum);
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -1119,5 +1132,6 @@ ELLE_TEST_SUITE()
         BOOST_TEST_CASE(one_of_three_knows_quorum_changed), 0, valgrind(1));
     }
     quorum->add(BOOST_TEST_CASE(propose_wrong_quorum), 0, valgrind(5));
+    quorum->add(BOOST_TEST_CASE(valueless_wrong_quorum), 0, valgrind(5));
   }
 }
