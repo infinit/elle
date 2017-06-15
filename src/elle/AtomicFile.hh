@@ -1,11 +1,10 @@
-#ifndef ELLE_ATOMIC_FILE_HH
-# define ELLE_ATOMIC_FILE_HH
+#pragma once
 
-# include <boost/filesystem.hpp>
+#include <boost/filesystem.hpp>
 
-# include <elle/attribute.hh>
-# include <elle/Printable.hh>
-# include <elle/With.hh>
+#include <elle/attribute.hh>
+#include <elle/Printable.hh>
+#include <elle/With.hh>
 
 namespace elle
 {
@@ -20,7 +19,7 @@ namespace elle
   /// a stream to write new content to the file. The new data will be taken in
   /// account only when and if the returned stream is cleanly destroyed.
   ///
-  /// \code{.cc}
+  /// @code{.cc}
   ///
   /// AtomicFile file("some/path");
   /// // Write initial content.
@@ -44,7 +43,7 @@ namespace elle
   ///   // destroyed here. If anything prevents this (SIGKILL, ...), the file
   ///   // will contain "data" upon the next run.
   /// }
-  /// \endcode
+  /// @endcode
   class ELLE_API AtomicFile:
     public elle::Printable
   {
@@ -63,8 +62,8 @@ namespace elle
     AtomicFile(boost::filesystem::path const& path);
     /// Destruct an AtomicFile.
     ///
-    /// \pre !this->reading()
-    /// \pre !this->writing()
+    /// @pre !this->reading()
+    /// @pre !this->writing()
     ~AtomicFile();
   private:
     ELLE_ATTRIBUTE_R(boost::filesystem::path, path);
@@ -88,7 +87,7 @@ namespace elle
       Read(Read&& source);
       /// Destruct a read operation.
       ///
-      /// \post !this->owner->reading()
+      /// @post !this->owner->reading()
       ~Read();
       /// Let With manage us.
       friend class elle::With<Read>;
@@ -106,15 +105,16 @@ namespace elle
       /// The temporary file to read content from.
       std::unique_ptr<std::istream> _stream;
     };
+
     /// A ward containing stream to read content from.
     ///
     /// The file stays in read mode until the ward is destructed.
     ///
-    /// \return A ward containing stream to read content from.
-    /// \pre this->exists()
-    /// \pre !this->reading()
-    /// \pre !this->writing()
-    /// \post this->reading()
+    /// @return A ward containing stream to read content from.
+    /// @pre this->exists()
+    /// @pre !this->reading()
+    /// @pre !this->writing()
+    /// @post this->reading()
     elle::With<Read>
     read() const;
     /// Whether the file is in read mode.
@@ -132,8 +132,8 @@ namespace elle
       Write(Write&& source);
       /// Destruct a write operation, commiting the changes.
       ///
-      /// \post !this->owner->exists()
-      /// \post !this->owner->writing()
+      /// @post !this->owner->exists()
+      /// @post !this->owner->writing()
       ~Write() noexcept(false);
       /// Let With manage us.
       friend class elle::With<Write>;
@@ -156,11 +156,11 @@ namespace elle
     /// The file stays in writing mode until the ward is destructed. The new
     /// content is effectively commited when leaving writing mode.
     ///
-    /// \return A ward containing stream to write new content to.
-    /// \pre !this->reading()
-    /// \pre !this->writing()
-    /// \post this->exists()
-    /// \post this->writing()
+    /// @return A ward containing stream to write new content to.
+    /// @pre !this->reading()
+    /// @pre !this->writing()
+    /// @post this->exists()
+    /// @post this->writing()
     elle::With<Write>
     write();
     /// Whether the file is in write mode.
@@ -183,11 +183,8 @@ namespace elle
   | Printable |
   `----------*/
   public:
-    /// Print pretty representation to \a stream.
-    virtual
+    /// Print pretty representation to @a stream.
     void
     print(std::ostream& stream) const override;
   };
 }
-
-#endif

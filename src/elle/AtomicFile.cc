@@ -9,25 +9,27 @@ ELLE_LOG_COMPONENT("elle.AtomicFile");
 
 namespace elle
 {
+  namespace bfs = boost::filesystem;
+
   /*-------------.
   | Construction |
   `-------------*/
 
   static
-  boost::filesystem::path
-  mitigate(boost::filesystem::path const& path, std::string const& salt)
+  bfs::path
+  mitigate(bfs::path const& path, std::string const& salt)
   {
     auto filename = "." + path.filename().string() + "." + salt;
     return path.parent_path() / filename;
   }
 
-  AtomicFile::AtomicFile(boost::filesystem::path const& path):
-    _path(path),
-    _exists(),
-    _reading(false),
-    _writing(false),
-    _path_new(mitigate(path, "new")),
-    _path_old(mitigate(path, "old"))
+  AtomicFile::AtomicFile(bfs::path const& path)
+    : _path(path)
+    , _exists()
+    , _reading(false)
+    , _writing(false)
+    , _path_new(mitigate(path, "new"))
+    , _path_old(mitigate(path, "old"))
   {
     this->_exists = this->_tidy();
   }
@@ -86,16 +88,16 @@ namespace elle
   | Writing |
   `--------*/
 
-  AtomicFile::Write::Write(AtomicFile* owner):
-    _owner(owner),
-    _stream(new std::ofstream(owner->_path_new.string()))
+  AtomicFile::Write::Write(AtomicFile* owner)
+    : _owner(owner)
+    , _stream(std::make_unique<std::ofstream>(owner->_path_new.string()))
   {
     this->_owner->_writing = true;
   }
 
-  AtomicFile::Write::Write(Write&& source):
-    _owner(std::move(source._owner)),
-    _stream(std::move(source._stream))
+  AtomicFile::Write::Write(Write&& source)
+    : _owner(std::move(source._owner))
+    , _stream(std::move(source._stream))
   {
     source._owner = nullptr;
   }
@@ -135,24 +137,24 @@ namespace elle
   AtomicFile::_tidy() const
   {
     ELLE_DEBUG_SCOPE("%s: cleanup transaction state", *this);
-    if (boost::filesystem::exists(this->_path))
+    if (bfs::exists(this->_path))
     {
       ELLE_DEBUG_SCOPE("%s: file exists", *this);
       // If the base file exists, it is the current valid version, remove any
       // potential stray transaction file.
-      if (boost::filesystem::exists(this->_path_new))
+      if (bfs::exists(this->_path_new))
       {
         ELLE_WARN("%s: discard aborted new content", *this);
         remove(this->_path_new);
       }
-      if (boost::filesystem::exists(this->_path_old))
+      if (bfs::exists(this->_path_old))
       {
         ELLE_WARN("%s: remove stray old content", *this);
         remove(this->_path_old);
       }
       return true;
     }
-    else if (boost::filesystem::exists(this->_path_old))
+    else if (bfs::exists(this->_path_old))
     {
       ELLE_DEBUG_SCOPE("%s: transaction failed", *this);
       // Otherwise if an old file exists, a transaction failed, restore it.
@@ -160,7 +162,7 @@ namespace elle
         ELLE_WARN("%s: restore old content of failed transaction", *this);
         rename(this->_path_old, this->_path);
       }
-      if (boost::filesystem::exists(this->_path_new))
+      if (bfs::exists(this->_path_new))
       {
         ELLE_WARN("%s: discard aborted new content", *this);
         remove(this->_path_new);
@@ -172,7 +174,7 @@ namespace elle
       ELLE_DEBUG_SCOPE("%s: file does not exist", *this);
       // Otherwise, the file never had any valid data written to it, remove any
       // potential stray transaction file.
-      if (boost::filesystem::exists(this->_path_new))
+      if (bfs::exists(this->_path_new))
       {
         ELLE_WARN("%s: discard aborted new content", *this);
         remove(this->_path_new);
@@ -184,7 +186,7 @@ namespace elle
   void
   AtomicFile::_commit()
   {
-    bool present = boost::filesystem::exists(this->_path);
+    bool const present = bfs::exists(this->_path);
     if (present)
     {
       ELLE_DEBUG("%s: save old version", *this);
