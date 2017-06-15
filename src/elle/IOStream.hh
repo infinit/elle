@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <iostream>
 
 #include <elle/compiler.hh>
@@ -118,8 +119,6 @@ namespace elle
   {
   public:
     using Size = StreamBuffer::Size;
-    PlainStreamBuffer();
-    ~PlainStreamBuffer() override;
 
   protected:
     friend class IOStream;
@@ -148,9 +147,9 @@ namespace elle
     flush(Size size) override;
 
   private:
-    static const int _bufsize = (1 << 12); // == 4096 bytes.
-    char _ibuf[_bufsize];
-    char _obuf[_bufsize];
+    enum { _bufsize = 1 << 12 }; // 4KB.
+    std::array<char, _bufsize> _ibuf = {{0}};
+    std::array<char, _bufsize> _obuf = {{0}};
   };
 
   /// Like PlainStreamBuffer but with an configurable size.
@@ -177,11 +176,11 @@ namespace elle
     // @see PlainStreamBuffer::read.
     virtual
     Size
-    read(char *buffer, Size size) = 0;
+    read(char* buffer, Size size) = 0;
     // @see PlainStreamBuffer::write.
     virtual
     void
-    write(char *buffer, Size size) = 0;
+    write(char* buffer, Size size) = 0;
     // @see PlainStreamBuffer::read_buffer.
     WeakBuffer
     read_buffer() override;
@@ -193,6 +192,7 @@ namespace elle
     flush(Size size) override;
 
   private:
+    // FIXME: Why the different types with PlainStreamBuffer???
     Size const _bufsize;
     Byte *_ibuf;
     Byte *_obuf;

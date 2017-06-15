@@ -74,9 +74,12 @@ namespace elle
       setg(0, 0, 0);
       return EOF;
     }
-    auto cp = reinterpret_cast<char*>(b.mutable_contents());
-    setg(cp, cp, cp + b.size());
-    return static_cast<unsigned char>(b.contents()[0]);
+    else
+    {
+      auto cp = reinterpret_cast<char*>(b.mutable_contents());
+      setg(cp, cp, cp + b.size());
+      return static_cast<unsigned char>(b.contents()[0]);
+    }
   }
 
   int
@@ -113,42 +116,33 @@ namespace elle
   | PlainStreamBuffer |
   `------------------*/
 
-  PlainStreamBuffer::PlainStreamBuffer()
-    : _ibuf()
-    , _obuf()
-  {}
-
-  PlainStreamBuffer::~PlainStreamBuffer()
-  {}
-
   WeakBuffer
   PlainStreamBuffer::read_buffer()
   {
-    static Size max_size = PlainStreamBuffer::_bufsize;
-    ELLE_TRACE("read at most %s bytes", max_size)
+    ELLE_TRACE("read at most %s bytes", this->_bufsize)
     {
-      Size size = this->read(this->_ibuf, max_size);
+      Size size = this->read(this->_ibuf.data(), this->_bufsize);
       ELLE_TRACE("got %s bytes", size);
-      return WeakBuffer(this->_ibuf, size);
+      return WeakBuffer(this->_ibuf.data(), size);
     }
   }
 
   WeakBuffer
   PlainStreamBuffer::write_buffer()
   {
-    return WeakBuffer(this->_obuf, PlainStreamBuffer::_bufsize);
+    return WeakBuffer(this->_obuf.data(), this->_bufsize);
   }
 
   void
   PlainStreamBuffer::flush(Size size)
   {
     ELLE_TRACE("write %s bytes", size)
-      this->write(this->_obuf, size);
+      this->write(this->_obuf.data(), size);
   }
 
-  /*-------------------.
+  /*--------------------.
   | DynamicStreamBuffer |
-  `-------------------*/
+  `--------------------*/
 
   DynamicStreamBuffer::DynamicStreamBuffer(Size size)
     : _bufsize(size)
@@ -189,7 +183,6 @@ namespace elle
 
 namespace std
 {
-  // Read up to \a n bytes, but at least one, unlike std::istream::readsome.
   streamsize
   readsome(std::istream& i, char* s, streamsize n)
   {
