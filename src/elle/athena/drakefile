@@ -35,6 +35,7 @@ def configure(cxx_toolkit,
   config = elle.config + das.config + reactor.config + cryptography.config
   local_config = drake.cxx.Config(config) + cxx_config
   lib_path = '../../../lib'
+  local_config.warnings.parentheses = False
 
   ## ------- ##
   ## Library ##
