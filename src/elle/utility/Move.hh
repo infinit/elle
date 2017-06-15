@@ -1,9 +1,7 @@
-#ifndef ELLE_UTILITY_MOVE_HH
-# define ELLE_UTILITY_MOVE_HH
+#pragma once
 
-# include <algorithm>
-# include <type_traits>
-
+#include <algorithm>
+#include <type_traits>
 
 namespace elle
 {
@@ -13,7 +11,7 @@ namespace elle
     ///
     /// This was useful when move captures were not supported (pre C++14).
     ///
-    /// \code{.cc}
+    /// @code{.cc}
     ///
     /// auto val = std::make_unique<X>();
     /// auto p = elle::utility::move_on_copy(std::move(val));
@@ -22,7 +20,7 @@ namespace elle
     /// auto r = [p] { assert(p.value != nullptr); return (**p); };
     /// assert(p.value == nullptr);
     ///
-    /// \endcode
+    /// @endcode
     template <typename T>
     struct Move
     {
@@ -77,6 +75,4 @@ namespace elle
   }
 }
 
-# include <elle/utility/Move.hxx>
-
-#endif
+#include <elle/utility/Move.hxx>

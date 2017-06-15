@@ -1,6 +1,3 @@
-#ifndef ELLE_UTILITY_MOVE_HXX
-# define ELLE_UTILITY_MOVE_HXX
-
 namespace elle
 {
   namespace utility
@@ -64,5 +61,3 @@ namespace elle
     }
   }
 }
-
-#endif
