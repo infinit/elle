@@ -434,14 +434,14 @@ namespace elle
       {
         ELLE_LOG_COMPONENT("athena.paxos.Server");
         ELLE_TRACE_SCOPE("%s: confirm proposal %s", *this, p);
-        if (!this->_partial)
-          _Details::check_quorum(*this, q, p);
         if (this->_state && p.version < this->_state->proposal.version)
         {
           ELLE_TRACE("discard obsolete confirm, current proposal is %s",
                      this->_state->proposal);
           return;
         }
+        if (!this->_partial)
+          _Details::check_quorum(*this, q, p);
         if (!this->_state ||
             this->_state->proposal < p ||
             !this->_state->accepted)
