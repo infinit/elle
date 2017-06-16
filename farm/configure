@@ -142,7 +142,9 @@ parameters = {
   'os': options.os,
   'drake_utils': '%s/../drake-utils.py' % os.path.dirname(os.path.realpath(__file__)),
   'project': options.project.lower(),
-  'go_path': '%s/go-dependencies' % os.path.realpath(options.build_dir)
+  'go_path': '%s/go-dependencies' % os.path.realpath(options.build_dir),
+  'source_dir': os.path.realpath(options.source_dir),
+  'install_dir': os.path.realpath(options.install_dir),
 }
 
 parameters['beyond_public'] = options.public_beyond
@@ -174,17 +176,14 @@ elif options.os == 'windows':
 else:
   raise Exception('invalid OS: %s' % options.os)
 
-build_dir = options.build_dir
-os.makedirs(build_dir, exist_ok = True)
+os.makedirs(options.build_dir, exist_ok = True)
+os.makedirs(options.install_dir, exist_ok = True)
 
-with open('%s/.drake.tmp' % build_dir, 'w') as drake:
-  parameters['source_dir'] = os.path.realpath(options.source_dir)
-  parameters['install_dir'] = os.path.realpath(options.install_dir)
+tmp = '%s/.drake.tmp' % options.build_dir
+with open(tmp, 'w') as drake:
   content = template % parameters
   print(content, file = drake)
-
-tmp = '%s/.drake.tmp' % build_dir
-drake = '%s/drake' % build_dir
+drake = '%s/drake' % options.build_dir
 subprocess.call(['diff', '-u', drake if os.path.isfile(drake) else '/dev/null', tmp])
 shutil.move(tmp, drake)
 # chmod +x
