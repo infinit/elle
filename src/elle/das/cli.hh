@@ -261,8 +261,8 @@ namespace elle
         static inline std::string const&
         nothing()
         {
-          // Quite unlikely with ten \0 characters, but ok in the logs.
-          static auto const res = std::string("NOTHING") + std::string(10, 0);
+          // A marker, quite unlikely to be an effective argument.
+          static auto const res = '{' + std::string(1, 0) + '}';
           return res;
         }
 
