@@ -604,13 +604,9 @@ namespace elle
       Function<
         typename make_signature<std::get_signature<F>,
                                 std::remove_cv_reference_t<Args>...>::type>
-      function(F f, Args&& ... args)
+      function(F f, Args&&... args)
       {
-        return Function<
-          typename make_signature<
-            std::get_signature<F>,
-            std::remove_cv_reference_t<Args>...>::type>(
-              std::move(f), std::forward<Args>(args)...);
+        return {std::move(f), std::forward<Args>(args)...};
       }
     }
   }
