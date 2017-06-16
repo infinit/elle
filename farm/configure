@@ -19,11 +19,11 @@ def parse_options():
       help = 'Target operating system')
   opt('--compiler', metavar = 'COMPILER', help = 'Host compiler',
       type = str, required = True)
-  opt('--project', metavar = 'PROJECT', help = 'Project name',
+  opt('--project', metavar = 'PROJECT', help = 'Project name (case insensitive)',
       type = str, required = True)
   opt('--public-beyond', metavar = 'PUBLIC_BEYOND',
       help = 'Strip all credentials from beyond',
-      type = bool, required = False, default = False)
+      type = bool, default = False)
   for d in ['build', 'install', 'source']:
     opt('--%s-dir' % d,
         metavar = '%s_DIR' % d.upper(),
@@ -74,20 +74,20 @@ if os_ == 'alpine':
   # inhibit major and minor macros
   cxx_config.define('_SYS_SYSMACROS_H')
 
-if os_ == 'alpine' and project == 'memo':
+if os_ == 'alpine' and project in ['filesystem', 'memo']:
   extra_args['enable_crash_report'] = False
 
 if %(arch)r == 'arm':
   cxx_toolkit_host =  drake.cxx.GccToolkit()
   extra_args['cxx_toolkit_host'] = cxx_toolkit_host
 
-if %(beyond_public)r and project == 'memo':
+if %(beyond_public)r and project in ['filesystem', 'memo']:
   extra_args['beyond_public'] = True
 
-if project == 'Elle':
+if project == 'elle':
   extra_args['enable_cryptographic_rotation'] = False
 
-if project == 'memo':
+if  in ['filesystem', 'memo']:
   if os_ == 'windows':
     go_toolkit = drake.go.Toolkit(os = 'windows',
                                   arch = 'amd64',
@@ -141,7 +141,7 @@ parameters = {
   'arch': options.arch,
   'os': options.os,
   'drake_utils': '%s/../drake-utils.py' % os.path.dirname(os.path.realpath(__file__)),
-  'project': options.project,
+  'project': options.project.lower(),
   'go_path': '%s/go-dependencies' % os.path.realpath(options.build_dir)
 }
 
