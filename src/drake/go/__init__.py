@@ -250,6 +250,10 @@ class Toolkit:
     return self.__root
 
   @property
+  def cxx_toolkit(self):
+    return self.__cxx_toolkit
+
+  @property
   def env(self):
     """
     The Go specific environment for the toolkit.
@@ -540,7 +544,7 @@ class LibraryBuilder(drake.Builder):
     assert isinstance(node, Source)
     self.__source = node
     self.__target = target
-    self.__toolkit = toolkit
+    self._toolkit = toolkit
     self.__config = config
     self.__dependencies = dependencies
     self.__url_dependencies = \
@@ -560,33 +564,41 @@ class LibraryBuilder(drake.Builder):
 
   def command(self):
     res = [
-      self.__toolkit.go,
+      self._toolkit.go,
       'build',
       '-buildmode=%s' % self.__type,
       '-o', str(self.__target),
     ]
     if len(self.__config.tags):
       res += ['-tags', ' '.join(self.__config.tags)]
-    if len(self.__config.ldflags):
-      res += ['-ldflags', ' '.join(self.__config.ldflags)]
+    ldflags = list(self.__config.ldflags)
+    # Set the soname on linux.
+    # On macOS, this operation is done later.
+    # Fixme: Find a better condition.
+    if self._toolkit.cxx_toolkit.os is drake.os.linux and \
+       not isinstance(self.__target, Executable):
+      ldflags.append(
+        '-extldflags -Wl,-soname,%s' % self.__target.name().basename())
+    if len(ldflags):
+      res += ['-ldflags', ' '.join(ldflags)]
     res.append(str(self.__source.path()))
     return res
 
   def execute(self):
     cmd = self.command()
-    env = self.__toolkit.host_env if self.__build_host else self.__toolkit.env
+    env = self._toolkit.host_env if self.__build_host else self._toolkit.env
     # Add the include paths to GOPATH so that Go can find dependencies.
     if self.__config.include_paths:
       include_paths = list(self.__config.include_paths)
-      if self.__toolkit.path:
-        include_paths.insert(0, self.__toolkit.path)
+      if self._toolkit.path:
+        include_paths.insert(0, self._toolkit.path)
       env['GOPATH'] = ':'.join(map(lambda p: os.path.abspath(str(p)),
                                    include_paths))
     return self.cmd('Generate %s' % self.__target, cmd, env = env)
 
   def hash(self):
     return {
-      'toolkit': self.__toolkit.hash(),
+      'toolkit': self._toolkit.hash(),
       'config': self.__config.hash(),
     }
 
@@ -672,8 +684,9 @@ class CDyLibBuilder(LibraryBuilder):
     if '.dylib' in str(path.basename()):
       cmd = ['install_name_tool', '-id', '@rpath/%s' % path.basename(), path]
       return self.cmd('Set Go library ID %s' % self.library, cmd)
-    else:
-      return True
+    elif self._toolkit.cxx_toolkit.os is not drake.os.windows:
+      cmd = self._toolkit.cxx_toolkit.rpath_set_command(path, '.')
+      return self.cmd('Fix rpath for %s' % self.library, cmd)
 
 class CStaticLibBuilder(LibraryBuilder):
 
