@@ -475,7 +475,8 @@ namespace elle
                 {
                   ELLE_TRACE("use next positional value: %s", *it);
                   this->_values.emplace_back(std::move(*it));
-                  it = this->_args.erase(it);
+                  *it = nothing();
+                  ++it;
                 }
                 else
                   return this->missing<I>();
