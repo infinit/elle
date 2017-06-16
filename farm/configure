@@ -8,6 +8,17 @@ import stat
 import sys
 import platform
 
+def find_python3():
+  for minor in range(19, 0, -1):
+    for dir in ['/usr/local',
+                # From MacPorts.
+                '/opt/local/Library',
+                # From Brew.
+                '/usr/local/Cellar/python3/3.5.1',
+                '/usr/local/Cellar/python3/3.6.0']:
+      p = '{}/Frameworks/Python.framework/Versions/3.{}'.format(dir, minor)
+      if os.path.isdir(p):
+        return p
 
 def parse_options():
   import argparse
@@ -164,7 +175,7 @@ elif options.os == 'macos':
   parameters['compiler'] = 'clang++'
   parameters['environ'] = {'MACOSX_DEPLOYMENT_TARGET': '10.7'}
   parameters['flags'] = ('-ftemplate-depth=512', '-stdlib=libc++')
-  parameters['python'] = '/usr/local/Frameworks/Python.framework/Versions/3.4'
+  parameters['python'] = find_python3()
 elif options.os == 'windows':
   parameters['compiler'] = '%s-w64-mingw32-g++' % options.arch
   parameters['flags'] = ('-gstabs',)
