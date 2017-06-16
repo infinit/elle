@@ -618,7 +618,7 @@ namespace elle
         {
           /// The type of the default value.
           using Default
-            = typename named::DefaultStore<Formal>::template default_for<Formal>;
+            = typename named::DefaultStore<Formal>::template DefaultFor<Formal>;
           using Symbol = named::make_formal<Formal>;
 
           /// Invoked once for each Formal type.
@@ -892,7 +892,7 @@ namespace elle
         print(std::ostream& s) const
         {
           std::tuple<make_bool<T>...>{
-            help_map<T, typename named::Prototype<T...>::DefaultStore::template default_for<T>>::value(
+            help_map<T, typename named::Prototype<T...>::DefaultStore::template DefaultFor<T>>::value(
               s, this->_options, this->_prototype.defaults)...
           };
         }

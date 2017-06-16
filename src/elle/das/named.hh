@@ -78,6 +78,10 @@ namespace elle
         return 0;
       };
 
+      /*-------------.
+      | DefaultStore |
+      `-------------*/
+
       template <typename T>
       struct is_effective
       {
@@ -85,8 +89,50 @@ namespace elle
           !std::is_same<decltype(_make_formal<T>(42)), T>::value;
       };
 
-      template <bool effective, typename T>
+      template <typename Formal, bool Effective = is_effective<Formal>::value>
       struct DefaultFor;
+
+      template <typename T>
+      struct DefaultFor<T, false>
+      {
+        static constexpr bool has = false;
+        template <typename Formal>
+        DefaultFor(Formal const&)
+        {}
+      };
+
+      template <typename T>
+      struct DefaultFor<T, true>
+        : public T::Formal::
+            template Effective<typename T::Default, typename T::Default const&>
+      {
+        static constexpr bool has = true;
+        using type = typename T::Default;
+        using Super = typename T::Formal::
+          template Effective<typename T::Default, typename T::Default const&>;
+        using Super::Super;
+      };
+
+      template <typename ... Formal>
+      struct DefaultStore
+        : public DefaultFor<Formal>...
+      {
+        template <typename ... Args>
+        DefaultStore(Args&& ... args)
+          : DefaultFor<Formal>(std::forward<Args>(args))...
+        {
+          static_assert(sizeof ... (Formal) == sizeof ... (Args), "LOLEUH2");
+        }
+
+        template <typename ... Args>
+        auto
+        extend(Args&& ... args) const
+        {
+          return DefaultStore<Args ..., Formal ...>(
+            std::forward<Args>(args)...,
+            static_cast<DefaultFor<Formal> const&>(*this)...);
+        }
+      };
 
       /*-----.
       | Find |
@@ -211,58 +257,7 @@ namespace elle
         auto&
         get(Default& d, Effectives&& ...)
         {
-          return d.DefaultFor<true, Formal>::value;
-        }
-      };
-
-      /*-------------.
-      | DefaultStore |
-      `-------------*/
-
-      template <bool Effective, typename T>
-      struct DefaultFor
-      {
-        static constexpr bool has = false;
-        template <typename Formal>
-        DefaultFor(Formal const&)
-        {}
-      };
-
-      template <typename T>
-      struct DefaultFor<true, T>
-        : public T::Formal::
-            template Effective<typename T::Default, typename T::Default const&>
-      {
-        static constexpr bool has = true;
-        using type = typename T::Default;
-        using Super = typename T::Formal::
-          template Effective<typename T::Default, typename T::Default const&>;
-        using Super::Super;
-      };
-
-      template <typename ... Formal>
-      struct DefaultStore
-        : public DefaultFor<is_effective<Formal>::value, Formal>...
-      {
-        template <typename ... Args>
-        DefaultStore(Args&& ... args)
-          : DefaultFor<is_effective<Formal>::value, Formal>(
-            std::forward<Args>(args))...
-        {
-          static_assert(sizeof ... (Formal) == sizeof ... (Args), "LOLEUH2");
-        }
-
-        template <typename T>
-        using default_for = DefaultFor<is_effective<T>::value, T>;
-
-        template <typename ... Args>
-        auto
-        extend(Args&& ... args) const
-        {
-          return DefaultStore<Args ..., Formal ...>(
-            std::forward<Args>(args)...,
-            static_cast<DefaultFor<is_effective<Formal>::value, Formal> const&>(
-              *this)...);
+          return d.DefaultFor<Formal>::value;
         }
       };
 
