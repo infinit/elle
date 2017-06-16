@@ -30,7 +30,7 @@ namespace elle
     /// @endcode
     template <typename C, typename F>
     void
-    for_each_parallel(C& c, F const& f, std::string const& name = std::string{});
+    for_each_parallel(C&& c, F const& f, std::string const& name = {});
 
     /// Break exception used to break for_each_parallel execution.
     class Break

@@ -13,11 +13,11 @@ namespace elle
 
     template <typename C, typename F>
     void
-    for_each_parallel(C& c, F const& f, std::string const& name)
+    for_each_parallel(C&& c, F const& f, std::string const& name)
     {
       elle::With<reactor::Scope>(name) << [&] (reactor::Scope& scope)
       {
-        for (auto& elt: c)
+        for (auto&& elt: std::forward<C>(c))
           scope.run_background(
             elle::sprintf("%s: %s: %s",
                           reactor::scheduler().current()->name(),
@@ -27,7 +27,7 @@ namespace elle
             {
               try
               {
-                f(elt);
+                f(std::forward<decltype(elt)>(elt));
               }
               catch (Break const&)
               {
