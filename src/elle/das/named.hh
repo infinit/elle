@@ -33,6 +33,8 @@ namespace elle
       typename T::Formal
       _make_formal(int);
 
+      /// T::Formal if it exists, otherwise T, both with references
+      /// stripped.
       template <typename T>
       using make_formal =
         std::remove_reference_t<decltype(_make_formal<T>(42))>;
@@ -82,14 +84,9 @@ namespace elle
       | DefaultStore |
       `-------------*/
 
-      template <typename T>
-      struct is_effective
-      {
-        static constexpr bool value =
-          !std::is_same<decltype(_make_formal<T>(42)), T>::value;
-      };
-
-      template <typename Formal, bool Effective = is_effective<Formal>::value>
+      template <typename Formal,
+                bool IsEffective = !std::is_same<decltype(_make_formal<Formal>(42)),
+                                                 Formal>::value>
       struct DefaultFor;
 
       template <typename T>
