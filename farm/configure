@@ -87,7 +87,7 @@ if %(beyond_public)r and project in ['filesystem', 'memo']:
 if project == 'elle':
   extra_args['enable_cryptographic_rotation'] = False
 
-if  in ['filesystem', 'memo']:
+if project in ['filesystem', 'memo']:
   if os_ == 'windows':
     go_toolkit = drake.go.Toolkit(os = 'windows',
                                   arch = 'amd64',
