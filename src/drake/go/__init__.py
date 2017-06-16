@@ -171,7 +171,7 @@ class Toolkit:
                root = None,
                os = None,
                arch = None,
-               cxx_toolkit = None):
+               cxx_toolkit = drake.cxx.Toolkit()):
     """
     Create a toolkit or clone an existing one.
 
