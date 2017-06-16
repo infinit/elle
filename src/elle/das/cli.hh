@@ -449,7 +449,7 @@ namespace elle
             ELLE_TRACE("convert: %s", this);
             if (this->_flag)
               throw ValuelessOption(this->_option);
-            if (this->_values.empty())
+            else if (this->_values.empty())
             {
               if (this->_positional)
               {
