@@ -1054,13 +1054,67 @@ using Server = paxos::Server<int, int, int>;
 using Client = paxos::Client<int, int, int>;
 using Peers = Client::Peers;
 
-template <typename Servers>
+class YAInstrumentedPeer
+  : public Peer<int, int, int>
+{
+public:
+  using Super = Peer<int, int, int>;
+  using Client = paxos::Client<int, int, int>;
+
+  using Super::Super;
+
+  boost::optional<typename Client::Accepted>
+  propose(typename Client::Quorum const& q,
+          typename Client::Proposal const& p) override
+  {
+    this->_proposing(p);
+    auto res = Super::propose(q, p);
+    this->_proposed(p);
+    return res;
+  }
+
+  typename Client::Proposal
+  accept(typename Client::Quorum const& q,
+         typename Client::Proposal const& p,
+         elle::Option<int, typename Client::Quorum> const& value) override
+  {
+    this->_accepting(p);
+    auto res = Super::accept(q, p, value);
+    this->_accepted(p);
+    return res;
+  }
+
+
+  void
+  confirm(typename Client::Quorum const& q,
+          typename Client::Proposal const& p) override
+  {
+    this->_confirming(p);
+    Super::confirm(q, p);
+    this->_confirmed(p);
+  }
+
+  ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (Server::Proposal const&)>,
+                    proposing);
+  ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (Server::Proposal const&)>,
+                    proposed);
+  ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (Server::Proposal const&)>,
+                    accepting);
+  ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (Server::Proposal const&)>,
+                    accepted);
+  ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (Server::Proposal const&)>,
+                    confirming);
+  ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (Server::Proposal const&)>,
+                    confirmed);
+};
+
+template <typename Peer = YAInstrumentedPeer, typename Servers>
 Client
 make_client(int id, Servers&& servers)
 {
   auto peers = Peers();
   for (auto& s: servers)
-    peers.emplace_back(new Peer<int, int, int>(s.id(), s));
+    peers.emplace_back(new Peer(s.id(), s));
   return Client(id, std::move(peers));
 }
 
@@ -1099,6 +1153,52 @@ ELLE_TEST_SCHEDULED(valueless_wrong_quorum)
                     Server::WrongQuorum);
 }
 
+ELLE_TEST_SCHEDULED(partial_conflict)
+{
+  std::vector<Server> servers
+  {
+    {11, {11, 12, 13}},
+    {12, {11, 12, 13}},
+    {13, {11, 12, 13}},
+  };
+  make_client(0, servers).choose(0, 1152);
+  elle::reactor::Barrier confirm, pick_value;
+  elle::With<elle::reactor::Scope>() << [&] (elle::reactor::Scope& scope)
+  {
+    scope.run_background(
+      "pick_quorum",
+      [&]
+      {
+        auto c = make_client(2, servers);
+        static_cast<YAInstrumentedPeer&>(*c.peers()[0]).confirming().connect(
+          [&] (Client::Proposal const& p)
+          {
+            pick_value.open();
+            elle::reactor::wait(confirm);
+          });
+        c.choose(1, Server::Quorum{11, 12});
+      });
+    scope.run_background(
+      "pick_value",
+      [&]
+      {
+        elle::reactor::wait(pick_value);
+        {
+          auto c = make_client(1, servers);
+          BOOST_CHECK_EQUAL(
+            c.choose(1, 1187)->value.get<Server::Quorum>(),
+            (Server::Quorum{11, 12}));
+        }
+        {
+          auto c = make_client(2, servers | sliced(0, 2));
+          BOOST_TEST(!c.choose(2, 1192));
+          confirm.open();
+        }
+      });
+    elle::reactor::wait(scope);
+  };
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -1116,6 +1216,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(serialization), 0, valgrind(1));
   suite.add(BOOST_TEST_CASE(partial_state), 0, valgrind(5));
   suite.add(BOOST_TEST_CASE(non_partial_state), 0, valgrind(5));
+  suite.add(BOOST_TEST_CASE(partial_conflict), 0, valgrind(5));
   {
     auto quorum = BOOST_TEST_SUITE("quorum");
     suite.add(quorum);
