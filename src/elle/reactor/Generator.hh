@@ -93,27 +93,47 @@ namespace elle
     public:
       /// Iterator used by the Generator.
       struct iterator
+        : public std::iterator<std::input_iterator_tag, T>
       {
+        using reference = T;
         iterator();
         iterator(Generator<T>& generator);
-        /// Compare iterator.
+        /// Compare iterators.
         bool
-        operator !=(iterator const& other);
-        /// Return the successor of the iterator.
+        operator !=(iterator const& other) const;
+        /// Compare iterators.
+        bool
+        operator ==(iterator const& other) const;
+        /// Advance the iterator.
+        ///
+        /// @return This.
         iterator&
         operator ++();
+        /// Advance the iterator.
+        ///
+        /// @return
+        void
+        operator ++(int);
         /// Return the element previous to current.
         T
-        operator *();
+        operator *() const;
         ELLE_ATTRIBUTE(Generator<T>*, generator)
-        ELLE_ATTRIBUTE(boost::optional<T>, value);
-        ELLE_ATTRIBUTE(bool, fetch);
+        ELLE_ATTRIBUTE(boost::optional<T>, value, mutable);
+        ELLE_ATTRIBUTE(bool, fetch, mutable);
       };
+      using const_iterator = iterator;
+
       /// An iterator to the beginning of the Generator.
       iterator
       begin();
       /// An iterator to the end of the Generator.
       iterator
+      end();
+      /// An iterator to the beginning of the Generator.
+      const_iterator
+      begin() const;
+      /// An iterator to the end of the Generator.
+      const_iterator
       end() const;
       ELLE_ATTRIBUTE(reactor::Channel<boost::optional<T>>, results);
       ELLE_ATTRIBUTE(std::exception_ptr, exception);

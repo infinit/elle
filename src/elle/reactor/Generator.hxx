@@ -63,7 +63,7 @@ namespace elle
 
     template <typename T>
     T
-    Generator<T>::iterator::operator *()
+    Generator<T>::iterator::operator *() const
     {
       assert(!this->_fetch);
       return std::move(this->_value.get());
@@ -87,7 +87,7 @@ namespace elle
 
     template <typename T>
     bool
-    Generator<T>::iterator::operator !=(iterator const& other)
+    Generator<T>::iterator::operator !=(iterator const& other) const
     {
       assert(other._generator == nullptr);
       if (this->_fetch)
@@ -104,12 +104,26 @@ namespace elle
     }
 
     template <typename T>
+    bool
+    Generator<T>::iterator::operator ==(iterator const& other) const
+    {
+      return !(*this != other);
+    }
+
+    template <typename T>
     typename Generator<T>::iterator&
     Generator<T>::iterator::operator ++()
     {
       this->_fetch = true;
       this->_value.reset();
       return *this;
+    }
+
+    template <typename T>
+    void
+    Generator<T>::iterator::operator ++(int)
+    {
+      ++*this;
     }
 
     template <typename T>
@@ -139,6 +153,20 @@ namespace elle
 
     template <typename T>
     typename Generator<T>::iterator
+    Generator<T>::end()
+    {
+      return typename Generator<T>::iterator();
+    }
+
+    template <typename T>
+    typename Generator<T>::const_iterator
+    Generator<T>::begin() const
+    {
+      return typename Generator<T>::iterator(elle::unconst(*this));
+    }
+
+    template <typename T>
+    typename Generator<T>::const_iterator
     Generator<T>::end() const
     {
       return typename Generator<T>::iterator();
