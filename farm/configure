@@ -105,7 +105,8 @@ if project in ['filesystem', 'memo']:
                                   path = go_path,
                                   cxx_toolkit = cxx_toolkit)
   else:
-    go_toolkit = drake.go.Toolkit(path = go_path)
+    go_toolkit = drake.go.Toolkit(path = go_path,
+                                  cxx_toolkit = cxx_toolkit)
   go_config = drake.go.Config()
   extra_args['go_toolkit'] = go_toolkit
   extra_args['go_config'] = go_config
