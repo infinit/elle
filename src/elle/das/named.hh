@@ -107,7 +107,19 @@ namespace elle
         using type = typename T::Default;
         using Super = typename T::Formal::
           template Effective<typename T::Default, typename T::Default const&>;
-        using Super::Super;
+
+        // A simple `using Super::Super` does not work with the newest
+        // compilers, stricter than their predecessors even in C++14.
+        //
+        // GCC7: "an inherited constructor is not a candidate for
+        // initialization from an expression of the same or derived
+        // type".
+        //
+        // Clang4: "candidate template ignored: inherited constructor
+        // cannot be used to move object".
+        DefaultFor(Super&& s)
+          : Super{std::move(s)}
+        {}
       };
 
       template <typename ... Formal>
