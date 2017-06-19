@@ -835,7 +835,7 @@ namespace elle
           // Whether expects an argument.
           bool with_argument
             = elle::meta::static_if<Default::has>
-            ([&s] (auto const& def)
+            ([] (auto const& def)
              {
                auto const& v = def.value;
                return !std::is_same<decltype(v), bool const&>::value;
@@ -848,13 +848,13 @@ namespace elle
           auto opt = opts.find(Symbol::name());
           if (opt == opts.end())
             elle::meta::static_if<std::is_base_of<CLI_Symbol, Symbol>::value>(
-              [&s, &with_argument] (auto formal) {
+              [&s, with_argument] (auto formal) {
                 using formal_t = typename decltype(formal)::type;
                 print_help(s,
                            formal_t::name(), with_argument,
                            formal_t::short_name(), formal_t::help());
               },
-              [&s, &with_argument] (auto formal) {
+              [&s, with_argument] (auto formal) {
                 using formal_t = typename decltype(formal)::type;
                 print_help(s, option_name_from_c(formal_t::name()), with_argument);
               })(elle::meta::Identity<Symbol>{});
@@ -862,7 +862,7 @@ namespace elle
             print_help(s, Symbol::name(), with_argument,
                        opt->second.short_name, opt->second.help);
           elle::meta::static_if<Default::has>
-            ([&s, &with_argument] (auto const& def)
+            ([&s] (auto const& def)
              {
                auto const& v = def.value;
                if (!std::is_same<decltype(v), bool const&>::value

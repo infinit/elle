@@ -3,6 +3,7 @@
 #include <utility>
 
 #include <elle/log.hh>
+#include <elle/os/environ.hh>
 #include <elle/printf.hh>
 
 #include <elle/reactor/network/Error.hh>
@@ -91,13 +92,13 @@ namespace elle
                   typename Resolver::iterator it)
           {
             auto const end
-              = typename Resolver::iterator::basic_resolver_iterator();
+              = typename Resolver::iterator::basic_resolver_iterator{};
             if (this->_canceled)
             {
               ELLE_TRACE_SCOPE("%s: canceled", *this);
             }
             else if (error == boost::asio::error::host_not_found_try_again
-                     || getenv("ELLE_REACTOR_RESOLVE_TRY_AGAIN"))
+                     || os::getenv("ELLE_REACTOR_RESOLVE_TRY_AGAIN", false))
             {
               ELLE_TRACE_SCOPE("%s: ended with error: %s", *this, error.message());
               this->_raise<TryAgain>();

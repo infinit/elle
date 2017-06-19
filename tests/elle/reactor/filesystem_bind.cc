@@ -2,7 +2,7 @@
 #include <elle/reactor/scheduler.hh>
 #include <elle/reactor/Thread.hh>
 
-namespace rfs = reactor::filesystem;
+namespace rfs = elle::reactor::filesystem;
 rfs::FileSystem* fs;
 
 static void run(int argc, char** argv)

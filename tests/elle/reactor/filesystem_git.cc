@@ -4,7 +4,7 @@
 #include <elle/reactor/scheduler.hh>
 #include <elle/reactor/Thread.hh>
 
-namespace rfs = reactor::filesystem;
+namespace rfs = elle::reactor::filesystem;
 namespace bfs = boost::filesystem;
 
 
@@ -12,9 +12,8 @@ class GitHandle: public rfs::BindHandle
 {
 public:
   GitHandle(int fd, boost::filesystem::path const& where)
-  : rfs::BindHandle(fd, where)
-  {
-  }
+    : rfs::BindHandle(fd, where)
+  {}
   void close() override
   {
     rfs::BindHandle::close();
@@ -22,20 +21,20 @@ public:
     elle::system::Process({"git", "commit", "-m", _where.string()}).wait();
   }
 };
+
 class GitPath: public rfs::BindPath
 {
 public:
   GitPath(boost::filesystem::path const& where,
                rfs::BindOperations& ops)
-  : rfs::BindPath(where, ops)
-  {
-  }
-  void unlink()
+    : rfs::BindPath(where, ops)
+  {}
+  void unlink() override
   {
     elle::system::Process({"git", "rm", where().string()}).wait();
     elle::system::Process({"git", "commit", "-m", "remove " + where().string()}).wait();
   }
-  void rename(boost::filesystem::path const& target)
+  void rename(boost::filesystem::path const& target) override
   {
     rfs::BindPath::rename(target);
     elle::system::Process({"git", "rm", where().string()}).wait();
@@ -48,11 +47,12 @@ public:
     return std::make_unique<GitHandle>(fd, where);
   }
 };
+
 class GitFilesystemOperations: public rfs::BindOperations
 {
 public:
   GitFilesystemOperations(boost::filesystem::path const& source)
-  : rfs::BindOperations(source)
+    : rfs::BindOperations(source)
   {
     bfs::current_path(source);
     if (!bfs::exists(".git"))
@@ -63,6 +63,7 @@ public:
     return std::make_shared<GitPath>(path, *this);
   }
 };
+
 rfs::FileSystem* fs;
 
 static void run(int argc, char** argv)
@@ -78,6 +79,7 @@ static void sig_int()
 {
   fs->unmount();
 }
+
 int main(int argc, char** argv)
 {
   elle::reactor::Scheduler sched;

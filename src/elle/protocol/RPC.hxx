@@ -324,7 +324,7 @@ namespace elle
               typename OS>
     template <typename R,
               typename ... Args>
-    RPC<IS, OS>::RemoteProcedure<R, Args...>
+    typename RPC<IS, OS>::template RemoteProcedure<R, Args...>
     RPC<IS, OS>::add(std::function<R (Args...)> const& f)
     {
       uint32_t id = this->_id++;
@@ -337,7 +337,7 @@ namespace elle
               typename OS>
     template <typename R,
               typename ... Args>
-    RPC<IS, OS>::RemoteProcedure<R, Args...>
+    typename RPC<IS, OS>::template RemoteProcedure<R, Args...>
     RPC<IS, OS>::add(std::string const& name)
     {
       uint32_t id = this->_id++;

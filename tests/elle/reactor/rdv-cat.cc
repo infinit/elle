@@ -14,7 +14,7 @@ static void send(std::string const& data)
 {
   while (rdvsocket == nullptr)
     elle::reactor::sleep(100_ms);
-  rdvsocket->send_to(elle::WeakBuffer(data), remote);
+  rdvsocket->send_to(elle::ConstWeakBuffer(data), remote);
 }
 
 static void run(int argc, char**argv)

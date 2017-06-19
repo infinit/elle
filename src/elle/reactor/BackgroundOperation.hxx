@@ -79,7 +79,7 @@ namespace elle
             ELLE_TRACE_SCOPE("%s: run background operation", sched);
             auto res = elle::utility::move_on_copy(result<T>::call(action));
             ELLE_TRACE("%s: background operation finished", sched);
-            return [this, status, &sched, res]
+            return [this, status, res]
             {
               if (!status->aborted)
               {
@@ -93,7 +93,7 @@ namespace elle
             ELLE_TRACE("%s: background operation threw: %s",
                        sched, elle::exception_string());
             auto e = std::current_exception();
-            return [this, status, &sched, e]
+            return [this, status, e]
             {
               if (!status->aborted)
               {
