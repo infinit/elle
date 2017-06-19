@@ -132,7 +132,7 @@ namespace std
       this->_payload.reset();
     }
 
-    operator bool() const
+    explicit operator bool() const
     {
       return this->lock() != nullptr;
     }
