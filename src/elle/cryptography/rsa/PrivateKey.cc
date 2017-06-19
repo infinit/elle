@@ -24,7 +24,7 @@
 #include <elle/cryptography/rsa/low.hh>
 #include <elle/cryptography/rsa/serialization.hh>
 
-#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+#if defined ELLE_CRYPTOGRAPHY_ROTATION
 # include <dopenssl/rsa.hh>
 #endif
 
@@ -47,14 +47,14 @@ namespace elle
           elle::Buffer
           encode(::RSA* rsa)
           {
-            return (rsa::der::encode_private(rsa));
+            return rsa::der::encode_private(rsa);
           }
 
           static
           ::RSA*
           decode(elle::ConstWeakBuffer const& buffer)
           {
-            return (rsa::der::decode_private(buffer));
+            return rsa::der::decode_private(buffer);
           }
         };
       }
@@ -63,8 +63,8 @@ namespace elle
       | Construction |
       `-------------*/
 
-      PrivateKey::PrivateKey(::EVP_PKEY* key):
-        _key(key)
+      PrivateKey::PrivateKey(::EVP_PKEY* key)
+        : _key(key)
       {
         ELLE_ASSERT_NEQ(key, nullptr);
         ELLE_ASSERT_NEQ(key->pkey.rsa->n, nullptr);
@@ -189,15 +189,13 @@ namespace elle
                        Cipher const cipher,
                        Mode const mode) const
       {
-        elle::IOStream _code(code.istreambuf());
-        std::stringstream _plain;
+        auto is = elle::IOStream(code.istreambuf());
+        std::stringstream plain;
 
-        this->open(_code, _plain,
+        this->open(is, plain,
                    cipher, mode);
 
-        elle::Buffer plain(_plain.str().data(), _plain.str().length());
-
-        return (plain);
+        return plain.str();
       }
 
       void
@@ -217,14 +215,14 @@ namespace elle
                           Padding const padding) const
       {
         auto prolog =
-          [this, padding](::EVP_PKEY_CTX* context)
+          [padding](::EVP_PKEY_CTX* context)
           {
             padding::pad(context, padding);
           };
 
-        return (raw::asymmetric::decrypt(this->_key.get(),
-                                         code,
-                                         prolog));
+        return raw::asymmetric::decrypt(this->_key.get(),
+                                        code,
+                                        prolog);
       }
 
       elle::Buffer
@@ -232,10 +230,9 @@ namespace elle
                        Padding const padding,
                        Oneway const oneway) const
       {
-        elle::IOStream _plain(plain.istreambuf());
-
-        return (this->sign(_plain,
-                           padding, oneway));
+        auto is = elle::IOStream(plain.istreambuf());
+        return this->sign(is,
+                          padding, oneway);
       }
 
       elle::Buffer
@@ -244,34 +241,33 @@ namespace elle
                        Oneway const oneway) const
       {
         auto prolog =
-          [this, padding](::EVP_MD_CTX* context,
-                          ::EVP_PKEY_CTX* ctx)
+          [padding](::EVP_MD_CTX* context, ::EVP_PKEY_CTX* ctx)
           {
             padding::pad(ctx, padding);
           };
 
-        return (raw::asymmetric::sign(
+        return raw::asymmetric::sign(
                   this->_key.get(),
                   oneway::resolve(oneway),
                   plain,
-                  prolog));
+                  prolog);
       }
 
       uint32_t
       PrivateKey::size() const
       {
-        return (static_cast<uint32_t>(
-                  ::EVP_PKEY_size(this->_key.get())));
+        return static_cast<uint32_t>(
+                  ::EVP_PKEY_size(this->_key.get()));
       }
 
       uint32_t
       PrivateKey::length() const
       {
-        return (static_cast<uint32_t>(
-                  ::EVP_PKEY_bits(this->_key.get())));
+        return static_cast<uint32_t>(
+                  ::EVP_PKEY_bits(this->_key.get()));
       }
 
-#if defined(ELLE_CRYPTOGRAPHY_ROTATION)
+#if defined ELLE_CRYPTOGRAPHY_ROTATION
       /*---------.
       | Rotation |
       `---------*/
@@ -282,25 +278,25 @@ namespace elle
         cryptography::require();
 
         // Deduce the RSA key from the given seed.
-        ::RSA* rsa = nullptr;
-
-        if ((rsa = ::dRSA_deduce_privatekey(
+        if (auto rsa = ::dRSA_deduce_privatekey(
                seed.length(),
                static_cast<unsigned char const*>(seed.buffer().contents()),
-               seed.buffer().size())) == nullptr)
+               seed.buffer().size()))
+        {
+          ELLE_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(rsa);
+
+          // Construct the private key based on the given RSA structure.
+          this->_construct(rsa);
+
+          ELLE_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
+
+          this->_check();
+        }
+        else
           throw Error(
             elle::sprintf("unable to deduce the RSA key from the given "
                           "seed: %s",
                           ::ERR_error_string(ERR_get_error(), nullptr)));
-
-        ELLE_CRYPTOGRAPHY_FINALLY_ACTION_FREE_RSA(rsa);
-
-        // Construct the private key based on the given RSA structure.
-        this->_construct(rsa);
-
-        ELLE_CRYPTOGRAPHY_FINALLY_ABORT(rsa);
-
-        this->_check();
       }
 
       Seed
@@ -319,7 +315,7 @@ namespace elle
                                                       seed.buffer(),
                                                       prolog);
 
-        return (Seed(buffer, seed.length()));
+        return Seed(buffer, seed.length());
       }
 #endif
 
@@ -331,14 +327,14 @@ namespace elle
       PrivateKey::operator ==(PrivateKey const& other) const
       {
         if (this == &other)
-          return (true);
+          return true;
 
         ELLE_ASSERT_NEQ(this->_key, nullptr);
         ELLE_ASSERT_NEQ(other._key, nullptr);
 
         // Compare the public components because it is sufficient to
         // uniquely distinguish keys.
-        return (::EVP_PKEY_cmp(this->_key.get(), other._key.get()) == 1);
+        return ::EVP_PKEY_cmp(this->_key.get(), other._key.get()) == 1;
       }
 
       PrivateKey&
@@ -425,7 +421,7 @@ namespace elle
           elle::Buffer
           encode(PrivateKey const& K)
           {
-            return (rsa::der::encode_private(K.key()->pkey.rsa));
+            return rsa::der::encode_private(K.key()->pkey.rsa);
           }
 
           PrivateKey
@@ -433,7 +429,7 @@ namespace elle
           {
             ::RSA* rsa = rsa::der::decode_private(buffer);
 
-            return (PrivateKey(rsa));
+            return PrivateKey(rsa);
           }
         }
       }

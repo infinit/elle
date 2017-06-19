@@ -186,7 +186,7 @@ namespace elle
         ELLE_DUMP("plain: %x", plain);
 
         auto prolog =
-          [this, padding](::EVP_PKEY_CTX* context)
+          [padding](::EVP_PKEY_CTX* context)
           {
             padding::pad(context, padding);
           };
@@ -236,8 +236,7 @@ namespace elle
                         Oneway const oneway) const
       {
         auto prolog =
-          [this, padding](::EVP_MD_CTX* context,
-                          ::EVP_PKEY_CTX* ctx)
+          [padding](::EVP_MD_CTX* context, ::EVP_PKEY_CTX* ctx)
           {
             padding::pad(ctx, padding);
           };

@@ -62,7 +62,7 @@ namespace elle
           void
           _abort() override
           {
-            ELLE_TRACE_SCOPE("%s: abort", *this);
+            ELLE_TRACE_SCOPE("%s: abort", this);
             this->_canceled = true;
             this->_resolver.cancel();
             reactor::wait(*this);
@@ -91,21 +91,20 @@ namespace elle
           _wakeup(boost::system::error_code const& error,
                   typename Resolver::iterator it)
           {
-            auto const end
-              = typename Resolver::iterator::basic_resolver_iterator{};
+            auto const end = typename Resolver::iterator{};
             if (this->_canceled)
             {
-              ELLE_TRACE_SCOPE("%s: canceled", *this);
+              ELLE_TRACE_SCOPE("%s: canceled", this);
             }
             else if (error == boost::asio::error::host_not_found_try_again
                      || os::getenv("ELLE_REACTOR_RESOLVE_TRY_AGAIN", false))
             {
-              ELLE_TRACE_SCOPE("%s: ended with error: %s", *this, error.message());
+              ELLE_TRACE_SCOPE("%s: ended with error: %s", this, error.message());
               this->_raise<TryAgain>();
             }
             else if (error)
             {
-              ELLE_TRACE_SCOPE("%s: ended with error: %s", *this, error.message());
+              ELLE_TRACE_SCOPE("%s: ended with error: %s", this, error.message());
               this->_raise<ResolutionError>(this->_hostname, error.message());
             }
             else if (it == end)
@@ -115,18 +114,18 @@ namespace elle
               //   one entry to the handler.
               // This is false on wine.
               ELLE_TRACE_SCOPE(
-                "%s: ended with no error but an empty address list", *this);
+                "%s: ended with no error but an empty address list", this);
               this->_raise<ResolutionError>(
                 this->_hostname, "host not found: address list is empty");
             }
             else
             {
-              ELLE_TRACE_SCOPE("%s: ended", *this);
+              ELLE_TRACE_SCOPE("%s: ended", this);
               for (; it != end; ++it)
               {
                 this->_end_points.emplace_back(*it);
                 ELLE_DEBUG("%s: endpoint address: %s",
-                           *this, this->_end_points.back().address().to_string());
+                           this, this->_end_points.back().address().to_string());
               }
             }
             this->done();
@@ -149,7 +148,8 @@ namespace elle
           while (0 < opt.num_attempts)
             try
             {
-              Resolution<Protocol> resolution(hostname, service, opt.ipv4_only);
+              auto&& resolution
+                = Resolution<Protocol>(hostname, service, opt.ipv4_only);
               resolution.run();
               return resolution.end_points();
             }
@@ -172,7 +172,8 @@ namespace elle
           auto const sep = repr.find_last_of(':');
           if (sep == std::string::npos || sep == repr.length())
             elle::err("invalid endpoint: %s", repr);
-          return std::make_pair(repr.substr(0, sep), repr.substr(sep + 1));
+          else
+            return std::make_pair(repr.substr(0, sep), repr.substr(sep + 1));
         }
       }
 

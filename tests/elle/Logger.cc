@@ -359,7 +359,7 @@ parallel_write()
   logger.component_level("in");
   logger.component_level("out");
 
-  auto action = [&logger](int& counter)
+  auto action = [](int& counter)
     {
       using namespace boost::posix_time;
       ptime deadline = microsec_clock::local_time() + seconds(10);
