@@ -4,6 +4,18 @@
 # include <valgrind/valgrind.h>
 #endif
 
+#if defined(__has_feature)
+# if __has_feature(address_sanitizer)
+#  include <sanitizer/common_interface_defs.h>
+# else
+#  define __sanitizer_start_switch_fiber(...) {}
+#  define __sanitizer_finish_switch_fiber(...) {}
+# endif
+#else
+# define __sanitizer_start_switch_fiber(...) {}
+# define __sanitizer_finish_switch_fiber(...) {}
+#endif
+
 #include <elle/Backtrace.hh>
 #include <elle/assert.hh>
 #include <elle/log.hh>
@@ -123,6 +135,8 @@ namespace elle
               VALGRIND_STACK_REGISTER(this->_base_pointer(),
                                       this->_stack_pointer);
 #endif
+            ELLE_DUMP("%s: create: sp = %x, ss = %x",
+                      this, this->_stack_pointer, this->_stack_size);
           }
 
           ~Thread() override
@@ -131,6 +145,8 @@ namespace elle
                         this->status() == Status::starting ||
                         this->_root);
             ELLE_TRACE("%s: die", this);
+            ELLE_DUMP("%s: die: sp = %x, ss = %x",
+                      this, this->_stack_pointer, this->_stack_size);
             if (this->_context)
             {
               this->_context = nullptr;
@@ -160,8 +176,15 @@ namespace elle
           /// Pass the execution from @from to @to.
           void _jump(Thread* from, Thread* to)
           {
+            ELLE_DUMP("%s: %s: _jump: start: sp = %x, ss = %x",
+                      from, to, to->_stack_pointer, to->_stack_size);
+            __sanitizer_start_switch_fiber(nullptr,
+                                           to->_base_pointer(),
+                                           to->_stack_size);
             jump_fcontext(&from->_context, to->_context,
                           reinterpret_cast<intptr_t>(this));
+            ELLE_DUMP("%s: %s: _jump: finish", from, to);
+            __sanitizer_finish_switch_fiber(nullptr, nullptr, nullptr);
           }
 
 
@@ -228,6 +251,7 @@ namespace elle
               ELLE_DUMP("yielding %s with in-flight exception", this);
             auto& next = this->_backend._current;
             this->_jump(this, next);
+
             if (this->_backend._current->_unwinding != std::uncaught_exception())
             {
               ELLE_TRACE("yield %s: unwind mismatch, expect %s, got %s",
@@ -248,6 +272,8 @@ namespace elle
           _run()
           {
             this->status(Status::running);
+            ELLE_DUMP("%s: sanitizer: finish: _run", this);
+            __sanitizer_finish_switch_fiber(nullptr, nullptr, nullptr);
             try
             {
               this->action()();
