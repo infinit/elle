@@ -799,6 +799,7 @@ def configure(curl_config,
   # (bin, libs, stdin)
   tests = [
     ('backend', [], None),
+    ('for-each', [], None),
     ('fsm', [], None),
     ('generator', [], None),
     ('http', [curl_lib], None),
