@@ -155,6 +155,13 @@ namespace elle
         o << "nullptr";
     }
 
+    template <typename T>
+    void
+    print(std::ostream& o, std::weak_ptr<T> const& value)
+    {
+      print(o, value.lock());
+    }
+
     inline
     void
     print(std::ostream& o, void* value)
