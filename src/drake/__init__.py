@@ -578,6 +578,14 @@ class Path:
       return self.__absolute
 
   @property
+  def name_relative(self):
+    """Path relative to the current drakefile."""
+    if self.absolute():
+      return self
+    else:
+      return self.without_prefix(drake.Drake.current.prefix)
+
+  @property
   def relative(self):
     return not self.__absolute
 
@@ -1309,9 +1317,7 @@ class BaseNode(object, metaclass = _BaseNodeType):
   @property
   def name_relative(self):
     """Node name, relative to the current drakefile."""
-    if self.__name.absolute():
-      return self.__name
-    return self.__name.without_prefix(drake.Drake.current.prefix)
+    return self.__name.name_relative
 
   def name_absolute(self):
     """Node name, relative to the root of the source directory."""
@@ -3870,11 +3876,13 @@ class Runner(Builder):
 
     self.__args = args or []
     self.__exe = exe
-    self.__name = name or self.__exe.name_relative
-    self.__out = node('%s.out' % self.__name)
-    self.__err = node('%s.err' % self.__name)
-    self.__status = node('%s.status' % self.__name)
-    self.__bench = node('%s.bench' % self.__name)
+    self.__name = name or self.__exe
+    base = (self.__exe.name_relative.dirname()
+            / (name or self.__exe.path().basename()))
+    self.__out = node('%s.out' % base)
+    self.__err = node('%s.err' % base)
+    self.__status = node('%s.status' % base)
+    self.__bench = node('%s.bench' % base)
     self.__sources = [exe] + sources
     self.__env = env
     self.__runs = runs
