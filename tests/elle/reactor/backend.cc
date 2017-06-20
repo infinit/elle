@@ -1,12 +1,12 @@
 #include <elle/test.hh>
 
-#if defined(REACTOR_CORO_BACKEND_IO)
+#if defined REACTOR_CORO_BACKEND_IO
 # include <elle/reactor/backend/coro_io/backend.hh>
-#elif defined(REACTOR_CORO_BACKEND_BOOST_CONTEXT)
+#elif defined REACTOR_CORO_BACKEND_BOOST_CONTEXT
 # include <elle/reactor/backend/boost_context/backend.hh>
 #endif
 
-#include <boost/bind.hpp>
+#include <boost/range/algorithm/for_each.hpp>
 
 using elle::reactor::backend::Thread;
 
@@ -89,6 +89,42 @@ namespace
     t->step();
     BOOST_CHECK(t->status() == Thread::Status::done);
   }
+
+  /// Check our coro can use their stacks.
+  template <typename Backend>
+  void
+  test_stack()
+  {
+    auto&& m = Backend{};
+
+    auto val = 1;
+
+    auto coro = [&m, &val]
+    {
+      auto array = std::array<int, 100>{};
+      auto sum = 0;
+
+      boost::for_each(array, [val](auto& i) { i = val; });
+      sum = array[0];
+      m.current()->yield();
+
+      boost::for_each(array, [val](auto& i) { i = val; });
+      sum += array[49];
+      m.current()->yield();
+
+      boost::for_each(array, [val](auto& i) { i = val; });
+      sum += array[99];
+
+      BOOST_CHECK(sum = 111);
+    };
+
+    auto t = m.make_thread("coro", coro);
+    t->step();
+    val *= 10;
+    t->step();
+    val *= 10;
+    t->step();
+  }
 }
 
 ELLE_TEST_SUITE()
@@ -109,4 +145,5 @@ ELLE_TEST_SUITE()
   TEST(deadlock_creation);
   TEST(deadlock_switch);
   TEST(status);
+  TEST(stack);
 }
