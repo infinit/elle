@@ -1,5 +1,8 @@
 #pragma once
 
+#include <type_traits> // std::integral_constant
+#include <utility> // std::forward
+
 namespace elle
 {
   namespace meta
@@ -80,57 +83,54 @@ namespace elle
       static bool constexpr value = Head::value && All<Tail...>::value;
     };
 
-    template <bool C, typename T, typename E>
-    struct _static_if
-    {
-      using type = T;
-      static
-      T const&
-      value(T const& t, E const&)
-      {
-        return t;
-      }
-    };
 
-    template <typename T, typename E>
-    struct _static_if<false, T, E>
-    {
-      using type = E;
-      static
-      E const&
-      value(T const&, E const& e)
-      {
-        return e;
-      }
-    };
+    /*------------.
+    | static-if.  |
+    `------------*/
 
-    template <bool Cond, typename T, typename E>
-    typename _static_if<Cond, T, E>::type const&
-    static_if(T const& then, E const& else_)
+    /// Execute the then-clause.
+    template <typename Then, typename Else>
+    auto constexpr static_if_impl(std::true_type, Then&& then, Else&&)
     {
-      return _static_if<Cond, T, E>::value(then, else_);
+      return std::forward<Then>(then);
+    }
+
+    /// Execute the else-clause.
+    template <typename Then, typename Else>
+    auto constexpr static_if_impl(std::false_type, Then&&, Else&& else_)
+    {
+      return std::forward<Else>(else_);
+    }
+
+    /// Execute the then- or the else-clause depending on \a cond.
+    template <bool Cond, typename Then, typename Else>
+    auto constexpr static_if(Then&& then, Else&& else_)
+    {
+      return static_if_impl(std::integral_constant<bool, Cond>{},
+                            std::forward<Then>(then),
+                            std::forward<Else>(else_));
     }
 
     struct Ignore
     {
       template <typename ... Args>
-      void
+      void constexpr
       operator()(Args&& ...)
       {}
     };
+
+    /// Execute the then-clause if \a cond is verified.
+    template <bool Cond, typename Then>
+    auto constexpr static_if(Then&& then)
+    {
+      return static_if<Cond>(std::forward<Then>(then), Ignore{});
+    }
 
     template <typename T>
     struct Identity
     {
       using type = T;
     };
-
-    template <bool Cond, typename T>
-    typename _static_if<Cond, T, Ignore>::type
-    static_if(T const& then)
-    {
-      return static_if<Cond>(then, Ignore());
-    }
   }
 }
 
