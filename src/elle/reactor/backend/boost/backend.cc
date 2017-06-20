@@ -19,10 +19,10 @@
 #include <elle/Backtrace.hh>
 #include <elle/assert.hh>
 #include <elle/log.hh>
-#include <elle/reactor/backend/boost_context/backend.hh>
+#include <elle/reactor/backend/boost/backend.hh>
 #include <elle/reactor/exception.hh>
 
-ELLE_LOG_COMPONENT("elle.reactor.backend.boost_context");
+ELLE_LOG_COMPONENT("elle.reactor.backend.boost");
 
 namespace elle
 {
@@ -30,7 +30,7 @@ namespace elle
   {
     namespace backend
     {
-      namespace boost_context
+      namespace boost
       {
         /*----------------.
         | Stack Allocator |
@@ -94,7 +94,7 @@ namespace elle
           8 * 1024          // Min: 8 kiB
           >;
         /// Type of context pointer used.
-        using Context = boost::context::fcontext_t;
+        using Context = ::boost::context::fcontext_t;
 
         /// Allocator.
         static StackAllocator stack_allocator;
@@ -104,8 +104,8 @@ namespace elle
         void
         wrapped_run(intptr_t thread_ptr);
 
-        using boost::context::make_fcontext;
-        using boost::context::jump_fcontext;
+        using ::boost::context::make_fcontext;
+        using ::boost::context::jump_fcontext;
 
         class Backend::Thread
           : public backend::Thread
@@ -341,9 +341,9 @@ namespace elle
         | Backend |
         `--------*/
 
-        Backend::Backend():
-          _self(new Thread(*this)),
-          _current(this->_self.get())
+        Backend::Backend()
+          : _self(new Thread(*this))
+          , _current(this->_self.get())
         {}
 
         Backend::~Backend()

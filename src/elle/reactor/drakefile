@@ -679,15 +679,15 @@ def configure(curl_config,
     backend_coro_io = None
 
   lib_cxx_config.add_local_include_path('modules/libutp')
-  backend_boost_context_cxx_config = drake.cxx.Config(lib_cxx_config)
-  backend_boost_context = drake.cxx.StaticLib(
-    lib_path + '/elle_reactor_backend_boost_context',
+  backend_boost_cxx_config = drake.cxx.Config(lib_cxx_config)
+  backend_boost = drake.cxx.StaticLib(
+    lib_path + '/elle_reactor_backend_boost',
     drake.nodes(
-      'backend/boost_context/backend.cc',
-      'backend/boost_context/backend.hh',
+      'backend/boost/backend.cc',
+      'backend/boost/backend.hh',
     ),
     cxx_toolkit,
-    backend_boost_context_cxx_config,
+    backend_boost_cxx_config,
   )
   lib_dynamic_link_libs = [
     curl_lib,
@@ -707,9 +707,9 @@ def configure(curl_config,
     lib_static_link_libs.append(libcoroutine)
     lib_static_link_libs.append(backend_coro_io)
   elif backend == Backends.boost:
-    lib_dynamic_link_libs.append(backend_boost_context)
+    lib_dynamic_link_libs.append(backend_boost)
     lib_dynamic_link_libs.append(backend_lib)
-    lib_static_link_libs.append(backend_boost_context)
+    lib_static_link_libs.append(backend_boost)
     lib_static_link_libs.append(backend_lib)
   if fuse_lib is not None:
     lib_dynamic_link_libs.append(fuse_lib)

@@ -3,7 +3,7 @@
 #if defined REACTOR_CORO_BACKEND_IO
 # include <elle/reactor/backend/coro_io/backend.hh>
 #elif defined REACTOR_CORO_BACKEND_BOOST_CONTEXT
-# include <elle/reactor/backend/boost_context/backend.hh>
+# include <elle/reactor/backend/boost/backend.hh>
 #endif
 
 #include <boost/range/algorithm/for_each.hpp>
@@ -135,7 +135,7 @@ ELLE_TEST_SUITE()
 #if defined REACTOR_CORO_BACKEND_IO
   using Backend = elle::reactor::backend::coro_io::Backend;
 #elif defined REACTOR_CORO_BACKEND_BOOST_CONTEXT
-  using Backend = elle::reactor::backend::boost_context::Backend;
+  using Backend = elle::reactor::backend::boost::Backend;
 #endif
 
 #define TEST(Name)                                                     \

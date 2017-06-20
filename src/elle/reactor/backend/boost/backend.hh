@@ -10,10 +10,10 @@ namespace elle
   {
     namespace backend
     {
-      namespace boost_context
+      namespace boost
       {
-        class Backend:
-          public reactor::backend::Backend
+        class Backend
+          : public reactor::backend::Backend
         {
         /*------.
         | Types |

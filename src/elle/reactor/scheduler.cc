@@ -13,7 +13,7 @@
 #if defined REACTOR_CORO_BACKEND_IO
 # include <elle/reactor/backend/coro_io/backend.hh>
 #elif defined REACTOR_CORO_BACKEND_BOOST_CONTEXT
-# include <elle/reactor/backend/boost_context/backend.hh>
+# include <elle/reactor/backend/boost/backend.hh>
 #endif
 #include <elle/reactor/exception.hh>
 #include <elle/reactor/Operation.hh>
@@ -54,7 +54,7 @@ namespace elle
 #if defined(REACTOR_CORO_BACKEND_IO)
       , _manager(new backend::coro_io::Backend())
 #elif defined(REACTOR_CORO_BACKEND_BOOST_CONTEXT)
-      , _manager(new backend::boost_context::Backend())
+      , _manager(new backend::boost::Backend())
 #else
 # error "REACTOR_CORO_BACKEND not defined"
 #endif
