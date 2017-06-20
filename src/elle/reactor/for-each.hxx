@@ -44,7 +44,7 @@ namespace elle
                   [&f] (auto&& e)
                   {
                     f(std::forward<decltype(e)>(e));
-                  })(std::forward<decltype(e)>(e));
+                  })(std::forward<decltype(e) const>(e));
               }
               catch (Break const&)
               {
