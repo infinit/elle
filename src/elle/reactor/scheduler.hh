@@ -263,7 +263,7 @@ namespace elle
       void
       _run_background(std::function<std::function<void ()> ()> action);
       ELLE_ATTRIBUTE(boost::asio::io_service, background_service);
-      ELLE_ATTRIBUTE(boost::asio::io_service::work*, background_service_work);
+      ELLE_ATTRIBUTE(std::unique_ptr<boost::asio::io_service::work>, background_service_work);
       ELLE_ATTRIBUTE(std::vector<std::thread>, background_pool);
       ELLE_ATTRIBUTE(int, background_pool_free);
       friend
@@ -289,7 +289,7 @@ namespace elle
       `-----*/
     public:
       ELLE_ATTRIBUTE_RX(boost::asio::io_service, io_service);
-      ELLE_ATTRIBUTE(boost::asio::io_service::work*, io_service_work);
+      ELLE_ATTRIBUTE(std::unique_ptr<boost::asio::io_service::work>, io_service_work);
 
     /*--------.
     | Details |

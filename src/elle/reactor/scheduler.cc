@@ -3,6 +3,7 @@
 #include <elle/assert.hh>
 #include <elle/attribute.hh>
 #include <elle/finally.hh>
+#include <elle/find.hh>
 #include <elle/log.hh>
 #include <elle/make-vector.hh>
 #include <elle/memory.hh>
@@ -44,17 +45,12 @@ namespace elle
       : _done(false)
       , _shallstop(false)
       , _current(nullptr)
-      , _starting()
-      , _starting_mtx()
-      , _running()
-      , _frozen()
-      , _background_service()
       , _background_service_work(
-          new boost::asio::io_service::work(this->_background_service))
+           std::make_unique<boost::asio::io_service::work>(this->_background_service))
       , _background_pool()
       , _background_pool_free(0)
-      , _io_service()
-      , _io_service_work(new boost::asio::io_service::work(this->_io_service))
+      , _io_service_work(
+           std::make_unique<boost::asio::io_service::work>(this->_io_service))
 #if defined(REACTOR_CORO_BACKEND_IO)
       , _manager(new backend::coro_io::Backend())
 #elif defined(REACTOR_CORO_BACKEND_BOOST_CONTEXT)
@@ -62,7 +58,6 @@ namespace elle
 #else
 # error "REACTOR_CORO_BACKEND not defined"
 #endif
-      , _running_thread()
     {
       this->_eptr = nullptr;
       plugins::logger_indentation.load();
@@ -79,11 +74,7 @@ namespace elle
 #endif
     }
 
-    Scheduler::~Scheduler()
-    {
-      delete this->_background_service_work;
-      delete this->_io_service_work;
-    }
+    Scheduler::~Scheduler() = default;
 
     /*------------------.
     | Current Scheduler |
@@ -222,13 +213,11 @@ namespace elle
       }
       this->_running_thread = std::this_thread::get_id();
       while (this->step())
-        /* nothing */;
+        continue;
       this->_running_thread = std::thread::id();
-      delete this->_background_service_work;
       this->_background_service_work = nullptr;
       for (auto& thread: this->_background_pool)
         thread.join();
-      delete this->_io_service_work;
       this->_io_service_work = nullptr;
       // Cancel all pending signal handlers.
       this->_signal_handlers.clear();
@@ -239,7 +228,7 @@ namespace elle
         ELLE_TRACE("%s: done", *this);
       }
       ELLE_ASSERT(this->_frozen.empty());
-      if (this->_eptr != nullptr)
+      if (this->_eptr)
         this->_rethrow_exception(this->_eptr);
     }
 
@@ -264,19 +253,18 @@ namespace elle
       auto running = make_vector(ordered);
       ELLE_TRACE_SCOPE("Scheduler: new round with %s jobs", running.size());
 
-      ELLE_DUMP("%s: starting: %s", *this, this->_starting);
-      ELLE_DUMP("%s: running: %s", *this, this->_running);
-      ELLE_DUMP("%s: frozen: %s", *this, this->_frozen);
+      ELLE_DUMP("%s: starting: %s", this, this->_starting);
+      ELLE_DUMP("%s: running: %s", this, this->_running);
+      ELLE_DUMP("%s: frozen: %s", this, this->_frozen);
       ELLE_MEASURE("Scheduler round")
         for (Thread* t: running)
-        {
           // If the thread was stopped during this round, skip. Can be caused by
           // terminate_now, for instance.
-          if (this->_running.find(t) == this->_running.end())
-            continue;
-          ELLE_TRACE("Scheduler: schedule %s", *t);
-          this->_step(t);
-        }
+          if (elle::find(this->_running, t))
+          {
+            ELLE_TRACE("Scheduler: schedule %s", *t);
+            this->_step(t);
+          }
       ELLE_TRACE("%s: run asynchronous jobs", *this)
       {
         ELLE_MEASURE_SCOPE("Asio callbacks");
@@ -326,7 +314,7 @@ namespace elle
               std::cerr << "ASIO service is dead." << std::endl;
               std::abort();
             }
-            if (this->_shallstop)
+            else if (this->_shallstop)
               break;
           }
       }
@@ -387,13 +375,6 @@ namespace elle
       thread.frozen()();
     }
 
-    namespace
-    {
-      void
-      nothing()
-      {}
-    }
-
     void
     Scheduler::_thread_register(Thread& thread)
     {
@@ -402,7 +383,7 @@ namespace elle
         std::unique_lock<std::mutex> lock(this->_starting_mtx);
         this->_starting.insert(&thread);
         // Wake the scheduler.
-        this->_io_service.post(nothing);
+        this->_io_service.post([]{});
       }
     }
 
@@ -414,7 +395,7 @@ namespace elle
       this->_running.insert(&thread);
       thread.unfrozen()(reason);
       if (this->_running.size() == 1)
-        this->_io_service.post(nothing);
+        this->_io_service.post([]{});
     }
 
     void
@@ -470,7 +451,7 @@ namespace elle
         throw Terminate(thread->name());
       }
       // If the underlying coroutine was never run, nothing to do.
-      if (this->_starting.erase(thread))
+      else if (this->_starting.erase(thread))
       {
         ELLE_DEBUG("thread was starting, discard it");
         thread->_state = Thread::State::done;
@@ -478,7 +459,7 @@ namespace elle
         thread->_scheduler_release();
         return true;
       }
-      if (thread->_terminating)
+      else if (thread->_terminating)
         ELLE_DEBUG("thread already terminating");
       else
       {
