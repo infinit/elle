@@ -3859,13 +3859,22 @@ class Runner(Builder):
                targets = None,
                sources = [],
                runs = 1,
+               name = None
   ):
-    self.__args = args or list()
+    '''
+    name -- the basename for the output files, defaults to exe
+    exe -- the executable to run
+    args -- the arguments
+    env -- environment variables to pass
+    '''
+
+    self.__args = args or []
     self.__exe = exe
-    self.__out = node('%s.out' % exe.name_relative)
-    self.__err = node('%s.err' % exe.name_relative)
-    self.__status = node('%s.status' % exe.name_relative)
-    self.__bench = node('%s.bench' % exe.name_relative)
+    self.__name = name or self.__exe.name_relative
+    self.__out = node('%s.out' % self.__name)
+    self.__err = node('%s.err' % self.__name)
+    self.__status = node('%s.status' % self.__name)
+    self.__bench = node('%s.bench' % self.__name)
     self.__sources = [exe] + sources
     self.__env = env
     self.__runs = runs
@@ -3884,8 +3893,7 @@ class Runner(Builder):
     import drake.cxx
     if isinstance(exe, drake.cxx.Executable):
         self.__sources += exe.dynamic_libraries
-    Builder.__init__(
-      self,
+    super().__init__(
       self.__sources,
       [self.__out, self.__err, self.__status, self.__bench] + (targets or []))
 
@@ -3961,7 +3969,7 @@ class Runner(Builder):
           output_cmd = (pipes.quote(str(a)) for a in self.command)
           self.output(' '.join(chain(output_env, output_cmd)),
             'Run %s%s' % (
-              self.__exe,
+              self.__name,
               ' (%s/%s)' % (count, self.__runs) if self.__runs > 1 else ''))
           env = dict(_OS.environ)
           if self.__env is not None:
@@ -4015,7 +4023,7 @@ class Runner(Builder):
     return self.__exe
 
   def __str__(self):
-    return str(self.__exe)
+    return str(self.__name)
 
   def hash(self):
     return self.command
