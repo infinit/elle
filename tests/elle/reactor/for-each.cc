@@ -104,5 +104,6 @@ ELLE_TEST_SUITE()
   master.add(BOOST_TEST_CASE(empty));
   master.add(BOOST_TEST_CASE(const_not_copiable));
   master.add(BOOST_TEST_CASE(mutable_not_copiable));
+  master.add(BOOST_TEST_CASE(mutable_copiable));
   // master.add(BOOST_TEST_CASE(moved_not_copiable));
 }
