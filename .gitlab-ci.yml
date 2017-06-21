@@ -18,6 +18,10 @@ before_script:
   - BUILD_DIR="$(dirname ${CI_PROJECT_DIR})/${CI_PROJECT_NAME}-build"
   - INSTALL_DIR="${SOURCE_DIR}/_install"
   - DESC=$(git describe)
+# smv FROM TO-HOST TO-DIR -- scp $FROM $TO-HOST:$TO-DIR && rm -f $FROM.
+# Use a tmp to avoid partial upload when interrupted.
+# A single call to ssh, rather than scp and then ssh.
+    - function smv { dst=$3/$(basename "$1") && time ssh "$2" "cat > '$dst.tmp' && mv -f '$dst.tmp' '$dst'" < "$1" && rm -f "$1"; }
 
 x86_64-centos6-gcc4:
   stage: build
@@ -31,8 +35,7 @@ x86_64-centos6-gcc4:
     - scl enable devtoolset-4 rh-python34 "python3 drake -j $(nproc) //install"
     - TARBALL="$PROJECT-x86_64-centos6-gcc4-$DESC.tbz"
     - tar $TARFLAGS -cjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,$PROJECT-$DESC/,"
-    - scp "$TARBALL" buildslave@packages.infinit.sh:tmp
-    - rm "$TARBALL"
+    - smv "$TARBALL" buildslave@packages.infinit.sh tmp
     - cd "$SOURCE_DIR"
     - time scl enable devtoolset-4 rh-python34 "./buildenv --cache-upload-build-tree --exclude='*.deb,*.rpm,*.tbz' --branch \"$CI_BUILD_REF_NAME\" --build-trees-root \"/cache/$CI_PROJECT_NAME\" --cache-namespace \"$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME\" --cache-id \"$CI_RUNNER_ID\" --verbose"
   tags:
@@ -53,8 +56,7 @@ x86_64-ubuntu-gcc4:
     - python3 drake -j $(nproc) //install
     - TARBALL="$BUILD_DIR/$PROJECT-x86_64-ubuntu-gcc4-$DESC.tbz"
     - tar $TARFLAGS -cjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,$PROJECT-$DESC/,"
-    - scp "$TARBALL" buildslave@packages.infinit.sh:tmp
-    - rm "$TARBALL"
+    - smv "$TARBALL" buildslave@packages.infinit.sh tmp
     - python3 drake -j $(nproc) //docker
     - docker tag $PROJECT:${DESC} mefyl/$PROJECT:${DESC}
     - docker push mefyl/$PROJECT:${DESC}
@@ -78,8 +80,7 @@ x86_64-jessie-gcc4:
     - python3 drake -j $(nproc) //install
     - TARBALL="$BUILD_DIR/$PROJECT-x86_64-jessie-gcc4-$DESC.tbz"
     - tar $TARFLAGS -cjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,$PROJECT-$DESC/,"
-    - scp "$TARBALL" buildslave@packages.infinit.sh:tmp
-    - rm "$TARBALL"
+    - smv "$TARBALL" buildslave@packages.infinit.sh tmp
     - cd "$SOURCE_DIR"
     - time ./buildenv --cache-upload-build-tree --exclude='*.deb,*.rpm,*.tbz' --branch "$CI_BUILD_REF_NAME" --build-trees-root "/cache/$CI_PROJECT_NAME" --cache-namespace "$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME" --cache-id "$CI_RUNNER_ID" --verbose
   tags:
@@ -99,8 +100,7 @@ x86_64-alpine-gcc:
     - python3 drake -j $(nproc) //install
     - TARBALL="$BUILD_DIR/$PROJECT-x86_64-alpine-gcc-$DESC.tbz"
     - tar $TARFLAGS -cjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,$PROJECT-$DESC/,"
-    - scp "$TARBALL" buildslave@packages.infinit.sh:tmp
-    - rm "$TARBALL"
+    - smv "$TARBALL" buildslave@packages.infinit.sh tmp
     - cd "$SOURCE_DIR"
     - time ./buildenv --cache-upload-build-tree --exclude='*.deb,*.rpm,*.tbz' --branch "$CI_BUILD_REF_NAME" --build-trees-root "/cache/$CI_PROJECT_NAME" --cache-namespace "$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME" --cache-id "$CI_RUNNER_ID" --verbose
   tags:
@@ -120,8 +120,7 @@ i386-jessie-gcc4:
     - python3 drake -j $(nproc) //install
     - TARBALL="$BUILD_DIR/$PROJECT-i386-jessie-gcc4-$DESC.tbz"
     - tar $TARFLAGS -cjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,$PROJECT-$DESC/,"
-    - scp "$TARBALL" buildslave@packages.infinit.sh:tmp
-    - rm "$TARBALL"
+    - smv "$TARBALL" buildslave@packages.infinit.sh tmp
     - cd "$SOURCE_DIR"
     - time ./buildenv --cache-upload-build-tree --exclude='*.deb,*.rpm,*.tbz' --branch "$CI_BUILD_REF_NAME" --build-trees-root "/cache/$CI_PROJECT_NAME" --cache-namespace "$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME" --cache-id "$CI_RUNNER_ID" --verbose
   tags:
@@ -141,8 +140,7 @@ x86_64-windows-mingw4:
     - python3 drake -j $(nproc) //install
     - TARBALL="$BUILD_DIR/$PROJECT-x86_64-windows-mingw4-$DESC.tbz"
     - tar $TARFLAGS -cjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,$PROJECT-$DESC/,"
-    - scp "$TARBALL" buildslave@packages.infinit.sh:tmp
-    - rm "$TARBALL"
+    - smv "$TARBALL" buildslave@packages.infinit.sh tmp
     - cd "$SOURCE_DIR"
     - time ./buildenv --cache-upload-build-tree --exclude='*.deb,*.rpm,*.tbz' --branch "$CI_BUILD_REF_NAME" --build-trees-root "/cache/$CI_PROJECT_NAME" --cache-namespace "$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME" --cache-id "$CI_RUNNER_ID" --verbose
   tags:
@@ -163,8 +161,7 @@ x86_64-osx-clang:
     - cd $BUILD_DIR && python3 drake -j 4 //install
     - TARBALL=../$PROJECT-x86_64-osx-clang3-$DESC.tbz
     - gtar $TARFLAGS -cjf "$TARBALL" -C $INSTALL_DIR . --show-transformed-names --transform "s,^\\./,$PROJECT-$DESC/,"
-    - scp "$TARBALL" buildslave@packages.infinit.sh:tmp
-    - rm "$TARBALL"
+    - smv "$TARBALL" buildslave@packages.infinit.sh tmp
   tags:
     - x86_64
     - osx
