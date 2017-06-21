@@ -9,6 +9,8 @@
 #include <boost/algorithm/string/predicate.hpp> // starts_with
 #include <boost/optional.hpp>
 
+#include <elle/random.hh> // random_engine.
+
 namespace elle
 {
   /// Whether @a e is in @a c.
@@ -102,6 +104,27 @@ namespace elle
       return dest.insert(std::end(dest),
                          std::make_move_iterator(std::begin(src)),
                          std::make_move_iterator(std::end(src)));
+  }
+
+  /// Reorder `r` randomly.
+  ///
+  /// Does not appear to be offered by Boost.Range.
+  template <typename Range, typename URBG>
+  auto shuffle(Range& r, URBG&& g)
+    -> Range&
+  {
+    std::shuffle(std::begin(r), std::end(r), std::forward<URBG>(g));
+    return r;
+  }
+
+  /// Reorder `r` randomly using elle's random engine singleton.
+  ///
+  /// Does not appear to be offered by Boost.Range.
+  template <typename Range>
+  auto shuffle(Range& r)
+    -> Range&
+  {
+    return shuffle(r, random_engine());
   }
 
   /// If `range` starts with `prefix`, the remainder of the range,
