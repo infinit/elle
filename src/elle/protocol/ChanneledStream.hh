@@ -78,8 +78,10 @@ namespace elle
     private:
       int
       _id_generate();
+      /// Decide who is the master on our _backend.
+      /// \return whether is the master.
       bool
-      _handshake(Stream& backend);
+      _handshake();
 
     /*----------.
     | Receiving |

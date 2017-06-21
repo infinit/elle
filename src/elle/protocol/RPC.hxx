@@ -253,8 +253,7 @@ namespace elle
            S const& f,
            Given&&... args)
       {
-        typename std::remove_const<
-          typename std::remove_reference<First>::type>::type a;
+        auto a = std::remove_const_t<std::remove_reference_t<First>>{};
         input >> a;
         return Call<Input, R, Types...>::call(input, f,
                                               std::forward<Given>(args)..., a);

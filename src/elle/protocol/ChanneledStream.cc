@@ -25,13 +25,8 @@ namespace elle
                                      Stream& backend)
       : Super(scheduler)
       , _backend(backend)
-      , _thread()
-      , _exception()
-      , _master(this->_handshake(backend))
+      , _master(this->_handshake())
       , _id_current(0)
-      , _channels()
-      , _channels_new()
-      , _channel_available()
       , _default(*this)
     {
       this->_thread.reset(
@@ -97,7 +92,7 @@ namespace elle
     }
 
     bool
-    ChanneledStream::_handshake(Stream& backend)
+    ChanneledStream::_handshake()
     {
       while (true)
       {
@@ -107,24 +102,24 @@ namespace elle
         {
           elle::Buffer p;
           p.append(&mine, 1);
-          backend.write(p);
+          this->_backend.write(p);
           ELLE_DEBUG("%s: my roll: %d", *this, (int)mine);
         }
         {
-          elle::Buffer p(backend.read());
+          auto p = this->_backend.read();
           if (signed(p.size()) != 1)
-            elle::err("invalid hanshake packet size: %s", p.size());
+            elle::err("invalid handshake packet size: %s", p.size());
           his = p.contents()[0];
           ELLE_DEBUG("%s: his roll: %d", *this, (int)his);
         }
-        if (mine != his)
+        if (mine == his)
+          ELLE_DEBUG("rolls are equal, restart handshake");
+        else
         {
           bool master = mine > his;
           ELLE_TRACE("%s: %s", *this, master ? "master" : "slave");
           return master;
         }
-        else
-          ELLE_DEBUG("rolls are equal, restart handshake");
       }
     }
 
