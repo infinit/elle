@@ -37,8 +37,8 @@ namespace elle
 
       if (!_logger())
       {
-        auto syslog = elle::os::getenv("ELLE_LOG_SYSLOG", "");
-        if (!syslog.empty())
+        auto const syslog = elle::os::getenv("ELLE_LOG_SYSLOG", false);
+        if (syslog)
           _logger() = std::make_unique<elle::log::SysLogger>(
             elle::sprintf("%s[%s]", syslog, elle::system::getpid()));
         else
@@ -48,7 +48,7 @@ namespace elle
             _logger() = std::make_unique<elle::log::TextLogger>(std::cerr);
           else
           {
-            bool append = !elle::os::getenv("ELLE_LOG_FILE_APPEND", false);
+            bool append = elle::os::getenv("ELLE_LOG_FILE_APPEND", false);
             static std::ofstream out{
               path,
                 (append ? std::fstream::app : std::fstream::trunc)

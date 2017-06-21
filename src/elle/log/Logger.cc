@@ -10,6 +10,7 @@
 #include <regex>
 #include <thread>
 
+#include <boost/algorithm/cxx11/any_of.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/range/algorithm/find_if.hpp>
 #include <boost/thread/tss.hpp>
@@ -152,7 +153,7 @@ namespace elle
     }
 
     void
-    Logger::_setup_levels(const std::string& levels)
+    Logger::_setup_levels(std::string const& levels)
     {
       using tokenizer = boost::tokenizer<boost::char_separator<char>>;
       auto sep = boost::char_separator<char>{","};
@@ -231,7 +232,7 @@ namespace elle
 
     static
     bool
-    _fnmatch(const std::string& pattern, const std::string& s)
+    _fnmatch(std::string const& pattern, std::string const& s)
     {
 #ifdef INFINIT_WINDOWS
       return ::PathMatchSpec(s.c_str(), pattern.c_str()) == TRUE;
@@ -241,35 +242,34 @@ namespace elle
     }
 
     bool
-    Logger::Filter::match(const std::string& s) const
+    Logger::Filter::match(std::string const& s) const
     {
       return _fnmatch(pattern, s);
     }
 
     bool
-    Logger::Filter::match(const component_stack_t& stack) const
+    Logger::Filter::match(component_stack_t const& stack) const
     {
       // Either there is no request on the context, or some component
       // matches it.
-      return
-        (context.empty()
-         || (boost::find_if(stack,
-                           [this](const auto& comp)
-                           {
-                             return _fnmatch(context, comp);
-                           })
-             != stack.cend()));
+      using boost::algorithm::any_of;
+      return (context.empty()
+              || (any_of(stack,
+                         [this](const auto& comp)
+                         {
+                           return _fnmatch(context, comp);
+                         })));
     }
 
     bool
-    Logger::Filter::match(const std::string& s,
-                          const component_stack_t& stack) const
+    Logger::Filter::match(std::string const& s,
+                          component_stack_t const& stack) const
     {
       return this->match(s) && this->match(stack);
     }
 
     bool
-    Logger::component_is_active(const std::string& name,
+    Logger::component_is_active(std::string const& name,
                                 Level level)
     {
       std::lock_guard<std::recursive_mutex> lock(_mutex);

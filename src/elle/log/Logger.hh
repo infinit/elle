@@ -96,7 +96,7 @@ namespace elle
 
       /// Process a string formatted like $ELLE_LOG_LEVEL.
       void
-      _setup_levels(const std::string& levels);
+      _setup_levels(std::string const& levels);
 
     /*------------.
     | Indentation |
@@ -189,16 +189,16 @@ namespace elle
 
         /// Whether this filter accepts this component name.
         bool
-        match(const std::string& component) const;
+        match(std::string const& component) const;
 
         /// Whether this filter accepts this component stack
         bool
-        match(const component_stack_t& stack) const;
+        match(component_stack_t const& stack) const;
 
         /// Whether this filter accepts this component name in this component stack.
         bool
-        match(const std::string& component,
-              const component_stack_t& stack) const;
+        match(std::string const& component,
+              component_stack_t const& stack) const;
 
         /// A context pattern denoting the requested nesting
         /// component, e.g., `infinit.model.*.ACB`.
