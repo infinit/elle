@@ -19,9 +19,9 @@ before_script:
   - INSTALL_DIR="${SOURCE_DIR}/_install"
   - DESC=$(git describe)
 # smv FROM TO-HOST TO-DIR -- scp $FROM $TO-HOST:$TO-DIR && rm -f $FROM.
-# Use a tmp to avoid partial upload when interrupted.
+# Use a tmp to avoid partial uploads when interrupted.
 # A single call to ssh, rather than scp and then ssh.
-    - function smv { dst=$3/$(basename "$1") && time ssh "$2" "cat > '$dst.tmp' && mv -f '$dst.tmp' '$dst'" < "$1" && rm -f "$1"; }
+  - function smv { dst=$3/$(basename "$1") && time ssh "$2" "cat > '$dst.tmp' && mv -f '$dst.tmp' '$dst'" < "$1" && rm -f "$1"; }
 
 x86_64-centos6-gcc4:
   stage: build
