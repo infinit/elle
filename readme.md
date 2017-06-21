@@ -1,6 +1,6 @@
 # Elle, *the coroutine-based asynchronous C++ development framework.*
 
-<img src="docs/static_files/elle_logotype@2x.png" alt="Logo - Elle" title="Elle logotype" width="300" style="max-width:300px;">
+<img src="docs/static_files/elle_docker_logotype@2x.png" alt="Logo - Elle" title="Elle logotype" width="300" style="max-width:300px;">
 
 Elle is a collection of libraries, written in modern C++ (C++14). It contains a rich set of highly reusable concepts, algorithms, API wrappers, ...
 
