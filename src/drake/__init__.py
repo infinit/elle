@@ -3915,7 +3915,7 @@ class Runner(Builder):
   def output(self, ext):
     '''The Node of an output file.  E.g., `self.output('valgrind')`
     to generate the Valgrind output for this runner.'''
-    return node('{}.{}'.format(self.__basename, ext)
+    return node('{}.{}'.format(self.__basename, ext))
 
   def __reporting_set(self, val):
     self.stdout_reporting = val
