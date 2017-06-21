@@ -99,6 +99,15 @@ namespace elle
         return default_;
     }
 
+    unsigned
+    getenv(std::string const& key, unsigned default_)
+    {
+      if (auto val = ::getenv(key.c_str()))
+        return std::stou(val);
+      else
+        return default_;
+    }
+
     bool
     inenv(std::string const& key)
     {

@@ -45,7 +45,10 @@ getenv_()
     auto const k = "cetteclefn'existepaslol";
     BOOST_TEST(elle::os::getenv(k, "(none)") == "(none)");
     BOOST_TEST(elle::os::getenv(k, "42") == "42");
+    BOOST_TEST(elle::os::getenv(k, false) == false);
+    BOOST_TEST(elle::os::getenv(k, true) == true);
     BOOST_TEST(elle::os::getenv(k, 42) == 42);
+    BOOST_TEST(elle::os::getenv(k, 42u) == 42u);
   }
 }
 

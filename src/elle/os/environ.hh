@@ -65,6 +65,11 @@ namespace elle
 
     /// Get a specific value from environment. If value is not found,
     /// default_ is returned
+    unsigned
+    getenv(std::string const& key, unsigned default_);
+
+    /// Get a specific value from environment. If value is not found,
+    /// default_ is returned
     bool
     getenv(std::string const& key, bool default_);
 
