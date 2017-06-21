@@ -52,7 +52,7 @@ class ValgrindRunner(drake.Runner):
                valgrind_args = None):
     super().__init__(exe, name = name, args = args, env = env, stdin = stdin)
     self.__valgrind = Valgrind(valgrind)
-    self.__valgrind_log = self.output('valgrind')
+    self.__valgrind_log = self._node('valgrind')
     self.__valgrind_log.builder = self
     self.valgrind_reporting = drake.Runner.Reporting.on_failure
     self.__valgrind_args = valgrind_args or []

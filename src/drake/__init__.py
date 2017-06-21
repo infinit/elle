@@ -3877,15 +3877,15 @@ class Runner(Builder):
     self.__args = args or []
     self.__exe = exe
     self.__name = name or self.__exe
-    # The basename for all output files, e.g. `tests/overlay-kelips`.
-    # Used by `output` to forge output Nodes such as
+    # The basename for the output files, e.g. `tests/overlay-kelips`.
+    # Used by `_node` to forge output Nodes such as
     # `tests/overlay-kelips.out`.
     self.__basename = (self.__exe.name_relative.dirname()
                        / (name or self.__exe.path().basename()))
-    self.__out = self.output('out')
-    self.__err = self.output('err')
-    self.__status = self.output('status')
-    self.__bench = self.output('bench')
+    self.__out = self._node('out')
+    self.__err = self._node('err')
+    self.__status = self._node('status')
+    self.__bench = self._node('bench')
     self.__sources = [exe] + sources
     self.__env = env
     self.__runs = runs
@@ -3912,7 +3912,7 @@ class Runner(Builder):
   def status(self):
     return self.__status
 
-  def output(self, ext):
+  def _node(self, ext):
     '''The Node of an output file.  E.g., `self.output('valgrind')`
     to generate the Valgrind output for this runner.'''
     return node('{}.{}'.format(self.__basename, ext))
