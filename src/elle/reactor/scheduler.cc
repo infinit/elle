@@ -24,7 +24,7 @@ ELLE_LOG_COMPONENT("elle.reactor.Scheduler");
 
 namespace
 {
-  auto const DBG = elle::os::inenv("REACTOR_SCHEDULER_DEBUG");
+  auto const DBG = elle::os::getenv("REACTOR_SCHEDULER_DEBUG", false);
 }
 
 namespace elle
@@ -87,8 +87,8 @@ namespace elle
       auto&
       _schedulers()
       {
-        static std::unordered_map<std::thread::id, Scheduler*> map;
-        return map;
+        static auto res = std::unordered_map<std::thread::id, Scheduler*>{};
+        return res;
       }
 
       std::mutex&
