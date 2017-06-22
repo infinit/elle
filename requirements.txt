@@ -2,3 +2,4 @@ Mako
 greenlet
 mistune
 orderedset
+requests
