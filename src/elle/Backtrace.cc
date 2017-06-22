@@ -84,6 +84,16 @@ namespace elle
       auto _ = std::string{};
       return demangle_impl(sym, res, _);
     }
+
+    template <typename T = int>
+    T
+    from_hex(std::string const& str)
+    {
+      auto res = T{};
+      auto&& s = std::stringstream(str);
+      s >> std::hex >> res;
+      return res;
+    }
   }
 
   std::string
@@ -98,17 +108,32 @@ namespace elle
                                     sym, error);
   }
 
-  Backtrace::Backtrace()
-    : _resolved(false)
-    , _skip(0)
-    , _frame_count(0)
-  {}
+  /*-------------.
+  | StackFrame.  |
+  `-------------*/
+
+  std::ostream&
+  operator<< (std::ostream& out, const StackFrame& frame)
+  {
+    // Two hex digits per byte.
+    auto const fmt = "0x%0" + std::to_string(2 * sizeof(void*)) + "x: ";
+    elle::fprintf(out, fmt, frame.address);
+    if (frame.symbol.empty())
+      out << "???";
+    else
+      elle::fprintf(out, "%s +0x%x", frame.symbol, frame.offset);
+    return out;
+  }
+
+  /*------------.
+  | Backtrace.  |
+  `------------*/
+
+  Backtrace::Backtrace() = default;
 
   Backtrace::Backtrace(std::vector<StackFrame> const& sf)
     : _frames(sf)
     , _resolved(true)
-    , _skip(0)
-    , _frame_count(0)
   {}
 
   void
@@ -143,11 +168,11 @@ namespace elle
       ::free(symbol);
     */
 #elif !defined INFINIT_ANDROID && !defined NO_EXECINFO
-    char** strs = backtrace_symbols(this->_callstack, this->_frame_count);
+    char** strs = backtrace_symbols(this->_callstack.data(), this->_frame_count);
     for (unsigned i = this->_skip; i < this->_frame_count; ++i)
     {
-      StackFrame frame;
-      std::string symbol_mangled;
+      this->_frames.emplace_back();
+      auto& frame = this->_frames.back();
       std::string addr;
       std::string offset;
       {
@@ -157,23 +182,19 @@ namespace elle
         std::string file;
         std::string _;
         auto&& s = std::stringstream(line);
-        s >> _ >> file >> addr >> symbol_mangled >> _ >> offset;
+        s >> _ >> file >> addr >> frame.symbol_mangled >> _ >> offset;
 # else
         discard(line, '(');
-        if (extract(line, symbol_mangled, '+'))
+        if (extract(line, frame.symbol_mangled, '+'))
           extract(line, offset, ')');
         discard(line, '[');
         extract(line, addr, ']');
 # endif
       }
-      frame.symbol_mangled = symbol_mangled;
-      if (!symbol_mangled.empty()
-          && !demangle_impl(symbol_mangled, frame.symbol))
-        frame.symbol = symbol_mangled;
-      {
-        auto&& s = std::stringstream(offset);
-        s >> std::hex >> frame.offset;
-      }
+      demangle_impl(frame.symbol_mangled, frame.symbol_demangled);
+      frame.symbol
+        = frame.symbol_demangled.empty() ? frame.symbol_mangled
+        : frame.symbol_demangled;
       {
         auto&& s = std::stringstream(addr);
 # ifdef INFINIT_MACOSX
@@ -182,7 +203,7 @@ namespace elle
         s >> std::hex >> frame.address;
 # endif
       }
-      this->_frames.emplace_back(frame);
+      frame.offset = from_hex(offset);
     }
     free(strs);
 #endif
@@ -215,19 +236,6 @@ namespace elle
   }
 
   std::ostream&
-  operator<< (std::ostream& out, const StackFrame& frame)
-  {
-    // Two hex digits per byte.
-    auto width = std::to_string(2 * sizeof(void*));
-    elle::fprintf(out, "0x%0" + width + "x: ", frame.address);
-    if (frame.symbol.empty())
-      out << "???";
-    else
-      elle::fprintf(out, "%s +0x%x", frame.symbol, frame.offset);
-    return out;
-  }
-
-  std::ostream&
   operator<< (std::ostream& out, const Backtrace& bt)
   {
     unsigned i = 0;
@@ -237,12 +245,5 @@ namespace elle
     for (const auto& f: bt.frames())
       fprintf(out, fmt, i++, f);
     return out;
-  }
-
-  StackFrame::operator std::string() const
-  {
-    std::stringstream s;
-    s << *this;
-    return s.str();
   }
 }

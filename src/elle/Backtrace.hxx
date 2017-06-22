@@ -27,7 +27,7 @@ namespace elle
     return {};
 #else
     auto res = Backtrace{};
-    res._frame_count = ::backtrace(res._callstack, res._callstack_size);
+    res._frame_count = ::backtrace(res._callstack.data(), res._callstack.size());
     ELLE_DEBUG("backtrace returned %s frames", res._frame_count);
     res._skip = skip;
     return res;
