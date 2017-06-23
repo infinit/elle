@@ -2,6 +2,8 @@
 
 #include <boost/multi_index_container.hpp>
 
+#include <elle/range.hh>
+
 namespace elle
 {
   /// Whether \a e is in \a c.
@@ -10,6 +12,22 @@ namespace elle
   contains(boost::multi_index::multi_index_container<Args...> const& c, T const& e)
   {
     return c.find(e) != c.end();
+  }
+
+  /// The range of values with equal key.
+  template <typename... Args, typename T>
+  auto
+  equal_range(boost::multi_index::detail::hashed_index<Args...> const& c, T const& e)
+  {
+    return as_range(c.equal_range(e));
+  }
+
+  /// The range of values with equal key.
+  template <typename... Args, typename T>
+  auto
+  equal_range(boost::multi_index::multi_index_container<Args...> const& c, T const& e)
+  {
+    return as_range(c.equal_range(e));
   }
 }
 
