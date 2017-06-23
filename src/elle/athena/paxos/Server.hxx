@@ -303,6 +303,8 @@ namespace elle
                             self.version());
             return true;
           }
+          if (self._partial)
+            return false;
           if (!self._state)
           {
             ELLE_DUMP("no confirmation needed as there never was a proposal");

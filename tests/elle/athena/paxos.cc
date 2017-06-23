@@ -1199,6 +1199,53 @@ ELLE_TEST_SCHEDULED(partial_conflict)
   };
 }
 
+ELLE_TEST_SCHEDULED(partial_interleave)
+{
+  std::vector<Server> servers;
+  servers.reserve(3);
+  servers.emplace_back(11, Server::Quorum{11, 12});
+  servers.emplace_back(12, Server::Quorum{11, 12});
+  elle::reactor::Barrier confirm, confirmed, pick_value;
+  elle::With<elle::reactor::Scope>() << [&] (elle::reactor::Scope& scope)
+  {
+    scope.run_background(
+      "pick_quorum",
+      [&]
+      {
+        auto c = make_client(0, servers);
+        static_cast<YAInstrumentedPeer&>(*c.peers()[0]).confirming().connect(
+          [&] (Client::Proposal const& p)
+          {
+            if (p.sender == c.id())
+            {
+              pick_value.open();
+              elle::reactor::wait(confirm);
+              confirmed.open();
+            }
+          });
+        c.choose(0, Server::Quorum{11, 12, 13});
+      });
+    scope.run_background(
+      "pick_value",
+      [&]
+      {
+        elle::reactor::wait(pick_value);
+        {
+          auto c = make_client(1, servers);
+          BOOST_CHECK_THROW(c.choose(1, 1233), Server::WrongQuorum);
+        }
+        servers.emplace_back(13, Server::Quorum{11, 12, 13});
+        confirm.open();
+        elle::reactor::wait(confirmed);
+        {
+          auto c = make_client(2, servers);
+          BOOST_CHECK(!c.choose(1, 1233));
+        }
+      });
+    elle::reactor::wait(scope);
+  };
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -1217,6 +1264,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(partial_state), 0, valgrind(5));
   suite.add(BOOST_TEST_CASE(non_partial_state), 0, valgrind(5));
   suite.add(BOOST_TEST_CASE(partial_conflict), 0, valgrind(5));
+  suite.add(BOOST_TEST_CASE(partial_interleave), 0, valgrind(5));
   {
     auto quorum = BOOST_TEST_SUITE("quorum");
     suite.add(quorum);
