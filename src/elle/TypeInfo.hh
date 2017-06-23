@@ -4,6 +4,8 @@
 #include <typeindex>
 #include <typeinfo>
 
+#include <boost/operators.hpp>
+
 #include <elle/attribute.hh>
 #include <elle/compiler.hh>
 
@@ -11,33 +13,32 @@ namespace elle
 {
   /// An extended std::type_info like.
   ///
-  /// \code{.cc}
+  /// @code{.cc}
   ///
   /// int i = 3;
-  /// std::cout << elle::type_info(i) << "\n";
+  /// std::cout << elle::type_info(i) << '\n';
   ///
   /// struct Foo
   /// {
-  ///   struct Bar
-  ///   {
-  ///   };
+  ///   struct Bar {};
   /// };
-  /// std::cout << elle::type_info<Foo::Bar>();
+  /// std::cout << elle::type_info<Foo::Bar>() << '\n';
   ///
   /// //Result: int
   ///           Foo::Bar
   ///
-  /// \endcode
+  /// @endcode
   class ELLE_API TypeInfo
+    : private boost::totally_ordered<TypeInfo>
   {
   public:
-    /// Return the demangled name (if possible) of the given type.
+    /// The demangled name (if possible) of the given type.
     std::string
     name() const;
-    /// Check if two TypeInfos are equal.
+    /// Whether two TypeInfos are equal.
     bool
     operator ==(TypeInfo const& rhs) const;
-    /// Check order of two TypeInfos according to their hash.
+    /// Check order of two TypeInfos.
     bool
     operator <(TypeInfo const& rhs) const;
     /// Register an abbreviation for a given type.
@@ -63,7 +64,7 @@ namespace elle
     friend struct std::hash<TypeInfo>;
   };
 
-  /// Print a TypeInfo. Use the abbreviation if any.
+  /// Print a TypeInfo. Use abbreviations in fixed format (%f, not %s).
   ELLE_API
   std::ostream&
   operator << (std::ostream& s, TypeInfo const& ti);
@@ -75,7 +76,7 @@ namespace elle
   TypeInfo
   type_info();
 
-  /// Return the TypeInfo for a given object.
+  /// The TypeInfo for a given object.
   ///
   /// @tparam T The type.
   /// @param v A variable.
@@ -93,5 +94,13 @@ namespace std
     size_t operator()(elle::TypeInfo const& info) const;
   };
 }
+
+/// Declare that `Long` should be displayed as `Short`.
+#define ELLE_TYPE_INFO_ABBR(Short, Long)                                \
+  namespace                                                             \
+  {                                                                     \
+    const auto BOOST_PP_CAT(_elle_typeinfo_abbr, __LINE__) =            \
+      elle::TypeInfo::RegisterAbbrevation(Long, Short);                 \
+  }
 
 #include <elle/TypeInfo.hxx>

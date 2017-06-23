@@ -31,7 +31,7 @@ namespace elle
   TypeInfo::operator <(TypeInfo const& rhs) const
   {
    // When using before on two different typeinfos for the same type,
-   // clang fails to treat them as equals.
+   // clang fails to treat them as equal.
 #ifdef __clang__
     return strcmp(this->_info.name(), rhs._info.name()) < 0;
 #else
