@@ -27,12 +27,13 @@ namespace elle
         "raising an assert (%s at %s:%s) with an exception already in flight",
         message, file, line);
     }
-    if (elle::os::inenv("ELLE_REAL_ASSERT"))
+    if (elle::os::getenv("ELLE_REAL_ASSERT", false))
     {
       ELLE_ERR("%s: (%s:%s)", message.c_str(), file, line);
       std::abort();
     }
-    throw elle::AssertError(message.c_str(), file, line);
+    else
+      throw elle::AssertError(message.c_str(), file, line);
   }
 
   AssertError::AssertError(char const* condition,
@@ -58,10 +59,9 @@ namespace elle
   const char*
   AssertError::what() const noexcept
   {
-    if (_what.size())
-      return _what.c_str();
-    else
+    if (_what.empty())
       return "AssertError (could not build the error string)";
+    else
+      return _what.c_str();
   }
-
 }
