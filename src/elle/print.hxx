@@ -71,7 +71,6 @@ namespace elle
     `--------------------------*/
 
     template <typename T>
-    inline
     std::enable_if_t<_elle_print_details::is_streamable<T>(), void>
     print(std::ostream& o, T&& value)
     {
@@ -79,12 +78,11 @@ namespace elle
     }
 
     template <typename T>
-    inline
     std::enable_if_t<!_elle_print_details::is_streamable<T>(), void>
     print(std::ostream& o, T&& value)
     {
-      static boost::format parsed("%f(%x)");
-      boost::format format(parsed);
+      static auto const parsed = boost::format("%f(%x)");
+      auto format = parsed;
       format % elle::type_info(value);
       format % reinterpret_cast<const void*>(&value);
       o << format;
@@ -112,7 +110,6 @@ namespace elle
     }
 
     template <typename T>
-    inline
     void
     print(std::ostream& o, std::unique_ptr<T> const& value)
     {
@@ -123,7 +120,6 @@ namespace elle
     }
 
     template <typename T>
-    inline
     void
     print(std::ostream& o, std::unique_ptr<T>& value)
     {
@@ -134,7 +130,6 @@ namespace elle
     }
 
     template <typename T>
-    inline
     void
     print(std::ostream& o, std::shared_ptr<T> const& value)
     {
@@ -145,7 +140,6 @@ namespace elle
     }
 
     template <typename T>
-    inline
     void
     print(std::ostream& o, std::shared_ptr<T>& value)
     {
@@ -173,7 +167,6 @@ namespace elle
     }
 
     template <typename T>
-    inline
     void
     print(std::ostream& o, T* value)
     {
@@ -190,15 +183,16 @@ namespace elle
     struct Argument
       : public std::function<void (std::ostream&)>
     {
+      using Super = std::function<void (std::ostream&)>;
       template <typename T>
       Argument(T const& value)
-        : std::function<void (std::ostream&)>(
+        : Super(
           [&value] (std::ostream& o) { print(o, value); })
         , _bool([&value] { return branch_test(value, 0); })
       {}
 
       Argument(char const* value)
-        : std::function<void (std::ostream&)>(
+        : Super(
           [value] (std::ostream& o) { print(o, value); })
         , _bool([value] { return value && strlen(value) > 0; })
       {}

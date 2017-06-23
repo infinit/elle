@@ -318,8 +318,7 @@ namespace elle
   Option<Types ...>::get()
   {
     if (this->_index != meta::List<Types ...>::template index_of<T>::value)
-      throw elle::Error(elle::sprintf("option is not a %s",
-                                      elle::type_info<T>()));
+      elle::err("option is not a %s", elle::type_info<T>());
     char* buffer = this->_buffer;
     return reinterpret_cast<T&>(*buffer);
   };
@@ -375,6 +374,7 @@ namespace elle
         s.serialize_forward(v);
       }
     };
+
     template<typename V>
     struct OptionNames
     {
