@@ -238,11 +238,11 @@ namespace elle
   std::ostream&
   operator<< (std::ostream& out, const Backtrace& bt)
   {
+    auto const& fs = bt.frames();
     unsigned i = 0;
-    // Visual expects a float ... don't ask.
-    size_t const width = std::log10(float(bt.frames().size())) + 1;
+    size_t const width = (fs.empty() ? 0 : std::log10(fs.size())) + 1;
     auto const fmt = "#%-" + std::to_string(width) + "d %s\n";
-    for (const auto& f: bt.frames())
+    for (const auto& f: fs)
       fprintf(out, fmt, i++, f);
     return out;
   }
