@@ -96,7 +96,7 @@ namespace elle
       std::string const& component,
       boost::posix_time::ptime const& time,
       std::string const& message,
-      std::vector<std::pair<std::string, std::string>> const& tags,
+      Tags const& tags,
       int indentation,
       std::string const& file,
       unsigned int line,
@@ -119,7 +119,7 @@ namespace elle
 
       // Indentation
       static bool const display_indentation
-        = !::getenv("ELLE_LOG_NO_INDENTATION");
+        = !os::getenv("ELLE_LOG_NO_INDENTATION", false);
       if (display_indentation)
       {
         auto align = std::string(indentation * 2, ' ');
@@ -127,7 +127,7 @@ namespace elle
       }
 
       // Location
-      static bool const location = ::getenv("ELLE_LOG_LOCATIONS");
+      static bool const location = os::getenv("ELLE_LOG_LOCATIONS", false);
       if (location)
         msg = elle::sprintf("%s (at %s:%s in %s)", msg, file, line, function);
 
@@ -135,10 +135,9 @@ namespace elle
       if (this->_display_type && type != elle::log::Logger::Type::info)
         msg = elle::sprintf("[%s] ", _type_to_string(type)) + msg;
 
-      static bool display_tags = !::getenv("ELLE_LOG_NO_TAGS");
+      static bool display_tags = !os::getenv("ELLE_LOG_NO_TAGS", false);
       // Tags
       if (display_tags)
-      {
         for (auto const& tag: tags)
         {
           if (tag.first == "PID" && !this->_enable_pid)
@@ -147,9 +146,8 @@ namespace elle
             continue;
           msg = elle::sprintf("[%s] %s", tag.second, msg);
         }
-      }
 
-      static bool show_component = !::getenv("ELLE_LOG_NO_COMPONENT");
+      static bool show_component = !os::getenv("ELLE_LOG_NO_COMPONENT", false);
       // Component
       std::string comp;
       if (show_component)

@@ -200,7 +200,7 @@ namespace elle
         return;
 
       int indent = this->indentation();
-      auto tags = std::vector<std::pair<std::string, std::string>>{};
+      auto tags = Tags{};
       for (auto const& tag: elle::Plugin<Tag>::plugins())
       {
         std::string content = tag.second->content();
@@ -367,26 +367,24 @@ namespace elle
     `-----*/
 
 #define ELLE_LOGGER_TAG(Name, Content)                          \
-    class Name##Tag:                                            \
-      public elle::log::Tag                                     \
+    class Name##Tag                                             \
+      : public elle::log::Tag                                   \
     {                                                           \
     public:                                                     \
-      virtual                                                   \
       std::string                                               \
-      content()                                                 \
+      content() override                                        \
       {                                                         \
         return boost::lexical_cast<std::string>(Content);       \
       }                                                         \
                                                                 \
-      virtual                                                   \
       std::string                                               \
-      name()                                                    \
+      name() override                                           \
       {                                                         \
         return #Name;                                           \
       }                                                         \
     };                                                          \
                                                                 \
-    elle::Plugin<Tag>::Register<Name##Tag> register_tag_##Name; \
+    elle::Plugin<Tag>::Register<Name##Tag> register_tag_##Name
 
     ELLE_LOGGER_TAG(PID, elle::system::getpid());
     ELLE_LOGGER_TAG(TID, std::this_thread::get_id());

@@ -130,14 +130,16 @@ namespace elle
                    unsigned int line,
                    std::string const& function);
     protected:
+      using Tags = std::vector<std::pair<std::string, std::string>>;
+      using Time = boost::posix_time::ptime;
       virtual
       void
       _message(Level level,
                elle::log::Logger::Type type,
                std::string const& component,
-               boost::posix_time::ptime const& time,
+               Time const& time,
                std::string const& message,
-               std::vector<std::pair<std::string, std::string>> const& tags,
+               Tags const& tags,
                int indentation,
                std::string const& file,
                unsigned int line,
