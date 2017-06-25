@@ -151,15 +151,15 @@ namespace elle
       | SSL connection |
       `---------------*/
 
-      class SSLHandshake:
-        public SocketOperation<boost::asio::ip::tcp::socket>
+      class SSLHandshake
+        : public SocketOperation<boost::asio::ip::tcp::socket>
       {
       public:
         SSLHandshake(SSLSocket& socket,
-                     SSLStream::handshake_type const& type):
-          SocketOperation(socket.socket()->next_layer()),
-          _socket(socket),
-          _type(type)
+                     SSLStream::handshake_type const& type)
+          : SocketOperation(socket.socket()->next_layer())
+          , _socket(socket)
+          , _type(type)
         {}
 
         void
@@ -210,8 +210,8 @@ namespace elle
       }
 
 
-      class SSLShutdown:
-        public DataOperation<boost::asio::ip::tcp::socket>
+      class SSLShutdown
+        : public DataOperation<boost::asio::ip::tcp::socket>
       {
       public:
         using Super = DataOperation<boost::asio::ip::tcp::socket>;
@@ -244,29 +244,7 @@ namespace elle
       void
       SSLSocket::_shutdown()
       {
-        if (!this->_shutdown_asynchronous)
-        {
-          ELLE_TRACE_SCOPE("%s: shutdown SSL", *this);
-          try
-          {
-            SSLShutdown shutdown(*this);
-            if (!shutdown.run(this->_timeout))
-            {
-              ELLE_TRACE("%s: SSL shutdown timed out (%s)",
-                         *this, *this->_timeout);
-              throw TimeOut();
-            }
-          }
-          catch (ConnectionClosed const&)
-          {
-            ELLE_DEBUG("%s: SSL already shutdown by peer", *this);
-          }
-          catch (SocketClosed const&)
-          {
-            ELLE_DEBUG("%s: socket is already closed", *this);
-          }
-        }
-        else
+        if (this->_shutdown_asynchronous)
         {
           ELLE_TRACE_SCOPE("%s: shutdown SSL asynchronously", *this);
           auto const has_timeout = bool(this->_timeout);
@@ -315,11 +293,33 @@ namespace elle
                     socket_raw->next_layer().cancel();
                   *over = true;
                 }
-                else if (error !=  boost::asio::error::operation_aborted)
+                else if (error != boost::asio::error::operation_aborted)
                   ELLE_ABORT(
                     "unexpected asynchronous SSL shutdown timeout error: %s",
                     error.message());
               });
+          }
+        }
+        else
+        {
+          ELLE_TRACE_SCOPE("%s: shutdown SSL", *this);
+          try
+          {
+            SSLShutdown shutdown(*this);
+            if (!shutdown.run(this->_timeout))
+            {
+              ELLE_TRACE("%s: SSL shutdown timed out (%s)",
+                         *this, *this->_timeout);
+              throw TimeOut();
+            }
+          }
+          catch (ConnectionClosed const&)
+          {
+            ELLE_DEBUG("%s: SSL already shutdown by peer", *this);
+          }
+          catch (SocketClosed const&)
+          {
+            ELLE_DEBUG("%s: socket is already closed", *this);
           }
         }
       }

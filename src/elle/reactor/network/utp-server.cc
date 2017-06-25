@@ -59,10 +59,12 @@ namespace elle
         uint64
         on_sendto(utp_callback_arguments* args)
         {
-          auto const ep = [args]() -> UTPServer::EndPoint {
+          auto const ep = [args]() -> UTPServer::EndPoint
+          {
             auto *sin = (sockaddr_in*)args->address;
             if (sin->sin_family == AF_INET)
-              return {
+              return
+              {
                 boost::asio::ip::address_v4(ntohl(sin->sin_addr.s_addr)),
                 ntohs(sin->sin_port)
               };
@@ -71,7 +73,8 @@ namespace elle
               auto *sin6 = (sockaddr_in6*)args->address;
               auto addr = std::array<unsigned char, 16>{{0}};
               memcpy(addr.data(), sin6->sin6_addr.s6_addr, 16);
-              return {
+              return
+              {
                 boost::asio::ip::address_v6(addr),
                 ntohs(sin6->sin6_port)
               };
@@ -577,13 +580,13 @@ namespace elle
       {
         this->_send_buffer.emplace_back(elle::Buffer(buf.contents(), buf.size()),
                                         where, on_error);
-        if (!this->_sending)
+        if (this->_sending)
+          ELLE_DEBUG("already sending, data queued");
+        else
         {
           this->_sending = true;
           this->_send();
         }
-        else
-          ELLE_DEBUG("already sending, data queued");
       }
 
       void

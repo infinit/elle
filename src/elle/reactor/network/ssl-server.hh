@@ -15,7 +15,7 @@ namespace elle
       /// This performs a handshake with the Sockets attempting to connect,
       /// using the given certificate.
       ///
-      /// \code{.cc}
+      /// @code{.cc}
       ///
       /// // Consider an SSLCertificate certificate.
       /// elle::With<elle::reactor::Scope>() << [&](elle::reactor::Scope &s)
@@ -49,7 +49,7 @@ namespace elle
       /// };
       /// // Result: "12AB3C".
       ///
-      /// \endcode
+      /// @endcode
       class SSLServer
         : public ProtoServer<boost::asio::ip::tcp::socket,
                              boost::asio::ip::tcp::endpoint,
@@ -69,8 +69,8 @@ namespace elle
       public:
         /// Create an SSLServer with the given certificate.
         ///
-        /// \param certificate An SSLCertificate to check socket authenticity.
-        /// \param handshake_timeout The maximum duration before the handshake
+        /// @param certificate An SSLCertificate to check socket authenticity.
+        /// @param handshake_timeout The maximum duration before the handshake
         ///                          times out.
         SSLServer(std::unique_ptr<SSLCertificate> certificate,
                   reactor::Duration  handshake_timeout = 30_sec);
@@ -87,7 +87,7 @@ namespace elle
         using Super::listen;
         /// Listen on the given port.
         ///
-        /// \param port Port to listen to.
+        /// @param port Port to listen to.
         void
         listen(int port);
         /// Port the SSLServer is listening to.

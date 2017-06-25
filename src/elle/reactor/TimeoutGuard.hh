@@ -13,7 +13,7 @@ namespace elle
     /// Guard a scope by throwing a TimeoutException if not destroyed within
     /// a given time.
     ///
-    /// \code{.cc}
+    /// @code{.cc}
     ///
     /// {
     ///   TimeoutGuard g(200_ms);
@@ -23,14 +23,14 @@ namespace elle
     ///   do_write();
     /// }
     ///
-    /// \endcode
+    /// @endcode
     class TimeoutGuard
       : public elle::Printable
     {
     public:
       /// Construct a TimeoutGuard with the given delay.
       ///
-      /// \param delay The Duration before the TimeoutGuard throws an Exception.
+      /// @param delay The Duration before the TimeoutGuard throws an Exception.
       TimeoutGuard(reactor::Duration delay);
       ~TimeoutGuard();
 

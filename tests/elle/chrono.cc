@@ -3,8 +3,8 @@
 
 #include <elle/test.hh>
 
-#define CHECK_PRETTY_PRINT(O, Expected)                          \
-  BOOST_CHECK_EQUAL(elle::sprintf("%s", O), Expected);           \
+#define CHECK_PRETTY_PRINT(O, Expected)                 \
+  BOOST_TEST(elle::sprintf("%s", O) == Expected)
 
 static
 void

@@ -1,3 +1,5 @@
+#include <utility>
+
 #include <boost/algorithm/string.hpp>
 #include <elle/reactor/asio.hh>
 #include <boost/test/unit_test.hpp>
@@ -20,7 +22,6 @@
 #include <elle/reactor/signal.hh>
 
 #include <elle/reactor/network/http-server.hh>
-#include <utility>
 
 ELLE_LOG_COMPONENT("elle.reactor.http.test");
 

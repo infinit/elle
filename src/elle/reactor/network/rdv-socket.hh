@@ -33,7 +33,7 @@ namespace elle
         rdv_connect(std::string const& id,
                     std::string const& rdv_host,
                     int rdv_port,
-                    DurationOpt timeout = DurationOpt());
+                    DurationOpt timeout = {});
         /// Connect to RDV server.
         ///
         /// \param id The ID used to identify us.
@@ -42,7 +42,7 @@ namespace elle
         void
         rdv_connect(std::string const& id,
                     Endpoint server,
-                    DurationOpt timeout = DurationOpt());
+                    DurationOpt timeout = {});
         /// Set local ID.
         ///
         /// \param id Our new ID.
@@ -58,7 +58,7 @@ namespace elle
         Size
         receive_from(elle::WeakBuffer buffer,
                      boost::asio::ip::udp::endpoint& endpoint,
-                     DurationOpt timeout = DurationOpt());
+                     DurationOpt timeout = {});
         /// Contact an RDV-aware peer.
         ///
         /// \param id ID if the peer.
@@ -68,7 +68,7 @@ namespace elle
         Endpoint
         contact(std::string const& id,
                 std::vector<Endpoint> const& endpoints = {},
-                DurationOpt timeout = DurationOpt());
+                DurationOpt timeout = {});
         /// Whether the RDV connection is established.
         bool
         rdv_connected() const;

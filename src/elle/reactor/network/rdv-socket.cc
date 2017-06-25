@@ -257,8 +257,7 @@ namespace elle
               req.command = rdv::Command::connect;
               req.id = this->_id;
               req.target_address = id;
-              elle::Buffer buf = elle::serialization::json::serialize(req,
-                                                                      false);
+              auto buf = elle::serialization::json::serialize(req, false);
               this->_send_to_failsafe(buf, _server);
             }
           }

@@ -1,7 +1,7 @@
 #pragma once
 
-# include <elle/reactor/asio.hh>
-# include <elle/reactor/Operation.hh>
+#include <elle/reactor/asio.hh>
+#include <elle/reactor/Operation.hh>
 
 namespace elle
 {
@@ -12,7 +12,7 @@ namespace elle
     ///
     /// Sleep is, for example, used by Thread::sleep(duration).
     ///
-    /// \code{.cc}
+    /// @code{.cc}
     ///
     /// std::time_t start = std::time(NULL);
     /// auto sleep = elle::reactor::Sleep{elle::reactor::Scheduler::scheduler(),
@@ -22,15 +22,15 @@ namespace elle
     ///
     /// // Result: 2 s
     ///
-    /// \endcode
+    /// @endcode
     class Sleep
       : public Operation
     {
     public:
       /// Construct a Sleep.
       ///
-      /// \param scheduler The Scheduler to run the Operation.
-      /// \param d The Duration the Thread must sleep.
+      /// @param scheduler The Scheduler to run the Operation.
+      /// @param d The Duration the Thread must sleep.
       Sleep(Scheduler& scheduler, Duration d);
 
     protected:

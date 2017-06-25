@@ -298,7 +298,7 @@ namespace elle
     bool
     Thread::wait(Waitable& s, DurationOpt timeout)
     {
-      Waitables waitables(1, &s);
+      auto waitables = Waitables{&s};
       return wait(waitables, timeout);
     }
 
@@ -312,7 +312,7 @@ namespace elle
       ELLE_ASSERT_EQ(_state, State::running);
       ELLE_ASSERT(_waited.empty());
       bool freeze = false;
-      for (Waitable* s: waitables)
+      for (auto s: waitables)
         if (s->_wait(this, Waker()))
         {
           freeze = true;
@@ -320,7 +320,7 @@ namespace elle
         }
         else if (s->_exception)
         {
-          for (Waitable* waitable: this->_waited)
+          for (auto waitable: this->_waited)
             waitable->_unwait(this);
           ELLE_ASSERT(this->_waited.empty());
           try
@@ -331,7 +331,7 @@ namespace elle
           {
             // FIXME: Only the latest backtrace will be stored, but this is still
             // better than the creation time backtrace, I suppose.
-            static bool keep = elle::os::inenv("ELLE_KEEP_ORIGINAL_BACKTRACE");
+            static bool keep = elle::os::getenv("ELLE_KEEP_ORIGINAL_BACKTRACE", false);
             if (!keep)
               e.backtrace(elle::Backtrace::current());
             throw;
@@ -341,7 +341,7 @@ namespace elle
       {
         if (timeout)
         {
-          this->_timeout_timer.expires_from_now(timeout.get());
+          this->_timeout_timer.expires_from_now(*timeout);
           this->_timeout = false;
           auto repr = elle::sprintf("%s", waitables);
           this->_timeout_timer.async_wait(

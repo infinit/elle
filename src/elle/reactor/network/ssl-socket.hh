@@ -29,15 +29,15 @@ namespace elle
         /// verify to none.
         /// This is the client implementation of the SSLCertificate.
         ///
-        /// \param meth The ssl::context::method to use.
+        /// @param meth The ssl::context::method to use.
         SSLCertificate(SSLCertificateMethod meth =
                        boost::asio::ssl::context::tlsv1_client);
         /// Create an SSLCertificate from given certificate, key and dh.
         ///
-        /// \param certificate The content of the certificate.
-        /// \param key The key.
-        /// \param dh The Diffie-Hellman key exchange.
-        /// \param meth The ssl::context::method to use.
+        /// @param certificate The content of the certificate.
+        /// @param key The key.
+        /// @param dh The Diffie-Hellman key exchange.
+        /// @param meth The ssl::context::method to use.
         SSLCertificate(std::vector<char> const& certificate,
                        std::vector<char> const& key,
                        std::vector<char> const& dh,
@@ -46,10 +46,10 @@ namespace elle
         /// Create an SSLCertificate from given paths for certificate, key and
         /// dh.
         ///
-        /// \param certificate The path to the certificate.
-        /// \param key The path to the key.
-        /// \param dh The path to the Diffie-Hellman key exchange.
-        /// \param meth The ssl::context::method to use.
+        /// @param certificate The path to the certificate.
+        /// @param key The path to the key.
+        /// @param dh The path to the Diffie-Hellman key exchange.
+        /// @param meth The ssl::context::method to use.
         SSLCertificate(std::string const& certificate,
                        std::string const& key,
                        std::string const& dhfile,
@@ -89,40 +89,40 @@ namespace elle
       public:
         /// Construct a client socket.
         ///
-        /// \param hostname The name of the host.
-        /// \param port The port the host is listening to.
-        /// \param timeout The maximum duration before the connection attempt
+        /// @param hostname The name of the host.
+        /// @param port The port the host is listening to.
+        /// @param timeout The maximum duration before the connection attempt
         ///                times out.
         SSLSocket(const std::string& hostname,
                   const std::string& port,
-                  DurationOpt timeout = DurationOpt());
+                  DurationOpt timeout = {});
         /// Construct a client socket.
         ///
-        /// \param endpoint The EndPoint of the host.
-        /// \param timeout The maximum duration before the connection attempt
+        /// @param endpoint The EndPoint of the host.
+        /// @param timeout The maximum duration before the connection attempt
         ///                times out.
         SSLSocket(SSLEndPoint const& endpoint,
-                  DurationOpt timeout = DurationOpt());
+                  DurationOpt timeout = {});
         /// Construct a server socket.
         ///
-        /// \param hostname The name of the host.
-        /// \param port The port the host is listening to.
-        /// \param certificate An SSLCertificate.
-        /// \param timeout The maximum duration before the connection attempt
+        /// @param hostname The name of the host.
+        /// @param port The port the host is listening to.
+        /// @param certificate An SSLCertificate.
+        /// @param timeout The maximum duration before the connection attempt
         ///                times out.
         SSLSocket(const std::string& hostname,
                   const std::string& port,
                   SSLCertificate& certificate,
-                  DurationOpt timeout = DurationOpt());
+                  DurationOpt timeout = {});
         /// Construct a server socket.
         ///
-        /// \param endpoint The EndPoint of the host.
-        /// \param certificate An SSLCertificate.
-        /// \param timeout The maximum duration before the connection attempt
+        /// @param endpoint The EndPoint of the host.
+        /// @param certificate An SSLCertificate.
+        /// @param timeout The maximum duration before the connection attempt
         ///                times out.
         SSLSocket(SSLEndPoint const& endpoint,
                   SSLCertificate& certificate,
-                  DurationOpt timeout = DurationOpt());
+                  DurationOpt timeout = {});
         ~SSLSocket();
 
       /*----------------.
@@ -140,7 +140,7 @@ namespace elle
         SSLSocket(std::unique_ptr<SSLStream> socket,
                   SSLEndPoint const& endpoint,
                   std::shared_ptr<SSLCertificate> certificate,
-                  DurationOpt timeout = DurationOpt());
+                  DurationOpt timeout = {});
         /// No check of certificate is done by default
         void
         _client_handshake();

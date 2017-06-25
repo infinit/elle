@@ -103,7 +103,7 @@ namespace elle
       /// @param action The Action to execute.
       /// @param dispose Put the Scheduler in charge of destroying the Thread.
       Thread(Scheduler& scheduler,
-             const std::string& name,
+             std::string const& name,
              Action action,
              bool dispose = false);
       /// Create a Thread that will run an Action, using the current Scheduler.
@@ -114,7 +114,7 @@ namespace elle
       /// @param name A descriptive name of Thread to be spawn.
       /// @param action The action to execute.
       /// @param dispose Put the Scheduler in charge of destroying the Thread.
-      Thread(const std::string& name,
+      Thread(std::string const& name,
              Action action,
              bool dispose = false);
       /// Create a Thread that will run an Action, using the current Scheduler.
@@ -126,7 +126,7 @@ namespace elle
       /// @param action The action to execute.
       /// @param args The named arguments `dispose` and `managed`.
       template <typename ... Args>
-      Thread(const std::string& name,
+      Thread(std::string const& name,
              Action action,
              Args&& ... args);
 
@@ -141,7 +141,7 @@ namespace elle
       static
       ThreadPtr
       make_tracked(Scheduler& scheduler,
-                   const std::string& name,
+                   std::string const& name,
                    Action action);
       /// Create a Thread.
       ///
@@ -153,7 +153,7 @@ namespace elle
       /// @returns A std::shared_ptr managing the created Thread.
       static
       ThreadPtr
-      make_tracked(const std::string& name,
+      make_tracked(std::string const& name,
                    Action action);
       virtual
       ~Thread();
@@ -238,7 +238,7 @@ namespace elle
     public:
       using Injection = std::function<void ()>;
       void
-      inject(const Injection& injection);
+      inject(Injection const& injection);
       template <typename Exception, typename... Args>
       void
       raise(Args&&... args);
@@ -252,7 +252,7 @@ namespace elle
     protected:
       virtual
       void
-      _action_wrapper(const Thread::Action& action);
+      _action_wrapper(Thread::Action const& action);
     protected:
       std::function<void ()> _injection;
       /// Exception to be thrown by the thread upon wake-up.
@@ -279,11 +279,11 @@ namespace elle
       /// @returns Whether the operation finished and didn't timeout.
       bool
       wait(Waitables const& waitables,
-           DurationOpt timeout = DurationOpt());
+           DurationOpt timeout = {});
       /// Shortcut to wait for a single waitable to be done.
       bool
       wait(Waitable& s,
-           DurationOpt timeout = DurationOpt());
+           DurationOpt timeout = {});
       /// Terminate execution of the thread by injecting a terminate exception.
       void
       terminate();
@@ -301,7 +301,7 @@ namespace elle
       friend class TimeoutGuard;
       friend class Waitable;
       void
-      _wait_timeout(const boost::system::error_code& e,
+      _wait_timeout(boost::system::error_code const& e,
                     std::string const& waited);
       void
       _wait_abort(std::string const& reason);
@@ -387,14 +387,14 @@ namespace elle
       `-------------*/
     public:
       VThread(Scheduler& scheduler,
-              const std::string& name,
+              std::string const& name,
               Action action);
 
       /*-------.
       | Result |
       `-------*/
     public:
-      const R&
+      R const&
       result() const;
     private:
       R _result;
@@ -429,8 +429,8 @@ namespace elle
     /// @returns The thread running the operation.
     Thread::unique_ptr
     every(Duration freq,
-          const std::string& name,
-          const std::function<void ()>& op,
+          std::string const& name,
+          std::function<void ()> const& op,
           bool dispose = false);
   }
 }

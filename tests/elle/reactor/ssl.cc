@@ -37,28 +37,28 @@ static
 std::unique_ptr<SSLCertificate>
 load_certificate()
 {
-  namespace fs = boost::filesystem;
-  fs::path tmp;
+  namespace bfs = boost::filesystem;
+  auto tmp = bfs::path{};
   while (true)
   {
-    tmp = fs::temp_directory_path() / fs::unique_path();
-    if (fs::create_directory(tmp))
+    tmp = bfs::temp_directory_path() / bfs::unique_path();
+    if (bfs::create_directory(tmp))
       break;
   }
-  elle::SafeFinally remove_tmp([tmp] { fs::remove_all(tmp); } );
+  elle::SafeFinally remove_tmp([tmp] { bfs::remove_all(tmp); } );
   auto cert = tmp / "server-cert.pem";
   auto key = tmp / "server-key.pem";
   auto dh1024 = tmp / "dh1024.pem";
   {
-    fs::ofstream cert_f(cert, std::ios::binary);
+    bfs::ofstream cert_f(cert, std::ios::binary);
     cert_f.write(server_cert.data(), server_cert.size());
   }
   {
-    fs::ofstream key_f(key, std::ios::binary);
+    bfs::ofstream key_f(key, std::ios::binary);
     key_f.write(server_key.data(), server_key.size());
   }
   {
-    fs::ofstream dh1024_f(dh1024, std::ios::binary);
+    bfs::ofstream dh1024_f(dh1024, std::ios::binary);
     dh1024_f.write(server_dh1024.data(), server_dh1024.size());
   }
   return std::make_unique<SSLCertificate>(cert.string(),

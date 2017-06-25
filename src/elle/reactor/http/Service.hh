@@ -42,16 +42,17 @@ namespace elle
       | Socket |
       `-------*/
       public:
-        class Socket:
-          public boost::asio::ip::tcp::socket
+        class Socket
+          : public boost::asio::ip::tcp::socket
         {
         public:
+          using Super = boost::asio::ip::tcp::socket;
           template <typename ... T>
-          Socket(T&& ... args):
-            boost::asio::ip::tcp::socket(std::forward<T>(args)...),
-            reading(false),
-            writing(false),
-            _fd(this->native_handle())
+          Socket(T&& ... args)
+            : Super(std::forward<T>(args)...)
+            , reading(false)
+            , writing(false)
+            , _fd(this->native_handle())
           {}
 
           ~Socket()
