@@ -800,7 +800,7 @@ namespace elle
           // Ensure that we reset the override_host;
           override_host = boost::none;
           RequestTime request_time =
-            boost::posix_time::second_clock::universal_time();
+            Clock::now();
           ELLE_TRACE("Applying clock skew: %s - %s = %s",
                      request_time,
                      this->_credentials.skew(),

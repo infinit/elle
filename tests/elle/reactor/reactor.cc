@@ -1278,7 +1278,7 @@ test_timeout_aborted()
 {
   elle::reactor::Scheduler sched;
 
-  boost::asio::deadline_timer(sched.io_service());
+  WTimer(sched.io_service());
   elle::reactor::Thread t1(sched, "John", &connor);
   elle::reactor::Thread t2(sched, "Terminator", &schwarzy);
   sched.run();

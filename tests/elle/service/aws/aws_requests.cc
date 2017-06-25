@@ -31,7 +31,7 @@ namespace
 
 static
 boost::posix_time::ptime _now =
-  boost::posix_time::second_clock::universal_time();
+  Clock::now();
 
 static
 boost::posix_time::ptime _later = _now + boost::posix_time::hours(1);

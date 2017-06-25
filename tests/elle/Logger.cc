@@ -251,7 +251,7 @@ _environment_format_test(bool env)
   ELLE_LOG("Test 2");
   // FIXME: Checking time printing is non-deterministic.
   // res << "[1m"
-  //     << boost::posix_time::second_clock::universal_time() << ": "
+  //     << Clock::now() << ": "
   //     << "[Test] Test 2\n[0m";
   res << "[1m[Test] Test 2\n[0m";
   BOOST_CHECK_EQUAL(ss.str(), res.str());
@@ -322,7 +322,7 @@ _environment_format_test(bool env)
   ELLE_LOG("Test 4");
   // FIXME: Checking time printing is non-deterministic.
   // res << "[1m"
-  //     << boost::posix_time::second_clock::universal_time() << ": "
+  //     << Clock::now() << ": "
   //     << "[Test] [" << boost::lexical_cast<std::string>(getpid()) << "] "
   //     << "Test 4\n[0m";
   res << "[1m[Test] [" << boost::lexical_cast<std::string>(getpid()) << "] "

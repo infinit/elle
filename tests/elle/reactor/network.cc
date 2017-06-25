@@ -783,7 +783,7 @@ ELLE_TEST_SCHEDULED(async_write)
     });
   elle::reactor::network::TCPSocket socket(
     "localhost", server.local_endpoint().port());
-  boost::asio::deadline_timer t(elle::reactor::scheduler().io_service());
+  WTimer t(elle::reactor::scheduler().io_service());
   t.expires_from_now(100ms);
   t.async_wait([&] (boost::system::error_code const& e)
                {

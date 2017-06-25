@@ -226,7 +226,7 @@ namespace elle
             if (--it->second.waiters <= 0)
               this->_contacts.erase(it);
           });
-        auto now = boost::posix_time::second_clock::universal_time();
+        auto now = Clock::now();
         while (true)
         {
           if (!endpoints.empty())

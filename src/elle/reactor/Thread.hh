@@ -311,7 +311,7 @@ namespace elle
       _wake(Waitable* waitable);
       ELLE_ATTRIBUTE_R(std::set<Waitable*>, waited);
       ELLE_ATTRIBUTE(bool, timeout);
-      ELLE_ATTRIBUTE(boost::asio::deadline_timer, timeout_timer);
+      ELLE_ATTRIBUTE(WTimer, timeout_timer);
 
     /*------.
     | Hooks |

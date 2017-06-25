@@ -49,7 +49,7 @@ namespace elle
         , _region(region)
         , _bucket(bucket)
         , _folder(folder)
-        , _server_time(boost::posix_time::second_clock::universal_time())
+        , _server_time(Clock::now())
         , _expiry(boost::posix_time::pos_infin)
         , _skew()
         , _federated_user(false)
@@ -63,7 +63,7 @@ namespace elle
       {
         // Assume creation time is now, and compute skew with local clock
         this->_skew =
-          boost::posix_time::second_clock::universal_time() - this->_server_time;
+          Clock::now() - this->_server_time;
         ELLE_TRACE("Computed clock skew of %s", this->_skew);
         if (!this->valid())
         {
@@ -130,7 +130,7 @@ namespace elle
         else if (s.in())
         {
           this->_expiry = boost::posix_time::pos_infin;
-          this->_server_time = boost::posix_time::second_clock::universal_time();
+          this->_server_time = Clock::now();
         }
         s.serialize("endpoint", this->_endpoint);
         if (s.in())
