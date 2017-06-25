@@ -557,7 +557,7 @@ _connection_lost_sender(elle::Version const& version,
       {
         while (true)
         {
-          elle::reactor::sleep(valgrind(10_ms, 10));
+          elle::reactor::sleep(valgrind(10ms, 10));
           s.write(p);
         }
       }
@@ -687,11 +687,11 @@ _interruption(elle::Version const& version,
         } while (true);
         // Version one will go throught even if a termination has been required.
         ELLE_DEBUG("wait for %s", terminated)
-          terminated.wait(valgrind(250_ms, 10));
+          terminated.wait(valgrind(250ms, 10));
         if (version == elle::Version{0, 1, 0})
         {
           ELLE_DEBUG("wait for %s", received)
-            received.wait(valgrind(250_ms, 10));
+            received.wait(valgrind(250ms, 10));
         }
         else if (version >= elle::Version{0, 2, 0})
         {

@@ -278,7 +278,7 @@ ELLE_TEST_SCHEDULED(encryption)
 
 ELLE_TEST_SCHEDULED(handshake_timeout)
 {
-  auto const timeout = valgrind(10_ms);
+  auto const timeout = valgrind(10ms);
   elle::reactor::Barrier listening;
   elle::reactor::Barrier timed_out;
   int port = 0;
@@ -665,7 +665,7 @@ ELLE_TEST_SCHEDULED(shutdown_asynchronous_timeout)
     ELLE_LOG("connect client")
     {
       elle::reactor::network::SSLSocket client(
-        "127.0.0.1", std::to_string(port), valgrind(200_ms));
+        "127.0.0.1", std::to_string(port), valgrind(200ms));
       client.shutdown_asynchronous(true);
     }
     ELLE_LOG("wait for SSL shutdown timeout")
@@ -700,7 +700,7 @@ ELLE_TEST_SCHEDULED(shutdown_asynchronous_concurrent)
     {
       elle::reactor::network::SSLSocket client(
         "127.0.0.1", std::to_string(port),
-        valgrind(500_ms, 5));
+        valgrind(500ms, 5));
       client.shutdown_asynchronous(true);
       elle::reactor::wait(closed);
     }

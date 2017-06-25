@@ -295,7 +295,7 @@ timeout()
     auto* current = sched.current();
     current->wait(sig);
     auto url = elle::sprintf("http://127.0.0.1:%d/", port);
-    elle::reactor::http::Request::Configuration conf(500_ms);
+    elle::reactor::http::Request::Configuration conf(500ms);
     BOOST_CHECK_THROW(elle::reactor::http::get(url, conf), elle::reactor::http::Timeout);
     tcp.terminate_now();
   };
@@ -543,7 +543,7 @@ ELLE_TEST_SCHEDULED(interrupted)
     r << "{}";
     r.finalize();
     elle::reactor::wait(server.serving());
-    elle::reactor::sleep(500_ms); // FIXME: wait for Curl to read
+    elle::reactor::sleep(500ms); // FIXME: wait for Curl to read
   }
 }
 

@@ -271,7 +271,7 @@ namespace elle
             if (conflicted)
             {
               auto rn = elle::cryptography::random::generate<uint8_t>(1, 8);
-              auto delay = 100_ms * rn * backoff;
+              auto delay = 100ms * rn * backoff;
               if (this->_conflict_backoff)
               {
                 ELLE_TRACE("%s: conflicted proposal, retry in %s", this, delay);

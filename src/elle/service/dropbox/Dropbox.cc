@@ -324,7 +324,7 @@ namespace elle
                         *this, this->_ranges_fetching);
               do
               {
-                elle::reactor::sleep(100_ms);
+                elle::reactor::sleep(100ms);
               }
               while (!this->_ranges_fetched.contains(range));
               ELLE_DEBUG("%s: done waiting", *this);

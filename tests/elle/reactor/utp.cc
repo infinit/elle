@@ -21,7 +21,7 @@ ELLE_TEST_SCHEDULED(udp)
       boost::asio::ip::udp::endpoint ep;
       s.receive_from(elle::WeakBuffer(data), ep);
     });
-  elle::reactor::sleep(100_ms);
+  elle::reactor::sleep(100ms);
   t.terminate();
   elle::reactor::wait(t);
 }
@@ -64,7 +64,7 @@ ELLE_TEST_SCHEDULED(utp_close)
   SocketPair sp;
   sp.s1->write("foo");
   sp.s1->close();
-  elle::reactor::sleep(100_ms);
+  elle::reactor::sleep(100ms);
   BOOST_CHECK_THROW(sp.s1->write("bar"),  elle::reactor::network::ConnectionClosed);
   BOOST_CHECK_THROW(sp.s1->read_some(10), elle::reactor::network::ConnectionClosed);
   BOOST_CHECK_THROW(sp.s2->read_some(10), elle::reactor::network::ConnectionClosed);
@@ -103,13 +103,13 @@ ELLE_TEST_SCHEDULED(utp_timeout)
   char* megabuf;
   {
   SocketPair sp;
-  BOOST_CHECK_THROW(sp.s1->read(10, 100_ms), elle::reactor::network::TimeOut);
+  BOOST_CHECK_THROW(sp.s1->read(10, 100ms), elle::reactor::network::TimeOut);
   sp.s2->write("foooo");
-  BOOST_CHECK_THROW(sp.s1->read(10, 100_ms), elle::reactor::network::TimeOut);
+  BOOST_CHECK_THROW(sp.s1->read(10, 100ms), elle::reactor::network::TimeOut);
   megabuf = (char*)malloc(10000000);
   memset(megabuf, 0, 10000000);
   BOOST_CHECK_THROW(sp.s1->write(elle::ConstWeakBuffer(megabuf, 10000000),
-                                 100_ms),
+                                 100ms),
                     elle::reactor::network::TimeOut);
   }
   free(megabuf);
@@ -172,7 +172,7 @@ ELLE_TEST_SCHEDULED(many)
     new elle::reactor::Thread("watch", [&] {
         while (true)
         {
-          elle::reactor::sleep(500_ms);
+          elle::reactor::sleep(500ms);
           std::cerr << "**I: " << iw1 << ' ' << ir2 << std::endl;
         }
       }));

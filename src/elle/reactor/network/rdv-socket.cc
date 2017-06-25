@@ -63,7 +63,7 @@ namespace elle
           this->_send_to_failsafe(
             elle::ConstWeakBuffer(buf.contents(), buf.size()),
             ep);
-          if (reactor::wait(_server_reached, 500_ms))
+          if (reactor::wait(_server_reached, 500ms))
             return;
           if (timeout &&
               boost::posix_time::second_clock::universal_time() - now > *timeout)
@@ -261,7 +261,7 @@ namespace elle
               this->_send_to_failsafe(buf, _server);
             }
           }
-          if (reactor::wait(this->_contacts.at(contactid).barrier, 500_ms))
+          if (reactor::wait(this->_contacts.at(contactid).barrier, 500ms))
           {
             auto& c = _contacts.at(contactid);
             if (c.result)
@@ -323,7 +323,7 @@ namespace elle
           }
           for (auto const& ep: to_ping)
             this->_send_ping(ep);
-          reactor::sleep(500_ms);
+          reactor::sleep(500ms);
         }
       }
 

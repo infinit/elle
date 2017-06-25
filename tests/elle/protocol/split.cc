@@ -146,7 +146,7 @@ ELLE_TEST_SCHEDULED(kill_reader)
   Serializer ser1(s1, v, false);
   ChanneledStream cs1(ser1);
   while (!cs2p)
-    elle::reactor::sleep(50_ms);
+    elle::reactor::sleep(50ms);
   ChanneledStream& cs2 = *cs2p;
 
   // FIXME: unused.
@@ -195,7 +195,7 @@ ELLE_TEST_SCHEDULED(kill_reader)
   Channel c = cs2.accept();
   c.write(elle::Buffer("foo"));
   while (!r2)
-    elle::reactor::sleep(100_ms);
+    elle::reactor::sleep(100ms);
   BOOST_CHECK(r2);
 }
 
@@ -220,7 +220,7 @@ ELLE_TEST_SCHEDULED(nonempty_queue)
   Serializer ser1(s1, v, false);
   ChanneledStream cs1(ser1);
   while (!cs2p)
-    elle::reactor::sleep(50_ms);
+    elle::reactor::sleep(50ms);
   ChanneledStream& cs2 = *cs2p;
   // force a reader on cs1
   elle::reactor::Thread::unique_ptr reader(new elle::reactor::Thread("reader",

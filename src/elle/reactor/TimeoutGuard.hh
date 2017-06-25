@@ -16,7 +16,7 @@ namespace elle
     /// @code{.cc}
     ///
     /// {
-    ///   TimeoutGuard g(200_ms);
+    ///   TimeoutGuard g(200ms);
     ///   // do_read and do_write have 200 ms to run, otherwise the TimeoutGuard
     ///   // will raise an exception.
     ///   do_read():

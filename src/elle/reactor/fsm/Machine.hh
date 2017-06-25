@@ -56,10 +56,10 @@ namespace elle
       ///     []
       ///     {
       ///       std::cout << "1";
-      ///       reactor::sleep(100_ms);
+      ///       reactor::sleep(100ms);
       ///       std::cout << "2";
       ///       a2b.signal();
-      ///       reactor::sleep(100_ms);
+      ///       reactor::sleep(100ms);
       ///       std::cout << "3";
       ///       b2c.signal();
       ///     });

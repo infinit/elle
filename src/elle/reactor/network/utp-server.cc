@@ -560,7 +560,7 @@ namespace elle
                       return !t || t->done();
                     });
                   utp_check_timeouts(this->_ctx);
-                  reactor::sleep(50_ms);
+                  reactor::sleep(50ms);
                   this->_check_icmp();
                 }
               }
