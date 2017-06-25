@@ -2,6 +2,7 @@
 
 #include <elle/find.hh>
 #include <elle/log.hh>
+#include <elle/reactor/Duration.hh>
 #include <elle/reactor/network/SocketOperation.hh>
 #include <elle/reactor/scheduler.hh>
 
@@ -13,7 +14,7 @@ ELLE_LOG_COMPONENT("elle.reactor.network.SocketOperation");
 namespace
 {
   auto _epoll_interrupt_callback
-  = std::unordered_map<elle::reactor::Thread*, std::function<void()>>{};
+    = std::unordered_map<elle::reactor::Thread*, std::function<void()>>{};
 }
 
 namespace elle
@@ -53,7 +54,7 @@ extern "C"
     auto& ios = elle::reactor::scheduler().io_service();
     boost::asio::posix::stream_descriptor s(ios);
     s.assign(epfd);
-    boost::asio::deadline_timer timer(ios);
+    elle::reactor::WTimer timer(ios);
     elle::reactor::Barrier b;
     bool timer_running = true;
     bool socket_running = true;

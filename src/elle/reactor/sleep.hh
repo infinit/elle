@@ -48,7 +48,7 @@ namespace elle
 
     private:
       Duration _duration;
-      boost::asio::deadline_timer _timer;
+      WTimer _timer;
     };
   }
 }

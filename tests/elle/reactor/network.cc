@@ -27,6 +27,8 @@
 
 #include "reactor.hh"
 
+using namespace std::literals;
+
 ELLE_LOG_COMPONENT("elle.reactor.network.test");
 
 using elle::reactor::network::Byte;
@@ -152,7 +154,7 @@ test_timeout_read()
       Byte b;
       auto buffer = elle::WeakBuffer(&b, 1);
       BOOST_CHECK_THROW(
-        socket.read_some(buffer, boost::posix_time::milliseconds(200)),
+        socket.read_some(buffer, 200ms),
         elle::reactor::network::TimeOut);
       try
       {
@@ -184,7 +186,7 @@ serve(std::unique_ptr<Socket> socket)
     try
     {
       read = socket->read_some(elle::WeakBuffer(buffer, sizeof buffer - 1),
-                               boost::posix_time::milliseconds(100));
+                               100ms);
     }
     catch (elle::reactor::network::ConnectionClosed&)
     {
@@ -782,7 +784,7 @@ ELLE_TEST_SCHEDULED(async_write)
   elle::reactor::network::TCPSocket socket(
     "localhost", server.local_endpoint().port());
   boost::asio::deadline_timer t(elle::reactor::scheduler().io_service());
-  t.expires_from_now(boost::posix_time::milliseconds(100));
+  t.expires_from_now(100ms);
   t.async_wait([&] (boost::system::error_code const& e)
                {
                  BOOST_TEST(!e);

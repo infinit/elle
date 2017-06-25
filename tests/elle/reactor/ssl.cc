@@ -23,6 +23,8 @@
 
 ELLE_LOG_COMPONENT("elle.reactor.network.SSL.test");
 
+using namespace std::literals;
+
 using elle::reactor::network::FingerprintedSocket;
 using elle::reactor::network::SSLCertificate;
 using elle::reactor::network::Socket;

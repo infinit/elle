@@ -9,6 +9,7 @@
 
 ELLE_LOG_COMPONENT("utpcat");
 
+using namespace std::literals;
 using namespace elle::reactor::network;
 
 ELLE_TEST_SCHEDULED(udp)

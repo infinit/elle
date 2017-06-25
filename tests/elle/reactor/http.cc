@@ -23,6 +23,8 @@
 
 #include <elle/reactor/network/http-server.hh>
 
+using namespace std::literals;
+
 ELLE_LOG_COMPONENT("elle.reactor.http.test");
 
 using HTTPServer = elle::reactor::network::HttpServer;
@@ -30,7 +32,7 @@ using HTTPServer = elle::reactor::network::HttpServer;
   do                                                       \
   {                                                        \
   for (unsigned i=0; i<20 && !((a) == (b)); ++i)           \
-    elle::reactor::sleep(boost::posix_time::milliseconds(50));   \
+    elle::reactor::sleep(50ms);   \
   BOOST_CHECK_EQUAL(a, b);                                 \
   }                                                        \
   while(0)
@@ -636,7 +638,7 @@ ELLE_TEST_SCHEDULED(download_progress)
   { // Lets not make too strong hypothesis about sched implementation details.
     for (unsigned i=0; i<10; ++i)
       elle::reactor::yield();
-    elle::reactor::sleep(boost::posix_time::milliseconds(100));
+    elle::reactor::sleep(100ms);
     for (unsigned i=0; i<10; ++i)
       elle::reactor::yield();
   };

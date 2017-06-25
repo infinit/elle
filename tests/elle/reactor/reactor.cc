@@ -569,7 +569,7 @@ void
 waiter_timeout()
 {
   elle::reactor::Signal s;
-  bool finished = elle::reactor::wait(s, boost::posix_time::milliseconds(10));
+  bool finished = elle::reactor::wait(s, 10ms);
   BOOST_CHECK(!finished);
   s.signal();
 }
@@ -1209,7 +1209,7 @@ void
 timeout(elle::reactor::Signal& s,
         bool expect)
 {
-  bool finished = elle::reactor::wait(s, boost::posix_time::milliseconds(500));
+  bool finished = elle::reactor::wait(s, 500ms);
   BOOST_CHECK(finished == expect);
   BOOST_CHECK(s.waiters().empty());
 }
@@ -1261,7 +1261,7 @@ connor()
 {
   elle::reactor::Semaphore s(0);
   elle::reactor::Scheduler::scheduler()->current()->wait(
-    s, boost::posix_time::milliseconds(1));
+    s, 1ms);
 }
 
 static
@@ -2109,7 +2109,7 @@ ELLE_TEST_SCHEDULED(test_terminate_now)
       catch (...)
       {
         ELLE_LOG("delay termination");
-        elle::reactor::sleep(boost::posix_time::milliseconds(10));
+        elle::reactor::sleep(10ms);
         beacon = true;
         ELLE_LOG("actually die");
         throw;
@@ -2196,7 +2196,7 @@ terminated(bool& terminated)
   catch (...)
   {
     terminated = true;
-    elle::reactor::sleep(boost::posix_time::milliseconds(10));
+    elle::reactor::sleep(10ms);
     throw;
   }
 }

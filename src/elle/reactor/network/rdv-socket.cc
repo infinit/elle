@@ -57,7 +57,7 @@ namespace elle
         req.command = rdv::Command::ping;
         req.id = id;
         elle::Buffer buf = elle::serialization::json::serialize(req, false);
-        auto now = boost::posix_time::second_clock::universal_time();
+        auto now = Clock::now();
         while (true)
         {
           this->_send_to_failsafe(
@@ -65,8 +65,7 @@ namespace elle
             ep);
           if (reactor::wait(_server_reached, 500ms))
             return;
-          if (timeout &&
-              boost::posix_time::second_clock::universal_time() - now > *timeout)
+          else if (timeout && Clock::now() - now > *timeout)
             throw TimeOut();
         }
       }
@@ -243,9 +242,7 @@ namespace elle
               && this->_server_reached.opened()
               && !id.empty())
           {
-            if (c.result
-                && boost::posix_time::second_clock::local_time() - c.result_time
-                   < 10s)
+            if (c.result && Clock::now() - c.result_time < 10s)
             {
               // RDV gave us an enpoint, but we are not connected to it yet,
               // ping it.
@@ -272,8 +269,7 @@ namespace elle
             else
               throw elle::Error(elle::sprintf("contact(%s) aborted", id));
           }
-          if (timeout &&
-              boost::posix_time::second_clock::universal_time() - now > *timeout)
+          else if (timeout && Clock::now() - now > *timeout)
             throw TimeOut();
         }
       }

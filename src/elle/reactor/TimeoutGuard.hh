@@ -41,7 +41,7 @@ namespace elle
       print(std::ostream& output) const override;
 
     private:
-      ELLE_ATTRIBUTE(boost::asio::deadline_timer, timer);
+      ELLE_ATTRIBUTE(WTimer, timer);
     };
   }
 }
