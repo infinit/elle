@@ -2,7 +2,7 @@
 
 #include <elle/find.hh>
 #include <elle/log.hh>
-#include <elle/reactor/Duration.hh>
+#include <elle/reactor/duration.hh>
 #include <elle/reactor/network/SocketOperation.hh>
 #include <elle/reactor/scheduler.hh>
 
@@ -62,7 +62,7 @@ extern "C"
       timer_running = false;
     else
     {
-      timer.expires_from_now(boost::posix_time::milliseconds(timeout));
+      timer.expires_from_now(std::chrono::milliseconds(timeout));
       timer.async_wait([&](boost::system::error_code erc) {
           ELLE_DUMP("timer_exp %s", erc);
           timer_running = false;

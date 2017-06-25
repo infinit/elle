@@ -690,7 +690,7 @@ namespace elle
         delay(int attempt)
         {
           unsigned int factor = pow(2, std::max(8, attempt));
-          return boost::posix_time::milliseconds(factor * 100);
+          return std::chrono::milliseconds(factor * 100);
         }
       }
 

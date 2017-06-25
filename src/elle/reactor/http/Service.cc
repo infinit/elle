@@ -300,7 +300,7 @@ namespace elle
         if (ms == -1)
           self->unset_timeout();
         else
-          self->set_timeout(boost::posix_time::milliseconds(ms));
+          self->set_timeout(std::chrono::milliseconds(ms));
         return 0;
       }
 

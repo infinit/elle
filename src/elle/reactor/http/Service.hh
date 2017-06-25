@@ -109,7 +109,7 @@ namespace elle
                          long ms,
                          void* userp);
         void
-        set_timeout(boost::posix_time::time_duration const& timeout);
+        set_timeout(Duration const& timeout);
         void
         unset_timeout();
         void
