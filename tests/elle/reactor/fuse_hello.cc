@@ -77,7 +77,7 @@ static int hello_read(const char *path, char *buf, size_t size, off_t offset,
 		      struct fuse_file_info *fi)
 {
   std::cerr << "reading file..." << std::endl;
-  reactor::sleep(1_sec);
+  reactor::sleep(1s);
   std::cerr << "..." << std::endl;
 	size_t len;
 	(void) fi;
@@ -114,7 +114,7 @@ static void ping()
   while (goon)
   {
     std::cerr << "ping" << std::endl;
-    reactor::sleep(5_sec);
+    reactor::sleep(5s);
   }
 }
 

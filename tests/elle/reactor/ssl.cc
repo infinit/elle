@@ -469,7 +469,7 @@ ELLE_TEST_SCHEDULED(shutdown_timeout)
   {
     elle::reactor::network::SSLSocket valid(
       "127.0.0.1", std::to_string(server.port()));
-    BOOST_CHECK(!elle::reactor::wait(server_thread, 1_sec));
+    BOOST_CHECK(!elle::reactor::wait(server_thread, 1s));
   }
   elle::reactor::wait(server_thread);
 }
@@ -559,11 +559,11 @@ ELLE_TEST_SCHEDULED(shutdown_asynchronous)
         "127.0.0.1", std::to_string(forwarder.port()));
       forwarding.close();
       connected1.open();
-      BOOST_CHECK_THROW(synchronous.read(1, 1_sec),
+      BOOST_CHECK_THROW(synchronous.read(1, 1s),
                         elle::reactor::network::TimeOut);
       BOOST_CHECK(!shutdown1.opened());
       forwarding.open();
-      BOOST_CHECK_THROW(synchronous.read(1, 1_sec),
+      BOOST_CHECK_THROW(synchronous.read(1, 1s),
                         elle::reactor::network::ConnectionClosed);
     }
     elle::reactor::wait(shutdown1);
@@ -573,11 +573,11 @@ ELLE_TEST_SCHEDULED(shutdown_asynchronous)
         "127.0.0.1", std::to_string(forwarder.port()));
       forwarding.close();
       connected2.open();
-      BOOST_CHECK_THROW(asynchronous.read(1, 1_sec),
+      BOOST_CHECK_THROW(asynchronous.read(1, 1s),
                         elle::reactor::network::TimeOut);
       elle::reactor::wait(shutdown2);
       forwarding.open();
-      BOOST_CHECK_THROW(asynchronous.read(1, 1_sec),
+      BOOST_CHECK_THROW(asynchronous.read(1, 1s),
                         elle::reactor::network::ConnectionClosed);
     }
     forwarder_thread.terminate();

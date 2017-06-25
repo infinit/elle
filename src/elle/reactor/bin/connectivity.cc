@@ -65,7 +65,7 @@ run(int argc, char** argv)
           auto address = func(host, port + deltaport);
           std::cerr << "OK: " << nated(public_ips, address) << std::endl;
       });
-      if (!elle::reactor::wait(t, 5_sec))
+      if (!elle::reactor::wait(t, 5s))
       {
         t.terminate_now();
         throw std::runtime_error("timeout");

@@ -143,7 +143,7 @@ test_timeout_read()
         [&]
         {
           std::unique_ptr<elle::reactor::network::Socket> socket(server.accept());
-          elle::reactor::sleep(2_sec);
+          elle::reactor::sleep(2s);
           socket->write(elle::ConstWeakBuffer("0"));
         });
       Socket socket(server.local_endpoint());
@@ -585,7 +585,7 @@ ELLE_TEST_SCHEDULED(read_write_cancel)
             "reader",
             [&]
             {
-              BOOST_CHECK_THROW(socket.read(1, 1_sec),
+              BOOST_CHECK_THROW(socket.read(1, 1s),
                                 elle::reactor::network::TimeOut);
             });
           auto& writer = scope.run_background(

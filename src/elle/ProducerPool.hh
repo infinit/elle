@@ -11,7 +11,7 @@ namespace elle
   ///
   /// \code{.cc}
   ///
-  /// Production p([] { return std::this_thread::sleep_for(2_sec); return 3; },
+  /// Production p([] { return std::this_thread::sleep_for(2s); return 3; },
   ///              30,
   ///              4);
   /// p.get();

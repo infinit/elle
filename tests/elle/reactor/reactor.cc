@@ -937,13 +937,13 @@ namespace scope
                 try
                 {
                   ready.open();
-                  elle::reactor::sleep(1_sec);
+                  elle::reactor::sleep(1s);
                   BOOST_FAIL("should have been killed");
                 }
                 catch (...)
                 {
                   t.terminate();
-                  elle::reactor::sleep(1_sec);
+                  elle::reactor::sleep(1s);
                   throw;
                 }
               }
@@ -3262,7 +3262,7 @@ namespace non_interruptible
                 BOOST_CHECK(!t1.done());
                 BOOST_CHECK(!t2.done());
                 ELLE_TRACE("wait fo %s", terminated)
-                  terminated.wait(1_sec);
+                  terminated.wait(1s);
                 elle::reactor::yield();
                 elle::reactor::yield();
                 BOOST_CHECK(t1.done());

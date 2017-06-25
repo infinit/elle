@@ -241,7 +241,7 @@ ELLE_TEST_SCHEDULED(nonempty_queue)
     elle::reactor::wait(b1);
     auto chan = Channel(cs2);
     chan.write(elle::Buffer("foo"));
-    BOOST_CHECK(elle::reactor::wait(b2, 1_sec));
+    BOOST_CHECK(elle::reactor::wait(b2, 1s));
   }
   //write first
   {
@@ -254,7 +254,7 @@ ELLE_TEST_SCHEDULED(nonempty_queue)
         cs1.accept().read();
         b2.open();
     }, true);
-    BOOST_CHECK(elle::reactor::wait(b2, 1_sec));
+    BOOST_CHECK(elle::reactor::wait(b2, 1s));
   }
 }
 

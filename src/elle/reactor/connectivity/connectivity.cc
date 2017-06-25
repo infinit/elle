@@ -42,7 +42,7 @@ namespace elle
       Result
       tcp(std::string const& host, int port)
       {
-        elle::reactor::network::TCPSocket s(host, port, 5_sec);
+        elle::reactor::network::TCPSocket s(host, port, 5s);
         s << "foo" << std::endl;
         std::string line;
         std::getline(s, line);
@@ -63,7 +63,7 @@ namespace elle
         boost::asio::ip::udp::endpoint ep;
         char buffer[5000];
         auto sz = s.receive_from(elle::WeakBuffer(buffer, sizeof buffer),
-                                 ep, 5_sec);
+                                 ep, 5s);
         auto const line = std::string(buffer, sz);
         auto p = line.find(' ');
         if (line.substr(p+1) == "foo\n")
@@ -123,7 +123,7 @@ namespace elle
         socket.rdv_connect(
           "connectivity-client-udp",
           elle::reactor::network::resolve_udp("rdv.infinit.sh", "7890")[0],
-          5_sec);
+          5s);
         auto ep = elle::reactor::network::resolve_udp(host, port);
         socket.send_to(std::string("foo\n"), ep[0]);
         elle::reactor::wait(poller);
@@ -140,11 +140,11 @@ namespace elle
         elle::reactor::network::UTPServer server;
         server.listen(0);
         server.xorify(xorit);
-        server.rdv_connect("connectivity", "rdv.infinit.sh:7890", 5_sec);
+        server.rdv_connect("connectivity", "rdv.infinit.sh:7890", 5s);
         elle::reactor::network::UTPSocket s(server);
-        s.connect("connectivity-server" + std::to_string(port), {}, 5_sec);
+        s.connect("connectivity-server" + std::to_string(port), {}, 5s);
         s << "foo" << std::endl;
-        auto const reply = s.read_until("\n", 5_sec);
+        auto const reply = s.read_until("\n", 5s);
         auto const line = reply.string();
         auto p = line.find(' ');
         if (line.substr(p+1) != "foo\n")
@@ -161,7 +161,7 @@ namespace elle
         server.xorify(xorit);
         s.connect(host, port);
         s << "foo" << std::endl;
-        elle::Buffer reply = s.read_until("\n", 5_sec);
+        elle::Buffer reply = s.read_until("\n", 5s);
         std::string line = reply.string();
         auto p = line.find(' ');
         if (line.substr(p+1) != "foo\n")

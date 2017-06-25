@@ -20,7 +20,7 @@ namespace elle
       /// // Consider an SSLCertificate certificate.
       /// elle::With<elle::reactor::Scope>() << [&](elle::reactor::Scope &s)
       /// {
-      ///   elle::reactor::network::SSLServer s(certificate, 10_sec);
+      ///   elle::reactor::network::SSLServer s(certificate, 10s);
       ///   elle::reactor::Barrier listening;
       ///   s.run_background("server",
       ///     [&]
@@ -73,7 +73,7 @@ namespace elle
         /// @param handshake_timeout The maximum duration before the handshake
         ///                          times out.
         SSLServer(std::unique_ptr<SSLCertificate> certificate,
-                  reactor::Duration  handshake_timeout = 30_sec);
+                  reactor::Duration  handshake_timeout = 30s);
         virtual
         ~SSLServer();
 

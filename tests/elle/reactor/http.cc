@@ -250,7 +250,7 @@ concurrent()
     {
       auto url = elle::sprintf("http://127.0.0.1:%s/some/path", port);
       auto res = elle::reactor::http::get(
-        url, elle::reactor::http::Request::Configuration(100_sec));
+        url, elle::reactor::http::Request::Configuration(100s));
       BOOST_CHECK_EQUAL(res.string().substr(0, 4), "lol\n");
     };
 
@@ -286,7 +286,7 @@ timeout()
     sig.signal();
     std::unique_ptr<elle::reactor::network::Socket> socket(serv.accept());
     while (true)
-      elle::reactor::sleep(1_sec);
+      elle::reactor::sleep(1s);
   };
   elle::reactor::Thread tcp(sched, "tcp", tcp_serv);
   auto run_test = [&]
@@ -677,7 +677,7 @@ ELLE_TEST_SCHEDULED(download_stall)
   for (unsigned i=0; i<100 + header.size() / 10; ++i)
     server.sem.release();
   // Careful, stall timeout has only second resolution.
-  elle::reactor::http::Request::Configuration conf(elle::reactor::DurationOpt(), 1_sec);
+  elle::reactor::http::Request::Configuration conf(elle::reactor::DurationOpt(), 1s);
   elle::reactor::http::Request r(server.url("whatever"), elle::reactor::http::Method::GET,
                            conf);
   r.finalize();
@@ -747,7 +747,7 @@ ELLE_TEST_SCHEDULED(keep_alive)
   std::string content;
   r_keep_alive >> content;
   BOOST_CHECK_EQUAL(content, "alive");
-  elle::reactor::http::Request::Configuration conf(30_sec,
+  elle::reactor::http::Request::Configuration conf(30s,
                                              elle::reactor::DurationOpt(),
                                              elle::reactor::http::Version::v11,
                                              false);

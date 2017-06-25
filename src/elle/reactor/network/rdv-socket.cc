@@ -245,7 +245,7 @@ namespace elle
           {
             if (c.result
                 && boost::posix_time::second_clock::local_time() - c.result_time
-                   < 10_sec)
+                   < 10s)
             {
               // RDV gave us an enpoint, but we are not connected to it yet,
               // ping it.
@@ -334,7 +334,7 @@ namespace elle
         while (true)
         {
           this->_send_ping(_server);
-          reactor::sleep(30_sec);
+          reactor::sleep(30s);
         }
       }
 

@@ -132,7 +132,7 @@ namespace elle
                 {
                   server->socket_shutdown_threads().emplace_back(
                     new Thread(name, [impl] {
-                      if (!reactor::wait(impl->_destroyed_barrier, 90_sec))
+                      if (!reactor::wait(impl->_destroyed_barrier, 90s))
                         ELLE_WARN("%s: timeout on UTP shutdown", impl);
                   }));
                 }

@@ -963,12 +963,12 @@ ELLE_TEST_SCHEDULED(ping)
     {
       elle::reactor::wait(elle::reactor::Waitables{&alice, &bob});
       // Let some pings go through
-      elle::reactor::sleep(1_sec);
+      elle::reactor::sleep(1s);
       timeout_expected = true;
       socket.alice_barrier().close();
       socket.bob_barrier().close();
       // Let some timeouts go through
-      elle::reactor::sleep(1_sec);
+      elle::reactor::sleep(1s);
       a.terminate();
       b.terminate();
       BOOST_TEST(timeouts >= 2);
