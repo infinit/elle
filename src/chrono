@@ -38,9 +38,9 @@ namespace std
     {
       auto const pos = repr.find_first_not_of("-0123456789");
       if (pos == std::string::npos)
-        elle::err("missing duration unit");
+        elle::err("missing duration unit: {}", repr);
       if (pos == 0)
-        elle::err("invalid duration: %s", pos);
+        elle::err("invalid duration: {}", repr);
       auto ticks = std::atoi(repr.substr(0, pos).c_str());
       auto const unit = repr.substr(pos);
       if (unit == "d")
