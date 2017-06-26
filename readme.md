@@ -1,4 +1,4 @@
-# Elle, *the coroutine-based asynchronous C++ development framework.*
+# Elle, *the coroutine-based asynchronous C++ development framework*
 
 <img src="docs/static_files/elle_docker_logotype@2x.png" alt="Logo - Elle" title="Elle logotype" width="300" style="max-width:300px;">
 
@@ -33,7 +33,7 @@ std::cout << elle::json::pretty_print(elle::json::read(r)) << std::endl;
 ```
 <!-- Full example [here](elle/src/elle/examples/samples/get_wikipedia.cc). -->
 
-## Getting Elle.
+## Getting Elle
 
 To download the source code and build Elle by yourself, get it from GitHub.
 
