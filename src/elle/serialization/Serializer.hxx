@@ -1124,8 +1124,9 @@ namespace elle
               template <typename, typename> class C,
               typename T,
               typename A>
-    void
+    auto
     Serializer::_serialize(C<T, A>& collection)
+      -> decltype(collection.size(), void())
     {
       this->_serialize_collection<S>(collection);
     }
@@ -1135,7 +1136,6 @@ namespace elle
     Serializer::_serialize_collection(C& collection)
     {
       if (this->out())
-      {
         this->_serialize_array(
           collection.size(),
           [&] ()
@@ -1151,9 +1151,7 @@ namespace elle
                    const_cast<typename C::value_type&>(elt));
             }
           });
-      }
-      else
-      {
+      else // this->in()
         this->_serialize_array(
           -1,
           [&] ()
@@ -1163,7 +1161,6 @@ namespace elle
                              this->current_name());
             this->_deserialize_in_array<S>(collection);
           });
-      }
     }
 
     template <typename As,

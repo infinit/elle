@@ -47,7 +47,7 @@ namespace elle
     ///
     /// N.B. You can have only one instance of a given type per Context.
     ///
-    /// \code{.cc}
+    /// @code{.cc}
     ///
     /// struct Foo
     /// {
@@ -80,7 +80,7 @@ namespace elle
     /// BOOST_CHECK_EQUAL(ctx.msg(), "/r/nocontext");
     /// assert(ctx.master()->operational());
     ///
-    /// \endcode
+    /// @endcode
     class ELLE_API Context
     {
     public:
@@ -187,7 +187,7 @@ namespace elle
     /// Version by using the "serialize" method
     /// serialize(Serializer& s, elle::Version v);
     ///
-    /// \code{.cc}
+    /// @code{.cc}
     ///
     /// struct NonVersionedFoo
     /// {
@@ -208,7 +208,7 @@ namespace elle
     ///   serialize(elle::serialization::Serializer& s)
     ///   {
     ///     std::cout << (s.in() ? "de" : "") << "serializing "
-    ///               << elle::type_info(*this) << "\n";
+    ///               << elle::type_info(*this) << '\n';
     ///     s.serialize("bob", this->bob);
     ///     s.serialize("alice", this->alice);
     ///   }
@@ -263,7 +263,7 @@ namespace elle
     ///   {}
     ///
     ///   VersionedFoo(elle::serialization::SerializerIn& s,
-    ///               elle::Version const& v)
+    ///                elle::Version const& v)
     ///   {
     ///     this->serialize(s, v);
     ///   }
@@ -273,7 +273,7 @@ namespace elle
     ///             elle::Version const& v)
     ///   {
     ///     std::cout << (s.in() ? "de" : "") << "serializing "
-    ///               << elle::type_info(*this) << "\n";
+    ///               << elle::type_info(*this) << '\n';
     ///     s.serialize("bob", this->bob);
     ///     s.serialize("alice", this->alice);
     ///     if (v >= elle::Version{0, 3, 0})
@@ -330,7 +330,7 @@ namespace elle
     /// // serializing VersionedFoo at version 0.2.0
     /// {".version":"0.2.0","alice":"alice","bob":"bob"}
     ///
-    /// \endcode
+    /// @endcode
     class ELLE_API Serializer
     {
     /*------.
@@ -438,6 +438,7 @@ namespace elle
       template <typename Serializer = void, typename T, typename As>
       void
       serialize(std::string const& name, T& v, as<As>);
+
       /// Serialize or deserialize a collection as a collection of given type
       /// As.
       ///
@@ -455,6 +456,7 @@ namespace elle
                 typename A>
       std::enable_if_t<std::is_default_constructible<T>::value, void>
       serialize(std::string const& name, C<T, A>& collection, as<As>);
+
       /// Serialize or deserialize an object.
       ///
       /// XXX[doc]: Should this be in the public API?
@@ -750,6 +752,7 @@ namespace elle
       _serialize_variant(std::vector<std::string> const& names,
                          int index, // out: filled, in: -1
                          std::function<void(int)> const& f);
+
       /// Serialize or deserialize an arbitrary collection.
       ///
       /// @tparam S XXX[doc]
@@ -760,8 +763,10 @@ namespace elle
       template <typename S = void,
                 template <typename, typename> class C,
                 typename T, typename A>
-      void
-      _serialize(C<T, A>& collection);
+      auto
+      _serialize(C<T, A>& collection)
+        -> decltype(collection.size(), void());
+
       /// Serialize or deserialize an arbitrary collection.
       ///
       /// @tparam S XXX[doc]
@@ -925,7 +930,7 @@ namespace elle
   }
 }
 
-# if !defined(ELLE_SERIALIZATION_SERIALIZER_IN_HH) && !defined(ELLE_SERIALIZATION_SERIALIZER_OUT_HH)
+# if !defined ELLE_SERIALIZATION_SERIALIZER_IN_HH && !defined ELLE_SERIALIZATION_SERIALIZER_OUT_HH
 #  include <elle/serialization/Serializer.hxx>
 # endif
 
