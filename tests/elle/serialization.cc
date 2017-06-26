@@ -572,7 +572,7 @@ buffer()
 template <typename Format>
 static
 void
-date()
+check_date()
 {
   auto now = boost::posix_time::microsec_clock().local_time();
   std::stringstream stream;
@@ -1770,12 +1770,12 @@ ELLE_TEST_SUITE()
   FOR_ALL_SERIALIZATION_TYPES(unordered_map_string);
   FOR_ALL_SERIALIZATION_TYPES(unordered_set);
   FOR_ALL_SERIALIZATION_TYPES(buffer);
-  FOR_ALL_SERIALIZATION_TYPES(date);
+  FOR_ALL_SERIALIZATION_TYPES(check_date);
   FOR_ALL_SERIALIZATION_TYPES(version);
   FOR_ALL_SERIALIZATION_TYPES(chrono);
   FOR_ALL_SERIALIZATION_TYPES(path);
   {
-    boost::unit_test::test_suite* subsuite = BOOST_TEST_SUITE("hierarchy");
+    auto* subsuite = BOOST_TEST_SUITE("hierarchy");
     {
       boost::unit_test::test_suite* s = BOOST_TEST_SUITE("unversioned");
       auto json = &hierarchy<elle::serialization::Json, false>;
@@ -1785,7 +1785,7 @@ ELLE_TEST_SUITE()
       subsuite->add(s);
     }
     {
-      boost::unit_test::test_suite* s = BOOST_TEST_SUITE("versioned");
+      auto* s = BOOST_TEST_SUITE("versioned");
       auto json = &hierarchy<elle::serialization::Json, true>;
       s->add(BOOST_TEST_CASE(json));
       auto binary = &hierarchy<elle::serialization::Binary, true>;

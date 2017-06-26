@@ -16,8 +16,8 @@ namespace elle
   {
     namespace aws
     {
-      class Credentials:
-        public elle::Printable
+      class Credentials
+        : public elle::Printable
       {
           /*-------------.
           | Construction |

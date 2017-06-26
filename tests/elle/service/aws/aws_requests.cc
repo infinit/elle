@@ -25,9 +25,9 @@ ELLE_LOG_COMPONENT("elle.services.aws.test");
 // SessionToken
 // Expiration
 
-
-static
-std::string _bucket_name("us-east-1-buffer-dev-infinit-io");
+namespace
+{
+  auto const _bucket_name = std::string("us-east-1-buffer-dev-infinit-io");
 
 static
 boost::posix_time::ptime _now =
@@ -36,30 +36,29 @@ boost::posix_time::ptime _now =
 static
 boost::posix_time::ptime _later = _now + boost::posix_time::hours(1);
 
-static
-elle::service::aws::Credentials _GET_credentials(
-  "ASIAJOU5RQKL2N6YKOXQ",
-  "9yC/yEGXvjH+3At0p6GOt04K8cgeol+klLlrFkLY",
-  "AQoDYXdzEGIagAPirqRMvxZjBVQrtGqwzzTKcfyU0cn+a5uyJPto88J09j/WYZdqrQ8YEr6MAk3sXcWlgtZ+k259fkSCqfkwg1ntS/SkrtDaC7GokhnOMRXsqGYV7Hf48QyWV3XpnIp3x0XgJKOvq2Mwfn1ZuFy7364Qk/5lkYLuQ/i2EqMXRgzZFH2TPkYk8+k4l4sNJf1c4/Vl9FapstpbwYha96oAFbZSd9GfTIkFXXhXMCxykE9uDxM2STYGkoFkE37doZUoZB3n6pjPdnV60Hn/KmgRTEC8fn/SdYrmpnpXIRcPi8tL+iOa3x74LcUv0KysNqVZuBIScVCmVnjNxhueSz7BdM9Zo7NsGNzrWBTUShjoXmw+a92eINvCKRv+buD4PYNGk+HekJxF3IGjUGaoBYJkfpwCYJMDsfs/R7DPG3qzqJN465bXDj/8RZmps7qb3ew8AhasWT8cMUDPr2ClGUwLaVkyH1KBvKxc6hhxzZOPuJq4ZzGQ/4axoM1CtP0UjerJdNMg/oDMmQU=",
-  "us-east-1",
-  _bucket_name,
-  "testing",
-  _later,
-  _now
-);
+  elle::service::aws::Credentials _GET_credentials(
+    "ASIAJOU5RQKL2N6YKOXQ",
+    "9yC/yEGXvjH+3At0p6GOt04K8cgeol+klLlrFkLY",
+    "AQoDYXdzEGIagAPirqRMvxZjBVQrtGqwzzTKcfyU0cn+a5uyJPto88J09j/WYZdqrQ8YEr6MAk3sXcWlgtZ+k259fkSCqfkwg1ntS/SkrtDaC7GokhnOMRXsqGYV7Hf48QyWV3XpnIp3x0XgJKOvq2Mwfn1ZuFy7364Qk/5lkYLuQ/i2EqMXRgzZFH2TPkYk8+k4l4sNJf1c4/Vl9FapstpbwYha96oAFbZSd9GfTIkFXXhXMCxykE9uDxM2STYGkoFkE37doZUoZB3n6pjPdnV60Hn/KmgRTEC8fn/SdYrmpnpXIRcPi8tL+iOa3x74LcUv0KysNqVZuBIScVCmVnjNxhueSz7BdM9Zo7NsGNzrWBTUShjoXmw+a92eINvCKRv+buD4PYNGk+HekJxF3IGjUGaoBYJkfpwCYJMDsfs/R7DPG3qzqJN465bXDj/8RZmps7qb3ew8AhasWT8cMUDPr2ClGUwLaVkyH1KBvKxc6hhxzZOPuJq4ZzGQ/4axoM1CtP0UjerJdNMg/oDMmQU=",
+    "us-east-1",
+    _bucket_name,
+    "testing",
+    _later,
+    _now
+  );
 
-static
-elle::service::aws::Credentials _PUT_credentials(
-  "ASIAJAGQUOJVE3HO46ZA",
-  "pG1iz87bCYOZ9sQ4fkryBgiS/wnS7K+2MJUmS7Hb",
-  "AQoDYXdzEGIawAIayH3x2pmusA2EhnhOK+42f07Y0cQILf7yltnXMG6sJ6sbE+o0IgZW8lEkCcZRGcXD1fM6pGAEBEYgO9ZJVXvRG5+riMGXmb7RHWGEEYRidqylFqK7vepkU2+ocFBshxKoSOJMCl5yjU351J3INvkkeTNJ9lpz0mPBWpEv82uBYzo6j0oDJMJutaiFvmRfpS79KWHemOcgUxbjTKChms3askIDJf6zgDTyIymWaIGquFgKwNgCO6UNk2zCCiWf3vtryuPxrlERz/Xm9cCejC4B4FiTjes6fWH7jlxbDu0s+6s7ivdSga68Ex4OJbetpYIn3vOTMTRzyUN/0TvMJPZFRn8joW3cjnJOQNMtoEmtS7Hp1fvOBkk/f1qWAM/GrMvbcJThOAjPuhqbJY7DpP4SNQtGgdwhOjC04Z3fUDgqnyDR/8uZBQ==",
-  "us-east-1",
-  "none",
-  "/",
-  _later,
-  _now
-);
 
+  elle::service::aws::Credentials _PUT_credentials(
+    "ASIAJAGQUOJVE3HO46ZA",
+    "pG1iz87bCYOZ9sQ4fkryBgiS/wnS7K+2MJUmS7Hb",
+    "AQoDYXdzEGIawAIayH3x2pmusA2EhnhOK+42f07Y0cQILf7yltnXMG6sJ6sbE+o0IgZW8lEkCcZRGcXD1fM6pGAEBEYgO9ZJVXvRG5+riMGXmb7RHWGEEYRidqylFqK7vepkU2+ocFBshxKoSOJMCl5yjU351J3INvkkeTNJ9lpz0mPBWpEv82uBYzo6j0oDJMJutaiFvmRfpS79KWHemOcgUxbjTKChms3askIDJf6zgDTyIymWaIGquFgKwNgCO6UNk2zCCiWf3vtryuPxrlERz/Xm9cCejC4B4FiTjes6fWH7jlxbDu0s+6s7ivdSga68Ex4OJbetpYIn3vOTMTRzyUN/0TvMJPZFRn8joW3cjnJOQNMtoEmtS7Hp1fvOBkk/f1qWAM/GrMvbcJThOAjPuhqbJY7DpP4SNQtGgdwhOjC04Z3fUDgqnyDR/8uZBQ==",
+    "us-east-1",
+    "none",
+    "/",
+    _later,
+    _now
+  );
+}
 
 
 // Test derived from link below with their query string instead of none.
@@ -68,20 +67,20 @@ static
 elle::service::aws::CanonicalRequest
 _make_canonical_request()
 {
-  std::map<std::string, std::string> query;
-  query["X-Amz-Algorithm"] = std::string("AWS4-HMAC-SHA256");
-  query["Action"] = std::string("ListUsers");
-  query["Version"] = std::string("2010-05-08");
-  query["X-Amz-Credentials"] =
-    std::string("AKIAIOSFODNN7EXAMPLE/20110909/us-east-1/iam/aws4_request");
-  query["X-Amz-Date"] = std::string("20110909T233600Z");
-
-  std::map<std::string, std::string> headers;
-  headers["content-type"] =
-    std::string("application/x-www-form-urlencoded; charset=utf-8");
-  headers["host"] = std::string("iam.amazonaws.com");
-  headers["x-amz-date"] = std::string("20110909T233600Z");
-
+  auto query = elle::service::aws::RequestQuery
+    {
+      { "X-Amz-Algorithm", "AWS4-HMAC-SHA256" },
+      { "Action", "ListUsers" },
+      { "Version", "2010-05-08" },
+      { "X-Amz-Credentials", "AKIAIOSFODNN7EXAMPLE/20110909/us-east-1/iam/aws4_request" },
+      { "X-Amz-Date", "20110909T233600Z" },
+    };
+  auto const headers = elle::service::aws::RequestHeaders
+    {
+      { "content-type", "application/x-www-form-urlencoded; charset=utf-8", },
+      { "host", "iam.amazonaws.com", },
+      { "x-amz-date", "20110909T233600Z", },
+    };
   std::vector<std::string> signed_headers;
   std::string signed_headers_str;
   for (auto header: headers)
@@ -114,7 +113,7 @@ static
 elle::service::aws::StringToSign
 _make_string_to_sign()
 {
-  boost::posix_time::ptime request_time(
+  auto const request_time = elle::service::aws::RequestTime(
     boost::gregorian::date(2011, boost::gregorian::Sep, 9),
     boost::posix_time::hours(23) + boost::posix_time::minutes(36)
   );

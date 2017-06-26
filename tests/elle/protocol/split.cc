@@ -23,9 +23,9 @@ ELLE_LOG_COMPONENT("elle.protocol.test");
 
 using Serializer = elle::protocol::Serializer;
 
-struct setup
+struct Setup
 {
-  setup(elle::Version const& version,
+  Setup(elle::Version const& version,
         bool checksum = true)
   {
     elle::reactor::network::TCPServer c;
@@ -104,7 +104,7 @@ exchange(Serializer& sender,
 
 ELLE_TEST_SCHEDULED(run_version, (elle::Version, version))
 {
-  auto s = setup(version);
+  auto s = Setup(version);
   auto& bob = *s.bob;
   auto& alice = *s.alice;
   ELLE_ASSERT_EQ(bob.version(), version);

@@ -94,18 +94,16 @@ namespace elle
       {
         using namespace boost::posix_time;
         ptime now = second_clock::universal_time();
-        bool res;
         if (this->_expiry < now)
         {
-          ELLE_DEBUG("%s: credentials have expired", *this);
-          res = false;
+          ELLE_DEBUG("%s: credentials have expired", this);
+          return false;
         }
         else
         {
-          ELLE_DEBUG("%s: credentials are valid", *this);
-          res = true;
+          ELLE_DEBUG("%s: credentials are valid", this);
+          return true;
         }
-        return res;
       }
 
       Credentials::Credentials(elle::serialization::SerializerIn& s)

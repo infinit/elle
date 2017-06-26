@@ -29,17 +29,11 @@ namespace elle
     {
       namespace
       {
-        auto const default_timeout = []
-        {
-          auto const opt = elle::os::getenv("INFINIT_S3_TIMEOUT", "500");
-          return boost::posix_time::seconds(boost::lexical_cast<int>(opt));
-        }();
-
-        auto const default_stall_timeout = []
-        {
-          auto const opt = elle::os::getenv("INFINIT_S3_STALL_TIMEOUT", "300");
-          return boost::posix_time::seconds(boost::lexical_cast<int>(opt));
-        }();
+        using elle::os::getenv;
+        auto const default_timeout =
+          boost::posix_time::seconds(getenv("INFINIT_S3_TIMEOUT", 500));
+        auto const default_stall_timeout =
+          boost::posix_time::seconds(getenv("INFINIT_S3_STALL_TIMEOUT", 300));
       }
 
       // Stay as close as possible to reference java implementation from amazon
@@ -797,16 +791,9 @@ namespace elle
                                  : default_stall_timeout);
         // Transient errors on requests is perfectly reasonable
         int attempt = 0;
-        static int max_attempts = -1;
-        if (max_attempts == -1)
-        {
-          max_attempts = 0;
-          std::string opt = elle::os::getenv("INFINIT_S3_MAX_ATTEMPTS", "");
-          if (!opt.empty())
-            max_attempts = boost::lexical_cast<int>(opt);
-        }
+        static int max_attempts = elle::os::getenv("INFINIT_S3_MAX_ATTEMPTS", 0);
         // If we receive a temporary redirect, we need to use a different host.
-        boost::optional<std::string> override_host = boost::none;
+        auto override_host = boost::optional<std::string>{};
         while (true)
         {
           URL const hostname(this->hostname(this->_credentials, override_host));

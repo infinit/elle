@@ -54,9 +54,8 @@ struct Focket // Fake socket.
       ELLE_TRACE("%s: destroy", this);
     }
 
-    virtual
     Size
-    read(char* buffer, Size size)
+    read(char* buffer, Size size) override
     {
       ELLE_TRACE("read %s: %f (%s)",
                  (void*) &this->_in, this->_in, this->_in.size());
@@ -76,9 +75,8 @@ struct Focket // Fake socket.
       } while (true);
     };
 
-    virtual
     void
-    write(char* buffer, Size size)
+    write(char* buffer, Size size) override
     {
       this->_bytes_written += size;
       this->_out.append(buffer, size);
@@ -329,14 +327,12 @@ public:
     virtual
     void
     operator ()(elle::ConstWeakBuffer const& data)
-    {
-    }
+    {}
 
     virtual
     void
     operator ()(SocketInstrumentation const& sockets)
-    {
-    }
+    {}
 
     int64_t quota;
     int64_t corrupt_offset;
@@ -467,7 +463,7 @@ void
 _exchange(elle::Version const& version,
           bool checksum)
 {
-  std::vector<elle::Buffer> packets={
+  auto const packets = std::vector<elle::Buffer>{
     elle::cryptography::random::generate<elle::Buffer>(0),
     elle::cryptography::random::generate<elle::Buffer>(1),
     elle::cryptography::random::generate<elle::Buffer>(1000),
@@ -1058,12 +1054,11 @@ ELLE_TEST_SCHEDULED(read_interruption, (elle::Version, version))
             elle::reactor::wait(carry_on);
             write.put(data.range(data.size() / 2));
           }
-          else
-            if (count++ >= 3)
-            {
-              blocked.open();
-              elle::reactor::wait(carry_on);
-            }
+          else if (count++ >= 3)
+          {
+            blocked.open();
+            elle::reactor::wait(carry_on);
+          }
         });
       elle::protocol::Serializer s(write_stream, version, false, {}, {}, 4);
       s.write(data);
@@ -1104,11 +1099,9 @@ ELLE_TEST_SUITE()
   {
     auto sub = BOOST_TEST_SUITE("read_interruption");
     suite.add(sub);
-    for (auto const& version: {
-        elle::Version(0, 1, 0),
-        elle::Version(0, 2, 0),
-        elle::Version(0, 3, 0),
-          })
+    for (auto const& version: {elle::Version(0, 1, 0),
+                               elle::Version(0, 2, 0),
+                               elle::Version(0, 3, 0)})
       sub->add(ELLE_TEST_CASE(std::bind(read_interruption, version),
                               elle::sprintf("%s", version)), 0, valgrind(1));
   }

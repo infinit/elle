@@ -11,15 +11,11 @@ namespace elle
                                        Service const& aws_service,
                                        std::string const& aws_region)
       {
-        std::string date = boost::posix_time::to_iso_string(request_time);
+        auto date = boost::posix_time::to_iso_string(request_time);
         date = date.substr(0, 8);
-        this->_credential_scope_str = std::string(elle::sprintf(
-                                                    "%s/%s/%s/%s",
-                                                    date,
-                                                    aws_region,
-                                                    aws_service,
-                                                    RequestType::aws4
-                                                    ));
+        this->_credential_scope_str =
+          elle::sprintf("%s/%s/%s/%s",
+                        date, aws_region, aws_service, RequestType::aws4);
       }
 
       void
@@ -33,7 +29,7 @@ namespace elle
                                  std::string const& hashed_canonical_request,
                                  SigningMethod const& algorithm)
       {
-        std::string iso_time = boost::posix_time::to_iso_string(request_time);
+        auto iso_time = boost::posix_time::to_iso_string(request_time);
         iso_time = elle::sprintf("%sZ", iso_time.substr(0, 15));
         this->_string = elle::sprintf("%s\n%s\n%s\n%s",
                                       algorithm,
