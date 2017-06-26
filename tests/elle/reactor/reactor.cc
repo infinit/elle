@@ -1052,13 +1052,6 @@ test_sleep_interleave()
   sched.run();
 }
 
-static
-boost::posix_time::ptime
-now()
-{
-  return boost::posix_time::microsec_clock::local_time();
-}
-
 ELLE_TEST_SCHEDULED(test_sleep_timing)
 {
   elle::reactor::Duration const delay = valgrind(500ms, 10);
@@ -1067,12 +1060,11 @@ ELLE_TEST_SCHEDULED(test_sleep_timing)
     elle::reactor::sleep(delay);
   for (int i = 0; i < 4; ++i)
   {
-    boost::posix_time::ptime start(now());
+    auto start = elle::Clock::now();
     elle::reactor::sleep(delay);
-    double elapsed = (now() - start).total_milliseconds();
-    double expected =  delay.total_milliseconds();
-    BOOST_CHECK_GE(elapsed, expected);
-    BOOST_CHECK_CLOSE(elapsed, expected, double(25));
+    auto elapsed = elle::Clock::now() - start;
+    BOOST_CHECK(delay <= elapsed);
+    BOOST_CHECK(elapsed <= delay + 25ms);
   }
 }
 
@@ -1087,7 +1079,7 @@ ELLE_TEST_SCHEDULED(every)
   // The first sleep is erratic on valgrind, don't include it in the tests.
   if (RUNNING_ON_VALGRIND)
     elle::reactor::sleep(delay);
-  boost::posix_time::ptime start(now());
+  auto start = elle::Clock::now();
   int i = 0;
   elle::reactor::Thread::unique_ptr thread = elle::reactor::every(
     delay, "inc",
@@ -1098,8 +1090,8 @@ ELLE_TEST_SCHEDULED(every)
     });
   elle::reactor::wait(*thread);
   BOOST_CHECK_EQUAL(i, iter);
-  double elapsed = (now() - start).total_milliseconds();
-  double expected =  delay.total_milliseconds() * iter;
+  double elapsed = elle::num_milliseconds(elle::Clock::now() - start);
+  double expected = elle::num_milliseconds(delay) * iter;
   BOOST_CHECK_GE(elapsed, expected);
   elle::reactor::sleep(delay * 3);
   BOOST_CHECK_EQUAL(i, iter);
@@ -1278,7 +1270,7 @@ test_timeout_aborted()
 {
   elle::reactor::Scheduler sched;
 
-  WTimer(sched.io_service());
+  elle::reactor::WTimer(sched.io_service());
   elle::reactor::Thread t1(sched, "John", &connor);
   elle::reactor::Thread t2(sched, "Terminator", &schwarzy);
   sched.run();
@@ -2560,19 +2552,17 @@ namespace background
               elle::reactor::background(
                 [&]
                 {
-                  std::this_thread::sleep_for
-                    (std::chrono::microseconds(sleep_time.total_microseconds()));
+                  std::this_thread::sleep_for(sleep_time);
                 });
               ++count;
             }));
-      auto start = boost::posix_time::microsec_clock::local_time();
+      auto start = elle::Clock::now();
       elle::reactor::wait(elle::reactor::Waitables(begin(threads), end(threads)));
-      auto duration =
-        boost::posix_time::microsec_clock::local_time() - start;
-      BOOST_CHECK_EQUAL(count, iterations);
-      BOOST_CHECK_EQUAL(
-        elle::reactor::scheduler().background_pool_size(), iterations);
-      BOOST_CHECK_LT(duration, sleep_time * 3);
+      auto duration = elle::Clock::now() - start;
+      BOOST_TEST(count == iterations);
+      BOOST_TEST(
+        elle::reactor::scheduler().background_pool_size() == iterations);
+      BOOST_TEST(duration <= sleep_time * 3);
       for (auto thread: threads)
         delete thread;
     }
@@ -3137,8 +3127,7 @@ namespace timeout_
     {
       auto const sleep_time = valgrind(10ms);
       elle::reactor::TimeoutGuard timeout(sleep_time);
-      std::this_thread::sleep_for
-        (std::chrono::microseconds((sleep_time * 2).total_microseconds()));
+      std::this_thread::sleep_for(sleep_time * 2);
     }
     catch(elle::reactor::Timeout const&)
     {

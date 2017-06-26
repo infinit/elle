@@ -11,6 +11,8 @@
 
 #include <elle/reactor/connectivity/connectivity.hh>
 
+using namespace std::literals;
+
 static
 std::string
 nated(std::vector<std::string> public_ips,

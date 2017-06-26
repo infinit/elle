@@ -384,7 +384,7 @@ namespace elle
       RDVSocket::ContactInfo::set_result(Endpoint ep)
       {
         this->result = ep;
-        this->result_time = boost::posix_time::second_clock::local_time();
+        this->result_time = Clock::now();
       }
     }
   }

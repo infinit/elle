@@ -158,7 +158,7 @@ namespace elle
             switch (proxy.type())
             {
               case ProxyType::None:
-                ELLE_ERR("cannot set proxy with type None", *this);
+                ELLE_ERR("{}: cannot set proxy with type None", this);
                 elle::unreachable();
               case ProxyType::HTTP:
                 return CURLPROXY_HTTP;
@@ -181,8 +181,9 @@ namespace elle
         }
         // Set timeout.
         auto const& timeout = this->_conf.timeout();
-        auto timeout_seconds = timeout ?
-          std::max(timeout->total_seconds(), 1) : 0;
+        auto const timeout_seconds
+          = timeout ? elle::num_seconds(std::max(elle::Duration{1s}, *timeout))
+          : 0;
         setopt(this->_handle, CURLOPT_TIMEOUT, timeout_seconds);
         // Set stall timeout
         if (auto const& stall_timeout = this->_conf.stall_timeout())
@@ -190,9 +191,10 @@ namespace elle
           // Timeout if bandwith is below 1 byte/second for given duration.
           // Note: CURL seems to wait for the test to fail some amount of
           // successive times to actually abort the operation (observed: 3, 6).
-          setopt(this->_handle, CURLOPT_LOW_SPEED_TIME,
-                 (long)std::max(stall_timeout->total_seconds(), 1));
-          setopt(this->_handle, CURLOPT_LOW_SPEED_LIMIT, (long)1);
+          auto const t = (long)elle::num_seconds(std::max(elle::Duration{1s},
+                                                          *stall_timeout));
+          setopt(this->_handle, CURLOPT_LOW_SPEED_TIME, t);
+          setopt(this->_handle, CURLOPT_LOW_SPEED_LIMIT, 1L);
         }
         // Set SSL options.
         if (!this->_conf.ssl_verify_host())
@@ -732,15 +734,13 @@ namespace elle
             {
               auto const& timeout = this->_impl->_conf.timeout();
               auto const& stall_timeout = this->_impl->_conf.stall_timeout();
-              auto value = is_stall?
-                (stall_timeout ? stall_timeout.get() : timeout.get())
-                : (timeout ? timeout.get() : stall_timeout.get());
+              auto const value = is_stall
+                ? (stall_timeout ? *stall_timeout : *timeout)
+                : (timeout ? *timeout : *stall_timeout);
               this->_raise<Timeout>(this->_url, value);
             }
             else if (code == CURLE_COULDNT_RESOLVE_HOST)
-            {
               this->_raise<ResolutionFailure>(this->_url);
-            }
             else
               this->_raise<RequestError>(this->_url, message);
           };
@@ -751,7 +751,7 @@ namespace elle
           message = elle::sprintf("%s: %s",
                                   curl_easy_strerror(CURLcode(code)),
                                   this->_impl->_error);
-          is_stall = (message.find("too slow") != message.npos);
+          is_stall = message.find("too slow") != message.npos;
           ELLE_WARN("%s: done with error: %s", *this, message);
           set_exception();
         }

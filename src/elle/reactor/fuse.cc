@@ -509,8 +509,7 @@ namespace elle
                           kDADiskUnmountOptionForce,
                           _unmount_callback,
                           nullptr);
-            float run_time =
-              grace_time ? grace_time.get().total_seconds() : 15.0f;
+            float run_time = grace_time ? num_seconds(*grace_time) : 15.0f;
             // returns CFRunLoopRunResult on 10.11+
             ELLE_DEBUG("mac unmount start run loop");
             SInt32 res =

@@ -379,54 +379,54 @@ post(elle::reactor::http::Request::Configuration conf,
 
 ELLE_TEST_SCHEDULED(post_no_body)
 {
-  elle::reactor::http::Request::Configuration conf;
+  auto conf = elle::reactor::http::Request::Configuration{};
   conf.version(elle::reactor::http::Version::v10);
   post(conf, "HTTP/1.0", elle::reactor::http::Method::POST, false, false, false);
 }
 
 ELLE_TEST_SCHEDULED(post_10)
 {
-  elle::reactor::http::Request::Configuration conf;
+  auto conf = elle::reactor::http::Request::Configuration{};
   conf.version(elle::reactor::http::Version::v10);
   post(conf, "HTTP/1.0", elle::reactor::http::Method::POST, false, false);
 }
 
 ELLE_TEST_SCHEDULED(post_11)
 {
-  elle::reactor::http::Request::Configuration conf;
+  auto conf = elle::reactor::http::Request::Configuration{};
   post(conf, "HTTP/1.1", elle::reactor::http::Method::POST, true, false);
 }
 
 ELLE_TEST_SCHEDULED(post_11_chunked)
 {
-  elle::reactor::http::Request::Configuration conf;
+  auto conf = elle::reactor::http::Request::Configuration{};
   conf.chunked_transfers(true);
   post(conf, "HTTP/1.1", elle::reactor::http::Method::POST, true, true);
 }
 
 ELLE_TEST_SCHEDULED(put_no_body)
 {
-  elle::reactor::http::Request::Configuration conf;
+  auto conf = elle::reactor::http::Request::Configuration{};
   conf.version(elle::reactor::http::Version::v10);
   post(conf, "HTTP/1.0", elle::reactor::http::Method::PUT, false, false, false);
 }
 
 ELLE_TEST_SCHEDULED(put_10)
 {
-  elle::reactor::http::Request::Configuration conf;
+  auto conf = elle::reactor::http::Request::Configuration{};
   conf.version(elle::reactor::http::Version::v10);
   post(conf, "HTTP/1.0", elle::reactor::http::Method::PUT, false, false);
 }
 
 ELLE_TEST_SCHEDULED(put_11)
 {
-  elle::reactor::http::Request::Configuration conf;
+  auto conf = elle::reactor::http::Request::Configuration{};
   post(conf, "HTTP/1.1", elle::reactor::http::Method::PUT, true, false);
 }
 
 ELLE_TEST_SCHEDULED(put_11_chunked)
 {
-  elle::reactor::http::Request::Configuration conf;
+  auto conf = elle::reactor::http::Request::Configuration{};
   conf.chunked_transfers(true);
   post(conf, "HTTP/1.1", elle::reactor::http::Method::PUT, true, true);
 }
@@ -472,7 +472,7 @@ ELLE_TEST_SCHEDULED(cookies)
   }
 
   {
-    elle::reactor::http::Request::Configuration conf;
+    auto conf = elle::reactor::http::Request::Configuration{};
     conf.cookies()["shitload"] = "of";
     elle::reactor::http::Request r(server.url("cookies"),
                              elle::reactor::http::Method::GET,
@@ -679,9 +679,11 @@ ELLE_TEST_SCHEDULED(download_stall)
   for (unsigned i=0; i<100 + header.size() / 10; ++i)
     server.sem.release();
   // Careful, stall timeout has only second resolution.
-  elle::reactor::http::Request::Configuration conf(elle::reactor::DurationOpt(), 1s);
-  elle::reactor::http::Request r(server.url("whatever"), elle::reactor::http::Method::GET,
-                           conf);
+  auto const conf
+    = elle::reactor::http::Request::Configuration({}, 1s);
+  elle::reactor::http::Request r(server.url("whatever"),
+                                 elle::reactor::http::Method::GET,
+                                 conf);
   r.finalize();
   // CURL takes some time to trigger the stall detection timeout, take margins.
   BOOST_CHECK_THROW(elle::reactor::wait(r), elle::reactor::http::Timeout);
@@ -749,10 +751,9 @@ ELLE_TEST_SCHEDULED(keep_alive)
   std::string content;
   r_keep_alive >> content;
   BOOST_CHECK_EQUAL(content, "alive");
-  elle::reactor::http::Request::Configuration conf(30s,
-                                             elle::reactor::DurationOpt(),
-                                             elle::reactor::http::Version::v11,
-                                             false);
+  auto const conf
+    = elle::reactor::http::Request::Configuration
+    (30s, {}, elle::reactor::http::Version::v11, false);
   elle::reactor::http::Request r_close(server.url("dead"),
                                  elle::reactor::http::Method::GET,
                                  conf);

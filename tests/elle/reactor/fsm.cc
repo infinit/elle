@@ -6,6 +6,8 @@
 
 #include <elle/test.hh>
 
+using namespace std::literals;
+
 using elle::reactor::fsm::Machine;
 using elle::reactor::fsm::State;
 using elle::reactor::fsm::Transition;

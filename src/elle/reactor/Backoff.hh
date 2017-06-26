@@ -1,6 +1,6 @@
 #pragma once
 
-#include <elle/chrono.hh>
+#include <elle/Duration.hh>
 
 namespace elle
 {
@@ -25,9 +25,7 @@ namespace elle
       ///
       /// @param base The first back off delay.
       /// @param max  The maximum back off delay.
-      Backoff(
-        std::chrono::milliseconds base = std::chrono::milliseconds(1000),
-        std::chrono::milliseconds max = std::chrono::milliseconds(1000 * 60));
+      Backoff(Duration base = 1s, Duration max = 1min);
 
     public:
       /// Wait for the current delay and double it for next time.
@@ -36,9 +34,9 @@ namespace elle
       /// The number of time we backed off already.
       ELLE_ATTRIBUTE_R(int, times_backed);
       /// The first back off delay.
-      ELLE_ATTRIBUTE_R(std::chrono::milliseconds, base_backoff);
+      ELLE_ATTRIBUTE_R(Duration, base_backoff);
       /// The maximum back off delay.
-      ELLE_ATTRIBUTE_R(std::chrono::milliseconds, max_backoff);
+      ELLE_ATTRIBUTE_R(Duration, max_backoff);
     };
   }
 }

@@ -321,7 +321,6 @@ operator delete(void* p) noexcept
 /// Scale a duration `d` by `factor` if we are instrumented (valgrind,
 /// asan, etc.).
 template <typename T>
-static
 auto
 valgrind(T d, int factor = 50)
 {

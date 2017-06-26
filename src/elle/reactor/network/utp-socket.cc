@@ -312,11 +312,10 @@ namespace elle
       UTPSocket::write(elle::ConstWeakBuffer const& buf, DurationOpt opt)
       {
         ELLE_DEBUG("write %s", buf.size());
-        using namespace boost::posix_time;
         if (!this->_impl->_open)
           throw ConnectionClosed();
         auto lock = this->_impl->_pending_operations.lock();
-        ptime start = microsec_clock::universal_time();
+        auto start = Clock::now();
         Lock l(this->_impl->_write_mutex);
         auto* data = const_cast<unsigned char*>(buf.contents());
         int sz = buf.size();
@@ -331,7 +330,7 @@ namespace elle
           {
             ELLE_DEBUG("write buffer full");
             this->_impl->_write_barrier.close();
-            Duration elapsed = microsec_clock::universal_time() - start;
+            Duration elapsed = Clock::now() - start;
             if (opt && *opt < elapsed)
               throw TimeOut();
             this->_impl->_write_barrier.wait(opt ? elapsed - *opt : opt);
@@ -365,18 +364,17 @@ namespace elle
       elle::Buffer
       UTPSocket::read_until(std::string const& delimiter, DurationOpt opt)
       {
-        using namespace boost::posix_time;
         if (!this->_impl->_open)
           throw ConnectionClosed();
         auto lock = this->_impl->_pending_operations.lock();
-        ptime start = microsec_clock::universal_time();
+        auto start = Clock::now();
         while (true)
         {
           size_t p = this->_impl->_read_buffer.string().find(delimiter);
           if (p != std::string::npos)
             return read(p + delimiter.length());
           this->_impl->_read_barrier.close();
-          Duration elapsed = microsec_clock::universal_time() - start;
+          Duration elapsed = Clock::now() - start;
           if (opt && *opt < elapsed)
             throw TimeOut();
           this->_impl->_read_barrier.wait(opt ? elapsed - *opt : opt);
@@ -389,16 +387,15 @@ namespace elle
       UTPSocket::read(size_t sz, DurationOpt opt)
       {
         ELLE_TRACE_SCOPE("%s: read up to %s bytes", this, sz);
-        using namespace boost::posix_time;
         if (!this->_impl->_open)
           throw ConnectionClosed();
         auto lock = this->_impl->_pending_operations.lock();
-        ptime start = microsec_clock::universal_time();
+        auto start = Clock::now();
         while (this->_impl->_read_buffer.size() < sz)
         {
           ELLE_DEBUG("read wait %s", this->_impl->_read_buffer.size());
           this->_impl->_read_barrier.close();
-          Duration elapsed = microsec_clock::universal_time() - start;
+          Duration elapsed = Clock::now() - start;
           if (opt && *opt < elapsed)
             throw TimeOut();
           this->_impl->_read_barrier.wait(opt ? elapsed - *opt : opt);
@@ -419,17 +416,16 @@ namespace elle
       elle::Buffer
       UTPSocket::read_some(size_t sz, DurationOpt opt)
       {
-        using namespace boost::posix_time;
         if (!this->_impl->_open)
           throw ConnectionClosed();
         auto lock = this->_impl->_pending_operations.lock();
         ELLE_DEBUG("read_some");
-        ptime start = microsec_clock::universal_time();
+        auto start = Clock::now();
         while (this->_impl->_read_buffer.empty())
         {
           ELLE_DEBUG("read_some wait");
           this->_impl->_read_barrier.close();
-          Duration elapsed = microsec_clock::universal_time() - start;
+          Duration elapsed = Clock::now() - start;
           if (opt && *opt < elapsed)
             throw TimeOut();
           this->_impl->_read_barrier.wait(opt ? elapsed - *opt : opt);

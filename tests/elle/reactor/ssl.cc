@@ -299,9 +299,7 @@ ELLE_TEST_SCHEDULED(handshake_timeout)
       });
     elle::reactor::wait(listening);
     BOOST_CHECK_THROW(
-      SSLSocket("127.0.0.1",
-                std::to_string(port),
-                timeout),
+      SSLSocket("127.0.0.1", std::to_string(port), timeout),
       elle::reactor::network::TimeOut);
     timed_out.open();
     elle::reactor::wait(scope);

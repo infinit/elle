@@ -158,7 +158,7 @@ test_timeout_read()
         elle::reactor::network::TimeOut);
       try
       {
-        socket.read_some(buffer, boost::posix_time::seconds(4));
+        socket.read_some(buffer, 4s);
       }
       catch (elle::reactor::network::TimeOut&)
       {
@@ -783,7 +783,7 @@ ELLE_TEST_SCHEDULED(async_write)
     });
   elle::reactor::network::TCPSocket socket(
     "localhost", server.local_endpoint().port());
-  WTimer t(elle::reactor::scheduler().io_service());
+  auto&& t = elle::reactor::WTimer(elle::reactor::scheduler().io_service());
   t.expires_from_now(100ms);
   t.async_wait([&] (boost::system::error_code const& e)
                {
