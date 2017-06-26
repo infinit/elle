@@ -117,6 +117,9 @@ namespace elle
         _serialize(boost::posix_time::ptime& v) override;
 
         void
+        _serialize(Time& v) override;
+
+        void
         _serialize_time_duration(std::int64_t& ticks,
                                  std::int64_t& num,
                                  std::int64_t& denom) override;

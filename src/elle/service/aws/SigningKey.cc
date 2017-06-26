@@ -27,9 +27,8 @@ namespace elle
                      std::string const& aws_region,
                      Service const& aws_service)
       {
-        std::string date_str = boost::posix_time::to_iso_string(request_time);
-        date_str = date_str.substr(0, 8);
-        std::string secret_str(elle::sprintf("AWS4%s", aws_secret));
+        auto date_str = date::format("%Y%m%d", request_time);
+        auto secret_str = elle::sprintf("AWS4%s", aws_secret);
         elle::Buffer k_secret(secret_str.data(), secret_str.size());
         elle::Buffer k_date = _aws_hmac(date_str, k_secret);
         elle::Buffer k_region = _aws_hmac(elle::sprintf("%s", aws_region),

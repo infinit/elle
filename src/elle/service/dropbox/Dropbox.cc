@@ -213,9 +213,7 @@ namespace elle
             this->_full = true;
           }
           else
-          {
             this->_cursor = this->_dropbox.delta_latest_cursor();
-          }
           this->_initialized.open();
           while (true)
           {
@@ -230,7 +228,7 @@ namespace elle
               ELLE_DEBUG("%s: longpoll returned with no change", *this);
             if (longpoll.backoff)
             {
-              auto delay = boost::posix_time::seconds(longpoll.backoff.get());
+              auto delay = std::chrono::seconds(*longpoll.backoff);
               ELLE_DEBUG("%s: longpoll backoff of %s", *this, delay);
               elle::reactor::sleep(delay);
             }

@@ -1,10 +1,7 @@
-#include <boost/date_time/gregorian/gregorian.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
-
+#include <elle/Duration.hh>
 #include <elle/cryptography/hash.hh>
 #include <elle/format/hexadecimal.hh>
 #include <elle/json/json.hh>
-#include <elle/test.hh>
 #include <elle/service/aws/CanonicalRequest.hh>
 #include <elle/service/aws/Credentials.hh>
 #include <elle/service/aws/Exceptions.hh>
@@ -12,10 +9,12 @@
 #include <elle/service/aws/S3.hh>
 #include <elle/service/aws/SigningKey.hh>
 #include <elle/service/aws/StringToSign.hh>
+#include <elle/test.hh>
 
 #include <elle/reactor/scheduler.hh>
 #include <elle/reactor/Thread.hh>
 
+using namespace std::literals;
 
 ELLE_LOG_COMPONENT("elle.services.aws.test");
 
@@ -29,13 +28,11 @@ namespace
 {
   auto const _bucket_name = std::string("us-east-1-buffer-dev-infinit-io");
 
-static
-boost::posix_time::ptime _now = elle::Clock::now();
+  auto const _now = elle::Clock::now();
 
-static
-boost::posix_time::ptime _later = _now + 1h;
+  auto const _later = _now + 1h;
 
-  elle::service::aws::Credentials _GET_credentials(
+  auto const _GET_credentials = elle::service::aws::Credentials(
     "ASIAJOU5RQKL2N6YKOXQ",
     "9yC/yEGXvjH+3At0p6GOt04K8cgeol+klLlrFkLY",
     "AQoDYXdzEGIagAPirqRMvxZjBVQrtGqwzzTKcfyU0cn+a5uyJPto88J09j/WYZdqrQ8YEr6MAk3sXcWlgtZ+k259fkSCqfkwg1ntS/SkrtDaC7GokhnOMRXsqGYV7Hf48QyWV3XpnIp3x0XgJKOvq2Mwfn1ZuFy7364Qk/5lkYLuQ/i2EqMXRgzZFH2TPkYk8+k4l4sNJf1c4/Vl9FapstpbwYha96oAFbZSd9GfTIkFXXhXMCxykE9uDxM2STYGkoFkE37doZUoZB3n6pjPdnV60Hn/KmgRTEC8fn/SdYrmpnpXIRcPi8tL+iOa3x74LcUv0KysNqVZuBIScVCmVnjNxhueSz7BdM9Zo7NsGNzrWBTUShjoXmw+a92eINvCKRv+buD4PYNGk+HekJxF3IGjUGaoBYJkfpwCYJMDsfs/R7DPG3qzqJN465bXDj/8RZmps7qb3ew8AhasWT8cMUDPr2ClGUwLaVkyH1KBvKxc6hhxzZOPuJq4ZzGQ/4axoM1CtP0UjerJdNMg/oDMmQU=",
@@ -46,8 +43,7 @@ boost::posix_time::ptime _later = _now + 1h;
     _now
   );
 
-
-  elle::service::aws::Credentials _PUT_credentials(
+  auto const _PUT_credentials = elle::service::aws::Credentials(
     "ASIAJAGQUOJVE3HO46ZA",
     "pG1iz87bCYOZ9sQ4fkryBgiS/wnS7K+2MJUmS7Hb",
     "AQoDYXdzEGIawAIayH3x2pmusA2EhnhOK+42f07Y0cQILf7yltnXMG6sJ6sbE+o0IgZW8lEkCcZRGcXD1fM6pGAEBEYgO9ZJVXvRG5+riMGXmb7RHWGEEYRidqylFqK7vepkU2+ocFBshxKoSOJMCl5yjU351J3INvkkeTNJ9lpz0mPBWpEv82uBYzo6j0oDJMJutaiFvmRfpS79KWHemOcgUxbjTKChms3askIDJf6zgDTyIymWaIGquFgKwNgCO6UNk2zCCiWf3vtryuPxrlERz/Xm9cCejC4B4FiTjes6fWH7jlxbDu0s+6s7ivdSga68Ex4OJbetpYIn3vOTMTRzyUN/0TvMJPZFRn8joW3cjnJOQNMtoEmtS7Hp1fvOBkk/f1qWAM/GrMvbcJThOAjPuhqbJY7DpP4SNQtGgdwhOjC04Z3fUDgqnyDR/8uZBQ==",
@@ -91,7 +87,7 @@ _make_canonical_request()
     signed_headers_str.substr(0, signed_headers_str.size() - 1);
   query["X-Amz-SignedHeaders"] = signed_headers_str;
 
-  std::string content("Action=ListUsers&Version=2010-05-08");
+  auto content = std::string("Action=ListUsers&Version=2010-05-08");
   auto digest = elle::cryptography::hash(content,
                                          elle::cryptography::Oneway::sha256);
 
@@ -112,10 +108,8 @@ static
 elle::service::aws::StringToSign
 _make_string_to_sign()
 {
-  auto const request_time = elle::service::aws::RequestTime(
-    boost::gregorian::date(2011, boost::gregorian::Sep, 9),
-    boost::posix_time::hours(23) + boost::posix_time::minutes(36)
-  );
+  using namespace date;
+  auto const request_time = elle::Time(sys_days(2011_y/sep/9) + 23h + 36min);
   elle::service::aws::CanonicalRequest canonical_request = _make_canonical_request();
   elle::service::aws::CredentialScope credential_scope(request_time, elle::service::aws::Service::iam,
                                         "us-east-1");
@@ -145,9 +139,9 @@ ELLE_TEST_SCHEDULED(string_to_sign)
 // http://docs.aws.amazon.com/general/latest/gr/signature-v4-examples.html
 ELLE_TEST_SCHEDULED(signing_key)
 {
-  std::string aws_secret("wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY");
-  boost::posix_time::ptime request_time(
-    boost::gregorian::date(2012, boost::gregorian::Feb,15));
+  using namespace date;
+  auto aws_secret = std::string("wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY");
+  auto request_time = elle::Time(sys_days(2012_y/feb/15));
   elle::service::aws::SigningKey signing_key(aws_secret, request_time,
                               "us-east-1",
                               elle::service::aws::Service::iam);
@@ -158,12 +152,10 @@ ELLE_TEST_SCHEDULED(signing_key)
 
 ELLE_TEST_SCHEDULED(sign_request)
 {
+  using namespace date;
   elle::service::aws::StringToSign string_to_sign = _make_string_to_sign();
   std::string aws_secret("wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY");
-  boost::posix_time::ptime request_time(
-    boost::gregorian::date(2011, boost::gregorian::Sep, 9),
-    boost::posix_time::hours(23) + boost::posix_time::minutes(36)
-  );
+  auto request_time = elle::Time(sys_days(2011_y/sep/9));
   elle::service::aws::SigningKey signing_key(aws_secret, request_time,
                               "us-east-1",
                               elle::service::aws::Service::iam);

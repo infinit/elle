@@ -17,6 +17,7 @@
 # include <boost/multi_index_container.hpp>
 
 # include <elle/Buffer.hh>
+# include <elle/Duration.hh> // elle::Time
 # include <elle/TypeInfo.hh>
 # include <elle/Version.hh>
 # include <elle/attribute.hh>
@@ -708,10 +709,19 @@ namespace elle
       virtual
       void
       _serialize(boost::posix_time::ptime& v) = 0;
+
+      /// Serialize or deserialize an elle::Time.
+      ///
+      /// FIXME: extend to all the std::chrono::time_points.
+      virtual
+      void
+      _serialize(Time& time) = 0;
+
       /// Serialize or deserialize an elle::Duration.
       template <typename Repr, typename Ratio>
       void
       _serialize(std::chrono::duration<Repr, Ratio>& duration);
+
       /// Serialize or deserialize a Duration type from its ticks, numerator
       /// and denominator.
       ///

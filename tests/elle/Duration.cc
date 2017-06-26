@@ -40,7 +40,7 @@ namespace
   void
   io()
   {
-    auto const ref = "20131009T233600";
+    auto const ref = std::string{"20131009T233600"};
     // Check Boost's format.  We use it to forge dates for S3.
     {
       auto const time
@@ -54,6 +54,7 @@ namespace
       using namespace date;
       auto const time = sys_days{2013_y/oct/9} + 23h + 36min;
       BOOST_TEST(format("%Y%m%dT%H%M%S", time) == ref);
+      BOOST_TEST(format("%Y%m%d", time) == ref.substr(0, 8));
     }
     // Likewise, using the date parser.
 #if ! GCC_VERSION_LTE(4, 9)

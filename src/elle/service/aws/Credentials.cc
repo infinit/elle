@@ -20,8 +20,8 @@ namespace elle
                                std::string const& region,
                                std::string const& bucket,
                                std::string const& folder,
-                               boost::posix_time::ptime expiration,
-                               boost::posix_time::ptime server_time,
+                               Time expiration,
+                               Time server_time,
                                boost::optional<std::string> endpoint)
         : _access_key_id(access_key_id)
         , _secret_access_key(secret_access_key)
@@ -51,7 +51,7 @@ namespace elle
         , _bucket(bucket)
         , _folder(folder)
         , _server_time(elle::Clock::now())
-        , _expiry(boost::posix_time::pos_infin)
+        , _expiry(Time::max())
         , _skew()
         , _federated_user(false)
         , _endpoint(endpoint)
@@ -77,24 +77,19 @@ namespace elle
       Credentials::credential_string(RequestTime const& request_time,
                                      Service const& aws_service)
       {
-        std::string date_str = boost::posix_time::to_iso_string(request_time);
-        date_str = date_str.substr(0, 8);
-        std::string res = elle::sprintf(
+        return elle::sprintf(
           "%s/%s/%s/%s/aws4_request",
           this->_access_key_id,
-          date_str,
+          format("%Y%m%d", request_time),
           this->_region,
           aws_service
         );
-        return res;
       }
 
       bool
       Credentials::valid()
       {
-        using namespace boost::posix_time;
-        ptime now = second_clock::universal_time();
-        if (this->_expiry < now)
+        if (this->_expiry < Clock::now())
         {
           ELLE_DEBUG("%s: credentials have expired", this);
           return false;
@@ -129,7 +124,7 @@ namespace elle
         }
         else if (s.in())
         {
-          this->_expiry = boost::posix_time::pos_infin;
+          this->_expiry = Time::max();
           this->_server_time = elle::Clock::now();
         }
         s.serialize("endpoint", this->_endpoint);

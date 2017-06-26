@@ -239,6 +239,15 @@ namespace elle
       }
 
       void
+      SerializerIn::_serialize(Time& time)
+      {
+        auto str = this->deserialize<std::string>();
+        auto&& in = std::istringstream{str};
+        in >> date::parse("%Y-%m-%dT%H:%M:%S%z", time);
+        // FIXME: check eof.
+      }
+
+      void
       SerializerIn::_serialize_time_duration(std::int64_t& ticks,
                                              std::int64_t& num,
                                              std::int64_t& denom)

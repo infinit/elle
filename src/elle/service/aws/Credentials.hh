@@ -31,8 +31,8 @@ namespace elle
                       std::string const& region,
                       std::string const& bucket,
                       std::string const& folder,
-                      boost::posix_time::ptime expiration,
-                      boost::posix_time::ptime server_time,
+                      Time expiration,
+                      Time server_time,
                       boost::optional<std::string> endpoint = {});
           /// Constructor for normal user (i.e.: No session_token).
           Credentials(std::string const& access_key_id,
@@ -55,10 +55,10 @@ namespace elle
           ELLE_ATTRIBUTE_R(std::string, bucket);
           ELLE_ATTRIBUTE_R(std::string, folder);
           // Amazon current time from server
-          ELLE_ATTRIBUTE_R(boost::posix_time::ptime, server_time);
-          ELLE_ATTRIBUTE_R(boost::posix_time::ptime, expiry);
+          ELLE_ATTRIBUTE_R(Time, server_time);
+          ELLE_ATTRIBUTE_R(Time, expiry);
           // Estimated skew between trusted server time and local universal time.
-          ELLE_ATTRIBUTE_RW(boost::posix_time::time_duration, skew);
+          ELLE_ATTRIBUTE_RW(Duration, skew);
           ELLE_ATTRIBUTE_R(bool, federated_user);
           ELLE_ATTRIBUTE_R(boost::optional<std::string>, endpoint);
 

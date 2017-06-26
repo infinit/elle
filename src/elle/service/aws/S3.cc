@@ -31,9 +31,9 @@ namespace elle
       {
         using elle::os::getenv;
         auto const default_timeout =
-          boost::posix_time::seconds(getenv("INFINIT_S3_TIMEOUT", 500));
+          std::chrono::seconds(getenv("INFINIT_S3_TIMEOUT", 500));
         auto const default_stall_timeout =
-          boost::posix_time::seconds(getenv("INFINIT_S3_STALL_TIMEOUT", 300));
+          std::chrono::seconds(getenv("INFINIT_S3_STALL_TIMEOUT", 300));
       }
 
       // Stay as close as possible to reference java implementation from amazon
@@ -519,19 +519,19 @@ namespace elle
       std::string
       S3::_amz_date(RequestTime const& request_time)
       {
-        std::string date = boost::posix_time::to_iso_string(request_time);
-        date = date.substr(0, 15);
-        date += "Z";
+        std::string date = date::format("%Y%m%dT%H%M%S", request_time);
+        date = date.substr(0, 15) + "Z";
         return date;
       }
 
       std::vector<std::string>
       S3::_signed_headers(RequestHeaders const& headers)
       {
-        std::vector<std::string> signed_headers;
-        for (auto header: headers)
-          signed_headers.push_back(header.first);
-        return signed_headers;
+        return elle::make_vector(headers,
+                                 [](auto header)
+                                 {
+                                   return header.first;
+                                 });
       }
 
       aws::StringToSign
@@ -799,7 +799,7 @@ namespace elle
           URL const hostname(this->hostname(this->_credentials, override_host));
           // Ensure that we reset the override_host;
           override_host = boost::none;
-          RequestTime request_time = Clock::now();
+          auto request_time = Clock::now();
           ELLE_TRACE("Applying clock skew: %s - %s = %s",
                      request_time,
                      this->_credentials.skew(),

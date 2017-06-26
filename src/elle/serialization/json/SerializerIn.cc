@@ -205,6 +205,7 @@ namespace elle
         }
       }
 
+      // FIXME: Code duplication with binary.
       void
       SerializerIn::_serialize(boost::posix_time::ptime& time)
       {
@@ -252,6 +253,15 @@ namespace elle
             this->current_name(),
             elle::sprintf("garbage at end of date: %s", leftover));
         }
+      }
+
+      void
+      SerializerIn::_serialize(Time& time)
+      {
+        auto& str = this->_check_type<std::string>();
+        auto&& in = std::istringstream{str};
+        in >> date::parse("%Y-%m-%dT%H:%M:%S%z", time);
+        // FIXME: check eof.
       }
 
       void

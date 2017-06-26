@@ -241,6 +241,12 @@ namespace elle
       }
 
       void
+      SerializerOut::_serialize(Time& time)
+      {
+        this->_get_current() = date::format("%Y-%m-%dT%H:%M:%S%z", time);
+      }
+
+      void
       SerializerOut::_serialize_time_duration(std::int64_t& ticks_,
                                               std::int64_t& num_,
                                               std::int64_t& denom_)
