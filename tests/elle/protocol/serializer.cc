@@ -23,6 +23,8 @@
 
 ELLE_LOG_COMPONENT("elle.protocol.test");
 
+using namespace std::literals;
+
 constexpr static elle::Buffer::Size buffer_size = 4096;
 
 struct Focket // Fake socket.

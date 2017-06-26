@@ -3,6 +3,7 @@
 #include <boost/optional.hpp>
 
 #include <elle/compiler.hh>
+#include <elle/date/date.h>
 #include <elle/printf.hh> // Actually needed by our <chrono>.
 #include <elle/time.hh>
 
@@ -11,7 +12,7 @@ namespace elle
   using namespace std::literals;
 
   /// A clock.
-  using Clock = std::chrono::high_resolution_clock;
+  using Clock = std::chrono::system_clock;
   /// A reference date.
   using Time = Clock::time_point;
   /// A duration related to our clock.
@@ -70,4 +71,15 @@ namespace elle
   ELLE_API
   std::ostream&
   operator << (std::ostream& s, const DurationOpt& opt);
+}
+
+namespace std
+{
+  template <typename Clock, typename Duration>
+  std::ostream&
+  operator << (std::ostream& o,
+               std::chrono::time_point<Clock, Duration> const& t)
+  {
+    return date::to_stream(o, "%F %T", t);
+  }
 }

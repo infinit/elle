@@ -21,6 +21,8 @@
 
 ELLE_LOG_COMPONENT("elle.protocol.test");
 
+using namespace std::literals;
+
 using Serializer = elle::protocol::Serializer;
 
 struct Setup

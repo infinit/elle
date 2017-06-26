@@ -189,7 +189,7 @@ namespace elle
                             RequestTime request_time,
                             CanonicalRequest const& canonical_request,
                             const RequestHeaders& initial_headers,
-                            boost::posix_time::time_duration timeout);
+                            Duration timeout);
 
         /// Check return code and throw appropriate exception if error
         /// ELLE_WARN the request response in case of error
@@ -210,8 +210,7 @@ namespace elle
           RequestHeaders const& extra_headers = RequestHeaders(),
           std::string const& content_type = "application/json",
           elle::ConstWeakBuffer const& payload = elle::ConstWeakBuffer(),
-          boost::optional<boost::posix_time::time_duration> timeout =
-          boost::optional<boost::posix_time::time_duration>(),
+          DurationOpt timeout = {},
           boost::optional<ProgressCallback> const& progress_callback = {});
 
         /*----------.

@@ -580,7 +580,7 @@ namespace elle
                               RequestTime request_time,
                               CanonicalRequest const& canonical_request,
                               const RequestHeaders& initial_headers,
-                              boost::posix_time::time_duration timeout)
+                              Duration timeout)
       {
 
         // Make headers.
@@ -781,7 +781,7 @@ namespace elle
         RequestHeaders const& extra_headers,
         std::string const& content_type,
         elle::ConstWeakBuffer const& payload,
-        boost::optional<boost::posix_time::time_duration> timeout_opt,
+        DurationOpt timeout_opt,
         boost::optional<std::function<void (int)>> const& progress_callback
         )
       {
@@ -799,8 +799,7 @@ namespace elle
           URL const hostname(this->hostname(this->_credentials, override_host));
           // Ensure that we reset the override_host;
           override_host = boost::none;
-          RequestTime request_time =
-            Clock::now();
+          RequestTime request_time = Clock::now();
           ELLE_TRACE("Applying clock skew: %s - %s = %s",
                      request_time,
                      this->_credentials.skew(),

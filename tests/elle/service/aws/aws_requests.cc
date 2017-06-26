@@ -30,11 +30,10 @@ namespace
   auto const _bucket_name = std::string("us-east-1-buffer-dev-infinit-io");
 
 static
-boost::posix_time::ptime _now =
-  Clock::now();
+boost::posix_time::ptime _now = elle::Clock::now();
 
 static
-boost::posix_time::ptime _later = _now + boost::posix_time::hours(1);
+boost::posix_time::ptime _later = _now + 1h;
 
   elle::service::aws::Credentials _GET_credentials(
     "ASIAJOU5RQKL2N6YKOXQ",
