@@ -589,12 +589,13 @@ ELLE_TEST_SCHEDULED(no_header_answer)
 }
 
 /// Wait on a barrier between each send of a reply chunk
-class SlowHttpServer:
-  public HTTPServer
+class SlowHttpServer
+  : public HTTPServer
 {
 public:
   SlowHttpServer(std::string reply, int chunk,
-                 bool wait_sem = true, elle::reactor::DurationOpt delay=elle::reactor::DurationOpt())
+                 bool wait_sem = true,
+                 elle::reactor::DurationOpt delay = {})
     : _reply(std::move(reply))
     , _chunk(chunk)
     , _wait_sem(wait_sem)

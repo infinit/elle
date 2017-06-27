@@ -115,7 +115,7 @@ namespace elle
       /// \returns Whether the Thread was awoken because the Waitable is done
       ///         (not because wait timed out).
       bool
-      wait(DurationOpt timeout = DurationOpt());
+      wait(DurationOpt timeout = {});
 
     protected:
       /// Wake a Thread when we are done, if we must be waited.
