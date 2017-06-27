@@ -301,6 +301,7 @@ def configure(curl_config,
   fuse_lib = None
   dokan_lib = None
   if fuse is None:
+    enable_fuse = True
     fuse_includes = drake.nodes(
       'fuse/include/fuse/cuse_lowlevel.h',
       'fuse/include/fuse/fuse_common_compat.h',
@@ -409,10 +410,13 @@ def configure(curl_config,
       fuse_lib = drake.cxx.DynLib('/usr/local/lib/libosxfuse.2.dylib')
 
   elif fuse:
+    enable_fuse = True
     fuse_config = drake.cxx.Config()
     fuse_config.add_local_include_path('%s/include/osxfuse' % fuse)
     local_cxx_config += fuse_config
     fuse_lib = drake.cxx.DynLib('%s/lib/libosxfuse.2.dylib' % fuse)
+  else:
+    enable_fuse = False
 
 
   # Curl
@@ -582,9 +586,6 @@ def configure(curl_config,
   )
   if cxx_toolkit.os in [drake.os.linux, drake.os.macos]:
     sources += drake.nodes(
-      'filesystem_fuse.cc',
-      'fuse.cc',
-      'fuse.hh',
       'network/unix-domain-server.cc',
       'network/unix-domain-server.hh',
       'network/unix-domain-socket.cc',
@@ -592,16 +593,28 @@ def configure(curl_config,
       'pthread.cc',
       'pthread.hh',
       )
+
+  if enable_fuse:
+    if cxx_toolkit.os in [drake.os.linux, drake.os.macos]:
+      sources += drake.nodes(
+        'filesystem_fuse.cc',
+        'fuse.cc',
+        'fuse.hh',
+      )
     if cxx_toolkit.os is drake.os.macos:
       local_cxx_config.add_system_include_path('/usr/local/include/osxfuse')
+    elif cxx_toolkit.os is drake.os.windows:
+      dokan = drake.include('modules/dokany', cxx_toolkit, cxx_config)
+      sources += drake.nodes(
+        'filesystem_dokanx.cc',
+        'fuse.hh',
+        )
+      local_cxx_config += dokan.config
+      dokan_lib = dokan.lib_dynamic
   else:
-    dokan = drake.include('modules/dokany', cxx_toolkit, cxx_config)
-    sources += drake.nodes(
-      'filesystem_dokanx.cc',
-      'fuse.hh',
+      sources += drake.nodes(
+        'filesystem_dummy.cc',
       )
-    local_cxx_config += dokan.config
-    dokan_lib = dokan.lib_dynamic
 
   sources += drake.nodes(
     'http/Client.cc',
@@ -713,7 +726,7 @@ def configure(curl_config,
     lib_dynamic_link_libs.append(backend_lib)
     lib_static_link_libs.append(backend_boost)
     lib_static_link_libs.append(backend_lib)
-  if fuse_lib is not None:
+  if enable_fuse:
     lib_dynamic_link_libs.append(fuse_lib)
   if dokan_lib is not None:
     lib_static_link_libs.append(dokan_lib)
@@ -817,9 +830,10 @@ def configure(curl_config,
   ]
   if cxx_toolkit.os in [drake.os.linux, drake.os.macos]:
     tests.append(('fdstream', [], None))
-    tests.append(('filesystem', [], None))
     tests.append(('filesystem_bind', [], None))
     tests.append(('filesystem_git', [], None))
+  if enable_fuse:
+    tests.append(('filesystem', [], None))
 
   cxx_config_tests = drake.cxx.Config(local_cxx_config)
   cxx_config_tests.add_local_include_path(elle_tests_path)
@@ -858,7 +872,8 @@ def configure(curl_config,
                                 test_sources + local_test_libs,
                                 cxx_toolkit, cxx_config_tests)
     rule_tests << test
-    if test_name in ['filesystem_git', 'filesystem_bind', 'rdv-cat','rdv-utp-cat', 'utp-chat']:
+    # These are not real tests, just binaries.
+    if test_name in ['filesystem_git', 'filesystem_bind', 'rdv-cat', 'rdv-utp-cat', 'utp-chat']:
       continue
     env = {
       'DIR_BUILD':  str(drake.path_build()),

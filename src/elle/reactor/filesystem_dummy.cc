@@ -11,8 +11,7 @@ namespace elle
         , _full_tree(full_tree)
       {}
 
-      FileSystem::~FileSystem()
-      {}
+      FileSystem::~FileSystem() = default;
 
       void
       FileSystem::mount(bfs::path const& where,
