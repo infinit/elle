@@ -288,12 +288,6 @@ namespace elle
           this->start();
       }
 
-      Reachability::~Reachability()
-      {
-        if (this->_impl)
-          delete this->_impl;
-      }
-
       void
       Reachability::start()
       {

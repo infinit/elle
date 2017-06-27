@@ -36,7 +36,7 @@ namespace elle
         Reachability(boost::optional<std::string> host = {},
                      std::function<StatusCallback> const& callback = {},
                      bool start = false);
-        ~Reachability();
+        ~Reachability() = default;
 
         void
         start();
@@ -56,7 +56,7 @@ namespace elle
         class Impl;
 
       private:
-        ELLE_ATTRIBUTE(Impl*, impl);
+        ELLE_ATTRIBUTE(std::unique_ptr<Impl>, impl);
       };
     }
   }

@@ -32,8 +32,7 @@ void
 reactor_pthread_mutex_destroy(reactor_pthread_mutex_t *m)
 {
   ELLE_TRACE("reactor_pthread_mutex_destroy %s", *m);
-  if (*m)
-    delete *m;
+  delete *m;
   *m = nullptr;
 }
 
