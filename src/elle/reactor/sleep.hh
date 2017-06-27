@@ -47,8 +47,6 @@ namespace elle
       print(std::ostream& stream) const override;
 
     private:
-      void
-      _wakeup(const boost::system::error_code& error);
       Duration _duration;
       boost::asio::deadline_timer _timer;
     };

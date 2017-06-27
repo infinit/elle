@@ -30,19 +30,16 @@ namespace elle
     }
 
     void
-    Sleep::_wakeup(const boost::system::error_code& error)
-    {
-      if (error == boost::asio::error::operation_aborted)
-        return;
-      if (error)
-        _raise<Exception>(error.message());
-      _signal();
-    }
-
-    void
     Sleep::_start()
     {
-      _timer.async_wait(boost::bind(&Sleep::_wakeup, this, _1));
+      _timer.async_wait([this](const boost::system::error_code& error)
+                        {
+                          if (error == boost::asio::error::operation_aborted)
+                            return;
+                          if (error)
+                            _raise<Exception>(error.message());
+                          this->_signal();
+                        });
     }
   }
 }
