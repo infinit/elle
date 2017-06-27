@@ -370,7 +370,7 @@ namespace elle
             this->_state.reset();
           }
         }
-        else
+        else if (!this->_partial)
         {
           ELLE_DEBUG("acknowledge partial state");
           this->_partial = true;

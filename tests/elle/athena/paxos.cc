@@ -1246,6 +1246,68 @@ ELLE_TEST_SCHEDULED(partial_interleave)
   };
 }
 
+ELLE_TEST_SCHEDULED(partial_in_progress)
+{
+  std::vector<Server> servers{
+    {11, Server::Quorum{11, 12}},
+    {12, Server::Quorum{11, 12}},
+    {12, Server::Quorum{11, 12}},
+  };
+  elle::reactor::Barrier partial, confirming, reset;
+  elle::With<elle::reactor::Scope>() << [&] (elle::reactor::Scope& scope)
+  {
+    scope.run_background(
+      "create_partial",
+      [&]
+      {
+        auto c = make_client(0, servers);
+        static_cast<YAInstrumentedPeer&>(*c.peers()[0]).confirming().connect(
+          [&] (Client::Proposal const& p)
+          {
+            if (p.sender == c.id())
+              partial.open();
+            elle::reactor::wait(reset);
+          });
+        c.choose(0, 1272);
+      });
+    scope.run_background(
+      "pick_value",
+      [&]
+      {
+        elle::reactor::wait(partial);
+        auto c = make_client(1, servers);
+        static_cast<YAInstrumentedPeer&>(*c.peers()[0]).confirming().connect(
+          [&] (Client::Proposal const& p)
+          {
+            if (p.sender == c.id())
+            {
+              confirming.open();
+              elle::reactor::wait(reset);
+            }
+          });
+        c.choose(1, 1287);
+      });
+    scope.run_background(
+      "reset",
+      [&]
+      {
+        elle::reactor::wait(confirming);
+        auto c = make_client(1, servers);
+        static_cast<YAInstrumentedPeer&>(*c.peers()[0]).proposed().connect(
+          [&] (Client::Proposal const& p)
+          {
+            if (p.sender == c.id())
+            {
+              reset.open();
+              elle::reactor::scheduler().current()->terminate();
+            }
+          });
+        c.choose(1, 1304);
+      });
+    elle::reactor::wait(scope);
+  };
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -1265,6 +1327,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(non_partial_state), 0, valgrind(5));
   suite.add(BOOST_TEST_CASE(partial_conflict), 0, valgrind(5));
   suite.add(BOOST_TEST_CASE(partial_interleave), 0, valgrind(5));
+  suite.add(BOOST_TEST_CASE(partial_in_progress), 0, valgrind(5));
   {
     auto quorum = BOOST_TEST_SUITE("quorum");
     suite.add(quorum);
