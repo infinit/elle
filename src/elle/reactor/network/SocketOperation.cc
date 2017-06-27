@@ -1,5 +1,6 @@
 #include <boost/asio/ssl.hpp>
 
+#include <elle/find.hh>
 #include <elle/log.hh>
 #include <elle/reactor/network/SocketOperation.hh>
 #include <elle/reactor/scheduler.hh>
@@ -104,9 +105,8 @@ extern "C"
         ELLE_ERR("reactor_epoll_wait threw again: %s",
                  elle::exception_string());
       }
-      auto it = _epoll_interrupt_callback.find(
-        elle::reactor::scheduler().current());
-      if (it != _epoll_interrupt_callback.end())
+      if (auto it = elle::find(_epoll_interrupt_callback,
+                               elle::reactor::scheduler().current()))
       {
         it->second();
         errno = EINTR;

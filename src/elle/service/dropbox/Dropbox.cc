@@ -105,15 +105,12 @@ namespace elle
             ELLE_DUMP("%s: %s", *this, it->second);
             return it->second;
           }
+          else if (this->_full)
+            throw NoSuchFile(path);
           else
-          {
-            if (this->_full)
-              throw NoSuchFile(path);
-            else
-              // FIXME: even if not full, if we have the parent directory we can
-              // know if that file is missing.
-              return {};
-          }
+            // FIXME: even if not full, if we have the parent directory we can
+            // know if that file is missing.
+            return {};
         }
 
         void
