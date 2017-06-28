@@ -6,6 +6,19 @@
 # define RUNNING_ON_VALGRIND 0
 #endif
 
+// GCC define __SANITIZE_ADDRESS__ for -fsanitize=address.
+#if defined(__has_feature)
+# if __has_feature(address_sanitizer)
+#  define __SANITIZE_ADDRESS__ 1
+# endif
+#endif
+
+#if __SANITIZE_ADDRESS__
+# define RUNNING_ON_ASAN true
+#else
+# define RUNNING_ON_ASAN false
+#endif
+
 #include <boost/preprocessor/cat.hpp>
 #include <boost/preprocessor/punctuation/comma_if.hpp>
 #include <boost/preprocessor/seq/for_each_i.hpp>
@@ -307,10 +320,13 @@ operator delete(void* p) noexcept
 # define ARM_FACTOR 0
 #endif
 
+/// Scale a duration `d` by `factor` if we are instrumented (valgrind,
+/// asan, etc.).
 template <typename T>
 static
 auto
-valgrind(T base, int factor = 50)
+valgrind(T d, int factor = 50)
 {
-  return base * (RUNNING_ON_VALGRIND ? factor : 1) * (ARM_FACTOR ? factor : 1);
+  auto const instrumented = RUNNING_ON_VALGRIND || RUNNING_ON_ASAN;
+  return d * (instrumented ? factor : 1) * (ARM_FACTOR ? factor : 1);
 }
