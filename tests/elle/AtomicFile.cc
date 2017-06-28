@@ -6,17 +6,21 @@
 #include <elle/AtomicFile.hh>
 #include <elle/With.hh>
 
-static boost::filesystem::path const path("atomic-file");
-static boost::filesystem::path const path_old(".atomic-file.old");
-static boost::filesystem::path const path_new(".atomic-file.new");
+namespace bfs = boost::filesystem;
 
-static
-void
-cleanup()
+namespace
 {
-  remove(path);
-  remove(path_old);
-  remove(path_new);
+  auto const path = bfs::path("atomic-file");
+  auto const path_old = bfs::path(".atomic-file.old");
+  auto const path_new = bfs::path(".atomic-file.new");
+
+  void
+  cleanup()
+  {
+    remove(path);
+    remove(path_old);
+    remove(path_new);
+  }
 }
 
 BOOST_AUTO_TEST_CASE(nominal)
@@ -71,6 +75,7 @@ BOOST_AUTO_TEST_CASE(errors)
 {
   cleanup();
   elle::AtomicFile f(path);
+  // Check that we raise assertions about invalid reads/writes.
   BOOST_CHECK_THROW(f.read(), std::exception);
   {
     auto write = f.write();

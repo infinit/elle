@@ -8,6 +8,8 @@
 
 namespace elle
 {
+  namespace bfs = boost::filesystem;
+
   /// Atomic files ensure transactional writes to files.
   ///
   /// An atomic files ensures the previous version of the file is overwritten
@@ -59,14 +61,14 @@ namespace elle
   `-------------*/
   public:
     /// Create an AtomicFile at the given path.
-    AtomicFile(boost::filesystem::path const& path);
+    AtomicFile(bfs::path const& path);
     /// Destruct an AtomicFile.
     ///
     /// @pre !this->reading()
     /// @pre !this->writing()
     ~AtomicFile();
   private:
-    ELLE_ATTRIBUTE_R(boost::filesystem::path, path);
+    ELLE_ATTRIBUTE_R(bfs::path, path);
 
   /*-----------.
   | Attributes |
@@ -175,9 +177,9 @@ namespace elle
     /// Commit the newly written content.
     void _commit();
     /// The path to store the new content being written.
-    ELLE_ATTRIBUTE(boost::filesystem::path, path_new);
+    ELLE_ATTRIBUTE(bfs::path, path_new);
     /// The path to store the previous content while committing the new one.
-    ELLE_ATTRIBUTE(boost::filesystem::path, path_old);
+    ELLE_ATTRIBUTE(bfs::path, path_old);
 
   /*----------.
   | Printable |

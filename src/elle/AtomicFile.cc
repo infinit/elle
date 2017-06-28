@@ -9,18 +9,18 @@ ELLE_LOG_COMPONENT("elle.AtomicFile");
 
 namespace elle
 {
-  namespace bfs = boost::filesystem;
-
   /*-------------.
   | Construction |
   `-------------*/
 
-  static
-  bfs::path
-  mitigate(bfs::path const& path, std::string const& salt)
+  namespace
   {
-    auto filename = "." + path.filename().string() + "." + salt;
-    return path.parent_path() / filename;
+    bfs::path
+    mitigate(bfs::path const& path, std::string const& salt)
+    {
+      auto filename = "." + path.filename().string() + "." + salt;
+      return path.parent_path() / filename;
+    }
   }
 
   AtomicFile::AtomicFile(bfs::path const& path)
