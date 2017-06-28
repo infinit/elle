@@ -57,9 +57,9 @@ namespace elle
       , _warn_err_only(warn_err_only)
     {
       this->time_universal(os::getenv("ELLE_LOG_TIME_UNIVERSAL",
-                                            universal_time));
+                                      universal_time));
       this->time_microsec(os::getenv("ELLE_LOG_TIME_MICROSEC",
-                                           microsec_time));
+                                     microsec_time));
     }
 
     namespace
@@ -90,41 +90,38 @@ namespace elle
     }
 
     void
-    TextLogger::_message(
-      Level level,
-      elle::log::Logger::Type type,
-      std::string const& component,
-      boost::posix_time::ptime const& time,
-      std::string const& message,
-      Tags const& tags,
-      int indentation,
-      std::string const& file,
-      unsigned int line,
-      std::string const& function)
+    TextLogger::_message(Level level,
+                         Type type,
+                         std::string const& component,
+                         boost::posix_time::ptime const& time,
+                         std::string const& message,
+                         Tags const& tags,
+                         int indentation,
+                         std::string const& file,
+                         unsigned int line,
+                         std::string const& function)
     {
       if (_warn_err_only && type < Type::warning)
         return;
-      auto lines = std::vector<std::string>{};
+      auto const lines = [&message]
       {
+        auto res = std::vector<std::string>{};
         auto trimmed = boost::algorithm::trim_copy_if(
           message,
           boost::algorithm::is_any_of(" \t\n\r"));
-        boost::split(lines,
+        boost::split(res,
                      trimmed,
                      boost::algorithm::is_any_of("\r\n"),
                      boost::token_compress_on);
-        ELLE_ASSERT(!lines.empty());
-      }
+        ELLE_ASSERT(!res.empty());
+        return res;
+      }();
       auto msg = lines[0];
 
       // Indentation
-      static bool const display_indentation
-        = !os::getenv("ELLE_LOG_NO_INDENTATION", false);
-      if (display_indentation)
-      {
-        auto align = std::string(indentation * 2, ' ');
-        msg = align + msg;
-      }
+      static bool const indent = !os::getenv("ELLE_LOG_NO_INDENTATION", false);
+      if (indent)
+        msg = std::string(indentation * 2, ' ') + msg;
 
       // Location
       static bool const location = os::getenv("ELLE_LOG_LOCATIONS", false);
@@ -132,34 +129,29 @@ namespace elle
         msg = elle::sprintf("%s (at %s:%s in %s)", msg, file, line, function);
 
       // Type
-      if (this->_display_type && type != elle::log::Logger::Type::info)
-        msg = elle::sprintf("[%s] ", _type_to_string(type)) + msg;
+      if (this->_display_type && type != Type::info)
+        msg = elle::sprintf("[%s] %s", _type_to_string(type), msg);
 
-      static bool display_tags = !os::getenv("ELLE_LOG_NO_TAGS", false);
       // Tags
+      static bool display_tags = !os::getenv("ELLE_LOG_NO_TAGS", false);
       if (display_tags)
         for (auto const& tag: tags)
-        {
-          if (tag.first == "PID" && !this->_enable_pid)
-            continue;
-          if (tag.first == "TID" && !this->_enable_tid)
-            continue;
-          msg = elle::sprintf("[%s] %s", tag.second, msg);
-        }
+          if ((this->_enable_pid || tag.first != "PID")
+              && (this->_enable_tid || tag.first != "TID"))
+            msg = elle::sprintf("[%s] %s", tag.second, msg);
 
-      static bool show_component = !os::getenv("ELLE_LOG_NO_COMPONENT", false);
       // Component
-      std::string comp;
+      static bool show_component = !os::getenv("ELLE_LOG_NO_COMPONENT", false);
       if (show_component)
       {
-        auto size = component.size();
+        auto const size = component.size();
         ELLE_ASSERT_LTE(size, this->component_max_size());
-        auto pad = this->component_max_size() - size;
-        comp = "[" + std::string(pad / 2, ' ')
+        auto const pad = this->component_max_size() - size;
+        auto const comp = "[" + std::string(pad / 2, ' ')
           + component + std::string(pad / 2 + pad % 2, ' ')
           + "] ";
+        msg = comp + msg;
       }
-      msg = comp + msg;
 
       // Time
       if (this->_enable_time)
