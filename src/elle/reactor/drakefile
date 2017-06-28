@@ -726,7 +726,7 @@ def configure(curl_config,
     lib_dynamic_link_libs.append(backend_lib)
     lib_static_link_libs.append(backend_boost)
     lib_static_link_libs.append(backend_lib)
-  if enable_fuse:
+  if fuse_lib:
     lib_dynamic_link_libs.append(fuse_lib)
   if dokan_lib is not None:
     lib_static_link_libs.append(dokan_lib)
