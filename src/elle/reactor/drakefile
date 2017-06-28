@@ -579,11 +579,6 @@ def configure(curl_config,
     'timer.hh',
   )
 
-  sources += drake.nodes(
-    'filesystem.cc',
-    'filesystem.hh',
-    'filesystem_journal.cc',
-  )
   if cxx_toolkit.os in [drake.os.linux, drake.os.macos]:
     sources += drake.nodes(
       'network/unix-domain-server.cc',
@@ -594,6 +589,11 @@ def configure(curl_config,
       'pthread.hh',
       )
 
+  sources += drake.nodes(
+    'filesystem.cc',
+    'filesystem.hh',
+    'filesystem_journal.cc',
+  )
   if enable_fuse:
     if cxx_toolkit.os in [drake.os.linux, drake.os.macos]:
       sources += drake.nodes(
@@ -728,7 +728,7 @@ def configure(curl_config,
     lib_static_link_libs.append(backend_lib)
   if fuse_lib:
     lib_dynamic_link_libs.append(fuse_lib)
-  if dokan_lib is not None:
+  if dokan_lib:
     lib_static_link_libs.append(dokan_lib)
   if cxx_toolkit.os in [drake.os.macos]:
     lib_cxx_config.framework_add('DiskArbitration')
@@ -832,8 +832,8 @@ def configure(curl_config,
     tests.append(('fdstream', [], None))
     tests.append(('filesystem_bind', [], None))
     tests.append(('filesystem_git', [], None))
-  if enable_fuse:
-    tests.append(('filesystem', [], None))
+    if enable_fuse:
+      tests.append(('filesystem', [], None))
 
   cxx_config_tests = drake.cxx.Config(local_cxx_config)
   cxx_config_tests.add_local_include_path(elle_tests_path)
