@@ -357,8 +357,8 @@ dialog(elle::Version const& version,
        std::function<void (elle::protocol::Serializer&)> const& b,
        std::function<void (elle::reactor::Thread&, elle::reactor::Thread&,
                            SocketProvider&)> const& f = {},
-       boost::optional<std::chrono::milliseconds> ping_period = {},
-       boost::optional<std::chrono::milliseconds> ping_timeout = {})
+       elle::DurationOpt ping_period = {},
+       elle::DurationOpt ping_timeout = {})
 {
   SocketProvider sockets;
   std::unique_ptr<elle::protocol::Serializer> alice;
@@ -975,8 +975,8 @@ ELLE_TEST_SCHEDULED(ping)
       b.terminate();
       BOOST_TEST(timeouts >= 2);
     },
-    std::chrono::milliseconds(400),
-    std::chrono::milliseconds(200));
+    400ms,
+    200ms);
 }
 
 class YAStream:

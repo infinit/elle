@@ -148,8 +148,8 @@ namespace elle
            elle::Buffer::Size chunk_size,
            bool checksum,
            elle::Version const& version,
-           boost::optional<std::chrono::milliseconds> ping_period,
-           boost::optional<std::chrono::milliseconds> ping_timeout)
+           elle::DurationOpt ping_period,
+           elle::DurationOpt ping_timeout)
         : _broken(false)
         , _scheduler(reactor::scheduler())
         , _pings(0)
@@ -383,18 +383,16 @@ namespace elle
         }
       }
 
-      /// A clock.
-      using Clock = std::chrono::high_resolution_clock;
       /// A reference date.
-      using Time = std::chrono::time_point<Clock>;
+      using Time = elle::Time;
       /// The type of our timers.
-      using Timer = boost::asio::basic_waitable_timer<Clock>;
+      using Timer = elle::reactor::WTimer;
 
       ELLE_ATTRIBUTE(elle::reactor::Scheduler&, scheduler);
       ELLE_ATTRIBUTE(int, pings);
       ELLE_ATTRIBUTE(int, pongs);
-      ELLE_ATTRIBUTE(boost::optional<std::chrono::milliseconds>, ping_period);
-      ELLE_ATTRIBUTE(boost::optional<std::chrono::milliseconds>, ping_delay);
+      ELLE_ATTRIBUTE(elle::DurationOpt, ping_period);
+      ELLE_ATTRIBUTE(elle::DurationOpt, ping_delay);
       ELLE_ATTRIBUTE(Timer, pinger);
       ELLE_ATTRIBUTE(std::function<void (boost::system::error_code const&)>,
                      pinger_handler);
@@ -502,8 +500,8 @@ namespace elle
       std::iostream& stream,
       elle::Version const& version,
       bool checksum,
-      boost::optional<std::chrono::milliseconds> ping_period,
-      boost::optional<std::chrono::milliseconds> ping_timeout,
+      elle::DurationOpt ping_period,
+      elle::DurationOpt ping_timeout,
       elle::Buffer::Size chunk_size)
       : Super(*elle::reactor::Scheduler::scheduler())
       , _stream(stream)
