@@ -23,6 +23,8 @@
 //
 // Using symbols would address both the issues of object destruction,
 // and optimization.
+//
+// Or better yet: move to string_view in C++17.
 # define ELLE_LOG_COMPONENT(_component_)        \
   static constexpr auto __attribute__((unused)) \
     _trace_component_ = _component_;

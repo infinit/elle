@@ -87,6 +87,9 @@ namespace elle
     | Construction |
     `-------------*/
     public:
+      /// Create a logger.
+      ///
+      /// @param log_level  default level.  Overriden by $ELLE_LOG_LEVEL.
       Logger(std::string const& log_level);
       virtual
       ~Logger();
@@ -122,6 +125,15 @@ namespace elle
     | Messaging |
     `----------*/
     public:
+      /// Send a log message.
+      ///
+      /// @param level   the verbosity level
+      /// @param type    the severity
+      /// @param component  the name of the component, e.g. "elle.Log"
+      /// @param message  the actually log message
+      /// @param file    the source file from which comes the message
+      /// @param line    and its line number
+      /// @param function and the name of the calling function
       void message(Level level,
                    elle::log::Logger::Type type,
                    std::string const& component,

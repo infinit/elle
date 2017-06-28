@@ -7,10 +7,12 @@ namespace elle
   {
     namespace detail
     {
+      /// Whether we should abort on invalid log messages.
       ELLE_API
       bool
       debug_formats();
 
+      /// Set whether we should abort on invalid log messages.
       ELLE_API
       void
       debug_formats(bool v);

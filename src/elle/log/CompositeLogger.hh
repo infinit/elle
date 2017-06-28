@@ -6,6 +6,7 @@ namespace elle
 {
   namespace log
   {
+    /// A Logger that aggregates several others.
     class ELLE_API CompositeLogger
       : public Logger
     {

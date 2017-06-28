@@ -8,9 +8,14 @@ namespace elle
 {
   namespace log
   {
+    /// The current logger.
     ELLE_API
     Logger&
     logger();
+
+    /// Change the current logger.
+    ///
+    /// @return the previous one.
     ELLE_API
     std::unique_ptr<Logger>
     logger(std::unique_ptr<Logger> l);
@@ -24,6 +29,17 @@ namespace elle
       struct ELLE_API Send
       {
       public:
+        /// Send a log message.
+        ///
+        /// @param level   the verbosity level
+        /// @param type    the severity
+        /// @param indent  indentation level
+        /// @param component  the name of the component, e.g. "elle.Log"
+        /// @param file    the source file from which comes the message
+        /// @param line    and its line number
+        /// @param function and the name of the calling function
+        /// @param fmt     format of the message
+        /// @param args    argument for the format string
         template <typename... Args>
         Send(elle::log::Logger::Level level,
              elle::log::Logger::Type type,
@@ -51,6 +67,9 @@ namespace elle
         /// Whether not to be ignored.
         bool _active;
       public: // used by macros
+        /// Whether messages of this kind are reported.
+        ///
+        /// Costly, so cache the result (see macros.hh).
         static bool active(elle::log::Logger::Level level,
                            elle::log::Logger::Type type,
                            std::string const& component);

@@ -35,8 +35,8 @@ namespace elle
     Indentation::~Indentation()
     {}
 
-    class PlainIndentation:
-      public Indentation
+    class PlainIndentation
+      : public Indentation
     {
     public:
       PlainIndentation()
@@ -96,23 +96,18 @@ namespace elle
     | Construction |
     `-------------*/
 
-    static
-    Logger::Level
-    parse_level(std::string const& level)
+    namespace
     {
-      if (level == "NONE")
-        return Logger::Level::none;
-      else if (level == "LOG")
-        return Logger::Level::log;
-      else if (level == "TRACE")
-        return Logger::Level::trace;
-      else if (level == "DEBUG")
-        return Logger::Level::debug;
-      else if (level == "DUMP")
-        return Logger::Level::dump;
-      else
-        throw elle::Exception(
-          elle::sprintf("invalid log level: %s", level));
+      Logger::Level
+      parse_level(std::string const& level)
+      {
+        if (level == "NONE")       return Logger::Level::none;
+        else if (level == "LOG")   return Logger::Level::log;
+        else if (level == "TRACE") return Logger::Level::trace;
+        else if (level == "DEBUG") return Logger::Level::debug;
+        else if (level == "DUMP")  return Logger::Level::dump;
+        else elle::err("invalid log level: %s", level);
+      }
     }
 
     Logger::Logger(std::string const& log_level)
