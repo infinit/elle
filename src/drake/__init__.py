@@ -1826,12 +1826,14 @@ def log_time(runner):
     timer[0] = threading.Timer(5 * 60, lambda: start_timer(False))
     timer[0].start()
   start_timer()
-  yield
-  timer[0].cancel()
-  end_time = time.time()
-  if 'DRAKE_NO_TIME_REPORTS' not in _OS.environ:
-    print('Ran {} in {}'.format(
-      runner, duration(start_time, end_time)))
+  try:
+    yield
+  finally:
+    timer[0].cancel()
+    end_time = time.time()
+    if 'DRAKE_NO_TIME_REPORTS' not in _OS.environ:
+      print('Ran {} in {}'.format(
+        runner, duration(start_time, end_time)))
 
 class Builder:
 
