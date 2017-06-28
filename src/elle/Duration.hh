@@ -29,12 +29,18 @@ namespace elle
     : boost::optional<Duration>
   {
     using Super = boost::optional<Duration>;
-    using Super::Super;
+
+    // We used to simply have `using Super::Super;`, but old compilers
+    // (Apple Clang++ on top of libstdc++) fails to discard some
+    // `boost::disable_if_c` code in the base constructors.
 
     template <typename Rep, typename Ratio>
-    constexpr DurationOpt(std::chrono::duration<Rep, Ratio> d)
-    noexcept(noexcept(std::chrono::duration_cast<Duration>(d)))
-      : Super{std::chrono::duration_cast<Duration>(d)}
+    DurationOpt(std::chrono::duration<Rep, Ratio> d) noexcept
+      : Super{d}
+    {}
+
+    DurationOpt(boost::none_t) noexcept
+      : Super{}
     {}
 
     // Needed although there is already a default ctor in Super. Why?
