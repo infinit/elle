@@ -17,7 +17,7 @@ namespace elle
   {
     namespace filesystem
     {
-      static void normalize(std::string& path)
+      static std::string normalize(std::string path)
       {
         if (path == "" || path == "\\")
           path = "/";
@@ -28,26 +28,26 @@ namespace elle
           path[pos] = '/';
           pos = path.find_first_of("\\");
         }
+        return path;
       }
 
       Operations::Operations()
         : _filesystem(nullptr)
       {}
 
-
       bool
       FileSystem::_wait(Thread* thread, Waker const& waker)
       {
-        if (!this->_impl)
-          return false;
-        else
+        if (this->_impl)
           return Waitable::_wait(thread, waker);
+        else
+          return false;
       }
 
       std::shared_ptr<Path>
       FileSystem::fetch_recurse(std::string path)
       {
-        normalize(path);
+        path = normalize(path);
         ELLE_DEBUG_SCOPE("%s: fetch_recurse \"%s\"", *this, path);
         ELLE_DUMP("from %s", _cache);
         auto it = _cache.find(path);
@@ -80,8 +80,7 @@ namespace elle
       FileSystem::path(std::string const& opath)
       {
         ELLE_DEBUG_SCOPE("%s: fetch \"%s\"", *this, opath);
-        std::string spath(opath);
-        normalize(spath);
+        auto spath = normalize(opath);
         ELLE_ASSERT(_impl);
         if (this->_full_tree)
         {
@@ -106,8 +105,7 @@ namespace elle
       std::shared_ptr<Path>
       FileSystem::extract(std::string const& path_)
       {
-        std::string path(path_);
-        normalize(path);
+        auto path = normalize(path_);
         auto it = this->_cache.find(path);
         if (it == this->_cache.end())
           return {};
@@ -120,8 +118,7 @@ namespace elle
       FileSystem::set(std::string const& path_,
                       std::shared_ptr<Path> new_content)
       {
-        std::string path(path_);
-        normalize(path);
+        auto path = normalize(path_);
         std::shared_ptr<Path> res = extract(path);
         this->_cache[path] =
           this->_operations->wrap(path, new_content);
@@ -131,8 +128,7 @@ namespace elle
       std::shared_ptr<Path>
       FileSystem::get(std::string const& path_)
       {
-        std::string path(path_);
-        normalize(path);
+        auto path = normalize(path_);
         auto it = this->_cache.find(path);
         if (it == this->_cache.end())
           return nullptr;
