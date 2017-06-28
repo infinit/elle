@@ -56,6 +56,8 @@ namespace elle
       content() = 0;
     };
 
+    using Tags = std::vector<std::pair<std::string, std::string>>;
+
     class ELLE_API Logger
       : private boost::noncopyable
     {
@@ -135,7 +137,7 @@ namespace elle
       /// @param line    and its line number
       /// @param function and the name of the calling function
       void message(Level level,
-                   elle::log::Logger::Type type,
+                   Type type,
                    std::string const& component,
                    std::string const& message,
                    std::string const& file,
@@ -147,7 +149,7 @@ namespace elle
       virtual
       void
       _message(Level level,
-               elle::log::Logger::Type type,
+               Type type,
                std::string const& component,
                Time const& time,
                std::string const& message,

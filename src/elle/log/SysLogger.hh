@@ -15,7 +15,7 @@ namespace elle
     protected:
       void
       _message(Level level,
-               elle::log::Logger::Type type,
+               Type type,
                std::string const& component,
                Time const& time,
                std::string const& message,

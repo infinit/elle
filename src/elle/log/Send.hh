@@ -41,8 +41,8 @@ namespace elle
         /// @param fmt     format of the message
         /// @param args    argument for the format string
         template <typename... Args>
-        Send(elle::log::Logger::Level level,
-             elle::log::Logger::Type type,
+        Send(Logger::Level level,
+             Logger::Type type,
              bool indent,
              std::string const& component,
              char const* file,
@@ -52,6 +52,7 @@ namespace elle
              Args&&... args);
         Send(); // no-op sender
         ~Send();
+        /// Whether is enabled.
         operator bool() const;
 
       /*------------.
@@ -70,8 +71,8 @@ namespace elle
         /// Whether messages of this kind are reported.
         ///
         /// Costly, so cache the result (see macros.hh).
-        static bool active(elle::log::Logger::Level level,
-                           elle::log::Logger::Type type,
+        static bool active(Logger::Level level,
+                           Logger::Type type,
                            std::string const& component);
 
       private:

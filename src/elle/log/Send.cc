@@ -37,24 +37,25 @@ namespace elle
 
       if (!_logger())
       {
-        auto const syslog = elle::os::getenv("ELLE_LOG_SYSLOG", false);
-        if (syslog)
-          _logger() = std::make_unique<elle::log::SysLogger>(
+        // ELLE_LOG_SYSLOG: the name of the logs.
+        auto const syslog = elle::os::getenv("ELLE_LOG_SYSLOG", "");
+        if (!syslog.empty())
+          _logger() = std::make_unique<SysLogger>(
             elle::sprintf("%s[%s]", syslog, elle::system::getpid()));
         else
         {
-          auto path = elle::os::getenv("ELLE_LOG_FILE", "");
+          auto const path = elle::os::getenv("ELLE_LOG_FILE", "");
           if (path.empty())
-            _logger() = std::make_unique<elle::log::TextLogger>(std::cerr);
+            _logger() = std::make_unique<TextLogger>(std::cerr);
           else
           {
-            bool append = elle::os::getenv("ELLE_LOG_FILE_APPEND", false);
+            bool const append = elle::os::getenv("ELLE_LOG_FILE_APPEND", false);
             static std::ofstream out{
               path,
                 (append ? std::fstream::app : std::fstream::trunc)
                   | std::fstream::out
                 };
-            _logger() = std::make_unique<elle::log::TextLogger>(out);
+            _logger() = std::make_unique<TextLogger>(out);
           }
         }
       }
@@ -65,27 +66,25 @@ namespace elle
     logger(std::unique_ptr<Logger> logger)
     {
       std::unique_lock<std::mutex> ulock{log_mutex()};
-      if (_logger() != nullptr && logger != nullptr)
+      if (_logger() && logger)
         logger->_indentation = _logger()->_indentation->clone();
-      auto prev = std::move(_logger());
-      _logger() = std::move(logger);
-      return prev;
+      std::swap(_logger(), logger);
+      return logger;
     }
 
     namespace detail
     {
-
       bool
-      Send::active(elle::log::Logger::Level level,
-                   elle::log::Logger::Type,
+      Send::active(Logger::Level level,
+                   Logger::Type,
                    std::string const& component)
       {
         return logger().component_is_active(component, level);
       }
 
       void
-      Send::_send(elle::log::Logger::Level level,
-                  elle::log::Logger::Type type,
+      Send::_send(Logger::Level level,
+                  Logger::Type type,
                   bool indent,
                   std::string const& component,
                   char const* file,

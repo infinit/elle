@@ -34,7 +34,6 @@ namespace elle
                  Args&&... args)
         : _active(true)
       {
-        bool debug = debug_formats();
         try
         {
           this->_send(level, type, indent, component, file, line, function,
@@ -44,7 +43,7 @@ namespace elle
         // elle::print can throw, and it only throws elle::Error.
         catch (...)
         {
-          static boost::format const error("%s:%s: invalid log: %s");
+          static auto const error = boost::format("%s:%s: invalid log: %s");
           this->_send(Logger::Level::log,
                       Logger::Type::error,
                       false,
@@ -54,7 +53,7 @@ namespace elle
                       ELLE_COMPILER_PRETTY_FUNCTION,
                       str(boost::format(error) % file % line % fmt)
             );
-          if (debug)
+          if (debug_formats())
             throw;
         }
       }

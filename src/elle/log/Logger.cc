@@ -32,8 +32,7 @@ namespace elle
     | Indentation |
     `------------*/
 
-    Indentation::~Indentation()
-    {}
+    Indentation::~Indentation() = default;
 
     class PlainIndentation
       : public Indentation
@@ -121,29 +120,25 @@ namespace elle
       elle::Plugin<Indenter>::hook_added().connect(
         [this] (Indenter&) { this->_setup_indentation(); }
       );
-      auto levels = elle::os::getenv("ELLE_LOG_LEVEL", log_level);
-      if (!levels.empty())
-        this->_setup_levels(levels);
+      this->_setup_levels(elle::os::getenv("ELLE_LOG_LEVEL", log_level));
     }
 
-    Logger::~Logger()
-    {}
+    Logger::~Logger() = default;
 
     void
     Logger::_setup_indentation()
     {
-      std::function<std::unique_ptr<Indentation> ()> factory =
+      auto factory = std::function<std::unique_ptr<Indentation> ()>{
         [] () -> std::unique_ptr<Indentation>
         {
           return std::make_unique<PlainIndentation>();
-        };
+        }
+      };
       for (auto const& indenter: elle::Plugin<Indenter>::plugins())
-      {
-        factory = [&indenter, factory] ()  -> std::unique_ptr<Indentation>
+        factory = [&indenter, factory]
           {
             return indenter.second->indentation(factory);
           };
-      }
       this->_indentation = factory();
     }
 
@@ -151,10 +146,10 @@ namespace elle
     Logger::_setup_levels(std::string const& levels)
     {
       using tokenizer = boost::tokenizer<boost::char_separator<char>>;
-      auto sep = boost::char_separator<char>{","};
-      for (auto& level: tokenizer{levels, sep})
+      auto const sep = boost::char_separator<char>{","};
+      for (auto const& level: tokenizer{levels, sep})
       {
-        static auto re =
+        static auto const re =
           std::regex{" *"
                      "(?:(.*)  *)?"     // 1: context
                      "(?:"
@@ -171,8 +166,7 @@ namespace elle
                           m[2].length() ? m[2].str() : "*",
                           parse_level(m[3]));
         else
-          throw elle::Exception(
-            elle::sprintf("invalid level specification: %s", level));
+          elle::err("invalid level specification: %s", level);
       }
     }
 
@@ -182,7 +176,7 @@ namespace elle
 
     void
     Logger::message(Level level,
-                    elle::log::Logger::Type type,
+                    Type type,
                     std::string const& component,
                     std::string const& msg,
                     std::string const& file,
@@ -225,15 +219,17 @@ namespace elle
     | Enabled |
     `--------*/
 
-    static
-    bool
-    _fnmatch(std::string const& pattern, std::string const& s)
+    namespace
     {
+      bool
+      _fnmatch(std::string const& pattern, std::string const& s)
+      {
 #ifdef INFINIT_WINDOWS
-      return ::PathMatchSpec(s.c_str(), pattern.c_str()) == TRUE;
+        return ::PathMatchSpec(s.c_str(), pattern.c_str()) == TRUE;
 #else
-      return fnmatch(pattern.c_str(), s.c_str(), 0) == 0;
+        return fnmatch(pattern.c_str(), s.c_str(), 0) == 0;
 #endif
+      }
     }
 
     bool

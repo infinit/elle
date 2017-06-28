@@ -30,25 +30,24 @@
     _trace_component_ = _component_;
 
 # define ELLE_LOG_VALUE(Lvl, T, ...)                                    \
-    [&] {                                                               \
-      static bool active =                                              \
-        elle::log::detail::Send::active(Lvl, T, _trace_component_);     \
-        return active;}()  ?                                            \
-    ::elle::log::detail::Send(                                          \
+  [&] {                                                                 \
+    using Send = ::elle::log::detail::Send;                             \
+    static bool active = Send::active(Lvl, T, _trace_component_);       \
+    return active;}()                                                   \
+  ? ::elle::log::detail::Send(                                          \
       Lvl,                                                              \
       T, true, _trace_component_,                                       \
       __FILE__, __LINE__, ELLE_COMPILER_PRETTY_FUNCTION,                \
-      __VA_ARGS__) : ::elle::log::detail::Send()                        \
+      __VA_ARGS__)                                                      \
+  : ::elle::log::detail::Send()
 
 # define ELLE_LOG_LEVEL_SCOPE(Lvl, T, ...)                              \
-    auto BOOST_PP_CAT(__trace_ctx_, __LINE__) =                         \
-      ELLE_LOG_VALUE(Lvl, T, __VA_ARGS__)                               \
+  auto BOOST_PP_CAT(__trace_ctx_, __LINE__) =                           \
+    ELLE_LOG_VALUE(Lvl, T, __VA_ARGS__)                                 \
 
 # define ELLE_LOG_LEVEL(Lvl, Type, ...)                                 \
   if (ELLE_LOG_LEVEL_SCOPE(Lvl, Type, __VA_ARGS__))                     \
-  {                                                                     \
     elle::unreachable();                                                \
-  }                                                                     \
   else                                                                  \
 /**/
 #endif
