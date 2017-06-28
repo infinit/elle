@@ -1120,6 +1120,24 @@ namespace elle
       }
     }
 
+    inline
+    void
+    Serializer::_serialize(DurationOpt& d)
+    {
+      // Behaves just like optional<Duration>.
+      if (out())
+      {
+        auto s = d ? boost::optional<Duration>{*d} : boost::optional<Duration>{};
+        this->serialize("DurationOpt", s);
+      }
+      else
+      {
+        auto s = boost::optional<Duration>{};
+        this->serialize("DurationOpt", s);
+        d = s ? DurationOpt{std::move(*s)} : DurationOpt{};
+      }
+    }
+
     template <typename S,
               template <typename, typename> class C,
               typename T,

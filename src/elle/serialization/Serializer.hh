@@ -722,6 +722,10 @@ namespace elle
       void
       _serialize(std::chrono::duration<Repr, Ratio>& duration);
 
+      /// Serialize an optional duration.
+      void
+      _serialize(DurationOpt& d);
+
       /// Serialize or deserialize a Duration type from its ticks, numerator
       /// and denominator.
       ///
@@ -744,6 +748,7 @@ namespace elle
       _serialize_named_option(std::string const& name,
                               bool present,
                               std::function<void ()> const& f) = 0;
+
       /// Serialize an anonymous optional entry.
       ///
       /// @param present Whether the option is present of not.
@@ -752,6 +757,7 @@ namespace elle
       void
       _serialize_option(bool present,
                         std::function<void ()> const& f) = 0;
+
       /// Serialize or deserialize a variant (such as elle::Option).
       ///
       /// @param names The names of the types the variant can take.
