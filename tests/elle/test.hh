@@ -299,11 +299,9 @@ operator new(std::size_t n) noexcept(false)
 void
 operator delete(void* p) noexcept
 {
-  if (!p)
-    return;
   if (RUNNING_ON_VALGRIND)
     std::free(p);
-  else
+  else if (p)
   {
     auto chunk = reinterpret_cast<char*>(p) - _memfry_offset;
     auto n = *reinterpret_cast<std::size_t*>(chunk);
