@@ -22,18 +22,15 @@ main(int argc, char* argv[])
 {
   try
   {
-    if (argc < 2 || argc > 3)
+    if (argc != 2)
     {
-      std::cerr << "Usage: " << argv[0] << " <port> [local_test]" << std::endl;
+      std::cerr << "Usage: " << argv[0] << " <port>" << std::endl;
       return 1;
     }
     // Create a Scheduler, the coroutines operator.
     elle::reactor::Scheduler sched;
     // Properly terminate the scheduler in case of SIGINT.
     sched.signal_handle(SIGINT, [&sched] { sched.terminate(); });
-    auto local_test = false;
-    if (argc == 3)
-      local_test = std::string{argv[2]} == "true";
     // Create a coroutine (named elle::reactor::Thread).
     elle::reactor::Thread acceptor(sched, "echo server", [&]
       {
@@ -45,48 +42,32 @@ main(int argc, char* argv[])
         // destruction, elle::With handles nested exceptions.
         elle::With<elle::reactor::Scope>() << [&] (elle::reactor::Scope& scope)
         {
-          if (local_test)
-            scope.run_background("echo me",
-                                 [port,&scope]
-                                 {
-                                   elle::reactor::network::TCPSocket s(
-                                     "127.0.0.1", port);
-                                   s.write("hello you!\n");
-                                   auto res = s.read_some(20);
-                                   assert(res.string() == "hello you!\n");
-                                   scope.terminate_now();
-                                 });
-          scope.run_background(
-            "acceptor",
-            [&]
-            {
-              while (true)
+          while (true)
+          {
+            // Server::accept yields until it gets a connection.
+            auto socket = elle::utility::move_on_copy(server.accept());
+            // Scope::run_background spawns a new coroutine.
+            scope.run_background(
+              elle::sprintf("client %s", socket),
+              [socket]
               {
-                // Server::accept yields until it gets a connection.
-                auto socket = elle::utility::move_on_copy(server.accept());
-                // Scope::run_background spawns a new coroutine.
-                scope.run_background(
-                  elle::sprintf("client %s", socket),
-                  [socket]
+                std::cout << "New connection" << std::endl;
+                try
+                {
+                  while (true)
                   {
-                    std::cout << "New connection" << std::endl;
-                    try
-                    {
-                      while (true)
-                      {
-                        // Yield until reading "<...>\n".
-                        elle::Buffer line = socket->read_until("\n");
-                        // Write the line we just get (this yields too).
-                        socket->write(line);
-                      }
-                    }
-                    catch (elle::reactor::network::ConnectionClosed const&)
-                    {
-                      std::cout << "Connection closed" << std::endl;
-                    }
-                  });
-              }
-            });
+                    // Yield until reading "<...>\n".
+                    elle::Buffer line = socket->read_until("\n");
+                    // Write the line we just get (this yields too).
+                    socket->write(line);
+                  }
+                }
+                catch (elle::reactor::network::ConnectionClosed const&)
+                {
+                  std::cout << "Connection closed" << std::endl;
+                }
+              });
+          };
           scope.wait();
         };
       });
