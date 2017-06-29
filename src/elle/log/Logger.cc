@@ -19,6 +19,7 @@
 #include <elle/Exception.hh>
 #include <elle/Plugin.hh>
 #include <elle/assert.hh>
+#include <elle/find.hh>
 #include <elle/log/Logger.hh>
 #include <elle/os/environ.hh>
 #include <elle/printf.hh>
@@ -278,9 +279,9 @@ namespace elle
     {
       std::lock_guard<std::recursive_mutex> lock(_mutex);
       auto res = Level::log;
-
-      auto i = this->_component_levels.find(name);
-      if (i == this->_component_levels.cend())
+      if (auto i = elle::find(this->_component_levels, name))
+        res = i->second;
+      else
       {
         for (auto const& filter: this->_component_patterns)
           if (filter.match(name))
@@ -294,15 +295,7 @@ namespace elle
               this->_component_levels[name] = res;
           }
       }
-      else
-        res = i->second;
       return res;
-    }
-
-    Logger::Level
-    Logger::component_enabled(std::string const& name)
-    {
-      return this->component_level(name);
     }
 
     /*-------------.
