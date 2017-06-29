@@ -36,9 +36,13 @@ namespace elle
       = from - boost::posix_time::from_time_t(0);
     std::chrono::time_point<Clock, Duration> t
       = std::chrono::system_clock::from_time_t(time_since_epoch.total_seconds());
-    long nsec
+    auto nsec
       = time_since_epoch.fractional_seconds()
       * (1000000000 / time_since_epoch.ticks_per_second());
-    return t + std::chrono::nanoseconds(nsec);
+    return t + std::chrono::duration_cast<Duration>(std::chrono::nanoseconds(nsec));
   };
+
+  /// Parse a date in ISO 8601 format.
+  boost::posix_time::ptime
+  to_posix_time(std::string const& str);
 }

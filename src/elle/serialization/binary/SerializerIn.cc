@@ -1,8 +1,8 @@
 #include <elle/serialization/binary/SerializerIn.hh>
 
 #include <elle/meta.hh> // static_if
-
 #include <elle/serialization/json/Error.hh>
+#include <elle/time.hh>
 
 ELLE_LOG_COMPONENT("elle.serialization.binary.SerializerIn")
 
@@ -192,49 +192,13 @@ namespace elle
       {
         std::string str;
         this->_serialize(str);
-        // Use the ISO extended input facet to interpret the string.
-        std::stringstream ss(str);
-        auto input_facet =
-          std::make_unique<boost::posix_time::time_input_facet>();
-        // ISO 8601
-        input_facet->format("%Y-%m-%dT%H:%M:%S%F");
-        ss.imbue(std::locale(ss.getloc(), input_facet.release()));
-        if (!(ss >> time))
-          throw json::FieldError(
-            this->current_name(),
-            elle::sprintf("invalid ISO8601 date: %s", str));
-        // Check there isn't any leftover.
-        std::string leftover;
-        std::getline(ss, leftover);
-        if (leftover.empty())
-          return;
-        // Boost can't parse timezones, handle it manually.
-        if (leftover == "Z")
-          {} // Accept UTC suffix.
-        else if ((leftover[0] == '+' || leftover[0] == '-') && leftover.size() == 5)
+        try
         {
-          // Handle timezone.
-          std::stringstream tz(leftover);
-          int direction = tz.get() == '+' ? -1 : 1;
-          int amount;
-          tz >> amount;
-          if (tz.get() != -1)
-            throw json::FieldError(
-              this->current_name(),
-              elle::sprintf("garbage at end of date: %s", leftover));
-          time += boost::posix_time::hours(direction * amount / 100);
+          time = to_posix_time(str);
         }
-        else
-          throw json::FieldError(
-            this->current_name(),
-            elle::sprintf("garbage at end of date: %s", leftover));
-        if (!ss.eof())
+        catch (elle::Error const& e)
         {
-          std::string leftover;
-          std::getline(ss, leftover);
-          throw json::FieldError(
-            this->current_name(),
-            elle::sprintf("garbage at end of date: %s", leftover));
+          throw json::FieldError(this->current_name(), e.what());
         }
       }
 
