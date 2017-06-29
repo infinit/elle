@@ -1,9 +1,8 @@
-#ifndef ELLE_FILESYSTEM_TEMPORARYFILE_HH
-# define ELLE_FILESYSTEM_TEMPORARYFILE_HH
+#pragma once
 
-# include <elle/attribute.hh>
-# include <elle/filesystem.hh>
-# include <elle/filesystem/TemporaryDirectory.hh>
+#include <elle/attribute.hh>
+#include <elle/filesystem.hh>
+#include <elle/filesystem/TemporaryDirectory.hh>
 
 namespace elle
 {
@@ -15,9 +14,7 @@ namespace elle
       TemporaryFile(std::string const& name);
     private:
       ELLE_ATTRIBUTE_R(TemporaryDirectory, directory);
-      ELLE_ATTRIBUTE_R(boost::filesystem::path, path);
+      ELLE_ATTRIBUTE_R(bfs::path, path);
     };
   }
 }
-
-#endif

@@ -1,31 +1,32 @@
 #include <elle/assert.hh>
 #include <elle/filesystem/TemporaryDirectory.hh>
+#include <elle/print.hh>
 #include <elle/system/self-path.hh>
+
+using namespace std::literals;
 
 namespace elle
 {
   namespace filesystem
   {
     TemporaryDirectory::TemporaryDirectory()
-      : _path()
-      , _root()
     {
-      std::string file_pattern = "%%%%-%%%%-%%%%-%%%%";
+      auto fpattern = "%%%%-%%%%-%%%%-%%%%"s;
       try
       {
-        auto self = system::self_path();
-        file_pattern = self.filename().string() + "-" + file_pattern;
+        fpattern = print("{}-{}",
+                         system::self_path().filename().string(), fpattern);
       }
       catch (...)
       {
         // No big deal.
       }
-      auto pattern = boost::filesystem::temp_directory_path() / file_pattern;
+      auto pattern = bfs::temp_directory_path() / fpattern;
       do
       {
-        this->_root = boost::filesystem::unique_path(pattern);
+        this->_root = bfs::unique_path(pattern);
       }
-      while (!boost::filesystem::create_directories(this->_root));
+      while (!bfs::create_directories(this->_root));
       this->_path = this->_root;
     }
 
@@ -33,12 +34,12 @@ namespace elle
       : TemporaryDirectory()
     {
       this->_path = this->_path / name;
-      ELLE_ASSERT(boost::filesystem::create_directories(this->_path));
+      ELLE_ASSERT(bfs::create_directories(this->_path));
     }
 
     TemporaryDirectory::~TemporaryDirectory()
     {
-      boost::filesystem::remove_all(this->_root);
+      bfs::remove_all(this->_root);
     }
   }
 }

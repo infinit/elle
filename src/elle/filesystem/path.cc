@@ -4,17 +4,17 @@ namespace elle
 {
   namespace serialization
   {
-    Serialize<boost::filesystem::path>::Type
-    Serialize<boost::filesystem::path>::convert(boost::filesystem::path& path)
+    Serialize<bfs::path>::Type
+    Serialize<bfs::path>::convert(bfs::path& path)
     {
       return path.generic_string();
     }
 
-    boost::filesystem::path
-    Serialize<boost::filesystem::path>::convert(
-      Serialize<boost::filesystem::path>::Type const& repr)
+    bfs::path
+    Serialize<bfs::path>::convert(
+      Serialize<bfs::path>::Type const& repr)
     {
-      return boost::filesystem::path(repr);
+      return bfs::path(repr);
     }
   }
 }

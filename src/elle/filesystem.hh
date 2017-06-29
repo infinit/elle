@@ -5,6 +5,11 @@
 
 #include <elle/compiler.hh>
 
+namespace elle
+{
+  namespace bfs = boost::filesystem;
+}
+
 namespace std
 {
   template<>

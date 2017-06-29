@@ -6,18 +6,20 @@
 
 namespace elle
 {
+  namespace bfs = boost::filesystem;
+
   namespace serialization
   {
     template<>
-    struct ELLE_API Serialize<boost::filesystem::path>
+    struct ELLE_API Serialize<bfs::path>
     {
       using Type = std::string;
       static
       Type
-      convert(boost::filesystem::path& path);
+      convert(bfs::path& path);
 
       static
-      boost::filesystem::path
+      bfs::path
       convert(Type const& repr);
     };
   }

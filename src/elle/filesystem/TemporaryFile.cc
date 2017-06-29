@@ -8,7 +8,8 @@ namespace elle
       : _directory(name)
     {
       this->_path = this->_directory.path() / name;
-      boost::filesystem::ofstream(this->_path);
+      // Check that it is ok.
+      bfs::ofstream(this->_path);
     }
   }
 }
