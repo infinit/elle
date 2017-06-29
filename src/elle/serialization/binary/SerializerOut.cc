@@ -227,13 +227,14 @@ namespace elle
       void
       SerializerOut::_serialize(boost::posix_time::ptime& time)
       {
-        this->_serialize(to_string(time));
+        auto s = to_string(time);
+        this->_serialize(s);
       }
 
       void
       SerializerOut::_serialize(Time& time)
       {
-        auto s = date::format("%Y-%m-%dT%H:%M:%S%z", time);
+        auto s = to_boost(time);
         this->_serialize(s);
       }
 

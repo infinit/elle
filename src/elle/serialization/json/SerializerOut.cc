@@ -236,7 +236,8 @@ namespace elle
       void
       SerializerOut::_serialize(Time& time)
       {
-        this->_get_current() = date::format("%Y-%m-%dT%H:%M:%S%z", time);
+        auto s = to_boost(time);
+        this->_serialize(s);
       }
 
       void

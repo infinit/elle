@@ -223,10 +223,9 @@ namespace elle
       void
       SerializerIn::_serialize(Time& time)
       {
-        auto& str = this->_check_type<std::string>();
-        auto&& in = std::istringstream{str};
-        in >> date::parse("%Y-%m-%dT%H:%M:%S%z", time);
-        // FIXME: check eof.
+        boost::posix_time::ptime t;
+        this->_serialize(t);
+        time = from_boost<Time::clock, Time::duration>(t);
       }
 
       void
