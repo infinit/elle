@@ -29,8 +29,9 @@
 #endif
 
 #if defined __GNUC__ && !defined __clang__
-# define GCC_VERSION_LTE(Major, Minor)                                 \
- (__GNUC__) < Major || (__GNUC__) == Major && (__GNUC_MINOR__) <= Minor
+# define GCC_VERSION_LTE(Major, Minor)                          \
+  ((__GNUC__) < (Major)                                         \
+   || (__GNUC__) == (Major) && (__GNUC_MINOR__) <= (Minor))
 #else
 # define GCC_VERSION_LTE(Major, Minor) 0
 #endif
