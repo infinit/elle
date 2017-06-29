@@ -46,4 +46,16 @@ namespace elle
     }
     return res;
   }
+
+  std::string
+  to_string(boost::posix_time::ptime const& time)
+  {
+    std::stringstream ss;
+    auto output_facet = std::make_unique<boost::posix_time::time_facet>();
+    // ISO 8601
+    output_facet->format("%Y-%m-%dT%H:%M:%S%F%q");
+    ss.imbue(std::locale(ss.getloc(), output_facet.release()));
+    ss << time;
+    return ss.str();
+  }
 }
