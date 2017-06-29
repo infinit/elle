@@ -3,17 +3,23 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/filesystem.hpp>
 
 //#define ELLE_TEST_NO_MEMFRY
 #include <elle/test.hh>
 
+#include <elle/filesystem/TemporaryDirectory.hh>
 #include <elle/finally.hh>
 #include <elle/log.hh>
-#include <elle/log/Logger.hh>
 #include <elle/log/CompositeLogger.hh>
+#include <elle/log/FileLogger.hh>
+#include <elle/log/Logger.hh>
 #include <elle/log/TextLogger.hh>
 #include <elle/memory.hh>
 #include <elle/os/environ.hh>
+
+using namespace std::literals;
+namespace bfs = boost::filesystem;
 
 /*---------------------.
 | test suite: logger.  |
@@ -357,7 +363,7 @@ namespace
   void
   composite()
   {
-    auto&& logger = std::make_unique<elle::log::CompositeLogger>();
+    auto logger = std::make_unique<elle::log::CompositeLogger>();
     auto& loggers = logger->loggers();
     auto&& log1 = std::stringstream{};
     loggers.push_back(std::make_unique<elle::log::TextLogger>(log1));
@@ -367,7 +373,7 @@ namespace
     loggers.push_back(std::make_unique<elle::log::TextLogger>(log2));
     loggers.back()->log_level("log2:TRACE");
 
-    elle::log::logger(std::move(logger));
+    auto prev = elle::log::logger(std::move(logger));
     {
       ELLE_LOG_COMPONENT("log1");
       ELLE_DUMP("Donald Dump");
@@ -378,7 +384,41 @@ namespace
     }
     BOOST_TEST(log1.str() == "[log1] Donald Dump\n");
     BOOST_TEST(log2.str() == "[log2] Samo Trace\n");
-    elle::log::logger(nullptr);
+    elle::log::logger(std::move(prev));
+  }
+
+  void
+  file()
+  {
+    auto d = elle::filesystem::TemporaryDirectory{};
+    auto const family = elle::print("{}/file.log", d.path().string());
+    auto logger = std::make_unique<elle::log::FileLogger>(family);
+    logger->threshold(512);
+    logger->log_level("DUMP");
+
+    auto prev = elle::log::logger(std::move(logger));
+    {
+      ELLE_LOG_COMPONENT("log");
+      for (int i = 0; i < 100; ++i)
+      {
+        ELLE_DUMP("ping");
+        ELLE_DUMP("pong");
+      }
+    }
+    // This should create five files of less than 600B.
+    for (int i = 0; i < 10; ++i)
+    {
+      auto f = bfs::path(elle::print("{}.{}", family, i));
+      BOOST_TEST_MESSAGE("file: " << f);
+      if (i < 5)
+      {
+        BOOST_TEST(exists(f));
+        BOOST_TEST(file_size(f) < 600);
+      }
+      else
+        BOOST_TEST(!exists(f));
+    }
+   elle::log::logger(std::move(prev));
   }
 }
 
@@ -601,6 +641,7 @@ ELLE_TEST_SUITE()
     logger->add(BOOST_TEST_CASE(message_test));
     logger->add(BOOST_TEST_CASE(environment_format_test));
     logger->add(BOOST_TEST_CASE(composite));
+    logger->add(BOOST_TEST_CASE(file));
   }
 
 #ifndef INFINIT_ANDROID

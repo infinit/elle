@@ -97,10 +97,19 @@ namespace elle
       virtual
       ~Logger();
 
+    /*-----------.
+    | Log levels |
+    `-----------*/
+    public:
       /// Process a string formatted like $ELLE_LOG_LEVEL.
       void
       log_level(std::string const& log_level);
-
+    protected:
+      /// Called at the end of log_level(), for instance to propagate
+      /// to children.
+      virtual
+      void
+      _log_level(std::string const& log_level);
 
     /*------------.
     | Indentation |

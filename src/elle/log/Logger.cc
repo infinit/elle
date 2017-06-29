@@ -145,6 +145,10 @@ namespace elle
     }
 
     void
+    Logger::_log_level(std::string const& levels)
+    {}
+
+    void
     Logger::log_level(std::string const& levels)
     {
       using tokenizer = boost::tokenizer<boost::char_separator<char>>;
@@ -170,6 +174,7 @@ namespace elle
         else
           elle::err("invalid level specification: %s", level);
       }
+      this->_log_level(levels);
     }
 
     /*----------.
