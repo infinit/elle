@@ -15,6 +15,27 @@
 
 ELLE_LOG_COMPONENT("elle.serialization.test");
 
+namespace
+{
+  template <typename Format, typename T>
+  void
+  round_trip(T const& value)
+  {
+    ELLE_LOG("round-trip: {} ({})", value, elle::type_info(value));
+    std::stringstream stream;
+    {
+      typename Format::SerializerOut output(stream);
+      output.serialize("value", value);
+    }
+    {
+      T res;
+      typename Format::SerializerIn input(stream);
+      input.serialize("value", res);
+      BOOST_TEST(value == res);
+    }
+  }
+}
+
 class InPlace
 {
 public:
@@ -569,105 +590,47 @@ buffer()
   }
 }
 
-template <typename Format>
-static
-void
-check_date()
+namespace
 {
-  auto now = boost::posix_time::microsec_clock().local_time();
-  std::stringstream stream;
+  template <typename Format>
+  void
+  check_date()
   {
-    typename Format::SerializerOut output(stream);
-    output.serialize("date", now);
+    round_trip<Format>(boost::posix_time::microsec_clock().local_time());
   }
-  {
-    boost::posix_time::ptime res;
-    typename Format::SerializerIn input(stream);
-    input.serialize("date", res);
-    BOOST_CHECK_EQUAL(now, res);
-  }
-}
 
-template <typename Format>
-static
-void
-version()
-{
-  std::stringstream stream;
-  auto version = elle::Version{2, 27, 123};
+  template <typename Format>
+  void
+  version()
   {
-    typename Format::SerializerOut output(stream);
-    output.serialize("version", version);
+    round_trip<Format>(elle::Version{2, 27, 123});
   }
-  {
-    elle::Version res;
-    typename Format::SerializerIn input(stream);
-    input.serialize("version", res);
-    BOOST_CHECK_EQUAL(version, res);
-  }
-}
 
-template <typename Format, typename Repr, typename Ratio>
-static
-void
-chrono_check(std::chrono::duration<Repr, Ratio> const& d)
-{
-  std::stringstream stream;
+  template <typename Format>
+  void
+  chrono()
   {
-    typename Format::SerializerOut output(stream);
-    output.serialize("duration", d);
+    round_trip<Format>(std::chrono::system_clock::duration(601));
+    round_trip<Format>(std::chrono::high_resolution_clock::duration(602));
+    round_trip<Format>(std::chrono::nanoseconds(603));
+    round_trip<Format>(std::chrono::microseconds(604));
+    round_trip<Format>(std::chrono::milliseconds(605));
+    round_trip<Format>(std::chrono::seconds(606));
+    round_trip<Format>(std::chrono::minutes(607));
+    round_trip<Format>(std::chrono::hours(608));
+    round_trip<Format>(std::chrono::hours(609 * 24));
   }
-  {
-    std::chrono::duration<Repr, Ratio> res;
-    typename Format::SerializerIn input(stream);
-    input.serialize("duration", res);
-    BOOST_CHECK_EQUAL(d, res);
-  }
-}
 
-template <typename Format>
-static
-void
-chrono()
-{
-  chrono_check<Format>(std::chrono::system_clock::duration(601));
-  chrono_check<Format>(std::chrono::high_resolution_clock::duration(602));
-  chrono_check<Format>(std::chrono::nanoseconds(603));
-  chrono_check<Format>(std::chrono::microseconds(604));
-  chrono_check<Format>(std::chrono::milliseconds(605));
-  chrono_check<Format>(std::chrono::seconds(606));
-  chrono_check<Format>(std::chrono::minutes(607));
-  chrono_check<Format>(std::chrono::hours(608));
-  chrono_check<Format>(std::chrono::hours(609 * 24));
-}
-
-template <typename Format>
-static
-void
-path_check(boost::filesystem::path const& path)
-{
-  std::stringstream stream;
+  template <typename Format>
+  void
+  path()
   {
-    typename Format::SerializerOut output(stream);
-    output.serialize("path", path);
+    using boost::filesystem::path;
+    round_trip<Format>(path("/tmp/elle"));
+    round_trip<Format>(path("../.."));
+    round_trip<Format>(path("./elle"));
+    round_trip<Format>(path("."));
   }
-  {
-    boost::filesystem::path res;
-    typename Format::SerializerIn input(stream);
-    input.serialize("path", res);
-    BOOST_CHECK(path == res);
-  }
-}
-
-template <typename Format>
-static
-void
-path()
-{
-  path_check<Format>("/tmp/elle");
-  path_check<Format>("../..");
-  path_check<Format>("./elle");
-  path_check<Format>(".");
 }
 
 template <bool Versioned>
