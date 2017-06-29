@@ -15,7 +15,7 @@ namespace elle
     constexpr const char* engineer[] =
       {"B", "kB", "MB", "GB", "TB", "EB", "ZB"};
     constexpr const char* computer[] =
-      {"B", "kiB", "MiB", "GiB", "TiB", "EiB", "ZiB"};
+      {"B", "KiB", "MiB", "GiB", "TiB", "EiB", "ZiB"};
     static_assert(sizeof engineer == sizeof computer,
                   "different scales");
     constexpr auto size = sizeof engineer / sizeof(*engineer);

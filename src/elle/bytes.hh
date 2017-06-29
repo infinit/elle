@@ -19,35 +19,35 @@ operator "" _kB(unsigned long long size)
 
 inline
 std::size_t
-operator "" _mB(unsigned long long size)
+operator "" _MB(unsigned long long size)
 {
   return size * 1'000'000;
 }
 
 inline
 std::size_t
-operator "" _gB(unsigned long long size)
+operator "" _GB(unsigned long long size)
 {
   return size * 1000'000'000;
 }
 
 inline
 std::size_t
-operator "" _kiB(unsigned long long size)
+operator "" _KiB(unsigned long long size)
 {
   return size * 1024;
 }
 
 inline
 std::size_t
-operator "" _miB(unsigned long long size)
+operator "" _MiB(unsigned long long size)
 {
   return size * 1024 * 1024;
 }
 
 inline
 std::size_t
-operator "" _giB(unsigned long long size)
+operator "" _GiB(unsigned long long size)
 {
   return size * 1024 * 1024 * 1024;
 }
