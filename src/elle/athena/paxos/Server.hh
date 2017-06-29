@@ -194,6 +194,7 @@ namespace elle
         `-------------*/
       public:
         Server(ServerId id, Quorum quorum,
+               boost::optional<T> value = {},
                elle::Version version = elle::serialization_tag::version);
         ELLE_ATTRIBUTE_R(ServerId, id);
         // The current commited quorum

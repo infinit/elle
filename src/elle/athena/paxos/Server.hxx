@@ -245,7 +245,10 @@ namespace elle
       template <
         typename T, typename Version, typename ClientId, typename ServerId>
       Server<T, Version, ClientId, ServerId>::Server(
-        ServerId id, Quorum quorum, elle::Version version)
+        ServerId id,
+        Quorum quorum,
+        boost::optional<T> value,
+        elle::Version version)
         : _id(std::move(id))
         , _quorum(quorum)
         , _value()
