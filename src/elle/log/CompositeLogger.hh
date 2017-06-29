@@ -25,6 +25,10 @@ namespace elle
                std::string const& file,
                unsigned int line,
                std::string const& function) override;
+
+      /// Whether is active for any of the subloggers.
+      bool
+      _component_is_active(std::string const& name, Level level) override;
     };
   }
 }

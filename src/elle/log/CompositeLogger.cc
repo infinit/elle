@@ -1,5 +1,7 @@
 #include <elle/log/CompositeLogger.hh>
 
+#include <boost/algorithm/cxx11/any_of.hpp>
+
 namespace elle
 {
   namespace log
@@ -29,6 +31,16 @@ namespace elle
         l->component_level(component); // for max size computation
         l->message(level, type, component, message, file, line, function);
       }
+    }
+
+    bool
+    CompositeLogger::_component_is_active(std::string const& name, Level level)
+    {
+      return boost::algorithm::any_of(this->_loggers,
+                                      [&name, level](auto& l)
+                                      {
+                                        return l->component_is_active(name, level);
+                                      });
     }
   }
 }

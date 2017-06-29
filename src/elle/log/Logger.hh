@@ -91,17 +91,16 @@ namespace elle
     public:
       /// Create a logger.
       ///
-      /// @param log_level  default level.  Overriden by $ELLE_LOG_LEVEL.
-      Logger(std::string const& log_level);
+      /// @param log_level  default level.  Overriden by `${$envvar}`.
+      Logger(std::string const& log_level,
+             std::string const& envvar = "ELLE_LOG_LEVEL");
       virtual
       ~Logger();
-    private:
-      void
-      _setup_indentation();
 
       /// Process a string formatted like $ELLE_LOG_LEVEL.
       void
-      _setup_levels(std::string const& log_level);
+      log_level(std::string const& log_level);
+
 
     /*------------.
     | Indentation |
@@ -117,6 +116,10 @@ namespace elle
       indent();
       void
       unindent();
+    private:
+      void
+      _setup_indentation();
+
     private:
       mutable std::recursive_mutex _mutex;
       std::unique_ptr<Indentation> _indentation;
@@ -182,6 +185,12 @@ namespace elle
       component_pop();
 
     private:
+      /// Whether participates as a context or as a component for this
+      /// level.
+      virtual
+      bool
+      _component_is_active(std::string const& name, Level level);
+
       /// Nested components.
       ///
       /// Yes, a stack of (copies) of strings.  Cannot use

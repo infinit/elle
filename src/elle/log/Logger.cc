@@ -110,7 +110,8 @@ namespace elle
       }
     }
 
-    Logger::Logger(std::string const& log_level)
+    Logger::Logger(std::string const& log_level,
+                   std::string const& envvar)
       : _indentation(std::make_unique<PlainIndentation>())
       , _time_universal(false)
       , _time_microsec(false)
@@ -121,7 +122,7 @@ namespace elle
       elle::Plugin<Indenter>::hook_added().connect(
         [this] (Indenter&) { this->_setup_indentation(); }
       );
-      this->_setup_levels(elle::os::getenv("ELLE_LOG_LEVEL", log_level));
+      this->log_level(os::getenv(envvar, log_level));
     }
 
     Logger::~Logger() = default;
@@ -144,7 +145,7 @@ namespace elle
     }
 
     void
-    Logger::_setup_levels(std::string const& levels)
+    Logger::log_level(std::string const& levels)
     {
       using tokenizer = boost::tokenizer<boost::char_separator<char>>;
       auto const sep = boost::char_separator<char>{","};
@@ -261,8 +262,14 @@ namespace elle
     }
 
     bool
-    Logger::component_is_active(std::string const& name,
-                                Level level)
+    Logger::component_is_active(std::string const& name, Level level)
+    {
+      return this->_component_is_active(name, level);
+    }
+
+    bool
+    Logger::_component_is_active(std::string const& name,
+                                 Level level)
     {
       std::lock_guard<std::recursive_mutex> lock(_mutex);
       auto res = level <= this->component_level(name);

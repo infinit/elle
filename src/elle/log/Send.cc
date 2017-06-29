@@ -52,9 +52,9 @@ namespace elle
             bool const append = elle::os::getenv("ELLE_LOG_FILE_APPEND", false);
             static std::ofstream out{
               path,
-                (append ? std::fstream::app : std::fstream::trunc)
-                  | std::fstream::out
-                };
+              (append ? std::fstream::app : std::fstream::trunc)
+              | std::fstream::out
+            };
             _logger() = std::make_unique<TextLogger>(out);
           }
         }

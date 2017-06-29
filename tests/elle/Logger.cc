@@ -353,6 +353,33 @@ namespace
     _environment_format_test(false);
     // _environment_format_test(true);
   }
+
+  void
+  composite()
+  {
+    auto&& logger = std::make_unique<elle::log::CompositeLogger>();
+    auto& loggers = logger->loggers();
+    auto&& log1 = std::stringstream{};
+    loggers.push_back(std::make_unique<elle::log::TextLogger>(log1));
+    loggers.back()->log_level("log1:DUMP");
+
+    auto&& log2 = std::stringstream{};
+    loggers.push_back(std::make_unique<elle::log::TextLogger>(log2));
+    loggers.back()->log_level("log2:TRACE");
+
+    elle::log::logger(std::move(logger));
+    {
+      ELLE_LOG_COMPONENT("log1");
+      ELLE_DUMP("Donald Dump");
+    }
+    {
+      ELLE_LOG_COMPONENT("log2");
+      ELLE_TRACE("Samo Trace");
+    }
+    BOOST_TEST(log1.str() == "[log1] Donald Dump\n");
+    BOOST_TEST(log2.str() == "[log2] Samo Trace\n");
+    elle::log::logger(nullptr);
+  }
 }
 
 /*--------------------------.
@@ -573,6 +600,7 @@ ELLE_TEST_SUITE()
     suite.add(logger);
     logger->add(BOOST_TEST_CASE(message_test));
     logger->add(BOOST_TEST_CASE(environment_format_test));
+    logger->add(BOOST_TEST_CASE(composite));
   }
 
 #ifndef INFINIT_ANDROID
