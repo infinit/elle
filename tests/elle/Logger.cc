@@ -1,41 +1,43 @@
+#include <sstream>
+#include <thread>
+
+#include <boost/algorithm/string.hpp>
+#include <boost/date_time/posix_time/posix_time.hpp>
+
 //#define ELLE_TEST_NO_MEMFRY
 #include <elle/test.hh>
 
 #include <elle/finally.hh>
 #include <elle/log.hh>
 #include <elle/log/Logger.hh>
+#include <elle/log/CompositeLogger.hh>
 #include <elle/log/TextLogger.hh>
 #include <elle/memory.hh>
 #include <elle/os/environ.hh>
-#include <elle/os/environ.hh>
-#include <elle/os/environ.hh>
 
-#include <boost/algorithm/string.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
+/*---------------------.
+| test suite: logger.  |
+`---------------------*/
 
-#include <sstream>
-#include <thread>
-
-template<bool b>
+template <bool b>
 void
 _message_test(bool env)
 {
   using Level = elle::log::Logger::Level;
 
   std::stringstream ss;
-  elle::log::TextLogger* logger;
+  auto logger = std::unique_ptr<elle::log::Logger>{};
   if (env)
   {
     elle::os::setenv("ELLE_LOG_LEVEL", "DUMP");
     elle::os::setenv("ELLE_LOG_DISPLAY_TYPE", "1");
-    logger = new elle::log::TextLogger(ss);
+    logger = std::make_unique<elle::log::TextLogger>(ss);
   }
   else
-  {
-    logger = new elle::log::TextLogger(ss, "DUMP", true);
-  }
-  elle::log::logger(std::unique_ptr<elle::log::Logger>(logger));
+    logger = std::make_unique<elle::log::TextLogger>(ss, "DUMP", true);
   BOOST_CHECK_EQUAL(logger->component_level("Test"), Level::dump);
+
+  elle::log::logger(std::move(logger));
 
   {
     ELLE_LOG_COMPONENT("Test");
@@ -90,22 +92,23 @@ _message_test(bool env)
   }
 }
 
-static
-void
-message_test()
+namespace
 {
-  _message_test<false>(false);
-  _message_test<true>(true);
-}
+  void
+  message_test()
+  {
+    _message_test<false>(false);
+    _message_test<true>(true);
+  }
 
-static
-void
-clear_env()
-{
-  elle::os::unsetenv("ELLE_LOG_LEVEL");
-  elle::os::unsetenv("ELLE_LOG_TIME");
-  elle::os::unsetenv("ELLE_LOG_TIME_UNIVERSAL");
-  elle::os::unsetenv("ELLE_LOG_PID");
+  void
+  clear_env()
+  {
+    elle::os::unsetenv("ELLE_LOG_LEVEL");
+    elle::os::unsetenv("ELLE_LOG_TIME");
+    elle::os::unsetenv("ELLE_LOG_TIME_UNIVERSAL");
+    elle::os::unsetenv("ELLE_LOG_PID");
+  }
 }
 
 static
@@ -339,16 +342,22 @@ _environment_format_test(bool env)
       << "[Test] [error] Test 6\n[0m";
   elle::os::setenv("ELLE_LOG_DISPLAY_TYPE", "0");
 
-  elle::log::logger(std::unique_ptr<elle::log::Logger>(nullptr));
+  elle::log::logger(nullptr);
 }
 
-static
-void
-environment_format_test()
+namespace
 {
-  _environment_format_test(false);
-  // _environment_format_test(true);
+  void
+  environment_format_test()
+  {
+    _environment_format_test(false);
+    // _environment_format_test(true);
+  }
 }
+
+/*--------------------------.
+| test suite: concurrency.  |
+`--------------------------*/
 
 static
 void
@@ -516,6 +525,10 @@ trim()
   BOOST_CHECK_EQUAL(output.str(), "[trim] This message is trimmed !\n");
 }
 
+/*---------------------.
+| test suite: format.  |
+`---------------------*/
+
 static
 void
 error()
@@ -552,25 +565,31 @@ error()
 ELLE_TEST_SUITE()
 {
   elle::log::detail::debug_formats(false);
-  auto& suite = boost::unit_test::framework::master_test_suite();
+  elle::os::setenv("ELLE_LOG_COLOR", "1", false);
 
-  elle::os::setenv("ELLE_LOG_COLOR", "1", 0);
-  boost::unit_test::test_suite* logger = BOOST_TEST_SUITE("logger");
-  suite.add(logger);
-  logger->add(BOOST_TEST_CASE(message_test));
-  logger->add(BOOST_TEST_CASE(environment_format_test));
+  auto& suite = boost::unit_test::framework::master_test_suite();
+  auto logger = BOOST_TEST_SUITE("logger");
+  {
+    suite.add(logger);
+    logger->add(BOOST_TEST_CASE(message_test));
+    logger->add(BOOST_TEST_CASE(environment_format_test));
+  }
 
 #ifndef INFINIT_ANDROID
-  boost::unit_test::test_suite* concurrency = BOOST_TEST_SUITE("concurrency");
-  suite.add(concurrency);
-  concurrency->add(BOOST_TEST_CASE(std::bind(parallel_write)));
+  auto concurrency = BOOST_TEST_SUITE("concurrency");
+  {
+    suite.add(concurrency);
+    concurrency->add(BOOST_TEST_CASE(parallel_write));
+  }
 
-  boost::unit_test::test_suite* format = BOOST_TEST_SUITE("format");
-  suite.add(format);
-  format->add(BOOST_TEST_CASE(error));
-  format->add(BOOST_TEST_CASE(multiline));
-  format->add(BOOST_TEST_CASE(trim));
-  format->add(BOOST_TEST_CASE(component_width));
-  format->add(BOOST_TEST_CASE(nested));
+  auto format = BOOST_TEST_SUITE("format");
+  {
+    suite.add(format);
+    format->add(BOOST_TEST_CASE(error));
+    format->add(BOOST_TEST_CASE(multiline));
+    format->add(BOOST_TEST_CASE(trim));
+    format->add(BOOST_TEST_CASE(component_width));
+    format->add(BOOST_TEST_CASE(nested));
+  }
 #endif
 }

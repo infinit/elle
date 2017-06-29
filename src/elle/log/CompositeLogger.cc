@@ -20,10 +20,10 @@ namespace elle
                               unsigned int line,
                               std::string const& function)
     {
-      /// We bounce to message and not _message so that each child logger can
-      /// have its own settings.
-      /// We must reproduce Send's behavior regarding indent and categories.
-      for (auto& l: _loggers)
+      // We bounce to message and not _message so that each child logger can
+      // have its own settings.
+      // We must reproduce Send's behavior regarding indent and categories.
+      for (auto& l: this->_loggers)
       {
         l->indentation() = indentation + 1;
         l->component_level(component); // for max size computation

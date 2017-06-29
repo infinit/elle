@@ -101,7 +101,7 @@ namespace elle
 
       /// Process a string formatted like $ELLE_LOG_LEVEL.
       void
-      _setup_levels(std::string const& levels);
+      _setup_levels(std::string const& log_level);
 
     /*------------.
     | Indentation |
