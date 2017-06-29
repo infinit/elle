@@ -26,7 +26,7 @@ namespace elle
       _message(Level level,
                Type type,
                std::string const& component,
-               boost::posix_time::ptime const& time,
+               Time const& time,
                std::string const& message,
                Tags const& tags,
                int indentation,
