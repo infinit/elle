@@ -181,6 +181,37 @@ namespace elle
     | Messaging |
     `----------*/
 
+    namespace
+    {
+      auto
+      now(bool microsec, bool universal)
+      {
+        using namespace boost::posix_time;
+        if (universal && microsec)
+          return microsec_clock::universal_time();
+        else if (universal && !microsec)
+          return second_clock::universal_time();
+        else if (!universal && microsec)
+          return microsec_clock::local_time();
+        else if (!universal && !microsec)
+          return second_clock::local_time();
+        elle::unreachable();
+      }
+
+      auto
+      make_tags()
+      {
+        auto res = Tags{};
+        for (auto const& tag: elle::Plugin<Tag>::plugins())
+        {
+          auto const& content = tag.second->content();
+          if (!content.empty())
+            res.emplace_back(tag.second->name(), content);
+        }
+        return res;
+      }
+    }
+
     void
     Logger::message(Level level,
                     Type type,
@@ -191,35 +222,22 @@ namespace elle
                     std::string const& function)
     {
       std::lock_guard<std::recursive_mutex> lock(_mutex);
-
-      if (!this->component_is_active(component, level))
-        return;
-
-      int indent = this->indentation();
-      auto tags = Tags{};
-      for (auto const& tag: elle::Plugin<Tag>::plugins())
+      if (this->component_is_active(component, level))
       {
-        std::string content = tag.second->content();
-        if (!content.empty())
-          tags.emplace_back(tag.second->name(), content);
+        auto const indent = this->indentation();
+        auto const tags = make_tags();
+        auto const time = now(this->_time_microsec, this->_time_universal);
+        if (indent < 1)
+        {
+          this->_message(
+            level, Type::error, component, time,
+            elle::sprintf("negative indentation level on log: %s", msg),
+            tags, 0, file, line, function);
+          std::abort();
+        }
+        this->_message(level, type, component, time, msg, tags,
+                       indent - 1, file, line, function);
       }
-      auto time = this->_time_microsec ?
-         ( this->_time_universal ?
-        boost::posix_time::microsec_clock::universal_time() :
-        boost::posix_time::microsec_clock::local_time())
-         :  ( this->_time_universal ?
-        boost::posix_time::second_clock::universal_time() :
-        boost::posix_time::second_clock::local_time());
-      if (indent < 1)
-      {
-        this->_message(
-          level, Type::error, component, time,
-          elle::sprintf("negative indentation level on log: %s", msg),
-          tags, 0, file, line, function);
-        std::abort();
-      }
-      this->_message(level, type, component, time, msg, tags,
-                     indent - 1, file, line, function);
     }
 
     /*--------.
