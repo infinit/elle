@@ -22,7 +22,7 @@ main(int argc, char* argv[])
 {
   try
   {
-    if (argc != 2)
+    if (argc > 2)
     {
       std::cerr << "Usage: " << argv[0] << " <port>" << std::endl;
       return 1;
@@ -35,9 +35,10 @@ main(int argc, char* argv[])
     elle::reactor::Thread acceptor(sched, "echo server", [&]
       {
         elle::reactor::network::TCPServer server;
-        auto port = std::atoi(argv[1]);
+        auto port = argc >= 2 ? std::atoi(argv[1]) : 0;
         server.listen(port);
         port = server.port();
+        std::cout << "Listening on port " << port << std::endl;
         // Scope enable to start tasks and make sure they are terminated upon
         // destruction, elle::With handles nested exceptions.
         elle::With<elle::reactor::Scope>() << [&] (elle::reactor::Scope& scope)

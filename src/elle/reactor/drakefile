@@ -937,9 +937,13 @@ def configure(curl_config,
       source + [library, elle.library],
       cxx_toolkit, cxx_config_examples)
     rule_examples << example
-    runner = drake.Runner(exe = example, args = ['0', 'true'])
-    runner.reporting = drake.Runner.Reporting.on_failure
-    rule_examples << runner.status
+  echo_server = drake.node('{}/demo/elle/reactor/echo_server'.format(examples_path))
+  runner = drake.Runner(
+    exe = drake.node(examples_path / 'demo/elle/reactor/test_echo_server'),
+    args = [echo_server.path()],
+    sources = [echo_server])
+  runner.reporting = drake.Runner.Reporting.on_failure
+  rule_examples << runner.status
   rule_build << rule_examples
 
   ## ------- ##
