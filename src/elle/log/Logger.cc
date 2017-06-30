@@ -130,7 +130,7 @@ namespace elle
     void
     Logger::_setup_indentation()
     {
-      auto factory = std::function<std::unique_ptr<Indentation> ()>{
+      auto factory = std::function<auto () -> std::unique_ptr<Indentation>>{
         [] () -> std::unique_ptr<Indentation>
         {
           return std::make_unique<PlainIndentation>();

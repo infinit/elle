@@ -39,7 +39,7 @@ namespace elle
     class ELLE_API Indenter
     {
     public:
-      using Factory = std::function<std::unique_ptr<Indentation> ()>;
+      using Factory = std::function<auto () -> std::unique_ptr<Indentation>>;
       virtual
       std::unique_ptr<Indentation>
       indentation(Factory const& factory) = 0;

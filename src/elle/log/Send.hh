@@ -33,13 +33,13 @@ namespace elle
         ///
         /// @param level   the verbosity level
         /// @param type    the severity
-        /// @param indent  indentation level
+        /// @param indent  whether to indent when nesting
         /// @param component  the name of the component, e.g. "elle.Log"
         /// @param file    the source file from which comes the message
         /// @param line    and its line number
         /// @param function and the name of the calling function
         /// @param fmt     format of the message
-        /// @param args    argument for the format string
+        /// @param args    arguments for the format string
         template <typename... Args>
         Send(Logger::Level level,
              Logger::Type type,
@@ -76,8 +76,8 @@ namespace elle
                            std::string const& component);
 
       private:
-        void _send(elle::log::Logger::Level level,
-                   elle::log::Logger::Type type,
+        void _send(Logger::Level level,
+                   Logger::Type type,
                    bool indent,
                    std::string const& component,
                    char const* file,

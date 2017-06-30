@@ -23,8 +23,8 @@ namespace elle
       {}
 
       template <typename... Args>
-      Send::Send(elle::log::Logger::Level level,
-                 elle::log::Logger::Type type,
+      Send::Send(Logger::Level level,
+                 Logger::Type type,
                  bool indent,
                  std::string const& component,
                  char const* file,
@@ -51,8 +51,7 @@ namespace elle
                       __FILE__,
                       __LINE__,
                       ELLE_COMPILER_PRETTY_FUNCTION,
-                      str(boost::format(error) % file % line % fmt)
-            );
+                      str(boost::format(error) % file % line % fmt));
           if (debug_formats())
             throw;
         }
