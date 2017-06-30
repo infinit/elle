@@ -8,6 +8,8 @@
 #include <boost/range/algorithm/transform.hpp>
 #include <boost/range/size.hpp>
 
+#include <elle/meta.hh>
+
 namespace elle
 {
   /*------.
@@ -77,12 +79,25 @@ namespace elle
   /// @returns   A set.
   template <typename Cont>
   auto
-  make_vector(const Cont& c)
-    -> std::vector<typename Cont::value_type>
+  make_vector(Cont&& c)
+    -> std::vector<typename std::remove_reference_t<Cont>::value_type>
   {
     using std::begin;
     using std::end;
-    return {begin(c), end(c)};
+    using Res = std::vector<typename std::remove_reference_t<Cont>::value_type>;
+    return elle::meta::static_if<
+      std::is_same<std::remove_reference_t<Cont>, Cont>::value>(
+        [] (auto&& c) -> Res
+        {
+          return {
+            std::make_move_iterator(c.begin()),
+            std::make_move_iterator(c.end()),
+          };
+        },
+        [] (auto& c) -> Res
+        {
+          return {begin(c), end(c)};
+        })(std::forward<Cont>(c));
   }
 
   /// This is really the `filter` function in functional languages:
