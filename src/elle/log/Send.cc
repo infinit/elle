@@ -1,7 +1,10 @@
 #include <fstream>
 #include <mutex>
 
+#include <boost/tokenizer.hpp>
+
 #include <elle/Exception.hh>
+#include <elle/assert.hh>
 #include <elle/log/Send.hh>
 #include <elle/log/SysLogger.hh>
 #include <elle/log/TextLogger.hh>
@@ -28,15 +31,12 @@ namespace elle
         static std::mutex mutex;
         return mutex;
       }
-    }
 
-    Logger&
-    logger()
-    {
-      std::unique_lock<std::mutex> ulock{log_mutex()};
-
-      if (!_logger())
+      // Call only when protected by the mutex.
+      void
+      _build_logger()
       {
+        ELLE_ASSERT(!log_mutex().try_lock());
         // ELLE_LOG_SYSLOG: the name of the logs.
         auto const syslog = elle::os::getenv("ELLE_LOG_SYSLOG", "");
         if (!syslog.empty())
@@ -59,6 +59,15 @@ namespace elle
           }
         }
       }
+    }
+
+    // ELLE_LOG_TARGET="syslog://<NAME>, file://<NAME>".
+    Logger&
+    logger()
+    {
+      std::unique_lock<std::mutex> ulock{log_mutex()};
+      if (!_logger())
+        _build_logger();
       return *_logger();
     }
 
