@@ -41,7 +41,7 @@ namespace elle
         auto const syslog = elle::os::getenv("ELLE_LOG_SYSLOG", "");
         if (!syslog.empty())
           _logger() = std::make_unique<SysLogger>(
-            elle::sprintf("%s[%s]", syslog, elle::system::getpid()));
+            print("%s[%s]", syslog, elle::system::getpid()));
         else
         {
           auto const path = elle::os::getenv("ELLE_LOG_FILE", "");

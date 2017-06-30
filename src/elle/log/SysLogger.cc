@@ -18,7 +18,7 @@
 
 #include <elle/assert.hh>
 #include <elle/log/SysLogger.hh>
-#include <elle/printf.hh>
+#include <elle/print.hh>
 
 namespace elle
 {
@@ -66,9 +66,10 @@ namespace elle
         }
         unreachable();
       }();
-      auto msg = elle::sprintf("[%s] ", component);
+      auto msg = print("[%s] ", component);
       for (auto const& tag: tags)
-        msg += elle::sprintf("[%s]", tag.second);
+        msg += print("[%s]", tag.second);
+
       msg += std::string(indentation * 2 + 1, ' ');
       msg += message;
       syslog(lvl, "%s", msg.c_str());

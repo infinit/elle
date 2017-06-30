@@ -231,7 +231,7 @@ namespace elle
         {
           this->_message(
             level, Type::error, component, time,
-            elle::sprintf("negative indentation level on log: %s", msg),
+            elle::print("negative indentation level on log: %s", msg),
             tags, 0, file, line, function);
           std::abort();
         }
