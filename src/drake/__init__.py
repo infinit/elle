@@ -1753,7 +1753,7 @@ def node(path, type = None):
   if not isinstance(path, Path):
     path = Path(path)
   d = Drake.current
-  res = d.nodes.get(drake.path_build() / path, None)
+  res = d.nodes.get((drake.path_build() / path).canonize(), None)
   if res is None:
     if type is not None:
       res = type(path)
