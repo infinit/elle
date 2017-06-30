@@ -84,7 +84,8 @@ namespace elle
                    unsigned int line,
                    char const* function,
                    const std::string& msg);
-        unsigned int* _indentation = nullptr;
+        // Indentation level.
+        int* _indentation = nullptr;
       };
     }
   }

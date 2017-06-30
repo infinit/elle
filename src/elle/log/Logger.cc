@@ -43,11 +43,11 @@ namespace elle
         : _indentation()
       {}
 
-      unsigned int&
+      int&
       indentation() override
       {
         if (!this->_indentation.get())
-          this->_indentation.reset(new unsigned int(1));
+          this->_indentation.reset(new int(1));
         return *this->_indentation;
       }
 
@@ -60,7 +60,7 @@ namespace elle
       void
       unindent() override
       {
-        ELLE_ASSERT_GTE(this->indentation(), 1u);
+        ELLE_ASSERT_GTE(this->indentation(), 1);
         this->indentation() -= 1;
       }
 
@@ -71,10 +71,10 @@ namespace elle
       }
 
     private:
-      boost::thread_specific_ptr<unsigned int> _indentation;
+      boost::thread_specific_ptr<int> _indentation;
     };
 
-    unsigned int&
+    int&
     Logger::indentation()
     {
       return this->_indentation->indentation();

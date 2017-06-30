@@ -8,17 +8,17 @@ namespace elle
 {
   namespace reactor
   {
-    class Indentation:
-      public elle::log::Indentation
+    class Indentation
+      : public elle::log::Indentation
     {
     public:
       using Factory = elle::log::Indenter::Factory;
-      Indentation(Factory  factory)
+      Indentation(Factory factory)
         : _factory(std::move(factory))
         , _indentations()
       {}
 
-      unsigned int&
+      int&
       indentation() override
       {
         return this->_indentation()->indentation();
@@ -56,8 +56,8 @@ namespace elle
       ELLE_ATTRIBUTE(Indentations, indentations);
     };
 
-    class Indenter:
-      public elle::log::Indenter
+    class Indenter
+      : public elle::log::Indenter
     {
     public:
       std::unique_ptr<elle::log::Indentation>
@@ -70,8 +70,8 @@ namespace elle
     elle::Plugin<elle::log::Indenter>::Register<Indenter>
     register_indentation;
 
-    class ThreadTag:
-      public elle::log::Tag
+    class ThreadTag
+      : public elle::log::Tag
     {
     public:
       std::string
@@ -83,9 +83,8 @@ namespace elle
       std::string
       content() override
       {
-        static std::string max_repr =
-          elle::os::getenv("ELLE_LOG_COROUTINE_MAX_WIDTH", "");
-        static int max = max_repr.empty() ? INT_MAX : std::atoi(max_repr.c_str());
+        static auto const max =
+          elle::os::getenv("ELLE_LOG_COROUTINE_MAX_WIDTH", INT_MAX);
         if (reactor::Scheduler* sched = reactor::Scheduler::scheduler())
           if (reactor::Thread* t = sched->current())
             return t->name().substr(0, max);
