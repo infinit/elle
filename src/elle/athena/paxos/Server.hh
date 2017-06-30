@@ -241,7 +241,7 @@ namespace elle
           serialize(elle::serialization::Serializer& s, elle::Version const& v);
         using serialization_tag = elle::serialization_tag;
         };
-        ELLE_ATTRIBUTE(boost::optional<VersionState>, state);
+        ELLE_ATTRIBUTE_R(boost::optional<VersionState>, state);
 
       private:
         struct _Details;
