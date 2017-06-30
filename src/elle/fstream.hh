@@ -17,7 +17,7 @@ namespace elle
 {
   namespace detail
   {
-    template <typename CharT, typename Traits>
+    template <typename CharT, typename Traits = std::char_traits<CharT>>
     void
     rotate_impl(std::basic_ofstream<CharT, Traits>& of,
                 std::string const& base,
@@ -40,6 +40,10 @@ namespace elle
       }
       err("failed to open file in family %s", base);
     }
+
+    extern template
+    void
+    rotate_impl(std::ofstream& of, std::string const& base, int threshold);
   }
 
   /// Rotate the file of a stream.
@@ -47,7 +51,7 @@ namespace elle
   /// \param of    the stream
   /// \param base  the base name for the file names
   /// \param threshold  size starting which the previous file is closed
-  template <typename CharT, typename Traits>
+  template <typename CharT, typename Traits = std::char_traits<CharT>>
   void
   rotate(std::basic_ofstream<CharT, Traits>& of,
          std::string const& base,
@@ -62,4 +66,8 @@ namespace elle
     if (!of.is_open())
       detail::rotate_impl(of, base, threshold);
   }
+
+  extern template
+  void
+  rotate(std::ofstream& of, std::string const& base, int threshold);
 }
