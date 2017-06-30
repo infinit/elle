@@ -212,6 +212,51 @@ namespace elle
       }
     }
 
+    auto
+    Logger::make_message(Level level,
+                         Type type,
+                         std::string const& component,
+                         std::string const& msg,
+                         std::string const& file,
+                         unsigned int line,
+                         std::string const& function)
+      -> Message
+    {
+      auto res = Message
+        {
+          level,
+          type,
+          component,
+          msg,
+          file,
+          line,
+          function,
+          this->indentation() - 1, // FIXME: Why this convention?
+          now(this->_time_microsec, this->_time_universal),
+          make_tags(),
+        };
+      if (0 <= res.indentation)
+        return res;
+      else
+      {
+        auto err = Message
+          {
+            level,
+            type,
+            component,
+            elle::sprintf("negative indentation level on log: %s", msg),
+            file,
+            line,
+            function,
+            0,
+            now(this->_time_microsec, this->_time_universal),
+            make_tags(),
+          };
+        this->_message(err);
+        std::abort();
+      }
+    }
+
     void
     Logger::message(Level level,
                     Type type,
@@ -219,25 +264,18 @@ namespace elle
                     std::string const& msg,
                     std::string const& file,
                     unsigned int line,
-                    std::string const& function)
+                    std::string const& fun)
+    {
+      this->message(make_message(level, type, component, msg,
+                                 file, line, fun));
+    }
+
+    void
+    Logger::message(Message const& msg)
     {
       std::lock_guard<std::recursive_mutex> lock(_mutex);
-      if (this->component_is_active(component, level))
-      {
-        auto const indent = this->indentation();
-        auto const tags = make_tags();
-        auto const time = now(this->_time_microsec, this->_time_universal);
-        if (indent < 1)
-        {
-          this->_message(
-            level, Type::error, component, time,
-            elle::print("negative indentation level on log: %s", msg),
-            tags, 0, file, line, function);
-          std::abort();
-        }
-        this->_message(level, type, component, time, msg, tags,
-                       indent - 1, file, line, function);
-      }
+      if (this->component_is_active(msg.component, msg.level))
+        this->_message(msg);
     }
 
     /*--------.

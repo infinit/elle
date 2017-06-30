@@ -23,16 +23,8 @@ namespace elle
                  bool warn_err_only = false);
     protected:
       void
-      _message(Level level,
-               Type type,
-               std::string const& component,
-               Time const& time,
-               std::string const& message,
-               Tags const& tags,
-               int indentation,
-               std::string const& file,
-               unsigned int line,
-               std::string const& function) override;
+      _message(Message const& msg) override;
+
     private:
       ELLE_ATTRIBUTE_R(std::ostream&, output);
       ELLE_ATTRIBUTE_RW(bool, display_type);

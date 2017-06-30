@@ -23,24 +23,9 @@ namespace elle
     }
 
     void
-    FileLogger::_message(Level level,
-                         Type type,
-                         std::string const& component,
-                         Time const& time,
-                         std::string const& message,
-                         Tags const& tags,
-                         int indentation,
-                         std::string const& file,
-                         unsigned int line,
-                         std::string const& function)
+    FileLogger::_message(Message const& msg)
     {
-      this->_logger->message(level, type, component
-                            // , time
-                            , message
-                            // , tags
-                            // , indentation
-                            , file, line, function
-                            );
+      this->_logger->message(msg);
       rotate(this->_fstream, this->base(), this->threshold());
     }
   }

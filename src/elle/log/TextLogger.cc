@@ -11,7 +11,7 @@
 #include <elle/Exception.hh>
 #include <elle/assert.hh>
 #include <elle/os/environ.hh>
-#include <elle/printf.hh>
+#include <elle/print.hh>
 
 namespace elle
 {
@@ -90,24 +90,15 @@ namespace elle
     }
 
     void
-    TextLogger::_message(Level level,
-                         Type type,
-                         std::string const& component,
-                         Time const& time,
-                         std::string const& message,
-                         Tags const& tags,
-                         int indentation,
-                         std::string const& file,
-                         unsigned int line,
-                         std::string const& function)
+    TextLogger::_message(Message const& msg)
     {
-      if (_warn_err_only && type < Type::warning)
+      if (_warn_err_only && msg.type < Type::warning)
         return;
-      auto const lines = [&message]
+      auto const lines = [&msg]
       {
         auto res = std::vector<std::string>{};
         auto trimmed = boost::algorithm::trim_copy_if(
-          message,
+          msg.message,
           boost::algorithm::is_any_of(" \t\n\r"));
         boost::split(res,
                      trimmed,
@@ -116,54 +107,56 @@ namespace elle
         ELLE_ASSERT(!res.empty());
         return res;
       }();
-      auto msg = lines[0];
+      auto str = lines[0];
 
       // Indentation
       static bool const indent = !os::getenv("ELLE_LOG_NO_INDENTATION", false);
       if (indent)
-        msg = std::string(indentation * 2, ' ') + msg;
+        str = std::string(msg.indentation * 2, ' ') + str;
 
       // Location
       static bool const location = os::getenv("ELLE_LOG_LOCATIONS", false);
       if (location)
-        msg = elle::sprintf("%s (at %s:%s in %s)", msg, file, line, function);
+        str = print("%s (at %s:%s in %s)",
+                    str, msg.file, msg.line, msg.function);
 
       // Type
-      if (this->_display_type && type != Type::info)
-        msg = elle::sprintf("[%s] %s", _type_to_string(type), msg);
+      if (this->_display_type && msg.type != Type::info)
+        str = print("[%s] %s", _type_to_string(msg.type), str);
 
       // Tags
       static bool display_tags = !os::getenv("ELLE_LOG_NO_TAGS", false);
       if (display_tags)
-        for (auto const& tag: tags)
+        for (auto const& tag: msg.tags)
           if ((this->_enable_pid || tag.first != "PID")
               && (this->_enable_tid || tag.first != "TID"))
-            msg = elle::sprintf("[%s] %s", tag.second, msg);
+            str = print("[%s] %s", tag.second, str);
 
       // Component
       static bool show_component = !os::getenv("ELLE_LOG_NO_COMPONENT", false);
       if (show_component)
       {
-        auto const size = component.size();
+        auto const size = msg.component.size();
         ELLE_ASSERT_LTE(size, this->component_max_size());
         auto const pad = this->component_max_size() - size;
-        auto const comp = "[" + std::string(pad / 2, ' ')
-          + component + std::string(pad / 2 + pad % 2, ' ')
-          + "] ";
-        msg = comp + msg;
+        str = print("[{}{}{}] {}",
+                    std::string(pad / 2, ' '),
+                    msg.component,
+                    std::string(pad / 2 + pad % 2, ' '),
+                    str);
       }
 
       // Time
       if (this->_enable_time)
-        msg = elle::sprintf("%s: %s", time, msg);
+        str = print("%s: %s", time, str);
 
-      auto color_code = get_color_code(level, type);
-      this->_output << color_code << msg << std::endl;
+      auto color_code = get_color_code(msg.level, msg.type);
+      this->_output << color_code << str << std::endl;
 
       if (lines.size() > 1)
       {
-        ELLE_ASSERT_GTE(msg.size(), lines[0].size());
-        auto indent = std::string(msg.size() - lines[0].size(), ' ');
+        ELLE_ASSERT_GTE(str.size(), lines[0].size());
+        auto indent = std::string(str.size() - lines[0].size(), ' ');
         for (auto i = 1u; i < lines.size(); i++)
           this->_output << indent << lines[i] << std::endl;
       }

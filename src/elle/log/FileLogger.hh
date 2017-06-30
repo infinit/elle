@@ -24,16 +24,7 @@ namespace elle
 
     protected:
       void
-      _message(Level level,
-               Type type,
-               std::string const& component,
-               Time const& time,
-               std::string const& message,
-               Tags const& tags,
-               int indentation,
-               std::string const& file,
-               unsigned int line,
-               std::string const& function) override;
+      _message(Message const& msg) override;
 
       void
       _log_level(std::string const& log_level) override;

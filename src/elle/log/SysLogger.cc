@@ -17,18 +17,9 @@ namespace elle
     }
 
     void
-    SysLogger::_message(Level level,
-                        Logger::Type type,
-                        std::string const& component,
-                        Time const&,
-                        std::string const& message,
-                        Tags const& tags,
-                        int indentation,
-                        std::string const&,
-                        unsigned int,
-                        std::string const&)
+    SysLogger::_message(Message const& msg)
     {
-      int lvl = [&type,&level]{
+      int lvl = [type = msg.type, level = msg.level]{
         switch (type)
         {
           case Logger::Type::error:
@@ -49,13 +40,12 @@ namespace elle
         }
         unreachable();
       }();
-      auto msg = print("[%s] ", component);
-      for (auto const& tag: tags)
-        msg += print("[%s]", tag.second);
-
-      msg += std::string(indentation * 2 + 1, ' ');
-      msg += message;
-      syslog(lvl, "%s", msg.c_str());
+      auto str = print("[%s] ", msg.component);
+      for (auto const& tag: msg.tags)
+        str += print("[%s]", tag.second);
+      str += std::string(msg.indentation * 2 + 1, ' ');
+      str += msg.message;
+      syslog(lvl, "%s", str.c_str());
     }
   }
 }

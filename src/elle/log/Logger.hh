@@ -139,6 +139,31 @@ namespace elle
     | Messaging |
     `----------*/
     public:
+      using Tags = std::vector<std::pair<std::string, std::string>>;
+      using Time = boost::posix_time::ptime;
+      struct Message
+      {
+        Level level;
+        Type type;
+        std::string const& component;
+        std::string const& message;
+        std::string const& file;
+        unsigned int line;
+        std::string const& function;
+        int indentation;
+        Time time;
+        Tags tags;
+      };
+
+      Message
+      make_message(Level level,
+                   Type type,
+                   std::string const& component,
+                   std::string const& message,
+                   std::string const& file,
+                   unsigned int line,
+                   std::string const& function);
+
       /// Send a log message.
       ///
       /// @param level   the verbosity level
@@ -155,21 +180,13 @@ namespace elle
                    std::string const& file,
                    unsigned int line,
                    std::string const& function);
+
+      void message(Message const& msg);
+
     protected:
-      using Tags = std::vector<std::pair<std::string, std::string>>;
-      using Time = boost::posix_time::ptime;
       virtual
       void
-      _message(Level level,
-               Type type,
-               std::string const& component,
-               Time const& time,
-               std::string const& message,
-               Tags const& tags,
-               int indentation,
-               std::string const& file,
-               unsigned int line,
-               std::string const& function) = 0;
+      _message(Message const& msg) = 0;
       friend class CompositeLogger;
 
     /*-----------.
