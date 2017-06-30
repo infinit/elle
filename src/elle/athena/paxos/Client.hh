@@ -95,7 +95,8 @@ namespace elle
         | Construction |
         `-------------*/
       public:
-        Client(ClientId id, Peers peers);
+        template <typename Peers>
+        Client(ClientId id, Peers&& peers);
         /// Change the peers.
         void
         peers(Peers peers);

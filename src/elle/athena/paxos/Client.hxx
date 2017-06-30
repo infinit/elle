@@ -34,9 +34,10 @@ namespace elle
       `-------------*/
 
       template <typename T, typename Version, typename ClientId>
-      Client<T, Version, ClientId>::Client(ClientId id, Peers peers)
+      template <typename P>
+      Client<T, Version, ClientId>::Client(ClientId id, P&& peers)
         : _id(id)
-        , _peers(std::move(peers))
+        , _peers(elle::make_vector(std::forward<P>(peers)))
         , _conflict_backoff(true)
         , _round(0)
       {
