@@ -107,58 +107,65 @@ namespace elle
         ELLE_ASSERT(!res.empty());
         return res;
       }();
-      auto str = lines[0];
 
-      // Indentation
-      static bool const indent = !os::getenv("ELLE_LOG_NO_INDENTATION", false);
-      if (indent)
-        str = std::string(msg.indentation * 2, ' ') + str;
-
-      // Location
-      static bool const location = os::getenv("ELLE_LOG_LOCATIONS", false);
-      if (location)
-        str = print("%s (at %s:%s in %s)",
-                    str, msg.file, msg.line, msg.function);
-
-      // Type
-      if (this->_display_type && msg.type != Type::info)
-        str = print("[%s] %s", _type_to_string(msg.type), str);
-
-      // Tags
-      static bool display_tags = !os::getenv("ELLE_LOG_NO_TAGS", false);
-      if (display_tags)
-        for (auto const& tag: msg.tags)
-          if ((this->_enable_pid || tag.first != "PID")
-              && (this->_enable_tid || tag.first != "TID"))
-            str = print("[%s] %s", tag.second, str);
-
-      // Component
-      static bool show_component = !os::getenv("ELLE_LOG_NO_COMPONENT", false);
-      if (show_component)
+      // The first line has a complete header.
+      auto const first_line = [&]
       {
-        auto const size = msg.component.size();
-        ELLE_ASSERT_LTE(size, this->component_max_size());
-        auto const pad = this->component_max_size() - size;
-        str = print("[{}{}{}] {}",
-                    std::string(pad / 2, ' '),
-                    msg.component,
-                    std::string(pad / 2 + pad % 2, ' '),
-                    str);
-      }
+        auto res = lines[0];
 
-      // Time
-      if (this->_enable_time)
-        str = print("%s: %s", time, str);
+        // Indentation
+        static bool const indent = !os::getenv("ELLE_LOG_NO_INDENTATION", false);
+        if (indent)
+          res = std::string(msg.indentation * 2, ' ') + res;
 
-      auto color_code = get_color_code(msg.level, msg.type);
-      this->_output << color_code << str << std::endl;
+        // Location
+        static bool const location = os::getenv("ELLE_LOG_LOCATIONS", false);
+        if (location)
+          res = print("%s (at %s:%s in %s)",
+                      res, msg.file, msg.line, msg.function);
+
+        // Type
+        if (this->_display_type && msg.type != Type::info)
+          res = print("[%s] %s", _type_to_string(msg.type), res);
+
+        // Tags
+        static bool display_tags = !os::getenv("ELLE_LOG_NO_TAGS", false);
+        if (display_tags)
+          for (auto const& tag: msg.tags)
+            if ((this->_enable_pid || tag.first != "PID")
+                && (this->_enable_tid || tag.first != "TID"))
+              res = print("[%s] %s", tag.second, res);
+
+        // Component
+        static bool show_component = !os::getenv("ELLE_LOG_NO_COMPONENT", false);
+        if (show_component)
+        {
+          auto const size = msg.component.size();
+          ELLE_ASSERT_LTE(size, this->component_max_size());
+          auto const pad = this->component_max_size() - size;
+          res = print("[{}{}{}] {}",
+                      std::string(pad / 2, ' '),
+                      msg.component,
+                      std::string(pad / 2 + pad % 2, ' '),
+                      res);
+        }
+
+        // Time
+        if (this->_enable_time)
+          res = print("%s: %s", time, res);
+
+        return res;
+      }();
+
+      auto const color_code = get_color_code(msg.level, msg.type);
+      this->_output << color_code << first_line << '\n';
 
       if (lines.size() > 1)
       {
-        ELLE_ASSERT_GTE(str.size(), lines[0].size());
-        auto indent = std::string(str.size() - lines[0].size(), ' ');
+        ELLE_ASSERT_GTE(first_line.size(), lines[0].size());
+        auto indent = std::string(first_line.size() - lines[0].size(), ' ');
         for (auto i = 1u; i < lines.size(); i++)
-          this->_output << indent << lines[i] << std::endl;
+          this->_output << indent << lines[i] << '\n';
       }
       if (!color_code.empty())
         this->_output << "[0m";
