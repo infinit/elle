@@ -316,6 +316,7 @@ bool parse(string_view::const_iterator &it, string_view::const_iterator last,
       else if (!isdigit(it, last)) {
         return false;
       }
+      continue;
     }
     else if (hp_state == hier_part_state::path) {
       if (*it == '?') {
