@@ -928,16 +928,15 @@ def configure(curl_config,
   rule_examples = drake.Rule('examples')
   examples_path = drake.Path('../../../examples')
   examples = [
-    'demo/elle/reactor/echo_server'
-  ]
-  for example in examples:
-    source = drake.nodes('%s/%s.cc' % (examples_path, example))
-    example = drake.cxx.Executable(
+    drake.cxx.Executable(
       examples_path / example,
-      source + [library, elle.library],
+      [drake.node('%s/%s.cc' % (examples_path, example)), library, elle.library],
       cxx_toolkit, cxx_config_examples)
-    rule_examples << example
-  echo_server = drake.node('{}/demo/elle/reactor/echo_server'.format(examples_path))
+    for example in [
+        'demo/elle/reactor/echo_server',
+    ]]
+  rule_examples << examples
+  echo_server = examples[0]
   runner = drake.Runner(
     exe = drake.node(examples_path / 'demo/elle/reactor/test_echo_server'),
     args = [echo_server.path()],
