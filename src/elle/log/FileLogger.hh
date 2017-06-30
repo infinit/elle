@@ -42,7 +42,10 @@ namespace elle
       ELLE_ATTRIBUTE_R(std::string const&, base);
       ELLE_ATTRIBUTE_R(std::ofstream, fstream);
       ELLE_ATTRIBUTE_RW(size_t, threshold);
-      ELLE_ATTRIBUTE_R(TextLogger, logger);
+      // A pointer only because we have to support G++ 4.9 which does
+      // not support move for streams.
+      // FIXME: C++17.
+      ELLE_ATTRIBUTE_R(std::unique_ptr<TextLogger>, logger);
     };
   }
 }

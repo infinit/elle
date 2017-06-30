@@ -15,29 +15,31 @@ ELLE_LOG_COMPONENT("elle.fstream");
 
 namespace elle
 {
-  template <typename CharT = char,
-            typename Traits = std::char_traits<CharT>>
-  std::basic_ofstream<CharT, Traits>
-  rotate_name(std::string const& base,
-              int threshold = 100_KiB)
+  namespace detail
   {
-    using ofstream = std::basic_ofstream<CharT, Traits>;
-    // Look for the first free name.
-    for (int i = 0; i < 100; ++i)
+    template <typename CharT, typename Traits>
+    void
+    rotate_impl(std::basic_ofstream<CharT, Traits>& of,
+                std::string const& base,
+                int threshold = 100_KiB)
     {
-      // There is no O_EXCL in C++.  TOCTOU...
-      auto f = elle::print("{}.{}", base, i);
-      if (!bfs::exists(f))
+      // Look for the first free name.
+      for (int i = 0; i < 100; ++i)
       {
-        auto&& o = ofstream{f, std::ios_base::app};
-        if (o.good())
+        // There is no O_EXCL in C++.  TOCTOU...
+        auto f = elle::print("{}.{}", base, i);
+        if (!bfs::exists(f))
         {
-          ELLE_DUMP("rotate_name: {}", f);
-          return std::move(o);
+          of.open(f, std::ios_base::app);
+          if (of.good())
+          {
+            ELLE_DUMP("rotate_name: {}", f);
+            return;
+          }
         }
       }
+      err("failed to open file in family %s", base);
     }
-    err("failed to open file in family %s", base);
   }
 
   /// Rotate the file of a stream.
@@ -51,12 +53,13 @@ namespace elle
          std::string const& base,
          int threshold = 100_KiB)
   {
-    if (threshold < of.tellp())
+    if (of.is_open() && threshold < of.tellp())
     {
       of.close();
       if (of.fail())
         err("failed to close file in family %s", base);
-      of = rotate_name(base, threshold);
     }
+    if (!of.is_open())
+      detail::rotate_impl(of, base, threshold);
   }
 }

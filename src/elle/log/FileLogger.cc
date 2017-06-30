@@ -10,15 +10,16 @@ namespace elle
                            std::string const& log_level)
       : Super{log_level}
       , _base(base)
-      , _fstream{rotate_name(this->_base)}
       , _threshold{100_KiB}
-      , _logger{this->_fstream, log_level}
-    {}
+    {
+      rotate(this->_fstream, this->base(), this->threshold());
+      this->_logger = std::make_unique<TextLogger>(this->_fstream, log_level);
+    }
 
     void
     FileLogger::_log_level(std::string const& log_level)
     {
-      this->_logger.log_level(log_level);
+      this->_logger->log_level(log_level);
     }
 
     void
@@ -33,7 +34,7 @@ namespace elle
                          unsigned int line,
                          std::string const& function)
     {
-      this->_logger.message(level, type, component
+      this->_logger->message(level, type, component
                             // , time
                             , message
                             // , tags
