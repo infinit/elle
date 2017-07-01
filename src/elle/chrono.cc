@@ -11,7 +11,12 @@ namespace elle
                    std::int64_t& denom)
     {
 #define ELLE_CHRONO_DURATION_PARSE_DYNAMIC(Ticks, Num, Denom)   \
-      ticks = Ticks; num = Num; denom = Denom;
+      do {                                                      \
+        ticks = Ticks;                                          \
+        num = Num;                                              \
+        denom = Denom;                                          \
+      } while (false)
+
       ELLE_CHRONO_DURATION_PARSE(ELLE_CHRONO_DURATION_PARSE_DYNAMIC);
 #undef ELLE_CHRONO_DURATION_PARSE_DYNAMIC
     }

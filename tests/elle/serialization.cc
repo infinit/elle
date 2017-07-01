@@ -564,6 +564,8 @@ namespace
     round_trip<Format>(std::chrono::seconds(606));
     round_trip<Format>(std::chrono::minutes(607));
     round_trip<Format>(std::chrono::hours(608));
+    // In Json, causes a serialization as "609d", which changes to
+    // std::ratio when read.
     round_trip<Format>(std::chrono::hours(609 * 24));
   }
 

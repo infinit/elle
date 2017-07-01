@@ -14,28 +14,28 @@ namespace elle
         auto count = std::atoi(repr.substr(0, pos).c_str());            \
         auto const unit = repr.substr(pos);                             \
         if (unit == "d")                                                \
-        { Res(count, 60 * 60 * 24, 1); }                                \
+          Res(count, 60 * 60 * 24, 1);                                  \
         else if (unit == "h")                                           \
-        { Res(count, 60 * 60, 1); }                                     \
+          Res(count, 60 * 60, 1);                                       \
         else if (unit == "min")                                         \
-        { Res(count, 60, 1); }                                          \
+          Res(count, 60, 1);                                            \
         else if (unit == "s")                                           \
-        { Res(count, 1, 1); }                                           \
+          Res(count, 1, 1);                                             \
         else if (unit == "ms")                                          \
-        { Res(count, 1, 1000); }                                        \
+          Res(count, 1, 1000);                                          \
         else if (unit == "us")                                          \
-        { Res(count, 1, 1'000'000); }                                   \
+          Res(count, 1, 1'000'000);                                     \
         else if (unit == "ns")                                          \
-        { Res(count, 1, 1000'000'000); }                                \
+          Res(count, 1, 1000'000'000);                                  \
         else if (unit == "ps")                                          \
-        { Res(count, 1, 1'000'000'000'000); }                           \
+          Res(count, 1, 1'000'000'000'000);                             \
         else if (unit == "fs")                                          \
-        { Res(count, 1, 1000'000'000'000'000); }                        \
+          Res(count, 1, 1000'000'000'000'000);                          \
         else                                                            \
           elle::err("invalid duration unit: %s", unit);                 \
       }                                                                 \
       else                                                              \
-      { Res(std::atoi(repr.c_str()), 1, 1); }                           \
+        Res(std::stoi(repr), 1, 1);
 
     template <typename Ratio, typename R>
     std::chrono::duration<R, Ratio>
