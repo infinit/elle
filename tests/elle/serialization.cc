@@ -13,6 +13,8 @@
 #include <elle/serialization/json/Error.hh>
 #include <elle/test.hh>
 
+using namespace std::literals;
+
 ELLE_LOG_COMPONENT("elle.serialization.test");
 
 namespace
@@ -543,6 +545,8 @@ namespace
   check_date()
   {
     round_trip<Format>(boost::posix_time::microsec_clock().local_time());
+    round_trip<Format>(elle::Duration{123min});
+    // round_trip<Format>(elle::Clock::now());
   }
 
   template <typename Format>

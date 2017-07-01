@@ -1101,22 +1101,32 @@ namespace elle
     void
     Serializer::_serialize(std::chrono::duration<Repr, Ratio>& duration)
     {
+      ELLE_LOG_COMPONENT("elle.serialization.Serializer");
       if (out())
       {
         int64_t count = duration.count();
         int64_t num = Ratio::num;
-        int64_t denom = Ratio::den;
-        this->_serialize_time_duration(count, num, denom);
+        int64_t den = Ratio::den;
+        ELLE_DUMP("duration out: {} => {} ({}/{})", duration, count, num, den);
+        this->_serialize_time_duration(count, num, den);
       }
       else
       {
         int64_t count;
         int64_t num;
-        int64_t denom;
-        this->_serialize_time_duration(count, num, denom);
-        // FIXME: handle overflows
-        count = count * num * Ratio::den / Ratio::num / denom;
+        int64_t den;
+        this->_serialize_time_duration(count, num, den);
+        // One would expect num == Ratio::num and den == Ratio::den.
+        // However our Json serialization tries to produce human
+        // readable durations, and for instance "24h" is serialized as
+        // "1d", and parsed with a different Ratio (day instead of
+        // hour).  So we have to scale "count".
+        //
+        // Unfortunately, in that case we overflow for simple case if
+        // we stay in integral numbers.
+        count = double(count) * num / Ratio::num * Ratio::den / den;
         duration = std::chrono::duration<Repr, Ratio>(count);
+        ELLE_DUMP("duration in: {} ({}/{}) => {}", count, num, den, duration);
       }
     }
 
