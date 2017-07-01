@@ -1558,9 +1558,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
       'examples/%s.cc' % x for x in
       list(chain(examples, elle.examples,
                  [x[0] for x in cryptography.examples], das.examples))
-    ] +[
-      '%s.cc' % x for x in list(chain(reactor.examples))
-    ]))
+    ])
 
   with drake.templating.Context(content = {
       'prefix': '/usr/elle',
