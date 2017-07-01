@@ -1554,10 +1554,12 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
       cxx_toolkit, example_config)
   rule_build << rule_examples
   examples = drake.nodes(
-    *[
+    *([
       'examples/%s.cc' % x for x in
-      list(chain(examples, elle.examples, reactor.examples,
+      list(chain(examples, elle.examples,
                  [x[0] for x in cryptography.examples], das.examples))
+    ] +[
+      '%s.cc' % x for x in list(chain(reactor.examples))
     ])
 
   with drake.templating.Context(content = {
