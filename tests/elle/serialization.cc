@@ -176,17 +176,7 @@ static
 void
 object()
 {
-  std::stringstream stream;
-  {
-    typename Format::SerializerOut output(stream);
-    Point p(42, 51);
-    p.serialize(output);
-  }
-  {
-    typename Format::SerializerIn input(stream);
-    Point p(input);
-    BOOST_CHECK_EQUAL(p, Point(42, 51));
-  }
+  round_trip<Format>(Point{42, 52});
 }
 
 class Segment
@@ -231,8 +221,7 @@ static
 std::ostream&
 operator << (std::ostream& out, Segment const& l)
 {
-  out << "Segment(" << l.start() << ", " << l.end() << ")";
-  return out;
+  return out << "Segment(" << l.start() << ", " << l.end() << ")";
 }
 
 template <typename Format>
@@ -240,17 +229,7 @@ static
 void
 object_composite()
 {
-  std::stringstream stream;
-  {
-    typename Format::SerializerOut output(stream);
-    Segment l(Point(42, 51), Point(69, 86));
-    l.serialize(output);
-  }
-  {
-    typename Format::SerializerIn input(stream);
-    Segment l(input);
-    BOOST_CHECK_EQUAL(l, Segment(Point(42, 51), Point(69, 86)));
-  }
+  round_trip<Format>(Segment{Point{42, 51}, Point{69, 86}});
 }
 
 template <template <typename, typename> class Container>
@@ -343,18 +322,7 @@ static
 void
 pair()
 {
-  std::stringstream stream;
-  {
-    typename Format::SerializerOut output(stream);
-    std::pair<int, std::string> p(4, "foo");
-    output.serialize("pair", p);
-  }
-  {
-    typename Format::SerializerIn input(stream);
-    std::pair<int, std::string> p;
-    input.serialize("pair", p);
-    BOOST_CHECK_EQUAL(p, (std::pair<int, std::string>(4, "foo")));
-  }
+  round_trip<Format>(std::pair<int, std::string>(4, "foo"));
 }
 
 template <typename Format>
@@ -525,18 +493,7 @@ static
 void
 unordered_set()
 {
-  auto set = std::unordered_set<int>{0, 1, 2};
-  std::stringstream stream;
-  {
-    typename Format::SerializerOut output(stream);
-    output.serialize("set", set);
-  }
-  {
-    std::unordered_set<int> res;
-    typename Format::SerializerIn input(stream);
-    input.serialize("set", res);
-    BOOST_CHECK_EQUAL(set, res);
-  }
+  round_trip<Format>(std::unordered_set<int>{0, 1, 2});
 }
 
 static
@@ -569,29 +526,18 @@ unordered_map_string_legacy()
                     input.deserialize<Map>("features"));
 }
 
-template <typename Format>
-static
-void
-buffer()
-{
-  auto buffer = elle::Buffer(256);
-  for (int i = 0; i < 256; ++i)
-    buffer[i] = i;
-  std::stringstream stream;
-  {
-    auto output = typename Format::SerializerOut{stream};
-    output.serialize("buffer", buffer);
-  }
-  {
-    auto res = elle::Buffer{};
-    auto input = typename Format::SerializerIn{stream};
-    input.serialize("buffer", res);
-    BOOST_CHECK_EQUAL(buffer, res);
-  }
-}
-
 namespace
 {
+  template <typename Format>
+  void
+  buffer()
+  {
+    auto buffer = elle::Buffer(256);
+    for (int i = 0; i < 256; ++i)
+      buffer[i] = i;
+    round_trip<Format>(buffer);
+  }
+
   template <typename Format>
   void
   check_date()
