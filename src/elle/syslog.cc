@@ -1,6 +1,9 @@
 #include <elle/syslog.hh>
 
 #if defined INFINIT_WINDOWS
+
+# include <iostream>
+
 void
 syslog(int lvl, char const*, char const* str)
 {
