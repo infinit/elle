@@ -11,8 +11,10 @@ namespace elle
       : public Logger
     {
     public:
+      using Loggers = std::vector<std::unique_ptr<Logger>>;
+      CompositeLogger(Loggers l);
       CompositeLogger();
-      ELLE_ATTRIBUTE_RX(std::vector<std::unique_ptr<Logger>>, loggers);
+      ELLE_ATTRIBUTE_RX(Loggers, loggers);
     protected:
       void
       _message(Message const& msg) override;

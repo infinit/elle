@@ -1,10 +1,15 @@
 #include <fstream>
 #include <mutex>
 
+#include <boost/algorithm/string/erase.hpp>
+#include <boost/algorithm/string/predicate.hpp>
 #include <boost/tokenizer.hpp>
 
 #include <elle/Exception.hh>
+#include <elle/algorithm.hh>
 #include <elle/assert.hh>
+#include <elle/log/CompositeLogger.hh>
+#include <elle/log/FileLogger.hh>
 #include <elle/log/Send.hh>
 #include <elle/log/SysLogger.hh>
 #include <elle/log/TextLogger.hh>
@@ -18,63 +23,113 @@ namespace elle
   {
     namespace
     {
-      std::unique_ptr<Logger>&
+      auto&
       _logger()
       {
         static std::unique_ptr<Logger> logger;
         return logger;
       }
 
-      std::mutex&
+      auto&
       log_mutex()
       {
-        static std::mutex mutex;
+        static std::recursive_mutex mutex;
         return mutex;
       }
 
-      // Call only when protected by the mutex.
-      void
-      _build_logger()
+      /// Build a logger from its URL-like specification.
+      ///
+      /// `file://cerr`: goes to std::cerr.
+      /// `file://NAME`: create file `NAME`.
+      /// `file://NAME+`: append to file `NAME`.
+      /// `files://BASE`: create `BASE.0`, `BASE.1`, etc.
+      /// `syslog://NAME`: to syslog, tagged with `NAME[PID]`.
+      ///
+      /// @pre Call only when protected by the mutex.
+      std::unique_ptr<Logger>
+      make_one_logger(std::string const& t,
+                      std::string const& log_level = "LOG")
       {
-        ELLE_ASSERT(!log_mutex().try_lock());
-        // ELLE_LOG_SYSLOG: the name of the logs.
-        auto const syslog = elle::os::getenv("ELLE_LOG_SYSLOG", "");
-        if (!syslog.empty())
-          _logger() = std::make_unique<SysLogger>(
-            print("%s[%s]", syslog, elle::system::getpid()));
-        else
+        if (t == "file://cerr")
+          return std::make_unique<TextLogger>(std::cerr, log_level);
+        else if (auto file = elle::tail(t, "file://"))
         {
-          auto const path = elle::os::getenv("ELLE_LOG_FILE", "");
-          if (path.empty())
-            _logger() = std::make_unique<TextLogger>(std::cerr);
-          else
-          {
-            bool const append = elle::os::getenv("ELLE_LOG_FILE_APPEND", false);
-            static std::ofstream out{
-              path,
-              (append ? std::fstream::app : std::fstream::trunc)
-              | std::fstream::out
-            };
-            _logger() = std::make_unique<TextLogger>(out);
-          }
+          auto const append = boost::ends_with(*file, "+");
+          if (append)
+            boost::erase_tail(*file, 1);
+          auto s = std::make_unique<std::ofstream>(
+            *file,
+            (append ? std::fstream::app : std::fstream::trunc)
+            | std::fstream::out);
+          static auto streams = std::vector<std::unique_ptr<std::ofstream>>{};
+          streams.emplace_back(std::move(s));
+          return std::make_unique<TextLogger>(*streams.back(), log_level);
         }
+        else if (auto s = elle::tail(t, "files://"))
+          return std::make_unique<FileLogger>(*s, log_level);
+        else if (auto s = elle::tail(t, "syslog://"))
+          return std::make_unique<SysLogger>(
+            print("%s[%s]", *s, elle::system::getpid()),
+            log_level);
+        else
+          err("invalid ELLE_LOG_TARGETS: {}", t);
+      }
+
+      /// Read `$ELLE_LOG_TARGETS` and setup _logger().
+      ///
+      /// @pre Call only when protected by the mutex.
+      std::unique_ptr<Logger>
+      make_logger()
+      {
+        using Tokenizer = boost::tokenizer<boost::char_separator<char>>;
+        auto const sep = boost::char_separator<char>{";, "};
+        auto const ts
+          = elle::print(os::getenv("ELLE_LOG_TARGETS", "file://cerr"),
+                        {
+                          {"pid", elle::system::getpid()},
+                        });
+        auto loggers = elle::make_vector(Tokenizer{ts, sep},
+                                         [](auto const& s)
+                                         {
+                                           return make_one_logger(s, "LOG");
+                                         });
+        // If there's just one log destination, let's avoid the
+        // composite logger.
+        if (loggers.size() == 1)
+          return std::move(loggers[0]);
+        else
+          return std::make_unique<CompositeLogger>(std::move(loggers));
       }
     }
 
-    // ELLE_LOG_TARGET="syslog://<NAME>, file://<NAME>".
+    /// The main logger.  Create it if it's null.
+    ///
+    /// In the case of the initialization, we are about to set-up the
+    /// main logger, which will shake quite a few pieces of elle, some
+    /// of them using, directly or now, the log facility.  As a
+    /// consequence `logger()` (this function) will be called several
+    /// times, recursively.  So first, we need a recursive_mutex, and
+    /// second, set up a temporary TextLogger (so that _logger() is
+    /// not null) which will log whatever happens during the call to
+    /// `make_logger()`.
+    ///
+    /// Alternatively, we could use a NullLogger.
     Logger&
     logger()
     {
-      std::unique_lock<std::mutex> ulock{log_mutex()};
+      std::unique_lock<std::recursive_mutex> ulock{log_mutex()};
       if (!_logger())
-        _build_logger();
+      {
+        _logger() = std::make_unique<TextLogger>(std::cerr);
+        _logger() = make_logger();
+      }
       return *_logger();
     }
 
     std::unique_ptr<Logger>
     logger(std::unique_ptr<Logger> logger)
     {
-      std::unique_lock<std::mutex> ulock{log_mutex()};
+      std::unique_lock<std::recursive_mutex> ulock{log_mutex()};
       if (_logger() && logger)
         logger->_indentation = _logger()->_indentation->clone();
       std::swap(_logger(), logger);

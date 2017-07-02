@@ -153,6 +153,12 @@ namespace elle
         int indentation;
         Time time;
         Tags tags;
+
+        friend
+        std::ostream& operator<< (std::ostream& o, Message m)
+        {
+          return o << "[" << m.component << "] " << m.message;
+        }
       };
 
       Message

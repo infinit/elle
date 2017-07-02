@@ -6,6 +6,11 @@ namespace elle
 {
   namespace log
   {
+    CompositeLogger::CompositeLogger(Loggers l)
+      : Logger("LOG")
+      , _loggers{std::move(l)}
+    {}
+
     CompositeLogger::CompositeLogger()
       : Logger("LOG")
     {}

@@ -418,7 +418,37 @@ namespace
       else
         BOOST_TEST(!exists(f));
     }
-   elle::log::logger(std::move(prev));
+    elle::log::logger(std::move(prev));
+  }
+
+  // Check that ELLE_LOG_TARGETS is honored.
+  void
+  targets()
+  {
+    auto d = elle::filesystem::TemporaryDirectory{};
+    elle::os::setenv
+      ("ELLE_LOG_TARGETS",
+       elle::print("file://{tmp}/log1, file://{tmp}/log2, files://{tmp}/logs",
+                   {{"tmp", d.path().string()}}));
+    // Save previous logger and force the creation of new loggers.
+    auto prev = elle::log::logger(nullptr);
+    elle::log::logger();
+    {
+      ELLE_LOG_COMPONENT("component");
+      ELLE_LOG("ping");
+    }
+    // Restore the previous logger.
+    elle::log::logger(std::move(prev));
+    elle::os::unsetenv("ELLE_LOG_TARGETS");
+    // Check the results.
+    for (auto p: bfs::directory_iterator(d.path()))
+      BOOST_TEST_MESSAGE("d contains" << p);
+    for (auto fn: {"log1", "log2", "logs.0"})
+    {
+      auto const f = d.path() / fn;
+      BOOST_TEST_MESSAGE("file: " << f);
+      BOOST_CHECK(exists(f));
+    }
   }
 }
 
@@ -642,6 +672,7 @@ ELLE_TEST_SUITE()
     logger->add(BOOST_TEST_CASE(environment_format_test));
     logger->add(BOOST_TEST_CASE(composite));
     logger->add(BOOST_TEST_CASE(file));
+    logger->add(BOOST_TEST_CASE(targets));
   }
 
 #ifndef INFINIT_ANDROID

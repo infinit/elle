@@ -94,6 +94,7 @@ namespace elle
     {
       if (_warn_err_only && msg.type < Type::warning)
         return;
+      // Split the message into lines.
       auto const lines = [&msg]
       {
         auto res = std::vector<std::string>{};

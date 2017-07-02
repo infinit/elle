@@ -20,7 +20,7 @@ namespace elle
       /// @param base  the basename for the logs: base.0, base.1, etc.
       /// @param log_level  the log levels
       FileLogger(std::string const& base,
-                 std::string const& log_level = "");
+                 std::string const& log_level = "LOG");
 
     protected:
       void
