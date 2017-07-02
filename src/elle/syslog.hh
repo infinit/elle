@@ -11,6 +11,11 @@ enum
   LOG_ERR = 3,
 };
 
+enum
+{
+  LOG_DAEMON = 3,
+};
+
 void
 syslog(int lvl, char const*, char const* str);
 
