@@ -399,6 +399,16 @@ namespace elle
       template <typename Serializer = void, typename T>
       void
       serialize(std::string const& name, boost::optional<T>& v);
+
+      /// Serialize or deserialize an optional Duration.
+      ///
+      /// @tparam Serializer The type of Serializer.
+      /// @param name The name of the entry.
+      /// @param v The variable to serialize or to deserialize to.
+      template <typename Serializer = void>
+      void
+      serialize(std::string const& name, DurationOpt& v);
+
       /// Serialize or deserialize an arbitrary std::unique_ptr.
       ///
       /// @tparam Serializer The type of Serializer.
@@ -713,21 +723,10 @@ namespace elle
       void
       _serialize(boost::posix_time::ptime& v) = 0;
 
-      /// Serialize or deserialize an elle::Time.
-      ///
-      /// FIXME: extend to all the std::chrono::time_points.
-      virtual
-      void
-      _serialize(Time& time) = 0;
-
       /// Serialize or deserialize an elle::Duration.
       template <typename Repr, typename Ratio>
       void
       _serialize(std::chrono::duration<Repr, Ratio>& duration);
-
-      /// Serialize an optional duration.
-      void
-      _serialize(DurationOpt& d);
 
       /// Serialize or deserialize a Duration type from its ticks, numerator
       /// and denominator.

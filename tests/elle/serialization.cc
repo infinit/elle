@@ -546,7 +546,9 @@ namespace
   {
     round_trip<Format>(boost::posix_time::microsec_clock().local_time());
     round_trip<Format>(elle::Duration{123min});
-    // round_trip<Format>(elle::Clock::now());
+    round_trip<Format>(elle::Clock::now()); // elle.Time
+    round_trip<Format>(elle::DurationOpt{2h});
+    round_trip<Format>(elle::DurationOpt{});
   }
 
   template <typename Format>

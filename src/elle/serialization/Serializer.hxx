@@ -14,6 +14,7 @@
 # include <elle/serialization/SerializerIn.hh>
 # include <elle/serialization/SerializerOut.hh>
 # include <elle/utils.hh>
+# include <elle/Duration.hh>
 
 namespace elle
 {
@@ -597,6 +598,56 @@ namespace elle
       };
     };
 
+    template <>
+    struct Serialize<DurationOpt>
+    {
+      static
+      void
+      serialize(DurationOpt const& o,
+                elle::serialization::SerializerOut& s)
+      {
+        s._serialize_option(
+          bool(o),
+          [&]
+          {
+            Serializer::serialize_switch(s, elle::unconst(*o));
+          });
+      }
+
+      static
+      DurationOpt
+      deserialize(elle::serialization::SerializerIn& s)
+      {
+        DurationOpt res;
+        s._serialize_option(
+          false,
+          [&]
+          {
+            res.emplace(Serializer::Details::deserialize<Duration>(
+                          static_cast<SerializerIn&>(s), 42));
+          });
+        return res;
+      }
+    };
+
+    template <>
+    struct Serialize<Time>
+    {
+      using Type = boost::posix_time::ptime;
+
+      static Type
+      convert(Time& t)
+      {
+        return to_boost(t);
+      }
+
+      static Time
+      convert(Type& repr)
+      {
+        return from_boost<Time::clock, Time::duration>(repr);
+      }
+    };
+
     template <typename T>
     struct Serialize<boost::optional<T>>
     {
@@ -786,6 +837,15 @@ namespace elle
     template <typename S, typename T>
     void
     Serializer::serialize(std::string const& name, boost::optional<T>& opt)
+    {
+      ELLE_LOG_COMPONENT("elle.serialization.Serializer");
+      ELLE_TRACE_SCOPE("%s: serialize option \"%s\"", *this, name);
+      Details::serialize_named_option<S>(*this, name, opt);
+    }
+
+    template <typename S>
+    void
+    Serializer::serialize(std::string const& name, DurationOpt& opt)
     {
       ELLE_LOG_COMPONENT("elle.serialization.Serializer");
       ELLE_TRACE_SCOPE("%s: serialize option \"%s\"", *this, name);
@@ -1127,24 +1187,6 @@ namespace elle
         count = double(count) * num / Ratio::num * Ratio::den / den;
         duration = std::chrono::duration<Repr, Ratio>(count);
         ELLE_DUMP("duration in: {} ({}/{}) => {}", count, num, den, duration);
-      }
-    }
-
-    inline
-    void
-    Serializer::_serialize(DurationOpt& d)
-    {
-      // Behaves just like optional<Duration>.
-      if (out())
-      {
-        auto s = d ? boost::optional<Duration>{*d} : boost::optional<Duration>{};
-        this->serialize("DurationOpt", s);
-      }
-      else
-      {
-        auto s = boost::optional<Duration>{};
-        this->serialize("DurationOpt", s);
-        d = s ? DurationOpt{std::move(*s)} : DurationOpt{};
       }
     }
 

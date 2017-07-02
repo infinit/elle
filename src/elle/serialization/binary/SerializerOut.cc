@@ -232,13 +232,6 @@ namespace elle
       }
 
       void
-      SerializerOut::_serialize(Time& time)
-      {
-        auto s = to_boost(time);
-        this->_serialize(s);
-      }
-
-      void
       SerializerOut::_serialize_time_duration(std::int64_t& ticks,
                                               std::int64_t& num,
                                               std::int64_t& denom)

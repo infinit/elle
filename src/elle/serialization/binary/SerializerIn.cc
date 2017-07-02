@@ -203,14 +203,6 @@ namespace elle
       }
 
       void
-      SerializerIn::_serialize(Time& time)
-      {
-        boost::posix_time::ptime t;
-        this->_serialize(t);
-        time = from_boost<Time::clock, Time::duration>(t);
-      }
-
-      void
       SerializerIn::_serialize_time_duration(std::int64_t& ticks,
                                              std::int64_t& num,
                                              std::int64_t& denom)

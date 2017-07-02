@@ -5,6 +5,7 @@
 #include <elle/compiler.hh>
 #include <elle/date/date.h>
 #include <elle/printf.hh> // Actually needed by our <chrono>.
+// #include <elle/serialization/Serializer.hh>
 #include <elle/time.hh>
 
 namespace elle
@@ -77,6 +78,50 @@ namespace elle
   ELLE_API
   std::ostream&
   operator << (std::ostream& s, const DurationOpt& opt);
+
+#if 0
+  namespace serialization
+  {
+    template <typename T>
+    struct Serialize;
+
+    template <>
+    struct Serialize<DurationOpt>
+    {
+      using Type = boost::optional<Duration>;
+
+      static Type
+      convert(DurationOpt& d)
+      {
+        return d ? Type{*d} : Type{};
+      }
+
+      static DurationOpt
+      convert(Type& repr)
+      {
+        return repr ? DurationOpt{std::move(*repr)} : DurationOpt{};
+      }
+    };
+
+    template <>
+    struct Serialize<Time>
+    {
+      using Type = boost::posix_time::ptime;
+
+      static Type
+      convert(Time& t)
+      {
+        return to_boost(t);
+      }
+
+      static Time
+      convert(Type& repr)
+      {
+        return from_boost<Time::clock, Time::duration>(repr);
+      }
+    };
+  }
+#endif
 }
 
 namespace std
