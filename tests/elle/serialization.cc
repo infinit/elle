@@ -561,7 +561,7 @@ namespace
   chrono()
   {
     round_trip<Format>(std::chrono::system_clock::duration(601));
-    round_trip<Format>(std::chrono::high_resolution_clock::duration(602));
+    round_trip<Format>(std::chrono::steady_clock::duration(602));
     round_trip<Format>(std::chrono::nanoseconds(603));
     round_trip<Format>(std::chrono::microseconds(604));
     round_trip<Format>(std::chrono::milliseconds(605));

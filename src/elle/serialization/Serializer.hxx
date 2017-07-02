@@ -614,8 +614,8 @@ namespace elle
       }
 
       static
-        boost::optional<T>
-        deserialize(elle::serialization::SerializerIn& s)
+      boost::optional<T>
+      deserialize(elle::serialization::SerializerIn& s)
       {
         boost::optional<T> res;
         s._serialize_option(
