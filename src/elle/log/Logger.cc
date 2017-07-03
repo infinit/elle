@@ -119,7 +119,7 @@ namespace elle
     {
       this->_setup_indentation();
       // FIXME: resets indentation
-      elle::Plugin<Indenter>::hook_added().connect(
+      this->_connection = elle::Plugin<Indenter>::hook_added().connect(
         [this] (Indenter&) { this->_setup_indentation(); }
       );
       this->log_level(os::getenv(envvar, log_level));

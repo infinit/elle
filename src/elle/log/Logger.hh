@@ -7,6 +7,7 @@
 #include <vector>
 
 #include <boost/noncopyable.hpp>
+#include <boost/signals2.hpp> // scoped_connection, for plugins.
 
 #include <elle/attribute.hh>
 #include <elle/log/fwd.hh>
@@ -270,6 +271,8 @@ namespace elle
       ELLE_ATTRIBUTE_R(unsigned int, component_max_size);
       /// Nested components.
       ELLE_ATTRIBUTE_R(component_stack_t, component_stack);
+      /// To clean the plugins.
+      ELLE_ATTRIBUTE(boost::signals2::scoped_connection, connection);
     };
 
     ELLE_API
