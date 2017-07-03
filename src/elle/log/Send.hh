@@ -20,6 +20,10 @@ namespace elle
     std::unique_ptr<Logger>
     logger(std::unique_ptr<Logger> l);
 
+    /// Add a new logger.
+    void
+    logger_add(std::unique_ptr<Logger> l);
+
     /// Here the simplest type possible is used (.rodata-located) so
     /// as to make sure that its initialization will always take place
     /// before the other global variables whose construction may require

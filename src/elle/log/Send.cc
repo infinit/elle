@@ -136,6 +136,24 @@ namespace elle
       return logger;
     }
 
+    /// Add a new logger.
+    void
+    logger_add(std::unique_ptr<Logger> l)
+    {
+      std::unique_lock<std::recursive_mutex> ulock{log_mutex()};
+      auto log = dynamic_cast<CompositeLogger*>(_logger().get());
+      if (!log)
+      {
+        // Create before, so that current logs apply.
+        auto clog = std::make_unique<CompositeLogger>();
+        auto old = std::move(_logger());
+        clog->loggers().push_back(std::move(old));
+        log = clog.get();
+        _logger() = std::move(clog);
+      }
+      log->loggers().push_back(std::move(l));
+    }
+
     namespace detail
     {
       bool

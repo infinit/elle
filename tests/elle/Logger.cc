@@ -5,7 +5,6 @@
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/filesystem.hpp>
 
-//#define ELLE_TEST_NO_MEMFRY
 #include <elle/test.hh>
 
 #include <elle/filesystem/TemporaryDirectory.hh>
@@ -425,29 +424,47 @@ namespace
   void
   targets()
   {
-    auto d = elle::filesystem::TemporaryDirectory{};
-    elle::os::setenv
-      ("ELLE_LOG_TARGETS",
-       elle::print("file://{tmp}/log1, file://{tmp}/log2, files://{tmp}/logs",
-                   {{"tmp", d.path().string()}}));
+    auto const d = elle::filesystem::TemporaryDirectory{};
+    auto subst = [&](auto&&... as)
+      {
+        return elle::print(std::forward<decltype(as)>(as)...,
+        {
+          {"tmp", d.path().string()},
+        });
+      };
+
+    // d's name on Windows will contain some `\`.  We need to escape
+    // them, as ELLE_LOG_TARGETS goes into elle::print.
+    auto escape = [](std::string const& s)
+      {
+        return boost::algorithm::replace_all_copy(s, "\\", "\\\\");
+      };
+
+    elle::os::setenv("ELLE_LOG_TARGETS",
+                     escape(subst("file://{tmp}/log1, "
+                                  "file://{tmp}/log2, "
+                                  "files://{tmp}/logs")));
     // Save previous logger and force the creation of new loggers.
     auto prev = elle::log::logger(nullptr);
     elle::log::logger();
+    auto&& l3 = std::ofstream{subst("{tmp}/log3")};
+    BOOST_TEST(bool(l3), "l3 is not ok: " << strerror(errno));
+    elle::log::logger_add(std::make_unique<elle::log::TextLogger>(l3, "LOG"));
     {
       ELLE_LOG_COMPONENT("component");
       ELLE_LOG("ping");
     }
+    l3.close();
     // Restore the previous logger.
     elle::log::logger(std::move(prev));
     elle::os::unsetenv("ELLE_LOG_TARGETS");
     // Check the results.
     for (auto p: bfs::directory_iterator(d.path()))
       BOOST_TEST_MESSAGE("d contains" << p);
-    for (auto fn: {"log1", "log2", "logs.0"})
+    for (auto fn: {"log1", "log2", "log3", "logs.0"})
     {
       auto const f = d.path() / fn;
-      BOOST_TEST_MESSAGE("file: " << f);
-      BOOST_CHECK(exists(f));
+      BOOST_TEST(exists(f), "missing file: " << f);
     }
   }
 }
