@@ -1,8 +1,10 @@
-#include <elle/Plugin.hh>
 #include <elle/log/Logger.hh>
+
+#include <utility>
+
+#include <elle/Plugin.hh>
 #include <elle/os/environ.hh>
 #include <elle/reactor/storage.hh>
-#include <utility>
 
 namespace elle
 {
@@ -46,7 +48,7 @@ namespace elle
       std::unique_ptr<elle::log::Indentation>&
       _indentation()
       {
-        std::unique_ptr<elle::log::Indentation>& idt = _indentations.get();
+        auto& idt = _indentations.get();
         if (!idt)
           idt = this->_factory();
         return idt;

@@ -10,10 +10,6 @@
 #include <elle/reactor/logger.hh>
 #include <elle/reactor/Thread.hh>
 
-elle::reactor::Scheduler* sched = nullptr;
-elle::log::TextLogger* logger;
-std::stringstream ss, res;
-
 elle::PluginLoad load_reactor_logger_plugins(
   elle::reactor::plugins::logger_indentation,
   elle::reactor::plugins::logger_tags
@@ -41,26 +37,27 @@ void
 scheduler_log_test()
 {
   elle::os::setenv("ELLE_LOG_LEVEL", "NONE,Test:DUMP,in:DUMP,out:DUMP");
-  logger = new elle::log::TextLogger(ss);
-  elle::log::logger(std::unique_ptr<elle::log::Logger>(logger));
+  std::stringstream ss;
+  elle::log::logger(std::make_unique<elle::log::TextLogger>(ss));
 
   elle::reactor::Scheduler sched;
 
   elle::reactor::Thread t1(sched, "Thread1",
-                     std::bind(gen_message, std::ref("Thread 1")));
+                           [] { gen_message("Thread 1"); });
   elle::reactor::Thread t2(sched, "Thread2",
-                     std::bind(gen_message, std::ref("Thread 2")));
+                           [] { gen_message("Thread 2"); });
 
   sched.run();
 
-  res << "[1m[Test] [Thread1] Test message from Thread 1\n[0m"
-      << "[1m[Test] [Thread2] Test message from Thread 2\n[0m"
-      << "[1m[Test] [Thread1]   Another message from Thread 1\n[0m"
-      << "[1m[Test] [Thread2]   Another message from Thread 2\n[0m"
-      << "[33;01;33m[Test] [Thread1]   A third message from Thread 1\n[0m"
-      << "[33;01;33m[Test] [Thread2]   A third message from Thread 2\n[0m";
+  auto const res =
+    "[1m[Test] [Thread1] Test message from Thread 1\n[0m"
+    "[1m[Test] [Thread2] Test message from Thread 2\n[0m"
+    "[1m[Test] [Thread1]   Another message from Thread 1\n[0m"
+    "[1m[Test] [Thread2]   Another message from Thread 2\n[0m"
+    "[33;01;33m[Test] [Thread1]   A third message from Thread 1\n[0m"
+    "[33;01;33m[Test] [Thread2]   A third message from Thread 2\n[0m";
 
-  BOOST_CHECK_EQUAL(ss.str(), res.str());
+  BOOST_TEST(ss.str() == res);
 }
 
 static
@@ -68,9 +65,7 @@ void
 parallel_write()
 {
   std::stringstream output;
-  auto logger =
-    std::unique_ptr<elle::log::Logger>(
-      std::make_unique<elle::log::TextLogger>(output));
+  auto logger = std::make_unique<elle::log::TextLogger>(output);
 
   logger->component_is_active("in");
   logger->component_is_active("out");
