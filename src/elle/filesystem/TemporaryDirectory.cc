@@ -1,9 +1,13 @@
-#include <elle/assert.hh>
 #include <elle/filesystem/TemporaryDirectory.hh>
+
+#include <elle/assert.hh>
+#include <elle/log.hh>
 #include <elle/print.hh>
 #include <elle/system/self-path.hh>
 
 using namespace std::literals;
+
+ELLE_LOG_COMPONENT("elle.TemporaryDirectory");
 
 namespace elle
 {
@@ -39,6 +43,7 @@ namespace elle
 
     TemporaryDirectory::~TemporaryDirectory()
     {
+      ELLE_DUMP("{}: cleaning", this->_root);
       bfs::remove_all(this->_root);
     }
   }
