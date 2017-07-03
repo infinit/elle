@@ -1,13 +1,12 @@
-#ifndef ELLE_PLUGIN_HH
-# define ELLE_PLUGIN_HH
+#pragma once
 
-# include <memory>
-# include <typeinfo>
-# include <unordered_map>
+#include <memory>
+#include <typeinfo>
+#include <unordered_map>
 
-# include <boost/signals2.hpp>
+#include <boost/signals2.hpp>
 
-# include <elle/compiler.hh>
+#include <elle/compiler.hh>
 
 namespace elle
 {
@@ -22,17 +21,18 @@ namespace elle
 
   /// Create a plugin.
   ///
-  /// \code{.cc}
+  /// @code{.cc}
   ///
   /// XXX[doc].
   ///
-  /// \endcode
+  /// @endcode
   template <typename T>
   class ELLE_API Plugin
     : public BasePlugin
   {
   public:
-    using plugins_t
+    using Self = Plugin;
+    using Plugins
       = std::unordered_map<std::type_info const*, std::unique_ptr<T>>;
 
     template <typename I>
@@ -54,7 +54,7 @@ namespace elle
     /// Get the global plugin map.
     ///
     static
-    plugins_t&
+    Plugins&
     plugins();
     /// XXX[doc]
     static
@@ -70,6 +70,4 @@ namespace elle
   };
 }
 
-# include <elle/Plugin.hxx>
-
-#endif
+#include <elle/Plugin.hxx>
