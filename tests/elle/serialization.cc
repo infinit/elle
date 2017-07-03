@@ -20,8 +20,8 @@ ELLE_LOG_COMPONENT("elle.serialization.test");
 namespace
 {
   template <typename Format, typename T>
-  void
-  round_trip(T const& value)
+  T
+  do_round_trip(T const& value)
   {
     ELLE_LOG("round-trip: {} ({})", value, elle::type_info(value));
     std::stringstream stream;
@@ -33,8 +33,15 @@ namespace
       T res;
       typename Format::SerializerIn input(stream);
       input.serialize("value", res);
-      BOOST_TEST(value == res);
+      return res;
     }
+  }
+
+  template <typename Format, typename T>
+  void
+  round_trip(T const& value)
+  {
+    BOOST_TEST(value == do_round_trip<Format>(value));
   }
 }
 
@@ -546,7 +553,15 @@ namespace
   {
     round_trip<Format>(boost::posix_time::microsec_clock().local_time());
     round_trip<Format>(elle::Duration{123min});
-    round_trip<Format>(elle::Clock::now()); // elle.Time
+    // elle::Time.
+    {
+      // The precision of this clock is 1ns on GNU/Linux, but our
+      // serialization's acuracy is 1us.
+      auto const now = elle::Clock::now();
+      auto const val = do_round_trip<Format>(now);
+      BOOST_TEST(val - 1us <= now);
+      BOOST_TEST(now <= val  + 1us);
+    }
     round_trip<Format>(elle::DurationOpt{2h});
     round_trip<Format>(elle::DurationOpt{});
   }
