@@ -9,6 +9,7 @@
 #include <boost/range/size.hpp>
 
 #include <elle/meta.hh>
+#include <elle/range.hh>
 
 namespace elle
 {
@@ -73,6 +74,23 @@ namespace elle
     return res;
   }
 
+  namespace detail
+  {
+    template <typename T>
+    struct
+    make_vector_move
+    {
+      static bool constexpr value = true;
+    };
+
+    template <typename T>
+    struct
+    make_vector_move<::elle::detail::range<T>>
+    {
+      static bool constexpr value = false;
+    };
+  }
+
   /// The content of @a cont as a vector.
   ///
   /// @param c   A container.
@@ -86,7 +104,8 @@ namespace elle
     using std::end;
     using Res = std::vector<typename std::remove_reference_t<Cont>::value_type>;
     return elle::meta::static_if<
-      std::is_same<std::remove_reference_t<Cont>, Cont>::value>(
+      std::is_same<std::remove_reference_t<Cont>, Cont>::value &&
+      detail::make_vector_move<std::remove_reference_t<Cont>>::value >(
         [] (auto&& c) -> Res
         {
           return {
@@ -94,7 +113,7 @@ namespace elle
             std::make_move_iterator(c.end()),
           };
         },
-        [] (auto& c) -> Res
+        [] (auto const& c) -> Res
         {
           return {begin(c), end(c)};
         })(std::forward<Cont>(c));
