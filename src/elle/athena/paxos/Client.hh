@@ -98,9 +98,8 @@ namespace elle
         template <typename Peers>
         Client(ClientId id, Peers&& peers);
         /// Change the peers.
-        template <typename Peers>
         void
-        peers(Peers&& peers);
+        peers(Peers peers);
         ELLE_ATTRIBUTE_R(ClientId, id);
         // FIXME: the W is there only for unit tests
         ELLE_ATTRIBUTE_RX(Peers, peers);
