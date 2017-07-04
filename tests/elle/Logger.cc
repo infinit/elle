@@ -441,9 +441,9 @@ namespace
       };
 
     elle::os::setenv("ELLE_LOG_TARGETS",
-                     escape(subst("file://{tmp}/log1, "
-                                  "file://{tmp}/log2, "
-                                  "files://{tmp}/logs")));
+                     escape(subst("file://{tmp}/log1:LOG; "
+                                  "file://{tmp}/log2:LOG; "
+                                  "files://{tmp}/logs:LOG")));
     // Save previous logger and force the creation of new loggers.
     auto prev = elle::log::logger(nullptr);
     elle::log::logger();

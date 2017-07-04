@@ -23,6 +23,7 @@ namespace elle
   {
     namespace
     {
+      /// The main logger.
       auto&
       _logger()
       {
@@ -30,6 +31,7 @@ namespace elle
         return logger;
       }
 
+      /// The mutex protecting the main logger.
       auto&
       log_mutex()
       {
@@ -37,20 +39,45 @@ namespace elle
         return mutex;
       }
 
+      /// Split a string around its *second* colon.
+      std::tuple<std::string, std::string>
+      split(std::string const& s)
+      {
+        auto const sep1 = s.find(':');
+        if (sep1 == s.npos)
+          return std::make_tuple(s, "LOG");
+        else
+        {
+          auto const sep2 = s.substr(sep1 + 1).find(':');
+          if (sep2 == s.npos)
+            return std::make_tuple(s, "LOG");
+          else
+          {
+            auto const sep = sep1 + sep2 + 1;
+            return std::make_tuple(s.substr(0, sep), s.substr(sep + 1));
+          }
+        }
+      }
+
+
       /// Build a logger from its URL-like specification.
       ///
+      /// <DEST>:
       /// `file://cerr`: goes to std::cerr.
       /// `file://NAME`: create file `NAME`.
       /// `file://NAME+`: append to file `NAME`.
       /// `files://BASE`: create `BASE.0`, `BASE.1`, etc.
       /// `syslog://NAME`: to syslog, tagged with `NAME[PID]`.
       std::unique_ptr<Logger>
-      make_one_logger(std::string const& t,
-                      std::string const& log_level = "LOG")
+      make_one_logger(std::string const& t)
       {
-        if (t == "file://cerr")
-          return std::make_unique<TextLogger>(std::cerr, log_level);
-        else if (auto file = elle::tail(t, "file://"))
+        // FIXME: C++17.
+        auto const spec = split(t);
+        auto const& dest = std::get<0>(spec);
+        auto const& level = std::get<1>(spec);
+        if (dest == "file://cerr")
+          return std::make_unique<TextLogger>(std::cerr, level);
+        else if (auto file = elle::tail(dest, "file://"))
         {
           auto const append = boost::ends_with(*file, "+");
           if (append)
@@ -61,20 +88,20 @@ namespace elle
             | std::fstream::out);
           static auto streams = std::vector<std::unique_ptr<std::ofstream>>{};
           streams.emplace_back(std::move(s));
-          return std::make_unique<TextLogger>(*streams.back(), log_level);
+          return std::make_unique<TextLogger>(*streams.back(), level);
         }
-        else if (auto s = elle::tail(t, "files://"))
-          return std::make_unique<FileLogger>(*s, log_level);
-        else if (auto s = elle::tail(t, "syslog://"))
+        else if (auto s = elle::tail(dest, "files://"))
+          return std::make_unique<FileLogger>(*s, level);
+        else if (auto s = elle::tail(dest, "syslog://"))
           return std::make_unique<SysLogger>(
             print("%s[%s]", *s, elle::system::getpid()),
-            log_level);
+            level);
         else
-          err("invalid ELLE_LOG_TARGETS: {}", t);
+          err("invalid ELLE_LOG_TARGETS: %s", t);
       }
     }
 
-    /// The main logger.  Create it if it's null.
+    /// The main logger.  Create it from $ELLE_LOG_TARGETS if it's null.
     ///
     /// In the case of the initialization, we are about to set-up the
     /// main logger, which will shake quite a few pieces of elle, some
@@ -98,6 +125,9 @@ namespace elle
       return *_logger();
     }
 
+    /// Replace the main logger with another.
+    ///
+    /// \return the previous logger.
     std::unique_ptr<Logger>
     logger(std::unique_ptr<Logger> logger)
     {
@@ -126,24 +156,18 @@ namespace elle
       log->loggers().push_back(std::move(l));
     }
 
-    /// Read `$ELLE_LOG_TARGETS` and setup _logger().
-    ///
-    /// @pre Call only when protected by the mutex.
     std::unique_ptr<Logger>
     make_logger(std::string const& targets)
     {
       using Tokenizer = boost::tokenizer<boost::char_separator<char>>;
-      auto const sep = boost::char_separator<char>{";, "};
+      auto const sep = boost::char_separator<char>{"; "};
       auto const ts
         = elle::print(targets,
                       {
                         {"pid", elle::system::getpid()},
                       });
-      auto loggers = elle::make_vector(Tokenizer{ts, sep},
-                                       [](auto const& s)
-                                       {
-                                         return make_one_logger(s, "LOG");
-                                       });
+      auto loggers
+        = elle::make_vector(Tokenizer{ts, sep}, make_one_logger);
       // If there's just one log destination, let's avoid the
       // composite logger.
       if (loggers.size() == 1)

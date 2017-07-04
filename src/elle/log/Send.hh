@@ -21,6 +21,16 @@ namespace elle
     logger(std::unique_ptr<Logger> l);
 
     /// Create a new logger from a spec string.
+    ///
+    /// The spec string is a semicolon separated list of single
+    /// logger specifications, whose syntax is `<DEST>:<LEVEL>`.
+    ///
+    /// <DEST> is:
+    /// `file://cerr`: goes to std::cerr.
+    /// `file://NAME`: create file `NAME`.
+    /// `file://NAME+`: append to file `NAME`.
+    /// `files://BASE`: create `BASE.0`, `BASE.1`, etc.
+    /// `syslog://NAME`: to syslog, tagged with `NAME[PID]`.
     std::unique_ptr<Logger>
     make_logger(std::string const& targets);
 
