@@ -29,14 +29,23 @@ namespace elle
 
     class Expression
       : public elle::Printable
-    {};
+    {
+    public:
+      /// Easy down cast.  Unsafe.
+      template <typename T>
+      T const& as() const
+      {
+        return static_cast<T const&>(*this);
+      }
+    };
 
     class Composite
       : public Expression
     {
     public:
-      Composite(std::vector<std::shared_ptr<Expression>> expressions = {})
-        : expressions(std::move(expressions))
+      using Exps = std::vector<std::shared_ptr<Expression>>;
+      Composite(Exps exps = {})
+        : expressions(std::move(exps))
       {}
 
       void
@@ -55,7 +64,7 @@ namespace elle
         s << ')';
       }
 
-      std::vector<std::shared_ptr<Expression>> expressions;
+      Exps expressions;
     };
 
     class Branch
@@ -244,29 +253,37 @@ namespace elle
       using qi::labels::_2;
       using qi::labels::_3;
       using Iterator = decltype(input.begin());
+
+      using Res = std::shared_ptr<Expression>;
+      using Exp = qi::rule<Iterator, Res()>;
+      using Chr = qi::rule<Iterator, char()>;
+      using Str = qi::rule<Iterator, std::string()>;
+
       qi::rule<Iterator, std::shared_ptr<Composite>()> phrase;
-      qi::rule<Iterator, char()> escape =
-        (qi::char_('\\') >> qi::char_("\\{}%"))[qi::_val = qi::_2];
-      qi::rule<Iterator, std::string()> literal =
-        *(escape | (qi::char_  - '{' - '}' - '\\' - '%') );
-      qi::rule<Iterator, std::shared_ptr<Expression>()> plain =
-        literal[qi::_val = phoenix::bind(&Literal::make, qi::_1)];
-      qi::rule<Iterator, std::string()> identifier =
-        ascii::alpha >> *ascii::alnum;
-      qi::rule<Iterator, std::shared_ptr<Expression>()> var =
-        identifier[qi::_val = phoenix::bind(&Name::make, _1)] |
-        qi::int_[qi::_val = phoenix::bind(&Index::make, _1)] |
-        qi::eps[qi::_val = phoenix::bind(&Next::make)];
-      qi::rule<Iterator, std::shared_ptr<Expression>()> fmt =
-        (var >> -("?" >> phrase))
+      Chr escape
+        = (qi::char_('\\') >> qi::char_("\\{}%"))[qi::_val = _2];
+      Str literal
+        = *(escape | (qi::char_  - '{' - '}' - '\\' - '%') );
+      Exp plain
+        = literal[qi::_val = phoenix::bind(&Literal::make, _1)];
+      Str identifier
+        = ascii::alpha >> *ascii::alnum;
+      Exp var
+        = identifier [qi::_val = phoenix::bind(&Name::make, _1)]
+        | qi::int_   [qi::_val = phoenix::bind(&Index::make, _1)]
+        | qi::eps    [qi::_val = phoenix::bind(&Next::make)];
+      Exp fmt
+        = (var >> -("?" >> phrase))
         [qi::_val = phoenix::bind(&make_fmt, _1, _2)];
-      qi::rule<Iterator, std::shared_ptr<Expression>()> legacy =
-        ("%" >> qi::char_("cdefgioprsuxCEGSX%")[
-          qi::_val = phoenix::bind(&Legacy::make, _1)]);
-      phrase = plain[phoenix::bind(&push, qi::_val, _1)] >>
-        *(("{" >> fmt[phoenix::bind(&push, qi::_val, _1)] >> "}" |
-           legacy[phoenix::bind(&push, qi::_val, _1)]) >>
-          plain[phoenix::bind(&push, qi::_val, _1)]);
+      Exp legacy
+        = ("%"
+           >> qi::char_("cdefgioprsuxCEGSX%"))
+        [qi::_val = phoenix::bind(&Legacy::make, _1)];
+      phrase
+        = plain[phoenix::bind(&push, qi::_val, _1)]
+        >> *(("{" >> fmt[phoenix::bind(&push, qi::_val, _1)] >> "}"
+              | legacy[phoenix::bind(&push, qi::_val, _1)])
+             >> plain[phoenix::bind(&push, qi::_val, _1)]);
       std::shared_ptr<Expression> res;
       auto first = input.begin();
       auto last = input.end();
@@ -291,21 +308,22 @@ namespace elle
           bool& full_positional)
     {
       auto const nth = [&] (int n) -> Argument const& {
-        if (n >= signed(args.size()))
+        if (n < signed(args.size()))
+          return args[n];
+        else
           elle::err(
             "too few arguments for format: %s, expected at least %s",
             args.size(), n + 1);
-        return args[n];
       };
       auto* id = &typeid(ast);
       if (id == &typeid(Composite))
-        for (auto const& e:static_cast<Composite const&>(ast).expressions)
+        for (auto const& e: ast.as<Composite>().expressions)
           print(s, *e, args, count, p, named, full_positional);
       else if (id == &typeid(Literal))
       {
         if (p)
-          s.write(static_cast<Literal const&>(ast).text.c_str(),
-                  static_cast<Literal const&>(ast).text.size());
+          s.write(ast.as<Literal>().text.c_str(),
+                  ast.as<Literal>().text.size());
       }
       else if (id == &typeid(Next))
       {
@@ -315,12 +333,13 @@ namespace elle
       }
       else if (id == &typeid(Legacy))
       {
+        auto& leg = ast.as<Legacy>();
         if (p)
         {
-          auto&& state = std::ios(nullptr);
-          state.copyfmt(s);
-          auto old_repr = repr(s);
-          switch (auto c = static_cast<Legacy const&>(ast).fmt)
+          // FIXME: we need a saver that also deals with `repr`.
+          auto const saver = boost::io::ios_all_saver(s);
+          auto const old_repr = repr(s);
+          switch (auto c = leg.fmt)
           {
             case 'd':
             case 'i':
@@ -347,7 +366,6 @@ namespace elle
               break;
             case '%':
               s << '%';
-              s.copyfmt(state);
               repr(s, old_repr);
               return;
             default:
@@ -356,7 +374,6 @@ namespace elle
               break;
           }
           nth(count)(s);
-          s.copyfmt(state);
           repr(s, old_repr);
         }
         ++count;
@@ -365,11 +382,11 @@ namespace elle
       {
         full_positional = false;
         if (p)
-          nth(static_cast<Index const&>(ast).n)(s);
+          nth(ast.as<Index>().n)(s);
       }
       else if (id == &typeid(Name))
       {
-        auto const& name = static_cast<Name const&>(ast).n;
+        auto const& name = ast.as<Name>().n;
         auto const it = named.find(name);
         if (it == named.end())
           elle::err("missing named format argument: %s", name);
@@ -378,7 +395,7 @@ namespace elle
       }
       else if (id == &typeid(Branch))
       {
-        auto const& branch = static_cast<Branch const&>(ast);
+        auto const& branch = ast.as<Branch>();
         auto const& cond = *branch.cond;
         auto const* cid = &typeid(cond);
         if (cid == &typeid(Next))
@@ -387,10 +404,10 @@ namespace elle
           ++count;
         }
         else if (cid == &typeid(Index))
-          p = p && bool(nth(static_cast<Index const&>(cond).n));
+          p = p && bool(nth(cond.as<Index>().n));
         else if (cid == &typeid(Name))
         {
-          auto const& name = static_cast<Name const&>(cond).n;
+          auto const& name = cond.as<Name>().n;
           auto it = named.find(name);
           if (it != named.end())
             p = p && bool(it->second);

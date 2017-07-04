@@ -143,8 +143,14 @@ namespace
   void
   legacy()
   {
-    BOOST_TEST(elle::print("%x %s%%", 134, 134) == "86 134%");
-    BOOST_TEST(elle::print("%r %s", Foo{}, Foo{}) == "Verbose Silent");
+#define CHECK(Out, ...)                         \
+    BOOST_TEST(Out == elle::print(__VA_ARGS__))
+    CHECK("86", "%x", 134);
+    CHECK("134", "%s", 134);
+    CHECK("%", "%%");
+    CHECK("86 134%", "%x %s%%", 134, 134);
+    CHECK("Verbose Silent", "%r %s", Foo{}, Foo{});
+#undef CHECK
   }
 }
 
