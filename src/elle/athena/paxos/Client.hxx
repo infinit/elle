@@ -37,7 +37,7 @@ namespace elle
       template <typename P>
       Client<T, Version, ClientId>::Client(ClientId id, P&& peers)
         : _id(id)
-        , _peers(elle::make_vector(std::forward<P>(peers)))
+        , _peers(elle::make_vector<Peers>(std::forward<P>(peers)))
         , _conflict_backoff(true)
         , _round(0)
       {
@@ -45,10 +45,11 @@ namespace elle
       }
 
       template <typename T, typename Version, typename ClientId>
+      template <typename P>
       void
-      Client<T, Version, ClientId>::peers(Peers peers)
+      Client<T, Version, ClientId>::peers(P&& peers)
       {
-        this->_peers = std::move(peers);
+        this->_peers = elle::make_vector<Peers>(std::forward<P>(peers));
       }
 
       class Unavailable
