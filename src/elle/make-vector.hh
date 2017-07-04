@@ -95,14 +95,18 @@ namespace elle
   ///
   /// @param c   A container.
   /// @returns   A set.
-  template <typename Cont>
+  template <typename R = void,
+            typename Cont>
   auto
   make_vector(Cont&& c)
-    -> std::vector<typename std::remove_reference_t<Cont>::value_type>
+    -> std::conditional_t<
+        std::is_same<R, void>::value,
+        std::vector<typename std::remove_reference_t<Cont>::value_type>,
+        R>
   {
     using std::begin;
     using std::end;
-    using Res = std::vector<typename std::remove_reference_t<Cont>::value_type>;
+    using Res = decltype(make_vector<R, Cont>(std::forward<Cont>(c)));
     return elle::meta::static_if<
       std::is_same<std::remove_reference_t<Cont>, Cont>::value &&
       detail::make_vector_move<std::remove_reference_t<Cont>>::value >(
