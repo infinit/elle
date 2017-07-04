@@ -44,8 +44,6 @@ namespace elle
       /// `file://NAME+`: append to file `NAME`.
       /// `files://BASE`: create `BASE.0`, `BASE.1`, etc.
       /// `syslog://NAME`: to syslog, tagged with `NAME[PID]`.
-      ///
-      /// @pre Call only when protected by the mutex.
       std::unique_ptr<Logger>
       make_one_logger(std::string const& t,
                       std::string const& log_level = "LOG")
@@ -74,32 +72,6 @@ namespace elle
         else
           err("invalid ELLE_LOG_TARGETS: {}", t);
       }
-
-      /// Read `$ELLE_LOG_TARGETS` and setup _logger().
-      ///
-      /// @pre Call only when protected by the mutex.
-      std::unique_ptr<Logger>
-      make_logger()
-      {
-        using Tokenizer = boost::tokenizer<boost::char_separator<char>>;
-        auto const sep = boost::char_separator<char>{";, "};
-        auto const ts
-          = elle::print(os::getenv("ELLE_LOG_TARGETS", "file://cerr"),
-                        {
-                          {"pid", elle::system::getpid()},
-                        });
-        auto loggers = elle::make_vector(Tokenizer{ts, sep},
-                                         [](auto const& s)
-                                         {
-                                           return make_one_logger(s, "LOG");
-                                         });
-        // If there's just one log destination, let's avoid the
-        // composite logger.
-        if (loggers.size() == 1)
-          return std::move(loggers[0]);
-        else
-          return std::make_unique<CompositeLogger>(std::move(loggers));
-      }
     }
 
     /// The main logger.  Create it if it's null.
@@ -121,7 +93,7 @@ namespace elle
       if (!_logger())
       {
         _logger() = std::make_unique<TextLogger>(std::cerr);
-        _logger() = make_logger();
+        _logger() = make_logger(os::getenv("ELLE_LOG_TARGETS", "file://cerr"));
       }
       return *_logger();
     }
@@ -152,6 +124,32 @@ namespace elle
         _logger() = std::move(clog);
       }
       log->loggers().push_back(std::move(l));
+    }
+
+    /// Read `$ELLE_LOG_TARGETS` and setup _logger().
+    ///
+    /// @pre Call only when protected by the mutex.
+    std::unique_ptr<Logger>
+    make_logger(std::string const& targets)
+    {
+      using Tokenizer = boost::tokenizer<boost::char_separator<char>>;
+      auto const sep = boost::char_separator<char>{";, "};
+      auto const ts
+        = elle::print(targets,
+                      {
+                        {"pid", elle::system::getpid()},
+                      });
+      auto loggers = elle::make_vector(Tokenizer{ts, sep},
+                                       [](auto const& s)
+                                       {
+                                         return make_one_logger(s, "LOG");
+                                       });
+      // If there's just one log destination, let's avoid the
+      // composite logger.
+      if (loggers.size() == 1)
+        return std::move(loggers[0]);
+      else
+        return std::make_unique<CompositeLogger>(std::move(loggers));
     }
 
     namespace detail

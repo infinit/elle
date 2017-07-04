@@ -20,6 +20,10 @@ namespace elle
     std::unique_ptr<Logger>
     logger(std::unique_ptr<Logger> l);
 
+    /// Create a new logger from a spec string.
+    std::unique_ptr<Logger>
+    make_logger(std::string const& targets);
+
     /// Add a new logger.
     void
     logger_add(std::unique_ptr<Logger> l);
