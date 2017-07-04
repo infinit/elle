@@ -24,86 +24,86 @@ namespace bfs = boost::filesystem;
 | test suite: logger.  |
 `---------------------*/
 
-template <bool b>
-void
-_message_test(bool env)
-{
-  using Level = elle::log::Logger::Level;
-
-  std::stringstream ss;
-  auto logger = std::unique_ptr<elle::log::Logger>{};
-  if (env)
-  {
-    elle::os::setenv("ELLE_LOG_LEVEL", "DUMP");
-    elle::os::setenv("ELLE_LOG_DISPLAY_TYPE", "1");
-    logger = std::make_unique<elle::log::TextLogger>(ss);
-  }
-  else
-    logger = std::make_unique<elle::log::TextLogger>(ss, "DUMP", true);
-  BOOST_CHECK_EQUAL(logger->component_level("Test"), Level::dump);
-
-  elle::log::logger(std::move(logger));
-
-  {
-    ELLE_LOG_COMPONENT("Test");
-    ELLE_LOG_SCOPE("Test Message");
-    BOOST_CHECK_EQUAL(ss.str(), "[1m[Test] Test Message\n[0m");
-
-    ss.str("");
-    ELLE_LOG("Another Test Message");
-    BOOST_CHECK_EQUAL(ss.str(), "[1m[Test]   Another Test Message\n[0m");
-
-    {
-      ELLE_LOG_COMPONENT("Another");
-
-      ss.str("");
-      ELLE_LOG("Test");
-      BOOST_CHECK_EQUAL(ss.str(), "[1m[Another]   Test\n[0m");
-
-      ss.str("");
-      ELLE_TRACE("Test2");
-      BOOST_CHECK_EQUAL(ss.str(), "[Another]   Test2\n");
-
-      ss.str("");
-      ELLE_DEBUG("Test3");
-      BOOST_CHECK_EQUAL(ss.str(), "[Another]   Test3\n");
-
-      ss.str("");
-      ELLE_DUMP("Test4");
-      BOOST_CHECK_EQUAL(ss.str(), "[Another]   Test4\n");
-
-      ss.str("");
-      ELLE_DUMP("Test5")
-      {
-        BOOST_CHECK_EQUAL(ss.str(), "[Another]   Test5\n");
-        ss.str("");
-        ELLE_DUMP("Test5.1")
-        {
-          BOOST_CHECK_EQUAL(ss.str(), "[Another]     Test5.1\n");
-          ss.str("");
-          ELLE_DUMP("Test5.1.1");
-          BOOST_CHECK_EQUAL(ss.str(), "[Another]       Test5.1.1\n");
-        }
-      }
-    }
-
-    ss.str("");
-    ELLE_WARN("Test5");
-    BOOST_CHECK_EQUAL(ss.str(), "[33;01;33m[ Test  ] [warning]   Test5\n[0m");
-
-    ss.str("");
-    ELLE_ERR("Test6");
-    BOOST_CHECK_EQUAL(ss.str(), "[33;01;31m[ Test  ] [error]   Test6\n[0m");
-  }
-}
-
 namespace
 {
   void
+  _message_test(bool env)
+  {
+    using Level = elle::log::Logger::Level;
+
+    std::stringstream ss;
+    auto logger = std::unique_ptr<elle::log::Logger>{};
+    if (env)
+    {
+      elle::os::setenv("ELLE_LOG_LEVEL", "DUMP");
+      elle::os::setenv("ELLE_LOG_DISPLAY_TYPE", "1");
+      logger = std::make_unique<elle::log::TextLogger>(ss);
+    }
+    else
+      logger = std::make_unique<elle::log::TextLogger>(ss, "DUMP", true);
+    BOOST_CHECK_EQUAL(logger->component_level("Test"), Level::dump);
+
+    auto prev = elle::log::logger(std::move(logger));
+
+    {
+      ELLE_LOG_COMPONENT("Test");
+      ELLE_LOG_SCOPE("Test Message");
+      BOOST_CHECK_EQUAL(ss.str(), "[1m[Test] Test Message\n[0m");
+
+      ss.str("");
+      ELLE_LOG("Another Test Message");
+      BOOST_CHECK_EQUAL(ss.str(), "[1m[Test]   Another Test Message\n[0m");
+
+      {
+        ELLE_LOG_COMPONENT("Another");
+
+        ss.str("");
+        ELLE_LOG("Test");
+        BOOST_CHECK_EQUAL(ss.str(), "[1m[Another]   Test\n[0m");
+
+        ss.str("");
+        ELLE_TRACE("Test2");
+        BOOST_CHECK_EQUAL(ss.str(), "[Another]   Test2\n");
+
+        ss.str("");
+        ELLE_DEBUG("Test3");
+        BOOST_CHECK_EQUAL(ss.str(), "[Another]   Test3\n");
+
+        ss.str("");
+        ELLE_DUMP("Test4");
+        BOOST_CHECK_EQUAL(ss.str(), "[Another]   Test4\n");
+
+        ss.str("");
+        ELLE_DUMP("Test5")
+        {
+          BOOST_CHECK_EQUAL(ss.str(), "[Another]   Test5\n");
+          ss.str("");
+          ELLE_DUMP("Test5.1")
+          {
+            BOOST_CHECK_EQUAL(ss.str(), "[Another]     Test5.1\n");
+            ss.str("");
+            ELLE_DUMP("Test5.1.1");
+            BOOST_CHECK_EQUAL(ss.str(), "[Another]       Test5.1.1\n");
+          }
+        }
+      }
+
+      ss.str("");
+      ELLE_WARN("Test5");
+      BOOST_CHECK_EQUAL(ss.str(), "[33;01;33m[ Test  ] [warning]   Test5\n[0m");
+
+      ss.str("");
+      ELLE_ERR("Test6");
+      BOOST_CHECK_EQUAL(ss.str(), "[33;01;31m[ Test  ] [error]   Test6\n[0m");
+    }
+    elle::log::logger(std::move(prev));
+  }
+
+  void
   message_test()
   {
-    _message_test<false>(false);
-    _message_test<true>(true);
+    _message_test(false);
+    _message_test(true);
   }
 
   void
@@ -153,7 +153,7 @@ _environment_format_test(bool env)
       false   // universal_time
     );
   }
-  elle::log::logger(std::unique_ptr<elle::log::Logger>(logger));
+  auto prev = elle::log::logger(std::unique_ptr<elle::log::Logger>(logger));
   BOOST_CHECK_EQUAL(logger->component_level("Test"),
                     Level::log);
   ELLE_LOG("Test");
@@ -347,7 +347,7 @@ _environment_format_test(bool env)
       << "[Test] [error] Test 6\n[0m";
   elle::os::setenv("ELLE_LOG_DISPLAY_TYPE", "0");
 
-  elle::log::logger(nullptr);
+  elle::log::logger(std::move(prev));
 }
 
 namespace
@@ -512,22 +512,25 @@ parallel_write()
   BOOST_CHECK_GE(c2, 64);
 }
 
-static
-void
-multiline()
+namespace
 {
-  std::stringstream output;
-  elle::os::setenv("ELLE_LOG_LEVEL", "DUMP");
-  elle::log::logger(std::make_unique<elle::log::TextLogger>(output));
-  ELLE_LOG_COMPONENT("multiline");
-  ELLE_TRACE("This message\nis\nsplitted\n\ninto\r\n5 lines\n\n\r\n\r\r");
-  auto expected =
-    "[multiline] This message\n"
-    "            is\n"
-    "            splitted\n"
-    "            into\n"
-    "            5 lines\n";
-  BOOST_CHECK_EQUAL(output.str(), expected);
+  void
+  multiline()
+  {
+    std::stringstream output;
+    elle::os::setenv("ELLE_LOG_LEVEL", "DUMP");
+    elle::log::logger(std::make_unique<elle::log::TextLogger>(output));
+    ELLE_LOG_COMPONENT("multiline");
+    ELLE_TRACE("This message\nis\nsplitted\n\ninto\r\n5 lines\n\n\r\n\r\r");
+    auto const expected =
+      "[multiline] This message\n"
+      "            is\n"
+      "            splitted\n"
+      "            into\n"
+      "            5 lines\n";
+    BOOST_CHECK_EQUAL(output.str(), expected);
+    elle::log::logger(nullptr);
+  }
 }
 
 /// Check that we components are displayed with just the needed width.
@@ -643,36 +646,40 @@ trim()
 | test suite: format.  |
 `---------------------*/
 
-static
-void
-error()
+namespace
 {
-  ELLE_LOG_COMPONENT("error");
+  void
+  error()
   {
-    std::stringstream output;
-    elle::log::logger(std::make_unique<elle::log::TextLogger>(output));
+    ELLE_LOG_COMPONENT("error");
     {
-      // We are passing through already executed code with a different logger
-      ELLE_LOG_COMPONENT("elle.printf");
-      ELLE_LOG("force component creation");
+      std::stringstream output;
+      auto prev = elle::log::logger(std::make_unique<elle::log::TextLogger>(output));
+      {
+        // We are passing through already executed code with a different logger
+        ELLE_LOG_COMPONENT("elle.printf");
+        ELLE_LOG("force component creation");
+      }
+      ELLE_LOG("invalid log", 42);
+      ELLE_LOG("invalid log %s");
+      BOOST_CHECK_GT(output.str().size(), 0);
+      elle::log::logger(std::move(prev));
     }
-    ELLE_LOG("invalid log", 42);
-    ELLE_LOG("invalid log %s");
-    BOOST_CHECK_GT(output.str().size(), 0);
-  }
-  {
-    std::stringstream output;
-    elle::log::detail::debug_formats(true);
-    elle::log::logger(std::make_unique<elle::log::TextLogger>(output));
     {
-      // We are passing through already executed code with a different logger
-      ELLE_LOG_COMPONENT("elle.printf");
-      ELLE_LOG("force component creation");
+      std::stringstream output;
+      elle::log::detail::debug_formats(true);
+      auto prev = elle::log::logger(std::make_unique<elle::log::TextLogger>(output));
+      {
+        // We are passing through already executed code with a different logger
+        ELLE_LOG_COMPONENT("elle.printf");
+        ELLE_LOG("force component creation");
+      }
+      BOOST_CHECK_THROW(ELLE_LOG("invalid log", 42), elle::Exception);
+      BOOST_CHECK_THROW(ELLE_LOG("invalid log %s"), elle::Exception);
+      BOOST_CHECK(!output.str().empty());
+      elle::log::detail::debug_formats(false);
+      elle::log::logger(std::move(prev));
     }
-    BOOST_CHECK_THROW(ELLE_LOG("invalid log", 42), elle::Exception);
-    BOOST_CHECK_THROW(ELLE_LOG("invalid log %s"), elle::Exception);
-    BOOST_CHECK(!output.str().empty());
-    elle::log::detail::debug_formats(false);
   }
 }
 
