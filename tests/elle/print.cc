@@ -150,6 +150,7 @@ namespace
     CHECK("%", "%%");
     CHECK("86 134%", "%x %s%%", 134, 134);
     CHECK("Verbose Silent", "%r %s", Foo{}, Foo{});
+    CHECK("(12) (  12) (12  )", "(%s) (%4s) (%-4s)", 12, 12, 12);
 #undef CHECK
   }
 }

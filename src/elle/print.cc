@@ -146,15 +146,28 @@ namespace elle
       : public Expression
     {
     public:
-      Legacy(char fmt)
-        : fmt(fmt)
-      {}
+      Legacy(std::vector<char> const& flags,
+             boost::optional<unsigned> width,
+             char fmt)
+        : width(width)
+        , fmt(fmt)
+      {
+        for (auto c: flags)
+          switch (c)
+          {
+          case '-':
+            this->positioning = left;
+            break;
+          }
+      }
 
       static
       std::shared_ptr<Legacy>
-      make(char fmt)
+      make(std::vector<char> const& flags,
+           boost::optional<unsigned> width,
+           char fmt)
       {
-        return std::make_shared<Legacy>(fmt);
+        return std::make_shared<Legacy>(flags, width, fmt);
       }
 
       virtual
@@ -164,6 +177,11 @@ namespace elle
         s << "Legacy(" << this->fmt << ')';
       }
 
+      /// Where the padding is applied.
+      enum Positioning { left, internal, right };
+      Positioning positioning = right;
+      /// The width.
+      boost::optional<unsigned> width;
       /// The format request: 's' for %s, 'd' for %d, etc.
       char fmt;
     };
@@ -277,8 +295,10 @@ namespace elle
         [qi::_val = phoenix::bind(&make_fmt, _1, _2)];
       Exp legacy
         = ("%"
+           >> *qi::char_("-+# 0") // flags
+           >> -qi::uint_          // width
            >> qi::char_("cdefgioprsuxCEGSX%"))
-        [qi::_val = phoenix::bind(&Legacy::make, _1)];
+        [qi::_val = phoenix::bind(&Legacy::make, _1, _2, _3)];
       phrase
         = plain[phoenix::bind(&push, qi::_val, _1)]
         >> *(("{" >> fmt[phoenix::bind(&push, qi::_val, _1)] >> "}"
@@ -339,6 +359,10 @@ namespace elle
           // FIXME: we need a saver that also deals with `repr`.
           auto const saver = boost::io::ios_all_saver(s);
           auto const old_repr = repr(s);
+          if (leg.positioning == Legacy::left)
+            s << std::left;
+          if (leg.width)
+            s << std::setw(*leg.width);
           switch (auto c = leg.fmt)
           {
             case 'd':
