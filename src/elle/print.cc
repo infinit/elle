@@ -158,6 +158,13 @@ namespace elle
           case '-':
             this->positioning = left;
             break;
+          case '+':
+            this->showpos = true;
+            break;
+          case ' ':
+          case '0':
+            this->padding = c;
+            break;
           }
       }
 
@@ -179,11 +186,13 @@ namespace elle
 
       /// Where the padding is applied.
       enum Positioning { left, internal, right };
-      Positioning positioning = right;
+      Positioning positioning = internal;
       /// The width.
       boost::optional<unsigned> width;
       /// The format request: 's' for %s, 'd' for %d, etc.
       char fmt;
+      char padding = ' ';
+      bool showpos = false;
     };
 
     class Name
@@ -295,8 +304,8 @@ namespace elle
         [qi::_val = phoenix::bind(&make_fmt, _1, _2)];
       Exp legacy
         = ("%"
-           >> *qi::char_("-+# 0") // flags
-           >> -qi::uint_          // width
+           >> *qi::char_("-+# 0'") // flags
+           >> -qi::uint_           // width
            >> qi::char_("cdefgioprsuxCEGSX%"))
         [qi::_val = phoenix::bind(&Legacy::make, _1, _2, _3)];
       phrase
@@ -361,8 +370,15 @@ namespace elle
           auto const old_repr = repr(s);
           if (leg.positioning == Legacy::left)
             s << std::left;
+          else if (leg.positioning == Legacy::internal)
+            s << std::internal;
+          else if (leg.positioning == Legacy::right)
+            s << std::right;
+          if (leg.showpos)
+            s << std::showpos;
           if (leg.width)
             s << std::setw(*leg.width);
+          s << std::setfill(leg.padding);
           switch (auto c = leg.fmt)
           {
             case 'd':
