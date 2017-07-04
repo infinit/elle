@@ -251,7 +251,7 @@ namespace elle
         elle::Version version)
         : _id(std::move(id))
         , _quorum(quorum)
-        , _value()
+        , _value(std::move(value))
         , _version(version)
         , _partial(false)
         , _state()
