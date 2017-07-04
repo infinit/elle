@@ -37,11 +37,11 @@ namespace elle
       using Timestamp = int64_t;
 
       /// A clock.
-      using Clock = std::chrono::high_resolution_clock;
+      using Clock = elle::Clock;
       /// A reference date.
-      using Time = std::chrono::time_point<Clock>;
+      using Time = elle::Time;
       /// A duration.
-      using Duration = std::chrono::seconds;
+      using Duration = elle::Duration;
 
       constexpr LamportAge(Time t) noexcept
         : _timestamp{t}
@@ -67,11 +67,10 @@ namespace elle
       age() const
       {
         if (_timestamp == Time{})
-          return Duration{0};
+          return Duration{0s};
         else
-          return std::max(Duration{1},
-                          std::chrono::duration_cast<Duration>(Clock::now()
-                                                               - _timestamp));
+          return std::max(Duration{1s},
+                          Clock::now() - _timestamp);
       }
 
       /// From a date to a number of milliseconds as an int.
