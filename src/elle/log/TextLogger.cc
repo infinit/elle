@@ -153,7 +153,7 @@ namespace elle
 
         // Time
         if (this->_enable_time)
-          res = print("%s: %s", time, res);
+          res = print("%s: %s", msg.time, res);
 
         return res;
       }();
