@@ -8,6 +8,7 @@
 #include <elle/Exception.hh>
 #include <elle/algorithm.hh>
 #include <elle/assert.hh>
+#include <elle/bytes.hh>
 #include <elle/log/CompositeLogger.hh>
 #include <elle/log/FileLogger.hh>
 #include <elle/log/Send.hh>
@@ -73,16 +74,11 @@ namespace elle
           auto const append = boost::ends_with(*file, "+");
           if (append)
             boost::erase_tail(*file, 1);
-          auto s = std::make_unique<std::ofstream>(
-            *file,
-            (append ? std::fstream::app : std::fstream::trunc)
-            | std::fstream::out);
-          static auto streams = std::vector<std::unique_ptr<std::ofstream>>{};
-          streams.emplace_back(std::move(s));
-          return std::make_unique<TextLogger>(*streams.back(), level);
+          return std::make_unique<FileLogger>(*file, level,
+                                              0, append);
         }
         else if (auto s = elle::tail(dest, "files://"))
-          return std::make_unique<FileLogger>(*s, level);
+          return std::make_unique<FileLogger>(*s, level, 100_KiB);
         else if (auto s = elle::tail(dest, "syslog://"))
           return std::make_unique<SysLogger>(
             print("%s[%s]", *s, elle::system::getpid()),

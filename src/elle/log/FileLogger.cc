@@ -7,13 +7,24 @@ namespace elle
   namespace log
   {
     FileLogger::FileLogger(std::string const& base,
-                           std::string const& log_level)
+                           std::string const& log_level,
+                           size_t threshold,
+                           bool append)
       : Super{log_level}
       , _base(base)
-      , _threshold{100_KiB}
+      , _threshold{threshold}
+      , _append{append}
     {
-      rotate(this->_fstream, this->base(), this->threshold());
-      this->_logger = std::make_unique<TextLogger>(this->_fstream, log_level);
+      if (this->_threshold)
+        rotate(this->_fstream, this->base(), this->threshold());
+      else if (append)
+        this->_fstream.open(this->base(),
+                            std::fstream::app | std::fstream::out);
+      else
+        this->_fstream.open(this->base(),
+                            std::fstream::trunc | std::fstream::out);
+      this->_logger
+        = std::make_unique<TextLogger>(this->_fstream, log_level);
     }
 
     void
@@ -26,7 +37,8 @@ namespace elle
     FileLogger::_message(Message const& msg)
     {
       this->_logger->message(msg);
-      rotate(this->_fstream, this->base(), this->threshold());
+      if (this->threshold())
+        rotate(this->_fstream, this->base(), this->threshold());
     }
   }
 }

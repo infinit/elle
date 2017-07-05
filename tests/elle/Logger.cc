@@ -391,10 +391,7 @@ namespace
   {
     auto d = elle::filesystem::TemporaryDirectory{};
     auto const family = elle::print("{}/file.log", d.path().string());
-    auto logger = std::make_unique<elle::log::FileLogger>(family);
-    logger->threshold(512);
-    logger->log_level("DUMP");
-
+    auto logger = std::make_unique<elle::log::FileLogger>(family, "DUMP", 512);
     auto prev = elle::log::logger(std::move(logger));
     {
       ELLE_LOG_COMPONENT("log");

@@ -20,7 +20,9 @@ namespace elle
       /// @param base  the basename for the logs: base.0, base.1, etc.
       /// @param log_level  the log levels
       FileLogger(std::string const& base,
-                 std::string const& log_level = "LOG");
+                 std::string const& log_level = "LOG",
+                 size_t threshold = 0,
+                 bool append = false);
 
     protected:
       void
@@ -33,7 +35,8 @@ namespace elle
       ELLE_ATTRIBUTE_R(std::string const&, base);
       ELLE_ATTRIBUTE_R(std::ofstream, fstream);
       ELLE_ATTRIBUTE_RW(size_t, threshold);
-      // A pointer only because we have to support G++ 4.9 which does
+      ELLE_ATTRIBUTE_RW(bool, append);
+      // A pointer because we have to support G++ 4.9 which does
       // not support move for streams.
       // FIXME: C++17.
       ELLE_ATTRIBUTE_R(std::unique_ptr<TextLogger>, logger);
