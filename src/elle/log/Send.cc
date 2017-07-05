@@ -43,20 +43,11 @@ namespace elle
       std::tuple<std::string, std::string>
       split(std::string const& s)
       {
-        auto const sep1 = s.find(':');
-        if (sep1 == s.npos)
+        auto const sep = s.find('?');
+        if (sep == s.npos)
           return std::make_tuple(s, "LOG");
         else
-        {
-          auto const sep2 = s.substr(sep1 + 1).find(':');
-          if (sep2 == s.npos)
-            return std::make_tuple(s, "LOG");
-          else
-          {
-            auto const sep = sep1 + sep2 + 1;
-            return std::make_tuple(s.substr(0, sep), s.substr(sep + 1));
-          }
-        }
+          return std::make_tuple(s.substr(0, sep), s.substr(sep + 1));
       }
 
 

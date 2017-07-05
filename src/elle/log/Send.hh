@@ -23,7 +23,7 @@ namespace elle
     /// Create a new logger from a spec string.
     ///
     /// The spec string is a semicolon separated list of single
-    /// logger specifications, whose syntax is `<DEST>:<LEVEL>`.
+    /// logger specifications, whose syntax is `<DEST>?<LEVEL>`.
     ///
     /// <DEST> is:
     /// `file://cerr`: goes to std::cerr.
