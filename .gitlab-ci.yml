@@ -4,11 +4,13 @@ stages:
 variables:
   PYTHONUNBUFFERED: "1"
 
+before_script:
+    - git fetch origin --tags
+    - pip3 install --user -r requirements.txt
+
 x86_64-ubuntu-gcc4:
   stage: check
   script:
-    - git fetch origin --tags
-    - pip3 install -r requirements.txt
     - (cd _build && ./drake //check)
     - (cd examples/hello_world/_build/linux64 && ./drake //build && ./hello_world)
     - (cd examples/user_libraries/_build/linux64 && ./drake //build && ./bin/colored_shape)
@@ -21,8 +23,6 @@ x86_64-ubuntu-gcc4:
 x86_64-osx-clang:
   stage: check
   script:
-    - git fetch origin --tags
-    - pip3 install --user -r requirements.txt
     - (cd _build && ./drake //check)
     - (cd examples/hello_world/_build/macosx64 && ./drake //build && ./hello_world)
     - (cd examples/user_libraries/_build/macosx64 && ./drake //build && ./bin/colored_shape)
