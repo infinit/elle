@@ -79,6 +79,25 @@ namespace elle
   std::ostream&
   operator << (std::ostream& s, const DurationOpt& opt);
 
+  template <typename Serializer, typename Duration>
+  void
+  serialize_duration_ms(Serializer& s, std::string const& name, Duration& d)
+  {
+    using milliseconds = std::chrono::milliseconds;
+    if (s.out())
+    {
+      int ms = std::chrono::duration_cast<milliseconds>(d).count();
+      s.serialize(name + "_ms", ms);
+    }
+    else
+    {
+      int ms;
+      s.serialize(name + "_ms", ms);
+      d = milliseconds(ms);
+    }
+  };
+
+
 #if 0
   namespace serialization
   {
