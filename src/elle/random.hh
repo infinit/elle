@@ -1,7 +1,9 @@
 #pragma once
 
 #include <cassert>
+#include <chrono>
 #include <random>
+#include <type_traits>
 #include <vector>
 
 #include <boost/range/adaptor/filtered.hpp>
@@ -9,6 +11,7 @@
 #include <boost/range/size.hpp>
 #include <boost/range/algorithm/sort.hpp>
 #include <boost/range/algorithm_ext/iota.hpp>
+
 
 namespace elle
 {
@@ -30,12 +33,21 @@ namespace elle
   /// Random integer in [0, size-1].
   ///
   /// @return an iterator.
-  template <typename Gen = std::mt19937>
+  template <typename Integral, typename Gen = std::mt19937>
   auto
-  pick_one(int size, Gen& gen = random_engine())
+  pick_one(Integral size, Gen& gen = random_engine())
+    -> std::enable_if_t<std::is_integral<Integral>{}, Integral>
   {
-    auto random = std::uniform_int_distribution<>(0, size - 1);
+    auto random = std::uniform_int_distribution<Integral>(0, size - 1);
     return random(gen);
+  }
+
+  /// Random duration in [0, d[.
+  template <typename Repr, typename Ratio, typename Gen = std::mt19937>
+  std::chrono::duration<Repr, Ratio>
+  pick_one(std::chrono::duration<Repr, Ratio> const& d, Gen& gen = random_engine())
+  {
+    return std::chrono::duration<Repr, Ratio>{pick_one(d.count(), gen)};
   }
 
   /// Random selection in a range.
