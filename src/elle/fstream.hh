@@ -24,7 +24,7 @@ namespace elle
                 int threshold = 100_KiB)
     {
       // Look for the first free name.
-      for (int i = 0; i < 100; ++i)
+      for (int i = 0; i < 10000; ++i)
       {
         // There is no O_EXCL in C++.  TOCTOU...
         auto f = elle::print("{}.{}", base, i);
