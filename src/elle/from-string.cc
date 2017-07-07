@@ -1,5 +1,6 @@
 #include <elle/from-string.hh>
 
+#include <stdexcept>
 #include <unordered_map>
 
 #include <boost/algorithm/string/case_conv.hpp>
@@ -27,6 +28,6 @@ namespace elle
     if (auto it = elle::find(map, boost::to_lower_copy(s)))
       return it->second;
     else
-      elle::err("invalid boolean value: %s", s);
+      elle::err<std::invalid_argument>("invalid boolean value: %s", s);
   }
 }
