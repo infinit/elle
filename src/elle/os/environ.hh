@@ -8,6 +8,7 @@
 #endif
 
 #include <elle/compiler.hh>
+#include <elle/from-string.hh>
 
 namespace elle
 {
@@ -37,7 +38,8 @@ namespace elle
     ///
     /// @return the resulting value of `$key`.
     std::string
-    setenv(std::string const& key, std::string const& val, bool overwrite = true);
+    setenv(std::string const& key, std::string const& val,
+           bool overwrite = true);
 
     /// Import all the variables from env to the (real) environment.
     void
@@ -50,33 +52,21 @@ namespace elle
 
     /// Get a specific value from environment. If value is not found,
     /// default_ is returned
-    std::string
-    getenv(std::string const& key, std::string const& default_);
-
-    /// Get a specific value from environment. If value is not found,
-    /// default_ is returned
-    std::string
-    getenv(std::string const& key, char const* default_);
-
-    /// Get a specific value from environment. If value is not found,
-    /// default_ is returned
-    int
-    getenv(std::string const& key, int default_);
-
-    /// Get a specific value from environment. If value is not found,
-    /// default_ is returned
-    unsigned
-    getenv(std::string const& key, unsigned default_);
-
-    /// Get a specific value from environment. If value is not found,
-    /// default_ is returned
-    bool
-    getenv(std::string const& key, bool default_);
+    template <typename T>
+    T
+    getenv(std::string const& key, T default_)
+    {
+      if (auto val = ::getenv(key.c_str()))
+        return from_string<T>(val);
+      else
+        return default_;
+    }
 
     /// Whether a key is defined in environment.
     bool
     inenv(std::string const& key);
 
+    /// Remove from the environment.
     void
     unsetenv(std::string const& key);
   }

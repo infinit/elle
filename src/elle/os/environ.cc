@@ -64,50 +64,6 @@ namespace elle
         throw KeyError(key);
     }
 
-    std::string getenv(std::string const& key,
-                       std::string const& default_)
-    {
-      if (auto val = ::getenv(key.c_str()))
-        return val;
-      else
-        return default_;
-    }
-
-    // Exists only because `bool` case takes precedence over
-    // `std::string const&`.
-    std::string getenv(std::string const& key,
-                       char const* default_)
-    {
-      return getenv(key, std::string(default_));
-    }
-
-    bool
-    getenv(std::string const& key, bool default_)
-    {
-      if (auto val = ::getenv(key.c_str()))
-        return from_string<bool>(val);
-      else
-        return default_;
-    }
-
-    int
-    getenv(std::string const& key, int default_)
-    {
-      if (auto val = ::getenv(key.c_str()))
-        return std::stoi(val);
-      else
-        return default_;
-    }
-
-    unsigned
-    getenv(std::string const& key, unsigned default_)
-    {
-      if (auto val = ::getenv(key.c_str()))
-        return std::stou(val);
-      else
-        return default_;
-    }
-
     bool
     inenv(std::string const& key)
     {
