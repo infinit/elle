@@ -898,8 +898,6 @@ namespace elle
   }
 }
 
-#define ELLE_DAS_CLI_SYMBOL(Name, ...) ELLE_DAS_CLI_SYMBOL_NAMED(Name, Name, __VA_ARGS__)
-
 #define ELLE_DAS_CLI_SYMBOL_NAMED(Name, CName, Short, Help, Pos)        \
   ELLE_DAS_SYMBOL_TYPE_NAMED(Name, CName);                              \
   class CS_##Name                                                       \
@@ -934,4 +932,7 @@ namespace elle
       return Pos;                                                       \
     }                                                                   \
   };                                                                    \
-  constexpr static CS_##Name CName = {};
+  constexpr static CS_##Name CName = {}
+
+#define ELLE_DAS_CLI_SYMBOL(Name, ...)                  \
+  ELLE_DAS_CLI_SYMBOL_NAMED(Name, Name, __VA_ARGS__)
