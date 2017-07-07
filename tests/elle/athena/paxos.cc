@@ -196,7 +196,7 @@ ELLE_TEST_SCHEDULED(already_chosen)
   peers_2.emplace_back(std::make_unique<Peer<int, int, int>>(11, server_1));
   peers_2.emplace_back(std::make_unique<Peer<int, int, int>>(12, server_2));
   peers_2.emplace_back(std::make_unique<Peer<int, int, int>>(13, server_3));
-  paxos::Client<int, int, int> client_2(1, std::move(peers_2));
+  paxos::Client<int, int, int> client_2(2, std::move(peers_2));
   BOOST_CHECK(!client_1.choose(42));
   auto chosen = client_2.choose(43);
   BOOST_CHECK(chosen);

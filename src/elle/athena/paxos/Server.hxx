@@ -347,8 +347,11 @@ namespace elle
             this->_state->accepted &&
             this->_state->accepted->proposal.version > p.version)
         {
-          ELLE_DEBUG(
-            "refuse proposal for version %s in favor of version %s",
+          if (this->_state->accepted->proposal == p)
+            ELLE_ERR("duplicate paxos proposal: %f", p);
+          else
+            ELLE_DEBUG(
+              "refuse proposal for version %s in favor of version %s",
             p.version, this->_state->accepted->proposal.version);
           return this->_state->accepted;
         }
@@ -387,7 +390,9 @@ namespace elle
         }
         else
         {
-          if (this->_state->proposal < p)
+          if (this->_state->proposal == p)
+            ELLE_ERR("duplicate paxos proposal: %f", p);
+          else if (this->_state->proposal < p)
           {
             ELLE_DEBUG("update minimum proposal for version %s", p.version);
             this->_state->proposal = std::move(p);
@@ -418,6 +423,8 @@ namespace elle
           return this->_state->proposal;
         }
         auto& version = *this->_state;
+        if (version.accepted)
+          ELLE_ERR("duplicate paxos accept: %f", p);
         if (!(p < version.proposal))
         {
           if (!version.accepted)
