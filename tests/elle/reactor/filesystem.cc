@@ -17,7 +17,7 @@ ELLE_LOG_COMPONENT("Test");
 
 bool sandbox = elle::os::getenv("SANDBOX", false);
 
-namespace fs = boost::filesystem;
+namespace bfs = boost::filesystem;
 
 namespace sum
 {
@@ -32,7 +32,7 @@ namespace sum
     read(elle::WeakBuffer buffer, size_t size, off_t offset) override
     {
       ELLE_TRACE("read %s/%s", offset, size);
-      std::string val = std::to_string(num) + "\n";
+      auto const val = std::to_string(num) + "\n";
       if (offset >= signed(val.length()))
         return 0;
       size_t sz = std::min(val.length()+1, size);
@@ -80,9 +80,7 @@ namespace sum
       if (!isDir)
         throw elle::reactor::filesystem::Error(ENOTDIR, "Not a directory");
       for (unsigned i=0; i<100; ++i)
-      {
         cb(std::to_string(i), nullptr);
-      }
       cb("sum", nullptr);
     }
 
@@ -95,7 +93,8 @@ namespace sum
         return std::make_unique<Path>(num, true);
       std::size_t pos;
       int n;
-      try {
+      try
+      {
         n = std::stol(name, &pos, 0);
       }
       catch(...)
@@ -129,11 +128,11 @@ namespace sum
   };
 }
 
-static int directory_count(fs::path const& p)
+static int directory_count(bfs::path const& p)
 {
-  fs::directory_iterator d(p);
+  bfs::directory_iterator d(p);
   int s=0;
-  while (d!= fs::directory_iterator())
+  while (d!= bfs::directory_iterator())
   {
     ++s; ++d;
   }
@@ -141,7 +140,7 @@ static int directory_count(fs::path const& p)
 }
 
 static void run_filesystem(elle::reactor::filesystem::FileSystem &fs,
-             fs::path tmp,
+             bfs::path tmp,
              elle::reactor::Barrier** b,
              elle::reactor::Scheduler* & sched_ptr)
 {
@@ -163,13 +162,13 @@ static void test_sum()
 {
   elle::reactor::filesystem::FileSystem fs(std::make_unique<sum::Operations>(), true);
 #ifdef INFINIT_WINDOWS
-  fs::path tmp("K:");
+  bfs::path tmp("K:");
 #else
-  auto tmp = fs::temp_directory_path() / fs::unique_path();
+  auto tmp = bfs::temp_directory_path() / bfs::unique_path();
   elle::SafeFinally remover([&] {
-      fs::remove(tmp);
+      bfs::remove(tmp);
   });
-  fs::create_directories(tmp);
+  bfs::create_directories(tmp);
 #endif
 
   elle::reactor::Barrier* barrier;
@@ -187,12 +186,12 @@ static void test_sum()
   ::usleep(500000);
 #endif
   int s = -1;
-  fs::ifstream(tmp/"1"/"sum") >> s;
+  bfs::ifstream(tmp/"1"/"sum") >> s;
   BOOST_CHECK_EQUAL(s, 1);
-  fs::ifstream(tmp/"10"/"12"/"sum") >> s;
+  bfs::ifstream(tmp/"10"/"12"/"sum") >> s;
   BOOST_CHECK_EQUAL(s, 22);
   s=0;
-  fs::ifstream(tmp/"10"/"12"/"sum") >> s;
+  bfs::ifstream(tmp/"10"/"12"/"sum") >> s;
   BOOST_CHECK_EQUAL(s, 22);
   BOOST_CHECK_EQUAL(directory_count(tmp), 101);
   ELLE_DEBUG("teardown");
@@ -206,11 +205,10 @@ static void test_sum()
 namespace xorfs
 {
   namespace rfs = elle::reactor::filesystem;
-  namespace bfs = fs;
   class Encrypt: public rfs::BindOperations
   {
   public:
-    Encrypt(fs::path const& source)
+    Encrypt(bfs::path const& source)
       : rfs::BindOperations(source)
     {}
 
@@ -220,7 +218,7 @@ namespace xorfs
   class Handle: public rfs::BindHandle
   {
   public:
-    Handle(int fd, fs::path const& where)
+    Handle(int fd, bfs::path const& where)
       : rfs::BindHandle(fd, where)
     {}
 
@@ -254,7 +252,7 @@ namespace xorfs
     {}
 
     std::unique_ptr<rfs::BindHandle>
-    make_handle(fs::path& where, int fd) override
+    make_handle(bfs::path& where, int fd) override
     {
       return std::make_unique<Handle>(fd, where);
     }
@@ -272,19 +270,19 @@ static
 void
 test_xor()
 {
-  auto tmpmount = fs::temp_directory_path() / fs::unique_path();
-  auto tmpsource = fs::temp_directory_path() / fs::unique_path();
+  auto const tmpmount = bfs::temp_directory_path() / bfs::unique_path();
+  auto const tmpsource = bfs::temp_directory_path() / bfs::unique_path();
 
   elle::SafeFinally remover([&] {
       boost::system::error_code erc;
-      fs::remove(tmpmount, erc);
-      fs::remove(tmpsource, erc);
+      bfs::remove(tmpmount, erc);
+      bfs::remove(tmpsource, erc);
   });
   elle::reactor::filesystem::FileSystem fs(
     std::make_unique<xorfs::Encrypt>(tmpsource),
     false);
-  fs::create_directories(tmpmount);
-  fs::create_directories(tmpsource);
+  bfs::create_directories(tmpmount);
+  bfs::create_directories(tmpsource);
   ELLE_LOG("mount: %s   source: %s", tmpmount, tmpsource);
   elle::reactor::Barrier* barrier;
   elle::reactor::Scheduler* sched;
@@ -297,26 +295,27 @@ test_xor()
   std::string text = "coincoin";
 
   for (int i=0;
-    i<10 && (directory_count(tmpmount) != 1 || directory_count(tmpsource) != 1);
-    ++i)
+       i<10
+       && (directory_count(tmpmount) != 1 || directory_count(tmpsource) != 1);
+       ++i)
   {
 #if INFINIT_WINDOWS
   Sleep(200);
 #else
   ::usleep(200000);
 #endif
-    fs::ofstream ofs(tmpmount / "test");
+    bfs::ofstream ofs(tmpmount / "test");
     ofs << text;
   }
   BOOST_CHECK_EQUAL(directory_count(tmpmount), 1);
   BOOST_CHECK_EQUAL(directory_count(tmpsource), 1);
   {
-    fs::ifstream ifs(tmpmount / "test");
+    bfs::ifstream ifs(tmpmount / "test");
     ifs >> text;
   }
   BOOST_CHECK_EQUAL(text, "coincoin");
   {
-    fs::ifstream ifs(tmpsource / "test");
+    bfs::ifstream ifs(tmpsource / "test");
     unsigned char xored[10];
     ifs.read((char*)xored, 10);
     BOOST_CHECK_EQUAL(ifs.gcount(), 8);
@@ -325,23 +324,23 @@ test_xor()
       BOOST_CHECK_EQUAL(text[i], xored[i] ^ 0xFF);
     }
   }
-  fs::remove(tmpmount / "test");
+  bfs::remove(tmpmount / "test");
   BOOST_CHECK_EQUAL(directory_count(tmpmount), 0);
   BOOST_CHECK_EQUAL(directory_count(tmpsource), 0);
 
-  fs::create_directory(tmpmount / "dir");
+  bfs::create_directory(tmpmount / "dir");
   BOOST_CHECK_EQUAL(directory_count(tmpmount), 1);
   BOOST_CHECK_EQUAL(directory_count(tmpsource), 1);
   BOOST_CHECK_EQUAL(directory_count(tmpmount / "dir"), 0);
   BOOST_CHECK_EQUAL(directory_count(tmpsource / "dir"), 0);
   {
-    fs::ofstream ofs(tmpmount / "dir"/ "test");
+    bfs::ofstream ofs(tmpmount / "dir"/ "test");
     ofs << text;
   }
   BOOST_CHECK_EQUAL(directory_count(tmpmount / "dir"), 1);
   BOOST_CHECK_EQUAL(directory_count(tmpsource / "dir"), 1);
   boost::system::error_code erc;
-  fs::remove(tmpmount / "dir", erc); // dir not empty
+  bfs::remove(tmpmount / "dir", erc); // dir not empty
   BOOST_CHECK_EQUAL(!!erc, true);
   struct stat st;
   ::stat((tmpmount / "dir" / "test").string().c_str(), &st);
@@ -352,7 +351,7 @@ test_xor()
   auto num_written = ::write(fd, "foo", 3);
   ::close(fd);
   BOOST_CHECK_EQUAL(num_written, 3);
-  BOOST_CHECK_EQUAL(fs::file_size(tmpmount / "dir" / "test"), 11);
+  BOOST_CHECK_EQUAL(bfs::file_size(tmpmount / "dir" / "test"), 11);
   fd = ::open((tmpmount / "dir" / "test").string().c_str(),
     O_WRONLY | O_CREAT | O_EXCL, 0644);
   BOOST_CHECK_LT(fd, 0);
@@ -362,14 +361,14 @@ test_xor()
   num_written = ::write(fd, "foo", 3);
   BOOST_CHECK_EQUAL(num_written, 3);
   ::close(fd);
-  BOOST_CHECK_EQUAL(fs::file_size(tmpmount / "dir" / "test"), 3);
-  fs::rename(tmpmount / "dir" / "test", tmpmount / "dir" / "test2", erc);
+  BOOST_CHECK_EQUAL(bfs::file_size(tmpmount / "dir" / "test"), 3);
+  bfs::rename(tmpmount / "dir" / "test", tmpmount / "dir" / "test2", erc);
   if (erc)
     ELLE_ERR("move: %s", erc.message());
   BOOST_CHECK_EQUAL(!!erc, false);
   BOOST_CHECK_EQUAL(directory_count(tmpmount / "dir"), 1);
   BOOST_CHECK_EQUAL(directory_count(tmpsource / "dir"), 1);
-  BOOST_CHECK_EQUAL(fs::file_size(tmpmount / "dir" / "test2"), 3);
+  BOOST_CHECK_EQUAL(bfs::file_size(tmpmount / "dir" / "test2"), 3);
 
   int res = ::chmod((tmpmount / "dir" / "test2").string().c_str(), 0600);
   if (res)
@@ -377,10 +376,10 @@ test_xor()
   ::stat((tmpmount / "dir" / "test2").string().c_str(), &st);
   BOOST_CHECK_EQUAL(st.st_mode&0777, 0600);
 
-  fs::remove(tmpmount / "dir" / "test2");
+  bfs::remove(tmpmount / "dir" / "test2");
   BOOST_CHECK_EQUAL(directory_count(tmpmount / "dir"), 0);
   BOOST_CHECK_EQUAL(directory_count(tmpsource / "dir"), 0);
-  fs::remove(tmpmount / "dir");
+  bfs::remove(tmpmount / "dir");
   ELLE_TRACE("unmounting...");
   sched->mt_run<void>("stop", [&] {fs.unmount();});
   sched->mt_run<void>("stop", [&] {barrier->open();});
