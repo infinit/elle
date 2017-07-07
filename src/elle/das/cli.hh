@@ -13,6 +13,7 @@
 #include <elle/Error.hh>
 #include <elle/assert.hh>
 #include <elle/find.hh>
+#include <elle/from-string.hh>
 #include <elle/log.hh>
 #include <elle/make-vector.hh>
 #include <elle/range.hh>
@@ -365,12 +366,14 @@ namespace elle
           std::enable_if_t<std::is_same<I, bool>::value, I>
           convert(std::string const& v, int) const
           {
-            if (v == "true")
-              return true;
-            else if (v == "false")
-              return false;
-            else
+            try
+            {
+              return elle::from_string<bool>(v);
+            }
+            catch (std::invalid_argument)
+            {
               throw OptionValueError(this->_option, v, "invalid boolean");
+            }
           }
 
           template <typename I>
