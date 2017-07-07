@@ -15,7 +15,7 @@
 
 ELLE_LOG_COMPONENT("Test");
 
-bool sandbox = !elle::os::getenv("SANDBOX", "").empty();
+bool sandbox = elle::os::getenv("SANDBOX", false);
 
 namespace fs = boost::filesystem;
 

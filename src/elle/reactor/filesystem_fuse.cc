@@ -733,13 +733,13 @@ namespace elle
           {
             this->unmount();
           });
-        if (!elle::os::getenv("INFINIT_FUSE_POOL", "").empty())
+        if (elle::os::inenv("INFINIT_FUSE_POOL"))
         {
           int nt = elle::os::getenv("INFINIT_FUSE_POOL", 5);
           ELLE_TRACE("Pool mode with %s workers", nt);
           _impl->loop_pool(nt);
         }
-        else if (!elle::os::getenv("INFINIT_FUSE_THREAD", "").empty())
+        else if (elle::os::getenv("INFINIT_FUSE_THREAD", false))
         {
           ELLE_TRACE("Thread mode");
           _impl->loop_mt();

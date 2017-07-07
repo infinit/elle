@@ -12,7 +12,7 @@
 #include <cstdlib>
 #include <cstring>
 
-#include <boost/lexical_cast.hpp>
+#include <elle/from-string.hh>
 
 #ifdef environ
 # undef environ
@@ -85,7 +85,7 @@ namespace elle
     getenv(std::string const& key, bool default_)
     {
       if (auto val = ::getenv(key.c_str()))
-        return boost::lexical_cast<bool>(val);
+        return from_string<bool>(val);
       else
         return default_;
     }
