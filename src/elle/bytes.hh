@@ -59,7 +59,7 @@ namespace elle
   /// Pretty-print a number of bytes.
   ///
   /// @param bytes  The number of bytes.
-  /// @param si Whether to use scientific notation or not (KiB vs KB, etc.).
+  /// @param si     Whether to use scientific notation (KB vs KiB, etc.).
   std::string
   human_data_size(double bytes, bool si = true);
 
@@ -74,5 +74,5 @@ namespace elle
 
   /// Parse a capacity, with its unit on the side.
   long double
-  convert_capacity(long double value, std::string const& unit);
+  convert_capacity(long double value, std::string unit);
 }

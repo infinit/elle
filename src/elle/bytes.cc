@@ -32,39 +32,41 @@ namespace elle
   }
 
   long double
-  convert_capacity(long double value, std::string const& unit)
+  convert_capacity(long double value, std::string unit)
   {
-    if (unit == "B" || unit == "")
+    boost::to_lower(unit);
+    if (unit == "b" || unit == "")
       return value;
-    else if (unit == "kB")
+    else if (unit == "kb")
       return value * 1000;
-    else if (unit == "KiB")
+    else if (unit == "kib")
       return value * 1024;
-    else if (unit == "MB")
+    else if (unit == "mb")
       return value * 1000 * 1000;
-    else if (unit == "MiB")
+    else if (unit == "mib")
       return value * 1024 * 1024;
-    else if (unit == "GB")
+    else if (unit == "gb")
       return value * 1000 * 1000 * 1000;
-    else if (unit == "GiB")
+    else if (unit == "gib")
       return value * 1024 * 1024 * 1024;
-    else if (unit == "TB")
+    else if (unit == "tb")
       return value * 1000 * 1000 * 1000 * 1000;
-    else if (unit == "TiB")
+    else if (unit == "tib")
       return value * 1024 * 1024 * 1024 * 1024;
     else
-      elle::err("invalid capacity: %s", unit);
+      elle::err("invalid capacity unit: %s", unit);
   }
 
   int64_t
   convert_capacity(std::string value)
   {
+    boost::to_lower(value);
     std::string const unit = [&]
       {
         auto const to_find = std::vector<std::string>
         {
-          // "B" MUST be the last element.
-          "kB", "MB", "GB", "TB", "KiB", "MiB", "GiB", "TiB", "B"
+          // "b" MUST be the last element.
+          "kb", "mb", "gb", "tb", "kib", "mib", "gib", "tib", "b"
         };
         const char* res = nullptr;
         for (auto const& t: to_find)
