@@ -3,6 +3,8 @@
 #include <cstddef>
 #include <string>
 
+#include <boost/optional.hpp>
+
 inline
 std::size_t
 operator "" _B(unsigned long long size)
@@ -60,4 +62,17 @@ namespace elle
   /// @param si Whether to use scientific notation or not (KiB vs KB, etc.).
   std::string
   human_data_size(double bytes, bool si = true);
+
+  /// Convert an optional capacity in string into an optional capacity.
+  boost::optional<int64_t>
+  convert_capacity(boost::optional<std::string> capacity);
+
+  /// Parse a capacity with embeded unit.
+  ///
+  /// For instance "10KB" => 10000, "10KiB" => 10240.
+  int64_t convert_capacity(std::string value);
+
+  /// Parse a capacity, with its unit on the side.
+  long double
+  convert_capacity(long double value, std::string const& unit);
 }
