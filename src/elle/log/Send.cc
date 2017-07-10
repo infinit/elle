@@ -174,8 +174,10 @@ namespace elle
       std::unique_lock<std::recursive_mutex> ulock{log_mutex()};
       if (!_logger())
       {
-        _logger() = std::make_unique<TextLogger>(std::cerr);
-        _logger() = make_logger(os::getenv("ELLE_LOG_TARGETS", "file://cerr"));
+        auto level = os::getenv("ELLE_LOG_LEVEL", "LOG"s);
+        _logger() = std::make_unique<TextLogger>(std::cerr, level);
+        _logger() = make_logger(os::getenv("ELLE_LOG_TARGETS",
+                                           "stderr://?" + level));
       }
       return *_logger();
     }
