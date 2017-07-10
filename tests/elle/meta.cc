@@ -81,7 +81,7 @@ namespace list
       "list::tail yielded the wrong type");
   }
 
-  namespace tail
+  namespace head
   {
     using l = List<int, float, void>;
     static_assert(
