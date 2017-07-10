@@ -5,6 +5,8 @@
 #include <elle/fstream.hh>
 #include <elle/test.hh>
 
+namespace bfs = boost::filesystem;
+
 BOOST_AUTO_TEST_CASE(rotate)
 {
   auto d = elle::filesystem::TemporaryDirectory{};
@@ -18,22 +20,12 @@ BOOST_AUTO_TEST_CASE(rotate)
     {
       // End with a period, rather than a \n, to avoid issues in Windows.
       o << "foo.";
-      BOOST_CHECK_NO_THROW(elle::rotate(o, family, 1_KiB));
+      BOOST_CHECK_NO_THROW(elle::rotate(o, family, 1_KiB, 2));
     }
     BOOST_TEST(o.good());
   }
-  // Check it created four files.
-  for (int i = 0; i < 10; ++i)
-  {
-    auto f = bfs::path(elle::print("{}.{}", family, i));
-    BOOST_TEST_MESSAGE("file: " << f);
-    if (i < 4)
-    {
-      BOOST_TEST(exists(f));
-      // The last file is shorter.
-      BOOST_TEST(file_size(f) == (i < 3 ? 1028 : 916));
-    }
-    else
-      BOOST_TEST(!exists(f));
-  }
+  // Check it created four files and removed the two oldest.
+  using Ints = std::vector<int>;
+  BOOST_TEST_MESSAGE("versions: " << elle::rotate_versions(family));
+  BOOST_TEST(elle::rotate_versions(family) == (Ints{2, 3}));
 }
