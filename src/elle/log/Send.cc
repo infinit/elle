@@ -3,12 +3,15 @@
 
 #include <boost/algorithm/string/erase.hpp>
 #include <boost/algorithm/string/predicate.hpp>
+#include <boost/algorithm/string/trim.hpp>
 #include <boost/tokenizer.hpp>
 
 #include <elle/Exception.hh>
 #include <elle/algorithm.hh>
 #include <elle/assert.hh>
 #include <elle/bytes.hh>
+#include <elle/find.hh>
+#include <elle/from-string.hh>
 #include <elle/log/CompositeLogger.hh>
 #include <elle/log/FileLogger.hh>
 #include <elle/log/Send.hh>
@@ -17,6 +20,8 @@
 #include <elle/os/environ.hh>
 #include <elle/printf.hh>
 #include <elle/system/getpid.hh>
+
+using namespace std::literals;
 
 namespace elle
 {
@@ -40,51 +45,114 @@ namespace elle
         return mutex;
       }
 
-      /// Split a string around its *second* colon.
-      std::tuple<std::string, std::string>
-      split(std::string const& s)
+      /// Split a string one a given separator.
+      auto
+      tokenize(std::string const& s, char const* sep)
       {
-        auto const sep = s.find('?');
+        using Tokenizer = boost::tokenizer<boost::char_separator<char>>;
+        auto const csep = boost::char_separator<char>{sep};
+        return Tokenizer{s, csep};
+      }
+
+      /// Split a string around its last question mark.
+      ///
+      /// On the last one so that `?` is valid in file names:
+      /// `file:///tmp/wtf????LOG` sends `LOG` to `/tmp/wtf???`.
+      std::tuple<std::string, std::string>
+      split(std::string s)
+      {
+        boost::trim(s);
+        auto const sep = s.rfind('?');
         if (sep == s.npos)
           return std::make_tuple(s, "LOG");
         else
           return std::make_tuple(s.substr(0, sep), s.substr(sep + 1));
       }
 
-
-      /// Build a logger from its URL-like specification.
-      ///
-      /// <DEST>:
-      /// `file://cerr`: goes to std::cerr.
-      /// `file://NAME`: create file `NAME`.
-      /// `file://NAME+`: append to file `NAME`.
-      /// `files://BASE`: create `BASE.0`, `BASE.1`, etc.
-      /// `syslog://NAME`: to syslog, tagged with `NAME[PID]`.
-      std::unique_ptr<Logger>
-      make_one_logger(std::string const& t)
+      /// Whether a logger spec is a log level (as opposed to an
+      /// argument such as `append`, or `size=100KiB`).
+      bool
+      is_log_level(std::string const& s)
       {
-        // FIXME: C++17.
-        auto const spec = split(t);
-        auto const& dest = std::get<0>(spec);
-        auto const& level = std::get<1>(spec);
-        if (dest == "file://cerr")
-          return std::make_unique<TextLogger>(std::cerr, level);
-        else if (auto file = elle::tail(dest, "file://"))
+        return (s == "NONE"
+                || s == "LOG"
+                || s == "TRACE"
+                || s == "DEBUG"
+                || s == "DUMP"
+                || s.find(':') != s.npos);
+      }
+
+      using Arguments = std::map<std::string, std::string>;
+
+      template <typename T>
+      T
+      get(Arguments& args, std::string const& k, T def)
+      {
+        if (auto i = elle::find(args, k))
         {
-          auto const append = boost::ends_with(*file, "+");
-          if (append)
-            boost::erase_tail(*file, 1);
-          return std::make_unique<FileLogger>(*file, level,
-                                              0, append);
+          auto res = elle::from_string<T>(std::move(i->second));
+          args.erase(i);
+          return res;
         }
-        else if (auto s = elle::tail(dest, "files://"))
-          return std::make_unique<FileLogger>(*s, level, 100_KiB);
+        else
+          return def;
+      }
+
+      std::unique_ptr<Logger>
+      make_one_logger_impl(std::string const& dest,
+                           std::string const& level,
+                           Arguments& args)
+      {
+        if (auto file = elle::tail(dest, "file://"))
+        {
+          auto const append = get(args, "append", false);
+          auto const size = convert_capacity(get(args, "size", "0b"s));
+          auto const rotate = get(args, "rotate", 0);
+          return std::make_unique<FileLogger>(*file, level,
+                                              size, rotate, append);
+        }
+        else if (dest == "stderr://")
+          return std::make_unique<TextLogger>(std::cerr, level);
         else if (auto s = elle::tail(dest, "syslog://"))
           return std::make_unique<SysLogger>(
             print("%s[%s]", *s, elle::system::getpid()),
             level);
         else
-          err("invalid ELLE_LOG_TARGETS: %s", t);
+          err<std::invalid_argument>("invalid log destination: %s", dest);
+      }
+
+
+      /// Build a logger from its URL-like specification.
+      std::unique_ptr<Logger>
+      make_one_logger(std::string const& t)
+      {
+        ELLE_LOG_COMPONENT("elle.log");
+        // FIXME: C++17.
+        auto const dest_specs = split(t);
+        auto const& dest = std::get<0>(dest_specs);
+        auto const& specs = std::get<1>(dest_specs);
+        // Iterate on the various specs of the level, separating
+        // arguments of the logger from log_level.
+        auto args = Arguments{};
+        auto level = ""s;
+        {
+          for (auto const& t: tokenize(specs, ","))
+            if (is_log_level(t))
+              level += (level.empty() ? "" : ",") + t;
+            else
+            {
+              auto pos = t.find('=');
+              // Not emplace, so that `foo=false,foo=true` stores true.
+              if (pos == t.npos)
+                args[t] = "true";
+              else
+                args[t.substr(0, pos)] = t.substr(pos+1);
+            }
+        }
+        auto res = make_one_logger_impl(dest, level, args);
+        if (!args.empty())
+          err<std::invalid_argument>("unused logger arguments: %s", args);
+        return res;
       }
     }
 
@@ -146,15 +214,12 @@ namespace elle
     std::unique_ptr<Logger>
     make_logger(std::string const& targets)
     {
-      using Tokenizer = boost::tokenizer<boost::char_separator<char>>;
-      auto const sep = boost::char_separator<char>{"; "};
       auto const ts
         = elle::print(targets,
                       {
                         {"pid", elle::system::getpid()},
                       });
-      auto loggers
-        = elle::make_vector(Tokenizer{ts, sep}, make_one_logger);
+      auto loggers = elle::make_vector(tokenize(ts, ";"), make_one_logger);
       // If there's just one log destination, let's avoid the
       // composite logger.
       if (loggers.size() == 1)

@@ -7,6 +7,7 @@
 
 #include <elle/test.hh>
 
+#include <elle/bytes.hh> // _KiB
 #include <elle/filesystem/TemporaryDirectory.hh>
 #include <elle/finally.hh>
 #include <elle/log.hh>
@@ -14,6 +15,7 @@
 #include <elle/log/FileLogger.hh>
 #include <elle/log/Logger.hh>
 #include <elle/log/TextLogger.hh>
+#include <elle/log/SysLogger.hh>
 #include <elle/memory.hh>
 #include <elle/os/environ.hh>
 
@@ -41,7 +43,7 @@ namespace
     }
     else
       logger = std::make_unique<elle::log::TextLogger>(ss, "DUMP", true);
-    BOOST_CHECK_EQUAL(logger->component_level("Test"), Level::dump);
+    BOOST_TEST(logger->component_level("Test") == Level::dump);
 
     auto prev = elle::log::logger(std::move(logger));
 
@@ -417,6 +419,61 @@ namespace
     elle::log::logger(std::move(prev));
   }
 
+  // Check make_logger.
+  void make_logger()
+  {
+    // file://
+    {
+      struct Case
+      {
+        std::string spec;
+        std::string base;
+        size_t size;
+        size_t rotate;
+        bool append;
+      };
+      for (auto const& c:
+           {
+             Case{"file://foo", "foo", 0, 0, false},
+             Case{"file://foo?append", "foo", 0, 0, true},
+             Case{"file://foo?size=100KiB", "foo", 100_KiB, 0, false},
+             Case{"file://foo?size=100KiB,rotate=10", "foo", 100_KiB, 10, false}
+           })
+
+      {
+        auto l = elle::log::make_logger(c.spec);
+        auto log = dynamic_cast<elle::log::FileLogger*>(l.get());
+        BOOST_TEST(log);
+        BOOST_TEST(log->base() == c.base);
+        BOOST_TEST(log->size() == c.size);
+        BOOST_TEST(log->rotate() == c.rotate);
+        BOOST_TEST(log->append() == c.append);
+      }
+      BOOST_CHECK_THROW(elle::log::make_logger("file://foo?size=toto"),
+                        std::invalid_argument);
+      BOOST_CHECK_THROW(elle::log::make_logger("file://foo?append=10"),
+                        std::invalid_argument);
+      BOOST_CHECK_THROW(elle::log::make_logger("file://foo?zise=10"),
+                        std::invalid_argument);
+    }
+    // stderr://
+    {
+      auto l = elle::log::make_logger("stderr://");
+      BOOST_TEST(dynamic_cast<elle::log::TextLogger*>(l.get()));
+      BOOST_CHECK_THROW(elle::log::make_logger("stderr://foo"),
+                        std::invalid_argument);
+      BOOST_CHECK_THROW(elle::log::make_logger("stderr://?foo"),
+                        std::invalid_argument);
+    }
+    // syslog://
+    {
+      auto l = elle::log::make_logger("syslog://foo");
+      BOOST_TEST(dynamic_cast<elle::log::SysLogger*>(l.get()));
+      BOOST_CHECK_THROW(elle::log::make_logger("syslog://foo?size=10"),
+                        std::invalid_argument);
+    }
+  }
+
   // Check that ELLE_LOG_TARGETS is honored.
   void
   targets()
@@ -440,7 +497,7 @@ namespace
     elle::os::setenv("ELLE_LOG_TARGETS",
                      escape(subst("file://{tmp}/log1?LOG; "
                                   "file://{tmp}/log2?LOG; "
-                                  "files://{tmp}/logs?LOG")));
+                                  "file://{tmp}/logs?size=100KiB,LOG")));
     // Save previous logger and force the creation of new loggers.
     auto prev = elle::log::logger(nullptr);
     elle::log::logger();
@@ -693,6 +750,7 @@ ELLE_TEST_SUITE()
     logger->add(BOOST_TEST_CASE(environment_format_test));
     logger->add(BOOST_TEST_CASE(composite));
     logger->add(BOOST_TEST_CASE(file));
+    logger->add(BOOST_TEST_CASE(make_logger));
     logger->add(BOOST_TEST_CASE(targets));
   }
 

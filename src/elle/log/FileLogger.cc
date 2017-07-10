@@ -6,17 +6,19 @@ namespace elle
 {
   namespace log
   {
-    FileLogger::FileLogger(std::string const& base,
+    FileLogger::FileLogger(std::string base,
                            std::string const& log_level,
-                           size_t threshold,
+                           size_t size,
+                           size_t rotate,
                            bool append)
       : Super{log_level}
-      , _base(base)
-      , _threshold{threshold}
+      , _base{std::move(base)}
+      , _size{size}
+      , _rotate{rotate}
       , _append{append}
     {
-      if (this->_threshold)
-        rotate(this->_fstream, this->base(), this->threshold());
+      if (this->_size)
+        elle::rotate(this->_fstream, this->base(), this->size());
       else if (append)
         this->_fstream.open(this->base(),
                             std::fstream::app | std::fstream::out);
@@ -37,8 +39,8 @@ namespace elle
     FileLogger::_message(Message const& msg)
     {
       this->_logger->message(msg);
-      if (this->threshold())
-        rotate(this->_fstream, this->base(), this->threshold());
+      if (this->size())
+        elle::rotate(this->_fstream, this->base(), this->size());
     }
   }
 }

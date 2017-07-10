@@ -25,11 +25,14 @@ namespace elle
     /// The spec string is a semicolon separated list of single
     /// logger specifications, whose syntax is `<DEST>?<LEVEL>`.
     ///
+    ///
+    /// <DEST>?<SPECS>
+    ///
     /// <DEST> is:
-    /// `file://cerr`: goes to std::cerr.
+    /// `stderr://`: goes to std::cerr.
     /// `file://NAME`: create file `NAME`.
-    /// `file://NAME+`: append to file `NAME`.
-    /// `files://BASE`: create `BASE.0`, `BASE.1`, etc.
+    /// `file://NAME?append`: append to file `NAME`.
+    /// `file://BASE?rotate=10`: create `BASE.0`, `BASE.1`, etc.
     /// `syslog://NAME`: to syslog, tagged with `NAME[PID]`.
     std::unique_ptr<Logger>
     make_logger(std::string const& targets);
