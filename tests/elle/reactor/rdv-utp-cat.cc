@@ -54,7 +54,7 @@ static void run(int argc, char**argv)
     ELLE_TRACE("...connected");
   }
   utpsocket = hsocket.get();
-  static bool noread = !elle::os::getenv("NO_READ", "").empty();
+  static bool noread = elle::os::getenv("NO_READ", false);
   try
   {
     while (hsocket)
@@ -81,6 +81,7 @@ static void run(int argc, char**argv)
 int main(int argc, char** argv)
 {
   elle::reactor::Scheduler sched;
+  using Action = std::function<auto () -> void>;
   exit_request = std::make_unique<elle::reactor::Barrier>();
   elle::reactor::Thread t(sched, "main", [&]
     {
@@ -93,11 +94,11 @@ int main(int argc, char** argv)
         std::getline(std::cin, buf);
         buf += '\n';
         sched.mt_run("data",
-          std::function<void()>([&] { send(buf);}));
+                     Action([&] { send(buf);}));
       }
       ELLE_TRACE("cin EOF, closing");
       sched.mt_run("close",
-          std::function<void()>([&] { close();}));
+                   Action([] { close();}));
   });
   sched.run();
   ELLE_TRACE("scheduler exited");
