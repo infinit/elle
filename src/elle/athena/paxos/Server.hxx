@@ -387,9 +387,7 @@ namespace elle
         }
         else
         {
-          if (this->_state->proposal == p)
-            ELLE_ERR("duplicate paxos proposal: %f", p);
-          else if (this->_state->proposal < p)
+          if (this->_state->proposal < p)
           {
             ELLE_DEBUG("update minimum proposal for version %s", p.version);
             this->_state->proposal = std::move(p);

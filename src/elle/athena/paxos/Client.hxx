@@ -204,6 +204,14 @@ namespace elle
             if (previous)
             {
               ELLE_DEBUG("replace value with %s", previous->value);
+              if (proposal == previous->proposal)
+              {
+                this->_round = previous->proposal.round + 1;
+                ELLE_DEBUG("retry at version %s round %s",
+                           version, this->_round);
+                continue;
+
+              }
               if (proposal < previous->proposal)
               {
                 version = previous->proposal.version;
