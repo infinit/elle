@@ -1308,6 +1308,55 @@ ELLE_TEST_SCHEDULED(partial_in_progress)
   };
 }
 
+ELLE_TEST_SCHEDULED(self_conflict)
+{
+  std::vector<Server> servers{
+    {11, Server::Quorum{11, 12, 13}},
+    {12, Server::Quorum{11, 12, 13}},
+    {13, Server::Quorum{11, 12, 13}},
+  };
+  elle::reactor::Barrier first, second;
+  elle::With<elle::reactor::Scope>() << [&] (elle::reactor::Scope& scope)
+  {
+    scope.run_background(
+      "first",
+      [&]
+      {
+        auto c = make_client(0, servers);
+        static_cast<YAInstrumentedPeer&>(*c.peers()[0]).accepting().connect(
+          [&] (Client::Proposal const& p)
+          {
+            elle::reactor::wait(first);
+          });
+        static_cast<YAInstrumentedPeer&>(*c.peers()[1]).accepting().connect(
+          [&] (Client::Proposal const& p)
+          {
+            elle::reactor::wait(first);
+          });
+        static_cast<YAInstrumentedPeer&>(*c.peers()[2]).accepted().connect(
+          [&] (Client::Proposal const& p)
+          {
+            second.open();
+          });
+        auto r = c.choose(0, 1331);
+        BOOST_REQUIRE(r);
+        BOOST_CHECK_EQUAL(r->value.get<int>(), 1331);
+      });
+    scope.run_background(
+      "second",
+      [&]
+      {
+        elle::reactor::wait(second);
+        auto c = make_client(0, servers);
+        auto r = c.choose(0, 1349);
+        BOOST_REQUIRE(r);
+        BOOST_CHECK_EQUAL(r->value.get<int>(), 1331);
+        first.open();
+      });
+    elle::reactor::wait(scope);
+  };
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -1328,6 +1377,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(partial_conflict), 0, valgrind(5));
   suite.add(BOOST_TEST_CASE(partial_interleave), 0, valgrind(5));
   suite.add(BOOST_TEST_CASE(partial_in_progress), 0, valgrind(5));
+  suite.add(BOOST_TEST_CASE(self_conflict), 0, valgrind(5));
   {
     auto quorum = BOOST_TEST_SUITE("quorum");
     suite.add(quorum);
