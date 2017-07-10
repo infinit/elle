@@ -23,20 +23,20 @@ namespace elle
       int lvl = [type = msg.type, level = msg.level]{
         switch (type)
         {
-          case Logger::Type::error:
+          case Type::error:
             return LOG_ERR;
-          case Logger::Type::info:
+          case Type::info:
             switch (level)
             {
-              case Logger::Level::none:
-              case Logger::Level::log:
+              case Level::none:
+              case Level::log:
                 return LOG_INFO;
-              case Logger::Level::trace:
-              case Logger::Level::debug:
-              case Logger::Level::dump:
+              case Level::trace:
+              case Level::debug:
+              case Level::dump:
                 return LOG_DEBUG;
             }
-          case Logger::Type::warning:
+          case Type::warning:
             return LOG_WARNING;
         }
         unreachable();
