@@ -347,11 +347,8 @@ namespace elle
             this->_state->accepted &&
             this->_state->accepted->proposal.version > p.version)
         {
-          if (this->_state->accepted->proposal == p)
-            ELLE_ERR("duplicate paxos proposal: %f", p);
-          else
-            ELLE_DEBUG(
-              "refuse proposal for version %s in favor of version %s",
+          ELLE_DEBUG(
+            "refuse proposal for version %s in favor of version %s",
             p.version, this->_state->accepted->proposal.version);
           return this->_state->accepted;
         }
