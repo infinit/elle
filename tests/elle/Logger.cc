@@ -10,12 +10,13 @@
 #include <elle/bytes.hh> // _KiB
 #include <elle/filesystem/TemporaryDirectory.hh>
 #include <elle/finally.hh>
+#include <elle/fstream.hh>
 #include <elle/log.hh>
 #include <elle/log/CompositeLogger.hh>
 #include <elle/log/FileLogger.hh>
 #include <elle/log/Logger.hh>
-#include <elle/log/TextLogger.hh>
 #include <elle/log/SysLogger.hh>
+#include <elle/log/TextLogger.hh>
 #include <elle/memory.hh>
 #include <elle/os/environ.hh>
 
@@ -28,6 +29,16 @@ namespace bfs = boost::filesystem;
 
 namespace
 {
+  /// All the paths inside directory @a d.
+  std::vector<bfs::path>
+  content(bfs::path const& d)
+  {
+    auto res = std::vector<bfs::path>{};
+    for (auto const& p: bfs::directory_iterator(d))
+      res.emplace_back(p.path());
+    return res;
+  }
+
   void
   _message_test(bool env)
   {
@@ -361,6 +372,7 @@ namespace
     // _environment_format_test(true);
   }
 
+  /// Check CompositeLogger.
   void
   composite()
   {
@@ -388,12 +400,13 @@ namespace
     elle::log::logger(std::move(prev));
   }
 
+  /// Check FileLogger.
   void
   file()
   {
     auto d = elle::filesystem::TemporaryDirectory{};
-    auto const family = elle::print("{}/file.log", d.path().string());
-    auto logger = std::make_unique<elle::log::FileLogger>(family, "DUMP", 512);
+    auto const base = elle::print("{}/file.log", d.path().string());
+    auto logger = std::make_unique<elle::log::FileLogger>(base, "DUMP", 512, 3);
     auto prev = elle::log::logger(std::move(logger));
     {
       ELLE_LOG_COMPONENT("log");
@@ -403,23 +416,20 @@ namespace
         ELLE_DUMP("pong");
       }
     }
-    // This should create five files of less than 600B.
-    for (int i = 0; i < 10; ++i)
+    BOOST_TEST_MESSAGE("d contains " << content(d.path()));
+    // This should create five files of less than 600B, but we kept the last tree.
+    BOOST_TEST_MESSAGE("versions: " << elle::rotate_versions(base));
+    BOOST_TEST(elle::rotate_versions(base) == (std::vector<int>{2, 3, 4}));
+    for (int i = 2; i <= 4; ++i)
     {
-      auto f = bfs::path(elle::print("{}.{}", family, i));
-      BOOST_TEST_MESSAGE("file: " << f);
-      if (i < 5)
-      {
-        BOOST_TEST(exists(f));
-        BOOST_TEST(file_size(f) < 600);
-      }
-      else
-        BOOST_TEST(!exists(f));
+      auto f = bfs::path(elle::print("{}.{}", base, i));
+      BOOST_TEST(file_size(f) < 600);
     }
+    BOOST_TEST_MESSAGE("d contains " << content(d.path()));
     elle::log::logger(std::move(prev));
   }
 
-  // Check make_logger.
+  /// Check make_logger.
   void make_logger()
   {
     // file://
@@ -437,10 +447,10 @@ namespace
              Case{"file://foo", "foo", 0, 0, false},
              Case{"file://foo?append", "foo", 0, 0, true},
              Case{"file://foo?size=100KiB", "foo", 100_KiB, 0, false},
-             Case{"file://foo?size=100KiB,rotate=10", "foo", 100_KiB, 10, false}
+             Case{"file://foo?size=1GiB,rotate=10", "foo", 1_GiB, 10, false}
            })
-
       {
+        BOOST_TEST_MESSAGE("Checking: " << c.spec);
         auto l = elle::log::make_logger(c.spec);
         auto log = dynamic_cast<elle::log::FileLogger*>(l.get());
         BOOST_TEST(log);
@@ -513,8 +523,7 @@ namespace
     elle::log::logger(std::move(prev));
     elle::os::unsetenv("ELLE_LOG_TARGETS");
     // Check the results.
-    for (auto p: bfs::directory_iterator(d.path()))
-      BOOST_TEST_MESSAGE("d contains " << p);
+    BOOST_TEST_MESSAGE("d contains " << content(d.path()));
     for (auto fn: {"log1", "log2", "log3", "logs.0"})
     {
       auto const f = d.path() / fn;

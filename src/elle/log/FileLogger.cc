@@ -17,9 +17,9 @@ namespace elle
       , _rotate{rotate}
       , _append{append}
     {
-      if (this->_size)
-        elle::rotate(this->_fstream, this->base(), this->size());
-      else if (append)
+      if (this->size())
+        elle::rotate(this->_fstream, this->base(), this->size(), this->rotate());
+      else if (this->_append)
         this->_fstream.open(this->base(),
                             std::fstream::app | std::fstream::out);
       else
@@ -40,7 +40,7 @@ namespace elle
     {
       this->_logger->message(msg);
       if (this->size())
-        elle::rotate(this->_fstream, this->base(), this->size());
+        elle::rotate(this->_fstream, this->base(), this->size(), this->rotate());
     }
   }
 }
