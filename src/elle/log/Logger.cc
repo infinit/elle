@@ -112,10 +112,10 @@ namespace elle
 
     Logger::Logger(std::string const& log_level,
                    std::string const& envvar)
-      : _indentation(std::make_unique<PlainIndentation>())
-      , _time_universal(false)
-      , _time_microsec(false)
-      , _component_max_size(0)
+      : _indentation{std::make_unique<PlainIndentation>()}
+      , _time_universal{os::getenv("ELLE_LOG_TIME_UNIVERSAL", false)}
+      , _time_microsec{os::getenv("ELLE_LOG_TIME_MICROSEC", false)}
+      , _component_max_size{0}
     {
       this->_setup_indentation();
       // FIXME: resets indentation
