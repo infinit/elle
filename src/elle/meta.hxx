@@ -126,10 +126,21 @@ namespace elle
     `--------*/
 
     template <typename ... Elts>
-    template <typename T>
+    template <typename ... Ts>
     struct List<Elts...>::prepend
     {
-      using type = List<T, Elts...>;
+      using type = List<Ts..., Elts...>;
+    };
+
+    /*-------.
+    | Append |
+    `-------*/
+
+    template <typename ... Elts>
+    template <typename ... Ts>
+    struct List<Elts...>::append
+    {
+      using type = List<Elts..., Ts...>;
     };
 
     /*-----.

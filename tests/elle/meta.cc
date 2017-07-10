@@ -71,6 +71,21 @@ namespace list
     static_assert(std::is_same<l::prepend<float>::type,
                                List<float, int, void>>::value,
                   "list::prepend yielded the wrong type");
+    static_assert(std::is_same<l::prepend<float, float, int>::type,
+                  // List<float, float, int, int, void>>::value,
+                  List<float, float, int, int, void>>::value,
+                  "list::prepend yielded the wrong type");
+  }
+
+  namespace append
+  {
+    using l = List<int, void>;
+    static_assert(std::is_same<l::append<float>::type,
+                  List<int, void, float>>::value,
+                  "list::append yielded the wrong type");
+    static_assert(std::is_same<l::append<float, int>::type,
+                  List<int, void, float, int>>::value,
+                  "list::append yielded the wrong type");
   }
 
   namespace tail

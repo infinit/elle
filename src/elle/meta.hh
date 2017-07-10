@@ -46,10 +46,15 @@ namespace elle
       struct
       map;
 
-      /// List<T, Elts...>
-      template <typename T>
+      /// List<Ts..., Elts...>
+      template <typename... Ts>
       struct
       prepend;
+
+      /// List<Elts..., Ts...>
+      template <typename... Ts>
+      struct
+      append;
 
       /// List<Elts[1:]>
       template <int = 0>
