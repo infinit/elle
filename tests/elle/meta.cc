@@ -80,6 +80,14 @@ namespace list
       std::is_same<l::tail<>::type, List<float, void>>::value,
       "list::tail yielded the wrong type");
   }
+
+  namespace tail
+  {
+    using l = List<int, float, void>;
+    static_assert(
+      std::is_same<typename l::head<>::type, int>::value,
+      "list::head yielded the wrong type");
+  }
 }
 
 template <typename T, typename Token>

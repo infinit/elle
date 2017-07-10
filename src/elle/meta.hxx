@@ -150,8 +150,8 @@ namespace elle
         using type = Head;
       };
 
-      template <typename ... List>
-      struct head_helper<Null, List ...>
+      template <>
+      struct head_helper<Null>
       {};
     }
 
