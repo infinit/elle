@@ -51,10 +51,20 @@ namespace elle
       struct
       prepend;
 
+      /// List<*L, Elts...>
+      template <typename L>
+      struct
+      prepend_list;
+
       /// List<Elts..., Ts...>
       template <typename... Ts>
       struct
       append;
+
+      /// List<Elts..., *L>
+      template <typename L>
+      struct
+      append_list;
 
       /// List<Elts[1:]>
       template <int = 0>

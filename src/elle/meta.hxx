@@ -132,6 +132,18 @@ namespace elle
       using type = List<Ts..., Elts...>;
     };
 
+    template <typename ... Elts>
+    template <typename L>
+    struct List<Elts...>::prepend_list
+    {};
+
+    template <typename ... Elts>
+    template <typename ... Args>
+    struct List<Elts...>::prepend_list<List<Args...>>
+    {
+      using type = List<Args..., Elts...>;
+    };
+
     /*-------.
     | Append |
     `-------*/
@@ -141,6 +153,18 @@ namespace elle
     struct List<Elts...>::append
     {
       using type = List<Elts..., Ts...>;
+    };
+
+    template <typename ... Elts>
+    template <typename L>
+    struct List<Elts...>::append_list
+    {};
+
+    template <typename ... Elts>
+    template <typename ... Args>
+    struct List<Elts...>::append_list<List<Args...>>
+    {
+      using type = List<Elts..., Args...>;
     };
 
     /*-----.
