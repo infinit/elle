@@ -32,7 +32,7 @@ namespace elle
       _log_level(std::string const& log_level) override;
 
     private:
-      ELLE_ATTRIBUTE_R(std::string const&, base);
+      ELLE_ATTRIBUTE_R(std::string, base);
       ELLE_ATTRIBUTE_R(std::ofstream, fstream);
       ELLE_ATTRIBUTE_RW(size_t, threshold);
       ELLE_ATTRIBUTE_RW(bool, append);

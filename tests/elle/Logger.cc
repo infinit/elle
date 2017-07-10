@@ -283,8 +283,8 @@ _environment_format_test(bool env)
     // FIXME: Checking time printing is non-deterministic.
     // elle::os::setenv("ELLE_LOG_TIME", "1", 0);
     // elle::os::setenv("ELLE_LOG_PID", "1", 0);
-    // BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME"), "1");
-    // BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_TIME_UNIVERSAL", ""), "");
+    // BOOST_TEST(elle::os::getenv("ELLE_LOG_TIME") == "1");
+    // BOOST_TEST(elle::os::getenv("ELLE_LOG_TIME_UNIVERSAL", "") == "");
     BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_PID"), "1");
     logger = new elle::log::TextLogger(ss);
   }
@@ -321,7 +321,7 @@ _environment_format_test(bool env)
   if (env)
   {
     elle::os::setenv("ELLE_LOG_DISPLAY_TYPE", "1");
-    BOOST_CHECK_EQUAL(elle::os::getenv("ELLE_LOG_DISPLAY_TYPE"), "1");
+    BOOST_TEST(elle::os::getenv("ELLE_LOG_DISPLAY_TYPE") == "1");
     logger = new elle::log::TextLogger(ss);
   }
   else
@@ -457,7 +457,7 @@ namespace
     elle::os::unsetenv("ELLE_LOG_TARGETS");
     // Check the results.
     for (auto p: bfs::directory_iterator(d.path()))
-      BOOST_TEST_MESSAGE("d contains" << p);
+      BOOST_TEST_MESSAGE("d contains " << p);
     for (auto fn: {"log1", "log2", "log3", "logs.0"})
     {
       auto const f = d.path() / fn;
