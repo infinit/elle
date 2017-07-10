@@ -83,7 +83,7 @@ namespace conversions
   check(std::string const& too_little, std::string const& too_big)
   {
     using elle::das::cli::call;
-    ELLE_LOG("check %s: %s - %s", typeid(I), too_little, too_big);
+    ELLE_LOG("check %s: %s and %s", elle::type_info<I>(), too_little, too_big);
     auto constexpr max = std::numeric_limits<I>::max();
     auto constexpr min = std::numeric_limits<I>::min();
     auto const proto = elle::das::named::prototype(foo);

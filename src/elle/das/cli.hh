@@ -322,44 +322,21 @@ namespace elle
 
           template <typename I>
           static
-          std::enable_if_t<std::is_signed<I>::value, I>
+          std::enable_if_t<std::is_integral<I>::value, I>
           to_int(std::string const& v, std::string const& option)
           {
-            std::size_t end;
-            auto i = std::stoll(v, &end);
-            if (end != v.size())
-              throw OptionValueError(option, v, "invalid integer");
-            else if (i < std::numeric_limits<I>::min()
-                || i > std::numeric_limits<I>::max())
-              throw OptionValueError(option, v, "integer out of range");
-            else
-              return i;
-          }
-
-          template <typename I>
-          static
-          std::enable_if_t<!std::is_signed<I>::value, I>
-          to_int(std::string const& v, std::string const& option)
-          {
-            // Beware: `std::stoull` underflows instead of throwing out_of_range,
-            // which is UTTER BULLSHIT. Check manually for negative numbers.
-            for (auto c: v)
+            try
             {
-              if (c == '-')
-                throw OptionValueError(option, v, "integer out of range");
-              // "Discards any whitespace characters (as identified by calling
-              // isspace()) until the first non-whitespace character is found"
-              if (!std::isspace(c))
-                break;
+              return from_string<I>(v);
             }
-            std::size_t end;
-            auto i = std::stoull(v, &end);
-            if (end != v.size())
+            catch (std::invalid_argument const& e)
+            {
               throw OptionValueError(option, v, "invalid integer");
-            else if (i > std::numeric_limits<I>::max())
+            }
+            catch (std::out_of_range const& e)
+            {
               throw OptionValueError(option, v, "integer out of range");
-            else
-              return i;
+            }
           }
 
           template <typename I>
