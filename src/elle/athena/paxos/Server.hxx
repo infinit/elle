@@ -418,7 +418,7 @@ namespace elle
           return this->_state->proposal;
         }
         auto& version = *this->_state;
-        if (version.accepted)
+        if (p == version.proposal && version.accepted)
           ELLE_ERR("duplicate paxos accept: %f", p);
         if (!(p < version.proposal))
         {
