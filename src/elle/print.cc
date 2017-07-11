@@ -247,7 +247,8 @@ namespace elle
     | Helpers |
     `--------*/
 
-    static
+    namespace
+    {
     void
     push(std::shared_ptr<Composite>& res, std::shared_ptr<Expression> e)
     {
@@ -256,7 +257,6 @@ namespace elle
       res->expressions.emplace_back(std::move(e));
     }
 
-    static
     std::shared_ptr<Expression>
     make_fmt(std::shared_ptr<Expression> fmt,
              boost::optional<std::shared_ptr<Composite>> then = boost::none)
@@ -267,9 +267,11 @@ namespace elle
         return fmt;
     }
 
-    static
-    std::shared_ptr<Expression>
-    parse(std::string const& input)
+    /// Generate our format parser.
+    ///
+    /// Should be called once.
+    auto
+    make_parser()
     {
       namespace phoenix = boost::phoenix;
       namespace qi = boost::spirit::qi;
@@ -277,30 +279,31 @@ namespace elle
       using qi::labels::_1;
       using qi::labels::_2;
       using qi::labels::_3;
-      using Iterator = decltype(input.begin());
+      using Iterator = std::string::const_iterator;
 
       using Res = std::shared_ptr<Expression>;
       using Exp = qi::rule<Iterator, Res()>;
       using Chr = qi::rule<Iterator, char()>;
       using Str = qi::rule<Iterator, std::string()>;
+      using Phr = qi::rule<Iterator, std::shared_ptr<Composite>()>;
 
-      qi::rule<Iterator, std::shared_ptr<Composite>()> phrase;
-      Chr escape
+      static Phr phrase;
+      static Chr escape
         = (qi::char_('\\') >> qi::char_("\\{}%"))[qi::_val = _2];
-      Str literal
+      static Str literal
         = *(escape | (qi::char_  - '{' - '}' - '\\' - '%') );
-      Exp plain
+      static Exp plain
         = literal[qi::_val = phoenix::bind(&Literal::make, _1)];
-      Str identifier
+      static Str identifier
         = ascii::alpha >> *ascii::alnum;
-      Exp var
+      static Exp var
         = identifier [qi::_val = phoenix::bind(&Name::make, _1)]
         | qi::int_   [qi::_val = phoenix::bind(&Index::make, _1)]
         | qi::eps    [qi::_val = phoenix::bind(&Next::make)];
-      Exp fmt
+      static Exp fmt
         = (var >> -("?" >> phrase))
         [qi::_val = phoenix::bind(&make_fmt, _1, _2)];
-      Exp legacy
+      static Exp legacy
         = ("%"
            >> *qi::char_("-+# 0'") // flags
            >> -qi::uint_           // width
@@ -311,7 +314,15 @@ namespace elle
         >> *(("{" >> fmt[phoenix::bind(&push, qi::_val, _1)] >> "}"
               | legacy[phoenix::bind(&push, qi::_val, _1)])
              >> plain[phoenix::bind(&push, qi::_val, _1)]);
-      std::shared_ptr<Expression> res;
+      return phrase;
+    }
+
+    std::shared_ptr<Expression>
+    parse(std::string const& input)
+    {
+      static auto const phrase = make_parser();
+      namespace qi = boost::spirit::qi;
+      auto res = std::shared_ptr<Expression>{};
       auto first = input.begin();
       auto last = input.end();
       if (!qi::phrase_parse(first, last, phrase, qi::eoi, res) || first != last)
@@ -319,11 +330,13 @@ namespace elle
       ELLE_ASSERT(res);
       return res;
     }
+    }
 
     /*------.
     | Print |
     `------*/
 
+    /// @param count   the number of used arguments.
     static
     void
     print(std::ostream& s,
