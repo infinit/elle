@@ -22,7 +22,7 @@
 #include <elle/find.hh>
 #include <elle/log/Logger.hh>
 #include <elle/os/environ.hh>
-#include <elle/printf.hh>
+#include <elle/printf.hh> // for elle/err.hh
 #include <elle/system/getpid.hh>
 
 namespace elle
@@ -244,7 +244,7 @@ namespace elle
             level,
             type,
             component,
-            elle::sprintf("negative indentation level on log: %s", msg),
+            elle::print("negative indentation level on log: %s", msg),
             file,
             line,
             function,

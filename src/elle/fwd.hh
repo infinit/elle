@@ -1,5 +1,8 @@
 #pragma once
 
+#include <exception>
+#include <string>
+
 namespace elle
 {
   class Buffer;
