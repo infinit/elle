@@ -23,19 +23,19 @@ namespace elle ELLE_API
     /// Construct an Exception.
     ///
     /// @param message An explanatory string.
-    /// @param skip The number of StackFrame to skip
+    /// @param skip The number of stack frames to skip
     Exception(std::string const& message, int skip = 0);
     /// Construct an Exception.
     ///
     /// @param bt The Backtrace to attach to the Exception.
     /// @param message An explanatory string.
     Exception(elle::Backtrace const& bt, std::string const& message);
-    ~Exception() noexcept (true) override;
+    ~Exception() noexcept override;
     /// Set an inner exception.
     ///
-    /// @param exception An exception pointer.
+    /// @param ex An exception pointer.
     void
-    inner_exception(std::exception_ptr exception);
+    inner_exception(std::exception_ptr ex);
 
   /*--------------.
   | Serialization |
@@ -55,7 +55,7 @@ namespace elle ELLE_API
               elle::Version const& version) override;
 
   private:
-    template <class T>
+    template <typename T>
     friend
     void
     throw_with_nested(T&& t);
@@ -73,7 +73,7 @@ namespace elle ELLE_API
   ///
   /// @tparam T Type of exception to nest.
   /// @param t The exception to nest.
-  template <class T>
+  template <typename T>
   ELLE_COMPILER_ATTRIBUTE_NORETURN
   void
   throw_with_nested(T&& t);
@@ -83,10 +83,12 @@ namespace elle ELLE_API
   ///
   /// If no exception is given, use the current exception.
   ///
-  /// @param err The exception.
-  /// @returns The string representing the given exceptioN
+  /// @param err The exception, defaults to the current one.
+  ///            The default value is not shown here, it's in elle/fwd.hh.
+  /// @returns The string representing the given exception.
   std::string
-  exception_string(std::exception_ptr err = std::exception_ptr{});
+  exception_string(std::exception_ptr err);
+
   /// Bouncer for exception_string.
   std::string
   exception_string(std::exception_ptr err, std::exception_ptr cur);

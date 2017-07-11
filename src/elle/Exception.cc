@@ -20,8 +20,7 @@ namespace elle
     , _backtrace(bt)
   {}
 
-  Exception::~Exception() noexcept (true)
-  {}
+  Exception::~Exception() noexcept = default;
 
   void
   Exception::inner_exception(std::exception_ptr exception)
@@ -57,6 +56,12 @@ namespace elle
     if (os::getenv("ELLE_DEBUG_BACKTRACE", false))
       s << e.backtrace();
     return s;
+  }
+
+  std::string
+  exception_string(std::exception_ptr err)
+  {
+    return exception_string(err, std::current_exception());
   }
 
   std::string
