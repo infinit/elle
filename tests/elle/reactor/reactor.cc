@@ -27,6 +27,7 @@
 #include <elle/reactor/Thread.hh>
 #include <elle/reactor/timer.hh>
 
+using namespace std::literals;
 
 ELLE_LOG_COMPONENT("Test");
 
@@ -43,15 +44,6 @@ public:
     : elle::Exception("beacon")
   {}
 };
-
-#ifdef INFINIT_WINDOWS
-static
-void
-usleep(int usec)
-{
-  ::Sleep(usec / 1000.0);
-}
-#endif
 
 /*-------.
 | Basics |
@@ -1277,7 +1269,7 @@ void
 schwarzy()
 {
   elle::reactor::Scheduler::scheduler()->terminate();
-  ::usleep(10);
+  std::this_thread::sleep_for(10us);
 }
 
 static
@@ -1336,7 +1328,7 @@ test_timeout_finished()
       s.start();
       // Block the IO service to make sure the task times out in the same cycle
       // it finishes.
-      sched.io_service().post([] { ::usleep(200000); });
+      sched.io_service().post([] { std::this_thread::sleep_for(200ms); });
       elle::reactor::wait(s, 11_ms);
     });
   sched.run();
@@ -1381,7 +1373,7 @@ test_multithread_spawn_wake()
     {
       ELLE_LOG("wait for the scheduler to be frozen")
         while (keeper.state() != elle::reactor::Thread::State::frozen)
-          ::usleep(10000);
+          std::this_thread::sleep_for(10ms);
       new elle::reactor::Thread(sched, "waker", [&] { barrier.open(); }, true);
     });
   sched.run();
@@ -2568,7 +2560,8 @@ namespace background
               elle::reactor::background(
                 [&]
                 {
-                  ::usleep(sleep_time.total_microseconds());
+                  std::this_thread::sleep_for
+                    (std::chrono::microseconds(sleep_time.total_microseconds()));
                 });
               ++count;
             }));
@@ -2603,14 +2596,13 @@ namespace background
       [&]
       {
         auto done = std::make_shared<bool>(false);
-        auto const sleep_time = 500_ms;
         try
         {
-          elle::reactor::background([done, sleep_time]
-                              {
-                                ::usleep(sleep_time.total_microseconds());
-                                *done = true;
-                              });
+          elle::reactor::background([done]
+                                    {
+                                      std::this_thread::sleep_for(500ms);
+                                      *done = true;
+                                    });
         }
         catch (elle::reactor::Terminate const&)
         {
@@ -2673,9 +2665,9 @@ namespace background
     }
     ELLE_LOG("test waiting value")
     {
-      elle::reactor::BackgroundFuture<int> f([] { ::usleep(100000); return 51; });
+      elle::reactor::BackgroundFuture<int> f([] { std::this_thread::sleep_for(100ms); return 51; });
       BOOST_CHECK_EQUAL(f.value(), 51);
-      f = [] { ::usleep(100000); return 69; };
+      f = [] { std::this_thread::sleep_for(100ms); return 69; };
       BOOST_CHECK_EQUAL(f.value(), 69);
     }
     ELLE_LOG("test already available value")
@@ -3145,7 +3137,8 @@ namespace timeout_
     {
       auto const sleep_time = valgrind(10_ms);
       elle::reactor::TimeoutGuard timeout(sleep_time);
-      ::usleep((sleep_time * 2).total_microseconds());
+      std::this_thread::sleep_for
+        (std::chrono::microseconds((sleep_time * 2).total_microseconds()));
     }
     catch(elle::reactor::Timeout const&)
     {

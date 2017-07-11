@@ -1,17 +1,19 @@
 #define _FILE_OFFSET_BITS 64
+#include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <fcntl.h>
 
 #include <boost/filesystem/fstream.hpp>
 
+#include <elle/finally.hh>
+#include <elle/os/environ.hh>
+#include <elle/reactor/Barrier.hh>
 #include <elle/reactor/filesystem.hh>
 #include <elle/reactor/scheduler.hh>
 #include <elle/reactor/signal.hh>
-#include <elle/reactor/Barrier.hh>
 #include <elle/test.hh>
-#include <elle/finally.hh>
-#include <elle/os/environ.hh>
+
+using namespace std::literals;
 
 ELLE_LOG_COMPONENT("Test");
 
@@ -139,10 +141,11 @@ static int directory_count(bfs::path const& p)
   return s;
 }
 
-static void run_filesystem(elle::reactor::filesystem::FileSystem &fs,
-             bfs::path tmp,
-             elle::reactor::Barrier** b,
-             elle::reactor::Scheduler* & sched_ptr)
+static void
+run_filesystem(elle::reactor::filesystem::FileSystem &fs,
+               bfs::path tmp,
+               elle::reactor::Barrier** b,
+               elle::reactor::Scheduler* & sched_ptr)
 {
   elle::reactor::Scheduler sched;
   sched_ptr = &sched;
@@ -160,11 +163,13 @@ static void run_filesystem(elle::reactor::filesystem::FileSystem &fs,
 
 static void test_sum()
 {
-  elle::reactor::filesystem::FileSystem fs(std::make_unique<sum::Operations>(), true);
+  auto&& fs =
+    elle::reactor::filesystem::FileSystem(std::make_unique<sum::Operations>(),
+                                          true);
 #ifdef INFINIT_WINDOWS
-  bfs::path tmp("K:");
+  auto const tmp = bfs::path("K:");
 #else
-  auto tmp = bfs::temp_directory_path() / bfs::unique_path();
+  auto const tmp = bfs::temp_directory_path() / bfs::unique_path();
   elle::SafeFinally remover([&] {
       bfs::remove(tmp);
   });
@@ -173,21 +178,17 @@ static void test_sum()
 
   elle::reactor::Barrier* barrier;
   elle::reactor::Scheduler* sched;
-  std::thread t([&] { run_filesystem(fs, tmp, &barrier, sched);});
+  std::thread t([&] { run_filesystem(fs, tmp, &barrier, sched); });
   ELLE_LOG("Mounted on %s", tmp);
   if (sandbox)
   {
     t.join();
     return;
   }
-#if INFINIT_WINDOWS
-  Sleep(500);
-#else
-  ::usleep(500000);
-#endif
+  std::this_thread::sleep_for(500ms);
   int s = -1;
   bfs::ifstream(tmp/"1"/"sum") >> s;
-  BOOST_CHECK_EQUAL(s, 1);
+  BOOST_REQUIRE(s == 1);
   bfs::ifstream(tmp/"10"/"12"/"sum") >> s;
   BOOST_CHECK_EQUAL(s, 22);
   s=0;
@@ -299,11 +300,7 @@ test_xor()
        && (directory_count(tmpmount) != 1 || directory_count(tmpsource) != 1);
        ++i)
   {
-#if INFINIT_WINDOWS
-  Sleep(200);
-#else
-  ::usleep(200000);
-#endif
+    std::this_thread::sleep_for(200ms);
     bfs::ofstream ofs(tmpmount / "test");
     ofs << text;
   }
