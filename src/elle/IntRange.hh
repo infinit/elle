@@ -10,7 +10,7 @@ namespace elle
 {
   /// A range of integers, defined by its beginning and size.
   ///
-  /// \code{.cc}
+  /// @code{.cc}
   ///
   /// IntRange x{10, 100}; // 10..109 (from 10 with 100 entries)
   /// assert(x.begin() == 10);
@@ -18,7 +18,7 @@ namespace elle
   /// assert(x.contains(50));
   /// assert(x.contains({20, 30})); // Contains the range {20, 21, ..., 48, 49};
   ///
-  /// \endcode
+  /// @endcode
   class IntRange
   {
   /*-------------.
@@ -117,7 +117,7 @@ namespace elle
 
   /// A collection of `IntRange`s.
   ///
-  /// \code{.cc}
+  /// @code{.cc}
   ///
   /// auto ranges = elle::IntRanges{{
   ///   elle::IntRange{0, 5},
@@ -130,7 +130,7 @@ namespace elle
   ///   std::cout << range;
   /// // Result: (0, 5)(10, 5)
   ///
-  /// \endcode
+  /// @endcode
   class IntRanges
   {
   public:
