@@ -50,13 +50,37 @@ namespace elle
     | Helpers |
     `--------*/
 
+    /// Boolean value of types featuring to bool() operator.
     template <typename T>
-    std::enable_if_exists_t<decltype(bool(std::declval<T>())), bool>
+    auto
     branch_test(T const& t, int)
+      -> decltype(bool(t))
     {
       return bool(t);
     }
 
+    /// A string is "false" iff it's empty.
+    ///
+    /// We also support dubious derived classes.  See das's
+    /// serialization test with NopeString.
+    template <typename T>
+    auto
+    branch_test(T const& t, int)
+      -> std::enable_if_t<std::is_base_of<std::string, T>{},
+                          bool>
+    {
+      return !t.empty();
+    }
+
+    /// A C-string is "false" iff it's empty.
+    inline
+    auto
+    branch_test(char const* t, int)
+    {
+      return t && *t;
+    }
+
+    /// Cannot not use this type as a Boolean value.
     template <typename T>
     ELLE_COMPILER_ATTRIBUTE_NORETURN
     bool
@@ -176,25 +200,18 @@ namespace elle
         o << "nullptr";
     }
 
-    /*----------------.
-    | Named arguments |
-    `----------------*/
+    /*------------.
+    | Arguments.  |
+    `------------*/
 
     struct Argument
-      : public std::function<void (std::ostream&)>
+      : public std::function<auto (std::ostream&) -> void>
     {
-      using Super = std::function<void (std::ostream&)>;
+      using Super = std::function<auto (std::ostream&) -> void>;
       template <typename T>
       Argument(T const& value)
-        : Super(
-          [&value] (std::ostream& o) { print(o, value); })
-        , _bool([&value] { return branch_test(value, 0); })
-      {}
-
-      Argument(char const* value)
-        : Super(
-          [value] (std::ostream& o) { print(o, value); })
-        , _bool([value] { return value && strlen(value) > 0; })
+        : Super{[&value] (std::ostream& o) { print(o, value); }}
+        , _bool{[&value] { return branch_test(value, 0); }}
       {}
 
       operator bool() const

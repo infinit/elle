@@ -1,18 +1,16 @@
 #include <memory>
 
-// #pragma GCC diagnostic push
-// #pragma GCC diagnostic ignored "-Wdeprecated"
 #include <boost/bind.hpp>
 #include <boost/config/warning_disable.hpp>
 #include <boost/phoenix.hpp>
 #include <boost/spirit/include/qi.hpp>
-// #pragma GCC diagnostic pop
 
 #include <elle/Printable.hh>
 #include <elle/assert.hh>
 #include <elle/err.hh>
 #include <elle/log.hh>
 #include <elle/finally.hh>
+#include <elle/find.hh>
 #include <elle/print.hh>
 #include <elle/utils.hh>
 #include <elle/xalloc.hh>
@@ -31,7 +29,7 @@ namespace elle
       : public elle::Printable
     {
     public:
-      /// Easy down cast.  Unsafe.
+      /// Easy down cast.  Unsafe (i.e., unchecked downcast).
       template <typename T>
       T const& as() const
       {
@@ -448,8 +446,7 @@ namespace elle
         else if (cid == &typeid(Name))
         {
           auto const& name = cond.as<Name>().n;
-          auto it = named.find(name);
-          if (it != named.end())
+          if (auto it = elle::find(named, name))
             p = p && bool(it->second);
           else
             elle::err("missing named format argument: %s", name);
@@ -471,7 +468,8 @@ namespace elle
       bool full_positional = true;
       _details::print(s, *ast, args, count, true, named, full_positional);
       if (full_positional && count < signed(args.size()))
-        elle::err("too many arguments for format: %s", fmt);
+        elle::err("too many arguments (%s > %s) for format: %s",
+                  args.size(), count, fmt);
     }
   }
 
