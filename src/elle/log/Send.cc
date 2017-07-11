@@ -84,9 +84,10 @@ namespace elle
 
       using Arguments = std::map<std::string, std::string>;
 
-      template <typename T>
+      /// Get the value of type `T` under the name `k`.
+      template <typename T = bool>
       T
-      get(Arguments& args, std::string const& k, T def)
+      get(Arguments& args, std::string const& k, T def = false)
       {
         if (auto i = elle::find(args, k))
         {
@@ -150,10 +151,28 @@ namespace elle
             }
         }
         auto res = make_one_logger_impl(dest, level, args);
+        if (auto l = get_text_logger(res))
+        {
+          l->enable_time(get(args, "time"));
+          l->time_universal(get(args, "universal"));
+          l->time_microsec(get(args, "microsec"));
+        }
         if (!args.empty())
           err<std::invalid_argument>("unused logger arguments: %s", args);
         return res;
       }
+    }
+
+    /// Get the TextLogger from a TextLogger or a FileLogger.
+    TextLogger*
+    get_text_logger(std::unique_ptr<Logger>& l)
+    {
+      if (auto const res = dynamic_cast<TextLogger*>(l.get()))
+        return res;
+      else if (auto const flog = dynamic_cast<FileLogger*>(l.get()))
+        return dynamic_cast<TextLogger*>(flog->logger().get());
+      else
+        return nullptr;
     }
 
     /// The main logger.  Create it from $ELLE_LOG_TARGETS if it's null.

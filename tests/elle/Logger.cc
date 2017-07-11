@@ -451,8 +451,8 @@ namespace
            })
       {
         BOOST_TEST_MESSAGE("Checking: " << c.spec);
-        auto l = elle::log::make_logger(c.spec);
-        auto log = dynamic_cast<elle::log::FileLogger*>(l.get());
+        auto const l = elle::log::make_logger(c.spec);
+        auto const log = dynamic_cast<elle::log::FileLogger const*>(l.get());
         BOOST_TEST(log);
         BOOST_TEST(log->base() == c.base);
         BOOST_TEST(log->size() == c.size);
@@ -482,9 +482,39 @@ namespace
       BOOST_CHECK_THROW(elle::log::make_logger("syslog://foo?size=10"),
                         std::invalid_argument);
     }
+    // Check time support.  That's a feature of TextLogger and FileLogger.
+    {
+      struct Case
+      {
+        std::string spec;
+        bool time;
+        bool microsec;
+        bool universal;
+      };
+      for (auto const& base: {"stderr://"s, "file://foo"s})
+        for (auto const& c:
+             {
+               Case{"", false, false, false},
+               Case{"?time", true, false, false},
+               Case{"?time,microsec", true, true, false},
+               Case{"?time,universal", true, false, true},
+               Case{"?time,microsec,universal", true, true, true},
+              })
+        {
+          auto spec = base + c.spec;
+          BOOST_TEST_MESSAGE("Checking: " << spec);
+          auto l = elle::log::make_logger(spec);
+          BOOST_TEST_MESSAGE(elle::print("Got: {}", l));
+          auto log = get_text_logger(l);
+          BOOST_TEST(log);
+          BOOST_TEST(log->enable_time() == c.time);
+          BOOST_TEST(log->time_microsec() == c.microsec);
+          BOOST_TEST(log->time_universal() == c.universal);
+        }
+    }
   }
 
-  // Check that ELLE_LOG_TARGETS is honored.
+  /// Check support of $ELLE_LOG_TARGETS.
   void
   targets()
   {

@@ -2,6 +2,7 @@
 
 #include <elle/compiler.hh>
 #include <elle/log/Logger.hh>
+#include <elle/log/fwd.hh>
 #include <elle/memory.hh>
 
 namespace elle
@@ -36,6 +37,10 @@ namespace elle
     /// `syslog://NAME`: to syslog, tagged with `NAME[PID]`.
     std::unique_ptr<Logger>
     make_logger(std::string const& targets);
+
+    /// Get the TextLogger from a TextLogger or a FileLogger.
+    TextLogger*
+    get_text_logger(std::unique_ptr<Logger>& l);
 
     /// Add a new logger.
     void
