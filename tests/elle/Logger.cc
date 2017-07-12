@@ -1,7 +1,9 @@
+#include <regex>
 #include <sstream>
 #include <thread>
 
 #include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/trim.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/filesystem.hpp>
 
@@ -560,6 +562,58 @@ namespace
       BOOST_TEST(exists(f), "missing file: " << f);
     }
   }
+
+  /// Check time display.
+  void
+  time_()
+  {
+    // Generate and return a single line of log.
+    auto make_log = [](bool microsec, bool universal)
+      {
+        auto&& os = std::ostringstream{};
+        auto&& log = elle::log::TextLogger(os, "DUMP");
+        log.enable_time(true);
+        log.time_microsec(microsec);
+        log.time_universal(universal);
+        log.message(elle::log::Logger::Level::dump, // no color, simpler regex
+                    elle::log::Logger::Type::info,
+                    "component",
+                    "message",
+                    "file",
+                    42,
+                    "function");
+        auto res = os.str();
+        // Remove eol.
+        res.resize(res.size() - 1);
+        return res;
+      };
+    // FIXME: check universal vs. local.
+    for (auto microsec: {false, true})
+      for (auto universal: {false, true})
+      {
+        auto msg = make_log(microsec, universal);
+        BOOST_TEST_MESSAGE("msg: {" << msg << "}");
+        auto const re =
+          std::regex{"(.*?-.*?-.*?)"                       // 1: date.
+                     " "
+                     "([0-9][0-9]:[0-9][0-9]:[0-9][0-9])"  // 2: time in secs.
+                     "(?:\\.([0-9]{6}))?"                  // 3: microseconds.
+                     ": "
+                     "\\[(.*?)\\]"                         // 4: component.
+                     " "
+                     "(.*)"};                              // 5: message.
+        auto m = std::smatch{};
+        BOOST_TEST(std::regex_match(msg, m, re));
+        ELLE_LOG("date: {}, time: {}, microsec: {}, component: {}, message: {}",
+                 m[1], m[2], m[3], m[4], m[5]);
+        if (microsec)
+          BOOST_TEST(m[3].length() != 0);
+        else
+          BOOST_TEST(m[3].length() == 0);
+        BOOST_TEST(m[4] == "component");
+        BOOST_TEST(m[5] == "message");
+      }
+  }
 }
 
 /*--------------------------.
@@ -791,6 +845,7 @@ ELLE_TEST_SUITE()
     logger->add(BOOST_TEST_CASE(file));
     logger->add(BOOST_TEST_CASE(make_logger));
     logger->add(BOOST_TEST_CASE(targets));
+    logger->add(BOOST_TEST_CASE(time_));
   }
 
 #ifndef INFINIT_ANDROID
