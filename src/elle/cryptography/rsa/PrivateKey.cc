@@ -6,7 +6,6 @@
 #include <openssl/err.h>
 #include <openssl/evp.h>
 
-#include <elle/Lazy.hh>
 #include <elle/log.hh>
 
 #include <elle/cryptography/Error.hh>
@@ -385,16 +384,14 @@ namespace elle
       `----------*/
 
       void
-      PrivateKey::print(std::ostream& stream) const
+      PrivateKey::print(std::ostream& o) const
       {
-        ELLE_ASSERT_NEQ(this->_key, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->n, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->e, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->d, nullptr);
-        elle::fprintf(
-          stream, "PrivateKey(%f)",
-          elle::lazy([this] { return privatekey::der::encode(*this); }));
+        ELLE_ASSERT(this->_key);
+        ELLE_ASSERT(this->_key->pkey.rsa);
+        ELLE_ASSERT(this->_key->pkey.rsa->n);
+        ELLE_ASSERT(this->_key->pkey.rsa->e);
+        ELLE_ASSERT(this->_key->pkey.rsa->d);
+        elle::print(o, "PrivateKey(%f)", privatekey::der::encode(*this));
       }
     }
   }

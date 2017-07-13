@@ -44,9 +44,7 @@ namespace elle
       SerializerOut::~SerializerOut() noexcept(false)
       {
         ELLE_TRACE_SCOPE("%s: write JSON %s", this, this->output());
-        ELLE_DUMP(
-          "%s",
-          elle::lazy([&] { return elle::json::pretty_print(this->_json); }));
+        ELLE_DUMP("%s", elle::json::pretty_print(this->_json));
         if (this->_pretty)
           this->output() << elle::json::pretty_print(this->_json);
         else

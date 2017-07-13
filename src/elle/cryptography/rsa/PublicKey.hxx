@@ -2,7 +2,6 @@
 // ---------- class -----------------------------------------------------------
 //
 
-#include <elle/Lazy.hh>
 #include <elle/serialization/binary.hh>
 #include <elle/serialization/json.hh>
 #include <elle/utility/Move.hh>
@@ -59,12 +58,12 @@ namespace elle
           elle::serialization::binary::serialize(o, version, false);
         ELLE_DUMP(
           "data: %s",
-          elle::lazy([&] {
+          [&] {
               std::stringstream out;
               elle::serialization::json::serialize(o, out, version,
                                                    false, true);
               return out.str();
-            }));
+          }());
         ELLE_DUMP("serialization version: %s", version);
         ELLE_DUMP("serialized data: %s", serialized);
         ELLE_DUMP("signature: %s", s);
