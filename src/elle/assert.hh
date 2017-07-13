@@ -22,7 +22,7 @@ namespace elle
   /// Exception thrown when an assertion is unmet.
   ///
   /// @note You should never catch directly `AssertError`, nor its base class
-  /// `std::exception`, but in the main function of the program.
+  /// `std::exception`, except in the main function of the program.
   class ELLE_API AssertError
     : public std::exception
   {
@@ -38,40 +38,40 @@ namespace elle
   };
 }
 
-#define ELLE_ABORT(...)                                               \
+#define ELLE_ABORT(...)                                         \
   ::elle::_abort(elle::sprintf(__VA_ARGS__), __FILE__, __LINE__)
 
 /// Enforce a condition is true (always present in the code)
 /// @see ELLE_ASSERT for debug only assertions.
-#define ELLE_ENFORCE(_condition_)                                           \
+#define ELLE_ENFORCE(_condition_)                                       \
   ::elle::_elle_assert(_condition_, #_condition_, __FILE__, __LINE__)
 
-#define ELLE_ENFORCE_EQ(A, B)                                               \
+#define ELLE_ENFORCE_EQ(A, B)                           \
   ::elle::_assert_eq(A, B, #A, #B, __FILE__, __LINE__)
 
-#define ELLE_ENFORCE_NEQ(A, B)                                              \
+#define ELLE_ENFORCE_NEQ(A, B)                          \
   ::elle::_assert_neq(A, B, #A, #B, __FILE__, __LINE__)
 
-#define ELLE_ENFORCE_GT(A, B)                                               \
+#define ELLE_ENFORCE_GT(A, B)                           \
   ::elle::_assert_gt(A, B, #A, #B, __FILE__, __LINE__)
 
-#define ELLE_ENFORCE_GTE(A, B)                                              \
+#define ELLE_ENFORCE_GTE(A, B)                          \
   ::elle::_assert_gte(A, B, #A, #B, __FILE__, __LINE__)
 
-#define ELLE_ENFORCE_LT(A, B)                                               \
+#define ELLE_ENFORCE_LT(A, B)                           \
   ::elle::_assert_lt(A, B, #A, #B, __FILE__, __LINE__)
 
-#define ELLE_ENFORCE_LTE(A, B)                                              \
+#define ELLE_ENFORCE_LTE(A, B)                          \
   ::elle::_assert_lte(A, B, #A, #B, __FILE__, __LINE__)
 
-#define ELLE_ENFORCE_CONTAINS(C, E)                                         \
+#define ELLE_ENFORCE_CONTAINS(C, E)                             \
   ::elle::_assert_contains(C, E, #C, #E, __FILE__, __LINE__)
 
-#define ELLE_ENFORCE_NCONTAINS(C, E)                                        \
+#define ELLE_ENFORCE_NCONTAINS(C, E)                            \
   ::elle::_assert_ncontains(C, E, #C, #E, __FILE__, __LINE__)
 
 /// Use after the last catch close to enforce no other exception is caught
-#define ELLE_ENFORCE_NO_OTHER_EXCEPTION                                \
+#define ELLE_ENFORCE_NO_OTHER_EXCEPTION                                 \
   catch(...)                                                            \
   {                                                                     \
     ::elle::_elle_assert(                                               \
@@ -82,32 +82,32 @@ namespace elle
 
 #if defined DEBUG || !defined NDEBUG
 /// Throw if the condition is unmet.
-# define ELLE_ASSERT(_condition_) ELLE_ENFORCE(_condition_)
-# define ELLE_ASSERT_EQ(A, B) ELLE_ENFORCE_EQ(A, B)
-# define ELLE_ASSERT_NEQ(A, B) ELLE_ENFORCE_NEQ(A, B)
-# define ELLE_ASSERT_GT(A, B) ELLE_ENFORCE_GT(A, B)
-# define ELLE_ASSERT_GTE(A, B) ELLE_ENFORCE_GTE(A, B)
-# define ELLE_ASSERT_LT(A, B) ELLE_ENFORCE_LT(A, B)
-# define ELLE_ASSERT_LTE(A, B) ELLE_ENFORCE_LTE(A, B)
-# define ELLE_ASSERT_CONTAINS(C, E) ELLE_ENFORCE_CONTAINS(C, E)
-# define ELLE_ASSERT_NCONTAINS(C, E) ELLE_ENFORCE_NCONTAINS(C, E)
+# define ELLE_ASSERT           ELLE_ENFORCE
+# define ELLE_ASSERT_EQ        ELLE_ENFORCE_EQ
+# define ELLE_ASSERT_NEQ       ELLE_ENFORCE_NEQ
+# define ELLE_ASSERT_GT        ELLE_ENFORCE_GT
+# define ELLE_ASSERT_GTE       ELLE_ENFORCE_GTE
+# define ELLE_ASSERT_LT        ELLE_ENFORCE_LT
+# define ELLE_ASSERT_LTE       ELLE_ENFORCE_LTE
+# define ELLE_ASSERT_CONTAINS  ELLE_ENFORCE_CONTAINS
+# define ELLE_ASSERT_NCONTAINS ELLE_ENFORCE_NCONTAINS
 # define ELLE_ASSERT_NO_OTHER_EXCEPTION ELLE_ENFORCE_NO_OTHER_EXCEPTION
 #else
-# define ELLE_ASSERT(_condition_) ((void) 0)
-# define ELLE_ASSERT_EQ(A, B) ELLE_ASSERT(true)
-# define ELLE_ASSERT_NEQ(A, B) ELLE_ASSERT(true)
-# define ELLE_ASSERT_GT(A, B) ELLE_ASSERT(true)
-# define ELLE_ASSERT_GTE(A, B) ELLE_ASSERT(true)
-# define ELLE_ASSERT_LT(A, B) ELLE_ASSERT(true)
-# define ELLE_ASSERT_LTE(A, B) ELLE_ASSERT(true)
-# define ELLE_ASSERT_CONTAINS(C, E) ELLE_ASSERT(true)
+# define ELLE_ASSERT(_)              ((void) 0)
+# define ELLE_ASSERT_EQ(A, B)        ELLE_ASSERT(true)
+# define ELLE_ASSERT_NEQ(A, B)       ELLE_ASSERT(true)
+# define ELLE_ASSERT_GT(A, B)        ELLE_ASSERT(true)
+# define ELLE_ASSERT_GTE(A, B)       ELLE_ASSERT(true)
+# define ELLE_ASSERT_LT(A, B)        ELLE_ASSERT(true)
+# define ELLE_ASSERT_LTE(A, B)       ELLE_ASSERT(true)
+# define ELLE_ASSERT_CONTAINS(C, E)  ELLE_ASSERT(true)
 # define ELLE_ASSERT_NCONTAINS(C, E) ELLE_ASSERT(true)
 # define ELLE_ASSERT_NO_OTHER_EXCEPTION ELLE_ASSERT(true)
 #endif
 
 /// Provide a way for generating code only if evolving in the DEBUG mode.
 #if defined(DEBUG) || !defined(NDEBUG)
-# define ELLE_STATEMENT(...)                                           \
+# define ELLE_STATEMENT(...)                    \
   __VA_ARGS__
 #else
 # define ELLE_STATEMENT(...)
@@ -149,7 +149,6 @@ namespace elle
               file,                                                     \
               line);                                                    \
   }
-/**/
 
   // Dump assert functions for each operator.
   ELLE_ASSERT_OP_CHECK(==, eq);
