@@ -137,10 +137,10 @@ namespace elle
       void
       PublicKey::_check() const
       {
-        ELLE_ASSERT_NEQ(this->_key, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->n, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->e, nullptr);
+        ELLE_ASSERT(this->_key);
+        ELLE_ASSERT(this->_key->pkey.rsa);
+        ELLE_ASSERT(this->_key->pkey.rsa->n);
+        ELLE_ASSERT(this->_key->pkey.rsa->e);
         ELLE_ASSERT_EQ(this->_key->pkey.rsa->d, nullptr);
         ELLE_ASSERT_EQ(this->_key->pkey.rsa->p, nullptr);
         ELLE_ASSERT_EQ(this->_key->pkey.rsa->q, nullptr);
@@ -323,8 +323,8 @@ namespace elle
       {
         if (this == &other)
           return (true);
-        ELLE_ASSERT_NEQ(this->_key, nullptr);
-        ELLE_ASSERT_NEQ(other._key, nullptr);
+        ELLE_ASSERT(this->_key);
+        ELLE_ASSERT(other._key);
         return (::EVP_PKEY_cmp(this->_key.get(), other._key.get()) == 1);
       }
 
@@ -360,12 +360,12 @@ namespace elle
       void
       PublicKey::serialize(elle::serialization::Serializer& serializer)
       {
-        ELLE_ASSERT_NEQ(this->_key, nullptr);
+        ELLE_ASSERT(this->_key);
 
         cryptography::serialize<publickey::Serialization>(
           serializer,
           this->_key->pkey.rsa);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa, nullptr);
+        ELLE_ASSERT(this->_key->pkey.rsa);
       }
 
       /*----------.

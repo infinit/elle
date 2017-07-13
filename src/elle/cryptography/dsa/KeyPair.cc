@@ -56,7 +56,7 @@ namespace elle
       PublicKey const&
       KeyPair::K() const
       {
-        ELLE_ASSERT_NEQ(this->_K, nullptr);
+        ELLE_ASSERT(this->_K);
 
         return (*this->_K);
       }
@@ -64,7 +64,7 @@ namespace elle
       PrivateKey const&
       KeyPair::k() const
       {
-        ELLE_ASSERT_NEQ(this->_k, nullptr);
+        ELLE_ASSERT(this->_k);
 
         return (*this->_k);
       }
@@ -72,8 +72,8 @@ namespace elle
       uint32_t
       KeyPair::size() const
       {
-        ELLE_ASSERT_NEQ(this->_K, nullptr);
-        ELLE_ASSERT_NEQ(this->_k, nullptr);
+        ELLE_ASSERT(this->_K);
+        ELLE_ASSERT(this->_k);
         ELLE_ASSERT_EQ(this->_K->size(), this->_k->size());
 
         return (this->_K->size());
@@ -82,8 +82,8 @@ namespace elle
       uint32_t
       KeyPair::length() const
       {
-        ELLE_ASSERT_NEQ(this->_K, nullptr);
-        ELLE_ASSERT_NEQ(this->_k, nullptr);
+        ELLE_ASSERT(this->_K);
+        ELLE_ASSERT(this->_k);
         ELLE_ASSERT_EQ(this->_K->length(), this->_k->length());
 
         return (this->_K->length());
@@ -99,8 +99,8 @@ namespace elle
         if (this == &other)
           return (true);
 
-        ELLE_ASSERT_NEQ(this->_K, nullptr);
-        ELLE_ASSERT_NEQ(this->_k, nullptr);
+        ELLE_ASSERT(this->_K);
+        ELLE_ASSERT(this->_k);
 
         // The public component is enough to uniquely identify a key pair.
         return (*this->_K == *other._K);
@@ -138,8 +138,8 @@ namespace elle
       void
       KeyPair::print(std::ostream& stream) const
       {
-        ELLE_ASSERT_NEQ(this->_K, nullptr);
-        ELLE_ASSERT_NEQ(this->_k, nullptr);
+        ELLE_ASSERT(this->_K);
+        ELLE_ASSERT(this->_k);
 
         stream << "(" << *this->_K << ", " << *this->_k << ")";
       }
@@ -240,7 +240,7 @@ namespace elle
             ::EVP_PKEY_CTX_free(context);
           }
 
-          ELLE_ASSERT_NEQ(key, nullptr);
+          ELLE_ASSERT(key);
 
           // Instanciate both a DSA public and private key based on the
           // EVP_PKEY.

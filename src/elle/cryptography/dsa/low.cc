@@ -30,7 +30,7 @@ namespace elle
         ::DSA*
         DSA_priv2pub(::DSA* private_key)
         {
-          ELLE_ASSERT_NEQ(private_key, nullptr);
+          ELLE_ASSERT(private_key);
 
           unsigned char* buffer = nullptr;
           int size = 0;
@@ -66,7 +66,7 @@ namespace elle
         ::DSA*
         DSA_dup(::DSA* key)
         {
-          ELLE_ASSERT_NEQ(key, nullptr);
+          ELLE_ASSERT(key);
 
           // Increase the reference counter on this object rather
           // than duplicating the structure.

@@ -16,7 +16,7 @@ namespace elle
     {
       if (serializer.out())
       {
-        ELLE_ASSERT_NEQ(data, nullptr);
+        ELLE_ASSERT(data);
         elle::Buffer representation = S::encode(data);
         serializer.serialize(S::identifier, representation);
       }
