@@ -19,7 +19,7 @@ namespace elle
       | Types |
       `------*/
       public:
-        using Self = elle::serialization::json::SerializerIn;
+        using Self = SerializerIn;
         using Super = serialization::SerializerIn;
 
       /*-------------.

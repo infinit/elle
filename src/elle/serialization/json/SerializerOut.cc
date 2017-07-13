@@ -2,6 +2,7 @@
 
 #include <elle/Lazy.hh>
 #include <elle/assert.hh>
+#include <elle/find.hh>
 #include <elle/format/base64.hh>
 #include <elle/json/json.hh>
 #include <elle/log.hh>
@@ -72,10 +73,14 @@ namespace elle
           auto& object = boost::any_cast<elle::json::Object&>(current);
           // FIXME: hackish way to not serialize version twice when
           // serialize_forward is used.
-          if (name == ".version" && object.find(name) != object.end())
+          if (name == ".version" && find(object, name))
             return false;
-          auto it = object.emplace(name, boost::any());
-          this->_current.push_back(&it.first->second);
+          else
+          {
+            auto it = object.emplace(name, boost::any());
+            this->_current.push_back(&it.first->second);
+            return true;
+          }
         }
         else if (current.type() == typeid(elle::json::Array))
         {
@@ -83,13 +88,11 @@ namespace elle
           auto& array = boost::any_cast<elle::json::Array&>(current);
           array.emplace_back();
           this->_current.push_back(&array.back());
+          return true;
         }
         else
-        {
           ELLE_ABORT("cannot serialize a composite and a fundamental object "
                      "in key %s", name);
-        }
-        return true;
       }
 
       void
