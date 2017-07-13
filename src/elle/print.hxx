@@ -50,6 +50,18 @@ namespace elle
     | Helpers |
     `--------*/
 
+    // GCC 4.9, when instantiating this piece of code, generates tons
+    // of warnings about our `-> decltype(bool(t))`:
+    //
+    // print.hxx:57:19: warning: the compiler can assume that the address
+    // of 't' will always evaluate to 'true' [-Waddress]
+    //
+    // The pragma cannot be restristed to that line.
+#if defined __GNUC__ && ! defined __clang__
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Waddress"
+#endif
+
     /// Boolean value of types featuring to bool() operator.
     template <typename T>
     auto
@@ -58,6 +70,10 @@ namespace elle
     {
       return bool(t);
     }
+
+#if defined __GNUC__ && ! defined __clang__
+# pragma GCC diagnostic pop
+#endif
 
     /// A string is "false" iff it's empty.
     ///
