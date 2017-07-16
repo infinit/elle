@@ -125,6 +125,13 @@ TEST(uri_parse_test, test_hierarchical_part_valid_host_valid_port_empty_path) {
   ASSERT_TRUE(uri.path().empty());
 }
 
+TEST(uri_parse_test, test_hierarchical_part_valid_user_odd_digits_port) {
+  test::uri uri("http://user@www.example.com:12345/foo");
+  EXPECT_TRUE(uri.parse_uri());
+  ASSERT_TRUE(uri.has_port());
+  EXPECT_EQ("12345", uri.port());
+}
+
 TEST(uri_parse_test, test_hierarchical_part_valid_host_port_path) {
   test::uri uri("http://www.example.com:80/path");
   EXPECT_TRUE(uri.parse_uri());
