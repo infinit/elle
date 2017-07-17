@@ -104,8 +104,8 @@ test_basics_interleave()
   elle::reactor::Scheduler sched;
 
   int step = 0;
-  elle::reactor::Thread c1(sched, "1", std::bind(coro1, std::ref(step)));
-  elle::reactor::Thread c2(sched, "2", std::bind(coro2, std::ref(step)));
+  elle::reactor::Thread c1(sched, "1", [&step] { coro1(step); });
+  elle::reactor::Thread c2(sched, "2", [&step] { coro2(step); });
   sched.run();
   BOOST_CHECK_EQUAL(step, 5);
 }
@@ -480,12 +480,11 @@ test_signals_one_on_one()
   elle::reactor::Waitables signals;
   signals << signal;
   elle::reactor::Thread w(sched, "waiter",
-                    std::bind(waiter, std::ref(step), signals));
+                          [&step, signals] () mutable { waiter(step, signals); });
   elle::reactor::Thread s(sched, "sender",
-                    std::bind(sender_one, std::ref(step),
-                              std::ref(signal), 1));
+                          [&step, &signal] { sender_one(step, signal, 1); });
   sched.run();
-  BOOST_CHECK_EQUAL(step, 1);
+  BOOST_TEST(step == 1);
 }
 
 static
@@ -500,10 +499,10 @@ test_signals_one_on_two()
   elle::reactor::Waitables signals;
   signals << signal1 << signal2;
   elle::reactor::Thread w(sched, "waiter",
-                    std::bind(waiter, std::ref(step), signals));
+                          [&step, signals] () mutable { waiter(step, signals); });
   elle::reactor::Thread s(sched, "sender",
-                    std::bind(sender_two, std::ref(step),
-                              std::ref(signal1), std::ref(signal2)));
+                          [&step, &signal1, &signal2]
+                          { sender_two(step, signal1, signal2); });
   sched.run();
   BOOST_CHECK_EQUAL(step, 1);
 }
@@ -537,20 +536,21 @@ ELLE_TEST_SCHEDULED(test_signals_order)
   elle::reactor::Signal s;
   elle::reactor::Barrier b;
   auto thread = [&](int id) { b.open(); s.wait(); seq = id;};
-  elle::reactor::Thread t1("t1", std::bind(thread, 1));
+  elle::reactor::Thread t1("t1", [&] { thread(1); });
   b.wait();b.close();
-  elle::reactor::Thread t2("t2", std::bind(thread, 2));
+  elle::reactor::Thread t2("t2", [&] { thread(2); });
   b.wait();b.close();
-  elle::reactor::Thread t3("t3", std::bind(thread, 3));
+  elle::reactor::Thread t3("t3", [&] { thread(3); });
   b.wait();b.close();
   for (unsigned int i = 4; i < 8; ++i)
   {
-    new elle::reactor::Thread(elle::sprintf("t%s", i), std::bind(thread, i), true);
-    b.wait();b.close();
+    new elle::reactor::Thread(elle::sprintf("t%s", i), [&] { thread(i); }, true);
+    b.wait();
+    b.close();
   }
-  elle::reactor::Thread t8("t8", std::bind(thread, 8));
+  elle::reactor::Thread t8("t8", [&] { thread(8); });
   b.wait();b.close();
-  elle::reactor::Thread t9("t9", std::bind(thread, 9));
+  elle::reactor::Thread t9("t9", [&] { thread(9); });
   b.wait();b.close();
   for (unsigned i=1; i<10; ++i)
   {
