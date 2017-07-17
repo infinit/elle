@@ -151,26 +151,38 @@ namespace elle
                       res);
         }
 
-        // Time
-        if (this->_enable_time)
-          res = print("%s: %s", msg.time, res);
-
         return res;
       }();
 
+      // The prefix related to time.
+      auto const time_prefix = [&]
+        {
+          if (this->_enable_time)
+          {
+            if (this->time_microsec())
+              return date::format("%F %T: ", msg.time);
+            else
+            {
+              auto const t = date::floor<std::chrono::seconds>(msg.time);
+              return date::format("%F %T: ", t);
+            }
+          }
+          else
+            return ""s;
+        }();
+
       auto const color_code = get_color_code(msg.level, msg.type);
-      this->_output << color_code << first_line << '\n';
+      this->_output << color_code << time_prefix << first_line << '\n';
 
       if (2 <= lines.size())
       {
         ELLE_ASSERT_GTE(first_line.size(), lines[0].size());
         // We repeat the time on each subsequent line, so that sorting
         // log files on time keeps these lines together.
-        auto const time = this->_enable_time ? print("%s: ", msg.time) : "";
         auto const indent
-          = std::string(first_line.size() - lines[0].size() - time.size(), ' ');
+          = std::string(first_line.size() - lines[0].size(), ' ');
         for (auto i = 1u; i < lines.size(); i++)
-          this->_output << time << indent << lines[i] << '\n';
+          this->_output << time_prefix << indent << lines[i] << '\n';
       }
       if (!color_code.empty())
         this->_output << "[0m";
