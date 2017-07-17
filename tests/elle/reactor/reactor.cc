@@ -2999,7 +2999,7 @@ namespace timer
   ELLE_TEST_SCHEDULED(basic_cancel)
   {
     int v = 0;
-    Timer t("myTimer3", 100ms, std::bind(&coro, std::ref(v)));
+    Timer t("myTimer3", 100ms, [&v] { coro(v); });
     BOOST_CHECK_EQUAL(v, 0);
     t.cancel();
     elle::reactor::sleep(200ms);
@@ -3025,7 +3025,15 @@ namespace timer
   {
     elle::reactor::Barrier b;
     int v = 0;
-    Timer t("myTimer5", 0ms, [&] { b.open(); v = 1; elle::reactor::yield(); elle::reactor::yield(); v=2;});
+    Timer t("myTimer5", 0ms,
+            [&]
+            {
+              b.open();
+              v = 1;
+              elle::reactor::yield();
+              elle::reactor::yield();
+              v = 2;
+            });
     b.wait();
     t.cancel_now(); // Waits.
     BOOST_CHECK_EQUAL(v, 2);
@@ -3037,8 +3045,13 @@ namespace timer
     elle::reactor::Barrier b;
     Timer t("myTimer6", 0ms, [&]
             {
-              try {
-                b.open(); v = 1; elle::reactor::yield(); elle::reactor::yield(); v=2;
+              try
+              {
+                b.open();
+                v = 1;
+                elle::reactor::yield();
+                elle::reactor::yield();
+                v = 2;
               }
               catch (...)
               {
@@ -3060,8 +3073,13 @@ namespace timer
     elle::reactor::Barrier b;
     Timer t("myTimer7", 0ms, [&]
             {
-              try {
-                b.open(); v = 1; elle::reactor::yield(); elle::reactor::yield(); v=2;
+              try
+              {
+                b.open();
+                v = 1;
+                elle::reactor::yield();
+                elle::reactor::yield();
+                v = 2;
               }
               catch (...)
               {
