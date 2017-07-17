@@ -140,10 +140,14 @@ namespace
       auto const re =
         std::regex{"(.*?-.*?-.*?)"                       // 1: date.
                    " "
-                   "([0-9][0-9]:[0-9][0-9]:[0-9][0-9])"  // 2: time in secs.
-                   "(?:\\.([0-9]{6}))?"                  // 3: microseconds.
-                   ": "
-                   "\\[(.*?)\\]"                         // 4: component.
+                   "(?:"
+                   "" "([0-9][0-9]:[0-9][0-9]:[0-9][0-9])"  // 2: time in secs.
+                   "" "(?:\\.([0-9]{6}))?"                  // 3: microseconds.
+                   "" ": "
+                   ")?"
+                   "(?:"
+                   "" "\\[(.*?)\\]"                         // 4: component.
+                   ")?"
                    " "
                    "(.*)"};                              // 5: message.
       auto m = std::smatch{};
@@ -154,7 +158,8 @@ namespace
       this->time = m[2];
       if (m[3].length())
         this->microsec = m[3];
-      this->component = m[4];
+      if (m[4].length())
+        this->component = m[4];
       this->message = m[5];
     }
     std::string date;
@@ -716,22 +721,44 @@ parallel_write()
 
 namespace
 {
+  /// Check the output of multiline messages.
   void
   multiline()
   {
-    std::stringstream output;
-    elle::os::setenv("ELLE_LOG_LEVEL", "DUMP");
-    elle::log::logger(std::make_unique<elle::log::TextLogger>(output));
-    ELLE_LOG_COMPONENT("multiline");
-    ELLE_TRACE("This message\nis\nsplitted\n\ninto\r\n5 lines\n\n\r\n\r\r");
+    auto make_log = []
+      {
+        std::stringstream output;
+        elle::os::setenv("ELLE_LOG_LEVEL", "DUMP");
+        auto prev = elle::log::logger(std::make_unique<elle::log::TextLogger>(output));
+        ELLE_LOG_COMPONENT("multiline");
+        ELLE_TRACE("This message\nis\nsplitted\n\ninto\r\n5 lines\n\n\r\n\r\r");
+        elle::log::logger(std::move(prev));
+        return output.str();
+      };
     auto const expected =
       "[multiline] This message\n"
       "            is\n"
       "            splitted\n"
       "            into\n"
       "            5 lines\n";
-    BOOST_CHECK_EQUAL(output.str(), expected);
-    elle::log::logger(nullptr);
+    BOOST_TEST(make_log() == expected);
+    // Check that with time enabled, all the lines have the timestamp.
+    {
+      auto lines = std::vector<std::string>{};
+      elle::os::setenv("ELLE_LOG_TIME", "1");
+      auto msg = make_log();
+      BOOST_TEST_MESSAGE("msg: " << msg);
+      boost::split(lines, msg, boost::is_any_of("\n"));
+      // We get an empty line at the end.
+      if (lines.back().empty())
+        lines.pop_back();
+      for (auto line: lines)
+      {
+        auto logm = LogMessage{line};
+        BOOST_TEST(!logm.time.empty());
+      }
+    }
+    clear_env();
   }
 }
 
