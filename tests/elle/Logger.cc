@@ -130,6 +130,39 @@ namespace
     elle::os::unsetenv("ELLE_LOG_TIME_UNIVERSAL");
     elle::os::unsetenv("ELLE_LOG_PID");
   }
+
+  /// Decompose ("parse") a log message.
+  struct LogMessage
+  {
+    LogMessage(std::string const& line)
+    {
+      BOOST_TEST_MESSAGE("msg: {" << line << "}");
+      auto const re =
+        std::regex{"(.*?-.*?-.*?)"                       // 1: date.
+                   " "
+                   "([0-9][0-9]:[0-9][0-9]:[0-9][0-9])"  // 2: time in secs.
+                   "(?:\\.([0-9]{6}))?"                  // 3: microseconds.
+                   ": "
+                   "\\[(.*?)\\]"                         // 4: component.
+                   " "
+                   "(.*)"};                              // 5: message.
+      auto m = std::smatch{};
+      BOOST_REQUIRE(std::regex_match(line, m, re));
+      ELLE_LOG("date: {}, time: {}, microsec: {}, component: {}, message: {}",
+               m[1], m[2], m[3], m[4], m[5]);
+      this->date = m[1];
+      this->time = m[2];
+      if (m[3].length())
+        this->microsec = m[3];
+      this->component = m[4];
+      this->message = m[5];
+    }
+    std::string date;
+    std::string time;
+    std::string microsec;
+    std::string component;
+    std::string message;
+  };
 }
 
 static
@@ -629,27 +662,11 @@ namespace
     for (auto microsec: {false, true})
       for (auto universal: {false, true})
       {
-        auto msg = make_log(microsec, universal);
-        BOOST_TEST_MESSAGE("msg: {" << msg << "}");
-        auto const re =
-          std::regex{"(.*?-.*?-.*?)"                       // 1: date.
-                     " "
-                     "([0-9][0-9]:[0-9][0-9]:[0-9][0-9])"  // 2: time in secs.
-                     "(?:\\.([0-9]{6}))?"                  // 3: microseconds.
-                     ": "
-                     "\\[(.*?)\\]"                         // 4: component.
-                     " "
-                     "(.*)"};                              // 5: message.
-        auto m = std::smatch{};
-        BOOST_TEST(std::regex_match(msg, m, re));
-        ELLE_LOG("date: {}, time: {}, microsec: {}, component: {}, message: {}",
-                 m[1], m[2], m[3], m[4], m[5]);
-        if (microsec)
-          BOOST_TEST(m[3].length() != 0);
-        else
-          BOOST_TEST(m[3].length() == 0);
-        BOOST_TEST(m[4] == "component");
-        BOOST_TEST(m[5] == "message");
+        auto const msg = make_log(microsec, universal);
+        auto const logm = LogMessage(msg);
+        BOOST_TEST(logm.microsec.empty() == !microsec);
+        BOOST_TEST(logm.component == "component");
+        BOOST_TEST(logm.message == "message");
       }
   }
 }
