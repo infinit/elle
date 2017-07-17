@@ -18,8 +18,9 @@ namespace elle
       , _append{append}
     {
       if (this->size())
-        elle::rotate(this->_fstream, this->base(), this->size(), this->rotate());
-      else if (this->_append)
+        elle::rotate(this->_fstream, this->base(), this->size(), this->rotate(),
+                     this->append());
+      else if (this->append())
         this->_fstream.open(this->base(),
                             std::fstream::app | std::fstream::out);
       else

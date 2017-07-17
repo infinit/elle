@@ -4,6 +4,7 @@
 #include <vector>
 
 #include <boost/range/adaptor/sliced.hpp>
+#include <boost/range/irange.hpp>
 
 #include <elle/bytes.hh>
 #include <elle/filesystem.hh>
@@ -28,27 +29,45 @@ namespace elle
     ///
     /// @param of      the output stream.
     /// @param base    the base for file names.
+    /// @param size    the threshold beyond which files are rotated.
     /// @param rotate  how many files to keep (0 for unlimited).
+    /// @param append  whether to append to the latest file,
+    ///                rather than creating a new one.
     template <typename CharT, typename Traits = std::char_traits<CharT>>
     void
     rotate_impl(std::basic_ofstream<CharT, Traits>& of,
                 std::string const& base,
-                int rotate)
+                int size, int rotate, bool append)
     {
       auto const vs = rotate_versions(base);
-      auto const next = vs.empty() ? 0 : vs.back() + 1;
-      // Remove the files that are too old.
-      if (rotate && rotate < int(vs.size() + 1))
+      auto const last = vs.empty() ? -1 : vs.back();
+      // Remove the files that are too old.  If we don't append, we
+      // will create a new file, so remove one more file.
+      if (rotate && rotate < int(vs.size() + !append))
         for (auto i: vs | boost::adaptors::sliced(0, vs.size() + 1 - rotate))
           try_remove(elle::print("{}.{}", base, i));
+      // If append is enabled, try to reuse the last file.
+      if (append
+          && last != -1
+          && int(file_size(bfs::path(elle::print("{}.{}", base, last)))) < size)
+      {
+        auto const f = elle::print("{}.{}", base, last);
+        of.open(f, std::ios_base::app);
+        if (of.good())
+        {
+          ELLE_DUMP("rotate_name: {}", f);
+          return;
+        }
+      }
       // Look for the first free name.
-      for (int i = next; i < next + 10000; ++i)
+      auto const next = last + 1;
+      for (auto i: boost::irange(next, next + 10000))
       {
         // There is no O_EXCL in C++.  TOCTOU...
-        auto f = elle::print("{}.{}", base, i);
+        auto const f = elle::print("{}.{}", base, i);
         if (!bfs::exists(f))
         {
-          of.open(f, std::ios_base::app);
+          of.open(f);
           if (of.good())
           {
             ELLE_DUMP("rotate_name: {}", f);
@@ -66,21 +85,24 @@ namespace elle
   /// @param base    the base name for the file names
   /// @param size    the threshold beyond which files are rotated.
   /// @param rotate  how many files to keep (0 to unlimited).
+  /// @param append  whether to append to the latest file,
+  ///                rather than creating a new one.
   template <typename CharT, typename Traits = std::char_traits<CharT>>
   void
   rotate(std::basic_ofstream<CharT, Traits>& of,
          std::string const& base,
          int size = 1_MiB,
-         int rotate = 0)
+         int rotate = 0,
+         bool append = false)
   {
-    if (of.is_open() && size < of.tellp())
+    if (of.is_open() && size <= of.tellp())
     {
       of.close();
       if (of.fail())
         err("failed to close file in family %s", base);
     }
     if (!of.is_open())
-      detail::rotate_impl(of, base, rotate);
+      detail::rotate_impl(of, base, size, rotate, append);
   }
 
 
@@ -91,9 +113,11 @@ namespace elle
   {
     extern template
     void
-    rotate_impl(std::ofstream& of, std::string const& base, int rotate);
+    rotate_impl(std::ofstream& of, std::string const& base,
+                int size, int rotate, bool append);
   }
   extern template
   void
-  rotate(std::ofstream& of, std::string const& base, int size, int rotate);
+  rotate(std::ofstream& of, std::string const& base,
+         int size, int rotate, bool append);
 }

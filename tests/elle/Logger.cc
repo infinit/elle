@@ -3,6 +3,7 @@
 #include <thread>
 
 #include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/predicate.hpp> // boost::contains
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/date_time/posix_time/posix_time.hpp>
 #include <boost/filesystem.hpp>
@@ -402,33 +403,70 @@ namespace
     elle::log::logger(std::move(prev));
   }
 
-  /// Check FileLogger.
+  /*-------------------.
+  | Check FileLogger.  |
+  `-------------------*/
   void
   file()
   {
     auto d = elle::filesystem::TemporaryDirectory{};
     auto const base = elle::print("{}/file.log", d.path().string());
-    auto logger = std::make_unique<elle::log::FileLogger>(base, "DUMP", 512, 3);
-    auto prev = elle::log::logger(std::move(logger));
+
+    for (auto phase: {1, 2})
     {
-      ELLE_LOG_COMPONENT("log");
-      for (int i = 0; i < 100; ++i)
+      // a. Generate the logs.
+      if (phase == 1)
       {
-        ELLE_DUMP("ping");
-        ELLE_DUMP("pong");
+        auto logger = std::make_unique<elle::log::FileLogger>(base, "DUMP", 512, 3);
+        auto prev = elle::log::logger(std::move(logger));
+        {
+          ELLE_LOG_COMPONENT("log");
+          for (int i = 0; i < 100; ++i)
+          {
+            ELLE_DUMP("ping");
+            ELLE_DUMP("pong");
+          }
+        }
+        elle::log::logger(std::move(prev));
+      }
+      else if (phase == 2)
+      {
+        // Check append by adding "append" to the last log, and
+        // checking there is no new file.
+        auto logger = std::make_unique<elle::log::FileLogger>(base, "DUMP", 512, 3, true);
+        auto prev = elle::log::logger(std::move(logger));
+        {
+          ELLE_LOG_COMPONENT("log");
+          ELLE_DUMP("append");
+        }
+        elle::log::logger(std::move(prev));
+      }
+      else
+        elle::unreachable();
+
+      // b. check the files.
+      {
+        BOOST_TEST_MESSAGE("d contains " << content(d.path()));
+        // This should create five files of less than 600B, but we
+        // kept the last three.
+        BOOST_TEST_MESSAGE("versions: " << elle::rotate_versions(base));
+        BOOST_TEST(elle::rotate_versions(base)
+                   == (std::vector<int>{2, 3, 4}));
+        for (int i = 2; i <= 4; ++i)
+        {
+          auto f = bfs::path(elle::print("{}.{}", base, i));
+          BOOST_TEST(file_size(f) < 600);
+        }
+        if (phase == 2)
+        {
+          auto&& is = std::ifstream(elle::print("{}.4", base));
+          auto&& ss = std::stringstream{};
+          ss << is.rdbuf();
+          auto const content = ss.str();
+          BOOST_TEST(boost::contains(content, "append"));
+        }
       }
     }
-    BOOST_TEST_MESSAGE("d contains " << content(d.path()));
-    // This should create five files of less than 600B, but we kept the last tree.
-    BOOST_TEST_MESSAGE("versions: " << elle::rotate_versions(base));
-    BOOST_TEST(elle::rotate_versions(base) == (std::vector<int>{2, 3, 4}));
-    for (int i = 2; i <= 4; ++i)
-    {
-      auto f = bfs::path(elle::print("{}.{}", base, i));
-      BOOST_TEST(file_size(f) < 600);
-    }
-    BOOST_TEST_MESSAGE("d contains " << content(d.path()));
-    elle::log::logger(std::move(prev));
   }
 
   /// Check make_logger.

@@ -35,10 +35,12 @@ namespace elle
   {
     template
     void
-    rotate_impl<char>(std::ofstream& of, std::string const& base, int rotate);
+    rotate_impl<char>(std::ofstream& of, std::string const& base,
+                      int size, int rotate, bool append);
   }
 
   template
   void
-  rotate(std::ofstream& of, std::string const& base, int size, int rotate);
+  rotate(std::ofstream& of, std::string const& base,
+         int size, int rotate, bool append);
 }

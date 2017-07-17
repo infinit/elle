@@ -3,7 +3,7 @@
 # include <winsock2.h>
 #endif
 
-#include <boost/algorithm/string/predicate.hpp>
+#include <boost/algorithm/string/predicate.hpp> // boost::contains
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 
