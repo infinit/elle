@@ -36,7 +36,10 @@ namespace elle
       , _timeout_timer(scheduler.io_service())
       , _thread(scheduler._manager->make_thread(
                   name,
-                  [this, a=std::move(action)] { this->_action_wrapper(a); }))
+                  [this, a=std::move(action)] ()
+                  {
+                    this->_action_wrapper(a);
+                  }))
       , _scheduler(scheduler)
       , _terminating(false)
       , _interruptible(true)
@@ -90,8 +93,13 @@ namespace elle
       this->_released();
       if (this->_dispose)
         delete this;
-      else /* the else is not an option*/
+      else if (this->_self)
+      {
+        this->_thread->action() = Action();
         this->_self.reset();
+      }
+      else
+        this->_thread->action() = Action();
     }
 
     /*----------.
