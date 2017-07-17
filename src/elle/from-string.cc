@@ -19,14 +19,14 @@ namespace elle
   {
     template <typename Type>
     auto
-    check_non_negative(std::string const& s)
+    check_unsigned(std::string const& s)
     {
       meta::static_if<std::is_unsigned<Type>{}>
         ([&s]
         {
           for (auto c: s)
             if (c == '-')
-              err<std::out_of_range>("invalid positive number: %s", s);
+              err<std::out_of_range>("invalid unsigned number: %s", s);
             else if (!std::isspace(c))
               break;
         })();
@@ -38,7 +38,7 @@ namespace elle
   Type                                                          \
   from_string(std::string const& s, Type*)                      \
   {                                                             \
-    check_non_negative<Type>(s);                                \
+    check_unsigned<Type>(s);                                    \
     auto size = size_t{};                                       \
     auto res = Conversion(s, &size);                            \
     if (size < s.size())                                        \
