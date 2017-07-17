@@ -15,10 +15,10 @@ namespace elle
     {
       class Thread;
 
-      /// Pool of thread that can switch execution.
+      /// Pool of threads that can switch execution.
       ///
-      /// All thread are affiliated with a Manager, and can only switch
-      /// execution to threads in the same manager. The context which
+      /// All threads are affiliated with a Manager, and can only switch
+      /// execution to threads in the same manager.  The context which
       /// instantiated the Manager is a valid thread (the root thread).
       class Backend
       {
@@ -98,18 +98,19 @@ namespace elle
         /// Start or resume execution.
         ///
         /// Start execution by running the action or resume it at the
-        /// point where yield was called. May only be called on a
+        /// point where `yield` was called. May only be called on a
         /// waiting or starting thread. Switch status to
         /// running. Make this thread the current thread.
         virtual
         void
         step() = 0;
+
         /// Give execution back to our caller.
         ///
         /// Suspend our execution and give it back to the thread that
-        /// called our step method. May only be called on the current
-        /// thread (whose status is thus running). Switch status to
-        /// waiting. Make the caller the current thread.
+        /// called our `step` method.  May only be called on the
+        /// current thread (whose status is thus running). Switch
+        /// status to waiting. Make the caller the current thread.
         virtual
         void
         yield() = 0;

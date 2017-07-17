@@ -64,23 +64,23 @@ namespace elle
           allocate(std::size_t size) const
           {
             ELLE_ASSERT(minimum_stack_size() <= size);
-            ELLE_ASSERT(maximum_stack_size() >= size);
+            ELLE_ASSERT(size <= maximum_stack_size());
 
-            if (auto limit = std::malloc(size))
-              return static_cast<char*>(limit) + size;
+            if (auto base = std::malloc(size))
+              return static_cast<char*>(base) + size;
             else
               throw std::bad_alloc();
           }
 
           void
-          deallocate(void* vp, std::size_t size) const
+          deallocate(void* sp, std::size_t size) const
           {
-            ELLE_ASSERT(vp);
+            ELLE_ASSERT(sp);
             ELLE_ASSERT(minimum_stack_size() <= size);
-            ELLE_ASSERT(maximum_stack_size() >= size);
+            ELLE_ASSERT(size <= maximum_stack_size());
 
-            void* limit = static_cast<char*>(vp) - size;
-            std::free(limit);
+            void* base = static_cast<char*>(sp) - size;
+            std::free(base);
           }
         };
 
