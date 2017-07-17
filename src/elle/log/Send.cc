@@ -153,9 +153,12 @@ namespace elle
         auto res = make_one_logger_impl(dest, level, args);
         if (auto l = get_text_logger(res))
         {
-          l->enable_time(get(args, "time"));
-          l->time_universal(get(args, "universal"));
-          l->time_microsec(get(args, "microsec"));
+          l->enable_time(get(args, "time",
+                             os::getenv("ELLE_LOG_TIME", false)));
+          l->time_universal(get(args, "universal",
+                                os::getenv("ELLE_LOG_TIME_UNIVERSAL", false)));
+          l->time_microsec(get(args, "microsec",
+                               os::getenv("ELLE_LOG_TIME_MICROSEC", false)));
         }
         if (!args.empty())
           err<std::invalid_argument>("unused logger arguments: %s", args);
