@@ -23,6 +23,8 @@
 
 using namespace std::literals;
 
+ELLE_LOG_COMPONENT("elle.log");
+
 namespace elle
 {
   namespace log
@@ -196,10 +198,11 @@ namespace elle
       std::unique_lock<std::recursive_mutex> ulock{log_mutex()};
       if (!_logger())
       {
-        auto level = os::getenv("ELLE_LOG_LEVEL", "LOG"s);
+        auto const level = os::getenv("ELLE_LOG_LEVEL", "LOG"s);
         _logger() = std::make_unique<TextLogger>(std::cerr, level);
-        _logger() = make_logger(os::getenv("ELLE_LOG_TARGETS",
-                                           "stderr://?" + level));
+        auto const ts = os::getenv("ELLE_LOG_TARGETS", "stderr://?" + level);
+        ELLE_DUMP("building main logger: {}", ts)
+        _logger() = make_logger(ts);
       }
       return *_logger();
     }
@@ -222,13 +225,13 @@ namespace elle
     logger_add(std::unique_ptr<Logger> l)
     {
       std::unique_lock<std::recursive_mutex> ulock{log_mutex()};
+      ELLE_DUMP("add new logger: {}", l);
       auto log = dynamic_cast<CompositeLogger*>(_logger().get());
       if (!log)
       {
         // Create before, so that current logs apply.
         auto clog = std::make_unique<CompositeLogger>();
-        auto old = std::move(_logger());
-        clog->loggers().push_back(std::move(old));
+        clog->loggers().push_back(std::move(_logger()));
         log = clog.get();
         _logger() = std::move(clog);
       }
