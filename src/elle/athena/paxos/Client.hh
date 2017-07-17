@@ -110,18 +110,32 @@ namespace elle
         | Consensus |
         `----------*/
       public:
+        class Choice
+        {
+        public:
+          Choice(Proposal proposal);
+          Choice(Proposal proposal, elle::Option<T, Quorum> value);
+          explicit
+          operator bool() const;
+          elle::Option<T, Quorum> const*
+          operator ->() const;
+          ELLE_ATTRIBUTE_R(Proposal, proposal);
+          ELLE_ATTRIBUTE_R(bool, conflicted);
+          ELLE_ATTRIBUTE_R((boost::optional<elle::Option<T, Quorum>>), value);
+        };
+
         /// Submit \a value as the chosen value.
         ///
         /// @param value The submitted value
         /// @returns The value that was chosen if not the one we submitted
-        boost::optional<Accepted>
+        Choice
         choose(elle::Option<T, Quorum> const& value);
         /// Submit \a value as the chosen value.
         ///
         /// @param value The submitted value
         /// @param version The version of the proposal.
         /// @returns The value that was chosen if not the one we submitted
-        boost::optional<Accepted>
+        Choice
         choose(elle::_detail::attribute_r_t<Version> version,
                elle::Option<T, Quorum> const& value);
         /// Get the latest chosen value.

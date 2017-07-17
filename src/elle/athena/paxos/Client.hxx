@@ -104,8 +104,9 @@ namespace elle
       `----------*/
 
       template <typename T, typename Version, typename ClientId>
-      boost::optional<typename Client<T, Version, ClientId>::Accepted>
+      auto
       Client<T, Version, ClientId>::choose(elle::Option<T, Quorum> const& value)
+        -> Choice
       {
         return this->choose(Version(), std::move(value));
       }
@@ -140,10 +141,11 @@ namespace elle
       }
 
       template <typename T, typename Version, typename ClientId>
-      boost::optional<typename Client<T, Version, ClientId>::Accepted>
+      auto
       Client<T, Version, ClientId>::choose(
         elle::_detail::attribute_r_t<Version> version,
         elle::Option<T, Quorum> const& value)
+        -> Choice
       {
         ELLE_LOG_COMPONENT("athena.paxos.Client");
         ELLE_TRACE_SCOPE("%s: choose %f", *this, value);
@@ -157,7 +159,8 @@ namespace elle
         {
           ++this->_round;
           std::set<Peer*> unavailables;
-          Proposal proposal(std::move(version), this->_round, this->_id);
+          auto const proposal =
+            Proposal(std::move(version), this->_round, this->_id);
           ELLE_DEBUG("%s: send proposal: %s", *this, proposal)
           {
             int reached = 0;
@@ -199,7 +202,9 @@ namespace elle
               },
               std::string("send proposal"));
             if (previous && previous->confirmed)
-              return previous;
+            {
+              return Choice(previous->proposal, previous->value);;
+            }
             this->_check_headcount(q, reached, weak_error, false);
             if (previous)
             {
@@ -210,7 +215,6 @@ namespace elle
                 ELLE_DEBUG("retry at version %s round %s",
                            version, this->_round);
                 continue;
-
               }
               if (proposal < previous->proposal)
               {
@@ -321,9 +325,11 @@ namespace elle
               std::string("send confirmation"));
             this->_check_headcount(q, reached, weak_error, false);
           }
-          break;
+          if (previous)
+            return Choice(previous->proposal, previous->value);
+          else
+            return Choice(proposal);
         }
-        return previous;
       }
 
       template <typename T, typename Version, typename ClientId>
@@ -421,6 +427,40 @@ namespace elle
       Client<T, Version, CId>::print(std::ostream& output) const
       {
         elle::fprintf(output, "paxos::Client(%f)", this->_id);
+      }
+
+      /*-------.
+      | Choice |
+      `-------*/
+
+      template <typename T, typename Version, typename ClientId>
+      Client<T, Version, ClientId>::Choice::Choice(Proposal proposal)
+        : _proposal(std::move(proposal))
+        , _conflicted(false)
+        , _value()
+      {}
+
+      template <typename T, typename Version, typename ClientId>
+      Client<T, Version, ClientId>::Choice::Choice(
+        Proposal proposal,
+        elle::Option<T, Quorum> value)
+        : _proposal(std::move(proposal))
+        , _conflicted(true)
+        , _value(std::move(value))
+      {}
+
+      template <typename T, typename Version, typename ClientId>
+      Client<T, Version, ClientId>::Choice::operator bool() const
+      {
+        return this->_conflicted;
+      }
+
+      template <typename T, typename Version, typename ClientId>
+      auto
+      Client<T, Version, ClientId>::Choice::operator ->() const
+        -> elle::Option<T, Quorum> const*
+      {
+        return &this->_value.get();
       }
     }
   }

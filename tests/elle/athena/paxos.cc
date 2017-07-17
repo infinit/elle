@@ -199,9 +199,10 @@ ELLE_TEST_SCHEDULED(already_chosen)
   paxos::Client<int, int, int> client_2(2, std::move(peers_2));
   BOOST_CHECK(!client_1.choose(42));
   auto chosen = client_2.choose(43);
+  static_assert(std::is_same<decltype(chosen), decltype(client_2)::Choice>::value, "");
   BOOST_CHECK(chosen);
-  BOOST_CHECK(chosen->value.is<int>());
-  BOOST_CHECK_EQUAL(chosen->value.get<int>(), 42);
+  BOOST_CHECK(chosen->is<int>());
+  BOOST_CHECK_EQUAL(chosen->get<int>(), 42);
 }
 
 template <typename T, typename Version, typename ServerId>
@@ -312,12 +313,12 @@ ELLE_TEST_SCHEDULED(concurrent)
       [&]
       {
         auto chosen = client_1.choose(42);
-        BOOST_CHECK_EQUAL(chosen->value.get<int>(), 42);
+        BOOST_CHECK_EQUAL(chosen->get<int>(), 42);
       }));
   elle::reactor::wait(
     elle::reactor::Waitables({&peer_1_2->accept_signal, &peer_1_3->accept_signal}));
   auto chosen = client_2.choose(43);
-  BOOST_CHECK_EQUAL(chosen->value.get<int>(), 42);
+  BOOST_CHECK_EQUAL(chosen->get<int>(), 42);
   peer_1_3->accept_barrier.open();
   elle::reactor::wait(*t1);
 }
@@ -352,7 +353,7 @@ ELLE_TEST_SCHEDULED(conflict)
       [&]
       {
         auto chosen = client_1.choose(43);
-        BOOST_CHECK_EQUAL(chosen->value.get<int>(), 42);
+        BOOST_CHECK_EQUAL(chosen->get<int>(), 42);
       }));
   elle::reactor::wait(
     elle::reactor::Waitables({&peer_1_2->accept_signal, &peer_1_3->accept_signal}));
@@ -429,7 +430,7 @@ ELLE_TEST_SCHEDULED(versions_partial)
                         {
                           auto chosen = client_1.choose(2, 2);
                           BOOST_CHECK(chosen);
-                          BOOST_CHECK_EQUAL(chosen->value.get<int>(), 2);
+                          BOOST_CHECK_EQUAL(chosen->get<int>(), 2);
                         }));
   elle::reactor::wait(peer_1_1->accept_signal);
   //        11        12        13
@@ -449,7 +450,7 @@ ELLE_TEST_SCHEDULED(versions_partial)
     paxos::Client<int, int, int> client_3(3, std::move(peers_3));
     auto chosen = client_3.choose(1, 1);
     client_3.conflict_backoff(false);
-    BOOST_CHECK_EQUAL(chosen->value.get<int>(), 2);
+    BOOST_CHECK_EQUAL(chosen->get<int>(), 2);
   }
   //        11        12        13
   //   +---------+---------+---------+
@@ -573,10 +574,10 @@ ELLE_TEST_SCHEDULED(elect_extend)
   //   |  1:1:1  |
   //   +---------+
   ELLE_LOG("fail choosing 1 for version 0")
-    BOOST_CHECK_EQUAL(client.choose(0, 1)->value.get<int>(), 0);
+    BOOST_CHECK_EQUAL(client.choose(0, 1)->get<int>(), 0);
   ELLE_LOG("fail choosing quorum of 2 for version 0");
     BOOST_CHECK_EQUAL(
-      client.choose(0, Client::Quorum{11, 12})->value.get<int>(), 0);
+      client.choose(0, Client::Quorum{11, 12})->get<int>(), 0);
   ELLE_LOG("choose quorum of 2 for version 1")
     BOOST_CHECK(!client.choose(1, Client::Quorum{11, 12}));
   //        11
@@ -588,7 +589,7 @@ ELLE_TEST_SCHEDULED(elect_extend)
   //   |  0:1:1  |
   //   +---------+
   ELLE_LOG("fail choosing 1 for version 1")
-    BOOST_CHECK_EQUAL(client.choose(1, 1)->value.get<Client::Quorum>(),
+    BOOST_CHECK_EQUAL(client.choose(1, 1)->get<Client::Quorum>(),
                       Client::Quorum({11, 12}));
   ELLE_LOG("fail choosing 2 for version 2 with partial quorum")
     BOOST_CHECK_THROW(client.choose(2, 2), Server::WrongQuorum);
@@ -713,10 +714,8 @@ ELLE_TEST_SCHEDULED(evict_down_lag_behind)
     {
       auto res = make_2client().choose(2, 21);
       BOOST_CHECK(res);
-      BOOST_CHECK(res->confirmed);
-      BOOST_CHECK(res->value.template is<Client::Quorum>());
-      BOOST_CHECK_EQUAL(res->value.template get<Client::Quorum>(),
-                        (Client::Quorum{11, 12}));
+      BOOST_CHECK(res->is<Client::Quorum>());
+      BOOST_CHECK_EQUAL(res->get<Client::Quorum>(), (Client::Quorum{11, 12}));
     }
     catch (Server::WrongQuorum const& e)
     {
@@ -727,9 +726,9 @@ ELLE_TEST_SCHEDULED(evict_down_lag_behind)
   {
     auto chosen = make_partial_client().choose(2, 21);
     BOOST_CHECK(chosen);
-    BOOST_CHECK_EQUAL(chosen->value.get<Client::Quorum>(),
+    BOOST_CHECK_EQUAL(chosen->get<Client::Quorum>(),
                       (Client::Quorum{11, 12}));
-    BOOST_CHECK_EQUAL(chosen->proposal.version, 3);
+    BOOST_CHECK_EQUAL(chosen.proposal().version, 3);
   }
   ELLE_LOG("choose 4 for version 4")
     BOOST_CHECK(!make_2client().choose(4, 4));
@@ -935,7 +934,7 @@ ELLE_TEST_SCHEDULED(serialization)
     peers.emplace_back(new Peer(11, server_1));
     peers.emplace_back(new Peer(12, server_2));
     paxos::Client<int, int, int> client(1, std::move(peers));
-    BOOST_CHECK_EQUAL(client.choose(1, 0)->value.template get<int>(), 1);
+    BOOST_CHECK_EQUAL(client.choose(1, 0)->template get<int>(), 1);
     BOOST_CHECK(!client.choose(2, 2));
   }
 }
@@ -1042,7 +1041,7 @@ ELLE_TEST_SCHEDULED(non_partial_state)
       [&]
       {
         elle::reactor::wait(p1->confirm_signal);
-        BOOST_CHECK_EQUAL(c2.choose(1, 2)->value.get<int>(), 1);
+        BOOST_CHECK_EQUAL(c2.choose(1, 2)->get<int>(), 1);
       });
     elle::reactor::wait(p2->accept_signal);
     p1->confirm_barrier.open();
@@ -1186,7 +1185,7 @@ ELLE_TEST_SCHEDULED(partial_conflict)
         {
           auto c = make_client(1, servers);
           BOOST_CHECK_EQUAL(
-            c.choose(1, 1187)->value.get<Server::Quorum>(),
+            c.choose(1, 1187)->get<Server::Quorum>(),
             (Server::Quorum{11, 12}));
         }
         {
@@ -1340,7 +1339,7 @@ ELLE_TEST_SCHEDULED(self_conflict)
           });
         auto r = c.choose(0, 1331);
         BOOST_REQUIRE(r);
-        BOOST_CHECK_EQUAL(r->value.get<int>(), 1331);
+        BOOST_CHECK_EQUAL(r->get<int>(), 1331);
       });
     scope.run_background(
       "second",
@@ -1350,7 +1349,7 @@ ELLE_TEST_SCHEDULED(self_conflict)
         auto c = make_client(0, servers);
         auto r = c.choose(0, 1349);
         BOOST_REQUIRE(r);
-        BOOST_CHECK_EQUAL(r->value.get<int>(), 1331);
+        BOOST_CHECK_EQUAL(r->get<int>(), 1331);
         first.open();
       });
     elle::reactor::wait(scope);
