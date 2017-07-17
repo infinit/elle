@@ -350,7 +350,6 @@ namespace elle
       if (auto i = elle::find(this->_component_levels, name))
         res = i->second;
       else
-      {
         for (auto const& filter: this->_component_patterns)
           if (filter.match(name))
           {
@@ -362,7 +361,6 @@ namespace elle
               // $ELLE_LOG_LEVEL="LOG,DUMP"), keep the last one.
               this->_component_levels[name] = res;
           }
-      }
       return res;
     }
 
@@ -381,8 +379,9 @@ namespace elle
     Logger::component_pop()
     {
       std::lock_guard<std::recursive_mutex> lock(_mutex);
-      assert(!this->_component_stack.empty());
-      this->_component_stack.pop_back();
+      // FIXME: make this an assert.
+      if (!this->_component_stack.empty())
+        this->_component_stack.pop_back();
     }
 
 
