@@ -3,6 +3,7 @@
 # include <winsock2.h>
 #endif
 
+#include <boost/algorithm/string/predicate.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 
@@ -98,7 +99,7 @@ ELLE_TEST_SCHEDULED(transfer)
         std::unique_ptr<Socket> socket(server.accept());
         static char servdata[5] = { 0 };
         socket->std::iostream::read(servdata, 4);
-        BOOST_CHECK_EQUAL(std::string(servdata), "lulz");
+        BOOST_TEST(std::string(servdata) == "lulz");
         socket->write(std::string("lol"));
         socket->write(std::string("lulz"));
       });
@@ -181,10 +182,9 @@ ELLE_TEST_SCHEDULED(short_read)
 class Sniffer
 {
 public:
-  Sniffer(std::string  secret):
-    _thread("sniffer", std::bind(&Sniffer::_run, this)),
-    _secret(std::move(secret)),
-    _server()
+  Sniffer(std::string secret)
+    : _thread{"sniffer", [this]{ this->_run(); }}
+    , _secret{std::move(secret)}
   {
     this->_server.listen();
   }
@@ -199,10 +199,10 @@ private:
   _run()
   {
     using elle::reactor::network::Socket;
-    std::unique_ptr<Socket> a(this->_server.accept());
-    std::unique_ptr<Socket> b(this->_server.accept());
+    auto a = this->_server.accept();
+    auto b = this->_server.accept();
 
-    elle::With<elle::reactor::Scope>() << [&] (elle::reactor::Scope& scope)
+    elle::With<elle::reactor::Scope>() << [&] (auto& scope)
     {
       auto route = [this] (Socket& from, Socket& to)
         {
@@ -211,24 +211,26 @@ private:
             while (true)
             {
               char data[BUFSIZ];
-              auto read = from.read_some(elle::WeakBuffer(data));
-              for (unsigned i = 0; i < read - this->_secret.size(); ++i)
-              {
-                BOOST_CHECK_NE(std::string(data + i, this->_secret.size()),
-                               this->_secret);
-              }
-              to.write(elle::WeakBuffer(data, read));
+              auto const read = from.read_some(elle::WeakBuffer(data));
+              auto const msg = elle::ConstWeakBuffer(data, read);
+              // The secret must remain secret.
+              BOOST_TEST(!boost::contains(msg, this->_secret));
+              to.write(msg);
             }
           }
           catch (elle::reactor::network::ConnectionClosed const&)
           { /* Nothing */ }
         };
-      scope.run_background(
-        elle::sprintf("%s: a to b", *this),
-        std::bind(route, std::ref(*a), std::ref(*b)));
-      scope.run_background(
-        elle::sprintf("%s: b to a", *this),
-        std::bind(route, std::ref(*b), std::ref(*a)));
+      scope.run_background(elle::sprintf("%s: a to b", *this),
+                           [&]
+                           {
+                             route(*a, *b);
+                           });
+      scope.run_background(elle::sprintf("%s: b to a", *this),
+                           [&]
+                           {
+                             route(*b, *a);
+                           });
       elle::reactor::wait(scope);
     };
   }
