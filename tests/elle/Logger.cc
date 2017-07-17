@@ -723,7 +723,7 @@ static
 void
 component_width()
 {
-  auto generate_log = []
+  auto make_log = []
   {
     std::stringstream output;
     elle::log::logger(std::make_unique<elle::log::TextLogger>(output));
@@ -743,7 +743,7 @@ component_width()
   };
 
   elle::os::setenv("ELLE_LOG_LEVEL", "DUMP");
-  BOOST_CHECK_EQUAL(generate_log(),
+  BOOST_CHECK_EQUAL(make_log(),
                     "[foo] foo.1\n"
                     "[bar]   bar.1\n"
                     "[quuuuux]     quuuuux.1\n"
@@ -751,7 +751,7 @@ component_width()
                     "[  foo  ] foo.2\n");
 
   elle::os::setenv("ELLE_LOG_LEVEL", "TRACE");
-  BOOST_CHECK_EQUAL(generate_log(),
+  BOOST_CHECK_EQUAL(make_log(),
                     "[foo] foo.1\n"
                     "[bar]   bar.1\n"
                     "[bar]   bar.2\n"
@@ -764,7 +764,7 @@ static
 void
 nested()
 {
-  auto generate_log = []
+  auto make_log = []
   {
     std::stringstream output;
     elle::log::logger(std::make_unique<elle::log::TextLogger>(output));
@@ -791,7 +791,7 @@ nested()
   };
 
   elle::os::setenv("ELLE_LOG_LEVEL", "TRACE");
-  BOOST_CHECK_EQUAL(generate_log(),
+  BOOST_CHECK_EQUAL(make_log(),
                     "[foo] foo.1\n"
                     "[bar]   bar.1\n"
                     "[baz]     baz.1\n"
@@ -803,14 +803,14 @@ nested()
                     "[foo] foo.3\n");
 
   elle::os::setenv("ELLE_LOG_LEVEL", "baz:TRACE");
-  BOOST_CHECK_EQUAL(generate_log(),
+  BOOST_CHECK_EQUAL(make_log(),
                     "[baz]     baz.1\n"
                     "[baz]     baz.2\n"
                     "[baz]   baz.3\n"
                     "[baz]   baz.4\n");
 
   elle::os::setenv("ELLE_LOG_LEVEL", "bar baz:TRACE");
-  BOOST_CHECK_EQUAL(generate_log(),
+  BOOST_CHECK_EQUAL(make_log(),
                     "[baz]     baz.1\n"
                     "[baz]     baz.2\n");
 }
