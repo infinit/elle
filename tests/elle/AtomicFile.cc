@@ -6,6 +6,8 @@
 #include <elle/AtomicFile.hh>
 #include <elle/With.hh>
 
+using namespace std::literals;
+
 namespace bfs = boost::filesystem;
 
 namespace
@@ -27,8 +29,8 @@ BOOST_AUTO_TEST_CASE(nominal)
 {
   using Read = elle::AtomicFile::Read;
   using Write = elle::AtomicFile::Write;
-  static std::string const data1("File me !\n");
-  static std::string const data2("File me harder !\n");
+  auto const data1 = "File me !\n"s;
+  auto const data2 = "File me harder !\n"s;
   cleanup();
   elle::AtomicFile f(path);
   auto write = [&] (std::string const& data)
@@ -92,12 +94,12 @@ BOOST_AUTO_TEST_CASE(errors)
 BOOST_AUTO_TEST_CASE(transaction_creation)
 {
   cleanup();
-  elle::AtomicFile f(path);
+  auto f = elle::AtomicFile{path};
   BOOST_CHECK_THROW(
     f.write() << [&]
     {
       // Check the not yet commited initial content gets discarded.
-      elle::AtomicFile check(path);
+      auto check = elle::AtomicFile(path);
       BOOST_CHECK(!check.exists());
     },
     // Check the initial write fails.
