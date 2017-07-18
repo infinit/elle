@@ -208,7 +208,15 @@ namespace elle
             this->_check_headcount(q, reached, weak_error, false);
             if (previous)
             {
-              ELLE_DEBUG("replace value with %s", previous->value);
+              bool const keep = previous->value.template is<Quorum>() &&
+                previous->value.template get<Quorum>().size() == 1 &&
+                *std::begin(previous->value.template get<Quorum>()) == ClientId();
+              elle::SafeFinally reset([&] { previous.reset(); });
+              if (!keep)
+              {
+                reset.abort();
+                ELLE_DEBUG("replace value with %s", previous->value);
+              }
               if (proposal == previous->proposal)
               {
                 this->_round = previous->proposal.round + 1;

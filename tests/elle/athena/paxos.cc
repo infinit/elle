@@ -318,6 +318,7 @@ ELLE_TEST_SCHEDULED(concurrent)
   elle::reactor::wait(
     elle::reactor::Waitables({&peer_1_2->accept_signal, &peer_1_3->accept_signal}));
   auto chosen = client_2.choose(43);
+  BOOST_REQUIRE(chosen);
   BOOST_CHECK_EQUAL(chosen->get<int>(), 42);
   peer_1_3->accept_barrier.open();
   elle::reactor::wait(*t1);
@@ -1356,6 +1357,55 @@ ELLE_TEST_SCHEDULED(self_conflict)
   };
 }
 
+ELLE_TEST_SCHEDULED(self_conflict2)
+{
+  std::vector<Server> servers{
+    {11, Server::Quorum{11, 12, 13}},
+    {12, Server::Quorum{11, 12, 13}},
+    {13, Server::Quorum{11, 12, 13}},
+  };
+  elle::reactor::Barrier first, second;
+  elle::With<elle::reactor::Scope>() << [&] (elle::reactor::Scope& scope)
+  {
+    scope.run_background(
+      "first",
+      [&]
+      {
+        auto c = make_client(0, servers);
+        static_cast<YAInstrumentedPeer&>(*c.peers()[0]).accepting().connect(
+          [&] (Client::Proposal const& p)
+          {
+            elle::reactor::wait(first);
+          });
+        static_cast<YAInstrumentedPeer&>(*c.peers()[1]).accepting().connect(
+          [&] (Client::Proposal const& p)
+          {
+            elle::reactor::wait(first);
+          });
+        static_cast<YAInstrumentedPeer&>(*c.peers()[2]).accepting().connect(
+          [&] (Client::Proposal const& p)
+          {
+            second.open();
+            elle::reactor::wait(first);
+          });
+        auto r = c.choose(0, 1389);
+        BOOST_REQUIRE(r);
+        BOOST_CHECK_EQUAL(r->get<int>(), 1400);
+      });
+    scope.run_background(
+      "second",
+      [&]
+      {
+        elle::reactor::wait(second);
+        auto c = make_client(0, servers);
+        auto r = c.choose(0, 1400);
+        BOOST_CHECK(!r);
+        first.open();
+      });
+    elle::reactor::wait(scope);
+  };
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -1377,6 +1427,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(partial_interleave), 0, valgrind(5));
   suite.add(BOOST_TEST_CASE(partial_in_progress), 0, valgrind(5));
   suite.add(BOOST_TEST_CASE(self_conflict), 0, valgrind(5));
+  suite.add(BOOST_TEST_CASE(self_conflict2), 0, valgrind(5));
   {
     auto quorum = BOOST_TEST_SUITE("quorum");
     suite.add(quorum);

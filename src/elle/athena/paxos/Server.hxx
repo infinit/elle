@@ -391,8 +391,14 @@ namespace elle
           {
             ELLE_DEBUG("update minimum proposal for version %s", p.version);
             this->_state->proposal = std::move(p);
+            return this->_state->accepted;
           }
-          return this->_state->accepted;
+          else if (this->_state->accepted)
+            return this->_state->accepted;
+          else if (this->version() >= elle::Version(0, 4, 0))
+            return Accepted(this->_state->proposal, Quorum{ServerId()}, false);
+          else
+            return boost::none;
         }
       }
 
