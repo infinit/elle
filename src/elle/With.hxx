@@ -50,41 +50,44 @@ namespace elle
   | Running |
   `--------*/
 
-  template <typename T>
-  class
-  ReturnHolder
+  namespace
   {
-  public:
-    template <typename F, typename V>
-    ReturnHolder(F const& f, V& v)
-      : _value(f(v))
-    {}
-
-    T&&
-    value()
+    template <typename T>
+    class
+    ReturnHolder
     {
-      return std::move(this->_value);
-    }
+    public:
+      template <typename F, typename V>
+      ReturnHolder(F const& f, V& v)
+        : _value(f(v))
+      {}
 
-  private:
-    T _value;
-  };
+      T&&
+      value()
+      {
+        return std::move(this->_value);
+      }
 
-  template <>
-  class
-  ReturnHolder<void>
-  {
-  public:
-    template <typename F, typename V>
-    ReturnHolder(F const& f, V& v)
+    private:
+      T _value;
+    };
+
+    template <>
+    class
+    ReturnHolder<void>
     {
-      f(v);
-    }
+    public:
+      template <typename F, typename V>
+      ReturnHolder(F const& f, V& v)
+      {
+        f(v);
+      }
 
-    void
-    value()
-    {}
-  };
+      void
+      value()
+      {}
+    };
+  }
 
   template <typename T>
   template <typename F>

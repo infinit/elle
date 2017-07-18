@@ -34,39 +34,40 @@ namespace elle
   ///
   /// struct DThrower
   /// {
-  ///   DThrower(bool should_throw)
-  ///     : _throw(should_throw)
+  ///   DThrower(bool destructor_throws)
+  ///     : _destructor_throws(destructor_throws)
   ///   {}
-  ///   ~DThrower()
+  ///
+  ///   ~DThrower() noexcept(false)
   ///   {
-  ///     if (should_throw)
+  ///     if (_destructor_throws)
   ///       throw 1;
   ///   };
+  ///
+  ///   bool _destructor_throws;
   /// };
   ///
   /// void
-  /// test(bool body_throw,
-  ///      bool destructor_throw)
+  /// test(bool body_throws, bool destructor_throws)
   /// {
   ///   try
   ///   {
-  ///     auto i = elle::With<DThrower>(destructor_throw) << [] (DThrower& d)
-  ///     {
-  ///       if (body_throw)
-  ///         throw 2;
-  ///       return 3;
-  ///     };
-  ///     std::cout << i;
+  ///     elle::With<DThrower>(destructor_throws) << [&] (DThrower& d)
+  ///       {
+  ///         throw body_throws ? 2 : 3;
+  ///       };
   ///   }
   ///   catch (int value)
   ///   {
-  ///     std::cout << value;
+  ///     std::cout << value << '\n';
   ///   }
+  ///   elle::unreachable();
   /// }
-  /// test(false, false); // Print 3;
-  /// test(true, false);  // Print 2;
-  /// test(false, true);  // Print 1;
-  /// test(true, true);   // Print 1;
+  ///
+  /// test(false, false); // Prints 3
+  /// test(true, false);  // Prints 2
+  /// test(false, true);  // Prinst 1
+  /// test(true, true);   // Prints 1
   ///
   /// @endcode
   template <typename T>

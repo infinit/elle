@@ -1,12 +1,13 @@
+#define BOOST_TEST_MODULE With
+
 #include <elle/With.hh>
 #include <elle/test.hh>
 
 class GoodBoy
 {
 public:
-  GoodBoy(int i):
-    _i(i),
-    _destructed(false)
+  GoodBoy(int i)
+    : _i(i)
   {}
 
   ~GoodBoy()
@@ -15,23 +16,20 @@ public:
     this->_destructed = true;
   }
 
-
 private:
   ELLE_ATTRIBUTE_RW(int, i);
-  bool _destructed;
+  bool _destructed = false;
 };
 
 class BadBoy
 {
 public:
-  BadBoy(int i):
-    _i(i),
-    _destructed(false)
+  BadBoy(int i)
+    : _i(i)
   {}
 
-  BadBoy(BadBoy&& source):
-    _i(source._i),
-    _destructed(false)
+  BadBoy(BadBoy&& source)
+    : _i(source._i)
   {
     source._i = 0;
   }
@@ -46,14 +44,14 @@ public:
 
 private:
   ELLE_ATTRIBUTE_RW(int, i);
-  bool _destructed;
+  bool _destructed = false;
 };
 
 class CheckDestruct
 {
 public:
-  CheckDestruct(bool& beacon):
-    _beacon(beacon)
+  CheckDestruct(bool& beacon)
+    : _beacon(beacon)
   {}
 
   ~CheckDestruct()
@@ -65,9 +63,7 @@ private:
   ELLE_ATTRIBUTE(bool&, beacon);
 };
 
-static
-void
-normal()
+BOOST_AUTO_TEST_CASE(normal)
 {
   bool beacon = false;
   elle::With<GoodBoy>(3) << [&] (GoodBoy& g)
@@ -78,9 +74,7 @@ normal()
   BOOST_CHECK(beacon);
 }
 
-static
-void
-exception()
+BOOST_AUTO_TEST_CASE(exception)
 {
   bool beacon = false;
   try
@@ -99,9 +93,7 @@ exception()
   BOOST_FAIL("should have thrown");
 }
 
-static
-void
-double_exception()
+BOOST_AUTO_TEST_CASE(double_exception)
 {
   bool beacon = false;
   try
@@ -122,9 +114,7 @@ double_exception()
   BOOST_FAIL("should have thrown");
 }
 
-static
-void
-value()
+BOOST_AUTO_TEST_CASE(value)
 {
   BOOST_CHECK_EQUAL(
     elle::With<GoodBoy>(1660) << [&] (GoodBoy& g)
@@ -134,16 +124,16 @@ value()
     1664);
 }
 
-static
-elle::With<BadBoy>
-make_with(int i)
+namespace
 {
-  return elle::With<BadBoy>(i);
+  elle::With<BadBoy>
+  make_with(int i)
+  {
+    return i;
+  }
 }
 
-static
-void
-move()
+BOOST_AUTO_TEST_CASE(move)
 {
   bool beacon = false;
   try
@@ -163,23 +153,51 @@ move()
   BOOST_FAIL("should have thrown");
 }
 
-static
-void
-unused()
+BOOST_AUTO_TEST_CASE(unused)
 {
   bool beacon = false;
   elle::With<CheckDestruct>{beacon};
   BOOST_CHECK(beacon);
 }
 
-ELLE_TEST_SUITE()
+// The example from the Doxygen documentation.
+namespace
 {
-  auto& suite = boost::unit_test::framework::master_test_suite();
+  struct DThrower
+  {
+    DThrower(bool destructor_throws)
+      : _destructor_throws(destructor_throws)
+    {}
+    ~DThrower() noexcept(false)
+    {
+      if (_destructor_throws)
+        throw 1;
+    };
+    bool _destructor_throws;
+  };
 
-  suite.add(BOOST_TEST_CASE(normal));
-  suite.add(BOOST_TEST_CASE(exception));
-  suite.add(BOOST_TEST_CASE(double_exception));
-  suite.add(BOOST_TEST_CASE(value));
-  suite.add(BOOST_TEST_CASE(move));
-  suite.add(BOOST_TEST_CASE(unused));
+  int
+  test(bool body_throws, bool destructor_throws)
+  {
+    try
+    {
+      elle::With<DThrower>(destructor_throws) << [&] (DThrower& d)
+        {
+          throw body_throws ? 2 : 3;
+        };
+    }
+    catch (int value)
+    {
+      return value;
+    }
+    elle::unreachable();
+  }
+
+  BOOST_AUTO_TEST_CASE(doc)
+  {
+    BOOST_TEST(test(false, false) == 3);
+    BOOST_TEST(test(true, false) == 2);
+    BOOST_TEST(test(false, true) == 1);
+    BOOST_TEST(test(true, true) == 1);
+  }
 }
