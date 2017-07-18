@@ -1,9 +1,7 @@
 #include <fstream>
 #include <mutex>
 
-#include <boost/algorithm/string/erase.hpp>
-#include <boost/algorithm/string/predicate.hpp>
-#include <boost/algorithm/string/trim.hpp>
+#include <boost/algorithm/string.hpp>
 #include <boost/tokenizer.hpp>
 
 #include <elle/Exception.hh>
@@ -242,7 +240,9 @@ namespace elle
     make_logger(std::string const& targets)
     {
       auto const ts
-        = elle::print(targets,
+        // On Windows we might get a path that uses `\` as a
+        // separator.  Escape it for elle::print.
+        = elle::print(boost::replace_all_copy(targets, "\\", "\\\\"),
                       {
                         {"pid", elle::system::getpid()},
                       });
