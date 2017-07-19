@@ -695,20 +695,16 @@ class GccToolkit(Toolkit):
       res = []
       # Make it nicer to the human reader: sort.
       for name, v in sorted(cfg.defines().items()):
-          if v is None:
-              res.append('-D%s' % name)
-          else:
-              res.append('-D%s=%s' % (name, v))
-      for include in cfg.system_include_path:
-          res.append('-isystem')
-          res.append(utils.shell_escape(include))
-          res.append('-isystem')
-          res.append(utils.shell_escape(drake.path_source() / include))
-      for include in cfg.local_include_path:
-          res.append('-I')
-          res.append(utils.shell_escape(drake.path_source() / include))
-          res.append('-I')
-          res.append(utils.shell_escape(include))
+        res.append('-D%s=%s' % (name, v) if v else ('-D%s' % name))
+      for flag, path in [('-isystem', cfg.system_include_path),
+                         ('-I',       cfg.local_include_path)]:
+        for include in path:
+          # Let's have the source tree have precedence over the build
+          # one.  There are arguments for the converse, but actually
+          # in a good build system it should not matter: we should not
+          # have file appearing in both sides.
+          res += [flag, utils.shell_escape(drake.path_source() / include)]
+          res += [flag, utils.shell_escape(include)]
       return res
 
   def cflags(self, cfg):
