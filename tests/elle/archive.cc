@@ -14,7 +14,7 @@
 #include <elle/system/Process.hh>
 #include <elle/test.hh>
 
-#ifndef INFINIT_WINDOWS
+#ifndef ELLE_WINDOWS
 # define EXTENSION ""
 #else
 # define EXTENSION ".exe"
@@ -347,7 +347,7 @@ static
 void
 archive_symlink(elle::archive::Format fmt)
 {
-  #ifdef INFINIT_WINDOWS
+  #ifdef ELLE_WINDOWS
   return;
   #else
   TemporaryDirectory d1("input");
@@ -379,7 +379,7 @@ archive_symlink(elle::archive::Format fmt)
   BOOST_CHECK_EQUAL(input.gcount(), 4);
   buffer[4] = 0;
   BOOST_CHECK_EQUAL(buffer, "data");
-  #endif // INFINIT_WINDOWS
+  #endif // ELLE_WINDOWS
 }
 
 static

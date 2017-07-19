@@ -1,4 +1,4 @@
-#ifdef INFINIT_WINDOWS // Fix missing ::hypot.
+#ifdef ELLE_WINDOWS // Fix missing ::hypot.
 # include <cmath>
 #endif
 

@@ -305,7 +305,7 @@ namespace elle
     bool
     Thread::wait(Waitables const& waitables, DurationOpt timeout)
     {
-#ifndef INFINIT_IOS
+#ifndef ELLE_IOS
       ELLE_TRACE_SCOPE("%s: wait %s%s", *this, waitables,
                        timeout ? elle::sprintf(" for %s", timeout) : "");
 #endif

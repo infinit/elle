@@ -118,7 +118,7 @@ namespace elle
 
 // Compiling with mingw gcc 4.8 and 5.3 with -O2 chokes on the traces:
 // it calls log::Send's dtor with this = nullptr.
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
 # define ELLE_TRACE_ ELLE_TRACE
 #else
 # define ELLE_TRACE_(...) {}

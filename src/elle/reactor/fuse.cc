@@ -4,7 +4,7 @@
 #include <sys/mount.h>
 
 #include <elle/reactor/fuse.hh>
-#if defined INFINIT_MACOSX
+#if defined ELLE_MACOS
 # include <CoreFoundation/CoreFoundation.h>
 # include <DiskArbitration/DiskArbitration.h>
 #endif
@@ -38,7 +38,7 @@ namespace elle
     FuseContext::loop()
     {
       // Macos can't run async ops on fuse socket, so thread it
-#ifdef INFINIT_MACOSX
+#ifdef ELLE_MACOS
       this->_loop.reset(new Thread(
         "holder",
         [&]
@@ -138,7 +138,7 @@ namespace elle
     void
     FuseContext::loop_pool(int threads)
     {
-#ifdef INFINIT_MACOSX
+#ifdef ELLE_MACOS
       Scheduler& sched = scheduler();
       this->_loop_thread.reset(new std::thread(
         [=] (Scheduler* sched)
@@ -159,7 +159,7 @@ namespace elle
     FuseContext::loop_mt()
     {
       Scheduler& sched = scheduler();
-#ifdef INFINIT_MACOSX
+#ifdef ELLE_MACOS
       this->_loop_thread.reset(new std::thread(
         [&]
         {
@@ -193,7 +193,7 @@ namespace elle
           sem.wait();
           elle::Buffer buf;
           {
-#ifdef INFINIT_MACOSX
+#ifdef ELLE_MACOS
             std::unique_lock<std::mutex> mutex_lock(this->_mutex);
 #endif
             if (stop)
@@ -217,7 +217,7 @@ namespace elle
         Thread* t = new Thread(elle::sprintf("fuse worker %s", i), worker);
         this->_workers.push_back(t);
       }
-#ifndef INFINIT_MACOSX
+#ifndef ELLE_MACOS
       int fd = fuse_chan_fd(ch);
       ELLE_TRACE("Got fuse fs %s", fd);
       boost::asio::posix::stream_descriptor socket(scheduler().io_service());
@@ -225,7 +225,7 @@ namespace elle
 #endif
       while (!fuse_exited(this->_fuse))
       {
-#ifndef INFINIT_MACOSX
+#ifndef ELLE_MACOS
         this->_socket_barrier.close();
         socket.async_read_some(boost::asio::null_buffers(),
           [&] (boost::system::error_code const& erc, std::size_t)
@@ -255,7 +255,7 @@ namespace elle
           break;
         }
         buf.size(res);
-#ifdef INFINIT_MACOSX
+#ifdef ELLE_MACOS
         std::unique_lock<std::mutex> mutex_lock(this->_mutex);
 #endif
         requests.push_back(std::move(buf));
@@ -269,7 +269,7 @@ namespace elle
         reactor::wait(*t);
       ELLE_DEBUG("fuse loop returning");
       if (this->on_loop_exited())
-#ifdef INFINIT_MACOSX
+#ifdef ELLE_MACOS
         sched.mt_run<void>("exit notifier", this->on_loop_exited());
 #else
         new reactor::Thread("exit notifier", this->on_loop_exited(), true);
@@ -283,7 +283,7 @@ namespace elle
       fuse_session* s = fuse_get_session(this->_fuse);
       fuse_chan* ch = fuse_session_next_chan(s, nullptr);
       size_t buffer_size = fuse_chan_bufsize(ch);
-#ifndef INFINIT_MACOSX
+#ifndef ELLE_MACOS
       int fd = fuse_chan_fd(ch);
       ELLE_TRACE("Got fuse fd %s", fd);
       boost::asio::posix::stream_descriptor socket(scheduler().io_service());
@@ -293,7 +293,7 @@ namespace elle
       void* buffer_data = malloc(buffer_size);
       while (!fuse_exited(this->_fuse))
       {
-#ifndef INFINIT_MACOSX
+#ifndef ELLE_MACOS
         this->_socket_barrier.close();
         socket.async_read_some(boost::asio::null_buffers(),
           [&](boost::system::error_code const& erc, std::size_t)
@@ -321,7 +321,7 @@ namespace elle
         }
         void* b2 = malloc(res);
         memcpy(b2, buffer_data, res);
-#ifdef INFINIT_MACOSX
+#ifdef ELLE_MACOS
         std::unique_lock<std::mutex> mutex_lock(this->_mutex);
 #endif
         this->_workers.push_back(new Thread(
@@ -332,7 +332,7 @@ namespace elle
             auto lock = this->_mt_barrier.lock();
             fuse_session_process(s, (const char*)b2, res, ch);
             free(b2);
-#ifdef INFINIT_MACOSX
+#ifdef ELLE_MACOS
             std::unique_lock<std::mutex> mutex_lock(this->_mutex);
 #endif
             auto it = std::find(this->_workers.begin(),
@@ -344,7 +344,7 @@ namespace elle
           }, true));
       }
       if (this->on_loop_exited())
-#ifdef INFINIT_MACOSX
+#ifdef ELLE_MACOS
         sched.mt_run<void>("exit notifier", this->on_loop_exited());
 #else
         new reactor::Thread("exit notifier", this->on_loop_exited(), true);
@@ -376,7 +376,7 @@ namespace elle
         throw filesystem::Error(EPERM, "fuse_new failed");
     }
 
-#ifdef INFINIT_MACOSX
+#ifdef ELLE_MACOS
     static
     void
     _signal_handler(int sig)
@@ -400,7 +400,7 @@ namespace elle
       }
       this->_socket_barrier.open();
       ELLE_TRACE("terminating...");
-#ifndef INFINIT_MACOSX
+#ifndef ELLE_MACOS
       try
       {
         reactor::wait(this->_mt_barrier, grace_time);
@@ -413,7 +413,7 @@ namespace elle
 #endif
       if (this->_loop_thread)
       {
-#ifdef INFINIT_MACOSX
+#ifdef ELLE_MACOS
         // Use a signal to stop the read syscall in fuse_chan_recv. We also need
         // to ensure that the syscall is not automatically restarted (default on
         // OS X, see `man signal`).
@@ -438,7 +438,7 @@ namespace elle
       ELLE_TRACE("done");
       if (!this->_fuse)
         return;
-#ifndef INFINIT_MACOSX
+#ifndef ELLE_MACOS
       fuse_session* s = ::fuse_get_session(this->_fuse);
       ELLE_TRACE("session");
       fuse_chan* ch = ::fuse_session_next_chan(s, NULL);
@@ -449,7 +449,7 @@ namespace elle
       ::fuse_destroy(this->_fuse);
       this->_fuse = nullptr;
       ELLE_TRACE("destroyed");
-#ifdef INFINIT_MACOSX
+#ifdef ELLE_MACOS
       this->_loop->terminate_now();
       this->_mac_unmount(grace_time);
 #endif
@@ -459,13 +459,13 @@ namespace elle
     void
     FuseContext::kill()
     {
-#ifndef INFINIT_MACOSX
+#ifndef ELLE_MACOS
       if (this->_loop)
         this->_loop->terminate_now();
 #endif
     }
 
-#ifdef INFINIT_MACOSX
+#ifdef ELLE_MACOS
     static
     void
     _unmount_callback(DADiskRef disk, DADissenterRef dissenter, void* context)

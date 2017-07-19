@@ -19,7 +19,7 @@ download_directory()
   auto download_dir = elle::system::download_directory();
   BOOST_CHECK(exists(download_dir));
   BOOST_CHECK(is_directory(download_dir));
-#ifdef INFINIT_MACOSX
+#ifdef ELLE_MACOS
   // Download folder on OS X is language dependent.
 #else
   // Some machines may not have a download directory in which case

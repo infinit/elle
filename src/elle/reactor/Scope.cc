@@ -122,7 +122,7 @@ namespace elle
     void
     Scope::_terminate_now()
     {
-  #ifndef INFINIT_WINDOWS
+  #ifndef ELLE_WINDOWS
       ELLE_TRACE_SCOPE("%s: terminate now", *this);
   #endif
       auto current = reactor::Scheduler::scheduler()->current();
@@ -137,7 +137,7 @@ namespace elle
           inside = true;
           continue;
         }
-  #ifndef INFINIT_WINDOWS
+  #ifndef ELLE_WINDOWS
         ELLE_DEBUG("%s: terminate %s%s", *this, *t,
                    !t->interruptible() ? " (non interruptible)" : "")
   #endif
@@ -146,7 +146,7 @@ namespace elle
       }
       while (true)
       {
-  #ifndef INFINIT_WINDOWS
+  #ifndef ELLE_WINDOWS
         ELLE_DEBUG_SCOPE(
           "%s: wait for %s thread(s) to finish", this, join.size());
   #endif

@@ -3,7 +3,7 @@
 
 using elle::Backtrace;
 
-#if defined INFINIT_WINDOWS || defined INFINIT_ANDROID || defined NO_EXECINFO
+#if defined ELLE_WINDOWS || defined ELLE_ANDROID || defined NO_EXECINFO
 
 /*---------------------.
 | Backtrace disabled.  |

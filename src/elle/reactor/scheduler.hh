@@ -8,7 +8,7 @@
 #include <boost/multi_index/hashed_index.hpp>
 #include <boost/multi_index/identity.hpp>
 #include <boost/multi_index/sequenced_index.hpp>
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
 # include <winsock2.h>
 #endif
 #include <boost/signals2.hpp>

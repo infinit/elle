@@ -1,4 +1,4 @@
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
 # include <shlwapi.h>
 #else
 # include <fnmatch.h>
@@ -287,7 +287,7 @@ namespace elle
       bool
       _fnmatch(std::string const& pattern, std::string const& s)
       {
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
         return ::PathMatchSpec(s.c_str(), pattern.c_str()) == TRUE;
 #else
         return fnmatch(pattern.c_str(), s.c_str(), 0) == 0;

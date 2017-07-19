@@ -1,6 +1,6 @@
 #include <elle/Backtrace.hh>
 
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
 # include <elle/windows.hh>
 # include <dbghelp.h>
 #endif
@@ -26,7 +26,7 @@ namespace elle
 {
   namespace
   {
-#if !defined INFINIT_MACOSX && !defined INFINIT_WINDOWS && !defined INFINIT_ANDROID
+#if !defined ELLE_MACOS && !defined ELLE_WINDOWS && !defined ELLE_ANDROID
     /// Whether `until` is in `str`.
     /// If it is, set `str` to the part before, and `chunk` to the part after.
     bool
@@ -142,7 +142,7 @@ namespace elle
     ELLE_DEBUG("resolve");
     if (this->_resolved)
       return;
-#if defined INFINIT_WINDOWS
+#if defined ELLE_WINDOWS
        /*
       auto initialize = []
         {
@@ -167,7 +167,7 @@ namespace elle
       }
       ::free(symbol);
     */
-#elif !defined INFINIT_ANDROID && !defined NO_EXECINFO
+#elif !defined ELLE_ANDROID && !defined NO_EXECINFO
     char** strs = backtrace_symbols(this->_callstack.data(), this->_frame_count);
     for (unsigned i = this->_skip; i < this->_frame_count; ++i)
     {
@@ -178,7 +178,7 @@ namespace elle
       {
         auto line = std::string{strs[i]};
         ELLE_DUMP("line: %s", line);
-# ifdef INFINIT_MACOSX
+# ifdef ELLE_MACOS
         std::string file;
         std::string _;
         auto&& s = std::stringstream(line);
@@ -197,7 +197,7 @@ namespace elle
         : frame.symbol_demangled;
       {
         auto&& s = std::stringstream(addr);
-# ifdef INFINIT_MACOSX
+# ifdef ELLE_MACOS
         s >> frame.address;
 # else
         s >> std::hex >> frame.address;

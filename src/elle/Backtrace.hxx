@@ -1,4 +1,4 @@
-#if !defined INFINIT_WINDOWS and !defined INFINIT_ANDROID
+#if !defined ELLE_WINDOWS and !defined ELLE_ANDROID
 #  ifdef __has_include
 #    if __has_include(<execinfo.h>)
 #      include <execinfo.h>
@@ -19,9 +19,9 @@ namespace elle
   Backtrace::current(unsigned skip)
   {
     ELLE_LOG_COMPONENT("elle.Backtrace");
-#if defined INFINIT_WINDOWS
+#if defined ELLE_WINDOWS
     return {};
-#elif defined INFINIT_ANDROID || defined NO_EXECINFO
+#elif defined ELLE_ANDROID || defined NO_EXECINFO
     // FIXME: implement with
     // https://android.googlesource.com/platform/frameworks/native/+/jb-dev/include/utils/CallStack.h
     return {};

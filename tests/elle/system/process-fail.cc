@@ -2,7 +2,7 @@
 #include <elle/printf.hh>
 #include <elle/system/Process.hh>
 
-#ifndef INFINIT_WINDOWS
+#ifndef ELLE_WINDOWS
 # define EXTENSION ""
 #else
 # define EXTENSION ".exe"

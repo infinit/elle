@@ -15,7 +15,7 @@ namespace elle ELLE_API
   struct StackFrame
   {
     // FIXME: why is this not void*?
-#if defined INFINIT_WINDOWS
+#if defined ELLE_WINDOWS
     using Address = uint64_t;
 #else
     using Address = int;

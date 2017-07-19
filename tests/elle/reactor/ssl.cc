@@ -1,5 +1,5 @@
 #include <unistd.h>
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
 # include <winsock2.h>
 #endif
 

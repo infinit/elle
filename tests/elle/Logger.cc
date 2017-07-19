@@ -930,7 +930,7 @@ ELLE_TEST_SUITE()
     logger->add(BOOST_TEST_CASE(time_));
   }
 
-#ifndef INFINIT_ANDROID
+#ifndef ELLE_ANDROID
   auto concurrency = BOOST_TEST_SUITE("concurrency");
   {
     suite.add(concurrency);

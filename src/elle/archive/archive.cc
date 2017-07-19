@@ -12,7 +12,7 @@
 #include <elle/log.hh>
 #include <elle/printf.hh>
 
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
 # define stat _stat
 #endif
 
@@ -108,7 +108,7 @@ namespace elle
       // XXX: Convert path to native windows encoding.
       archive_entry_copy_pathname(entry.get(), relative_path.string().c_str());
       struct stat st;
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
       archive_entry_copy_sourcepath_w(entry.get(), file.native().c_str());
 #define S_ISLNK(a) false
       ::_wstat(file.native().c_str(), &st);
@@ -186,7 +186,7 @@ namespace elle
       if (compression_setter)
         check_call(archive.get(), compression_setter(archive.get()));
       check_call(archive.get(),
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
         archive_write_open_filename_w(archive.get(), path.native().c_str()));
 #else
         archive_write_open_filename(archive.get(), path.string().c_str()));

@@ -4,7 +4,7 @@
 # include <SDKDDKVer.h>
 #endif
 
-#if defined INFINIT_WINDOWS
+#if defined ELLE_WINDOWS
 # include <winsock2.h>
 #endif
 

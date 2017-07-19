@@ -11,9 +11,9 @@ namespace elle
     {
       @autoreleasepool
       {
-#if defined(INFINIT_MACOSX)
+#if defined(ELLE_MACOS)
         return NSHomeDirectory().UTF8String;
-#elif defined(INFINIT_IOS)
+#elif defined(ELLE_IOS)
         NSString* application_support_dir =
           NSSearchPathForDirectoriesInDomains(NSApplicationSupportDirectory,
                                               NSUserDomainMask,
@@ -30,12 +30,12 @@ namespace elle
     {
       @autoreleasepool
       {
-#if defined(INFINIT_MACOSX)
+#if defined(ELLE_MACOS)
         NSString* download_dir =
           NSSearchPathForDirectoriesInDomains(NSDownloadsDirectory,
                                               NSUserDomainMask,
                                               YES).firstObject;
-#elif defined(INFINIT_IOS)
+#elif defined(ELLE_IOS)
         NSString* doc_dir =
           NSSearchPathForDirectoriesInDomains(NSDocumentDirectory,
                                               NSUserDomainMask,

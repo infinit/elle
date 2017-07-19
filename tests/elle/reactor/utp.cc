@@ -115,7 +115,7 @@ ELLE_TEST_SCHEDULED(utp_timeout)
   free(megabuf);
 }
 
-#ifdef INFINIT_LINUX
+#ifdef ELLE_LINUX
 ELLE_TEST_SCHEDULED(utp_failures)
 {
   SocketPair sp;
@@ -223,7 +223,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(utp_close), 0, valgrind(2));
   suite.add(BOOST_TEST_CASE(basic), 0, valgrind(2));
   suite.add(BOOST_TEST_CASE(utp_timeout), 0, valgrind(2));
-#ifdef INFINIT_LINUX
+#ifdef ELLE_LINUX
   suite.add(BOOST_TEST_CASE(utp_failures), 0, valgrind(2));
 #endif
   suite.add(BOOST_TEST_CASE(streams), 0, valgrind(2));

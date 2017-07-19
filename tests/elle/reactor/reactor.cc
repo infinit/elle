@@ -1826,7 +1826,7 @@ test_storage()
 }
 
 // Most likely a wine issue. To be investigated.
-#ifndef INFINIT_WINDOWS
+#ifndef ELLE_WINDOWS
 static
 void
 test_storage_multithread()
@@ -2727,7 +2727,7 @@ namespace background
 | Signals |
 `--------*/
 
-#if !defined INFINIT_WINDOWS && !defined INFINIT_IOS
+#if !defined ELLE_WINDOWS && !defined ELLE_IOS
 namespace system_signals
 {
   static
@@ -3522,7 +3522,7 @@ ELLE_TEST_SUITE()
   boost::unit_test::framework::master_test_suite().add(vthread);
   vthread->add(BOOST_TEST_CASE(test_vthread), 0, valgrind(1, 5));
 
-#if !defined INFINIT_ANDROID
+#if !defined ELLE_ANDROID
   boost::unit_test::test_suite* mt = BOOST_TEST_SUITE("multithreading");
   boost::unit_test::framework::master_test_suite().add(mt);
   // mt->add(BOOST_TEST_CASE(test_multithread), 0, valgrind(1, 5));
@@ -3556,7 +3556,7 @@ ELLE_TEST_SUITE()
   boost::unit_test::test_suite* storage = BOOST_TEST_SUITE("Storage");
   boost::unit_test::framework::master_test_suite().add(storage);
   storage->add(BOOST_TEST_CASE(test_storage), 0, valgrind(1, 5));
-#if !defined INFINIT_WINDOWS && !defined INFINIT_ANDROID
+#if !defined ELLE_WINDOWS && !defined ELLE_ANDROID
   storage->add(BOOST_TEST_CASE(test_storage_multithread), 0, valgrind(3, 4));
 #endif
 
@@ -3605,7 +3605,7 @@ ELLE_TEST_SUITE()
     s->add(BOOST_TEST_CASE(race_condition), 0, valgrind(1, 5));
   }
 
-#if !defined(INFINIT_WINDOWS) && !defined(INFINIT_IOS)
+#if !defined(ELLE_WINDOWS) && !defined(ELLE_IOS)
   {
     boost::unit_test::test_suite* system_signals =
       BOOST_TEST_SUITE("system_signals");

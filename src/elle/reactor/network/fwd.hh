@@ -2,7 +2,7 @@
 
 #include <elle/reactor/fwd.hh>
 
-#if defined(INFINIT_LINUX) || defined(INFINIT_MACOSX)
+#if defined(ELLE_LINUX) || defined(ELLE_MACOS)
 # define REACTOR_NETWORK_UNIX_DOMAIN_SOCKET
 #endif
 

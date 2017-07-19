@@ -9,7 +9,7 @@
 
 ELLE_LOG_COMPONENT("elle.reactor.network.SocketOperation");
 
-#ifdef INFINIT_LINUX
+#ifdef ELLE_LINUX
 namespace
 {
   auto _epoll_interrupt_callback
