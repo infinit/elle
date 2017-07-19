@@ -274,19 +274,16 @@ class Config:
       self.__local_includes.add(path)
       self._includes[path] = None
 
-
     def add_system_include_path(self, path):
       path = Path(path)
       # Never include those.
       # FIXME: Unix only
-      if path == Path('/include') or path == Path('/usr/include'):
-        return
-      if not path.absolute():
-        path = drake.path_build() / path
-      path = path.canonize()
-      self.__system_includes.add(path)
-      self._includes[path] = None
-
+      if path not in [Path('/include'), Path('/usr/include')]:
+        if not path.absolute():
+          path = drake.path_build() / path
+        path = path.canonize()
+        self.__system_includes.add(path)
+        self._includes[path] = None
 
     def include_path(self):
         return list(self._includes)
