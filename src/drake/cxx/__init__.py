@@ -1001,13 +1001,12 @@ class GccToolkit(Toolkit):
 
   def rpath(self, path):
     path = drake.Path(path)
-    if not path.absolute():
-      if self.os is drake.os.macos:
-        return drake.Path('@loader_path') / path
-      else:
-        return drake.Path('$ORIGIN') / path
-    else:
+    if path.absolute():
       return path
+    elif self.os is drake.os.macos:
+      return drake.Path('@loader_path') / path
+    else:
+      return drake.Path('$ORIGIN') / path
 
   def __split(self):
     if self.__splitted is None:
