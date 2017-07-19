@@ -57,11 +57,14 @@ namespace elle
                         Mode const mode,
                         Oneway const oneway) const
     {
-      auto _plain = elle::IOStream(plain.istreambuf());
-      std::stringstream _code;
-      this->encipher(_plain, _code,
-                     cipher, mode, oneway);
-      return _code.str();
+      auto in = elle::IOStream(plain.istreambuf());
+      auto res = elle::Buffer();
+      res.capacity(plain.size() + 1024);
+      {
+        auto out = elle::IOStream(res.ostreambuf());
+        this->encipher(in, out, cipher, mode, oneway);
+      }
+      return res;
     }
 
     elle::Buffer
@@ -70,11 +73,14 @@ namespace elle
                         Mode const mode,
                         Oneway const oneway) const
     {
-      auto _code = elle::IOStream(code.istreambuf());
-      std::stringstream _plain;
-      this->decipher(_code, _plain,
-                     cipher, mode, oneway);
-      return _plain.str();
+      auto in = elle::IOStream(code.istreambuf());
+      auto res = elle::Buffer();
+      res.capacity(code.size());
+      {
+        auto out = elle::IOStream(res.ostreambuf());
+        this->decipher(in, out, cipher, mode, oneway);
+      }
+      return res;
     }
 
     void
