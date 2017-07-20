@@ -5,15 +5,15 @@ namespace elle
   namespace archive
   {
     void
-    tar(std::vector<boost::filesystem::path> const& files,
-        boost::filesystem::path const& path,
+    tar(std::vector<bfs::path> const& files,
+        bfs::path const& path,
         Renamer const& renamer)
     {
       return archive(Format::tar, files, path, renamer);
     }
 
     void
-    untar(boost::filesystem::path const& path)
+    untar(bfs::path const& path)
     {
       return extract(path);
     }

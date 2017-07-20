@@ -1,7 +1,6 @@
-#ifndef ELLE_ARCHIVE_ZIP_HH
-# define ELLE_ARCHIVE_ZIP_HH
+#pragma once
 
-# include <elle/archive/archive.hh>
+#include <elle/archive/archive.hh>
 
 namespace elle
 {
@@ -14,8 +13,8 @@ namespace elle
     /// @param no_compression Whether the content of the archive should be
     ///                       compressed or not.
     void
-    zip(std::vector<boost::filesystem::path> const& files,
-        boost::filesystem::path const& path,
+    zip(std::vector<bfs::path> const& files,
+        bfs::path const& path,
         Renamer const& renamer = Renamer(),
         bool no_compression = false);
 
@@ -23,8 +22,6 @@ namespace elle
     ///
     /// @see extract.
     void
-    unzip(boost::filesystem::path const& path);
+    unzip(bfs::path const& path);
   }
 }
-
-#endif

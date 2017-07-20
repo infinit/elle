@@ -12,6 +12,8 @@ namespace elle
 {
   namespace archive
   {
+    namespace bfs = boost::filesystem;
+
     enum class Format
     {
       zip,
@@ -21,32 +23,30 @@ namespace elle
       zip_uncompressed
     };
 
-    using Renamer =
-      std::function<boost::filesystem::path(boost::filesystem::path const&)>;
-    /// Returns true to exclude the file.
-    using Excluder =
-      std::function<bool(boost::filesystem::path const&)>;
+    using Renamer = std::function<auto (bfs::path const&) -> bfs::path>;
+    /// Return true to exclude the file.
+    using Excluder = std::function<auto (bfs::path const&) -> bool>;
 
-    /// Create an archive containing \a list of files.
+    /// Create an archive containing @a list of files.
     ///
-    /// @param format The type of archive.
-    /// @param files The paths of the files to archive.
-    /// @param path Where to write the resulting archive.
-    /// @param renamer A function to rename entries.
-    /// @param excluder A function to exclude files.
+    /// @param format         The type of archive.
+    /// @param files          The paths of the files to archive.
+    /// @param path           Where to write the resulting archive.
+    /// @param renamer        A function to rename entries.
+    /// @param excluder       A function to exclude files.
     /// @param ignore_failure Ignore failure (like non-existent files, etc.)
     ELLE_API
     void
     archive(Format format,
-            std::vector<boost::filesystem::path> const& files,
-            boost::filesystem::path const& path,
-            Renamer const& renamer = Renamer(),
-            Excluder const& excluder = Excluder(),
+            std::vector<bfs::path> const& files,
+            bfs::path const& path,
+            Renamer const& renamer = {},
+            Excluder const& excluder = {},
             bool ignore_failure = false);
 
     /// Extract an archive to a given path.
     ///
-    /// The extract function supports all formats, no need to specify it
+    /// The extract function supports all formats, no need to specify it.
     ///
     /// @param archive The path of the archive.
     /// @param output An optional location where to output the archive. If
@@ -54,7 +54,7 @@ namespace elle
     ///               folder.
     ELLE_API
     void
-    extract(boost::filesystem::path const& archive,
-            boost::optional<boost::filesystem::path> const& output = boost::none);
+    extract(bfs::path const& archive,
+            boost::optional<bfs::path> const& output = {});
   }
 }

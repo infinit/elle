@@ -100,8 +100,8 @@ namespace elle
     static
     void
     _archive_file(::archive* archive,
-                  boost::filesystem::path const& file,
-                  boost::filesystem::path const& relative_path)
+                  bfs::path const& file,
+                  bfs::path const& relative_path)
     {
       ELLE_TRACE_SCOPE("add %s as %s", file, relative_path);
       EntryPtr entry(archive_entry_new());
@@ -135,7 +135,9 @@ namespace elle
           ELLE_DEBUG("buffer size %s", buffer.size());
           if (buffer.empty())
             break;
-          check_call(archive, archive_write_data(archive, buffer.contents(), buffer.size()), buffer.size());
+          check_call(archive,
+                     archive_write_data(archive, buffer.contents(), buffer.size()),
+                     buffer.size());
           if (buffer.size() < chunck_size)
             break;
           offset += buffer.size();
@@ -146,8 +148,8 @@ namespace elle
 
     void
     archive(Format format,
-            std::vector<boost::filesystem::path> const& files,
-            boost::filesystem::path const& path,
+            std::vector<bfs::path> const& files,
+            bfs::path const& path,
             Renamer const& renamer,
             Excluder const& excluder,
             bool ignore_failure)
@@ -193,8 +195,8 @@ namespace elle
 #endif
       auto do_archiving = [ignore_failure] (
         ::archive* archive,
-        boost::filesystem::path const& absolute,
-        boost::filesystem::path const& relative)
+        bfs::path const& absolute,
+        bfs::path const& relative)
         {
           try
           {
@@ -216,21 +218,21 @@ namespace elle
           root = renamer(root);
         root_entries.insert(root.string());
         ELLE_DEBUG("renamed %s to %s", path, root);
-        if (!boost::filesystem::exists(path))
+        if (!bfs::exists(path))
         {
           if (ignore_failure)
             continue;
           throw elle::Error(elle::sprintf("path %s does not exist", path));
         }
-        if (boost::filesystem::is_directory(path))
-          for (auto it = boost::filesystem::recursive_directory_iterator(path);
-               it != boost::filesystem::recursive_directory_iterator();
+        if (bfs::is_directory(path))
+          for (auto it = bfs::recursive_directory_iterator(path);
+               it != bfs::recursive_directory_iterator();
                ++it)
           {
-            boost::filesystem::path absolute(*it);
-            if (boost::filesystem::is_directory(absolute))
+            bfs::path absolute(*it);
+            if (bfs::is_directory(absolute))
               continue;
-            boost::filesystem::path relative = root;
+            bfs::path relative = root;
             {
               auto start = std::begin(absolute);
               for (auto count = std::begin(path);
@@ -261,8 +263,8 @@ namespace elle
       }
     }
 
-    void extract(boost::filesystem::path const& archive,
-                 boost::optional<boost::filesystem::path> const& output)
+    void extract(bfs::path const& archive,
+                 boost::optional<bfs::path> const& output)
     {
       ELLE_TRACE("[Archive] extracting %s", archive.string());
       ArchiveReadPtr a(archive_read_new());
