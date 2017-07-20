@@ -60,6 +60,13 @@ option()
     BOOST_CHECK_THROW(opt.get<std::string>(), elle::Error);
   }
   {
+    elle::Option<int, std::string> const opt(42);
+    BOOST_CHECK(opt.is<int>());
+    BOOST_CHECK_EQUAL(opt.get<int>(), 42);
+    BOOST_CHECK(!opt.is<std::string>());
+    BOOST_CHECK_THROW(opt.get<std::string>(), elle::Error);
+  }
+  {
     std::string data = "no rage de mon bolossage";
     elle::Option<int, std::string> opt(data);
     BOOST_CHECK(opt.is<std::string>());
@@ -370,7 +377,7 @@ exceptions()
   int count = 0;
   {
     O o{Count(count)};
-    BOOST_CHECK_EQUAL(o.is<Count>(), true);
+    BOOST_CHECK(o.is<Count>());
     BOOST_CHECK_EQUAL(count, 1);
 
     O thrower{Thrower()};
@@ -378,8 +385,8 @@ exceptions()
     BOOST_CHECK_THROW(o = std::move(thrower), elle::Error);
 
     // o in unknown state.
-    BOOST_CHECK_EQUAL(o.is<Count>(), false);
-    BOOST_CHECK_EQUAL(o.is<Thrower>(), false);
+    BOOST_CHECK(!o.is<Count>());
+    BOOST_CHECK(!o.is<Thrower>());
 
     BOOST_CHECK_EQUAL(count, 0);
   }

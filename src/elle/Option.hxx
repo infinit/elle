@@ -317,10 +317,10 @@ namespace elle
   T&
   Option<Types ...>::get()
   {
-    if (this->_index != meta::List<Types ...>::template index_of<T>::value)
+    if (auto res = this->template is<T>())
+      return *res;
+    else
       elle::err("option is not a %s", elle::type_info<T>());
-    char* buffer = this->_buffer;
-    return reinterpret_cast<T&>(*buffer);
   };
 
   template <typename ... Types>
@@ -333,10 +333,46 @@ namespace elle
 
   template <typename ... Types>
   template <typename T>
-  bool
+  typename _details::is_result<T>::type
+  Option<Types ...>::is()
+  {
+    return elle::meta::static_if<std::is_same<T, void>::value>(
+      [this] (auto)
+      {
+        return
+          this->_index == meta::List<Types ...>::template index_of<T>::value;
+      },
+      [this] (auto t)
+      {
+        using T_ = typename decltype(t)::type;
+        if (this->_index == meta::List<Types ...>::template index_of<T>::value)
+        {
+          char* buffer = this->_buffer;
+          return boost::optional<T_&>(reinterpret_cast<T_&>(*buffer));
+        }
+        else
+          return boost::optional<T_&>();
+      })(std::identity<T>());
+  };
+
+  template <typename ... Types>
+  template <typename T>
+  typename _details::is_result<T const>::type
   Option<Types ...>::is() const
   {
-    return this->_index == meta::List<Types ...>::template index_of<T>::value;
+    return elle::meta::static_if<std::is_same<T, void>::value>(
+      [this] (auto)
+      {
+        return elle::unconst(*this).template is<T>();
+      },
+      [this] (auto t)
+      {
+        using T_ = typename decltype(t)::type;
+        if (auto res = elle::unconst(*this).template is<T>())
+          return boost::optional<T_ const&>(*res);
+        else
+          return boost::optional<T_ const&>();
+      })(std::identity<T>());
   };
 
   /*--------------.
