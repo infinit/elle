@@ -48,6 +48,21 @@ namespace elle
     return this->_bt;
   }
 
+
+  namespace
+  {
+    auto abort_callbacks = std::vector<AbortCallback>{};
+  }
+
+  namespace detail
+  {
+    void
+    on_abort(AbortCallback fun)
+    {
+      abort_callbacks.emplace_back(std::move(fun));
+    }
+  }
+
   void
   unreachable()
   {
@@ -64,6 +79,8 @@ namespace elle
         message, file, line);
     }
     auto&& error = elle::AssertError(message.c_str(), file, line);
+    for (auto&& fun: abort_callbacks)
+      fun(error);
     if (elle::os::getenv("ELLE_REAL_ASSERT", false))
     {
       ELLE_ERR("%s: (%s:%s)", message, file, line);

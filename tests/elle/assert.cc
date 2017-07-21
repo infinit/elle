@@ -1,5 +1,7 @@
 #define BOOST_TEST_MODULE assert
 
+#include <boost/algorithm/cxx11/any_of.hpp>
+
 #include <elle/assert.hh>
 #include <elle/test.hh>
 
@@ -59,4 +61,41 @@ BOOST_AUTO_TEST_CASE(value)
     auto p = ELLE_ENFORCE(std::make_unique<int>(42));
     BOOST_TEST(*p == 42);
   }
+}
+
+// Pacify -Wmissing-declarations.  Avoid unnamed namespace, it changes
+// the names.
+void f0();
+void f1();
+void f2();
+void f3();
+
+#define NO_INLINE ELLE_COMPILER_ATTRIBUTE_NO_INLINE
+
+NO_INLINE void f0() { ELLE_ASSERT_EQ(42, 51); }; auto const line = __LINE__;
+NO_INLINE void f1() { f0(); }
+NO_INLINE void f2() { f1(); }
+NO_INLINE void f3() { f2(); }
+
+BOOST_AUTO_TEST_CASE(abort_callbacks)
+{
+  using boost::algorithm::any_of;
+
+  auto err = elle::AssertError{};
+  elle::on_abort([&err](elle::AssertError const& e)
+    {
+      err = e;
+    });
+  BOOST_CHECK_THROW(f3(), elle::AssertError);
+  BOOST_TEST(err.what() ==
+             elle::print("assertion '42 == 51 is false: (42=42, 51=51)' failed at %s:%s",
+                         __FILE__, line));
+  // At least clang does not seem to obey the NO_INLINE, and shows
+  // only f0.
+  BOOST_TEST_MESSAGE("Backtrace: " << *err.backtrace());
+  BOOST_TEST(any_of(err.backtrace()->frames(),
+                    [](auto const& frame)
+                    {
+                      return frame.symbol == "f0()";
+                    }));
 }

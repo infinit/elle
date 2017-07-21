@@ -45,6 +45,15 @@ namespace elle ELLE_API
   ELLE_COMPILER_ATTRIBUTE_NORETURN
   void
   _abort(std::string const& msg, char const* file, int line);
+
+  /// An AssertError handler.
+  using AbortCallback
+    = std::function<auto (AssertError const& except) -> void>;
+
+  /// Register an action to perform before raising/aborting.
+  template <typename Fun>
+  auto on_abort(Fun&& fun)
+    -> decltype(AbortCallback(fun), void());
 }
 
 
