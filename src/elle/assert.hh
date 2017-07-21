@@ -4,6 +4,7 @@
 #include <stdexcept>
 
 #include <elle/compiler.hh>
+#include <elle/fwd.hh>
 #include <elle/printf.hh>
 #include <elle/unreachable.hh>
 
@@ -16,14 +17,25 @@ namespace elle ELLE_API
   class AssertError
     : public std::exception
   {
-  private:
-    std::string _what;
   public:
     AssertError(char const* condition,
                 char const* file, int line) noexcept;
+    AssertError() = default;
+    AssertError(AssertError const& that) = default;
+    AssertError& operator=(AssertError const& that) = default;
+    ~AssertError() = default;
 
+    /// The error message, including file and line.
     const char*
     what() const noexcept override;
+    /// The stack of frames leading to the assertion.
+    std::shared_ptr<Backtrace const>
+    backtrace() const noexcept;
+
+  private:
+    /// The message, including file and line.
+    std::string _what = "";
+    std::shared_ptr<Backtrace const> _bt = nullptr;
   };
 
   /// Print the message and abort program execution.
