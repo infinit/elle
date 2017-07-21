@@ -34,6 +34,12 @@ from itertools import chain
 from drake.sched import logger
 from drake.utils import property_memoize
 
+# The default timeout value for shell commands, in seconds.
+TIMEOUT = int(_OS.getenv('DRAKE_TIMEOUT', '3600'))
+PRETTY = 'DRAKE_PRETTY' in os.environ
+PROFILE = 'DRAKE_PROFILE' in os.environ
+
+
 def _scheduled():
   return Coroutine.current and \
     Coroutine.current._Coroutine__scheduler
@@ -54,8 +60,6 @@ def duration(start, stop = None):
   import datetime
   return datetime.timedelta(seconds=round(stop - start))
 
-PRETTY = 'DRAKE_PRETTY' in os.environ
-PROFILE = 'DRAKE_PROFILE' in os.environ
 
 class Drake:
 
@@ -1783,7 +1787,8 @@ def nodes(*paths, type = None):
     return list(map(lambda p: node(p, type = type), paths))
 
 
-def command(cmd, cwd = None, stdout = None, stderr = None, env = None):
+def command(cmd, cwd = None, stdout = None, stderr = None, env = None,
+            timeout = TIMEOUT):
   """Run the shell command.
 
   cmd -- the shell command.
@@ -1791,13 +1796,14 @@ def command(cmd, cwd = None, stdout = None, stderr = None, env = None):
   """
   if cwd is not None:
     cwd = str(cwd)
+  if env:
+    env = {k: str(v) for k, v in env.items()}
   try:
-    if env:
-      env = {k: str(v) for k, v in env.items()}
-    p = subprocess.Popen(cmd,
-                         cwd = cwd, stdout = stdout, stderr = stderr, env = env)
-    p.wait()
-    return p.returncode == 0
+    returncode = subprocess.call(cmd,
+                                 cwd = cwd,
+                                 stdout = stdout, stderr = stderr, env = env,
+                                 timeout = timeout)
+    return returncode == 0
   except getattr(__builtins__,'FileNotFoundError', IOError) as e:
     print(e, file = sys.stderr)
     return False
