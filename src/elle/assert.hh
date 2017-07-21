@@ -35,6 +35,7 @@ namespace elle ELLE_API
   _abort(std::string const& msg, char const* file, int line);
 }
 
+
 #define ELLE_ABORT(...)                                         \
   ::elle::_abort(elle::sprintf(__VA_ARGS__), __FILE__, __LINE__)
 
@@ -43,29 +44,18 @@ namespace elle ELLE_API
 #define ELLE_ENFORCE(_condition_)                                       \
   ::elle::_elle_assert(_condition_, #_condition_, __FILE__, __LINE__)
 
-#define ELLE_ENFORCE_EQ(A, B)                           \
-  ::elle::_assert_eq(A, B, #A, #B, __FILE__, __LINE__)
+#define ELLE_ENFORCE_OP(Op, A, B)                               \
+  ::elle::_assert_ ## Op(A, B, #A, #B, __FILE__, __LINE__)
 
-#define ELLE_ENFORCE_NEQ(A, B)                          \
-  ::elle::_assert_neq(A, B, #A, #B, __FILE__, __LINE__)
+#define ELLE_ENFORCE_EQ(A, B)  ELLE_ENFORCE_OP(eq,  A, B)
+#define ELLE_ENFORCE_NEQ(A, B) ELLE_ENFORCE_OP(neq, A, B)
+#define ELLE_ENFORCE_GT(A, B)  ELLE_ENFORCE_OP(gt,  A, B)
+#define ELLE_ENFORCE_GTE(A, B) ELLE_ENFORCE_OP(gte, A, B)
+#define ELLE_ENFORCE_LT(A, B)  ELLE_ENFORCE_OP(lt,  A, B)
+#define ELLE_ENFORCE_LTE(A, B) ELLE_ENFORCE_OP(lte, A, B)
 
-#define ELLE_ENFORCE_GT(A, B)                           \
-  ::elle::_assert_gt(A, B, #A, #B, __FILE__, __LINE__)
-
-#define ELLE_ENFORCE_GTE(A, B)                          \
-  ::elle::_assert_gte(A, B, #A, #B, __FILE__, __LINE__)
-
-#define ELLE_ENFORCE_LT(A, B)                           \
-  ::elle::_assert_lt(A, B, #A, #B, __FILE__, __LINE__)
-
-#define ELLE_ENFORCE_LTE(A, B)                          \
-  ::elle::_assert_lte(A, B, #A, #B, __FILE__, __LINE__)
-
-#define ELLE_ENFORCE_CONTAINS(C, E)                             \
-  ::elle::_assert_contains(C, E, #C, #E, __FILE__, __LINE__)
-
-#define ELLE_ENFORCE_NCONTAINS(C, E)                            \
-  ::elle::_assert_ncontains(C, E, #C, #E, __FILE__, __LINE__)
+#define ELLE_ENFORCE_CONTAINS(C, E)   ELLE_ENFORCE_OP(contains,  C, E)
+#define ELLE_ENFORCE_NCONTAINS(C, E)  ELLE_ENFORCE_OP(ncontains, C, E)
 
 /// Use after the last catch close to enforce no other exception is caught
 #define ELLE_ENFORCE_NO_OTHER_EXCEPTION                                 \
