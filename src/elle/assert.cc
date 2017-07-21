@@ -17,9 +17,7 @@ namespace elle
   }
 
   void
-  _abort(std::string const& message,
-         char const* file,
-         int line)
+  _abort(std::string const& message, char const* file, int line)
   {
     if (std::uncaught_exception())
     {
@@ -37,8 +35,7 @@ namespace elle
   }
 
   AssertError::AssertError(char const* condition,
-                           char const* file,
-                           uint64_t line) noexcept
+                           char const* file, int line) noexcept
   {
     try
     {
@@ -50,9 +47,7 @@ namespace elle
     catch (...)
     {
       ELLE_WARN("could not build the error string for %s at %s:%s",
-                condition,
-                file,
-                line);
+                condition, file, line);
     }
   }
 

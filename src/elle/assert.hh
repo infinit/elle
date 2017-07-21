@@ -9,33 +9,30 @@
 
 namespace elle ELLE_API
 {
-  /// Print the message and abort program execution.
-  ELLE_COMPILER_ATTRIBUTE_NORETURN
-  void
-  _abort(std::string const& msg,
-         char const* file,
-         int line);
-}
-
-namespace elle
-{
-  /// Exception thrown when an assertion is unmet.
+  /// Exception thrown when an assertion failed.
   ///
   /// @note You should never catch directly `AssertError`, nor its base class
   /// `std::exception`, except in the main function of the program.
-  class ELLE_API AssertError
+  class AssertError
     : public std::exception
   {
   private:
     std::string _what;
   public:
     AssertError(char const* condition,
-                char const* file,
-                uint64_t line) noexcept;
+                char const* file, int line) noexcept;
 
     const char*
     what() const noexcept override;
   };
+
+  /// Print the message and abort program execution.
+  ///
+  /// @throws AssertError, unless $ENV{"ELLE_REAL_ASSERT"} is true,
+  ///    in which case std::abort is called.
+  ELLE_COMPILER_ATTRIBUTE_NORETURN
+  void
+  _abort(std::string const& msg, char const* file, int line);
 }
 
 #define ELLE_ABORT(...)                                         \

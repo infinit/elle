@@ -4,8 +4,7 @@ namespace elle
   decltype(auto)
   _elle_assert(T&& predicate,
                std::string const& message,
-               char const* file,
-               int line)
+               char const* file, int line)
   {
     if (predicate)
       return std::forward<T>(predicate);
