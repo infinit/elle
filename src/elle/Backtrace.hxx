@@ -15,22 +15,28 @@
 namespace elle
 {
   inline
-  Backtrace
-  Backtrace::current(unsigned skip)
+  Backtrace::Backtrace(now_t, unsigned skip)
   {
     ELLE_LOG_COMPONENT("elle.Backtrace");
 #if defined ELLE_WINDOWS
-    return {};
+    {};
 #elif defined ELLE_ANDROID || defined NO_EXECINFO
     // FIXME: implement with
     // https://android.googlesource.com/platform/frameworks/native/+/jb-dev/include/utils/CallStack.h
-    return {};
+    {};
 #else
-    auto res = Backtrace{};
-    res._frame_count = ::backtrace(res._callstack.data(), res._callstack.size());
-    ELLE_DEBUG("backtrace returned %s frames", res._frame_count);
-    res._skip = skip;
-    return res;
+    this->_frame_count = ::backtrace(this->_callstack.data(),
+                                     this->_callstack.size());
+    ELLE_DEBUG("backtrace returned %s frames",
+               this->_frame_count);
+    this->_skip = skip;
 #endif
+  }
+
+  inline
+  Backtrace
+  Backtrace::current(unsigned skip)
+  {
+    return {now, skip};
   }
 }

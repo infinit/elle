@@ -39,16 +39,27 @@ namespace elle ELLE_API
   std::string
   demangle(const std::string& sym);
 
+
   class Backtrace
   {
   public:
-    Backtrace();
-    Backtrace(std::vector<StackFrame> const&);
     using Frame = StackFrame;
+
+    Backtrace();
+    Backtrace(std::vector<Frame> const&);
+
+    struct now_t {};
+    static now_t now;
+
+    /// The backtrace leading to the call to this constructor.
+    ///
+    /// I.e., does not include the call to this ctor.
+    ELLE_COMPILER_ATTRIBUTE_ALWAYS_INLINE
+    Backtrace(now_t, unsigned skip = 0);
 
     /// The backtrace leading to the call to this function.
     ///
-    /// I.e., does not include this function.
+    /// I.e., does not include the call to this function.
     static inline ELLE_COMPILER_ATTRIBUTE_ALWAYS_INLINE
     Backtrace
     current(unsigned skip = 0);
@@ -56,12 +67,12 @@ namespace elle ELLE_API
     void
     strip_base(const Backtrace& base);
 
-    std::vector<StackFrame> const&
+    std::vector<Frame> const&
     frames() const;
 
   private:
     void _resolve();
-    std::vector<StackFrame> _frames;
+    std::vector<Frame> _frames;
     bool _resolved = false;
     unsigned _skip = 0;
     static constexpr size_t _callstack_size = 128;

@@ -129,9 +129,11 @@ namespace elle
   | Backtrace.  |
   `------------*/
 
+  Backtrace::now_t Backtrace::now;
+
   Backtrace::Backtrace() = default;
 
-  Backtrace::Backtrace(std::vector<StackFrame> const& sf)
+  Backtrace::Backtrace(std::vector<Frame> const& sf)
     : _frames(sf)
     , _resolved(true)
   {}
@@ -139,7 +141,7 @@ namespace elle
   void
   Backtrace::_resolve()
   {
-    ELLE_DEBUG("resolve");
+    ELLE_DEBUG("resolve {} frames", this->_frame_count);
     if (this->_resolved)
       return;
 #if defined ELLE_WINDOWS
@@ -210,8 +212,9 @@ namespace elle
     this->_resolved = true;
   }
 
-  const std::vector<StackFrame>&
+  auto
   Backtrace::frames() const
+    -> const std::vector<Frame>&
   {
     elle::unconst(this)->_resolve();
     return this->_frames;
