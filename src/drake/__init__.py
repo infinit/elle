@@ -1787,8 +1787,8 @@ def nodes(*paths, type = None):
     return list(map(lambda p: node(p, type = type), paths))
 
 
-def command(cmd, cwd = None, stdout = None, stderr = None, env = None,
-            timeout = TIMEOUT):
+def command(cmd, cwd = None, env = None, timeout = TIMEOUT,
+            **kwargs):
   """Run the shell command.
 
   cmd -- the shell command.
@@ -1800,9 +1800,8 @@ def command(cmd, cwd = None, stdout = None, stderr = None, env = None,
     env = {k: str(v) for k, v in env.items()}
   try:
     returncode = subprocess.call(cmd,
-                                 cwd = cwd,
-                                 stdout = stdout, stderr = stderr, env = env,
-                                 timeout = timeout)
+                                 cwd = cwd, env = env, timeout = timeout,
+                                 **kwargs)
     return returncode == 0
   except getattr(__builtins__,'FileNotFoundError', IOError) as e:
     print(e, file = sys.stderr)
