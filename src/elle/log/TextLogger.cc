@@ -13,6 +13,8 @@
 #include <elle/os/environ.hh>
 #include <elle/print.hh>
 
+#include <elle/date/tz.h>
+
 namespace elle
 {
   namespace log
@@ -155,17 +157,22 @@ namespace elle
       }();
 
       // The prefix related to time.
-      auto const time_prefix = [&]
+      auto const time_prefix = [&] () -> std::string
         {
           if (this->_enable_time)
           {
-            if (this->time_microsec())
-              return date::format("%F %T: ", msg.time);
+            using namespace std::chrono;
+            using namespace date;
+            if (this->time_universal())
+              if (this->time_microsec())
+                return date::format("%F %T: ", msg.time);
+              else
+                return date::format("%F %T: ", floor<seconds>(msg.time));
             else
-            {
-              auto const t = date::floor<std::chrono::seconds>(msg.time);
-              return date::format("%F %T: ", t);
-            }
+              if (this->time_microsec())
+                return date::format("%F %T: ", make_zoned(date::current_zone(), msg.time));
+              else
+                return date::format("%F %T: ", make_zoned(date::current_zone(), floor<seconds>(msg.time)));
           }
           else
             return ""s;
