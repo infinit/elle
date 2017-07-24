@@ -190,12 +190,12 @@ namespace elle
           input >> error;
           ELLE_TRACE_SCOPE("%s: remote procedure call failed: %s",
                            this->_owner, error);
-          auto bt =
+          auto bt = []
             {
-              uint16_t bt_size;
-              input >> bt_size;
+              uint16_t size;
+              input >> size;
               auto frames = std::vector<StackFrame>{};
-              for (int i = 0; i < bt_size; ++i)
+              for (int i = 0; i < size; ++i)
               {
                 frames.emplace_back();
                 auto& frame = frames.back();

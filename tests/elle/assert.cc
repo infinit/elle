@@ -93,9 +93,11 @@ BOOST_AUTO_TEST_CASE(abort_callbacks)
   // At least clang does not seem to obey the NO_INLINE, and shows
   // only f0.
   BOOST_TEST_MESSAGE("Backtrace: " << *err.backtrace());
+#if ELLE_HAVE_BACKTRACE
   BOOST_TEST(any_of(err.backtrace()->frames(),
                     [](auto const& frame)
                     {
                       return frame.symbol == "f0()";
                     }));
+#endif
 }

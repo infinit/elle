@@ -6,6 +6,26 @@
 
 #include <elle/compiler.hh>
 
+#if defined ELLE_WINDOWS or defined ELLE_ANDROID
+# define ELLE_HAVE_EXECINFO 0
+#elif ! defined __has_include
+# define ELLE_HAVE_EXECINFO 1
+#elif __has_include(<execinfo.h>)
+# define ELLE_HAVE_EXECINFO 1
+#else
+# define ELLE_HAVE_EXECINFO 0
+#endif
+
+#if ELLE_HAVE_EXECINFO
+# include <execinfo.h>
+#endif
+
+#if defined ELLE_WINDOWS || defined ELLE_ANDROID || !ELLE_HAVE_EXECINFO
+# define ELLE_HAVE_BACKTRACE 0
+#else
+# define ELLE_HAVE_BACKTRACE 1
+#endif
+
 namespace elle ELLE_API
 {
   /// The description of a function activation.
@@ -20,6 +40,10 @@ namespace elle ELLE_API
 #else
     using Address = int;
 #endif
+
+    StackFrame();
+    /// Build from a line issued by backtrace_symbols.
+    StackFrame(std::string line);
 
     /// The symbol, demangled if we could.
     std::string symbol;

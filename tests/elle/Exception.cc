@@ -25,8 +25,8 @@ BOOST_AUTO_TEST_CASE(ExceptionBacktrace)
   catch (elle::Exception& e)
   {
     BOOST_TEST(e.what() == "test message");
-#if ! defined ELLE_WINDOWS && ! defined ELLE_ANDROID && !defined NO_EXECINFO
-    BOOST_CHECK_EQUAL(e.backtrace().frames().front().symbol, "thrower()");
+#if ELLE_HAVE_BACKTRACE
+    BOOST_TEST(e.backtrace().frames().front().symbol == "thrower()");
 #endif
   }
   catch (...)

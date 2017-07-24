@@ -3,12 +3,6 @@
 #include <elle/Backtrace.hh>
 #include <elle/test.hh>
 
-#if defined ELLE_WINDOWS || defined ELLE_ANDROID || defined NO_EXECINFO
-# define HAVE_BACKTRACE 0
-#else
-# define HAVE_BACKTRACE 1
-#endif
-
 using elle::Backtrace;
 
 /// How the Backtrace is built.
@@ -56,7 +50,7 @@ BOOST_AUTO_TEST_CASE(syndical_minimum)
     BOOST_CHECK_NO_THROW(foo(via));
 }
 
-#if HAVE_BACKTRACE
+#if ELLE_HAVE_BACKTRACE
 
 BOOST_AUTO_TEST_CASE(test_backtrace_empty)
 {
