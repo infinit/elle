@@ -45,8 +45,10 @@ namespace elle ELLE_API
   public:
     using Frame = StackFrame;
 
+    /// An empty backtrace.
     Backtrace();
-    Backtrace(std::vector<Frame> const&);
+    /// A backtrace corresponding to these stack frames.
+    Backtrace(std::vector<Frame>);
 
     struct now_t {};
     static now_t now;

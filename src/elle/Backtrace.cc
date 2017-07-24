@@ -133,8 +133,8 @@ namespace elle
 
   Backtrace::Backtrace() = default;
 
-  Backtrace::Backtrace(std::vector<Frame> const& sf)
-    : _frames(sf)
+  Backtrace::Backtrace(std::vector<Frame> sf)
+    : _frames(std::move(sf))
     , _resolved(true)
   {}
 
