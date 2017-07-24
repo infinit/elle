@@ -190,25 +190,29 @@ namespace elle
           input >> error;
           ELLE_TRACE_SCOPE("%s: remote procedure call failed: %s",
                            this->_owner, error);
-          uint16_t bt_size;
-          input >> bt_size;
-          std::vector<elle::StackFrame> frames;
-          for (int i = 0; i < bt_size; ++i)
-          {
-            elle::StackFrame frame;
-            input >> frame.symbol;
-            input >> frame.symbol_mangled;
-            input >> frame.symbol_demangled;
-            input >> frame.address;
-            input >> frame.offset;
-            frames.push_back(frame);
-          }
-          elle::Backtrace bt(frames);
+          auto bt =
+            {
+              uint16_t bt_size;
+              input >> bt_size;
+              auto frames = std::vector<StackFrame>{};
+              for (int i = 0; i < bt_size; ++i)
+              {
+                frames.emplace_back();
+                auto& frame = frames.back();
+                input >> frame.symbol;
+                input >> frame.symbol_mangled;
+                input >> frame.symbol_demangled;
+                input >> frame.address;
+                input >> frame.offset;
+              }
+              return Backtrace{std::move(frames)};
+            }();
           // FIXME: only protocol error should throw this, not remote
           // exceptions.
-          RPCError e
-            (elle::sprintf("remote procedure '%s' failed with '%s'", this->_name, error));
-          elle::Exception inner_exception(bt, error);
+          auto e =
+            RPCError(sprintf("remote procedure '%s' failed with '%s'",
+                             this->_name, error));
+          auto inner_exception = elle::Exception(std::move(bt), error);
           e.inner_exception(std::make_exception_ptr(inner_exception));
           throw e;
         }

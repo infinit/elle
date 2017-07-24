@@ -20,6 +20,8 @@ namespace elle ELLE_API
   | Construction |
   `-------------*/
   public:
+    using Self = Exception;
+
     /// Construct an Exception.
     ///
     /// @param message An explanatory string.
@@ -29,7 +31,7 @@ namespace elle ELLE_API
     ///
     /// @param bt The Backtrace to attach to the Exception.
     /// @param message An explanatory string.
-    Exception(elle::Backtrace const& bt, std::string const& message);
+    Exception(Backtrace bt, std::string const& message);
     ~Exception() noexcept override;
     /// Set an inner exception.
     ///
