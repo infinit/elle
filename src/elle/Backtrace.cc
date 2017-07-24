@@ -26,7 +26,7 @@ namespace elle
 {
   namespace
   {
-#if ELLE_HAVE_BACKTRACE && !defined ELLE_MACOS
+#if !defined ELLE_MACOS
     /// Whether `until` is in `str`.
     /// If it is, set `str` to the part before, and `chunk` to the part after.
     bool

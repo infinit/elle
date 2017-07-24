@@ -186,34 +186,15 @@ namespace elle
           return GetRes<IS, R>::get_res(input);
         else
         {
-          std::string error;
-          input >> error;
+          auto error = input_error(input);
           ELLE_TRACE_SCOPE("%s: remote procedure call failed: %s",
-                           this->_owner, error);
-          auto bt = []
-            {
-              uint16_t size;
-              input >> size;
-              auto frames = std::vector<StackFrame>{};
-              for (int i = 0; i < size; ++i)
-              {
-                frames.emplace_back();
-                auto& frame = frames.back();
-                input >> frame.symbol;
-                input >> frame.symbol_mangled;
-                input >> frame.symbol_demangled;
-                input >> frame.address;
-                input >> frame.offset;
-              }
-              return Backtrace{std::move(frames)};
-            }();
+                           this->_owner, error.what());
           // FIXME: only protocol error should throw this, not remote
           // exceptions.
           auto e =
             RPCError(sprintf("remote procedure '%s' failed with '%s'",
-                             this->_name, error));
-          auto inner_exception = elle::Exception(std::move(bt), error);
-          e.inner_exception(std::make_exception_ptr(inner_exception));
+                             this->_name, error.what()));
+          e.inner_exception(std::make_exception_ptr(error));
           throw e;
         }
       }
@@ -354,6 +335,46 @@ namespace elle
       : BaseRPC(channels)
     {}
 
+    // FIXME: move closer to elle::Error.
+    namespace
+    {
+      template <typename OStream>
+      void
+      output_error(OStream& os, elle::Error const& e)
+      {
+        os << std::string(e.what());
+        os << uint16_t(e.backtrace().frames().size());
+        for (auto const& frame: e.backtrace().frames())
+          os << frame.symbol
+             << frame.symbol_mangled
+             << frame.symbol_demangled
+             << frame.address
+             << frame.offset;
+      }
+
+      template <typename IStream>
+      elle::Error
+      input_error(IStream& is)
+      {
+        std::string err;
+        is >> err;
+        uint16_t size;
+        is >> size;
+        auto frames = std::vector<StackFrame>{};
+        for (int i = 0; i < size; ++i)
+        {
+          frames.emplace_back();
+          auto& frame = frames.back();
+          is >> frame.symbol
+             >> frame.symbol_mangled
+             >> frame.symbol_demangled
+             >> frame.address
+             >> frame.offset;
+        }
+        return {std::move(frames), std::move(err)};
+      }
+    }
+
     template<typename T>
     bool
     handle_exception(ExceptionHandler & handler,
@@ -376,30 +397,21 @@ namespace elle
         ELLE_TRACE_SCOPE("RPC procedure failed: %s (stop_request = %s)",
           e.what(), res);
         output << false;
-        output << std::string(e.what());
-        output << uint16_t(e.backtrace().frames().size());
-        for (auto const& frame: e.backtrace().frames())
-        {
-          output << frame.symbol;
-          output << frame.symbol_mangled;
-          output << frame.symbol_demangled;
-          output << frame.address;
-          output << frame.offset;
-        }
+        output_error(output, e);
       }
       catch (std::exception& e)
       {
         ELLE_TRACE_SCOPE("RPC procedure failed: %s", e.what());
-        output << false;
-        output << std::string(e.what());
-        output << uint16_t(0);
+        output << false
+               << std::string(e.what())
+               << uint16_t(0);
       }
       catch (...)
       {
         ELLE_TRACE_SCOPE("RPC procedure failed: unknown error");
-        output << false;
-        output << std::string("unknown error");
-        output << uint16_t(0);
+        output << false
+               << std::string("unknown error")
+               << uint16_t(0);
       }
       return res;
     }
@@ -510,14 +522,11 @@ namespace elle
                 if (proc == _procedures.end())
                   throw Exception(sprintf("call to unknown procedure: %s", id));
                 else if (proc->second.second == nullptr)
-                {
                   throw Exception(sprintf("remote call to non-local procedure: %s",
                                           proc->second.first));
-                }
                 else
                 {
                   auto const &name = proc->second.first;
-
                   ELLE_TRACE("%s: remote procedure called: %s", *this, name)
                     proc->second.second->_call(input, output);
                   ELLE_TRACE("%s: procedure %s succeeded", *this, name);
@@ -527,16 +536,7 @@ namespace elle
               {
                 ELLE_TRACE("%s: procedure failed: %s", *this, e.what());
                 output << false;
-                output << std::string(e.what());
-                output << uint16_t(e.backtrace().frames().size());
-                for (auto const& frame: e.backtrace().frames())
-                {
-                  output << frame.symbol;
-                  output << frame.symbol_mangled;
-                  output << frame.symbol_demangled;
-                  output << frame.address;
-                  output << frame.offset;
-                }
+                output_error(output, e);
               }
               catch (elle::reactor::Terminate const&)
               {
@@ -546,16 +546,16 @@ namespace elle
               catch (std::exception& e)
               {
                 ELLE_TRACE("%s: procedure failed: %s", *this, e.what());
-                output << false;
-                output << std::string(e.what());
-                output << uint16_t(0);
+                output << false
+                       << std::string(e.what())
+                       << uint16_t(0);
               }
               catch (...)
               {
                 ELLE_TRACE("%s: procedure failed: unknown error", *this);
-                output << false;
-                output << std::string("unknown error");
-                output << uint16_t(0);
+                output << false
+                       << std::string("unknown error")
+                       << uint16_t(0);
               }
               outs.flush();
               chan->write(answer);
