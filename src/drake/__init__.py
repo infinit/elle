@@ -3872,7 +3872,8 @@ class Runner(Builder):
                targets = None,
                sources = [],
                runs = 1,
-               name = None
+               name = None,
+               timeout = TIMEOUT,
   ):
     '''
     name -- the basename for the output files, defaults to exe
@@ -3895,6 +3896,7 @@ class Runner(Builder):
     self.__bench = self._node('bench')
     self.__sources = [exe] + sources
     self.__env = env
+    self.__timeout = timeout
     self.__runs = runs
     if stdin is None:
       self.__input = None
@@ -4000,14 +4002,14 @@ class Runner(Builder):
             env = { k: str(v) for k, v in env.items() }
           try:
             start_time = time.time()
-            p = subprocess.Popen(map(str, self.command),
+            p = subprocess.Popen([str(c) for c in self.command],
                                  stdout = out,
                                  stderr = err,
                                  stdin = subprocess.PIPE,
                                  env = env)
             if self.__input:
-              p.communicate(self.__input)
-            p.wait()
+              p.communicate(self.__input, timeout = self.__timeout)
+            p.wait(timeout = self.__timeout)
             end_time = time.time()
             print('%s' % (end_time - start_time), file = bench)
             status = p.returncode
