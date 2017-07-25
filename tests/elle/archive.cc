@@ -7,26 +7,29 @@
 #include <elle/filesystem.hh>
 #include <elle/filesystem/TemporaryDirectory.hh>
 #include <elle/filesystem/TemporaryFile.hh>
-#include <elle/finally.hh>
 #include <elle/Error.hh>
 #include <elle/os/environ.hh>
 #include <elle/printf.hh>
 #include <elle/system/Process.hh>
 #include <elle/test.hh>
 
-#ifndef ELLE_WINDOWS
-# define EXTENSION ""
-#else
+#ifdef ELLE_WINDOWS
 # define EXTENSION ".exe"
+#else
+# define EXTENSION ""
 #endif
 
+using namespace std::literals;
 namespace bfs = boost::filesystem;
 
 using elle::filesystem::TemporaryDirectory;
 using elle::filesystem::TemporaryFile;
 
-static const std::string ROOT("root");
-static const std::string SUB("sub");
+namespace
+{
+  auto const ROOT = "root"s;
+  auto const SUB = "sub"s;
+}
 
 class DummyHierarchy
 {
@@ -75,6 +78,7 @@ private:
   ELLE_ATTRIBUTE_R(bfs::path, path);
 };
 
+/// RAII for changing directory momentarily.
 class ChangeDirectory
 {
 public:
@@ -94,18 +98,6 @@ private:
   ELLE_ATTRIBUTE_R(bfs::path, path);
   ELLE_ATTRIBUTE_R(bfs::path, previous);
 };
-
-static
-void
-check_file_content(bfs::path const& path,
-                   char content)
-{
-  char result[BUFSIZ];
-  bfs::ifstream f(path);
-  f.read(result, BUFSIZ);
-  BOOST_CHECK_EQUAL(f.gcount(), 1);
-  BOOST_CHECK_EQUAL(result[0], content);
-}
 
 static
 void
@@ -180,24 +172,15 @@ static
 void
 archive(elle::archive::Format fmt)
 {
-  auto const root =
-    bfs::unique_path(
-      bfs::temp_directory_path() / "%%%%-%%%%-%%%%-%%%%");
-  bfs::create_directories(root);
-  elle::SafeFinally clean_root([&] { bfs::remove_all(root); });
-  auto pattern = root / "%%%%-%%%%-%%%%-%%%%.zip";
-  auto path = bfs::unique_path(pattern);
-  elle::SafeFinally clean([&] { bfs::remove(path); });
+  auto const root = TemporaryDirectory{};
+  auto const pattern = root.path() / "%%%%-%%%%-%%%%-%%%%.zip";
+  auto const path = bfs::unique_path(pattern);
   {
     DummyHierarchy dummy;
     elle::archive::archive(fmt, {dummy.root()}, path, renamer_forbid);
   }
   {
-    auto const output_pattern =
-      bfs::temp_directory_path() / "%%%%-%%%%-%%%%-%%%%";
-    auto output = bfs::unique_path(output_pattern);
-    bfs::create_directory(output);
-    elle::SafeFinally clean([&] { bfs::remove_all(output); });
+    auto const output = TemporaryDirectory{};
     bool change_directory_beacon = false;
     bool extract_and_delete_beacon = false;
     auto extraction = [&] (bool use_libarchive_binaries,
@@ -223,34 +206,31 @@ archive(elle::archive::Format fmt)
         bool beacon2 = false;
         bool beacon3 = false;
         bool beacon4 = false;
-        for (auto it = bfs::recursive_directory_iterator(".");
-             it != bfs::recursive_directory_iterator();
-             ++it)
+        for (auto path: bfs::recursive_directory_iterator("."))
         {
           ++count;
-          auto path = *it;
           if (path == elle::sprintf("./%s", ROOT) ||
               path == elle::sprintf("./%s/%s", ROOT, SUB))
             continue;
           else if (path == elle::sprintf("./%s/1", ROOT))
           {
             beacon1 = true;
-            check_file_content(path, '1');
+            check_file_content(path, "1");
           }
           else if (path == elle::sprintf("./%s/2", ROOT))
           {
             beacon2 = true;
-            check_file_content(path, '2');
+            check_file_content(path, "2");
           }
           else if (path == elle::sprintf("./%s/%s/3", ROOT, SUB))
           {
             beacon3 = true;
-            check_file_content(path, '3');
+            check_file_content(path, "3");
           }
           else if (path == elle::sprintf("./%s/%s/4", ROOT, SUB))
           {
             beacon4 = true;
-            check_file_content(path, '4');
+            check_file_content(path, "4");
           }
           else
           {
@@ -260,10 +240,10 @@ archive(elle::archive::Format fmt)
         BOOST_CHECK_EQUAL(count, 6);
         BOOST_CHECK(beacon1 && beacon2 && beacon3 && beacon4);
       };
-    extraction(true, output);
-    extraction(false, output);
+    extraction(true, output.path());
+    extraction(false, output.path());
     extraction(false, boost::none);
-    ELLE_ASSERT(change_directory_beacon && extract_and_delete_beacon);
+    BOOST_REQUIRE(change_directory_beacon && extract_and_delete_beacon);
   }
 }
 
@@ -271,18 +251,18 @@ static
 void
 larger_archive(elle::archive::Format fmt)
 {
-  std::string content;
+  auto content = std::string{};
   for (int i = 0; i < 10000; i++)
     content += "stuffs n ";
-  auto f1 = LargerTemporaryFile("file1", content);
-  auto f2 = LargerTemporaryFile("file2", content);
-  TemporaryDirectory output("output");
+  auto const f1 = LargerTemporaryFile("file1", content);
+  auto const f2 = LargerTemporaryFile("file2", content);
+  auto const output = TemporaryDirectory("output");
   auto const archive_path = output.path() / "output.zip";
   elle::archive::archive(fmt, {f1.path(), f2.path()}, archive_path);
   {
-    TemporaryDirectory decompress("decompress");
+    auto const decompress = TemporaryDirectory("decompress");
     extract(fmt, archive_path, decompress.path());
-    ChangeDirectory cd(decompress.path());
+    auto const cd = ChangeDirectory(decompress.path());
     int count = 0;
     for (auto p: bfs::recursive_directory_iterator("."))
     {
@@ -304,19 +284,19 @@ static
 void
 archive_duplicate(elle::archive::Format fmt)
 {
-  TemporaryDirectory d1("same");
+  auto const d1 = TemporaryDirectory("same");
   bfs::ofstream(d1.path() / "beacon");
-  TemporaryDirectory d2("same");
+  auto const d2 = TemporaryDirectory("same");
   bfs::ofstream(d2.path() / "beacon");
-  TemporaryFile f("same");
-  TemporaryDirectory output("output");
-  auto path = output.path() / "output.zip";
+  auto const f = TemporaryFile("same");
+  auto const output = TemporaryDirectory("output");
+  auto const path = output.path() / "output.zip";
   elle::archive::archive(fmt,
                          {d1.path(), d2.path(), f.path()},
                          path,
                          renamer);
   {
-    TemporaryDirectory decompress("decompress");
+    auto const decompress = TemporaryDirectory("decompress");
     extract(fmt, path, decompress.path());
     int count = 0;
     auto const accepted = std::unordered_set<bfs::path>{
@@ -326,7 +306,7 @@ archive_duplicate(elle::archive::Format fmt)
       "./same bis/beacon",
       "./same bis bis",
     };
-    ChangeDirectory cd(decompress.path());
+    auto const cd = ChangeDirectory(decompress.path());
     for (auto p: bfs::recursive_directory_iterator("."))
     {
       ++count;
@@ -341,20 +321,17 @@ void
 archive_symlink(elle::archive::Format fmt)
 {
 #if ! defined ELLE_WINDOWS
-  TemporaryDirectory d1("input");
+  auto const d1 = TemporaryDirectory("input");
   bfs::create_directories(d1.path() / "files");
   bfs::ofstream(d1.path() / "files" / "data") << "data";
   bfs::ofstream(d1.path() / "outside-data") << "outside-data";
   bfs::create_symlink("data", (d1.path() / "files" / "data-link"));
   bfs::create_symlink("nosuchfile", (d1.path() / "files" / "invalid-link"));
   bfs::create_symlink("../outside-data", (d1.path() / "files" / "external-link"));
-  TemporaryDirectory d2("output");
-  auto path = d2.path() / "output.zip";
-  elle::archive::archive(fmt,
-                         {d1.path() / "files"},
-                         path
-                         );
-  TemporaryDirectory decompress("decompress");
+  auto const d2 = TemporaryDirectory("output");
+  auto const path = d2.path() / "output.zip";
+  elle::archive::archive(fmt, {d1.path() / "files"}, path);
+  auto const decompress = TemporaryDirectory("decompress");
   extract(fmt, path, decompress.path());
   BOOST_CHECK_EQUAL(bfs::read_symlink(decompress.path() / "files" / "data-link"),
                     bfs::path("data"));
@@ -363,7 +340,7 @@ archive_symlink(elle::archive::Format fmt)
   BOOST_CHECK_EQUAL(bfs::read_symlink(decompress.path() / "files" / "invalid-link"),
                     bfs::path("nosuchfile"));
   bfs::ifstream input(decompress.path() / "files" / "data-link",
-                                    std::ios_base::in | std::ios_base::binary);
+                      std::ios_base::in | std::ios_base::binary);
   BOOST_CHECK(input.good());
   char buffer[BUFSIZ];
   input.read(buffer, BUFSIZ);
@@ -377,27 +354,29 @@ static
 void
 archiving_error(elle::archive::Format fmt)
 {
-  TemporaryDirectory d1("input");
-  TemporaryDirectory d2("output");
-  bfs::path doesnt_exist = d1.path() / "this path doesn't exists";
-  bfs::path exists(d1.path() / "data");
+  auto const d1 = TemporaryDirectory("input");
+  auto const d2 = TemporaryDirectory("output");
+  auto const doesnt_exist = d1.path() / "this path doesn't exists";
+  auto const exists = d1.path() / "data";
   bfs::ofstream(exists) << "data";
   BOOST_CHECK(bfs::exists(exists));
   {
-    auto path = d2.path() / "output.zip";
+    auto const path = d2.path() / "output.zip";
     BOOST_CHECK_THROW(elle::archive::archive(fmt, {doesnt_exist}, path),
                       elle::Error);
     // Should have been deleted.
     BOOST_CHECK(bfs::exists(path));
-    TemporaryDirectory decompress("decompress");
+    auto const decompress = TemporaryDirectory("decompress");
     extract(fmt, path, decompress.path());
     BOOST_CHECK(bfs::is_empty(decompress.path()));
   }
   {
-    auto path = d2.path() / "output2.zip";
+    auto const path = d2.path() / "output2.zip";
     elle::archive::archive(
-      fmt, {doesnt_exist, exists}, path, elle::archive::Renamer{}, elle::archive::Excluder{}, true);
-    TemporaryDirectory decompress("decompress2");
+      fmt, {doesnt_exist, exists}, path,
+      {}, {},
+      true);
+    auto const decompress = TemporaryDirectory("decompress2");
     extract(fmt, path, decompress.path());
     BOOST_CHECK(!bfs::is_empty(decompress.path()));
     BOOST_CHECK(bfs::exists(decompress.path() / "data"));
