@@ -44,6 +44,19 @@ namespace elle
     ELLE_COMPILER_ATTRIBUTE_NORETURN
     void
     break_parallel();
+
+    /// Continue exception used to skip current iteration of for_each_parallel.
+    class Continue
+      : public elle::Exception
+    {
+    public:
+      Continue();
+    };
+
+    /// Continue from a for_each_parallel loop by throwing a Continue exception.
+    ELLE_COMPILER_ATTRIBUTE_NORETURN
+    void
+    continue_parallel();
   }
 }
 

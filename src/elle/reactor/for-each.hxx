@@ -11,6 +11,11 @@ namespace elle
       : elle::Exception("break")
     {}
 
+    inline
+    Continue::Continue()
+      : elle::Exception("continue")
+    {}
+
     template <typename C, typename F>
     void
     for_each_parallel(C&& c, F const& f, std::string const& name)
@@ -50,6 +55,8 @@ namespace elle
               {
                 scope.terminate_now();
               }
+              catch (Continue const&)
+              {}
             });
         }
         reactor::wait(scope);
@@ -61,6 +68,13 @@ namespace elle
     break_parallel()
     {
       throw Break();
+    }
+
+    inline
+    void
+    continue_parallel()
+    {
+      throw Continue();
     }
   }
 }
