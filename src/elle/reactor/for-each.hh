@@ -7,6 +7,30 @@ namespace elle
 {
   namespace reactor
   {
+    namespace details
+    {
+      template <typename T>
+      struct _for_each_parallel_result
+      {
+        using type = std::conditional_t<
+          std::is_same<T, void>::value, void, std::vector<T>>;
+      };
+
+      template <typename F, typename C>
+      auto
+      for_each_iteration_result(F const& f, C&& c)
+      {
+        for (auto&& elt: std::forward<C>(c))
+          return f(std::forward<decltype(elt)>(elt));
+      }
+
+      template <typename F, typename C>
+      auto
+      for_each_parallel_result(F const& f, C&& c)
+        -> typename _for_each_parallel_result<
+          decltype(for_each_iteration_result(f, std::forward<C>(c)))>::type;
+    }
+
     /// Apply a given function to every item of a given container in parallel.
     ///
     /// @code{.cc}
@@ -29,8 +53,9 @@ namespace elle
     ///
     /// @endcode
     template <typename C, typename F>
-    void
-    for_each_parallel(C&& c, F const& f, std::string const& name = {});
+    auto
+    for_each_parallel(C&& c, F const& f, std::string const& name = {})
+      -> decltype(details::for_each_parallel_result(f, std::forward<C>(c)));
 
     /// Break exception used to break for_each_parallel execution.
     class Break

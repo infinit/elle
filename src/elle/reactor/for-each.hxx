@@ -17,9 +17,13 @@ namespace elle
     {}
 
     template <typename C, typename F>
-    void
+    auto
     for_each_parallel(C&& c, F const& f, std::string const& name)
+      -> decltype(details::for_each_parallel_result(f, std::forward<C>(c)))
     {
+      using Type = decltype(f(*std::begin(c)));
+      auto constexpr valued = !std::is_same<Type, void>::value;
+      std::vector<std::conditional_t<valued, Type, bool>> res;
       elle::With<reactor::Scope>(name) << [&] (reactor::Scope& scope)
       {
         for (auto&& elt: std::forward<C>(c))
@@ -37,19 +41,35 @@ namespace elle
                         elt),
             [
               e = Wrapper{std::forward<decltype(elt)>(elt)},
-              &f, &scope]
+              &f, &scope, &res]
             {
               try
               {
-                elle::meta::static_if<lvalue>(
-                  [&f] (auto&& e)
+                elle::meta::static_if<valued>(
+                  [&] (auto& v)
                   {
-                    f(e.get());
+                    elle::meta::static_if<lvalue>(
+                      [&] (auto&& e)
+                      {
+                        v.emplace_back(f(e.get()));
+                      },
+                      [&] (auto&& e)
+                      {
+                        v.emplace_back(f(std::forward<decltype(e)>(e)));
+                      })(std::forward<decltype(e) const>(e));
                   },
-                  [&f] (auto&& e)
+                  [&] (auto&)
                   {
-                    f(std::forward<decltype(e)>(e));
-                  })(std::forward<decltype(e) const>(e));
+                    elle::meta::static_if<lvalue>(
+                      [&] (auto&& e)
+                      {
+                        f(e.get());
+                      },
+                      [&] (auto&& e)
+                      {
+                        f(std::forward<decltype(e)>(e));
+                      })(std::forward<decltype(e) const>(e));
+                  })(res);
               }
               catch (Break const&)
               {
@@ -61,6 +81,9 @@ namespace elle
         }
         reactor::wait(scope);
       };
+      return elle::meta::static_if<valued>(
+        [] (auto& res) { return res; },
+        [] (auto& res) {})(res);
     }
 
     inline

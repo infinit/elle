@@ -80,6 +80,28 @@ ELLE_TEST_SCHEDULED(mutable_copiable)
   }
 }
 
+ELLE_TEST_SCHEDULED(valued)
+{
+  std::vector<int> v{0, 1, 2};
+  BOOST_TEST(
+    elle::reactor::for_each_parallel(
+      v, [] (auto i) { return std::to_string(i); }) ==
+    (std::vector<std::string>{"0", "1", "2"}));
+}
+
+ELLE_TEST_SCHEDULED(valued_continue)
+{
+  std::vector<int> v{0, 1, 2, 3, 4, 5};
+  BOOST_TEST(
+    elle::reactor::for_each_parallel(
+      v, [] (auto i) {
+        if (i % 2)
+          elle::reactor::continue_parallel();
+        else
+          return std::to_string(i);
+      }) == (std::vector<std::string>{"0", "2", "4"}));
+}
+
 // ELLE_TEST_SCHEDULED(moved_not_copiable)
 // {
 //   std::vector<std::unique_ptr<int>> v;
@@ -105,5 +127,7 @@ ELLE_TEST_SUITE()
   master.add(BOOST_TEST_CASE(const_not_copiable));
   master.add(BOOST_TEST_CASE(mutable_not_copiable));
   master.add(BOOST_TEST_CASE(mutable_copiable));
+  master.add(BOOST_TEST_CASE(valued));
+  master.add(BOOST_TEST_CASE(valued_continue));
   // master.add(BOOST_TEST_CASE(moved_not_copiable));
 }
