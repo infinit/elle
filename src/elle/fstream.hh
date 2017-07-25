@@ -12,8 +12,6 @@
 #include <elle/print.hh>
 #include <elle/printf.hh> // for err
 
-ELLE_LOG_COMPONENT("elle.fstream");
-
 namespace elle
 {
   /// The sorted list of existing versions of a file family.
@@ -39,6 +37,7 @@ namespace elle
                 std::string const& base,
                 int size, int rotate, bool append)
     {
+      ELLE_LOG_COMPONENT("elle.fstream");
       auto const vs = rotate_versions(base);
       auto const last = vs.empty() ? -1 : vs.back();
       // Remove the files that are too old.  If we don't append, we

@@ -26,6 +26,8 @@
 using namespace std::literals;
 namespace bfs = boost::filesystem;
 
+ELLE_LOG_COMPONENT("elle.log");
+
 /*---------------------.
 | test suite: logger.  |
 `---------------------*/
