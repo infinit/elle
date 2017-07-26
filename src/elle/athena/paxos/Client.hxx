@@ -105,7 +105,7 @@ namespace elle
 
       template <typename T, typename Version, typename ClientId>
       auto
-      Client<T, Version, ClientId>::choose(elle::Option<T, Quorum> const& value)
+      Client<T, Version, ClientId>::choose(Value const& value)
         -> Choice
       {
         return this->choose(Version(), std::move(value));
@@ -144,7 +144,7 @@ namespace elle
       auto
       Client<T, Version, ClientId>::choose(
         elle::_detail::attribute_r_t<Version> version,
-        elle::Option<T, Quorum> const& value)
+        Value const& value)
         -> Choice
       {
         ELLE_LOG_COMPONENT("athena.paxos.Client");
@@ -451,7 +451,7 @@ namespace elle
       template <typename T, typename Version, typename ClientId>
       Client<T, Version, ClientId>::Choice::Choice(
         Proposal proposal,
-        elle::Option<T, Quorum> value)
+        Value value)
         : _proposal(std::move(proposal))
         , _conflicted(true)
         , _value(std::move(value))
@@ -466,7 +466,7 @@ namespace elle
       template <typename T, typename Version, typename ClientId>
       auto
       Client<T, Version, ClientId>::Choice::operator ->() const
-        -> elle::Option<T, Quorum> const*
+        -> Value const*
       {
         return &this->_value.get();
       }

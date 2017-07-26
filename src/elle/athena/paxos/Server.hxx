@@ -74,7 +74,7 @@ namespace elle
         typename T, typename Version, typename ClientId, typename ServerId>
       Server<T, Version, ClientId, ServerId>::Accepted::Accepted(
         Proposal proposal_,
-        elle::Option<T, Quorum> value_,
+        Value value_,
         bool confirmed_)
         : proposal(std::move(proposal_))
         , value(std::move(value_))
@@ -405,7 +405,7 @@ namespace elle
       template <typename T, typename Version, typename CId, typename SId>
       typename Server<T, Version, CId, SId>::Proposal
       Server<T, Version, CId, SId>::accept(
-        Quorum q, Proposal p, elle::Option<T, Quorum> value)
+        Quorum q, Proposal p, Value value)
       {
         ELLE_LOG_COMPONENT("athena.paxos.Server");
         ELLE_TRACE_SCOPE("%s: accept for %f: %f", *this, p, value);

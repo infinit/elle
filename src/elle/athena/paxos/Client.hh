@@ -33,6 +33,7 @@ namespace elle
         using Accepted = typename Server::Accepted;
         using Proposal = typename Server::Proposal;
         using Quorum = typename Server::Quorum;
+        using Value = typename Server::Value;
 
         /*-----.
         | Peer |
@@ -64,8 +65,7 @@ namespace elle
           /// @param value The value you agreed for.
           virtual
           Proposal
-          accept(Quorum const& q, Proposal const& p,
-                 elle::Option<T, Quorum> const& value) = 0;
+          accept(Quorum const& q, Proposal const& p, Value const& value) = 0;
           /// Confirm \a proposal.
           ///
           /// @param q The quorum the proposal is sent to.
@@ -112,14 +112,14 @@ namespace elle
         {
         public:
           Choice(Proposal proposal);
-          Choice(Proposal proposal, elle::Option<T, Quorum> value);
+          Choice(Proposal proposal, Value value);
           explicit
           operator bool() const;
-          elle::Option<T, Quorum> const*
+          Value const*
           operator ->() const;
           ELLE_ATTRIBUTE_R(Proposal, proposal);
           ELLE_ATTRIBUTE_R(bool, conflicted);
-          ELLE_ATTRIBUTE_R((boost::optional<elle::Option<T, Quorum>>), value);
+          ELLE_ATTRIBUTE_R((boost::optional<Value>), value);
         };
 
         /// Submit \a value as the chosen value.
@@ -127,7 +127,7 @@ namespace elle
         /// @param value The submitted value
         /// @returns The value that was chosen if not the one we submitted
         Choice
-        choose(elle::Option<T, Quorum> const& value);
+        choose(Value const& value);
         /// Submit \a value as the chosen value.
         ///
         /// @param value The submitted value
@@ -135,7 +135,7 @@ namespace elle
         /// @returns The value that was chosen if not the one we submitted
         Choice
         choose(elle::_detail::attribute_r_t<Version> version,
-               elle::Option<T, Quorum> const& value);
+               Value const& value);
         /// Get the latest chosen value.
         boost::optional<T>
         get();
