@@ -8,16 +8,14 @@
 #include <elle/das/Symbol.hh>
 #include <elle/das/tuple.hh>
 
+#include <elle/athena/paxos/symbols.hh>
+
 namespace elle
 {
   namespace athena
   {
     namespace paxos
     {
-      ELLE_DAS_SYMBOL(proposal);
-      ELLE_DAS_SYMBOL(quorum);
-      ELLE_DAS_SYMBOL(value);
-
       /// A client of the Paxos consensus algorithm.
       ///
       /// For more details, on both the terminology and the algorithm:
