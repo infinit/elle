@@ -154,7 +154,7 @@ namespace elle
         for (auto const& peer: this->_peers)
           q.insert(peer->id());
         ELLE_DUMP("quorum: %s", q);
-        boost::optional<Accepted> previous;
+        Response previous;
         while (true)
         {
           ++this->_round;

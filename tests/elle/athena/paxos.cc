@@ -49,7 +49,7 @@ public:
   {}
 
 
-  boost::optional<typename Client::Accepted>
+  typename Client::Response
   propose(
     typename paxos::Server<T, Version, ServerId>::Quorum const& q,
     typename Client::Proposal const& p) override
@@ -122,7 +122,7 @@ public:
   {}
 
 
-  boost::optional<typename Client::Accepted>
+  typename Client::Response
   propose(typename Client::Quorum const& q,
           typename Client::Proposal const& p) override
   {
@@ -233,7 +233,7 @@ public:
   {}
 
 
-  boost::optional<typename Client::Accepted>
+  typename Client::Response
   propose(
     typename Client::Quorum const& q,
     typename Client::Proposal const& p) override
@@ -1063,7 +1063,7 @@ public:
 
   using Super::Super;
 
-  boost::optional<typename Client::Accepted>
+  typename Client::Response
   propose(typename Client::Quorum const& q,
           typename Client::Proposal const& p) override
   {

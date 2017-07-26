@@ -33,6 +33,7 @@ namespace elle
         using Accepted = typename Server::Accepted;
         using Proposal = typename Server::Proposal;
         using Quorum = typename Server::Quorum;
+        using Response = typename Server::Response;
         using Value = typename Server::Value;
 
         /*-----.
@@ -56,7 +57,7 @@ namespace elle
           /// @param p The proposal.
           /// @returns An optional acceptation.
           virtual
-          boost::optional<Accepted>
+          Response
           propose(Quorum const& q, Proposal const& p) = 0;
           /// Tell the Quorum you accept \a proposal.
           ///

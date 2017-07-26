@@ -123,6 +123,7 @@ namespace elle
               < std::tie(b.proposal, b.confirmed);
           }
         };
+        using Response = boost::optional<Accepted>;
 
         /*------------.
         | WrongQuorum |
@@ -212,7 +213,7 @@ namespace elle
         ///
         /// If the Proposal is already outdated, return the newest Proposal.
         ///
-        boost::optional<Accepted>
+        Response
         propose(Quorum q, Proposal p);
         Proposal
         accept(Quorum q, Proposal p, Value value);

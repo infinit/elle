@@ -338,8 +338,9 @@ namespace elle
 
       template <
         typename T, typename Version, typename ClientId, typename ServerId>
-      boost::optional<typename Server<T, Version, ClientId, ServerId>::Accepted>
+      auto
       Server<T, Version, ClientId, ServerId>::propose(Quorum q, Proposal p)
+        -> Response
       {
         ELLE_LOG_COMPONENT("athena.paxos.Server");
         ELLE_TRACE_SCOPE("%s: get proposal: %s ", *this, p);
