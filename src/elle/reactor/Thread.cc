@@ -596,6 +596,7 @@ namespace elle
 
 // Instantiate those methods to ensure we can dereference thread pointers in
 // debuggers.
-template class std::unique_ptr<elle::reactor::Thread,
-                               elle::reactor::Thread::Terminator>;
-template class std::unique_ptr<elle::reactor::backend::Thread>;
+template
+class std::unique_ptr<elle::reactor::Thread, elle::reactor::Thread::Terminator>;
+template
+class std::unique_ptr<elle::reactor::backend::Thread>;
