@@ -6,9 +6,10 @@
 
 namespace elle
 {
-  namespace filesystem
+  namespace filesystem ELLE_API
   {
-    class ELLE_API TemporaryFile
+    /// A file with a specified name, but in a temporary directory.
+    class TemporaryFile
     {
     public:
       TemporaryFile(std::string const& name);
