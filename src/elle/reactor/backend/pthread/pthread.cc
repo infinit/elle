@@ -155,7 +155,8 @@ namespace elle
           _status = status::running;
           try
           {
-            _action();
+            this->action();
+            this->action() = Action();
           }
           catch (const std::exception& e)
           {

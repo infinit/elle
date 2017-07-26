@@ -277,6 +277,7 @@ namespace elle
             try
             {
               this->action()();
+              this->action() = Action();
             }
             catch (reactor::Exception const& e)
             {

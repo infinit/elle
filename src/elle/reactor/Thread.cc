@@ -93,13 +93,8 @@ namespace elle
       this->_released();
       if (this->_dispose)
         delete this;
-      else if (this->_self)
-      {
-        this->_thread->action() = Action();
-        this->_self.reset();
-      }
       else
-        this->_thread->action() = Action();
+        this->_self.reset();
     }
 
     /*----------.

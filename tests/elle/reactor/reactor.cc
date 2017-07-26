@@ -2960,16 +2960,25 @@ namespace tracked
     t.reset();
   }
 
+  class DeathYielder
+  {
+  public:
+    ~DeathYielder()
+    {
+      elle::reactor::yield();
+    }
+  };
+
   // Check thread free their captures as soon as they are over.
   ELLE_TEST_SCHEDULED(capture_liberation)
   {
-    auto p = std::make_shared<int>(2965);
+    auto p = std::make_shared<DeathYielder>();
     elle::reactor::Thread t(
       "hold", [p]
       {
         elle::reactor::yield();
       });
-    auto w = std::weak_ptr<int>(p);
+    auto w = std::weak_ptr<DeathYielder>(p);
     p.reset();
     BOOST_TEST(w.lock());
     elle::reactor::wait(t);
