@@ -20,8 +20,7 @@ namespace elle
     `-------------*/
 
     SecretKey::SecretKey(std::string const& password)
-      : _password(reinterpret_cast<uint8_t const*>(password.c_str()),
-                  password.length())
+      : _password(password)
     {
       // Make sure the cryptographic system is set up.
       cryptography::require();
@@ -35,7 +34,7 @@ namespace elle
     }
 
     SecretKey::SecretKey(SecretKey const& other)
-      : _password(other._password.contents(), other._password.size())
+      : _password(other._password)
     {
       // Make sure the cryptographic system is set up.
       cryptography::require();
@@ -58,11 +57,14 @@ namespace elle
                         Mode const mode,
                         Oneway const oneway) const
     {
-      elle::IOStream _plain(plain.istreambuf());
-      std::stringstream _code;
-      this->encipher(_plain, _code,
-                     cipher, mode, oneway);
-      return elle::Buffer{_code.str()};
+      auto in = elle::IOStream(plain.istreambuf());
+      auto res = elle::Buffer();
+      res.capacity(plain.size() + 1024);
+      {
+        auto out = elle::IOStream(res.ostreambuf());
+        this->encipher(in, out, cipher, mode, oneway);
+      }
+      return res;
     }
 
     elle::Buffer
@@ -71,11 +73,14 @@ namespace elle
                         Mode const mode,
                         Oneway const oneway) const
     {
-      elle::IOStream _code(code.istreambuf());
-      std::stringstream _plain;
-      this->decipher(_code, _plain,
-                     cipher, mode, oneway);
-      return elle::Buffer{_plain.str()};
+      auto in = elle::IOStream(code.istreambuf());
+      auto res = elle::Buffer();
+      res.capacity(code.size());
+      {
+        auto out = elle::IOStream(res.ostreambuf());
+        this->decipher(in, out, cipher, mode, oneway);
+      }
+      return res;
     }
 
     void
@@ -85,11 +90,9 @@ namespace elle
                         Mode const mode,
                         Oneway const oneway) const
     {
-      ::EVP_CIPHER const* function_cipher = cipher::resolve(cipher, mode);
-      ::EVP_MD const* function_oneway = oneway::resolve(oneway);
       raw::symmetric::encipher(this->_password,
-                               function_cipher,
-                               function_oneway,
+                               cipher::resolve(cipher, mode),
+                               oneway::resolve(oneway),
                                plain,
                                code);
     }
@@ -101,11 +104,9 @@ namespace elle
                         Mode const mode,
                         Oneway const oneway) const
     {
-      ::EVP_CIPHER const* function_cipher = cipher::resolve(cipher, mode);
-      ::EVP_MD const* function_oneway = oneway::resolve(oneway);
       raw::symmetric::decipher(this->_password,
-                               function_cipher,
-                               function_oneway,
+                               cipher::resolve(cipher, mode),
+                               oneway::resolve(oneway),
                                code,
                                plain);
     }
@@ -178,14 +179,7 @@ namespace elle
       SecretKey
       generate(uint32_t const length)
       {
-        // Convert the length in a bit-specific size.
-        uint32_t size = length / 8;
-
-        // Generate a buffer-based password.
-        elle::Buffer password(random::generate<elle::Buffer>(size));
-
-        // Return a new secret key.
-        return SecretKey(std::move(password));
+        return random::generate<elle::Buffer>(length / 8);
       }
     }
   }

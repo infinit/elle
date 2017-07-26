@@ -32,9 +32,9 @@ namespace elle
     public:
       struct defaults
       {
-        static Cipher const cipher = Cipher::aes256;
-        static Mode const mode = Mode::cbc;
-        static Oneway const oneway = Oneway::sha256;
+        static auto const cipher = Cipher::aes256;
+        static auto const mode = Mode::cbc;
+        static auto const oneway = Oneway::sha256;
       };
 
       /*-------------.
@@ -84,10 +84,10 @@ namespace elle
                Cipher const cipher = defaults::cipher,
                Mode const mode = defaults::mode,
                Oneway const oneway = defaults::oneway) const;
-      /// Return the size, in bytes, of the secret key.
+      /// The number of bytes of the secret key.
       uint32_t
       size() const;
-      /// Return the length, in bits, of the secret key.
+      /// The number of bits of the secret key.
       uint32_t
       length() const;
 
@@ -141,9 +141,7 @@ namespace elle
       | Functions |
       `----------*/
 
-      /// Return a freshly generated secret key of the given length.
-      ///
-      /// Note that the length is expressed in bits.
+      /// A freshly generated secret key of the given length (in bits).
       SecretKey
       generate(uint32_t const length);
     }
