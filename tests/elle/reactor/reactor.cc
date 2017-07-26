@@ -17,7 +17,6 @@
 #include <elle/reactor/asio.hh>
 #include <elle/reactor/duration.hh>
 #include <elle/reactor/exception.hh>
-#include <elle/reactor/for-each.hh>
 #include <elle/reactor/mutex.hh>
 #include <elle/reactor/rw-mutex.hh>
 #include <elle/reactor/semaphore.hh>
@@ -3307,51 +3306,6 @@ namespace non_interruptible
   }
 }
 
-/*---------.
-| For each |
-`---------*/
-
-namespace for_each
-{
-  ELLE_TEST_SCHEDULED(parallel)
-  {
-    std::vector<int> c{0, 1, 2};
-    elle::reactor::Barrier b;
-    elle::reactor::Thread check(
-      "check",
-      [&]
-      {
-        BOOST_CHECK_EQUAL(c, std::vector<int>({0, 1, 2}));
-        elle::reactor::yield();
-        BOOST_CHECK_EQUAL(c, std::vector<int>({1, 2, 3}));
-        elle::reactor::yield();
-        b.open();
-      });
-    elle::reactor::for_each_parallel(
-      c,
-      [&] (int& c)
-      {
-        ++c;
-        elle::reactor::wait(b);
-      });
-    BOOST_CHECK(b.opened());
-  }
-
-  ELLE_TEST_SCHEDULED(parallel_break)
-  {
-    std::vector<int> c{0, 1, 2};
-    elle::reactor::for_each_parallel(
-      c,
-      [&] (int& c)
-      {
-        if (c == 1)
-          elle::reactor::break_parallel();
-        ++c;
-      });
-    BOOST_CHECK_EQUAL(c, std::vector<int>({1, 1, 2}));
-  }
-}
-
 /*-----.
 | Main |
 `-----*/
@@ -3614,13 +3568,4 @@ ELLE_TEST_SUITE()
     system_signals->add(BOOST_TEST_CASE(terminate), 0, valgrind(1, 5));
   }
 #endif
-
-  {
-    boost::unit_test::test_suite* s = BOOST_TEST_SUITE("for-each");
-    boost::unit_test::framework::master_test_suite().add(s);
-    auto parallel = &for_each::parallel;
-    s->add(BOOST_TEST_CASE(parallel));
-    auto parallel_break = &for_each::parallel_break;
-    s->add(BOOST_TEST_CASE(parallel_break));
-  }
 }
