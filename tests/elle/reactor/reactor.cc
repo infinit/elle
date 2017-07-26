@@ -2959,6 +2959,22 @@ namespace tracked
     elle::reactor::yield();
     t.reset();
   }
+
+  // Check thread free their captures as soon as they are over.
+  ELLE_TEST_SCHEDULED(capture_liberation)
+  {
+    auto p = std::make_shared<int>(2965);
+    elle::reactor::Thread t(
+      "hold", [p]
+      {
+        elle::reactor::yield();
+      });
+    auto w = std::weak_ptr<int>(p);
+    p.reset();
+    BOOST_TEST(w.lock());
+    elle::reactor::wait(t);
+    BOOST_TEST(!w.lock());
+  }
 }
 
 static
@@ -3546,6 +3562,7 @@ ELLE_TEST_SUITE()
     using namespace tracked;
     tracked->add(BOOST_TEST_CASE(&reset_before), 0, valgrind(1, 5));
     tracked->add(BOOST_TEST_CASE(&reset_after), 0, valgrind(1, 5));
+    tracked->add(BOOST_TEST_CASE(&capture_liberation), 0, valgrind(1, 5));
   }
 
   {
