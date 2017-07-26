@@ -1,8 +1,12 @@
 #pragma once
 
+#include <boost/range/adaptor/filtered.hpp>
+
 #include <elle/With.hh>
 #include <elle/cryptography/random.hh>
 #include <elle/find.hh>
+#include <elle/find_if.hh>
+#include <elle/max_element.hh>
 #include <elle/reactor/Scope.hh>
 #include <elle/reactor/for-each.hh>
 #include <elle/reactor/scheduler.hh>
@@ -154,7 +158,7 @@ namespace elle
         for (auto const& peer: this->_peers)
           q.insert(peer->id());
         ELLE_DUMP("quorum: %s", q);
-        Response previous;
+        boost::optional<Value> replace;
         while (true)
         {
           ++this->_round;
@@ -165,7 +169,7 @@ namespace elle
           {
             int reached = 0;
             std::exception_ptr weak_error;
-            elle::reactor::for_each_parallel(
+            auto responses = elle::reactor::for_each_parallel(
               this->_peers,
               [&] (std::unique_ptr<Peer>& peer)
               {
@@ -173,17 +177,9 @@ namespace elle
                 {
                   ELLE_DEBUG_SCOPE("%s: send proposal %s to %s",
                                    *this, proposal, peer);
-                  if (auto p = peer->propose(q, proposal))
-                  {
-                    if (!previous || *previous < p)
-                    {
-                      // FIXME: what if previous was accepted and p is not?
-                      ELLE_DEBUG_SCOPE("%s: value already accepted at %f: %f",
-                                       *this, p->proposal, p->value);
-                      previous = std::move(p);
-                    }
-                  }
+                  auto response = peer->propose(q, proposal);
                   ++reached;
+                  return response;
                 }
                 catch (Unavailable const& e)
                 {
@@ -199,40 +195,59 @@ namespace elle
                   if (!weak_error)
                     weak_error = e.exception();
                 }
+                elle::reactor::continue_parallel();
               },
               std::string("send proposal"));
-            if (previous && previous->confirmed)
-            {
-              return Choice(previous->proposal, previous->value);;
-            }
+            ELLE_DUMP("proposal responses: {}", responses);
+            auto const confirmed = [] (Response const& r)
+              {
+                return r.value() && r.confirmed();
+              };
+            if (auto r = elle::find_if(responses, confirmed))
+              return Choice(*r->proposal(), *r->value());
             this->_check_headcount(q, reached, weak_error, false);
-            if (previous)
-            {
-              bool const keep = previous->value.template is<Quorum>() &&
-                previous->value.template get<Quorum>().size() == 1 &&
-                *std::begin(previous->value.template get<Quorum>()) == ClientId();
-              elle::SafeFinally reset([&] { previous.reset(); });
-              if (!keep)
+            auto const valued = [] (Response const& l, Response const& r)
               {
-                reset.abort();
-                ELLE_DEBUG("replace value with %s", previous->value);
-              }
-              if (proposal == previous->proposal)
+                if (l.value() && r.value())
+                  return
+                    ELLE_ENFORCE(l.proposal()) < ELLE_ENFORCE(r.proposal());
+                else
+                  return bool(l.value()) < bool(r.value());
+              };
+            if (auto r = elle::max_element(responses, valued))
+              if (r->value())
               {
-                this->_round = previous->proposal.round + 1;
-                ELLE_DEBUG("retry at version %s round %s",
-                           version, this->_round);
-                continue;
+                ELLE_DEBUG_SCOPE("%s: value already accepted at %f: %f",
+                                 this, r->proposal(), r->value());
+                replace = std::move(r->value());
               }
-              if (proposal < previous->proposal)
+            auto const proposed = [] (Response const& l, Response const& r)
               {
-                version = previous->proposal.version;
-                this->_round = previous->proposal.round;
-                ELLE_DEBUG("retry at version %s round %s",
-                           version, this->_round);
-                continue;
+                if (l.proposal() && r.proposal())
+                  return
+                    ELLE_ENFORCE(l.proposal()) < ELLE_ENFORCE(r.proposal());
+                else
+                  return bool(l.proposal()) < bool(r.proposal());
+              };
+            if (auto r = elle::max_element(responses, proposed))
+              if (r->proposal())
+              {
+                if (proposal == r->proposal())
+                {
+                  this->_round = r->proposal()->round + 1;
+                  ELLE_DEBUG("self conflict, retry at version {} round {}",
+                             version, this->_round);
+                  continue;
+                }
+                if (proposal < r->proposal())
+                {
+                  version = r->proposal()->version;
+                  this->_round = r->proposal()->round;
+                  ELLE_DEBUG("retry at version %s round %s",
+                             version, this->_round);
+                  continue;
+                }
               }
-            }
           }
           ELLE_DEBUG("%s: send acceptation", *this)
           {
@@ -250,7 +265,7 @@ namespace elle
                   ELLE_DEBUG_SCOPE("%s: send acceptation %s to %s",
                                    *this, proposal, *peer);
                   auto minimum = peer->accept(
-                    q, proposal, previous ? previous->value : value);
+                    q, proposal, replace ? *replace : value);
                   // FIXME: If the majority doesn't conflict, the value was
                   // still chosen - right ? Take that in account.
                   if (proposal < minimum)
@@ -297,7 +312,7 @@ namespace elle
             else
               this->_check_headcount(q, reached, weak_error, false);
           }
-          ELLE_TRACE("%s: chose %f", this, previous ? previous->value : value);
+          ELLE_TRACE("%s: chose %f", this, replace ? *replace : value);
           ELLE_DEBUG("%s: send confirmation", *this)
           {
             auto reached = 0;
@@ -333,8 +348,8 @@ namespace elle
               std::string("send confirmation"));
             this->_check_headcount(q, reached, weak_error, false);
           }
-          if (previous)
-            return Choice(previous->proposal, previous->value);
+          if (replace)
+            return Choice(proposal, *replace);
           else
             return Choice(proposal);
         }

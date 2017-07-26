@@ -12,7 +12,12 @@
 #include <elle/attribute.hh>
 #include <elle/serialization/Serializer.hh>
 
+#include <elle/das/model.hh>
+#include <elle/das/printer.hh>
+
 #include <elle/reactor/Barrier.hh>
+
+#include <elle/athena/paxos/symbols.hh>
 
 namespace elle
 {
@@ -113,7 +118,8 @@ namespace elle
           std::ostream&
           operator <<(std::ostream& o, Accepted const& a)
           {
-            return elle::fprintf(o, "Accepted(%f)", a.proposal);
+            elle::print(o, "Accepted(%f)", a.proposal);
+            return o;
           }
 
           friend bool
@@ -123,7 +129,6 @@ namespace elle
               < std::tie(b.proposal, b.confirmed);
           }
         };
-        using Response = boost::optional<Accepted>;
 
         /*------------.
         | WrongQuorum |
@@ -209,6 +214,38 @@ namespace elle
         | Consensus |
         `----------*/
       public:
+        class Response
+        {
+        public:
+          Response(boost::optional<Proposal> proposal,
+                   boost::optional<Value> value,
+                   bool confirmed)
+            : _proposal(std::move(proposal))
+            , _value(std::move(value))
+            , _confirmed(confirmed)
+          {}
+
+          ELLE_ATTRIBUTE_R(boost::optional<Proposal>, proposal);
+          ELLE_ATTRIBUTE_R(boost::optional<Value>, value);
+          ELLE_ATTRIBUTE_R(bool, confirmed);
+
+          friend
+          bool
+          operator <(Response const& lhs, Response const& rhs)
+          {
+            auto lhs_valued = bool(lhs.value());
+            auto rhs_valued = bool(rhs.value());
+            return
+              std::tie(lhs_valued, lhs._confirmed, lhs._proposal) <
+              std::tie(rhs_valued, rhs._confirmed, rhs._proposal);
+          }
+
+          using Model = das::Model<
+            Response,
+            decltype(elle::meta::list(paxos::proposal,
+                                      paxos::value,
+                                      paxos::confirmed))>;
+        };
         /// Propose @a Proposal to @a Quorum.
         ///
         /// If the Proposal is already outdated, return the newest Proposal.
@@ -264,6 +301,8 @@ namespace elle
         void
         print(std::ostream& output) const override;
       };
+
+      using das::operator <<;
     }
   }
 }

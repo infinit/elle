@@ -351,7 +351,9 @@ namespace elle
           ELLE_DEBUG(
             "refuse proposal for version %s in favor of version %s",
             p.version, this->_state->accepted->proposal.version);
-          return this->_state->accepted;
+          return Response(this->_state->accepted->proposal,
+                          this->_state->accepted->value,
+                          this->_state->accepted->confirmed);
         }
         if (_Details::check_confirmed(*this, p))
         {
@@ -383,23 +385,31 @@ namespace elle
         if (!this->_state)
         {
           ELLE_DEBUG("accept first proposal for version %s", p.version);
+          this->_state.reset();
           this->_state.emplace(std::move(p));
-          return {};
+          return Response(boost::none, boost::none, false);
         }
         else
         {
           if (this->_state->proposal < p)
           {
             ELLE_DEBUG("update minimum proposal for version %s", p.version);
+            auto previous_proposal = this->_state->proposal;
             this->_state->proposal = std::move(p);
-            return this->_state->accepted;
+            if (this->_state->accepted)
+              return Response(previous_proposal,
+                              this->_state->accepted->value,
+                              this->_state->accepted->confirmed);
+            else
+              return Response(boost::none, boost::none, false);
           }
           else if (this->_state->accepted)
-            return this->_state->accepted;
-          else if (this->version() >= elle::Version(0, 4, 0))
-            return Accepted(this->_state->proposal, Quorum{ServerId()}, false);
+            return Response(
+              this->_state->proposal,
+              this->_state->accepted->value,
+              this->_state->accepted->confirmed);
           else
-            return boost::none;
+            return Response(this->_state->proposal, boost::none, false);
         }
       }
 

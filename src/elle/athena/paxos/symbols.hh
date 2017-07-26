@@ -8,6 +8,7 @@ namespace elle
   {
     namespace paxos
     {
+      ELLE_DAS_SYMBOL(confirmed);
       ELLE_DAS_SYMBOL(proposal);
       ELLE_DAS_SYMBOL(quorum);
       ELLE_DAS_SYMBOL(value);
