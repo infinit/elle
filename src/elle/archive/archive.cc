@@ -148,7 +148,7 @@ namespace elle
 
     void
     archive(Format format,
-            std::vector<bfs::path> const& files,
+            Paths const& files,
             bfs::path const& path,
             Renamer const& renamer,
             Excluder const& excluder,
@@ -156,7 +156,7 @@ namespace elle
     {
       ELLE_TRACE_SCOPE("archive %s", path);
       ELLE_DEBUG("files: %s", files);
-      std::unordered_set<std::string> root_entries;
+      auto root_entries = std::unordered_set<std::string>{};
       ArchivePtr archive(archive_write_new());
       ELLE_TRACE("archive: %s", (void*)(archive.get()));
       int (*format_setter)(::archive*) = nullptr;
@@ -222,34 +222,33 @@ namespace elle
         {
           if (ignore_failure)
             continue;
-          throw elle::Error(elle::sprintf("path %s does not exist", path));
+          else
+            throw elle::Error(elle::sprintf("path %s does not exist", path));
         }
         if (bfs::is_directory(path))
-          for (auto it = bfs::recursive_directory_iterator(path);
-               it != bfs::recursive_directory_iterator();
-               ++it)
-          {
-            bfs::path absolute(*it);
-            if (bfs::is_directory(absolute))
-              continue;
-            bfs::path relative = root;
+        {
+          for (auto const& absolute: bfs::recursive_directory_iterator(path))
+            if (!bfs::is_directory(absolute))
             {
-              auto start = std::begin(absolute);
-              for (auto count = std::begin(path);
-                   count != std::end(path);
-                   ++count)
-                ++start;
-              for (; start != std::end(absolute); ++start)
-                relative /= *start;
+              if (excluder && excluder(absolute))
+                ELLE_DEBUG("skipping %s", absolute);
+              else
+              {
+                auto const relative = [&]
+                {
+                  auto res = root;
+                  for (auto start = std::next(std::begin(absolute.path()),
+                                              boost::distance(path));
+                       start != std::end(absolute.path());
+                       ++start)
+                    res /= *start;
+                  return res;
+                }();
+                ELLE_DEBUG("archiving from directory %s as %s", absolute, relative);
+                do_archiving(archive.get(), absolute, relative);
+              }
             }
-            if (excluder && excluder(absolute))
-            {
-              ELLE_DEBUG("skipping %s", absolute);
-              continue;
-            }
-            ELLE_DEBUG("archiving from directory %s as %s", absolute, relative);
-            do_archiving(archive.get(), absolute, relative);
-          }
+        }
         else
         {
           if (excluder && excluder(path))

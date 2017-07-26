@@ -10,9 +10,8 @@ namespace elle
     ///
     /// @see archive.
     void
-    tar(std::vector<bfs::path> const& files,
-        bfs::path const& path,
-        Renamer const& renamer = Renamer());
+    tar(Paths const& files, bfs::path const& path,
+        Renamer const& renamer = {});
 
     /// Helper for tar extraction.
     ///

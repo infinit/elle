@@ -5,9 +5,7 @@ namespace elle
   namespace archive
   {
     void
-    tar(std::vector<bfs::path> const& files,
-        bfs::path const& path,
-        Renamer const& renamer)
+    tar(Paths const& files, bfs::path const& path, Renamer const& renamer)
     {
       return archive(Format::tar, files, path, renamer);
     }

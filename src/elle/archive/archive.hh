@@ -10,7 +10,7 @@
 
 namespace elle
 {
-  namespace archive
+  namespace archive ELLE_API
   {
     namespace bfs = boost::filesystem;
 
@@ -23,6 +23,9 @@ namespace elle
       zip_uncompressed
     };
 
+    /// Set of files.
+    using Paths = std::vector<bfs::path>;
+    /// Map source names to names in the archive.
     using Renamer = std::function<auto (bfs::path const&) -> bfs::path>;
     /// Return true to exclude the file.
     using Excluder = std::function<auto (bfs::path const&) -> bool>;
@@ -35,10 +38,9 @@ namespace elle
     /// @param renamer        A function to rename entries.
     /// @param excluder       A function to exclude files.
     /// @param ignore_failure Ignore failure (like non-existent files, etc.)
-    ELLE_API
     void
     archive(Format format,
-            std::vector<bfs::path> const& files,
+            Paths const& files,
             bfs::path const& path,
             Renamer const& renamer = {},
             Excluder const& excluder = {},
@@ -52,7 +54,6 @@ namespace elle
     /// @param output An optional location where to output the archive. If
     //                unspecified, archive will be extracted in its parent
     ///               folder.
-    ELLE_API
     void
     extract(bfs::path const& archive,
             boost::optional<bfs::path> const& output = {});

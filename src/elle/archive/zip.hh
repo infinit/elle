@@ -10,12 +10,14 @@ namespace elle
     ///
     /// @see archive.
     ///
+    /// @param files          The paths of the files to archive.
+    /// @param path           Where to write the resulting archive.
+    /// @param renamer        A function to rename entries.
     /// @param no_compression Whether the content of the archive should be
     ///                       compressed or not.
     void
-    zip(std::vector<bfs::path> const& files,
-        bfs::path const& path,
-        Renamer const& renamer = Renamer(),
+    zip(Paths const& files, bfs::path const& path,
+        Renamer const& renamer = {},
         bool no_compression = false);
 
     /// Helper for zip extraction.
