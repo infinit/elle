@@ -492,7 +492,9 @@ namespace elle
       {
         try
         {
-          this->current()->wait(*thread);
+          auto current = this->current();
+          ELLE_ASSERT(current);
+          current->wait(*thread);
         }
         catch (...)
         {
