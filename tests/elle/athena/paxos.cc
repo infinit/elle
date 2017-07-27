@@ -251,26 +251,25 @@ ELLE_TEST_SCHEDULED(one_of_three)
 
 ELLE_TEST_SCHEDULED(already_chosen)
 {
-  paxos::Server<int, int, int> server_1(11, {11, 12, 13});
-  paxos::Server<int, int, int> server_2(12, {11, 12, 13});
-  paxos::Server<int, int, int> server_3(13, {11, 12, 13});
-  using Peers = paxos::Client<int, int, int>::Peers;
-  auto peers_1 = Peers{};
-  peers_1.emplace_back(std::make_unique<Peer<int, int, int>>(11, server_1));
-  peers_1.emplace_back(std::make_unique<Peer<int, int, int>>(12, server_2));
-  peers_1.emplace_back(std::make_unique<Peer<int, int, int>>(13, server_3));
-  paxos::Client<int, int, int> client_1(1, std::move(peers_1));
-  auto peers_2 = Peers{};
-  peers_2.emplace_back(std::make_unique<Peer<int, int, int>>(11, server_1));
-  peers_2.emplace_back(std::make_unique<Peer<int, int, int>>(12, server_2));
-  peers_2.emplace_back(std::make_unique<Peer<int, int, int>>(13, server_3));
-  paxos::Client<int, int, int> client_2(2, std::move(peers_2));
-  BOOST_CHECK(!client_1.choose(42));
-  auto chosen = client_2.choose(43);
-  static_assert(std::is_same<decltype(chosen), decltype(client_2)::Choice>::value, "");
-  BOOST_CHECK(chosen);
-  BOOST_CHECK(chosen->is<int>());
-  BOOST_CHECK_EQUAL(chosen->get<int>(), 42);
+  std::vector<Server> servers
+  {
+    {11, {11, 12, 13}},
+    {12, {11, 12, 13}},
+    {13, {11, 12, 13}},
+  };
+  ELLE_LOG("chose 42 from client 1")
+  {
+    auto client_1 = make_client(1, servers);
+    BOOST_CHECK(!client_1.choose(42));
+  }
+  ELLE_LOG("chose 43 from client 2")
+  {
+    auto client_2 = make_client(2, servers);
+    auto chosen = client_2.choose(43);
+    BOOST_REQUIRE(chosen);
+    BOOST_CHECK(chosen->is<int>());
+    BOOST_CHECK_EQUAL(chosen->get<int>(), 42);
+  }
 }
 
 template <typename T, typename Version, typename ServerId>
@@ -354,23 +353,22 @@ public:
 
 ELLE_TEST_SCHEDULED(concurrent)
 {
-  paxos::Server<int, int, int> server_1(11, {11, 12, 13});
-  paxos::Server<int, int, int> server_2(12, {11, 12, 13});
-  paxos::Server<int, int, int> server_3(13, {11, 12, 13});
-  auto peer_1_2 = new InstrumentedPeer<int, int, int>(12, server_2);
-  auto peer_1_3 = new InstrumentedPeer<int, int, int>(13, server_3);
+  std::vector<Server> servers
+  {
+    {11, {11, 12, 13}},
+    {12, {11, 12, 13}},
+    {13, {11, 12, 13}},
+  };
+  auto peer_1_2 = new InstrumentedPeer<int, int, int>(12, servers[1]);
+  auto peer_1_3 = new InstrumentedPeer<int, int, int>(13, servers[2]);
   using Peers = paxos::Client<int, int, int>::Peers;
   auto peers_1 = Peers{};
-  peers_1.emplace_back(std::make_unique<Peer<int, int, int>>(11, server_1));
+  peers_1.emplace_back(std::make_unique<Peer<int, int, int>>(11, servers[0]));
   peers_1.emplace_back(std::unique_ptr<paxos::Client<int, int, int>::Peer>(peer_1_2));
   peers_1.emplace_back(std::unique_ptr<paxos::Client<int, int, int>::Peer>(peer_1_3));
   paxos::Client<int, int, int> client_1(1, std::move(peers_1));
   client_1.conflict_backoff(false);
-  auto peers_2 = Peers{};
-  peers_2.emplace_back(std::make_unique<Peer<int, int, int>>(11, server_1));
-  peers_2.emplace_back(std::make_unique<Peer<int, int, int>>(12, server_2));
-  peers_2.emplace_back(std::make_unique<Peer<int, int, int>>(13, server_3));
-  paxos::Client<int, int, int> client_2(2, std::move(peers_2));
+  auto client_2 = make_client(2, servers);
   client_2.conflict_backoff(false);
   peer_1_2->propose_barrier.open();
   peer_1_2->accept_barrier.open();
