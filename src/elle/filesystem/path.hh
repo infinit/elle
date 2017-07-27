@@ -39,3 +39,13 @@ namespace elle
     };
   }
 }
+
+namespace std
+{
+  template<>
+  struct ELLE_API hash<boost::filesystem::path>
+  {
+    std::size_t
+    operator()(boost::filesystem::path const& p) const;
+  };
+}

@@ -15,13 +15,3 @@ namespace elle
       ELLE_WARN("cannot remove file %s: %s", path, erc.message());
   }
 }
-
-namespace std
-{
-  std::size_t
-  hash<boost::filesystem::path>::operator()(
-    boost::filesystem::path const& p) const
-  {
-    return hash_value(p);
-  }
-}

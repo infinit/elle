@@ -1,9 +1,8 @@
-#ifndef ELLE_OS_FILE_HH
-# define ELLE_OS_FILE_HH
+#pragma once
 
-# include <string>
+#include <string>
 
-# include <boost/filesystem/path.hpp>
+#include <elle/filesystem/path.hh>
 
 ///
 /// Provide simple methods for file.
@@ -30,5 +29,3 @@ namespace elle
     }
   }
 }
-
-#endif

@@ -6,7 +6,7 @@
 #include <boost/optional.hpp>
 
 #include <elle/compiler.hh>
-#include <elle/filesystem.hh>
+#include <elle/filesystem/path.hh>
 
 namespace elle
 {
