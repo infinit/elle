@@ -87,6 +87,74 @@ public:
   ELLE_ATTRIBUTE_RW((paxos::Server<T, Version, ServerId>&), paxos);
 };
 
+using Server = paxos::Server<int, int, int>;
+using Client = paxos::Client<int, int, int>;
+using Peers = Client::Peers;
+
+class YAInstrumentedPeer
+  : public Peer<int, int, int>
+{
+public:
+  using Super = Peer<int, int, int>;
+  using Client = paxos::Client<int, int, int>;
+
+  using Super::Super;
+
+  typename Client::Response
+  propose(typename Client::Quorum const& q,
+          typename Client::Proposal const& p) override
+  {
+    this->_proposing(p);
+    auto res = Super::propose(q, p);
+    this->_proposed(p);
+    return res;
+  }
+
+  typename Client::Proposal
+  accept(typename Client::Quorum const& q,
+         typename Client::Proposal const& p,
+         elle::Option<int, typename Client::Quorum> const& value) override
+  {
+    this->_accepting(p);
+    auto res = Super::accept(q, p, value);
+    this->_accepted(p);
+    return res;
+  }
+
+
+  void
+  confirm(typename Client::Quorum const& q,
+          typename Client::Proposal const& p) override
+  {
+    this->_confirming(p);
+    Super::confirm(q, p);
+    this->_confirmed(p);
+  }
+
+  ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (Server::Proposal const&)>,
+                    proposing);
+  ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (Server::Proposal const&)>,
+                    proposed);
+  ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (Server::Proposal const&)>,
+                    accepting);
+  ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (Server::Proposal const&)>,
+                    accepted);
+  ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (Server::Proposal const&)>,
+                    confirming);
+  ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (Server::Proposal const&)>,
+                    confirmed);
+};
+
+template <typename Peer = YAInstrumentedPeer, typename Servers>
+Client
+make_client(int id, Servers&& servers)
+{
+  auto peers = Peers();
+  for (auto& s: servers)
+    peers.emplace_back(new Peer(s.id(), s));
+  return Client(id, std::move(peers));
+}
+
 ELLE_TEST_SCHEDULED(all_is_well)
 {
   paxos::Server<int, int, int> server_1(11, {11, 12, 13});
@@ -1048,74 +1116,6 @@ ELLE_TEST_SCHEDULED(non_partial_state)
     p1->confirm_barrier.open();
     elle::reactor::wait(scope);
   };
-}
-
-using Server = paxos::Server<int, int, int>;
-using Client = paxos::Client<int, int, int>;
-using Peers = Client::Peers;
-
-class YAInstrumentedPeer
-  : public Peer<int, int, int>
-{
-public:
-  using Super = Peer<int, int, int>;
-  using Client = paxos::Client<int, int, int>;
-
-  using Super::Super;
-
-  typename Client::Response
-  propose(typename Client::Quorum const& q,
-          typename Client::Proposal const& p) override
-  {
-    this->_proposing(p);
-    auto res = Super::propose(q, p);
-    this->_proposed(p);
-    return res;
-  }
-
-  typename Client::Proposal
-  accept(typename Client::Quorum const& q,
-         typename Client::Proposal const& p,
-         elle::Option<int, typename Client::Quorum> const& value) override
-  {
-    this->_accepting(p);
-    auto res = Super::accept(q, p, value);
-    this->_accepted(p);
-    return res;
-  }
-
-
-  void
-  confirm(typename Client::Quorum const& q,
-          typename Client::Proposal const& p) override
-  {
-    this->_confirming(p);
-    Super::confirm(q, p);
-    this->_confirmed(p);
-  }
-
-  ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (Server::Proposal const&)>,
-                    proposing);
-  ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (Server::Proposal const&)>,
-                    proposed);
-  ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (Server::Proposal const&)>,
-                    accepting);
-  ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (Server::Proposal const&)>,
-                    accepted);
-  ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (Server::Proposal const&)>,
-                    confirming);
-  ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (Server::Proposal const&)>,
-                    confirmed);
-};
-
-template <typename Peer = YAInstrumentedPeer, typename Servers>
-Client
-make_client(int id, Servers&& servers)
-{
-  auto peers = Peers();
-  for (auto& s: servers)
-    peers.emplace_back(new Peer(s.id(), s));
-  return Client(id, std::move(peers));
 }
 
 // Proposing on a wrong quorum used to commit the previous value - thus emptying
