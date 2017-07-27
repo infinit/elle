@@ -26,7 +26,7 @@ BOOST_AUTO_TEST_CASE(ofstream)
   BOOST_TEST(is_empty(foo.path()));
   BOOST_TEST(is_empty(bar.path()));
 
-  auto&& f = elle::ofstream(foo.path());
+  auto&& f = elle::ofstream{foo};
   BOOST_TEST(is_empty(foo.path()));
   BOOST_TEST(is_empty(bar.path()));
   f << "Hello, ";
@@ -58,6 +58,5 @@ BOOST_AUTO_TEST_CASE(rotate)
   }
   // Check it created four files and removed the two oldest.
   using Ints = std::vector<int>;
-  BOOST_TEST_MESSAGE("versions: " << elle::rotate_versions(family));
-  BOOST_TEST(elle::rotate_versions(family) == (Ints{2, 3}));
+  BOOST_CHECK_EQUAL(elle::rotate_versions(family), (Ints{2, 3}));
 }

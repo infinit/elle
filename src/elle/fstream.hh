@@ -44,6 +44,16 @@ namespace elle
       }
     }
 
+    /// The base of the version family to which this file belongs.
+    /// The base includes the (possible) directory.
+    ///
+    /// \pre the filename is `<BASE>.<NUM>`, where `<NUM>` is a
+    /// decimal number.
+    bfs::path base() const
+    {
+      return elle::base(this->path());
+    }
+
     ELLE_ATTRIBUTE_R(bfs::path, path);
   };
 

@@ -6,20 +6,27 @@
 
 namespace elle
 {
-  namespace bfs = boost::filesystem;
+  namespace fs = boost::filesystem;
+
+  /// The base of the version family to which this file belongs.
+  /// The base includes the (possible) directory.
+  ///
+  /// \pre the filename is `<BASE>.<NUM>`, where `<NUM>` is a
+  /// decimal number.
+  fs::path base(fs::path const& p);
 
   namespace serialization
   {
     template<>
-    struct ELLE_API Serialize<bfs::path>
+    struct ELLE_API Serialize<fs::path>
     {
       using Type = std::string;
       static
       Type
-      convert(bfs::path& path);
+      convert(fs::path& path);
 
       static
-      bfs::path
+      fs::path
       convert(Type const& repr);
     };
   }
