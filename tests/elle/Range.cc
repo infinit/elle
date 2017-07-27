@@ -1,4 +1,5 @@
 #include <elle/IntRange.hh>
+#include <elle/find_if.hh>
 #include <elle/printf.hh>
 #include <elle/test.hh>
 
@@ -94,10 +95,26 @@ namespace int_ranges
   }
 }
 
+namespace algorithm
+{
+  static
+  void
+  find_if()
+  {
+    std::vector<int> v{0, 1, 2};
+    auto it = elle::find_if(v, [] (int i) { return i % 2; });
+    BOOST_TEST(it);
+    BOOST_TEST(*it == 1);
+    BOOST_TEST(
+      !elle::find_if(std::vector<int> {0, 2}, [] (int i) { return i % 2; }););
+  }
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
   suite.add(BOOST_TEST_CASE(int_range::basics));
   suite.add(BOOST_TEST_CASE(int_range::arithmetic));
   suite.add(BOOST_TEST_CASE(int_ranges::basics));
+  suite.add(BOOST_TEST_CASE(algorithm::find_if));
 }

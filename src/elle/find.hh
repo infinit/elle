@@ -1,24 +1,9 @@
 #pragma once
 
+#include <elle/BoolIterator.hh>
+
 namespace elle
 {
-  template <typename I>
-  struct BoolIterator
-    : public I
-  {
-    BoolIterator(I it, bool v = true)
-      : I(it)
-      , value(v)
-    {}
-
-    operator bool() const
-    {
-      return this->value;
-    }
-
-    bool value;
-  };
-
   template <typename C, typename E>
   auto
   find(C& c, E const& e)
