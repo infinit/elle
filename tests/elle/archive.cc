@@ -104,7 +104,7 @@ void
 check_file_content(bfs::path const& path,
                    std::string const& content)
 {
-  bfs::ifstream f(path);
+  auto&& f = bfs::ifstream(path);
   char file_content[content.size()];
   f.read(file_content, content.size());
   BOOST_CHECK_EQUAL(f.gcount(), content.size());

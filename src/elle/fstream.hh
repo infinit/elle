@@ -8,12 +8,41 @@
 
 #include <elle/bytes.hh>
 #include <elle/filesystem.hh>
+#include <elle/filesystem/path.hh>
 #include <elle/log.hh>
 #include <elle/print.hh>
 #include <elle/printf.hh> // for err
 
 namespace elle
 {
+  /// The content of stream @a is.
+  template <typename CharT, typename Traits = std::char_traits<CharT>>
+  std::basic_string<CharT, Traits>
+  content(std::basic_ifstream<CharT, Traits>& is)
+  {
+    auto&& ss = std::basic_stringstream<CharT, Traits>{};
+    ss << is.rdbuf();
+    return ss.str();
+  }
+
+  /// The content of stream @a is.
+  template <typename CharT, typename Traits = std::char_traits<CharT>>
+  std::basic_string<CharT, Traits>
+  content(std::basic_ifstream<CharT, Traits>&& is)
+  {
+    auto&& ss = std::basic_stringstream<CharT, Traits>{};
+    ss << is.rdbuf();
+    return ss.str();
+  }
+
+  /// The content of file @a p.
+  template <typename CharT = char, typename Traits = std::char_traits<CharT>>
+  std::basic_string<CharT, Traits>
+  content(bfs::path const& p)
+  {
+    return content(std::basic_ifstream<CharT, Traits>{p.string()});
+  }
+
   /// The sorted list of existing versions of a file family.
   ///
   /// For instance /tmp/foo.1, /tmp/foo.42, /tmp/foo.5 -> (1, 5, 42).
@@ -108,6 +137,23 @@ namespace elle
   /*--------------------------.
   | Explicit instantiations.  |
   `--------------------------*/
+
+  // content.
+  extern template
+  std::basic_string<char>
+  content(std::basic_ifstream<char>& is);
+  extern template
+  std::basic_string<char>
+  content(std::basic_ifstream<char>&& is);
+
+  extern template
+  std::basic_string<wchar_t>
+  content(std::basic_ifstream<wchar_t>& is);
+  extern template
+  std::basic_string<wchar_t>
+  content(std::basic_ifstream<wchar_t>&& is);
+
+  // rotate.
   namespace detail
   {
     extern template
