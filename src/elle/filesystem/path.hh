@@ -17,6 +17,10 @@ namespace elle
   /// decimal number.
   fs::path base(fs::path const& p);
 
+  /// All the paths inside directory @a d (not recursive).
+  std::vector<fs::path>
+  entries(fs::path const& d);
+
   /// The sorted list of existing versions of a file family.
   ///
   /// For instance /tmp/foo.1, /tmp/foo.42, /tmp/foo.5 -> [1, 5, 42].

@@ -34,16 +34,6 @@ ELLE_LOG_COMPONENT("elle.log");
 
 namespace
 {
-  /// All the paths inside directory @a d.
-  std::vector<bfs::path>
-  entries(bfs::path const& d)
-  {
-    auto res = std::vector<bfs::path>{};
-    for (auto const& p: bfs::directory_iterator(d))
-      res.emplace_back(p.path());
-    return res;
-  }
-
   void
   _message_test(bool env)
   {
@@ -486,7 +476,7 @@ namespace
 
       // b. check the files.
       {
-        BOOST_TEST_MESSAGE("d contains " << entries(d.path()));
+        BOOST_TEST_MESSAGE("d contains " << elle::entries(d));
         // This should create five files of less than 600B, but we
         // kept the last three.
         BOOST_TEST_MESSAGE("versions: " << elle::rotate_versions(base));
@@ -630,7 +620,7 @@ namespace
     elle::log::logger(std::move(prev));
     elle::os::unsetenv("ELLE_LOG_TARGETS");
     // Check the results.
-    BOOST_TEST_MESSAGE("d contains " << entries(d.path()));
+    BOOST_TEST_MESSAGE("d contains " << elle::entries(d));
     for (auto fn: {"log1", "log2", "log3", "logs.0"})
     {
       auto const f = d.path() / fn;

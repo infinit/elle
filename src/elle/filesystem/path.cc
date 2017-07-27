@@ -23,6 +23,15 @@ namespace elle
       return path.parent_path() / path.stem();
   }
 
+  std::vector<fs::path>
+  entries(fs::path const& d)
+  {
+    auto res = std::vector<fs::path>{};
+    for (auto const& p: fs::directory_iterator(d))
+      res.emplace_back(p.path());
+    return res;
+  }
+
   std::vector<int>
   rotate_versions(fs::path const& base)
   {
