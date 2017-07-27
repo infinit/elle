@@ -22,6 +22,7 @@ namespace elle
       {
         for (auto&& elt: std::forward<C>(c))
           return f(std::forward<decltype(elt)>(elt));
+        elle::unreachable();
       }
 
       template <typename F, typename C>
