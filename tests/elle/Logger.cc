@@ -24,7 +24,7 @@
 #include <elle/os/environ.hh>
 
 using namespace std::literals;
-namespace bfs = boost::filesystem;
+namespace fs = boost::filesystem;
 
 ELLE_LOG_COMPONENT("elle.log");
 
@@ -440,7 +440,7 @@ namespace
   file()
   {
     auto d = elle::filesystem::TemporaryDirectory{};
-    auto const base = elle::print("{}/file.log", d.path().string());
+    auto const base = d.path() / "file.log";
 
     for (auto phase: {1, 2})
     {
@@ -448,6 +448,7 @@ namespace
       if (phase == 1)
       {
         auto logger = std::make_unique<elle::log::FileLogger>(base, "DUMP", 512, 3);
+        BOOST_CHECK_EQUAL(logger->base(), base);
         auto prev = elle::log::logger(std::move(logger));
         {
           ELLE_LOG_COMPONENT("log");
@@ -463,7 +464,8 @@ namespace
       {
         // Check append by adding "append" to the last log, and
         // checking there is no new file.
-        auto logger = std::make_unique<elle::log::FileLogger>(base, "DUMP", 512, 3, true);
+        auto logger =
+          std::make_unique<elle::log::FileLogger>(base, "DUMP", 512, 3, true);
         auto prev = elle::log::logger(std::move(logger));
         {
           ELLE_LOG_COMPONENT("log");
@@ -479,21 +481,54 @@ namespace
         BOOST_TEST_MESSAGE("d contains " << elle::entries(d));
         // This should create five files of less than 600B, but we
         // kept the last three.
-        BOOST_TEST_MESSAGE("versions: " << elle::rotate_versions(base));
-        BOOST_TEST(elle::rotate_versions(base)
-                   == (std::vector<int>{2, 3, 4}));
+        BOOST_CHECK_EQUAL(elle::rotate_versions(base),
+                          (std::vector<int>{2, 3, 4}));
         for (int i = 2; i <= 4; ++i)
         {
-          auto f = bfs::path(elle::print("{}.{}", base, i));
+          auto f = fs::path(elle::print("{}.{}", base.string(), i));
           BOOST_TEST(file_size(f) < 600);
         }
         if (phase == 2)
         {
-          auto&& is = std::ifstream(elle::print("{}.4", base));
+          auto&& is = std::ifstream(elle::print("{}.4", base.string()));
           BOOST_TEST(boost::contains(elle::content(is), "append"));
         }
       }
     }
+  }
+
+  /// Check that FileLogger::base does rename the log file.
+  void
+  file_rename()
+  {
+    auto d = elle::filesystem::TemporaryDirectory{};
+    auto const log1 = d.path() / "foo.log";
+    auto const log2 = d.path() / "bar.log";
+    // The expected paths.
+    auto const path1 = fs::path{log1.string() + ".0"};
+    auto const path2 = fs::path{log2.string() + ".0"};
+    {
+      auto logger
+        = std::make_unique<elle::log::FileLogger>(log1, "DUMP", 512, 3);
+      auto& logger_ref = *logger;
+      BOOST_CHECK_EQUAL(logger->fstream().path(),
+                        log1.string() + ".0");
+      auto prev = elle::log::logger(std::move(logger));
+      {
+        ELLE_DUMP("ping");
+        BOOST_CHECK(exists(path1));
+        BOOST_CHECK(!exists(path2));
+        logger_ref.base(log2);
+        ELLE_DUMP("pong");
+      }
+      elle::log::logger(std::move(prev));
+    }
+    BOOST_TEST_MESSAGE("d contains " << elle::entries(d.path()));
+    BOOST_CHECK(!exists(path1));
+    BOOST_CHECK(exists(path2));
+    auto const log = elle::content(path2);
+    BOOST_TEST(boost::contains(log, "ping"));
+    BOOST_TEST(boost::contains(log, "pong"));
   }
 
   /// Check make_logger.
@@ -914,6 +949,7 @@ ELLE_TEST_SUITE()
     logger->add(BOOST_TEST_CASE(environment_format_test));
     logger->add(BOOST_TEST_CASE(composite));
     logger->add(BOOST_TEST_CASE(file));
+    logger->add(BOOST_TEST_CASE(file_rename));
     logger->add(BOOST_TEST_CASE(make_logger));
     logger->add(BOOST_TEST_CASE(targets));
     logger->add(BOOST_TEST_CASE(time_));

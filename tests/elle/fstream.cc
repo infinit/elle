@@ -27,25 +27,29 @@ BOOST_AUTO_TEST_CASE(ofstream)
   BOOST_TEST(is_empty(bar.path()));
 
   auto&& f = elle::ofstream{foo};
+  BOOST_CHECK_EQUAL(f.path(), foo.path());
   BOOST_TEST(is_empty(foo.path()));
   BOOST_TEST(is_empty(bar.path()));
   f << "Hello, ";
-  f.path(bar.path());
+  f.flush();
+  BOOST_TEST(elle::content(foo) == "Hello, ");
+  f.path(bar);
+  BOOST_CHECK_EQUAL(f.path(), bar.path());
   f << "world!";
   f.close();
   BOOST_TEST(!exists(foo.path()));
   BOOST_TEST(!is_empty(bar.path()));
-  BOOST_TEST(elle::content(bar.path()) == "Hello, world!");
+  BOOST_TEST(elle::content(bar) == "Hello, world!");
 }
 
 BOOST_AUTO_TEST_CASE(rotate)
 {
   auto d = elle::filesystem::TemporaryDirectory{};
-  auto const family = elle::print("{}/fstream.log", d.path().string());
+  auto const family = d.path() / "fstream.log";
 
   // Fill family.
   {
-    auto&& o = std::ofstream(elle::print("%s.0", family));
+    auto&& o = elle::ofstream(elle::print("%s.0", family.string()));
     BOOST_TEST(o.good());
     for (auto _: boost::irange(0, 1000))
     {

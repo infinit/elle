@@ -17,17 +17,29 @@ namespace elle
       , _rotate{rotate}
       , _append{append}
     {
+      struct base;
       if (this->size())
-        elle::rotate(this->_fstream, this->base(), this->size(), this->rotate(),
+        elle::rotate(this->_fstream, this->_base, this->size(), this->rotate(),
                      this->append());
       else if (this->append())
-        this->_fstream.open(this->base().string(),
+        this->_fstream.open(this->base(),
                             std::fstream::app | std::fstream::out);
       else
-        this->_fstream.open(this->base().string(),
+        this->_fstream.open(this->base(),
                             std::fstream::trunc | std::fstream::out);
       this->_logger
         = std::make_unique<TextLogger>(this->_fstream, log_level);
+    }
+
+    void
+    FileLogger::base(fs::path base)
+    {
+      auto path
+        = fs::path(boost::replace_head_copy(this->_fstream.path().string(),
+                                            this->_base.string().size(),
+                                            base.string()));
+      this->_base = std::move(base);
+      this->_fstream.path(std::move(path));
     }
 
     void
@@ -41,7 +53,7 @@ namespace elle
     {
       this->_logger->message(msg);
       if (this->size())
-        elle::rotate(this->_fstream, this->base(), this->size(), this->rotate());
+        elle::rotate(this->_fstream, this->size(), this->rotate());
     }
   }
 }

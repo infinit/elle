@@ -31,6 +31,9 @@ namespace elle
                  size_t rotate = 0,
                  bool append = false);
 
+      /// Change the family name.  Renames the current file.
+      void base(fs::path base);
+
     protected:
       void
       _message(Message const& msg) override;
@@ -40,7 +43,7 @@ namespace elle
 
     private:
       ELLE_ATTRIBUTE_R(fs::path, base);
-      ELLE_ATTRIBUTE_R(std::ofstream, fstream);
+      ELLE_ATTRIBUTE_R(elle::ofstream, fstream);
       ELLE_ATTRIBUTE_RW(size_t, size);
       ELLE_ATTRIBUTE_RW(size_t, rotate);
       ELLE_ATTRIBUTE_RW(bool, append);

@@ -54,11 +54,12 @@ namespace elle
       return elle::base(this->path());
     }
 
-    /// Convenience wrapper.
-    template <typename... Args>
-    void open(Args&&... args)
+    void
+    open(fs::path path,
+         std::ios_base::openmode mode = std::ios_base::out)
     {
-      open(this->path().string(), std::forward<Args>(args)...);
+      Super::open(path.string(), mode);
+      this->_path = std::move(path);
     }
 
     ELLE_ATTRIBUTE_R(fs::path, path);
@@ -117,7 +118,7 @@ namespace elle
     ///                rather than creating a new one.
     template <typename CharT, typename Traits = std::char_traits<CharT>>
     void
-    rotate_impl(std::basic_ofstream<CharT, Traits>& of,
+    rotate_impl(elle::basic_ofstream<CharT, Traits>& of,
                 fs::path const& base,
                 int size, int rotate, bool append)
     {
@@ -164,19 +165,27 @@ namespace elle
       }
       err("failed to open file in family %s", base);
     }
+
+    template <typename CharT, typename Traits = std::char_traits<CharT>>
+    void
+    rotate_impl(elle::basic_ofstream<CharT, Traits>& of,
+                int size, int rotate, bool append)
+    {
+      rotate_impl(of, base(of.path()), size, rotate, append);
+    }
   }
 
-  /// Rotate the file of a stream.
+  /// Rotate the file of a stream if needed.
   ///
   /// @param of      the stream
-  /// @param base    the base name for the file names
+  /// @param base    the base for file names.
   /// @param size    the threshold beyond which files are rotated.
   /// @param rotate  how many files to keep (0 to unlimited).
   /// @param append  whether to append to the latest file,
   ///                rather than creating a new one.
   template <typename CharT, typename Traits = std::char_traits<CharT>>
   void
-  rotate(std::basic_ofstream<CharT, Traits>& of,
+  rotate(elle::basic_ofstream<CharT, Traits>& of,
          fs::path const& base,
          int size = 1_MiB,
          int rotate = 0,
@@ -186,10 +195,27 @@ namespace elle
     {
       of.close();
       if (of.fail())
-        err("failed to close file in family %s", base);
+        err("failed to close file %s", of.path());
     }
     if (!of.is_open())
       detail::rotate_impl(of, base, size, rotate, append);
+  }
+
+  /// Rotate the file of a stream if needed.
+  ///
+  /// @param of      the stream
+  /// @param size    the threshold beyond which files are rotated.
+  /// @param rotate  how many files to keep (0 to unlimited).
+  /// @param append  whether to append to the latest file,
+  ///                rather than creating a new one.
+  template <typename CharT, typename Traits = std::char_traits<CharT>>
+  void
+  rotate(elle::basic_ofstream<CharT, Traits>& of,
+         int size = 1_MiB,
+         int rotate = 0,
+         bool append = false)
+  {
+    elle::rotate(of, base(of.path()), size, rotate, append);
   }
 
 
@@ -223,11 +249,9 @@ namespace elle
   {
     extern template
     void
-    rotate_impl(std::ofstream& of, fs::path const& base,
-                int size, int rotate, bool append);
+    rotate_impl(elle::ofstream& of, int size, int rotate, bool append);
   }
   extern template
   void
-  rotate(std::ofstream& of, fs::path const& base,
-         int size, int rotate, bool append);
+  rotate(elle::ofstream& of, int size, int rotate, bool append);
 }
