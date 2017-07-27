@@ -4,17 +4,19 @@ namespace elle
 {
   namespace serialization
   {
-    Serialize<bfs::path>::Type
+    auto
     Serialize<bfs::path>::convert(bfs::path& path)
+      -> Type
     {
+      // `generic_string` always uses `/` (vs `\`).
       return path.generic_string();
     }
 
-    bfs::path
-    Serialize<bfs::path>::convert(
-      Serialize<bfs::path>::Type const& repr)
+    auto
+    Serialize<bfs::path>::convert(Type const& repr)
+      -> bfs::path
     {
-      return bfs::path(repr);
+      return repr;
     }
   }
 }
