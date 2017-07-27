@@ -2,6 +2,11 @@
 
 #include <boost/algorithm/string/classification.hpp> // is_digit
 #include <boost/algorithm/string/predicate.hpp> // all
+#include <boost/filesystem.hpp>
+#include <boost/range/algorithm/sort.hpp>
+
+#include <elle/algorithm.hh> // tail
+#include <elle/from-string.hh>
 
 namespace elle
 {
@@ -16,6 +21,25 @@ namespace elle
       err("base: path whose extension is not a number: %s", path);
     else
       return path.parent_path() / path.stem();
+  }
+
+  std::vector<int>
+  rotate_versions(fs::path const& base)
+  {
+    auto res = std::vector<int>{};
+    auto const dir = base.parent_path().empty() ? "." : base.parent_path();
+    // Use `generic_string` to avoid gratuitious differences on `/` vs `\`.
+    auto const prefix = base.generic_string() + ".";
+    for (auto& p: fs::directory_iterator(dir))
+      if (auto n = elle::tail(p.path().generic_string(), prefix))
+        try
+        {
+          res.emplace_back(from_string<int>(*n));
+        }
+        catch (std::invalid_argument)
+        {}
+    boost::sort(res);
+    return res;
   }
 
   namespace serialization

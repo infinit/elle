@@ -98,13 +98,6 @@ namespace elle
   | rotate.  |
   `---------*/
 
-  /// The sorted list of existing versions of a file family.
-  ///
-  /// For instance /tmp/foo.1, /tmp/foo.42, /tmp/foo.5 -> (1, 5, 42).
-  /// Very alike glob(base.*).
-  std::vector<int>
-  rotate_versions(bfs::path const& base);
-
   namespace detail
   {
     /// Rotate the file of a stream.
