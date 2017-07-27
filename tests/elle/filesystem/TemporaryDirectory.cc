@@ -1,13 +1,15 @@
+#define BOOST_TEST_MODULE TemporaryDirectory
+
 #include <elle/test.hh>
 #include <elle/filesystem/TemporaryDirectory.hh>
 
 using elle::filesystem::TemporaryDirectory;
 
-static
-void
-simple()
+namespace fs = boost::filesystem;
+
+BOOST_AUTO_TEST_CASE(simple)
 {
-  boost::filesystem::path path;
+  auto path = fs::path{};
   {
     TemporaryDirectory d;
     path = d.path();
@@ -16,11 +18,9 @@ simple()
   BOOST_CHECK(!exists(path));
 }
 
-static
-void
-named()
+BOOST_AUTO_TEST_CASE(named)
 {
-  boost::filesystem::path path;
+  fs::path path;
   {
     TemporaryDirectory d("some-name");
     path = d.path();
@@ -28,11 +28,4 @@ named()
     BOOST_CHECK(is_directory(path));
   }
   BOOST_CHECK(!exists(path));
-}
-
-ELLE_TEST_SUITE()
-{
-  auto& suite = boost::unit_test::framework::master_test_suite();
-  suite.add(BOOST_TEST_CASE(simple));
-  suite.add(BOOST_TEST_CASE(named));
 }

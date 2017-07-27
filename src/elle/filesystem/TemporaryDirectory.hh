@@ -19,6 +19,12 @@ namespace elle
       TemporaryDirectory(std::string const& name);
       ~TemporaryDirectory();
 
+      /// Behave as the path to this directory.
+      operator bfs::path const&() const
+      {
+        return this->path();
+      }
+
     private:
       ELLE_ATTRIBUTE_R(bfs::path, path);
       ELLE_ATTRIBUTE(bfs::path, root);
