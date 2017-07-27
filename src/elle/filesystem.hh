@@ -7,9 +7,13 @@
 
 namespace elle
 {
-  namespace bfs = boost::filesystem;
+  namespace fs = boost::filesystem;
+
+  /// Make sure the parent directory exists.
+  void
+  create_parent_directories(fs::path const& p);
 
   /// Remove file, logging failures but proceeding anyway.
   void
-  try_remove(bfs::path const& path);
+  try_remove(fs::path const& path);
 }

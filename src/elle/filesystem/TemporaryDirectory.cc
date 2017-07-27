@@ -25,12 +25,12 @@ namespace elle
       {
         // No big deal.
       }
-      auto pattern = bfs::temp_directory_path() / fpattern;
+      auto pattern = fs::temp_directory_path() / fpattern;
       do
       {
-        this->_root = bfs::unique_path(pattern);
+        this->_root = fs::unique_path(pattern);
       }
-      while (!bfs::create_directories(this->_root));
+      while (!fs::create_directories(this->_root));
       this->_path = this->_root;
     }
 
@@ -38,13 +38,13 @@ namespace elle
       : TemporaryDirectory()
     {
       this->_path = this->_path / name;
-      ELLE_ASSERT(bfs::create_directories(this->_path));
+      ELLE_ASSERT(fs::create_directories(this->_path));
     }
 
     TemporaryDirectory::~TemporaryDirectory()
     {
       ELLE_DUMP("{}: cleaning", this->_root);
-      bfs::remove_all(this->_root);
+      fs::remove_all(this->_root);
     }
   }
 }

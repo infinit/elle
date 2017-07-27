@@ -20,14 +20,14 @@ namespace elle
       ~TemporaryDirectory();
 
       /// Behave as the path to this directory.
-      operator bfs::path const&() const
+      operator fs::path const&() const
       {
         return this->path();
       }
 
     private:
-      ELLE_ATTRIBUTE_R(bfs::path, path);
-      ELLE_ATTRIBUTE(bfs::path, root);
+      ELLE_ATTRIBUTE_R(fs::path, path);
+      ELLE_ATTRIBUTE(fs::path, root);
     };
   }
 }

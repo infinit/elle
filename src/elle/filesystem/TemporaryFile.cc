@@ -9,7 +9,7 @@ namespace elle
     {
       this->_path = this->_directory.path() / name;
       // Check that it is ok.
-      bfs::ofstream(this->_path);
+      fs::ofstream(this->_path);
     }
   }
 }
