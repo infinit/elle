@@ -15,6 +15,46 @@
 
 namespace elle
 {
+  /*-----------------.
+  | basic_ofstream.  |
+  `-----------------*/
+
+  /// An ofstream that knows its file name, and can be renamed.
+  template <typename CharT, typename Traits = std::char_traits<CharT>>
+  class basic_ofstream
+    : public std::basic_ofstream<CharT, Traits>
+  {
+  public:
+    using Self = basic_ofstream;
+    using Super = std::basic_ofstream<CharT, Traits>;
+    using Super::Super;
+
+    basic_ofstream(bfs::path path)
+      : Super{path.string()}
+      , _path(std::move(path))
+    {}
+
+    /// Rename this file.
+    void name(bfs::path path)
+    {
+      if (path != this->path())
+      {
+        bfs::rename(this->path(), path);
+        this->_path = std::move(path);
+      }
+    }
+
+    ELLE_ATTRIBUTE_R(bfs::path, path);
+  };
+
+  using ofstream = basic_ofstream<char>;
+  using wofstream = basic_ofstream<wchar_t>;
+
+
+  /*----------.
+  | content.  |
+  `----------*/
+
   /// The content of stream @a is.
   template <typename CharT, typename Traits = std::char_traits<CharT>>
   std::basic_string<CharT, Traits>
@@ -42,6 +82,11 @@ namespace elle
   {
     return content(std::basic_ifstream<CharT, Traits>{p.string()});
   }
+
+
+  /*---------.
+  | rotate.  |
+  `---------*/
 
   /// The sorted list of existing versions of a file family.
   ///
@@ -137,6 +182,12 @@ namespace elle
   /*--------------------------.
   | Explicit instantiations.  |
   `--------------------------*/
+
+  // basic_ofstream.
+  extern template
+  class basic_ofstream<char>;
+  extern template
+  class basic_ofstream<wchar_t>;
 
   // content.
   extern template
