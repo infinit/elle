@@ -1,7 +1,7 @@
 #pragma once
 
-#include <fstream>
-
+#include <elle/filesystem/path.hh>
+#include <elle/fstream.hh>
 #include <elle/log/TextLogger.hh>
 
 namespace elle
@@ -25,7 +25,7 @@ namespace elle
       ///               0 to never remove.
       ///               (same name as logrotate)
       /// @param append whether to append to the last log.
-      FileLogger(std::string base,
+      FileLogger(fs::path base,
                  std::string const& log_level = "LOG",
                  size_t size = 0,
                  size_t rotate = 0,
@@ -39,7 +39,7 @@ namespace elle
       _log_level(std::string const& log_level) override;
 
     private:
-      ELLE_ATTRIBUTE_R(std::string, base);
+      ELLE_ATTRIBUTE_R(fs::path, base);
       ELLE_ATTRIBUTE_R(std::ofstream, fstream);
       ELLE_ATTRIBUTE_RW(size_t, size);
       ELLE_ATTRIBUTE_RW(size_t, rotate);

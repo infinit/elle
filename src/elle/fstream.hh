@@ -29,17 +29,17 @@ namespace elle
     using Super = std::basic_ofstream<CharT, Traits>;
     using Super::Super;
 
-    basic_ofstream(bfs::path path)
+    basic_ofstream(fs::path path)
       : Super{path.string()}
       , _path(std::move(path))
     {}
 
     /// Rename this file.
-    void name(bfs::path path)
+    void path(fs::path path)
     {
       if (path != this->path())
       {
-        bfs::rename(this->path(), path);
+        fs::rename(this->path(), path);
         this->_path = std::move(path);
       }
     }
@@ -49,12 +49,19 @@ namespace elle
     ///
     /// \pre the filename is `<BASE>.<NUM>`, where `<NUM>` is a
     /// decimal number.
-    bfs::path base() const
+    fs::path base() const
     {
       return elle::base(this->path());
     }
 
-    ELLE_ATTRIBUTE_R(bfs::path, path);
+    /// Convenience wrapper.
+    template <typename... Args>
+    void open(Args&&... args)
+    {
+      open(this->path().string(), std::forward<Args>(args)...);
+    }
+
+    ELLE_ATTRIBUTE_R(fs::path, path);
   };
 
   using ofstream = basic_ofstream<char>;
@@ -88,7 +95,7 @@ namespace elle
   /// The content of file @a p.
   template <typename CharT = char, typename Traits = std::char_traits<CharT>>
   std::basic_string<CharT, Traits>
-  content(bfs::path const& p)
+  content(fs::path const& p)
   {
     return content(std::basic_ifstream<CharT, Traits>{p.string()});
   }
@@ -111,23 +118,27 @@ namespace elle
     template <typename CharT, typename Traits = std::char_traits<CharT>>
     void
     rotate_impl(std::basic_ofstream<CharT, Traits>& of,
-                std::string const& base,
+                fs::path const& base,
                 int size, int rotate, bool append)
     {
       ELLE_LOG_COMPONENT("elle.fstream");
+      auto const version = [&](int i)
+        {
+          return elle::print("{}.{}", base.string(), i);
+        };
       auto const vs = rotate_versions(base);
       auto const last = vs.empty() ? -1 : vs.back();
       // Remove the files that are too old.  If we don't append, we
       // will create a new file, so remove one more file.
       if (rotate && rotate < int(vs.size() + !append))
         for (auto i: vs | boost::adaptors::sliced(0, vs.size() + 1 - rotate))
-          try_remove(elle::print("{}.{}", base, i));
+          try_remove(version(i));
       // If append is enabled, try to reuse the last file.
       if (append
           && last != -1
-          && int(file_size(bfs::path(elle::print("{}.{}", base, last)))) < size)
+          && int(file_size(fs::path(version(last)))) < size)
       {
-        auto const f = elle::print("{}.{}", base, last);
+        auto const f = version(last);
         of.open(f, std::ios_base::app);
         if (of.good())
         {
@@ -140,8 +151,8 @@ namespace elle
       for (auto i: boost::irange(next, next + 10000))
       {
         // There is no O_EXCL in C++.  TOCTOU...
-        auto const f = elle::print("{}.{}", base, i);
-        if (!bfs::exists(f))
+        auto const f = version(i);
+        if (!fs::exists(f))
         {
           of.open(f);
           if (of.good())
@@ -166,7 +177,7 @@ namespace elle
   template <typename CharT, typename Traits = std::char_traits<CharT>>
   void
   rotate(std::basic_ofstream<CharT, Traits>& of,
-         std::string const& base,
+         fs::path const& base,
          int size = 1_MiB,
          int rotate = 0,
          bool append = false)
@@ -212,11 +223,11 @@ namespace elle
   {
     extern template
     void
-    rotate_impl(std::ofstream& of, std::string const& base,
+    rotate_impl(std::ofstream& of, fs::path const& base,
                 int size, int rotate, bool append);
   }
   extern template
   void
-  rotate(std::ofstream& of, std::string const& base,
+  rotate(std::ofstream& of, fs::path const& base,
          int size, int rotate, bool append);
 }

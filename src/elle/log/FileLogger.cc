@@ -6,7 +6,7 @@ namespace elle
 {
   namespace log
   {
-    FileLogger::FileLogger(std::string base,
+    FileLogger::FileLogger(fs::path base,
                            std::string const& log_level,
                            size_t size,
                            size_t rotate,
@@ -21,10 +21,10 @@ namespace elle
         elle::rotate(this->_fstream, this->base(), this->size(), this->rotate(),
                      this->append());
       else if (this->append())
-        this->_fstream.open(this->base(),
+        this->_fstream.open(this->base().string(),
                             std::fstream::app | std::fstream::out);
       else
-        this->_fstream.open(this->base(),
+        this->_fstream.open(this->base().string(),
                             std::fstream::trunc | std::fstream::out);
       this->_logger
         = std::make_unique<TextLogger>(this->_fstream, log_level);

@@ -30,7 +30,7 @@ BOOST_AUTO_TEST_CASE(ofstream)
   BOOST_TEST(is_empty(foo.path()));
   BOOST_TEST(is_empty(bar.path()));
   f << "Hello, ";
-  f.name(bar.path());
+  f.path(bar.path());
   f << "world!";
   f.close();
   BOOST_TEST(!exists(foo.path()));
