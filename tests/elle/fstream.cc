@@ -20,6 +20,13 @@ BOOST_AUTO_TEST_CASE(content)
 
 BOOST_AUTO_TEST_CASE(ofstream)
 {
+  // Make sure there is a working default ctor.
+  auto&& f = elle::ofstream{};
+  BOOST_CHECK(!(f << "foo"));
+}
+
+BOOST_AUTO_TEST_CASE(ofstream_rename)
+{
   auto foo = elle::filesystem::TemporaryFile{"foo"};
   auto bar = elle::filesystem::TemporaryFile{"bar"};
   // These files already exist, as a side effect of TemporaryFile.

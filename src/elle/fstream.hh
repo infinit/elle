@@ -29,6 +29,8 @@ namespace elle
     using Super = std::basic_ofstream<CharT, Traits>;
     using Super::Super;
 
+    basic_ofstream() {};
+
     basic_ofstream(fs::path path)
       : Super{path.string()}
       , _path(std::move(path))
