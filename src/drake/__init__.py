@@ -311,10 +311,10 @@ class Drake:
       if 'DRAKE_DEBUG_BACKTRACE' in _OS.environ:
         import traceback
         traceback.print_exc()
-      exit(1)
+      sys.exit(1)
     except KeyboardInterrupt:
       print('%s: interrupted.' % sys.argv[0])
-      exit(1)
+      sys.exit(1)
     self.notify(0, ' '.join(args), start)
 
 EXPLAIN = 'DRAKE_EXPLAIN' in _OS.environ
@@ -2914,7 +2914,7 @@ def _register_commands():
           Drake.current.scheduler.run()
         except Builder.Failed as e:
           print('%s: *** %s' % (sys.argv[0], e))
-          exit(1)
+          sys.exit(1)
     command_add('build', build)
 
     def clean(nodes):
@@ -3015,24 +3015,24 @@ ACTIONS:
           NODES (requires dot).
         --dot-show NODES: show a dependency graph for NODES (requires
           dot and xv).''')
-  exit(0)
+  sys.exit(0)
 
 def complete_modes():
   for mode in sorted(_MODES.keys()):
     print('%s\tswitch to %s mode' % (mode, mode))
-  exit(0)
+  sys.exit(0)
 
 def complete_nodes():
   def res():
     for node in Drake.current.nodes:
       print(node)
-    exit(0)
+    sys.exit(0)
   return res
 
 def complete_options():
   print('-j,--jobs\tset the number of parallel jobs\tnumber of parallel jobs')
   print('-h,--help\tshow usage')
-  exit(0)
+  sys.exit(0)
 
 _DEFAULTS = []
 
