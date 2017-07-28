@@ -105,8 +105,8 @@ namespace elle
       fuse_session* s = fuse_get_session(this->_fuse);
       fuse_chan* ch = fuse_session_next_chan(s, nullptr);
       int fd = fuse_chan_fd(ch);
-      ELLE_TRACE("Got fuse fs %s", fd);
-      boost::asio::posix::stream_descriptor socket(scheduler().io_service());
+      ELLE_TRACE("got fuse fd %s", fd);
+      auto socket = boost::asio::posix::stream_descriptor(scheduler().io_service());
       socket.assign(fd);
       auto lock = this->_mt_barrier.lock();
       while (!fuse_exited(this->_fuse))
@@ -125,10 +125,10 @@ namespace elle
           break;
         ELLE_DUMP("Processing command");
         //highlevel api
-        fuse_cmd* cmd = fuse_read_cmd(this->_fuse);
-        if (!cmd)
+        if (auto cmd = fuse_read_cmd(this->_fuse))
+          fuse_process_cmd(this->_fuse, cmd);
+        else
           break;
-        fuse_process_cmd(this->_fuse, cmd);
       }
       socket.release();
       if (this->on_loop_exited())
@@ -181,7 +181,7 @@ namespace elle
       ELLE_TRACE("Entering pool loop with %s workers", threads);
       reactor::Semaphore sem;
       bool stop = false;
-      std::list<elle::Buffer> requests;
+      auto requests = std::list<elle::Buffer>{};
       fuse_session* s = fuse_get_session(this->_fuse);
       fuse_chan* ch = fuse_session_next_chan(s, nullptr);
       size_t buffer_size = fuse_chan_bufsize(ch);
@@ -212,15 +212,13 @@ namespace elle
           ELLE_TRACE("Back to the pool");
         }
       };
-      for(int i = 0; i < threads; ++i)
-      {
-        Thread* t = new Thread(elle::sprintf("fuse worker %s", i), worker);
-        this->_workers.push_back(t);
-      }
+      for (int i = 0; i < threads; ++i)
+        this->_workers.emplace_back(
+          new Thread(elle::sprintf("fuse worker %s", i), worker));
 #ifndef ELLE_MACOS
       int fd = fuse_chan_fd(ch);
       ELLE_TRACE("Got fuse fs %s", fd);
-      boost::asio::posix::stream_descriptor socket(scheduler().io_service());
+      auto socket = boost::asio::posix::stream_descriptor(scheduler().io_service());
       socket.assign(fd);
 #endif
       while (!fuse_exited(this->_fuse))
@@ -286,7 +284,7 @@ namespace elle
 #ifndef ELLE_MACOS
       int fd = fuse_chan_fd(ch);
       ELLE_TRACE("Got fuse fd %s", fd);
-      boost::asio::posix::stream_descriptor socket(scheduler().io_service());
+      auto socket = boost::asio::posix::stream_descriptor(scheduler().io_service());
       socket.assign(fd);
 #endif
       auto lock = this->_mt_barrier.lock();
