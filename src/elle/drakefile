@@ -162,9 +162,6 @@ def configure(zlib_lib,
   if not cxx_config_libs.visibility_hidden:
     cxx_config.define('ELLE_DISABLE_VISIBILITY')
 
-  # Disable date/tz's ability to use curl.
-  cxx_config_libs.define('HAS_REMOTE_API', 0)
-
   sources = drake.nodes(
     '../string.cc',
     'AtomicFile.cc',
@@ -229,9 +226,6 @@ def configure(zlib_lib,
     'chrono.hxx',
     'compiler.hh',
     'date/date.h',
-    'date/tz.cpp',
-    'date/tz.h',
-    'date/tz_private.h',
     'err.cc',
     'err.hh',
     'factory.hh',

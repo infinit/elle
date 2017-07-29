@@ -13,8 +13,6 @@
 #include <elle/os/environ.hh>
 #include <elle/print.hh>
 
-#include <elle/date/tz.h>
-
 namespace elle
 {
   namespace log
@@ -162,17 +160,22 @@ namespace elle
           if (this->_enable_time)
           {
             using namespace std::chrono;
-            using namespace date;
-            if (this->time_universal())
-              if (this->time_microsec())
-                return date::format("%F %T: ", msg.time);
-              else
-                return date::format("%F %T: ", floor<seconds>(msg.time));
-            else
-              if (this->time_microsec())
-                return date::format("%F %T: ", make_zoned(date::current_zone(), msg.time));
-              else
-                return date::format("%F %T: ", make_zoned(date::current_zone(), floor<seconds>(msg.time)));
+            using namespace date; // floor
+            auto const t = Clock::to_time_t(msg.time);
+            auto const tm
+              = (this->time_universal() ? std::gmtime : std::localtime)(&t);
+            auto os = std::ostringstream{};
+            os << std::put_time(tm, "%F %T");
+            if (this->time_microsec())
+            {
+              auto const ms =
+                (time_point_cast<microseconds>(msg.time)
+                 - time_point_cast<seconds>(msg.time))
+                .count();
+              os << '.' << std::setfill('0') << std::setw(6) << ms;
+            }
+            os << ": ";
+            return os.str();
           }
           else
             return ""s;
