@@ -8,14 +8,86 @@
 
 #include <elle/bytes.hh>
 #include <elle/filesystem.hh>
+#include <elle/filesystem/path.hh>
 #include <elle/log.hh>
 #include <elle/print.hh>
 #include <elle/printf.hh> // for err
 
-ELLE_LOG_COMPONENT("elle.fstream");
-
 namespace elle
 {
+  /*-----------------.
+  | basic_ofstream.  |
+  `-----------------*/
+
+  /// An ofstream that knows its file name, and can be renamed.
+  template <typename CharT, typename Traits = std::char_traits<CharT>>
+  class basic_ofstream
+    : public std::basic_ofstream<CharT, Traits>
+  {
+  public:
+    using Self = basic_ofstream;
+    using Super = std::basic_ofstream<CharT, Traits>;
+    using Super::Super;
+
+    basic_ofstream(bfs::path path)
+      : Super{path.string()}
+      , _path(std::move(path))
+    {}
+
+    /// Rename this file.
+    void name(bfs::path path)
+    {
+      if (path != this->path())
+      {
+        bfs::rename(this->path(), path);
+        this->_path = std::move(path);
+      }
+    }
+
+    ELLE_ATTRIBUTE_R(bfs::path, path);
+  };
+
+  using ofstream = basic_ofstream<char>;
+  using wofstream = basic_ofstream<wchar_t>;
+
+
+  /*----------.
+  | content.  |
+  `----------*/
+
+  /// The content of stream @a is.
+  template <typename CharT, typename Traits = std::char_traits<CharT>>
+  std::basic_string<CharT, Traits>
+  content(std::basic_ifstream<CharT, Traits>& is)
+  {
+    auto&& ss = std::basic_stringstream<CharT, Traits>{};
+    ss << is.rdbuf();
+    return ss.str();
+  }
+
+  /// The content of stream @a is.
+  template <typename CharT, typename Traits = std::char_traits<CharT>>
+  std::basic_string<CharT, Traits>
+  content(std::basic_ifstream<CharT, Traits>&& is)
+  {
+    auto&& ss = std::basic_stringstream<CharT, Traits>{};
+    ss << is.rdbuf();
+    return ss.str();
+  }
+
+  /// The content of file @a p.
+  template <typename CharT = char, typename Traits = std::char_traits<CharT>>
+  std::basic_string<CharT, Traits>
+  content(bfs::path const& p)
+  {
+    return content(std::basic_ifstream<CharT, Traits>{p.string()});
+  }
+
+
+  /*---------.
+  | rotate.  |
+  `---------*/
+
   /// The sorted list of existing versions of a file family.
   ///
   /// For instance /tmp/foo.1, /tmp/foo.42, /tmp/foo.5 -> (1, 5, 42).
@@ -39,6 +111,7 @@ namespace elle
                 std::string const& base,
                 int size, int rotate, bool append)
     {
+      ELLE_LOG_COMPONENT("elle.fstream");
       auto const vs = rotate_versions(base);
       auto const last = vs.empty() ? -1 : vs.back();
       // Remove the files that are too old.  If we don't append, we
@@ -109,6 +182,29 @@ namespace elle
   /*--------------------------.
   | Explicit instantiations.  |
   `--------------------------*/
+
+  // basic_ofstream.
+  extern template
+  class basic_ofstream<char>;
+  extern template
+  class basic_ofstream<wchar_t>;
+
+  // content.
+  extern template
+  std::basic_string<char>
+  content(std::basic_ifstream<char>& is);
+  extern template
+  std::basic_string<char>
+  content(std::basic_ifstream<char>&& is);
+
+  extern template
+  std::basic_string<wchar_t>
+  content(std::basic_ifstream<wchar_t>& is);
+  extern template
+  std::basic_string<wchar_t>
+  content(std::basic_ifstream<wchar_t>&& is);
+
+  // rotate.
   namespace detail
   {
     extern template

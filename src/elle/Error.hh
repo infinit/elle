@@ -24,7 +24,7 @@ namespace elle
     /// Construct an Error.
     ///
     /// @see Exception::Exception.
-    Error(elle::Backtrace const& bt, std::string const& message);
+    Error(elle::Backtrace bt, std::string const& message);
     /// Construct an Error.
     ///
     /// Skip the first StackFrame of the Backtrace (to ignore the Construction

@@ -173,3 +173,7 @@ def configure(cryptography,
     rule_install << drake.install(
       headers,
       prefix / 'include' / 'elle' / 'service' / 'aws')
+
+# Local Variables:
+# mode: python
+# End:

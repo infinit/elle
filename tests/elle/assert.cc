@@ -1,9 +1,11 @@
+#define BOOST_TEST_MODULE assert
+
+#include <boost/algorithm/cxx11/any_of.hpp>
+
 #include <elle/assert.hh>
 #include <elle/test.hh>
 
-static
-void
-success()
+BOOST_AUTO_TEST_CASE(success)
 {
   ELLE_ASSERT(true);
   try
@@ -26,37 +28,27 @@ static void an_other_exception()
   ELLE_ASSERT_NO_OTHER_EXCEPTION
 }
 
-static
-void
-failure()
+BOOST_AUTO_TEST_CASE(failure)
 {
   BOOST_CHECK_THROW(ELLE_ASSERT(false), elle::AssertError);
 }
 
-static
-void
-failure2()
+BOOST_AUTO_TEST_CASE(failure2)
 {
   BOOST_CHECK_THROW(an_other_exception(), elle::AssertError);
 }
 
-static
-void
-success_eq()
+BOOST_AUTO_TEST_CASE(success_eq)
 {
   ELLE_ASSERT_EQ(42, 42);
 }
 
-static
-void
-failure_eq()
+BOOST_AUTO_TEST_CASE(failure_eq)
 {
   BOOST_CHECK_THROW(ELLE_ASSERT_EQ(42, 51), elle::AssertError);
 }
 
-static
-void
-value()
+BOOST_AUTO_TEST_CASE(value)
 {
   {
     auto v = std::make_unique<int>(1);
@@ -71,14 +63,41 @@ value()
   }
 }
 
-ELLE_TEST_SUITE()
-{
-  auto& suite = boost::unit_test::framework::master_test_suite();
+// Pacify -Wmissing-declarations.  Avoid unnamed namespace, it changes
+// the names.
+void f0();
+void f1();
+void f2();
+void f3();
 
-  suite.add(BOOST_TEST_CASE(success));
-  suite.add(BOOST_TEST_CASE(failure));
-  suite.add(BOOST_TEST_CASE(failure2));
-  suite.add(BOOST_TEST_CASE(success_eq));
-  suite.add(BOOST_TEST_CASE(failure_eq));
-  suite.add(BOOST_TEST_CASE(value));
+#define NO_INLINE ELLE_COMPILER_ATTRIBUTE_NO_INLINE
+
+NO_INLINE void f0() { ELLE_ASSERT_EQ(42, 51); }; auto const line = __LINE__;
+NO_INLINE void f1() { f0(); }
+NO_INLINE void f2() { f1(); }
+NO_INLINE void f3() { f2(); }
+
+BOOST_AUTO_TEST_CASE(abort_callbacks)
+{
+  using boost::algorithm::any_of;
+
+  auto err = elle::AssertError{};
+  elle::on_abort([&err](elle::AssertError const& e)
+    {
+      err = e;
+    });
+  BOOST_CHECK_THROW(f3(), elle::AssertError);
+  BOOST_TEST(err.what() ==
+             elle::print("assertion '42 == 51 is false: (42=42, 51=51)' failed at %s:%s",
+                         __FILE__, line));
+  // At least clang does not seem to obey the NO_INLINE, and shows
+  // only f0.
+  BOOST_TEST_MESSAGE("Backtrace: " << *err.backtrace());
+#if ELLE_HAVE_BACKTRACE
+  BOOST_TEST(any_of(err.backtrace()->frames(),
+                    [](auto const& frame)
+                    {
+                      return frame.symbol == "f0()";
+                    }));
+#endif
 }

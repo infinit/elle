@@ -166,7 +166,7 @@ static void test_sum()
   auto&& fs =
     elle::reactor::filesystem::FileSystem(std::make_unique<sum::Operations>(),
                                           true);
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
   auto const tmp = bfs::path("K:");
 #else
   auto const tmp = bfs::temp_directory_path() / bfs::unique_path();

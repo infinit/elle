@@ -5,6 +5,7 @@
 
 namespace elle
 {
+  class Backtrace;
   class Buffer;
   class ConstWeakBuffer;
   class Error;

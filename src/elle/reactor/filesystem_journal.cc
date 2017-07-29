@@ -337,7 +337,7 @@ namespace elle
               response.serialize("st_gid"    , s->st_gid    );
               response.serialize("st_rdev"   , s->st_rdev   );
               response.serialize("st_size"   , int64_t(s->st_size));
-#ifndef INFINIT_WINDOWS
+#ifndef ELLE_WINDOWS
               response.serialize("st_blksize", int64_t(s->st_blksize));
               response.serialize("st_blocks" , s->st_blocks );
 #endif

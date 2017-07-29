@@ -74,7 +74,7 @@ namespace elle
   }
 }
 
-#ifdef INFINIT_LINUX
+#ifdef ELLE_LINUX
 namespace elle
 {
   namespace reactor

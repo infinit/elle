@@ -150,8 +150,7 @@ conditional_positional()
 
   BOOST_TEST(print("{0?({0})}", "foo") == "(foo)");
   BOOST_TEST(print("{0?({0})}", "") == "");
-  BOOST_TEST(print("{0?({0})} - {1?({1})} - {2?({2})}",
-                   0, 1, "2"s)
+  BOOST_TEST(print("{0?({0})} - {1?({1})} - {2?({2})}", 0, 1, std::string("2"))
              == " - (1) - (2)");
 }
 

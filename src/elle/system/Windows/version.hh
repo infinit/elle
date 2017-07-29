@@ -1,5 +1,5 @@
-#ifndef INFINIT_WINDOWS
-# error this file should be included if INFINIT_WINDOWS is not defined.
+#ifndef ELLE_WINDOWS
+# error this file should be included if ELLE_WINDOWS is not defined.
 #endif
 
 namespace elle

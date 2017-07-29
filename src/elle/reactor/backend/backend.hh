@@ -79,7 +79,7 @@ namespace elle
       `------*/
       public:
         /// Run action.
-        ELLE_ATTRIBUTE_R(Action, action);
+        ELLE_ATTRIBUTE_RX(Action, action);
         /// Pretty name.
         ELLE_ATTRIBUTE_RW(std::string, name);
         /// Current status.

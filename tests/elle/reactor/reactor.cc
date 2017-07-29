@@ -17,7 +17,6 @@
 #include <elle/reactor/asio.hh>
 #include <elle/reactor/duration.hh>
 #include <elle/reactor/exception.hh>
-#include <elle/reactor/for-each.hh>
 #include <elle/reactor/mutex.hh>
 #include <elle/reactor/rw-mutex.hh>
 #include <elle/reactor/semaphore.hh>
@@ -1818,7 +1817,7 @@ test_storage()
 }
 
 // Most likely a wine issue. To be investigated.
-#ifndef INFINIT_WINDOWS
+#ifndef ELLE_WINDOWS
 static
 void
 test_storage_multithread()
@@ -2717,7 +2716,7 @@ namespace background
 | Signals |
 `--------*/
 
-#if !defined INFINIT_WINDOWS && !defined INFINIT_IOS
+#if !defined ELLE_WINDOWS && !defined ELLE_IOS
 namespace system_signals
 {
   static
@@ -2949,6 +2948,31 @@ namespace tracked
     elle::reactor::yield();
     elle::reactor::yield();
     t.reset();
+  }
+
+  class DeathYielder
+  {
+  public:
+    ~DeathYielder()
+    {
+      elle::reactor::yield();
+    }
+  };
+
+  // Check thread free their captures as soon as they are over.
+  ELLE_TEST_SCHEDULED(capture_liberation)
+  {
+    auto p = std::make_shared<DeathYielder>();
+    elle::reactor::Thread t(
+      "hold", [p]
+      {
+        elle::reactor::yield();
+      });
+    auto w = std::weak_ptr<DeathYielder>(p);
+    p.reset();
+    BOOST_TEST(w.lock());
+    elle::reactor::wait(t);
+    BOOST_TEST(!w.lock());
   }
 }
 
@@ -3314,51 +3338,6 @@ namespace non_interruptible
   }
 }
 
-/*---------.
-| For each |
-`---------*/
-
-namespace for_each
-{
-  ELLE_TEST_SCHEDULED(parallel)
-  {
-    std::vector<int> c{0, 1, 2};
-    elle::reactor::Barrier b;
-    elle::reactor::Thread check(
-      "check",
-      [&]
-      {
-        BOOST_CHECK_EQUAL(c, std::vector<int>({0, 1, 2}));
-        elle::reactor::yield();
-        BOOST_CHECK_EQUAL(c, std::vector<int>({1, 2, 3}));
-        elle::reactor::yield();
-        b.open();
-      });
-    elle::reactor::for_each_parallel(
-      c,
-      [&] (int& c)
-      {
-        ++c;
-        elle::reactor::wait(b);
-      });
-    BOOST_CHECK(b.opened());
-  }
-
-  ELLE_TEST_SCHEDULED(parallel_break)
-  {
-    std::vector<int> c{0, 1, 2};
-    elle::reactor::for_each_parallel(
-      c,
-      [&] (int& c)
-      {
-        if (c == 1)
-          elle::reactor::break_parallel();
-        ++c;
-      });
-    BOOST_CHECK_EQUAL(c, std::vector<int>({1, 1, 2}));
-  }
-}
-
 /*-----.
 | Main |
 `-----*/
@@ -3529,7 +3508,7 @@ ELLE_TEST_SUITE()
   boost::unit_test::framework::master_test_suite().add(vthread);
   vthread->add(BOOST_TEST_CASE(test_vthread), 0, valgrind(1, 5));
 
-#if !defined INFINIT_ANDROID
+#if !defined ELLE_ANDROID
   boost::unit_test::test_suite* mt = BOOST_TEST_SUITE("multithreading");
   boost::unit_test::framework::master_test_suite().add(mt);
   // mt->add(BOOST_TEST_CASE(test_multithread), 0, valgrind(1, 5));
@@ -3563,7 +3542,7 @@ ELLE_TEST_SUITE()
   boost::unit_test::test_suite* storage = BOOST_TEST_SUITE("Storage");
   boost::unit_test::framework::master_test_suite().add(storage);
   storage->add(BOOST_TEST_CASE(test_storage), 0, valgrind(1, 5));
-#if !defined INFINIT_WINDOWS && !defined INFINIT_ANDROID
+#if !defined ELLE_WINDOWS && !defined ELLE_ANDROID
   storage->add(BOOST_TEST_CASE(test_storage_multithread), 0, valgrind(3, 4));
 #endif
 
@@ -3599,6 +3578,7 @@ ELLE_TEST_SUITE()
     using namespace tracked;
     tracked->add(BOOST_TEST_CASE(&reset_before), 0, valgrind(1, 5));
     tracked->add(BOOST_TEST_CASE(&reset_after), 0, valgrind(1, 5));
+    tracked->add(BOOST_TEST_CASE(&capture_liberation), 0, valgrind(1, 5));
   }
 
   {
@@ -3612,7 +3592,7 @@ ELLE_TEST_SUITE()
     s->add(BOOST_TEST_CASE(race_condition), 0, valgrind(1, 5));
   }
 
-#if !defined(INFINIT_WINDOWS) && !defined(INFINIT_IOS)
+#if !defined(ELLE_WINDOWS) && !defined(ELLE_IOS)
   {
     boost::unit_test::test_suite* system_signals =
       BOOST_TEST_SUITE("system_signals");
@@ -3621,13 +3601,4 @@ ELLE_TEST_SUITE()
     system_signals->add(BOOST_TEST_CASE(terminate), 0, valgrind(1, 5));
   }
 #endif
-
-  {
-    boost::unit_test::test_suite* s = BOOST_TEST_SUITE("for-each");
-    boost::unit_test::framework::master_test_suite().add(s);
-    auto parallel = &for_each::parallel;
-    s->add(BOOST_TEST_CASE(parallel));
-    auto parallel_break = &for_each::parallel_break;
-    s->add(BOOST_TEST_CASE(parallel_break));
-  }
 }

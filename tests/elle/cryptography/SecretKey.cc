@@ -7,6 +7,8 @@
 
 #include <elle/serialization/json.hh>
 
+using namespace std::literals;
+
 /*----------.
 | Represent |
 `----------*/
@@ -21,8 +23,7 @@ template <uint32_t N,
 void
 test_represent_n()
 {
-  elle::cryptography::SecretKey key =
-    elle::cryptography::secretkey::generate(L);
+  auto key = elle::cryptography::secretkey::generate(L);
 
   // N.1)
   {
@@ -49,13 +50,11 @@ test_represent_n()
   }
 }
 
+ELLE_COMPILER_ATTRIBUTE_MAYBE_UNUSED
 static
 void
 test_represent()
 {
-  // WARNING: To uncomment only if one wants to update the representations.
-  return;
-
   // These generate base64-based representations which can be used in
   // other tests.
 
@@ -135,10 +134,7 @@ template <uint32_t L>
 elle::cryptography::SecretKey
 test_generate_x()
 {
-  elle::cryptography::SecretKey key =
-    elle::cryptography::secretkey::generate(L);
-
-  return (key);
+  return elle::cryptography::secretkey::generate(L);
 }
 
 static
@@ -177,20 +173,16 @@ static
 elle::cryptography::SecretKey
 _test_construct_aes128()
 {
-  elle::cryptography::SecretKey key1("chiche");
-
-  elle::cryptography::SecretKey key2("chechi");
+  auto const key1 = elle::cryptography::SecretKey("chiche");
+  auto const key2 = elle::cryptography::SecretKey("chechi");
 
   BOOST_CHECK_NE(key1, key2);
 
-  elle::cryptography::SecretKey key3("chiche");
+  auto const key3 = elle::cryptography::SecretKey("chiche");
 
   BOOST_CHECK_EQUAL(key1, key3);
 
-  elle::cryptography::SecretKey key4 =
-    test_generate_x<128>();
-
-  return (key4);
+  return test_generate_x<128>();
 }
 
 static
@@ -198,15 +190,15 @@ void
 test_construct()
 {
   // AES128.
-  elle::cryptography::SecretKey key1 = _test_construct_aes128();
+  auto const key1 = _test_construct_aes128();
 
   // SecretKey copy.
-  elle::cryptography::SecretKey key2(key1);
+  auto const key2 = elle::cryptography::SecretKey(key1);
 
   BOOST_CHECK_EQUAL(key1, key2);
 
   // SecretKey move.
-  elle::cryptography::SecretKey key3(std::move(key1));
+  auto const key3 = elle::cryptography::SecretKey(std::move(key1));
 
   BOOST_CHECK_EQUAL(key2, key3);
 }
@@ -219,18 +211,11 @@ static
 void
 _test_operate_idea()
 {
-  elle::cryptography::SecretKey key =
-    test_generate_x<512>();
-
-  std::string const input = "Chie du foutre!";
-
-  elle::Buffer code = key.encipher(input,
-                                   elle::cryptography::Cipher::idea);
-  elle::Buffer plain = key.decipher(code,
-                                    elle::cryptography::Cipher::idea);
-
-  std::string const output(plain.string());
-
+  auto const key = test_generate_x<512>();
+  auto const input = "Ouistiti!"s;
+  auto const code = key.encipher(input, elle::cryptography::Cipher::idea);
+  auto const plain = key.decipher(code, elle::cryptography::Cipher::idea);
+  auto const output = plain.string();
   BOOST_CHECK_EQUAL(input, output);
 }
 
@@ -255,16 +240,15 @@ test_serialize_x(std::string const& R1,
                  elle::cryptography::Oneway const oneway)
 {
   std::stringstream stream1(R1);
-  typename elle::serialization::json::SerializerIn input1(stream1);
+  elle::serialization::json::SerializerIn input1(stream1);
   elle::cryptography::SecretKey key(input1);
 
   std::stringstream stream2(R2);
-  typename elle::serialization::json::SerializerIn input2(stream2);
+  elle::serialization::json::SerializerIn input2(stream2);
   elle::Buffer code;
   input2.serialize("code", code);
 
-  elle::Buffer plain = key.decipher(code,
-                                    cipher, mode, oneway);
+  auto const plain = key.decipher(code, cipher, mode, oneway);
 
   BOOST_CHECK_EQUAL(_message, plain.string());
 }
@@ -349,7 +333,8 @@ ELLE_TEST_SUITE()
 {
   boost::unit_test::test_suite* suite = BOOST_TEST_SUITE("SecretKey");
 
-  suite->add(BOOST_TEST_CASE(test_represent));
+  // WARNING: To uncomment only if one wants to update the representations.
+  // suite->add(BOOST_TEST_CASE(test_represent));
   suite->add(BOOST_TEST_CASE(test_generate));
   suite->add(BOOST_TEST_CASE(test_construct));
   suite->add(BOOST_TEST_CASE(test_operate));

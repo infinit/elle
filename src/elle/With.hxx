@@ -50,41 +50,44 @@ namespace elle
   | Running |
   `--------*/
 
-  template <typename T>
-  class
-  ReturnHolder
+  namespace
   {
-  public:
-    template <typename F, typename V>
-    ReturnHolder(F const& f, V& v)
-      : _value(f(v))
-    {}
-
-    T&&
-    value()
+    template <typename T>
+    class
+    ReturnHolder
     {
-      return std::move(this->_value);
-    }
+    public:
+      template <typename F, typename V>
+      ReturnHolder(F const& f, V& v)
+        : _value(f(v))
+      {}
 
-  private:
-    T _value;
-  };
+      T&&
+      value()
+      {
+        return std::move(this->_value);
+      }
 
-  template <>
-  class
-  ReturnHolder<void>
-  {
-  public:
-    template <typename F, typename V>
-    ReturnHolder(F const& f, V& v)
+    private:
+      T _value;
+    };
+
+    template <>
+    class
+    ReturnHolder<void>
     {
-      f(v);
-    }
+    public:
+      template <typename F, typename V>
+      ReturnHolder(F const& f, V& v)
+      {
+        f(v);
+      }
 
-    void
-    value()
-    {}
-  };
+      void
+      value()
+      {}
+    };
+  }
 
   template <typename T>
   template <typename F>
@@ -115,7 +118,7 @@ namespace elle
 
 // Compiling with mingw gcc 4.8 and 5.3 with -O2 chokes on the traces:
 // it calls log::Send's dtor with this = nullptr.
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
 # define ELLE_TRACE_ ELLE_TRACE
 #else
 # define ELLE_TRACE_(...) {}

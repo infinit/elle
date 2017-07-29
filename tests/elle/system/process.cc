@@ -4,7 +4,7 @@
 
 using namespace elle::system;
 
-#ifndef INFINIT_WINDOWS
+#ifndef ELLE_WINDOWS
 # define EXTENSION ""
 #else
 # define EXTENSION ".exe"

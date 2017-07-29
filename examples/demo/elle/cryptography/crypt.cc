@@ -1,4 +1,4 @@
-#if !defined INFINIT_WINDOWS
+#if !defined ELLE_WINDOWS
 # include <termios.h>
 #endif
 
@@ -14,7 +14,7 @@ namespace
   void
   echo_mode(bool enable)
   {
-#if defined INFINIT_WINDOWS
+#if defined ELLE_WINDOWS
     HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
     DWORD mode;
     GetConsoleMode(hStdin, &mode);

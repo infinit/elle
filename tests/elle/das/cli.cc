@@ -335,8 +335,8 @@ dash()
 
 namespace short_options_ct
 {
-  ELLE_DAS_CLI_SYMBOL(foo, 'f', "", false);
-  ELLE_DAS_CLI_SYMBOL(bar, 'b', "", false);
+  ELLE_DAS_CLI_SYMBOL(foo, 'f', "");
+  ELLE_DAS_CLI_SYMBOL(bar, 'b', "");
 
   static
   void
@@ -376,7 +376,7 @@ namespace short_options_rt
 
 namespace positional_ct
 {
-  ELLE_DAS_CLI_SYMBOL(foo, 'f', "", false);
+  ELLE_DAS_CLI_SYMBOL(foo, "");
   ELLE_DAS_CLI_SYMBOL(bar, 'b', "", true);
   ELLE_DAS_CLI_SYMBOL(quux, 'q', "", true);
 
@@ -389,9 +389,9 @@ namespace positional_ct
       [] (int foo, int bar) { return foo + bar; };
     {
       auto const proto = elle::das::named::prototype(foo, bar);
-      BOOST_TEST(call(proto, f, {"-f", "1", "-b", "2"}) == 3);
-      BOOST_TEST(call(proto, f, {"-f", "3", "4"}) == 7);
-      BOOST_TEST(call(proto, f, {"6", "-f", "5"}) == 11);
+      BOOST_TEST(call(proto, f, {"--foo", "1", "-b", "2"}) == 3);
+      BOOST_TEST(call(proto, f, {"--foo", "3", "4"}) == 7);
+      BOOST_TEST(call(proto, f, {"6", "--foo", "5"}) == 11);
     }
     {
       auto const proto = elle::das::named::prototype(foo = 1, bar = 2);

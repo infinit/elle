@@ -1,5 +1,3 @@
-# -*- Python -*-
-
 import collections
 import drake
 import drake.cxx
@@ -1222,17 +1220,17 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
 
   cxx_config = drake.cxx.Config(cxx_config)
   if cxx_toolkit.os == drake.os.linux:
-    config.define('INFINIT_LINUX')
-    cxx_config.define('INFINIT_LINUX')
+    config.define('ELLE_LINUX')
+    cxx_config.define('ELLE_LINUX')
   elif cxx_toolkit.os == drake.os.android:
-    config.define('INFINIT_ANDROID')
-    cxx_config.define('INFINIT_ANDROID')
+    config.define('ELLE_ANDROID')
+    cxx_config.define('ELLE_ANDROID')
   elif cxx_toolkit.os == drake.os.macos:
-    config.define('INFINIT_MACOSX')
-    cxx_config.define('INFINIT_MACOSX')
+    config.define('ELLE_MACOS')
+    cxx_config.define('ELLE_MACOS')
   elif cxx_toolkit.os == drake.os.windows:
-    config.define('INFINIT_WINDOWS')
-    cxx_config.define('INFINIT_WINDOWS')
+    config.define('ELLE_WINDOWS')
+    cxx_config.define('ELLE_WINDOWS')
     cxx_config.define('BOOST_USE_WINDOWS_H')
     cxx_config.define('WIN32_LEAN_AND_MEAN')
     cxx_config.lib('dbghelp')
@@ -1243,8 +1241,8 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     cxx_config.lib('iphlpapi')
     cxx_config.lib('crypt32')
   elif cxx_toolkit.os is drake.os.ios:
-    config.define('INFINIT_IOS')
-    cxx_config.define('INFINIT_IOS')
+    config.define('ELLE_IOS')
+    cxx_config.define('ELLE_IOS')
   cxx_config.export_dynamic = True
   cxx_config.warnings.parentheses = False
   cxx_config.warnings.empty_body = False
@@ -1612,3 +1610,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     '/home/root')
   docker_file.workdir('/home/root/build')
   drake.docker.DockerBuilder(docker_image, docker_file)
+
+# Local Variables:
+# mode: python
+# End:

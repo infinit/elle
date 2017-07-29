@@ -53,18 +53,11 @@ namespace elle
       auto thread =
         new Thread(
           sched, name,
-          // Mutable lambda so the action can be moved.
-          [this, a = std::move(a), name, idt, parent] () mutable
+          [this, action = std::move(a), name, idt, parent]
           {
             elle::log::logger().indentation() = idt;
             try
             {
-              // Make sure the action is deleted as soon as it's done,
-              // and not when finished thread are garbage collected. It
-              // may hold objects that are expected to be destroyed - a
-              // captured unique_ptr to a socket for instance, and one
-              // would expect a disconnection when the thread is done.
-              Thread::Action action(std::move(a));
               ELLE_TRACE("%s: background job %s starts", *this, name)
                 action();
               ELLE_TRACE("%s: background job %s finished", *this, name);
@@ -122,7 +115,7 @@ namespace elle
     void
     Scope::_terminate_now()
     {
-  #ifndef INFINIT_WINDOWS
+  #ifndef ELLE_WINDOWS
       ELLE_TRACE_SCOPE("%s: terminate now", *this);
   #endif
       auto current = reactor::Scheduler::scheduler()->current();
@@ -137,7 +130,7 @@ namespace elle
           inside = true;
           continue;
         }
-  #ifndef INFINIT_WINDOWS
+  #ifndef ELLE_WINDOWS
         ELLE_DEBUG("%s: terminate %s%s", *this, *t,
                    !t->interruptible() ? " (non interruptible)" : "")
   #endif
@@ -146,7 +139,7 @@ namespace elle
       }
       while (true)
       {
-  #ifndef INFINIT_WINDOWS
+  #ifndef ELLE_WINDOWS
         ELLE_DEBUG_SCOPE(
           "%s: wait for %s thread(s) to finish", this, join.size());
   #endif

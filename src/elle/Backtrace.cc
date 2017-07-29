@@ -1,6 +1,6 @@
 #include <elle/Backtrace.hh>
 
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
 # include <elle/windows.hh>
 # include <dbghelp.h>
 #endif
@@ -18,7 +18,7 @@
 
 ELLE_LOG_COMPONENT("elle.Backtrace");
 
-#if defined NO_EXECINFO
+#if ! ELLE_HAVE_EXECINFO
 # warning "Backtrace support disabled"
 #endif
 
@@ -26,7 +26,7 @@ namespace elle
 {
   namespace
   {
-#if !defined INFINIT_MACOSX && !defined INFINIT_WINDOWS && !defined INFINIT_ANDROID
+#if !defined ELLE_MACOS
     /// Whether `until` is in `str`.
     /// If it is, set `str` to the part before, and `chunk` to the part after.
     bool
@@ -112,6 +112,42 @@ namespace elle
   | StackFrame.  |
   `-------------*/
 
+  StackFrame::StackFrame() = default;
+
+  StackFrame::StackFrame(std::string line)
+  {
+    std::string addr;
+    std::string offset;
+    {
+      ELLE_DUMP("line: %s", line);
+# ifdef ELLE_MACOS
+      std::string file;
+      std::string _;
+      auto&& s = std::stringstream(line);
+      s >> _ >> file >> addr >> this->symbol_mangled >> _ >> offset;
+# else
+      discard(line, '(');
+      if (extract(line, this->symbol_mangled, '+'))
+        extract(line, offset, ')');
+      discard(line, '[');
+      extract(line, addr, ']');
+# endif
+    }
+    demangle_impl(this->symbol_mangled, this->symbol_demangled);
+    this->symbol
+      = this->symbol_demangled.empty() ? this->symbol_mangled
+      : this->symbol_demangled;
+    {
+      auto&& s = std::stringstream(addr);
+# ifdef ELLE_MACOS
+      s >> this->address;
+# else
+      s >> std::hex >> this->address;
+# endif
+    }
+    this->offset = from_hex(offset);
+  }
+
   std::ostream&
   operator<< (std::ostream& out, const StackFrame& frame)
   {
@@ -129,89 +165,33 @@ namespace elle
   | Backtrace.  |
   `------------*/
 
+  Backtrace::now_t Backtrace::now;
+
   Backtrace::Backtrace() = default;
 
-  Backtrace::Backtrace(std::vector<StackFrame> const& sf)
-    : _frames(sf)
+  Backtrace::Backtrace(std::vector<Frame> sf)
+    : _frames(std::move(sf))
     , _resolved(true)
   {}
 
   void
   Backtrace::_resolve()
   {
-    ELLE_DEBUG("resolve");
+    ELLE_DEBUG("resolve {} frames", this->_frame_count);
     if (this->_resolved)
       return;
-#if defined INFINIT_WINDOWS
-       /*
-      auto initialize = []
-        {
-          HANDLE process = GetCurrentProcess();
-          if (!::SymInitialize(process, NULL, TRUE))
-            throw std::runtime_error("unable to initialize debug symbols");
-          return process;
-        };
-      static auto process = initialize();
-      void* stack[128];
-      long unsigned int hash = 0;
-      int frames = CaptureStackBackTrace(0, sizeof(stack), stack, &hash);
-      auto symbol = (SYMBOL_INFO*)calloc(sizeof(SYMBOL_INFO) + 256 * sizeof(char), 1);
-      symbol->MaxNameLen = 255;
-      symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
-
-      for (int i = 0; i < frames; i++)
-      {
-        ::SymFromAddr(process, (DWORD64)(stack[i]), 0, symbol);
-        res.emplace_back(symbol->Name, symbol->Name, symbol->Name,
-                         symbol->Address, 0);
-      }
-      ::free(symbol);
-    */
-#elif !defined INFINIT_ANDROID && !defined NO_EXECINFO
+#if ELLE_HAVE_BACKTRACE
     char** strs = backtrace_symbols(this->_callstack.data(), this->_frame_count);
     for (unsigned i = this->_skip; i < this->_frame_count; ++i)
-    {
-      this->_frames.emplace_back();
-      auto& frame = this->_frames.back();
-      std::string addr;
-      std::string offset;
-      {
-        auto line = std::string{strs[i]};
-        ELLE_DUMP("line: %s", line);
-# ifdef INFINIT_MACOSX
-        std::string file;
-        std::string _;
-        auto&& s = std::stringstream(line);
-        s >> _ >> file >> addr >> frame.symbol_mangled >> _ >> offset;
-# else
-        discard(line, '(');
-        if (extract(line, frame.symbol_mangled, '+'))
-          extract(line, offset, ')');
-        discard(line, '[');
-        extract(line, addr, ']');
-# endif
-      }
-      demangle_impl(frame.symbol_mangled, frame.symbol_demangled);
-      frame.symbol
-        = frame.symbol_demangled.empty() ? frame.symbol_mangled
-        : frame.symbol_demangled;
-      {
-        auto&& s = std::stringstream(addr);
-# ifdef INFINIT_MACOSX
-        s >> frame.address;
-# else
-        s >> std::hex >> frame.address;
-# endif
-      }
-      frame.offset = from_hex(offset);
-    }
+      this->_frames.emplace_back(strs[i]);
     free(strs);
 #endif
     this->_resolved = true;
   }
 
-  const std::vector<StackFrame>&
+  auto
   Backtrace::frames() const
+    -> const std::vector<Frame>&
   {
     elle::unconst(this)->_resolve();
     return this->_frames;

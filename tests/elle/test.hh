@@ -53,7 +53,7 @@
 # define BOOST_TEST_MODULE ELLE_TEST_MODULE
 #endif
 
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
 # include <winsock2.h>
 #endif
 #include <boost/test/unit_test.hpp>
@@ -162,7 +162,7 @@ _test_suite()                                           \
 | Alarm handling.  |
 `-----------------*/
 
-#if defined INFINIT_WINDOWS
+#if defined ELLE_WINDOWS
 # define ELLE_TEST_HANDLE_SIGALRM(Sched, Name)
 #else
 namespace

@@ -7,7 +7,7 @@
 #include <elle/log.hh>
 #include <elle/system/unistd.hh>
 
-#ifndef INFINIT_WINDOWS
+#ifndef ELLE_WINDOWS
 # include <sys/types.h>
 # include <sys/wait.h>
 #else
@@ -20,7 +20,7 @@ namespace elle
 {
   namespace system
   {
-#ifndef INFINIT_WINDOWS
+#ifndef ELLE_WINDOWS
     class Process::Impl
     {
     public:

@@ -58,7 +58,7 @@ install_dir = %(install_dir)r
 go_path = %(go_path)r
 
 # Add drake in the Python path.
-sys.path.insert(0, os.path.realpath(source_dir + '/drake/src'))
+sys.path.insert(0, source_dir + '/drake/src')
 
 import drake
 import drake.cxx
@@ -152,11 +152,11 @@ parameters = {
   'production_build': True,
   'arch': options.arch,
   'os': options.os,
-  'drake_utils': '%s/../drake-utils.py' % os.path.dirname(os.path.realpath(__file__)),
+  'drake_utils': '%s/../drake-utils.py' % os.path.dirname(__file__),
   'project': options.project.lower(),
-  'go_path': '%s/go-dependencies' % os.path.realpath(options.build_dir),
-  'source_dir': os.path.realpath(options.source_dir),
-  'install_dir': os.path.realpath(options.install_dir),
+  'go_path': '%s/go-dependencies' % options.build_dir,
+  'source_dir': options.source_dir,
+  'install_dir': options.install_dir,
 }
 
 parameters['beyond_public'] = options.public_beyond

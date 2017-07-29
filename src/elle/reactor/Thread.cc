@@ -36,7 +36,10 @@ namespace elle
       , _timeout_timer(scheduler.io_service())
       , _thread(scheduler._manager->make_thread(
                   name,
-                  [this, a=std::move(action)] { this->_action_wrapper(a); }))
+                  [this, a=std::move(action)] ()
+                  {
+                    this->_action_wrapper(a);
+                  }))
       , _scheduler(scheduler)
       , _terminating(false)
       , _interruptible(true)
@@ -90,7 +93,7 @@ namespace elle
       this->_released();
       if (this->_dispose)
         delete this;
-      else /* the else is not an option*/
+      else
         this->_self.reset();
     }
 
@@ -305,7 +308,7 @@ namespace elle
     bool
     Thread::wait(Waitables const& waitables, DurationOpt timeout)
     {
-#ifndef INFINIT_IOS
+#ifndef ELLE_IOS
       ELLE_TRACE_SCOPE("%s: wait %s%s", *this, waitables,
                        timeout ? elle::sprintf(" for %s", timeout) : "");
 #endif
@@ -590,3 +593,10 @@ namespace elle
     }
   }
 }
+
+// Instantiate those methods to ensure we can dereference thread pointers in
+// debuggers.
+template
+class std::unique_ptr<elle::reactor::Thread, elle::reactor::Thread::Terminator>;
+template
+class std::unique_ptr<elle::reactor::backend::Thread>;

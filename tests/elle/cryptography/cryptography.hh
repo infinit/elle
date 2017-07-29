@@ -1,10 +1,9 @@
-#ifndef CRYPTOGRAPHY_HH
-# define CRYPTOGRAPHY_HH
+#pragma once
 
-# include <elle/test.hh>
-# include <elle/serialization/json.hh>
+#include <functional>
 
-# include <functional>
+#include <elle/test.hh>
+#include <elle/serialization/json.hh>
 
 namespace elle
 {
@@ -20,9 +19,9 @@ namespace elle
       template <typename T>
       void
       formats(std::vector<std::string> const& archives,
-              std::function<void (T const&)> operate = nullptr)
+              std::function<void (T const&)> operate = {})
       {
-        std::vector<std::unique_ptr<T>> objects(archives.size());
+        auto objects = std::vector<std::unique_ptr<T>>(archives.size());
 
         // First, deserialize all the objects from the archives,
         // call the operate function and finally check thatt
@@ -30,19 +29,19 @@ namespace elle
         for (uint32_t i = 0; i < archives.size(); ++i)
         {
           std::stringstream stream1(archives[i]);
-          typename elle::serialization::json::SerializerIn input1(stream1);
+          elle::serialization::json::SerializerIn input1(stream1);
           objects[i].reset(new T(input1));
 
-          if (operate != nullptr)
+          if (operate)
             operate(*objects[i]);
 
           std::stringstream stream2;
           {
-            typename elle::serialization::json::SerializerOut output2(stream2);
+            elle::serialization::json::SerializerOut output2(stream2);
             objects[i]->serialize(output2);
           }
 
-          typename elle::serialization::json::SerializerIn input3(stream2);
+          elle::serialization::json::SerializerIn input3(stream2);
           T _o(input3);
 
           BOOST_CHECK_EQUAL(*objects[i], _o);
@@ -51,5 +50,3 @@ namespace elle
     }
   }
 }
-
-#endif

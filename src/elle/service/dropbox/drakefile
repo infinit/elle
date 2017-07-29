@@ -29,7 +29,6 @@ def configure(cxx_toolkit,
   ## ----------------- ##
 
   config = elle.config + das.config + reactor.config
-  config.add_local_include_path('src')
   local_config = drake.cxx.Config(config) + cxx_config
   lib_path = '../../../../lib'
 
@@ -68,3 +67,7 @@ def configure(cxx_toolkit,
     rule_install << drake.install(
       headers,
       prefix / 'include' / 'elle' / 'service' / 'dropbox')
+
+# Local Variables:
+# mode: python
+# End:

@@ -1,4 +1,4 @@
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
 # include <shlwapi.h>
 #else
 # include <fnmatch.h>
@@ -273,7 +273,7 @@ namespace elle
       bool
       _fnmatch(std::string const& pattern, std::string const& s)
       {
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
         return ::PathMatchSpec(s.c_str(), pattern.c_str()) == TRUE;
 #else
         return fnmatch(pattern.c_str(), s.c_str(), 0) == 0;
@@ -376,27 +376,17 @@ namespace elle
     `------*/
 
     std::ostream&
-    operator << (std::ostream& stream, Logger::Level l)
+    operator << (std::ostream& os, Logger::Level l)
     {
       switch (l)
       {
-      case Logger::Level::none:
-        stream << "none";
-        break;
-      case Logger::Level::log:
-        stream << "log";
-        break;
-      case Logger::Level::trace:
-        stream << "trace";
-        break;
-      case Logger::Level::debug:
-        stream << "debug";
-        break;
-      case Logger::Level::dump:
-        stream << "dump";
-        break;
+      case Logger::Level::none:  return os << "none";
+      case Logger::Level::log:   return os << "log";
+      case Logger::Level::trace: return os << "trace";
+      case Logger::Level::debug: return os << "debug";
+      case Logger::Level::dump:  return os << "dump";
       }
-      return stream;
+      elle::unreachable();
     }
 
     /*-----.

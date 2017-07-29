@@ -435,4 +435,9 @@ namespace elle
   }
 }
 
+extern template
+class std::unique_ptr<elle::reactor::Thread, elle::reactor::Thread::Terminator>;
+extern template
+class std::unique_ptr<elle::reactor::backend::Thread>;
+
 #include <elle/reactor/Thread.hxx>

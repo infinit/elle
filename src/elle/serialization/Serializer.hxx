@@ -1453,7 +1453,7 @@ namespace elle
       using TypeMap =
         std::unordered_map<std::string,
                            std::function<std::unique_ptr<T>(SerializerIn&)>>;
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
 # ifdef ELLE_SERIALIZATION_USE_DLL
   __declspec(dllimport) static TypeMap& _map();
   __declspec(dllimport) static std::map<TypeInfo, std::string>&_rmap();

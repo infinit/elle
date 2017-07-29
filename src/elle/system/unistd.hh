@@ -1,7 +1,7 @@
 #ifndef ELLE_UNISTD_HH
 # define ELLE_UNISTD_HH
 
-# ifndef INFINIT_WINDOWS
+# ifndef ELLE_WINDOWS
 #  include <sys/types.h>
 
 # include <string>

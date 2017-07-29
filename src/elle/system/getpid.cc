@@ -1,6 +1,6 @@
 #include <elle/system/getpid.hh>
 
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
 # include <elle/windows.hh>
 #else
 # include <unistd.h>
@@ -14,7 +14,7 @@ namespace elle
     ProcessId
     getpid()
     {
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
       return ::GetCurrentProcessId();
 #else
       return ::getpid();

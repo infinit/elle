@@ -26,6 +26,8 @@
 using namespace std::literals;
 namespace bfs = boost::filesystem;
 
+ELLE_LOG_COMPONENT("elle.log");
+
 /*---------------------.
 | test suite: logger.  |
 `---------------------*/
@@ -34,7 +36,7 @@ namespace
 {
   /// All the paths inside directory @a d.
   std::vector<bfs::path>
-  content(bfs::path const& d)
+  entries(bfs::path const& d)
   {
     auto res = std::vector<bfs::path>{};
     for (auto const& p: bfs::directory_iterator(d))
@@ -486,7 +488,7 @@ namespace
 
       // b. check the files.
       {
-        BOOST_TEST_MESSAGE("d contains " << content(d.path()));
+        BOOST_TEST_MESSAGE("d contains " << entries(d.path()));
         // This should create five files of less than 600B, but we
         // kept the last three.
         BOOST_TEST_MESSAGE("versions: " << elle::rotate_versions(base));
@@ -500,10 +502,7 @@ namespace
         if (phase == 2)
         {
           auto&& is = std::ifstream(elle::print("{}.4", base));
-          auto&& ss = std::stringstream{};
-          ss << is.rdbuf();
-          auto const content = ss.str();
-          BOOST_TEST(boost::contains(content, "append"));
+          BOOST_TEST(boost::contains(elle::content(is), "append"));
         }
       }
     }
@@ -633,7 +632,7 @@ namespace
     elle::log::logger(std::move(prev));
     elle::os::unsetenv("ELLE_LOG_TARGETS");
     // Check the results.
-    BOOST_TEST_MESSAGE("d contains " << content(d.path()));
+    BOOST_TEST_MESSAGE("d contains " << entries(d.path()));
     for (auto fn: {"log1", "log2", "log3", "logs.0"})
     {
       auto const f = d.path() / fn;
@@ -933,7 +932,7 @@ ELLE_TEST_SUITE()
     logger->add(BOOST_TEST_CASE(time_));
   }
 
-#ifndef INFINIT_ANDROID
+#ifndef ELLE_ANDROID
   auto concurrency = BOOST_TEST_SUITE("concurrency");
   {
     suite.add(concurrency);

@@ -4,39 +4,58 @@
 #include <stdexcept>
 
 #include <elle/compiler.hh>
+#include <elle/fwd.hh>
 #include <elle/printf.hh>
 #include <elle/unreachable.hh>
 
 namespace elle ELLE_API
 {
-  /// Print the message and abort program execution.
-  ELLE_COMPILER_ATTRIBUTE_NORETURN
-  void
-  _abort(std::string const& msg,
-         char const* file,
-         int line);
-}
-
-namespace elle
-{
-  /// Exception thrown when an assertion is unmet.
+  /// Exception thrown when an assertion failed.
   ///
   /// @note You should never catch directly `AssertError`, nor its base class
   /// `std::exception`, except in the main function of the program.
-  class ELLE_API AssertError
+  class AssertError
     : public std::exception
   {
-  private:
-    std::string _what;
   public:
     AssertError(char const* condition,
-                char const* file,
-                uint64_t line) noexcept;
+                char const* file, int line) noexcept;
+    AssertError() = default;
+    AssertError(AssertError const& that) = default;
+    AssertError& operator=(AssertError const& that) = default;
+    ~AssertError() = default;
 
+    /// The error message, including file and line.
     const char*
     what() const noexcept override;
+    /// The stack of frames leading to the assertion.
+    std::shared_ptr<Backtrace const>
+    backtrace() const noexcept;
+
+  private:
+    /// The message, including file and line.
+    std::string _what = "";
+    std::shared_ptr<Backtrace const> _bt = nullptr;
   };
+
+  /// Print the message and abort program execution.
+  ///
+  /// @throws AssertError, unless $ENV{"ELLE_REAL_ASSERT"} is true,
+  ///    in which case std::abort is called.
+  ELLE_COMPILER_ATTRIBUTE_NORETURN
+  void
+  _abort(std::string const& msg, char const* file, int line);
+
+  /// An AssertError handler.
+  using AbortCallback
+    = std::function<auto (AssertError const& except) -> void>;
+
+  /// Register an action to perform before raising/aborting.
+  template <typename Fun>
+  auto on_abort(Fun&& fun)
+    -> decltype(AbortCallback(fun), void());
 }
+
 
 #define ELLE_ABORT(...)                                         \
   ::elle::_abort(elle::sprintf(__VA_ARGS__), __FILE__, __LINE__)
@@ -46,29 +65,18 @@ namespace elle
 #define ELLE_ENFORCE(_condition_)                                       \
   ::elle::_elle_assert(_condition_, #_condition_, __FILE__, __LINE__)
 
-#define ELLE_ENFORCE_EQ(A, B)                           \
-  ::elle::_assert_eq(A, B, #A, #B, __FILE__, __LINE__)
+#define ELLE_ENFORCE_OP(Op, A, B)                               \
+  ::elle::_assert_ ## Op(A, B, #A, #B, __FILE__, __LINE__)
 
-#define ELLE_ENFORCE_NEQ(A, B)                          \
-  ::elle::_assert_neq(A, B, #A, #B, __FILE__, __LINE__)
+#define ELLE_ENFORCE_EQ(A, B)  ELLE_ENFORCE_OP(eq,  A, B)
+#define ELLE_ENFORCE_NEQ(A, B) ELLE_ENFORCE_OP(neq, A, B)
+#define ELLE_ENFORCE_GT(A, B)  ELLE_ENFORCE_OP(gt,  A, B)
+#define ELLE_ENFORCE_GTE(A, B) ELLE_ENFORCE_OP(gte, A, B)
+#define ELLE_ENFORCE_LT(A, B)  ELLE_ENFORCE_OP(lt,  A, B)
+#define ELLE_ENFORCE_LTE(A, B) ELLE_ENFORCE_OP(lte, A, B)
 
-#define ELLE_ENFORCE_GT(A, B)                           \
-  ::elle::_assert_gt(A, B, #A, #B, __FILE__, __LINE__)
-
-#define ELLE_ENFORCE_GTE(A, B)                          \
-  ::elle::_assert_gte(A, B, #A, #B, __FILE__, __LINE__)
-
-#define ELLE_ENFORCE_LT(A, B)                           \
-  ::elle::_assert_lt(A, B, #A, #B, __FILE__, __LINE__)
-
-#define ELLE_ENFORCE_LTE(A, B)                          \
-  ::elle::_assert_lte(A, B, #A, #B, __FILE__, __LINE__)
-
-#define ELLE_ENFORCE_CONTAINS(C, E)                             \
-  ::elle::_assert_contains(C, E, #C, #E, __FILE__, __LINE__)
-
-#define ELLE_ENFORCE_NCONTAINS(C, E)                            \
-  ::elle::_assert_ncontains(C, E, #C, #E, __FILE__, __LINE__)
+#define ELLE_ENFORCE_CONTAINS(C, E)   ELLE_ENFORCE_OP(contains,  C, E)
+#define ELLE_ENFORCE_NCONTAINS(C, E)  ELLE_ENFORCE_OP(ncontains, C, E)
 
 /// Use after the last catch close to enforce no other exception is caught
 #define ELLE_ENFORCE_NO_OTHER_EXCEPTION                                 \
