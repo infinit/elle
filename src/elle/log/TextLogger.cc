@@ -1,7 +1,10 @@
 #include <elle/log/TextLogger.hh>
 
-#include <iostream>
 #include <unistd.h>
+
+#include <array>
+//#include <iomanip> // put_time
+#include <iostream>
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
@@ -164,8 +167,15 @@ namespace elle
             auto const t = Clock::to_time_t(msg.time);
             auto const tm
               = (this->time_universal() ? std::gmtime : std::localtime)(&t);
-            auto os = std::ostringstream{};
-            os << std::put_time(tm, "%F %T");
+            auto&& os = std::ostringstream{};
+            // GCC 4.9 does not support put_time.
+            // os << std::put_time(tm, "%F %T");
+            {
+              // strlen("2017-07-31 05:24:53") = 20;
+              auto buf = std::array<char, 24>{};
+              std::strftime(buf.data(), buf.size(), "%F %T", tm);
+              os << buf.data();
+            }
             if (this->time_microsec())
             {
               auto const ms =
