@@ -17,7 +17,6 @@
 #include <elle/reactor/asio.hh>
 #include <elle/reactor/duration.hh>
 #include <elle/reactor/exception.hh>
-#include <elle/reactor/for-each.hh>
 #include <elle/reactor/mutex.hh>
 #include <elle/reactor/rw-mutex.hh>
 #include <elle/reactor/semaphore.hh>
@@ -27,6 +26,7 @@
 #include <elle/reactor/Thread.hh>
 #include <elle/reactor/timer.hh>
 
+using namespace std::literals;
 
 ELLE_LOG_COMPONENT("Test");
 
@@ -43,15 +43,6 @@ public:
     : elle::Exception("beacon")
   {}
 };
-
-#ifdef INFINIT_WINDOWS
-static
-void
-usleep(int usec)
-{
-  ::Sleep(usec / 1000.0);
-}
-#endif
 
 /*-------.
 | Basics |
@@ -1277,7 +1268,7 @@ void
 schwarzy()
 {
   elle::reactor::Scheduler::scheduler()->terminate();
-  ::usleep(10);
+  std::this_thread::sleep_for(10us);
 }
 
 static
@@ -1336,7 +1327,7 @@ test_timeout_finished()
       s.start();
       // Block the IO service to make sure the task times out in the same cycle
       // it finishes.
-      sched.io_service().post([] { ::usleep(200000); });
+      sched.io_service().post([] { std::this_thread::sleep_for(200ms); });
       elle::reactor::wait(s, 11_ms);
     });
   sched.run();
@@ -1381,7 +1372,7 @@ test_multithread_spawn_wake()
     {
       ELLE_LOG("wait for the scheduler to be frozen")
         while (keeper.state() != elle::reactor::Thread::State::frozen)
-          ::usleep(10000);
+          std::this_thread::sleep_for(10ms);
       new elle::reactor::Thread(sched, "waker", [&] { barrier.open(); }, true);
     });
   sched.run();
@@ -1834,7 +1825,7 @@ test_storage()
 }
 
 // Most likely a wine issue. To be investigated.
-#ifndef INFINIT_WINDOWS
+#ifndef ELLE_WINDOWS
 static
 void
 test_storage_multithread()
@@ -2568,7 +2559,8 @@ namespace background
               elle::reactor::background(
                 [&]
                 {
-                  ::usleep(sleep_time.total_microseconds());
+                  std::this_thread::sleep_for
+                    (std::chrono::microseconds(sleep_time.total_microseconds()));
                 });
               ++count;
             }));
@@ -2603,14 +2595,13 @@ namespace background
       [&]
       {
         auto done = std::make_shared<bool>(false);
-        auto const sleep_time = 500_ms;
         try
         {
-          elle::reactor::background([done, sleep_time]
-                              {
-                                ::usleep(sleep_time.total_microseconds());
-                                *done = true;
-                              });
+          elle::reactor::background([done]
+                                    {
+                                      std::this_thread::sleep_for(500ms);
+                                      *done = true;
+                                    });
         }
         catch (elle::reactor::Terminate const&)
         {
@@ -2673,9 +2664,9 @@ namespace background
     }
     ELLE_LOG("test waiting value")
     {
-      elle::reactor::BackgroundFuture<int> f([] { ::usleep(100000); return 51; });
+      elle::reactor::BackgroundFuture<int> f([] { std::this_thread::sleep_for(100ms); return 51; });
       BOOST_CHECK_EQUAL(f.value(), 51);
-      f = [] { ::usleep(100000); return 69; };
+      f = [] { std::this_thread::sleep_for(100ms); return 69; };
       BOOST_CHECK_EQUAL(f.value(), 69);
     }
     ELLE_LOG("test already available value")
@@ -2735,7 +2726,7 @@ namespace background
 | Signals |
 `--------*/
 
-#if !defined INFINIT_WINDOWS && !defined INFINIT_IOS
+#if !defined ELLE_WINDOWS && !defined ELLE_IOS
 namespace system_signals
 {
   static
@@ -2968,6 +2959,31 @@ namespace tracked
     elle::reactor::yield();
     t.reset();
   }
+
+  class DeathYielder
+  {
+  public:
+    ~DeathYielder()
+    {
+      elle::reactor::yield();
+    }
+  };
+
+  // Check thread free their captures as soon as they are over.
+  ELLE_TEST_SCHEDULED(capture_liberation)
+  {
+    auto p = std::make_shared<DeathYielder>();
+    elle::reactor::Thread t(
+      "hold", [p]
+      {
+        elle::reactor::yield();
+      });
+    auto w = std::weak_ptr<DeathYielder>(p);
+    p.reset();
+    BOOST_TEST(w.lock());
+    elle::reactor::wait(t);
+    BOOST_TEST(!w.lock());
+  }
 }
 
 static
@@ -3145,7 +3161,8 @@ namespace timeout_
     {
       auto const sleep_time = valgrind(10_ms);
       elle::reactor::TimeoutGuard timeout(sleep_time);
-      ::usleep((sleep_time * 2).total_microseconds());
+      std::this_thread::sleep_for
+        (std::chrono::microseconds((sleep_time * 2).total_microseconds()));
     }
     catch(elle::reactor::Timeout const&)
     {
@@ -3311,51 +3328,6 @@ namespace non_interruptible
     poke.put(42);
     cobaye.terminate_now();
     BOOST_CHECK(beacon);
-  }
-}
-
-/*---------.
-| For each |
-`---------*/
-
-namespace for_each
-{
-  ELLE_TEST_SCHEDULED(parallel)
-  {
-    std::vector<int> c{0, 1, 2};
-    elle::reactor::Barrier b;
-    elle::reactor::Thread check(
-      "check",
-      [&]
-      {
-        BOOST_CHECK_EQUAL(c, std::vector<int>({0, 1, 2}));
-        elle::reactor::yield();
-        BOOST_CHECK_EQUAL(c, std::vector<int>({1, 2, 3}));
-        elle::reactor::yield();
-        b.open();
-      });
-    elle::reactor::for_each_parallel(
-      c,
-      [&] (int& c)
-      {
-        ++c;
-        elle::reactor::wait(b);
-      });
-    BOOST_CHECK(b.opened());
-  }
-
-  ELLE_TEST_SCHEDULED(parallel_break)
-  {
-    std::vector<int> c{0, 1, 2};
-    elle::reactor::for_each_parallel(
-      c,
-      [&] (int& c)
-      {
-        if (c == 1)
-          elle::reactor::break_parallel();
-        ++c;
-      });
-    BOOST_CHECK_EQUAL(c, std::vector<int>({1, 1, 2}));
   }
 }
 
@@ -3529,7 +3501,7 @@ ELLE_TEST_SUITE()
   boost::unit_test::framework::master_test_suite().add(vthread);
   vthread->add(BOOST_TEST_CASE(test_vthread), 0, valgrind(1, 5));
 
-#if !defined INFINIT_ANDROID
+#if !defined ELLE_ANDROID
   boost::unit_test::test_suite* mt = BOOST_TEST_SUITE("multithreading");
   boost::unit_test::framework::master_test_suite().add(mt);
   // mt->add(BOOST_TEST_CASE(test_multithread), 0, valgrind(1, 5));
@@ -3563,7 +3535,7 @@ ELLE_TEST_SUITE()
   boost::unit_test::test_suite* storage = BOOST_TEST_SUITE("Storage");
   boost::unit_test::framework::master_test_suite().add(storage);
   storage->add(BOOST_TEST_CASE(test_storage), 0, valgrind(1, 5));
-#if !defined INFINIT_WINDOWS && !defined INFINIT_ANDROID
+#if !defined ELLE_WINDOWS && !defined ELLE_ANDROID
   storage->add(BOOST_TEST_CASE(test_storage_multithread), 0, valgrind(3, 4));
 #endif
 
@@ -3599,6 +3571,7 @@ ELLE_TEST_SUITE()
     using namespace tracked;
     tracked->add(BOOST_TEST_CASE(&reset_before), 0, valgrind(1, 5));
     tracked->add(BOOST_TEST_CASE(&reset_after), 0, valgrind(1, 5));
+    tracked->add(BOOST_TEST_CASE(&capture_liberation), 0, valgrind(1, 5));
   }
 
   {
@@ -3612,7 +3585,7 @@ ELLE_TEST_SUITE()
     s->add(BOOST_TEST_CASE(race_condition), 0, valgrind(1, 5));
   }
 
-#if !defined(INFINIT_WINDOWS) && !defined(INFINIT_IOS)
+#if !defined(ELLE_WINDOWS) && !defined(ELLE_IOS)
   {
     boost::unit_test::test_suite* system_signals =
       BOOST_TEST_SUITE("system_signals");
@@ -3621,13 +3594,4 @@ ELLE_TEST_SUITE()
     system_signals->add(BOOST_TEST_CASE(terminate), 0, valgrind(1, 5));
   }
 #endif
-
-  {
-    boost::unit_test::test_suite* s = BOOST_TEST_SUITE("for-each");
-    boost::unit_test::framework::master_test_suite().add(s);
-    auto parallel = &for_each::parallel;
-    s->add(BOOST_TEST_CASE(parallel));
-    auto parallel_break = &for_each::parallel_break;
-    s->add(BOOST_TEST_CASE(parallel_break));
-  }
 }

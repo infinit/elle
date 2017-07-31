@@ -1,11 +1,11 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#if defined INFINIT_WINDOWS
+#if defined ELLE_WINDOWS
 # include <process.h>
 # include <elle/windows.hh>
 # include <wincrypt.h>
-#elif defined INFINIT_IOS
+#elif defined ELLE_IOS
 # include <Security/Security.h>
 #endif
 
@@ -42,7 +42,7 @@ namespace elle
       {
         uint8_t temporary[256];
         ELLE_TRACE("setting up the random generator")
-#if defined INFINIT_LINUX || defined INFINIT_MACOSX || defined INFINIT_ANDROID
+#if defined ELLE_LINUX || defined ELLE_MACOS || defined ELLE_ANDROID
         {
           /// The path to read random data from.
           ///
@@ -67,7 +67,7 @@ namespace elle
           random_source_file.read(reinterpret_cast<char *>(temporary),
                                   sizeof (temporary));
         }
-#elif defined INFINIT_IOS
+#elif defined ELLE_IOS
         {
           int res = SecRandomCopyBytes(kSecRandomDefault, 256, temporary);
           if (res != 0)
@@ -75,7 +75,7 @@ namespace elle
             throw Error("unable to get 256 bytes of random data");
           }
         }
-#elif defined INFINIT_WINDOWS
+#elif defined ELLE_WINDOWS
         {
           HCRYPTPROV h_provider = 0;
 

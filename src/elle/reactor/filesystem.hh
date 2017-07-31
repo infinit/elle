@@ -19,7 +19,7 @@
 static_assert(sizeof(off_t) == 8,
               "off_t is 32 bits long, define _FILE_OFFSET_BITS to 64");
 
-#if defined INFINIT_WINDOWS || defined INFINIT_ANDROID
+#if defined ELLE_WINDOWS || defined ELLE_ANDROID
 struct statvfs
 {
   unsigned long  f_bsize;    /* filesystem block size */

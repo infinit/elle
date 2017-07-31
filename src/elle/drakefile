@@ -637,8 +637,11 @@ def configure(zlib_lib,
       test.dependency_add(dep)
     rule_tests << test
     env = {
-      'BUILD_DIR': str(drake.path_build()),
-      'TEST_DIR': str(drake.path_build(tests_path)),
+      'BUILD_DIR': drake.path_build(),
+      'BOOST_TEST_COLOR_OUTPUT': '1',
+      'BOOST_TEST_LOG_LEVEL': 'all',
+      'BOOST_TEST_LOG_SINK': 'stderr',  # Keep our logs, and Boost's, together.
+      'TEST_DIR': drake.path_build(tests_path),
     }
     if valgrind_tests and valgrind_this_test:
       runner = drake.valgrind.ValgrindRunner(exe = test,

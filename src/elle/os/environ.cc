@@ -1,8 +1,8 @@
 #include <elle/os/environ.hh>
 
-#if defined INFINIT_MACOSX
+#if defined ELLE_MACOS
 # include <crt_externs.h>
-#elif defined INFINIT_WINDOWS
+#elif defined ELLE_WINDOWS
 # include <elle/windows.hh>
 #else
 # include <sys/types.h>
@@ -18,7 +18,7 @@
 # undef environ
 #endif
 
-#ifdef INFINIT_IOS
+#ifdef ELLE_IOS
 extern char **environ;
 #endif
 
@@ -39,7 +39,7 @@ namespace elle
         if (auto value = ::getenv(key.c_str()))
           return value;
 
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
       if (::_putenv((key + "=" + val).c_str()) != 0)
 #else
       if (::setenv(key.c_str(), val.c_str(), 1) == -1)
@@ -80,7 +80,7 @@ namespace elle
         assert(cp);
         res.emplace(std::string{str, cp}, std::string{cp+1});
       };
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
       LPTCH strings = GetEnvironmentStrings();
       if (strings == nullptr)
         elle::err("cannot get environment strings");
@@ -92,7 +92,7 @@ namespace elle
 
       FreeEnvironmentStrings(strings);
 #else
-# ifdef INFINIT_MACOSX
+# ifdef ELLE_MACOS
       char** strings = *(_NSGetEnviron());
 # else
       char** strings = ::environ;
@@ -109,7 +109,7 @@ namespace elle
     void
     unsetenv(std::string const& key)
     {
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
       if (::_putenv((key + "=").c_str()) != 0)
 #else
       if(::unsetenv(key.c_str()) == -1)

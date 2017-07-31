@@ -1,6 +1,7 @@
+#define ELLE_TEST_MODULE Exception
+
 #include <boost/algorithm/string/predicate.hpp>
 
-#define ELLE_TEST_MODULE Exception
 #include <elle/test.hh>
 #include <elle/Exception.hh>
 
@@ -19,18 +20,18 @@ BOOST_AUTO_TEST_CASE(ExceptionBacktrace)
   try
   {
     thrower();
-    BOOST_CHECK(false && "Shouldn't be there");
+    BOOST_CHECK(!"Shouldn't be there");
   }
   catch (elle::Exception& e)
   {
-    BOOST_CHECK_EQUAL(e.what(), "test message");
-#if ! defined INFINIT_WINDOWS && ! defined INFINIT_ANDROID && !defined NO_EXECINFO
-    BOOST_CHECK_EQUAL(e.backtrace().frames().front().symbol, "thrower()");
+    BOOST_TEST(e.what() == "test message");
+#if ELLE_HAVE_BACKTRACE
+    BOOST_TEST(e.backtrace().frames().front().symbol == "thrower()");
 #endif
   }
   catch (...)
   {
-    BOOST_CHECK(false && "Shouldn't be there");
+    BOOST_CHECK(!"Shouldn't be there");
   }
 }
 

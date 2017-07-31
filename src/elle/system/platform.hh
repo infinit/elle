@@ -11,7 +11,7 @@ namespace elle
 /// Linux-specific
 ///
 /// Note that the _linux_ macro is undefined since generating conflicts.
-#if defined(INFINIT_LINUX)
+#if defined(ELLE_LINUX)
 # undef linux
 #endif
 

@@ -4,7 +4,7 @@
 
 #include <elle/os/environ.hh>
 #include <elle/system/user_paths.hh>
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
 # include <elle/windows/string_conversion.hh>
 # include <shlobj.h>
 #else
@@ -18,7 +18,7 @@ namespace elle
     boost::filesystem::path
     home_directory()
     {
-#if defined(INFINIT_WINDOWS)
+#if defined(ELLE_WINDOWS)
       wchar_t path[MAX_PATH];
       if (SUCCEEDED(SHGetSpecialFolderPathW(NULL, path, CSIDL_PROFILE, 0)))
       {

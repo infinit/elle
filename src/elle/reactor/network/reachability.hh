@@ -1,6 +1,6 @@
 #pragma once
 
-#if !defined INFINIT_MACOSX && !defined INFINIT_IOS
+#if !defined ELLE_MACOS && !defined ELLE_IOS
 # error "Unsupported platform"
 #endif
 
@@ -24,7 +24,7 @@ namespace elle
         {
           Unreachable   = 0,
           Reachable     = 1,
-# ifdef INFINIT_IOS
+# ifdef ELLE_IOS
           ReachableWWAN = 2, // Reachable using mobile data connection.
 # endif
         };

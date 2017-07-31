@@ -161,12 +161,16 @@ namespace elle
       auto const color_code = get_color_code(msg.level, msg.type);
       this->_output << color_code << first_line << '\n';
 
-      if (lines.size() > 1)
+      if (2 <= lines.size())
       {
         ELLE_ASSERT_GTE(first_line.size(), lines[0].size());
-        auto indent = std::string(first_line.size() - lines[0].size(), ' ');
+        // We repeat the time on each subsequent line, so that sorting
+        // log files on time keeps these lines together.
+        auto const time = this->_enable_time ? print("%s: ", msg.time) : "";
+        auto const indent
+          = std::string(first_line.size() - lines[0].size() - time.size(), ' ');
         for (auto i = 1u; i < lines.size(); i++)
-          this->_output << indent << lines[i] << '\n';
+          this->_output << time << indent << lines[i] << '\n';
       }
       if (!color_code.empty())
         this->_output << "[0m";

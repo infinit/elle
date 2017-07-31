@@ -1,12 +1,11 @@
-#ifndef ELLE_WINDOWS_STRING_CONVERSION_HH
-# define ELLE_WINDOWS_STRING_CONVERSION_HH
+#pragma once
 
-# include <string>
+#include <string>
 
-# ifndef INFINIT_WINDOWS
-#  error "This file should only be included on Windows"
-#  error "(if INFINIT_WINDOWS is defined)."
-# endif
+#ifndef ELLE_WINDOWS
+# error "This file should only be included on Windows"
+# error "(if ELLE_WINDOWS is defined)."
+#endif
 
 namespace elle
 {
@@ -28,5 +27,3 @@ namespace elle
     wstring_to_string(std::wstring const& s);
   }
 }
-
-#endif

@@ -1,7 +1,6 @@
-#ifndef ELLE_ARCHIVE_TAR_HH
-# define ELLE_ARCHIVE_TAR_HH
+#pragma once
 
-# include <elle/archive/archive.hh>
+#include <elle/archive/archive.hh>
 
 namespace elle
 {
@@ -11,16 +10,13 @@ namespace elle
     ///
     /// @see archive.
     void
-    tar(std::vector<boost::filesystem::path> const& files,
-        boost::filesystem::path const& path,
-        Renamer const& renamer = Renamer());
+    tar(Paths const& files, bfs::path const& path,
+        Renamer const& renamer = {});
 
     /// Helper for tar extraction.
     ///
     /// @see extract.
     void
-    untar(boost::filesystem::path const& path);
+    untar(bfs::path const& path);
   }
 }
-
-#endif

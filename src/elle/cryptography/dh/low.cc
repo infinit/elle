@@ -27,7 +27,7 @@ namespace elle
         ::DH*
         DH_priv2pub(::DH* private_key)
         {
-          ELLE_ASSERT_NEQ(private_key, nullptr);
+          ELLE_ASSERT(private_key);
 
           // Duplicate the parameters and manually copy the public key.
           //
@@ -41,7 +41,7 @@ namespace elle
         ::DH*
         DH_dup(::DH* key)
         {
-          ELLE_ASSERT_NEQ(key, nullptr);
+          ELLE_ASSERT(key);
 
           ::DH_up_ref(key);
 

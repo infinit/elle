@@ -50,13 +50,53 @@ namespace elle
     | Helpers |
     `--------*/
 
+    // GCC 4.9, when instantiating this piece of code, generates tons
+    // of warnings about our `-> decltype(bool(t))`:
+    //
+    // print.hxx:57:19: warning: the compiler can assume that the address
+    // of 't' will always evaluate to 'true' [-Waddress]
+    //
+    // The pragma cannot be restristed to that line.
+#if defined __GNUC__ && ! defined __clang__
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Waddress"
+#endif
+
+    /// Boolean value of types featuring to bool() operator.
     template <typename T>
-    std::enable_if_exists_t<decltype(bool(std::declval<T>())), bool>
+    auto
     branch_test(T const& t, int)
+      -> decltype(bool(t))
     {
       return bool(t);
     }
 
+#if defined __GNUC__ && ! defined __clang__
+# pragma GCC diagnostic pop
+#endif
+
+    /// A string is "false" iff it's empty.
+    ///
+    /// We also support dubious derived classes.  See das's
+    /// serialization test with NopeString.
+    template <typename T>
+    auto
+    branch_test(T const& t, int)
+      -> std::enable_if_t<std::is_base_of<std::string, T>{},
+                          bool>
+    {
+      return !t.empty();
+    }
+
+    /// A C-string is "false" iff it's empty.
+    inline
+    auto
+    branch_test(char const* t, int)
+    {
+      return t && *t;
+    }
+
+    /// Cannot not use this type as a Boolean value.
     template <typename T>
     ELLE_COMPILER_ATTRIBUTE_NORETURN
     bool
@@ -176,25 +216,18 @@ namespace elle
         o << "nullptr";
     }
 
-    /*----------------.
-    | Named arguments |
-    `----------------*/
+    /*------------.
+    | Arguments.  |
+    `------------*/
 
     struct Argument
-      : public std::function<void (std::ostream&)>
+      : public std::function<auto (std::ostream&) -> void>
     {
-      using Super = std::function<void (std::ostream&)>;
+      using Super = std::function<auto (std::ostream&) -> void>;
       template <typename T>
       Argument(T const& value)
-        : Super(
-          [&value] (std::ostream& o) { print(o, value); })
-        , _bool([&value] { return branch_test(value, 0); })
-      {}
-
-      Argument(char const* value)
-        : Super(
-          [value] (std::ostream& o) { print(o, value); })
-        , _bool([value] { return value && strlen(value) > 0; })
+        : Super{[&value] (std::ostream& o) { print(o, value); }}
+        , _bool{[&value] { return branch_test(value, 0); }}
       {}
 
       operator bool() const

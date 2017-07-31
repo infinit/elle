@@ -1,8 +1,9 @@
 #include <elle/reactor/backend/backend.hh>
-#if defined(INFINIT_MACOSX)
+
+#if defined ELLE_MACOS
 // libc++
 # include <elle/reactor/libcxx-exceptions/cxa_exception.hpp>
-#include <utility>
+# include <utility>
 # define THROW_SPEC
 #else
 //libstdc++
@@ -20,8 +21,7 @@ namespace elle
       | Backend |
       `--------*/
 
-      Backend::~Backend()
-      = default;
+      Backend::~Backend() = default;
 
       /*-------------.
       | Construction |

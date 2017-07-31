@@ -8,11 +8,11 @@ namespace elle
   `-------------*/
 
   Error::Error(std::string const& message)
-    : Super(message, 1)
+    : Super{message, 1}
   {}
 
-  Error::Error(elle::Backtrace const& bt, std::string const& message)
-    : Super(bt, message)
+  Error::Error(elle::Backtrace bt, std::string const& message)
+    : Super{std::move(bt), message}
   {}
 
   /*--------------.

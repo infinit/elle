@@ -81,7 +81,7 @@ public:
 `---------------*/
 
 // Connection refused entails infinite wait on wine.
-#ifndef INFINIT_WINDOWS
+#ifndef ELLE_WINDOWS
 // Find a free port. Of course there's a race condition, but it's better than an
 // hardcoded one.
 static
@@ -806,7 +806,7 @@ ELLE_TEST_SCHEDULED(async_write)
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
-#ifndef INFINIT_WINDOWS
+#ifndef ELLE_WINDOWS
   suite.add(BOOST_TEST_CASE(destroy_socket), 0, 10);
 #endif
 #define INFINIT_REACTOR_NETWORK_TEST(Proto)                             \

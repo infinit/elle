@@ -133,7 +133,7 @@ namespace elle
       {
         ELLE_TRACE_SCOPE("%s: wait for connection", *this);
         // FIXME: server should listen in ctor to avoid this crappy state ?
-        ELLE_ASSERT_NEQ(this->acceptor(), nullptr);
+        ELLE_ASSERT(this->acceptor());
         Accept<Socket, EndPoint, Acceptor> accept(
           socket, peer, *this->_acceptor);
         accept.run();

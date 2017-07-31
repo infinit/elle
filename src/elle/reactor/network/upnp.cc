@@ -76,9 +76,7 @@ namespace elle
                    *this,
                    _impl->lanaddr,
                    _impl->valid_igd,
-                   _impl->externalIPAddress ?
-                   *_impl->externalIPAddress :
-                   std::string("unknown"));
+                   _impl->externalIPAddress.value_or("unknown"));
         this->_available = true;
       }
 
@@ -188,7 +186,7 @@ namespace elle
           nullptr/*desc*/,
           nullptr/*enabled*/,
           duration);
-        if(r!=UPNPCOMMAND_SUCCESS)
+        if (r != UPNPCOMMAND_SUCCESS)
           throw std::runtime_error(
             elle::sprintf("GetSpecificPortMappingEntry: %s", strupnperror(r)));
         res._owner = owner;

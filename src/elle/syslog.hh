@@ -1,6 +1,6 @@
 #pragma once
 
-#if defined INFINIT_WINDOWS
+#if defined ELLE_WINDOWS
 
 // TODO http://msdn.microsoft.com/en-us/library/windows/desktop/aa363680.aspx
 enum

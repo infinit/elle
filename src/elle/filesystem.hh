@@ -8,6 +8,10 @@
 namespace elle
 {
   namespace bfs = boost::filesystem;
+
+  /// Remove file, logging failures but proceeding anyway.
+  void
+  try_remove(bfs::path const& path);
 }
 
 namespace std
@@ -15,10 +19,7 @@ namespace std
   template<>
   struct ELLE_API hash<boost::filesystem::path>
   {
-    using argument_type = boost::filesystem::path;
-    using value_type = std::size_t;
-
-    value_type
-    operator()(argument_type const& p) const;
+    std::size_t
+    operator()(boost::filesystem::path const& p) const;
   };
 }

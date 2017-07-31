@@ -114,7 +114,6 @@ namespace elle
       ELLE_TRACE_SCOPE("%s: abort background operation", sched);
       this->_status->aborted = true;
       this->_signal();
-      ++sched._background_pool_free;
     }
   }
 }

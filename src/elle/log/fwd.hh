@@ -8,5 +8,9 @@ namespace elle
     {
       struct Send;
     }
+    class CompositeLogger;
+    class FileLogger;
+    class Logger;
+    class TextLogger;
   }
 }

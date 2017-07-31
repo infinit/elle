@@ -27,7 +27,7 @@ namespace elle
         ::RSA*
         RSA_priv2pub(::RSA* private_key)
         {
-          ELLE_ASSERT_NEQ(private_key, nullptr);
+          ELLE_ASSERT(private_key);
 
           return (::RSAPublicKey_dup(private_key));
         }
@@ -35,7 +35,7 @@ namespace elle
         ::RSA*
         RSA_dup(::RSA* key)
         {
-          ELLE_ASSERT_NEQ(key, nullptr);
+          ELLE_ASSERT(key);
 
           // Increase the reference counter on this object rather
           // than duplicating the structure.

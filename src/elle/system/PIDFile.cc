@@ -12,7 +12,7 @@ namespace elle
   {
     boost::filesystem::ofstream ofs(this->_path);
     ofs <<
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
       ::GetCurrentProcessId()
 #else
       ::getpid()

@@ -1,9 +1,7 @@
 #include <fstream>
 #include <mutex>
 
-#include <boost/algorithm/string/erase.hpp>
-#include <boost/algorithm/string/predicate.hpp>
-#include <boost/algorithm/string/trim.hpp>
+#include <boost/algorithm/string.hpp>
 #include <boost/tokenizer.hpp>
 
 #include <elle/Exception.hh>
@@ -22,6 +20,8 @@
 #include <elle/system/getpid.hh>
 
 using namespace std::literals;
+
+ELLE_LOG_COMPONENT("elle.log");
 
 namespace elle
 {
@@ -84,9 +84,10 @@ namespace elle
 
       using Arguments = std::map<std::string, std::string>;
 
-      template <typename T>
+      /// Get the value of type `T` under the name `k`.
+      template <typename T = bool>
       T
-      get(Arguments& args, std::string const& k, T def)
+      get(Arguments& args, std::string const& k, T def = false)
       {
         if (auto i = elle::find(args, k))
         {
@@ -150,10 +151,31 @@ namespace elle
             }
         }
         auto res = make_one_logger_impl(dest, level, args);
+        if (auto l = get_text_logger(res))
+        {
+          l->enable_time(get(args, "time",
+                             os::getenv("ELLE_LOG_TIME", false)));
+          l->time_universal(get(args, "universal",
+                                os::getenv("ELLE_LOG_TIME_UNIVERSAL", false)));
+          l->time_microsec(get(args, "microsec",
+                               os::getenv("ELLE_LOG_TIME_MICROSEC", false)));
+        }
         if (!args.empty())
           err<std::invalid_argument>("unused logger arguments: %s", args);
         return res;
       }
+    }
+
+    /// Get the TextLogger from a TextLogger or a FileLogger.
+    TextLogger*
+    get_text_logger(std::unique_ptr<Logger>& l)
+    {
+      if (auto const res = dynamic_cast<TextLogger*>(l.get()))
+        return res;
+      else if (auto const flog = dynamic_cast<FileLogger*>(l.get()))
+        return dynamic_cast<TextLogger*>(flog->logger().get());
+      else
+        return nullptr;
     }
 
     /// The main logger.  Create it from $ELLE_LOG_TARGETS if it's null.
@@ -174,10 +196,11 @@ namespace elle
       std::unique_lock<std::recursive_mutex> ulock{log_mutex()};
       if (!_logger())
       {
-        auto level = os::getenv("ELLE_LOG_LEVEL", "LOG"s);
+        auto const level = os::getenv("ELLE_LOG_LEVEL", "LOG"s);
         _logger() = std::make_unique<TextLogger>(std::cerr, level);
-        _logger() = make_logger(os::getenv("ELLE_LOG_TARGETS",
-                                           "stderr://?" + level));
+        auto const ts = os::getenv("ELLE_LOG_TARGETS", "stderr://?" + level);
+        ELLE_DUMP("building main logger: {}", ts)
+        _logger() = make_logger(ts);
       }
       return *_logger();
     }
@@ -200,13 +223,13 @@ namespace elle
     logger_add(std::unique_ptr<Logger> l)
     {
       std::unique_lock<std::recursive_mutex> ulock{log_mutex()};
+      ELLE_DUMP("add new logger: {}", l);
       auto log = dynamic_cast<CompositeLogger*>(_logger().get());
       if (!log)
       {
         // Create before, so that current logs apply.
         auto clog = std::make_unique<CompositeLogger>();
-        auto old = std::move(_logger());
-        clog->loggers().push_back(std::move(old));
+        clog->loggers().push_back(std::move(_logger()));
         log = clog.get();
         _logger() = std::move(clog);
       }
@@ -217,7 +240,9 @@ namespace elle
     make_logger(std::string const& targets)
     {
       auto const ts
-        = elle::print(targets,
+        // On Windows we might get a path that uses `\` as a
+        // separator.  Escape it for elle::print.
+        = elle::print(boost::replace_all_copy(targets, "\\", "\\\\"),
                       {
                         {"pid", elle::system::getpid()},
                       });

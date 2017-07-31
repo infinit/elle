@@ -29,7 +29,7 @@ namespace elle
       : public elle::IOStream
     {
     public:
-  #if defined(INFINIT_WINDOWS)
+  #if defined(ELLE_WINDOWS)
       using Handle = HANDLE;
   #else
       using Handle = int;
@@ -55,7 +55,7 @@ namespace elle
         virtual
         void
         write(char* buffer, Size size) override;
-#if defined(INFINIT_WINDOWS)
+#if defined(ELLE_WINDOWS)
         ELLE_ATTRIBUTE(boost::asio::windows::stream_handle, stream);
 #else
         ELLE_ATTRIBUTE(boost::asio::posix::stream_descriptor, stream);

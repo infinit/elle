@@ -1,6 +1,6 @@
 #include <elle/syslog.hh>
 
-#if defined INFINIT_WINDOWS
+#if defined ELLE_WINDOWS
 
 # include <iostream>
 

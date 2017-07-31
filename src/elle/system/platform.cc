@@ -1,6 +1,6 @@
 #include <elle/system/platform.hh>
 #include <elle/printf.hh>
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
 # include <elle/system/Windows/version.hh>
 #endif
 
@@ -13,35 +13,29 @@ namespace elle
       std::string
       os_name()
       {
-#if defined INFINIT_WINDOWS
+#if defined ELLE_WINDOWS
         return "Windows";
-#elif defined INFINIT_LINUX
+#elif defined ELLE_LINUX
         return "Linux";
-#elif defined INFINIT_ANDROID
+#elif defined ELLE_ANDROID
         return "Android";
-#elif defined INFINIT_MACOSX
+#elif defined ELLE_MACOS
         return "MacOSX";
-#elif defined INFINIT_IOS
+#elif defined ELLE_IOS
         return "iOS";
 #else
-# error Please define INFINIT_{OS} according to your platform.
+# error Please define ELLE_{OS} according to your platform.
 #endif
       }
 
       std::string
       os_version()
       {
-#if defined INFINIT_WINDOWS
+#if defined ELLE_WINDOWS
         static const std::string version = windows::version_name();
         return version;
-#elif defined INFINIT_LINUX
-        return "unknown";
-#elif defined INFINIT_MACOSX || defined(INFINIT_IOS)
-        return "unknown";
-#elif defined INFINIT_ANDROID
-        return "unknown"; // FIXME
 #else
-# error Please define INFINIT_{OS} according to your platform.
+        return "unknown";
 #endif
       }
 

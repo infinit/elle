@@ -10,11 +10,17 @@ namespace elle
   /// @param fmt The un-formatted string specifying how to format and interpret
   ///            the given data.
   /// @param args The arguments specifying data to print.
+  ///
+  /// Examples of formats:
+  /// - "{0}, {1}, {2}": prints arguments 1, 2, and 3.
+  /// - "{2}, {1}, {2}": prints arguments 3, 2, and 3.
+  /// - "{1?one}": prints argument "one" if arg 1 evaluates to true.
+  /// - "{1?({1})}": prints arg 2 in parens if it evaluates to true.
   template <typename ... Args>
   void
   print(std::ostream& o, std::string const& fmt, Args&& ... args);
 
-  /// Return a formatted string.
+  /// A formatted string.
   ///
   /// @param fmt The un-formatted string specifying how to format and interpret
   ///            the given data.

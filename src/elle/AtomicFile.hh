@@ -23,14 +23,14 @@ namespace elle
   ///
   /// @code{.cc}
   ///
-  /// AtomicFile file("some/path");
+  /// auto file = AtomicFile{"some/path"};
   /// // Write initial content.
   /// {
   ///   Write write = file.write();
   ///   write.stream() << "data";
   ///   // The file will be effectively created when the Write object is
   ///   // destroyed here. If anything prevents this (SIGKILL, ...), the file
-  ///   // will be considered inexistent upon the next run.
+  ///   // will be considered nonexistent upon the next run.
   /// }
   /// // Oneliner works too.
   /// file.write().stream() << "data";
@@ -41,13 +41,13 @@ namespace elle
   /// {
   ///   Write write = file.write();
   ///   write.stream() << "data2";
-  ///   // The new content will be effectively commited when the Write object is
+  ///   // The new content will be effectively committed when the Write object is
   ///   // destroyed here. If anything prevents this (SIGKILL, ...), the file
   ///   // will contain "data" upon the next run.
   /// }
   /// @endcode
-  class ELLE_API AtomicFile:
-    public elle::Printable
+  class ELLE_API AtomicFile
+    : public elle::Printable
   {
   /*------.
   | Types |
@@ -132,7 +132,7 @@ namespace elle
     private:
       /// Move a write operation.
       Write(Write&& source);
-      /// Destruct a write operation, commiting the changes.
+      /// Destruct a write operation, committing the changes.
       ///
       /// @post !this->owner->exists()
       /// @post !this->owner->writing()
@@ -156,7 +156,7 @@ namespace elle
     /// A ward containing stream to write new content to.
     ///
     /// The file stays in writing mode until the ward is destructed. The new
-    /// content is effectively commited when leaving writing mode.
+    /// content is effectively committed when leaving writing mode.
     ///
     /// @return A ward containing stream to write new content to.
     /// @pre !this->reading()

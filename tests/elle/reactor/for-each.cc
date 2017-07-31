@@ -5,6 +5,30 @@
 
 ELLE_LOG_COMPONENT("elle.reactor.for-each.test");
 
+ELLE_TEST_SCHEDULED(parallel)
+{
+  std::vector<int> c{0, 1, 2};
+  elle::reactor::Barrier b;
+  elle::reactor::Thread check(
+    "check",
+    [&]
+    {
+      BOOST_CHECK_EQUAL(c, std::vector<int>({0, 1, 2}));
+      elle::reactor::yield();
+      BOOST_CHECK_EQUAL(c, std::vector<int>({1, 2, 3}));
+      elle::reactor::yield();
+      b.open();
+    });
+  elle::reactor::for_each_parallel(
+    c,
+    [&] (int& c)
+    {
+      ++c;
+      elle::reactor::wait(b);
+    });
+  BOOST_CHECK(b.opened());
+}
+
 ELLE_TEST_SCHEDULED(empty)
 {
   elle::reactor::for_each_parallel(
@@ -102,6 +126,20 @@ ELLE_TEST_SCHEDULED(valued_continue)
       }) == (std::vector<std::string>{"0", "2", "4"}));
 }
 
+ELLE_TEST_SCHEDULED(parallel_break)
+{
+  std::vector<int> c{0, 1, 2};
+  elle::reactor::for_each_parallel(
+    c,
+    [&] (int& c)
+    {
+      if (c == 1)
+        elle::reactor::break_parallel();
+      ++c;
+    });
+  BOOST_CHECK_EQUAL(c, std::vector<int>({1, 1, 2}));
+}
+
 // ELLE_TEST_SCHEDULED(moved_not_copiable)
 // {
 //   std::vector<std::unique_ptr<int>> v;
@@ -123,11 +161,13 @@ ELLE_TEST_SCHEDULED(valued_continue)
 ELLE_TEST_SUITE()
 {
   auto& master = boost::unit_test::framework::master_test_suite();
+  master.add(BOOST_TEST_CASE(parallel));
   master.add(BOOST_TEST_CASE(empty));
   master.add(BOOST_TEST_CASE(const_not_copiable));
   master.add(BOOST_TEST_CASE(mutable_not_copiable));
   master.add(BOOST_TEST_CASE(mutable_copiable));
   master.add(BOOST_TEST_CASE(valued));
   master.add(BOOST_TEST_CASE(valued_continue));
+  master.add(BOOST_TEST_CASE(parallel_break));
   // master.add(BOOST_TEST_CASE(moved_not_copiable));
 }

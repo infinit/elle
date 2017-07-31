@@ -119,7 +119,7 @@ namespace elle
         {
           bfs::path path(value.path);
           ELLE_DEBUG_SCOPE("%s: store metadata for %s", *this, path);
-          ELLE_DUMP("%s: %s", *this, value);
+          { ELLE_DUMP("%s: %s", *this, value); } // Braces for gcc warnings.
           // Update metadata
           {
             // Preserve previously registered folder content.

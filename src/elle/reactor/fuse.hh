@@ -52,7 +52,7 @@ namespace elle
       void
       _loop_pool(int threads, Scheduler&);
 
-#if defined INFINIT_MACOSX
+#if defined ELLE_MACOS
       void
       _mac_unmount(DurationOpt grace_time);
 #endif

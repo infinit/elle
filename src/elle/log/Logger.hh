@@ -180,6 +180,7 @@ namespace elle
       /// @param file    the source file from which comes the message
       /// @param line    and its line number
       /// @param function and the name of the calling function
+      virtual // FIXME: should not be virtual.
       void message(Level level,
                    Type type,
                    std::string const& component,

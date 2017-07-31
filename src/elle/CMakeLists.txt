@@ -1,12 +1,12 @@
 PROJECT(Elle CXX)
 
-IF(INFINIT_LINUX)
+IF(ELLE_LINUX)
   SET(elle_PLATFORM
     utility/Unicode-unix.cc)
-ELSEIF(INFINIT_MACOSX)
+ELSEIF(ELLE_MACOS)
   SET(elle_PLATFORM
     utility/Unicode-unix.cc)
-ELSEIF(INFINIT_WINDOWS)
+ELSEIF(ELLE_WINDOWS)
   SET(elle_PLATFORM
     utility/Unicode-win32.cc)
 ENDIF()

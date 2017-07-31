@@ -33,7 +33,7 @@ namespace elle
             return "Unreachable";
           case Reachability::NetworkStatus::Reachable:
             return "Reachable";
-#ifdef INFINIT_IOS
+#ifdef ELLE_IOS
           case Reachability::NetworkStatus::ReachableWWAN:
             return "ReachableWWAN";
 #endif
@@ -90,7 +90,7 @@ namespace elle
         else if ((flags & kSCNetworkReachabilityFlagsConnectionRequired) == 0)
         {
           status = NetworkStatus::Reachable;
-#ifdef INFINIT_IOS
+#ifdef ELLE_IOS
           // WWAN connection.
           if ((flags & kSCNetworkReachabilityFlagsIsWWAN) ==
                 kSCNetworkReachabilityFlagsIsWWAN)

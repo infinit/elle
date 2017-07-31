@@ -67,7 +67,7 @@ namespace elle
       PublicKey const&
       KeyPair::K() const
       {
-        ELLE_ASSERT_NEQ(this->_public_key, nullptr);
+        ELLE_ASSERT(this->_public_key);
 
         return (*this->_public_key);
       }
@@ -75,7 +75,7 @@ namespace elle
       PrivateKey const&
       KeyPair::k() const
       {
-        ELLE_ASSERT_NEQ(this->_private_key, nullptr);
+        ELLE_ASSERT(this->_private_key);
 
         return (*this->_private_key);
       }
@@ -83,8 +83,8 @@ namespace elle
       uint32_t
       KeyPair::size() const
       {
-        ELLE_ASSERT_NEQ(this->_public_key, nullptr);
-        ELLE_ASSERT_NEQ(this->_private_key, nullptr);
+        ELLE_ASSERT(this->_public_key);
+        ELLE_ASSERT(this->_private_key);
         ELLE_ASSERT_EQ(this->_public_key->size(), this->_private_key->size());
 
         return (this->_public_key->size());
@@ -93,8 +93,8 @@ namespace elle
       uint32_t
       KeyPair::length() const
       {
-        ELLE_ASSERT_NEQ(this->_public_key, nullptr);
-        ELLE_ASSERT_NEQ(this->_private_key, nullptr);
+        ELLE_ASSERT(this->_public_key);
+        ELLE_ASSERT(this->_private_key);
         ELLE_ASSERT_EQ(this->_public_key->length(),
                        this->_private_key->length());
 
@@ -143,8 +143,8 @@ namespace elle
         if (this == &other)
           return (true);
 
-        ELLE_ASSERT_NEQ(this->_public_key, nullptr);
-        ELLE_ASSERT_NEQ(this->_private_key, nullptr);
+        ELLE_ASSERT(this->_public_key);
+        ELLE_ASSERT(this->_private_key);
 
         // The public component is enough to uniquely identify a key pair.
         return (*this->_public_key == *other._public_key);
@@ -182,8 +182,8 @@ namespace elle
       void
       KeyPair::print(std::ostream& stream) const
       {
-        ELLE_ASSERT_NEQ(this->_public_key, nullptr);
-        ELLE_ASSERT_NEQ(this->_private_key, nullptr);
+        ELLE_ASSERT(this->_public_key);
+        ELLE_ASSERT(this->_private_key);
 
         stream << "(" << *this->_public_key << ", "
                << *this->_private_key << ")";
@@ -252,7 +252,7 @@ namespace elle
 
           ELLE_CRYPTOGRAPHY_FINALLY_ACTION_FREE_EVP_PKEY(key);
 
-          ELLE_ASSERT_NEQ(key, nullptr);
+          ELLE_ASSERT(key);
 
           // Instanciate both a RSA public and private key based on the
           // EVP_PKEY.

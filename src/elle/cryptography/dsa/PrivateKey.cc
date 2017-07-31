@@ -60,9 +60,9 @@ namespace elle
         _key(key),
         _digest_algorithm(digest_algorithm)
       {
-        ELLE_ASSERT_NEQ(key, nullptr);
-        ELLE_ASSERT_NEQ(key->pkey.dsa->pub_key, nullptr);
-        ELLE_ASSERT_NEQ(key->pkey.dsa->priv_key, nullptr);
+        ELLE_ASSERT(key);
+        ELLE_ASSERT(key->pkey.dsa->pub_key);
+        ELLE_ASSERT(key->pkey.dsa->priv_key);
 
         // Make sure the cryptographic system is set up.
         cryptography::require();
@@ -74,9 +74,9 @@ namespace elle
                              Oneway const digest_algorithm):
         _digest_algorithm(digest_algorithm)
       {
-        ELLE_ASSERT_NEQ(dsa, nullptr);
-        ELLE_ASSERT_NEQ(dsa->pub_key, nullptr);
-        ELLE_ASSERT_NEQ(dsa->priv_key, nullptr);
+        ELLE_ASSERT(dsa);
+        ELLE_ASSERT(dsa->pub_key);
+        ELLE_ASSERT(dsa->priv_key);
 
         // Make sure the cryptographic system is set up.
         cryptography::require();
@@ -95,8 +95,8 @@ namespace elle
       PrivateKey::PrivateKey(PrivateKey const& other):
         _digest_algorithm(other._digest_algorithm)
       {
-        ELLE_ASSERT_NEQ(other._key->pkey.dsa->pub_key, nullptr);
-        ELLE_ASSERT_NEQ(other._key->pkey.dsa->priv_key, nullptr);
+        ELLE_ASSERT(other._key->pkey.dsa->pub_key);
+        ELLE_ASSERT(other._key->pkey.dsa->priv_key);
 
         // Make sure the cryptographic system is set up.
         cryptography::require();
@@ -130,7 +130,7 @@ namespace elle
       void
       PrivateKey::_construct(::DSA* dsa)
       {
-        ELLE_ASSERT_NEQ(dsa, nullptr);
+        ELLE_ASSERT(dsa);
 
         // Initialise the private key structure.
         ELLE_ASSERT_EQ(this->_key, nullptr);
@@ -152,10 +152,10 @@ namespace elle
       void
       PrivateKey::_check() const
       {
-        ELLE_ASSERT_NEQ(this->_key, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.dsa, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.dsa->pub_key, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.dsa->priv_key, nullptr);
+        ELLE_ASSERT(this->_key);
+        ELLE_ASSERT(this->_key->pkey.dsa);
+        ELLE_ASSERT(this->_key->pkey.dsa->pub_key);
+        ELLE_ASSERT(this->_key->pkey.dsa->priv_key);
       }
 
       elle::Buffer
@@ -199,8 +199,8 @@ namespace elle
         if (this == &other)
           return (true);
 
-        ELLE_ASSERT_NEQ(this->_key, nullptr);
-        ELLE_ASSERT_NEQ(other._key, nullptr);
+        ELLE_ASSERT(this->_key);
+        ELLE_ASSERT(other._key);
 
         // Compare the public components because it is sufficient to
         // uniquely distinguish keys.
@@ -233,12 +233,12 @@ namespace elle
       void
       PrivateKey::serialize(elle::serialization::Serializer& serializer)
       {
-        ELLE_ASSERT_NEQ(this->_key, nullptr);
+        ELLE_ASSERT(this->_key);
 
         cryptography::serialize<privatekey::Serialization>(
           serializer,
           this->_key->pkey.dsa);
-        ELLE_ASSERT_NEQ(this->_key->pkey.dsa, nullptr);
+        ELLE_ASSERT(this->_key->pkey.dsa);
 
         serializer.serialize("digest algorithm", this->_digest_algorithm);
       }
@@ -250,10 +250,10 @@ namespace elle
       void
       PrivateKey::print(std::ostream& stream) const
       {
-        ELLE_ASSERT_NEQ(this->_key, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.dsa, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.dsa->pub_key, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.dsa->priv_key, nullptr);
+        ELLE_ASSERT(this->_key);
+        ELLE_ASSERT(this->_key->pkey.dsa);
+        ELLE_ASSERT(this->_key->pkey.dsa->pub_key);
+        ELLE_ASSERT(this->_key->pkey.dsa->priv_key);
 
         stream << "("
                << *this->_key->pkey.dsa->pub_key

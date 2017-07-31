@@ -2,8 +2,41 @@
 
 #include <elle/bytes.hh>
 #include <elle/filesystem/TemporaryDirectory.hh>
+#include <elle/filesystem/TemporaryFile.hh>
 #include <elle/fstream.hh>
 #include <elle/test.hh>
+
+using namespace std::literals;
+
+namespace bfs = boost::filesystem;
+
+BOOST_AUTO_TEST_CASE(content)
+{
+  auto foo = elle::filesystem::TemporaryFile{"foo"};
+  auto const msg = "Top of the world!\n"s;
+  std::ofstream{foo.path().string()} << msg;
+  BOOST_TEST(elle::content(foo.path()) == msg);
+}
+
+BOOST_AUTO_TEST_CASE(ofstream)
+{
+  auto foo = elle::filesystem::TemporaryFile{"foo"};
+  auto bar = elle::filesystem::TemporaryFile{"bar"};
+  // These files already exist, as a side effect of TemporaryFile.
+  BOOST_TEST(is_empty(foo.path()));
+  BOOST_TEST(is_empty(bar.path()));
+
+  auto&& f = elle::ofstream(foo.path());
+  BOOST_TEST(is_empty(foo.path()));
+  BOOST_TEST(is_empty(bar.path()));
+  f << "Hello, ";
+  f.name(bar.path());
+  f << "world!";
+  f.close();
+  BOOST_TEST(!exists(foo.path()));
+  BOOST_TEST(!is_empty(bar.path()));
+  BOOST_TEST(elle::content(bar.path()) == "Hello, world!");
+}
 
 BOOST_AUTO_TEST_CASE(rotate)
 {
@@ -14,26 +47,17 @@ BOOST_AUTO_TEST_CASE(rotate)
   {
     auto&& o = std::ofstream(elle::print("%s.0", family));
     BOOST_TEST(o.good());
-    for (int i = 0; i < 1000; ++i)
+    for (auto _: boost::irange(0, 1000))
     {
-      // End with a period, rather than a \n, to avoid issues in Windows.
+      // End with a period, rather than a \n, to avoid getting
+      // a different size on Windows.
       o << "foo.";
-      BOOST_CHECK_NO_THROW(elle::rotate(o, family, 1_KiB));
+      elle::rotate(o, family, 1_KiB, 2);
     }
     BOOST_TEST(o.good());
   }
-  // Check it created four files.
-  for (int i = 0; i < 10; ++i)
-  {
-    auto f = bfs::path(elle::print("{}.{}", family, i));
-    BOOST_TEST_MESSAGE("file: " << f);
-    if (i < 4)
-    {
-      BOOST_TEST(exists(f));
-      // The last file is shorter.
-      BOOST_TEST(file_size(f) == (i < 3 ? 1028 : 916));
-    }
-    else
-      BOOST_TEST(!exists(f));
-  }
+  // Check it created four files and removed the two oldest.
+  using Ints = std::vector<int>;
+  BOOST_TEST_MESSAGE("versions: " << elle::rotate_versions(family));
+  BOOST_TEST(elle::rotate_versions(family) == (Ints{2, 3}));
 }

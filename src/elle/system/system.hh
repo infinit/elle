@@ -94,7 +94,7 @@ namespace elle
       Buffer
       read(uint64_t file_offset, uint64_t size);
     private:
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
     using NativeHandle = HANDLE;
 #else
      using NativeHandle = int;

@@ -5,7 +5,7 @@
 #include <sys/types.h>
 
 /*
-#ifdef INFINIT_LINUX
+#ifdef ELLE_LINUX
 # include <attr/xattr.h>
 #else
 # include <sys/xattr.h>
@@ -515,7 +515,7 @@ namespace elle
                      const char* val,
                      size_t valsize,
                      int flags
-  #ifdef INFINIT_MACOSX
+  #ifdef ELLE_MACOS
                      , uint32_t position
   #endif
         )
@@ -544,7 +544,7 @@ namespace elle
                      const char* key,
                      char* val,
                      size_t valsize
-  #ifdef INFINIT_MACOSX
+  #ifdef ELLE_MACOS
                      , uint32_t position
   #endif
         )

@@ -3,6 +3,8 @@
 #include <elle/print.hh>
 #include <elle/test.hh>
 
+using namespace std::literals;
+
 static
 void
 empty()
@@ -90,7 +92,9 @@ static
 void
 indexed()
 {
-  BOOST_CHECK_EQUAL(elle::print("{2} {1} {0}", 0, 1, 2), "2 1 0");
+  using elle::print;
+  BOOST_TEST(print("{2} {1} {0}", 0, 1, 2) == "2 1 0");
+  BOOST_TEST(print("{0} {1} {2}", 0, 1, 2) == "0 1 2");
 }
 
 static
@@ -106,30 +110,48 @@ static
 void
 conditional()
 {
-  BOOST_CHECK_EQUAL(
-    elle::print(
-      "{zero?oops} - {one?one} - {empty?oops} - {filled?content: {filled}}",
-      {{"zero", 0}, {"one", 1}, {"empty", ""}, {"filled", "yes"}}),
-     " - one -  - content: yes");
+  using elle::print;
+  BOOST_TEST(print("{yes?success}{no?fail}",
+                   {
+                     {"yes", 1},
+                     {"no", 0},
+                   })
+             == "success");
+  BOOST_TEST(
+    print("{zero?oops} - {one?one} - {empty?oops} - {filled?content: {filled}}",
+          {{"zero", 0}, {"one", 1}, {"empty", ""}, {"filled", "yes"}})
+    == " - one -  - content: yes");
 }
 
 static
 void
 conditional_positional()
 {
-  BOOST_CHECK_EQUAL(
-    elle::print(
-      "{?{}, }{?{}, }{4?{5}, }{6?{7}, }",
-      false, 0, true, 1, true, 2, false, 4),
-     "1, 2, ");
-  BOOST_CHECK_EQUAL(
-    elle::print(
-      "{yes?success}{no?fail}",
-      {
-        {"yes", 1},
-        {"no", 0},
-      }),
-    "success");
+  using elle::print;
+  BOOST_TEST(print("{?{}, }{?{}, }{4?{5}, }{6?{7}, }",
+                   false, 0, true, 1, true, 2, false, 3)
+             == "1, 2, ");
+  {
+    char f[10] = {0};
+    char t[10] = {1};
+    BOOST_TEST(print("{?1}:{?2}", f, t) == ":2");
+  }
+  {
+    auto const f = "";
+    auto const t = "x";
+    BOOST_TEST(print("{?1}:{?2}", f, t) == ":2");
+  }
+  BOOST_TEST(print("{?1}:{?2}", "", "t") == ":2");
+  {
+    struct Foo {};
+    BOOST_CHECK_THROW(print("{?1}", Foo{}),
+                      std::exception);
+  }
+
+  BOOST_TEST(print("{0?({0})}", "foo") == "(foo)");
+  BOOST_TEST(print("{0?({0})}", "") == "");
+  BOOST_TEST(print("{0?({0})} - {1?({1})} - {2?({2})}", 0, 1, std::string("2"))
+             == " - (1) - (2)");
 }
 
 namespace

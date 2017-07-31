@@ -1,6 +1,6 @@
-#if defined(INFINIT_IOS)
+#if defined(ELLE_IOS)
 # import <UIKit/UIDevice.h>
-#elif defined(INFINIT_MACOSX)
+#elif defined(ELLE_MACOS)
 # include <CoreServices/CoreServices.h>
 #endif
 
@@ -16,9 +16,9 @@ namespace elle
       std::string
       os_name()
       {
-#if defined(INFINIT_MACOSX)
+#if defined(ELLE_MACOS)
         return "MacOSX";
-#elif defined(INFINIT_IOS)
+#elif defined(ELLE_IOS)
         return "iOS";
 #endif
       }
@@ -26,7 +26,7 @@ namespace elle
       std::string
       os_version()
       {
-#if defined(INFINIT_MACOSX)
+#if defined(ELLE_MACOS)
 # pragma clang diagnostic push
 # pragma clang diagnostic ignored "-Wdeprecated-declarations"
         int32_t major_version, minor_version, bugfix_version;
@@ -39,7 +39,7 @@ namespace elle
         return elle::sprintf("%s.%s.%s",
                              major_version, minor_version, bugfix_version);
 # pragma clang diagnostic pop
-#elif defined(INFINIT_IOS)
+#elif defined(ELLE_IOS)
         return [UIDevice currentDevice].systemVersion.UTF8String;
 #endif
       }

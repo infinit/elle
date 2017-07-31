@@ -1,4 +1,4 @@
-#ifndef INFINIT_WINDOWS
+#ifndef ELLE_WINDOWS
 # include <errno.h>
 # include <string.h>
 # include <sys/types.h>

@@ -1,6 +1,6 @@
 #include <elle/system/username.hh>
 
-#if !defined(INFINIT_WINDOWS)
+#if !defined(ELLE_WINDOWS)
 # include <pwd.h>
 # include <stdio.h>
 # include <sys/types.h>
@@ -17,7 +17,7 @@ namespace elle
     std::string
     username()
     {
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
       char buffer[1024];
       DWORD sz = 1024;
       GetUserName(buffer, &sz);

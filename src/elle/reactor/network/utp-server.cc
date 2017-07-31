@@ -1,10 +1,10 @@
-#ifdef INFINIT_LINUX
+#ifdef ELLE_LINUX
 # include <sys/time.h> // timespec
 # include <linux/errqueue.h>
 # include <netinet/ip_icmp.h>
 #endif
 
-#ifdef INFINIT_MACOSX
+#ifdef ELLE_MACOS
 # include <netinet/in_systm.h>
 # include <netinet/ip.h>
 # include <netinet/ip_icmp.h>
@@ -335,7 +335,7 @@ namespace elle
       UTPServer::Impl::_check_icmp()
       {
         ELLE_LOG_COMPONENT("elle.reactor.network.UTPServer.ICMP");
-#if defined INFINIT_MACOSX
+#if defined ELLE_MACOS
         if (this->_icmp_fd == -1)
         {
           this->_icmp_fd = ::socket(AF_INET, SOCK_DGRAM, IPPROTO_ICMP);
@@ -390,7 +390,7 @@ namespace elle
             sizeof(sa));
 #endif
         // Code coming straight from ucat libutp example.
-#if defined INFINIT_LINUX
+#if defined ELLE_LINUX
         int fd = this->_socket->socket()->native_handle();
         unsigned char vec_buf[4096], ancillary_buf[4096];
         struct iovec iov = { vec_buf, sizeof vec_buf };
@@ -500,7 +500,7 @@ namespace elle
         this->_socket = std::make_unique<RDVSocket>();
         this->_socket->close();
         this->_socket->bind(ep);
-#ifdef INFINIT_LINUX
+#ifdef ELLE_LINUX
         int on = 1;
         /* Set the option, so we can receive errors */
         setsockopt(this->_socket->socket()->native_handle(), SOL_IP, IP_RECVERR,

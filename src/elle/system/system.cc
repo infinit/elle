@@ -1,4 +1,4 @@
-#ifndef INFINIT_WINDOWS
+#ifndef ELLE_WINDOWS
   #define _LARGEFILE64_SOURCE
   #include <sys/types.h>
   #include <sys/stat.h>
@@ -21,7 +21,7 @@ namespace elle
              uint64_t size)
     {
       using namespace boost::system::errc; // make_error_code and errors
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
       HANDLE h = CreateFileW(
         std::wstring(path.string().begin(), path.string().end()).c_str(),
         GENERIC_WRITE,
@@ -62,7 +62,7 @@ namespace elle
     void
     FileHandle::write(Buffer const& buffer)
     {
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
 
       DWORD written;
       BOOL ok =
@@ -100,7 +100,7 @@ namespace elle
     FileHandle::FileHandle(boost::filesystem::path const& path, OpenMode mode)
       : _path(path)
     {
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
       ELLE_LOG_COMPONENT("elle.system");
       ELLE_DEBUG("get HANDLE for file: %s", path);
       switch(mode)
@@ -166,7 +166,7 @@ namespace elle
 #endif
     }
     FileHandle::NativeHandle FileHandle::_invalid =
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
     INVALID_HANDLE_VALUE;
 #else
     -1;
@@ -183,7 +183,7 @@ namespace elle
     FileHandle& FileHandle::operator= (FileHandle&& b)
     {
       if (_handle != _invalid)
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
         ::CloseHandle(_handle);
 #else
         ::close(_handle);
@@ -197,7 +197,7 @@ namespace elle
     FileHandle::~FileHandle()
     {
       if (_handle != _invalid)
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
         ::CloseHandle(_handle);
 #else
         ::close(_handle);
@@ -206,7 +206,7 @@ namespace elle
     Buffer
     FileHandle::read(uint64_t offset, uint64_t size)
     {
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
       LONG offsetLow = offset & 0xFFFFFFFF;
       LONG offsetHigh = offset >> 32;
       DWORD seekAmount = SetFilePointer(_handle, offsetLow, &offsetHigh, FILE_BEGIN);
@@ -219,7 +219,7 @@ namespace elle
           boost::system::error_code(error, boost::system::system_category()));
       }
 #else // POSIX version
-#if defined(INFINIT_MACOSX) || defined(INFINIT_IOS)
+#if defined(ELLE_MACOS) || defined(ELLE_IOS)
       // macos has 64 bit lseek because off_t is 64 bits
       ELLE_ASSERT_GTE(sizeof(off_t), 8u);
       using seek_offset_type = off_t;
@@ -240,7 +240,7 @@ namespace elle
     Buffer
     FileHandle::read(uint64_t size)
     {
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
       DWORD bytesRead;
       elle::Buffer buffer(size);
       BOOL ok = ReadFile(_handle, buffer.mutable_contents(), size, &bytesRead, NULL);
@@ -274,7 +274,7 @@ namespace elle
       ELLE_ASSERT_GTE(size, position);
       buffer.size(position);
       return buffer;
-#endif // INFINIT_WINDOWS
+#endif // ELLE_WINDOWS
     }
 
   }

@@ -62,7 +62,7 @@ namespace elle
       this->_eptr = nullptr;
       plugins::logger_indentation.load();
       plugins::logger_tags.load();
-#ifndef INFINIT_WINDOWS
+#ifndef ELLE_WINDOWS
       // Thread dumper on SIGUSR2.
       if (DBG)
         this->signal_handle(
@@ -492,7 +492,9 @@ namespace elle
       {
         try
         {
-          this->current()->wait(*thread);
+          auto current = this->current();
+          ELLE_ASSERT(current);
+          current->wait(*thread);
         }
         catch (...)
         {
@@ -624,7 +626,7 @@ namespace elle
 
       std::string signal_string(int const signal)
       {
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
         //XXX should at least map common signal values
         return std::to_string(signal);
 #else
@@ -777,13 +779,13 @@ namespace elle
 | Standdard library overrides |
 `----------------------------*/
 
-#if !defined INFINIT_LINUX && !defined INFINIT_ANDROID      \
-    && !defined INFINIT_WINDOWS && !defined INFINIT_MACOSX  \
-    && !defined INFINIT_IOS
+#if !defined ELLE_LINUX && !defined ELLE_ANDROID      \
+    && !defined ELLE_WINDOWS && !defined ELLE_MACOS  \
+    && !defined ELLE_IOS
 # error "Unsupported platform"
 #endif
 
-#if defined(INFINIT_MACOSX)
+#if defined(ELLE_MACOS)
 // libc++
 # include <elle/reactor/libcxx-exceptions/cxa_exception.hpp>
 # define THROW_SPEC

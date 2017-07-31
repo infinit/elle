@@ -6,7 +6,6 @@
 #include <openssl/err.h>
 #include <openssl/evp.h>
 
-#include <elle/Lazy.hh>
 #include <elle/log.hh>
 
 #include <elle/cryptography/Error.hh>
@@ -66,15 +65,15 @@ namespace elle
       PrivateKey::PrivateKey(::EVP_PKEY* key)
         : _key(key)
       {
-        ELLE_ASSERT_NEQ(key, nullptr);
-        ELLE_ASSERT_NEQ(key->pkey.rsa->n, nullptr);
-        ELLE_ASSERT_NEQ(key->pkey.rsa->e, nullptr);
-        ELLE_ASSERT_NEQ(key->pkey.rsa->d, nullptr);
-        ELLE_ASSERT_NEQ(key->pkey.rsa->p, nullptr);
-        ELLE_ASSERT_NEQ(key->pkey.rsa->q, nullptr);
-        ELLE_ASSERT_NEQ(key->pkey.rsa->dmp1, nullptr);
-        ELLE_ASSERT_NEQ(key->pkey.rsa->dmq1, nullptr);
-        ELLE_ASSERT_NEQ(key->pkey.rsa->iqmp, nullptr);
+        ELLE_ASSERT(key);
+        ELLE_ASSERT(key->pkey.rsa->n);
+        ELLE_ASSERT(key->pkey.rsa->e);
+        ELLE_ASSERT(key->pkey.rsa->d);
+        ELLE_ASSERT(key->pkey.rsa->p);
+        ELLE_ASSERT(key->pkey.rsa->q);
+        ELLE_ASSERT(key->pkey.rsa->dmp1);
+        ELLE_ASSERT(key->pkey.rsa->dmq1);
+        ELLE_ASSERT(key->pkey.rsa->iqmp);
 
         // Make sure the cryptographic system is set up.
         cryptography::require();
@@ -89,15 +88,15 @@ namespace elle
 
       PrivateKey::PrivateKey(::RSA* rsa)
       {
-        ELLE_ASSERT_NEQ(rsa, nullptr);
-        ELLE_ASSERT_NEQ(rsa->n, nullptr);
-        ELLE_ASSERT_NEQ(rsa->e, nullptr);
-        ELLE_ASSERT_NEQ(rsa->d, nullptr);
-        ELLE_ASSERT_NEQ(rsa->p, nullptr);
-        ELLE_ASSERT_NEQ(rsa->q, nullptr);
-        ELLE_ASSERT_NEQ(rsa->dmp1, nullptr);
-        ELLE_ASSERT_NEQ(rsa->dmq1, nullptr);
-        ELLE_ASSERT_NEQ(rsa->iqmp, nullptr);
+        ELLE_ASSERT(rsa);
+        ELLE_ASSERT(rsa->n);
+        ELLE_ASSERT(rsa->e);
+        ELLE_ASSERT(rsa->d);
+        ELLE_ASSERT(rsa->p);
+        ELLE_ASSERT(rsa->q);
+        ELLE_ASSERT(rsa->dmp1);
+        ELLE_ASSERT(rsa->dmq1);
+        ELLE_ASSERT(rsa->iqmp);
 
         // Make sure the cryptographic system is set up.
         cryptography::require();
@@ -110,14 +109,14 @@ namespace elle
 
       PrivateKey::PrivateKey(PrivateKey const& other)
       {
-        ELLE_ASSERT_NEQ(other._key->pkey.rsa->n, nullptr);
-        ELLE_ASSERT_NEQ(other._key->pkey.rsa->e, nullptr);
-        ELLE_ASSERT_NEQ(other._key->pkey.rsa->d, nullptr);
-        ELLE_ASSERT_NEQ(other._key->pkey.rsa->p, nullptr);
-        ELLE_ASSERT_NEQ(other._key->pkey.rsa->q, nullptr);
-        ELLE_ASSERT_NEQ(other._key->pkey.rsa->dmp1, nullptr);
-        ELLE_ASSERT_NEQ(other._key->pkey.rsa->dmq1, nullptr);
-        ELLE_ASSERT_NEQ(other._key->pkey.rsa->iqmp, nullptr);
+        ELLE_ASSERT(other._key->pkey.rsa->n);
+        ELLE_ASSERT(other._key->pkey.rsa->e);
+        ELLE_ASSERT(other._key->pkey.rsa->d);
+        ELLE_ASSERT(other._key->pkey.rsa->p);
+        ELLE_ASSERT(other._key->pkey.rsa->q);
+        ELLE_ASSERT(other._key->pkey.rsa->dmp1);
+        ELLE_ASSERT(other._key->pkey.rsa->dmq1);
+        ELLE_ASSERT(other._key->pkey.rsa->iqmp);
 
         // Make sure the cryptographic system is set up.
         cryptography::require();
@@ -150,7 +149,7 @@ namespace elle
       void
       PrivateKey::_construct(::RSA* rsa)
       {
-        ELLE_ASSERT_NEQ(rsa, nullptr);
+        ELLE_ASSERT(rsa);
 
         // Initialise the private key structure.
         ELLE_ASSERT_EQ(this->_key, nullptr);
@@ -172,16 +171,16 @@ namespace elle
       void
       PrivateKey::_check() const
       {
-        ELLE_ASSERT_NEQ(this->_key, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->n, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->e, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->d, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->p, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->q, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->dmp1, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->dmq1, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->iqmp, nullptr);
+        ELLE_ASSERT(this->_key);
+        ELLE_ASSERT(this->_key->pkey.rsa);
+        ELLE_ASSERT(this->_key->pkey.rsa->n);
+        ELLE_ASSERT(this->_key->pkey.rsa->e);
+        ELLE_ASSERT(this->_key->pkey.rsa->d);
+        ELLE_ASSERT(this->_key->pkey.rsa->p);
+        ELLE_ASSERT(this->_key->pkey.rsa->q);
+        ELLE_ASSERT(this->_key->pkey.rsa->dmp1);
+        ELLE_ASSERT(this->_key->pkey.rsa->dmq1);
+        ELLE_ASSERT(this->_key->pkey.rsa->iqmp);
       }
 
       elle::Buffer
@@ -329,8 +328,8 @@ namespace elle
         if (this == &other)
           return true;
 
-        ELLE_ASSERT_NEQ(this->_key, nullptr);
-        ELLE_ASSERT_NEQ(other._key, nullptr);
+        ELLE_ASSERT(this->_key);
+        ELLE_ASSERT(other._key);
 
         // Compare the public components because it is sufficient to
         // uniquely distinguish keys.
@@ -372,12 +371,12 @@ namespace elle
       void
       PrivateKey::serialize(elle::serialization::Serializer& serializer)
       {
-        ELLE_ASSERT_NEQ(this->_key, nullptr);
+        ELLE_ASSERT(this->_key);
 
         cryptography::serialize<privatekey::Serialization>(
           serializer,
           this->_key->pkey.rsa);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa, nullptr);
+        ELLE_ASSERT(this->_key->pkey.rsa);
       }
 
       /*----------.
@@ -385,16 +384,14 @@ namespace elle
       `----------*/
 
       void
-      PrivateKey::print(std::ostream& stream) const
+      PrivateKey::print(std::ostream& o) const
       {
-        ELLE_ASSERT_NEQ(this->_key, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->n, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->e, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->d, nullptr);
-        elle::fprintf(
-          stream, "PrivateKey(%f)",
-          elle::lazy([this] { return privatekey::der::encode(*this); }));
+        ELLE_ASSERT(this->_key);
+        ELLE_ASSERT(this->_key->pkey.rsa);
+        ELLE_ASSERT(this->_key->pkey.rsa->n);
+        ELLE_ASSERT(this->_key->pkey.rsa->e);
+        ELLE_ASSERT(this->_key->pkey.rsa->d);
+        elle::print(o, "PrivateKey(%f)", privatekey::der::encode(*this));
       }
     }
   }

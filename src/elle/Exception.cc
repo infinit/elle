@@ -14,14 +14,12 @@ namespace elle
     : Exception(Backtrace::current(1 + skip), message)
   {}
 
-  Exception::Exception(elle::Backtrace const& bt,
-                       std::string const& message)
+  Exception::Exception(Backtrace bt, std::string const& message)
     : std::runtime_error(message)
-    , _backtrace(bt)
+    , _backtrace(std::move(bt))
   {}
 
-  Exception::~Exception() noexcept (true)
-  {}
+  Exception::~Exception() noexcept = default;
 
   void
   Exception::inner_exception(std::exception_ptr exception)
@@ -50,13 +48,18 @@ namespace elle
   `--------*/
 
   std::ostream&
-  operator <<(std::ostream& s,
-              Exception const& e)
+  operator <<(std::ostream& s, Exception const& e)
   {
     s << e.what();
     if (os::getenv("ELLE_DEBUG_BACKTRACE", false))
       s << e.backtrace();
     return s;
+  }
+
+  std::string
+  exception_string(std::exception_ptr err)
+  {
+    return exception_string(err, std::current_exception());
   }
 
   std::string

@@ -43,7 +43,7 @@ namespace elle
         // elle::print can throw, and it only throws elle::Error.
         catch (...)
         {
-          static auto const error = boost::format("%s:%s: invalid log: %s");
+          static auto const error = boost::format("%s:%s: invalid log: %s: %s");
           this->_send(Logger::Level::log,
                       Logger::Type::error,
                       false,
@@ -51,7 +51,8 @@ namespace elle
                       __FILE__,
                       __LINE__,
                       ELLE_COMPILER_PRETTY_FUNCTION,
-                      str(boost::format(error) % file % line % fmt));
+                      str(boost::format(error)
+                          % file % line % fmt % elle::exception_string()));
           if (debug_formats())
             throw;
         }

@@ -27,7 +27,7 @@ namespace elle
   | Construction |
   `-------------*/
   public:
-    /// Build a lazy that evaluates to the return value of \a lambda.
+    /// Build a lazy that evaluates to the return value of @a lambda.
     Lazy(Lambda const& lambda);
 
   /*------.
@@ -54,7 +54,7 @@ namespace elle
     ELLE_ATTRIBUTE(boost::optional<Value>, value);
   };
 
-  /// Print the value of \a lazy into \a output.
+  /// Print the value of @a lazy into @a output.
   ///
   /// @param output The stream to print to.
   /// @param lazy The Lazy whose value to print.
@@ -65,7 +65,7 @@ namespace elle
 
   /// Helper to create lazy values.
   ///
-  /// @return Lazy(\a f).
+  /// @return Lazy(@a f).
   template <typename F>
   auto
   lazy(F&& f) -> Lazy<decltype(f())>;

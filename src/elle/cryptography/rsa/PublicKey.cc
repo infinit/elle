@@ -8,9 +8,9 @@
 #include <functional>
 
 #include <elle/Error.hh>
-#include <elle/Lazy.hh>
 #include <elle/finally.hh>
 #include <elle/log.hh>
+#include <elle/print.hh>
 #include <elle/printf.hh>
 
 #include <elle/cryptography/rsa/PublicKey.hh>
@@ -137,10 +137,10 @@ namespace elle
       void
       PublicKey::_check() const
       {
-        ELLE_ASSERT_NEQ(this->_key, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->n, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->e, nullptr);
+        ELLE_ASSERT(this->_key);
+        ELLE_ASSERT(this->_key->pkey.rsa);
+        ELLE_ASSERT(this->_key->pkey.rsa->n);
+        ELLE_ASSERT(this->_key->pkey.rsa->e);
         ELLE_ASSERT_EQ(this->_key->pkey.rsa->d, nullptr);
         ELLE_ASSERT_EQ(this->_key->pkey.rsa->p, nullptr);
         ELLE_ASSERT_EQ(this->_key->pkey.rsa->q, nullptr);
@@ -323,8 +323,8 @@ namespace elle
       {
         if (this == &other)
           return (true);
-        ELLE_ASSERT_NEQ(this->_key, nullptr);
-        ELLE_ASSERT_NEQ(other._key, nullptr);
+        ELLE_ASSERT(this->_key);
+        ELLE_ASSERT(other._key);
         return (::EVP_PKEY_cmp(this->_key.get(), other._key.get()) == 1);
       }
 
@@ -360,12 +360,12 @@ namespace elle
       void
       PublicKey::serialize(elle::serialization::Serializer& serializer)
       {
-        ELLE_ASSERT_NEQ(this->_key, nullptr);
+        ELLE_ASSERT(this->_key);
 
         cryptography::serialize<publickey::Serialization>(
           serializer,
           this->_key->pkey.rsa);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa, nullptr);
+        ELLE_ASSERT(this->_key->pkey.rsa);
       }
 
       /*----------.
@@ -373,15 +373,13 @@ namespace elle
       `----------*/
 
       void
-      PublicKey::print(std::ostream& stream) const
+      PublicKey::print(std::ostream& o) const
       {
-        ELLE_ASSERT_NEQ(this->_key, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->n, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.rsa->e, nullptr);
-        elle::fprintf(
-          stream, "PublicKey(%f)",
-          elle::lazy([this] { return publickey::der::encode(*this); }));
+        ELLE_ASSERT(this->_key);
+        ELLE_ASSERT(this->_key->pkey.rsa);
+        ELLE_ASSERT(this->_key->pkey.rsa->n);
+        ELLE_ASSERT(this->_key->pkey.rsa->e);
+        elle::print(o, "PublicKey(%f)", publickey::der::encode(*this));
       }
     }
   }

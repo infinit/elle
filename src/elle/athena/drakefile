@@ -102,6 +102,11 @@ def configure(cxx_toolkit,
                           [boost.timer_dynamic, boost.test_dynamic]))
   local_config_tests.lib_path_runtime(
     drake.Path('../../..') / library.path().dirname())
+  env = {
+    'BOOST_TEST_COLOR_OUTPUT': '1',
+    'BOOST_TEST_LOG_LEVEL': 'all',
+    'BOOST_TEST_LOG_SINK': 'stderr',  # Keep our logs, and Boost's, together.
+  }
   for name in tests:
     test = drake.cxx.Executable(
       '%s/%s' % (tests_path, name),
@@ -115,9 +120,10 @@ def configure(cxx_toolkit,
         valgrind_args = [
           '--suppressions=%s' % drake.path_source('../../../valgrind.suppr'),
         ],
+        env = env,
       )
     else:
-      runner = drake.Runner(test)
+      runner = drake.Runner(test, env = env)
     runner.reporting = drake.Runner.Reporting.on_failure
     rule_check << runner.status
 

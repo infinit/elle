@@ -50,6 +50,12 @@ namespace elle
       ELLE_DEBUG("%s has been copied from %s", *this, lock);
     }
 
+    MultiLockBarrier::Lock::Lock(Lock && lock)
+      : Lock(lock._barrier)
+    {
+      ELLE_DEBUG("%s has been moved from %s", *this, lock);
+    }
+
     MultiLockBarrier::Lock::~Lock()
     {
       ELLE_DEBUG_SCOPE("%s: destuction", *this);

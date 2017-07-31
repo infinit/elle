@@ -222,7 +222,7 @@ namespace elle
           // Make sure the cryptographic system is set up.
           cryptography::require();
 
-          ELLE_ASSERT_NEQ(key, nullptr);
+          ELLE_ASSERT(key);
 
           ::EVP_MD_CTX context;
           ::EVP_PKEY_CTX* ctx = nullptr;
@@ -313,7 +313,7 @@ namespace elle
           // Make sure the cryptographic system is set up.
           cryptography::require();
 
-          ELLE_ASSERT_NEQ(key, nullptr);
+          ELLE_ASSERT(key);
 
           ::EVP_MD_CTX context;
           ::EVP_PKEY_CTX* ctx = nullptr;
@@ -567,7 +567,7 @@ namespace elle
           // Check that the secret key's buffer has a non-null address.
           //
           // Otherwise, EVP_BytesToKey() is non-deterministic :(
-          ELLE_ASSERT_NEQ(secret.contents(), nullptr);
+          ELLE_ASSERT(secret.contents());
 
           // Generate a key/IV tuple based on the salt.
           unsigned char key[EVP_MAX_KEY_LENGTH];

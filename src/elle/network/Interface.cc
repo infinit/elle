@@ -5,9 +5,9 @@
 #include <sstream>
 #include <string>
 
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
 # include <winsock2.h>
-#elif defined INFINIT_ANDROID
+#elif defined ELLE_ANDROID
 # include <arpa/inet.h>
 # include <elle/network/ifaddrs_android.h>
 # include <net/if.h>
@@ -51,7 +51,7 @@ namespace elle
 {
   namespace network
   {
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
 
     std::map<std::string, Interface>
     Interface::get_map(Filter filter)

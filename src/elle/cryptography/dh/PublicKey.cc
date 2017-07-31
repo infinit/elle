@@ -59,8 +59,8 @@ namespace elle
       PublicKey::PublicKey(::EVP_PKEY* key):
         _key(key)
       {
-        ELLE_ASSERT_NEQ(key, nullptr);
-        ELLE_ASSERT_NEQ(key->pkey.dh->pub_key, nullptr);
+        ELLE_ASSERT(key);
+        ELLE_ASSERT(key->pkey.dh->pub_key);
         ELLE_ASSERT_EQ(key->pkey.dh->priv_key, nullptr);
 
         // Make sure the cryptographic system is set up.
@@ -76,8 +76,8 @@ namespace elle
 
       PublicKey::PublicKey(::DH* dh)
       {
-        ELLE_ASSERT_NEQ(dh, nullptr);
-        ELLE_ASSERT_NEQ(dh->pub_key, nullptr);
+        ELLE_ASSERT(dh);
+        ELLE_ASSERT(dh->pub_key);
         ELLE_ASSERT_EQ(dh->priv_key, nullptr);
 
         // Make sure the cryptographic system is set up.
@@ -91,7 +91,7 @@ namespace elle
 
       PublicKey::PublicKey(PublicKey const& other)
       {
-        ELLE_ASSERT_NEQ(other._key->pkey.dh->pub_key, nullptr);
+        ELLE_ASSERT(other._key->pkey.dh->pub_key);
 
         // Make sure the cryptographic system is set up.
         cryptography::require();
@@ -124,7 +124,7 @@ namespace elle
       void
       PublicKey::_construct(::DH* dh)
       {
-        ELLE_ASSERT_NEQ(dh, nullptr);
+        ELLE_ASSERT(dh);
 
         // Initialise the public key structure.
         ELLE_ASSERT_EQ(this->_key, nullptr);
@@ -146,9 +146,9 @@ namespace elle
       void
       PublicKey::_check() const
       {
-        ELLE_ASSERT_NEQ(this->_key, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.dh, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.dh->pub_key, nullptr);
+        ELLE_ASSERT(this->_key);
+        ELLE_ASSERT(this->_key->pkey.dh);
+        ELLE_ASSERT(this->_key->pkey.dh->pub_key);
         ELLE_ASSERT_EQ(this->_key->pkey.dh->priv_key, nullptr);
       }
 
@@ -176,8 +176,8 @@ namespace elle
         if (this == &other)
           return (true);
 
-        ELLE_ASSERT_NEQ(this->_key, nullptr);
-        ELLE_ASSERT_NEQ(other._key, nullptr);
+        ELLE_ASSERT(this->_key);
+        ELLE_ASSERT(other._key);
 
         return (::EVP_PKEY_cmp(this->_key.get(), other._key.get()) == 1);
       }
@@ -189,9 +189,9 @@ namespace elle
       void
       PublicKey::print(std::ostream& stream) const
       {
-        ELLE_ASSERT_NEQ(this->_key, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.dh, nullptr);
-        ELLE_ASSERT_NEQ(this->_key->pkey.dh->pub_key, nullptr);
+        ELLE_ASSERT(this->_key);
+        ELLE_ASSERT(this->_key->pkey.dh);
+        ELLE_ASSERT(this->_key->pkey.dh->pub_key);
 
         stream << "("
                << *this->_key->pkey.dh->pub_key

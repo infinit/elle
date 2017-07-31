@@ -22,17 +22,22 @@ before_script:
 # Use a tmp to avoid partial uploads when interrupted.
 # A single call to ssh, rather than scp and then ssh.
   - function smv { dst=$3/$(basename "$1") && time ssh "$2" "cat > '$dst.tmp' && mv -f '$dst.tmp' '$dst'" < "$1" && rm -f "$1"; }
+# rmkdir DIR -- remove and recreate a directory, which is possibly a symlink.
+# realpath about everywhere, readlink -f on CentOS
+  - function rmkdir { dir=$(realpath "$1" || readlink -f "$1") 2>/dev/null && rm -rf "$dir" && mkdir -p "$dir"; }
+# nproc on GNU/Linux, sysctl on macOS
+  - NPROC=$((nproc || sysctl -n hw.physicalcpu) 2>/dev/null)
 
 x86_64-centos6-gcc4:
   stage: build
   script:
     - time scl enable devtoolset-4 rh-python34 "./buildenv --pick-build-tree --branch \"$CI_BUILD_REF_NAME\" --link-build-tree \"$BUILD_DIR\" --build-trees-root \"/cache/$CI_PROJECT_NAME\""
-    - if test -n "$FROM_SCRATCH"; then dir=$(readlink -f $BUILD_DIR); rm -rf "$dir" && mkdir -p "$dir"; else time scl enable devtoolset-4 rh-python34 "./buildenv --cache-download-build-tree --exclude='*.deb,*.rpm,*.tbz' --branch \"$CI_BUILD_REF_NAME\" --build-trees-root \"/cache/$CI_PROJECT_NAME\" --cache-namespace \"$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME\" --cache-id \"$CI_RUNNER_ID\" --verbose"; fi
+    - if test -n "$FROM_SCRATCH"; then rmkdir "$BUILD_DIR"; else time scl enable devtoolset-4 rh-python34 "./buildenv --cache-download-build-tree --exclude='*.deb,*.rpm,*.tbz' --branch \"$CI_BUILD_REF_NAME\" --build-trees-root \"/cache/$CI_PROJECT_NAME\" --cache-namespace \"$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME\" --cache-id \"$CI_RUNNER_ID\" --verbose"; fi
     - scl enable devtoolset-4 rh-python34 "farm/configure --arch x86_64 --os centos6 --compiler gcc4 --project $PROJECT --source-dir \"$SOURCE_DIR\" --build-dir \"$BUILD_DIR\" --install-dir \"$INSTALL_DIR\""
     - cd "$BUILD_DIR"
-    - scl enable devtoolset-4 rh-python34 "python3 drake -j $(nproc) //build"
-    - scl enable devtoolset-4 rh-python34 "python3 drake -j $(nproc) //check"
-    - scl enable devtoolset-4 rh-python34 "python3 drake -j $(nproc) //install"
+    - scl enable devtoolset-4 rh-python34 "python3 drake -j $NPROC //build"
+    - scl enable devtoolset-4 rh-python34 "python3 drake -j $NPROC //check"
+    - scl enable devtoolset-4 rh-python34 "python3 drake -j $NPROC //install"
     - TARBALL="$PROJECT-x86_64-centos6-gcc4-$DESC.tbz"
     - tar $TARFLAGS -cjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,$PROJECT-$DESC/,"
     - smv "$TARBALL" buildslave@packages.infinit.sh tmp
@@ -47,17 +52,17 @@ x86_64-ubuntu-gcc4:
   stage: build
   script:
     - time ./buildenv --pick-build-tree --branch "$CI_BUILD_REF_NAME" --link-build-tree "$BUILD_DIR" --build-trees-root "/cache/$CI_PROJECT_NAME"
-    - if test -n "$FROM_SCRATCH"; then dir=$(realpath $BUILD_DIR); rm -rf "$dir" && mkdir -p "$dir"; else time ./buildenv --cache-download-build-tree --exclude='*.deb,*.rpm,*.tbz' --branch "$CI_BUILD_REF_NAME" --build-trees-root "/cache/$CI_PROJECT_NAME" --cache-namespace "$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME" --cache-id "$CI_RUNNER_ID" --verbose; fi
+    - if test -n "$FROM_SCRATCH"; then rmkdir "$BUILD_DIR"; else time ./buildenv --cache-download-build-tree --exclude='*.deb,*.rpm,*.tbz' --branch "$CI_BUILD_REF_NAME" --build-trees-root "/cache/$CI_PROJECT_NAME" --cache-namespace "$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME" --cache-id "$CI_RUNNER_ID" --verbose; fi
     - farm/configure --arch x86_64 --os trusty --compiler gcc4 --project $PROJECT --source-dir "$SOURCE_DIR" --build-dir "$BUILD_DIR" --install-dir "$INSTALL_DIR"
     - cd "$BUILD_DIR"
     - export ELLE_LOG_CHECK_FORMATS=1
-    - python3 drake -j $(nproc) //build
-    - python3 drake -j $(($(nproc) / 4)) //check
-    - python3 drake -j $(nproc) //install
+    - python3 drake -j $NPROC //build
+    - python3 drake -j $(($NPROC / 4)) //check
+    - python3 drake -j $NPROC //install
     - TARBALL="$BUILD_DIR/$PROJECT-x86_64-ubuntu-gcc4-$DESC.tbz"
     - tar $TARFLAGS -cjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,$PROJECT-$DESC/,"
     - smv "$TARBALL" buildslave@packages.infinit.sh tmp
-    - python3 drake -j $(nproc) //docker
+    - python3 drake -j $NPROC //docker
     - docker tag $PROJECT:${DESC} mefyl/$PROJECT:${DESC}
     - docker push mefyl/$PROJECT:${DESC}
     - docker rmi {,mefyl/}$PROJECT:${DESC}
@@ -72,12 +77,12 @@ x86_64-jessie-gcc4:
   stage: build
   script:
     - time ./buildenv --pick-build-tree --branch "$CI_BUILD_REF_NAME" --link-build-tree "$BUILD_DIR" --build-trees-root "/cache/$CI_PROJECT_NAME"
-    - if test -n "$FROM_SCRATCH"; then dir=$(realpath $BUILD_DIR); rm -rf "$dir" && mkdir -p "$dir"; else time ./buildenv --cache-download-build-tree --exclude='*.deb,*.rpm,*.tbz' --branch "$CI_BUILD_REF_NAME" --build-trees-root "/cache/$CI_PROJECT_NAME" --cache-namespace "$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME" --cache-id "$CI_RUNNER_ID" --verbose; fi
+    - if test -n "$FROM_SCRATCH"; then rmkdir "$BUILD_DIR"; else time ./buildenv --cache-download-build-tree --exclude='*.deb,*.rpm,*.tbz' --branch "$CI_BUILD_REF_NAME" --build-trees-root "/cache/$CI_PROJECT_NAME" --cache-namespace "$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME" --cache-id "$CI_RUNNER_ID" --verbose; fi
     - farm/configure --arch x86_64 --os jessie --compiler gcc4 --project $PROJECT --source-dir "$SOURCE_DIR" --build-dir "$BUILD_DIR" --install-dir "$INSTALL_DIR"
     - cd "$BUILD_DIR"
-    - python3 drake -j $(nproc) //build
-    - python3 drake -j $(nproc) //check
-    - python3 drake -j $(nproc) //install
+    - python3 drake -j $NPROC //build
+    - python3 drake -j $NPROC //check
+    - python3 drake -j $NPROC //install
     - TARBALL="$BUILD_DIR/$PROJECT-x86_64-jessie-gcc4-$DESC.tbz"
     - tar $TARFLAGS -cjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,$PROJECT-$DESC/,"
     - smv "$TARBALL" buildslave@packages.infinit.sh tmp
@@ -92,12 +97,12 @@ x86_64-alpine-gcc:
   stage: build
   script:
     - time ./buildenv --pick-build-tree --branch "$CI_BUILD_REF_NAME" --link-build-tree "$BUILD_DIR" --build-trees-root "/cache/$CI_PROJECT_NAME"
-    - if test -n "$FROM_SCRATCH"; then dir=$(realpath $BUILD_DIR); rm -rf "$dir" && mkdir -p "$dir"; else time ./buildenv --cache-download-build-tree --exclude='*.deb,*.rpm,*.tbz' --branch "$CI_BUILD_REF_NAME" --build-trees-root "/cache/$CI_PROJECT_NAME" --cache-namespace "$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME" --cache-id "$CI_RUNNER_ID" --verbose; fi
+    - if test -n "$FROM_SCRATCH"; then rmkdir "$BUILD_DIR"; else time ./buildenv --cache-download-build-tree --exclude='*.deb,*.rpm,*.tbz' --branch "$CI_BUILD_REF_NAME" --build-trees-root "/cache/$CI_PROJECT_NAME" --cache-namespace "$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME" --cache-id "$CI_RUNNER_ID" --verbose; fi
     - farm/configure --arch x86_64 --os alpine --compiler gcc4 --project $PROJECT --source-dir "$SOURCE_DIR" --build-dir "$BUILD_DIR" --install-dir "$INSTALL_DIR"
     - cd "$BUILD_DIR"
-    - python3 drake -j $(nproc) //build
-    - python3 drake -j $(nproc) //check
-    - python3 drake -j $(nproc) //install
+    - python3 drake -j $NPROC //build
+    - python3 drake -j $NPROC //check
+    - python3 drake -j $NPROC //install
     - TARBALL="$BUILD_DIR/$PROJECT-x86_64-alpine-gcc-$DESC.tbz"
     - tar $TARFLAGS -cjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,$PROJECT-$DESC/,"
     - smv "$TARBALL" buildslave@packages.infinit.sh tmp
@@ -112,12 +117,12 @@ i386-jessie-gcc4:
   stage: build
   script:
     - time ./buildenv --pick-build-tree --branch "$CI_BUILD_REF_NAME" --link-build-tree "$BUILD_DIR" --build-trees-root "/cache/$CI_PROJECT_NAME"
-    - if test -n "$FROM_SCRATCH"; then dir=$(realpath $BUILD_DIR); rm -rf "$dir" && mkdir -p "$dir"; else time ./buildenv --cache-download-build-tree --exclude='*.deb,*.rpm,*.tbz' --branch "$CI_BUILD_REF_NAME" --build-trees-root "/cache/$CI_PROJECT_NAME" --cache-namespace "$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME" --cache-id "$CI_RUNNER_ID" --verbose; fi
+    - if test -n "$FROM_SCRATCH"; then rmkdir "$BUILD_DIR"; else time ./buildenv --cache-download-build-tree --exclude='*.deb,*.rpm,*.tbz' --branch "$CI_BUILD_REF_NAME" --build-trees-root "/cache/$CI_PROJECT_NAME" --cache-namespace "$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME" --cache-id "$CI_RUNNER_ID" --verbose; fi
     - farm/configure --arch i386 --os jessie --compiler gcc4 --project $PROJECT --source-dir "$SOURCE_DIR" --build-dir "$BUILD_DIR" --install-dir "$INSTALL_DIR"
     - cd "$BUILD_DIR"
-    - python3 drake -j $(nproc) //build
-    - python3 drake -j $(nproc) //check
-    - python3 drake -j $(nproc) //install
+    - python3 drake -j $NPROC //build
+    - python3 drake -j $NPROC //check
+    - python3 drake -j $NPROC //install
     - TARBALL="$BUILD_DIR/$PROJECT-i386-jessie-gcc4-$DESC.tbz"
     - tar $TARFLAGS -cjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,$PROJECT-$DESC/,"
     - smv "$TARBALL" buildslave@packages.infinit.sh tmp
@@ -132,12 +137,12 @@ x86_64-windows-mingw4:
   stage: build
   script:
     - time ./buildenv --pick-build-tree --branch "$CI_BUILD_REF_NAME" --link-build-tree "$BUILD_DIR" --build-trees-root "/cache/$CI_PROJECT_NAME"
-    - if test -n "$FROM_SCRATCH"; then dir=$(realpath $BUILD_DIR); rm -rf "$dir" && mkdir -p "$dir"; else time ./buildenv --cache-download-build-tree --exclude='*.deb,*.rpm,*.tbz' --branch "$CI_BUILD_REF_NAME" --build-trees-root "/cache/$CI_PROJECT_NAME" --cache-namespace "$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME" --cache-id "$CI_RUNNER_ID" --verbose; fi
+    - if test -n "$FROM_SCRATCH"; then rmkdir "$BUILD_DIR"; else time ./buildenv --cache-download-build-tree --exclude='*.deb,*.rpm,*.tbz' --branch "$CI_BUILD_REF_NAME" --build-trees-root "/cache/$CI_PROJECT_NAME" --cache-namespace "$CI_RUNNER_DESCRIPTION/$CI_PROJECT_NAME" --cache-id "$CI_RUNNER_ID" --verbose; fi
     - farm/configure --arch x86_64 --os windows --compiler mingw4 --project $PROJECT --source-dir "$SOURCE_DIR" --build-dir "$BUILD_DIR" --install-dir "$INSTALL_DIR"
     - cd "$BUILD_DIR"
-    - python3 drake -j $(nproc) //build
-    - python3 drake -j $(nproc) //check
-    - python3 drake -j $(nproc) //install
+    - python3 drake -j $NPROC //build
+    - python3 drake -j $NPROC //check
+    - python3 drake -j $NPROC //install
     - TARBALL="$BUILD_DIR/$PROJECT-x86_64-windows-mingw4-$DESC.tbz"
     - tar $TARFLAGS -cjf "$TARBALL" -C "$INSTALL_DIR" . --show-transformed-names --transform "s,^\\./,$PROJECT-$DESC/,"
     - smv "$TARBALL" buildslave@packages.infinit.sh tmp
@@ -156,9 +161,9 @@ x86_64-osx-clang:
     - INSTALL_DIR=$SOURCE_DIR/../$PROJECT-install
     - if test -n "$FROM_SCRATCH"; then rm -rf $BUILD_DIR; fi
     - farm/configure --arch x86_64 --os osx --compiler clang --project $PROJECT --source-dir $SOURCE_DIR --build-dir $BUILD_DIR --install-dir $INSTALL_DIR
-    - cd $BUILD_DIR && python3 drake -j 4 //build
-    - cd $BUILD_DIR && python3 drake -j 4 //check
-    - cd $BUILD_DIR && python3 drake -j 4 //install
+    - cd $BUILD_DIR && python3 drake -j $NPROC //build
+    - cd $BUILD_DIR && python3 drake -j $NPROC //check
+    - cd $BUILD_DIR && python3 drake -j $NPROC //install
     - TARBALL=../$PROJECT-x86_64-osx-clang3-$DESC.tbz
     - gtar $TARFLAGS -cjf "$TARBALL" -C $INSTALL_DIR . --show-transformed-names --transform "s,^\\./,$PROJECT-$DESC/,"
     - smv "$TARBALL" buildslave@packages.infinit.sh tmp

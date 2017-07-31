@@ -55,7 +55,7 @@ namespace elle
         Lock(MultiLockBarrier& bite);
       public:
         ~Lock();
-        Lock(Lock&&) = default;
+        Lock(Lock&&);
         Lock(Lock const&);
       private:
         ELLE_ATTRIBUTE(MultiLockBarrier&, barrier);

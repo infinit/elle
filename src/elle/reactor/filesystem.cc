@@ -376,7 +376,7 @@ namespace elle
       void
       BindPath::chown(int uid, int gid)
       {
-  #ifdef INFINIT_WINDOWS
+  #ifdef ELLE_WINDOWS
         throw Error(EPERM, "Not implemented");
   #else
         int res = ::chown(this->_where.string().c_str(), uid, gid);
@@ -388,7 +388,7 @@ namespace elle
       void
       BindPath::statfs(struct statvfs *s)
       {
-  #if defined(INFINIT_WINDOWS) || defined(INFINIT_ANDROID)
+  #if defined(ELLE_WINDOWS) || defined(ELLE_ANDROID)
         throw Error(EPERM, "Not implemented");
   #else
        int res = ::statvfs(this->_where.string().c_str(), s);
@@ -400,7 +400,7 @@ namespace elle
       void
       BindPath::utimens(const struct timespec tv[2])
       {
-  #ifdef INFINIT_LINUX
+  #ifdef ELLE_LINUX
         int res = ::utimensat(0, this->_where.string().c_str(), tv, 0);
         if (res < 0)
           throw Error(errno, strerror(errno));

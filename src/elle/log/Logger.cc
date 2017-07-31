@@ -1,4 +1,4 @@
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
 # include <shlwapi.h>
 #else
 # include <fnmatch.h>
@@ -22,7 +22,7 @@
 #include <elle/find.hh>
 #include <elle/log/Logger.hh>
 #include <elle/os/environ.hh>
-#include <elle/printf.hh>
+#include <elle/printf.hh> // for elle/err.hh
 #include <elle/system/getpid.hh>
 
 namespace elle
@@ -112,10 +112,10 @@ namespace elle
 
     Logger::Logger(std::string const& log_level,
                    std::string const& envvar)
-      : _indentation(std::make_unique<PlainIndentation>())
-      , _time_universal(false)
-      , _time_microsec(false)
-      , _component_max_size(0)
+      : _indentation{std::make_unique<PlainIndentation>()}
+      , _time_universal{os::getenv("ELLE_LOG_TIME_UNIVERSAL", false)}
+      , _time_microsec{os::getenv("ELLE_LOG_TIME_MICROSEC", false)}
+      , _component_max_size{0}
     {
       this->_setup_indentation();
       // FIXME: resets indentation
@@ -244,7 +244,7 @@ namespace elle
             level,
             type,
             component,
-            elle::sprintf("negative indentation level on log: %s", msg),
+            elle::print("negative indentation level on log: %s", msg),
             file,
             line,
             function,
@@ -287,7 +287,7 @@ namespace elle
       bool
       _fnmatch(std::string const& pattern, std::string const& s)
       {
-#ifdef INFINIT_WINDOWS
+#ifdef ELLE_WINDOWS
         return ::PathMatchSpec(s.c_str(), pattern.c_str()) == TRUE;
 #else
         return fnmatch(pattern.c_str(), s.c_str(), 0) == 0;
@@ -350,7 +350,6 @@ namespace elle
       if (auto i = elle::find(this->_component_levels, name))
         res = i->second;
       else
-      {
         for (auto const& filter: this->_component_patterns)
           if (filter.match(name))
           {
@@ -362,7 +361,6 @@ namespace elle
               // $ELLE_LOG_LEVEL="LOG,DUMP"), keep the last one.
               this->_component_levels[name] = res;
           }
-      }
       return res;
     }
 
@@ -381,8 +379,9 @@ namespace elle
     Logger::component_pop()
     {
       std::lock_guard<std::recursive_mutex> lock(_mutex);
-      assert(!this->_component_stack.empty());
-      this->_component_stack.pop_back();
+      // FIXME: make this an assert.
+      if (!this->_component_stack.empty())
+        this->_component_stack.pop_back();
     }
 
 
@@ -391,27 +390,17 @@ namespace elle
     `------*/
 
     std::ostream&
-    operator << (std::ostream& stream, Logger::Level l)
+    operator << (std::ostream& os, Logger::Level l)
     {
       switch (l)
       {
-      case Logger::Level::none:
-        stream << "none";
-        break;
-      case Logger::Level::log:
-        stream << "log";
-        break;
-      case Logger::Level::trace:
-        stream << "trace";
-        break;
-      case Logger::Level::debug:
-        stream << "debug";
-        break;
-      case Logger::Level::dump:
-        stream << "dump";
-        break;
+      case Logger::Level::none:  return os << "none";
+      case Logger::Level::log:   return os << "log";
+      case Logger::Level::trace: return os << "trace";
+      case Logger::Level::debug: return os << "debug";
+      case Logger::Level::dump:  return os << "dump";
       }
-      return stream;
+      elle::unreachable();
     }
 
     /*-----.
