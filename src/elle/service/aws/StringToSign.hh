@@ -30,8 +30,8 @@ namespace elle
         print(std::ostream& stream) const;
       };
 
-      class StringToSign:
-        public elle::Printable
+      class StringToSign
+        : public elle::Printable
       {
         /*-------------.
         | Construction |
@@ -49,9 +49,8 @@ namespace elle
         | Printable |
         `----------*/
       public:
-        virtual
         void
-        print(std::ostream& stream) const;
+        print(std::ostream& stream) const override;
       };
     }
   }
