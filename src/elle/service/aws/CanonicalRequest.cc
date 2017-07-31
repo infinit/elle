@@ -2,6 +2,7 @@
 
 #include <elle/cryptography/hash.hh>
 #include <elle/format/hexadecimal.hh>
+#include <elle/print.hh>
 #include <elle/service/aws/CanonicalRequest.hh>
 
 #include <elle/reactor/http/EscapedString.hh>
@@ -22,14 +23,14 @@ namespace elle
         std::vector<std::string> const& signed_headers,
         std::string const& payload_sha256)
       {
-        this->_canonical_request = std::string(
-          elle::sprintf("%s\n%s\n%s\n%s\n\n%s\n%s",
-                        http_method,
-                        canonical_uri,
-                        this->_canonical_query_string(query),
-                        this->_canonical_headers_string(headers),
-                        this->_signed_headers_string(signed_headers),
-                        payload_sha256));
+        this->_canonical_request =
+          elle::print("%s\n%s\n%s\n%s\n\n%s\n%s",
+                      http_method,
+                      canonical_uri,
+                      this->_canonical_query_string(query),
+                      this->_canonical_headers_string(headers),
+                      this->_signed_headers_string(signed_headers),
+                      payload_sha256);
         ELLE_DUMP("%s", this->_canonical_request);
       }
 
@@ -43,39 +44,31 @@ namespace elle
         return elle::format::hexadecimal::encode(digest);
       }
 
+      // FIXME: query_parameters in S3.cc.
       std::string
       CanonicalRequest::_canonical_query_string(
         std::map<std::string, std::string> const& query)
       {
-        if (query.empty())
-          return "";
-
-        std::string res;
+        auto res = std::string{};
         using elle::reactor::http::EscapedString;
         for (auto const& parameter: query)
-        {
-          res.append(elle::sprintf("%s=%s&", EscapedString(parameter.first),
-                                   EscapedString(parameter.second)));
-        }
-        return res.substr(0, res.size() - 1);
+          res += elle::print("%s%s=%s",
+                             res.empty() ? "" : "&",
+                             EscapedString(parameter.first),
+                             EscapedString(parameter.second));
+        return res;
       }
 
       std::string
       CanonicalRequest::_canonical_headers_string(RequestHeaders const& headers)
       {
-        if (headers.empty())
-          return "";
-
-        std::string res;
-        for (auto const& header: headers)
-        {
-          std::string key = header.first;
-          std::transform(key.begin(), key.end(), key.begin(), ::tolower);
-          std::string value = header.second;
+        auto res = std::string{};
+        for (auto const& h: headers)
           // XXX May need to trim whitespace from header values
-          res.append(elle::sprintf("%s:%s\n", key, value));
-        }
-        res = res.substr(0, res.size() - 1);
+          res += elle::print("%s%s:%s",
+                             res.empty() ? "" : "\n",
+                             boost::to_lower_copy(h.first),
+                             h.second);
         return res;
       }
 
@@ -83,17 +76,11 @@ namespace elle
       CanonicalRequest::_signed_headers_string(
         std::vector<std::string> const& signed_headers)
       {
-        if (signed_headers.empty())
-          return "";
-
-        std::string res;
-        for (auto const& header: signed_headers)
-        {
-          std::string key = header;
-          std::transform(key.begin(), key.end(), key.begin(), ::tolower);
-          res.append(elle::sprintf("%s;", key));
-        }
-        res = res.substr(0, res.size() - 1);
+        auto res = std::string{};
+        for (auto const& h: signed_headers)
+          res += elle::print("%s%s",
+                             res.empty() ? "" : ";",
+                             boost::to_lower_copy(h));
         return res;
       }
 

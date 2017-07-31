@@ -15,8 +15,8 @@ namespace elle
   {
     namespace aws
     {
-      class CanonicalRequest:
-        public elle::Printable
+      class CanonicalRequest
+        : public elle::Printable
       {
         /*-------------.
         | Construction |
