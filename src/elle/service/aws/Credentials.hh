@@ -25,25 +25,25 @@ namespace elle
         public:
           Credentials() = default;
           /// Constructor for federated user.
-          Credentials(std::string const& access_key_id,
-                      std::string const& secret_access_key,
-                      std::string const& session_token,
-                      std::string const& region,
-                      std::string const& bucket,
-                      std::string const& folder,
+          Credentials(std::string access_key_id,
+                      std::string secret_access_key,
+                      std::string session_token,
+                      std::string region,
+                      std::string bucket,
+                      std::string folder,
                       Time expiration,
                       Time server_time,
                       boost::optional<std::string> endpoint = {});
           /// Constructor for normal user (i.e.: No session_token).
-          Credentials(std::string const& access_key_id,
-                      std::string const& secret_access_key,
-                      std::string const& region,
-                      std::string const& bucket,
-                      std::string const& folder,
+          Credentials(std::string access_key_id,
+                      std::string secret_access_key,
+                      std::string region,
+                      std::string bucket,
+                      std::string folder,
                       boost::optional<std::string> endpoint = {});
           std::string
           credential_string(RequestTime const& request_time,
-                            Service const& aws_service);
+                            Service const& aws_service) const;
 
           bool
           valid();

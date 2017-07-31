@@ -78,7 +78,7 @@ _make_canonical_request()
     };
   std::vector<std::string> signed_headers;
   std::string signed_headers_str;
-  for (auto header: headers)
+  for (auto const& header: headers)
   {
     signed_headers.push_back(header.first);
     signed_headers_str += elle::sprintf("%s;", header.first);
@@ -91,7 +91,7 @@ _make_canonical_request()
   auto digest = elle::cryptography::hash(content,
                                          elle::cryptography::Oneway::sha256);
 
-  elle::service::aws::CanonicalRequest request(
+  auto res = elle::service::aws::CanonicalRequest(
     elle::reactor::http::Method::POST,
     "/",
     query,
@@ -99,8 +99,8 @@ _make_canonical_request()
     signed_headers,
     elle::format::hexadecimal::encode(digest)
   );
-  ELLE_DEBUG("canonical request: %s", request);
-  return request;
+  ELLE_DEBUG("canonical request: %s", res);
+  return res;
 }
 
 // http://docs.aws.amazon.com/general/latest/gr/sigv4-create-string-to-sign.html
@@ -110,14 +110,16 @@ _make_string_to_sign()
 {
   using namespace date;
   auto const request_time = elle::Time(sys_days(2011_y/sep/9) + 23h + 36min);
-  elle::service::aws::CanonicalRequest canonical_request = _make_canonical_request();
-  elle::service::aws::CredentialScope credential_scope(request_time, elle::service::aws::Service::iam,
+  auto const canonical_request = _make_canonical_request();
+  auto const credential_scope =
+    elle::service::aws::CredentialScope(request_time, elle::service::aws::Service::iam,
                                         "us-east-1");
-  elle::service::aws::StringToSign string_to_sign(request_time, credential_scope,
-                                   canonical_request.sha256_hash(),
-                                   elle::service::aws::SigningMethod::aws4_hmac_sha256);
-  ELLE_DEBUG("string to sign: %s", string_to_sign);
-  return string_to_sign;
+  auto res =
+    elle::service::aws::StringToSign(request_time, credential_scope,
+                                     canonical_request.sha256_hash(),
+                                     elle::service::aws::SigningMethod::aws4_hmac_sha256);
+  ELLE_DEBUG("string to sign: %s", res);
+  return res;
 }
 
 ELLE_TEST_SCHEDULED(canonical_request)

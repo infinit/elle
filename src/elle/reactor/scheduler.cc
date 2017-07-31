@@ -51,9 +51,9 @@ namespace elle
       , _background_pool_free(0)
       , _io_service_work(
            std::make_unique<boost::asio::io_service::work>(this->_io_service))
-#if defined(REACTOR_CORO_BACKEND_IO)
+#if defined REACTOR_CORO_BACKEND_IO
       , _manager(new backend::coro_io::Backend())
-#elif defined(REACTOR_CORO_BACKEND_BOOST_CONTEXT)
+#elif defined REACTOR_CORO_BACKEND_BOOST_CONTEXT
       , _manager(new backend::boost::Backend())
 #else
 # error "REACTOR_CORO_BACKEND not defined"
@@ -676,7 +676,7 @@ namespace elle
     reactor::Scheduler&
     scheduler()
     {
-      auto res = reactor::Scheduler::scheduler();
+      auto res = Scheduler::scheduler();
       if (!res)
         ELLE_ABORT("can't run outside a scheduler");
       return *res;
@@ -692,9 +692,8 @@ namespace elle
     void
     yield()
     {
-      auto* sched = Scheduler::scheduler();
-      ELLE_ASSERT(sched);
-      auto* current = sched->current();
+      auto& sched = scheduler();
+      auto* current = sched.current();
       ELLE_ASSERT(current);
       current->yield();
     }
@@ -702,9 +701,8 @@ namespace elle
     void
     sleep(Duration d)
     {
-      auto* sched = Scheduler::scheduler();
-      ELLE_ASSERT(sched);
-      auto* current = sched->current();
+      auto& sched = scheduler();
+      auto* current = sched.current();
       ELLE_ASSERT(current);
       current->sleep(d);
     }
@@ -712,9 +710,8 @@ namespace elle
     void
     sleep()
     {
-      auto* sched = Scheduler::scheduler();
-      ELLE_ASSERT(sched);
-      auto* current = sched->current();
+      auto& sched = scheduler();
+      auto* current = sched.current();
       ELLE_ASSERT(current);
       ELLE_TRACE("%s: sleep forever", current);
       reactor::wait(*current);
@@ -723,9 +720,8 @@ namespace elle
     bool
     wait(Waitable& waitable, DurationOpt timeout)
     {
-      auto* sched = Scheduler::scheduler();
-      ELLE_ASSERT(sched);
-      auto* current = sched->current();
+      auto& sched = scheduler();
+      auto* current = sched.current();
       ELLE_ASSERT(current);
       return current->wait(waitable, timeout);
     }
@@ -733,9 +729,8 @@ namespace elle
     bool
     wait(Waitables const& waitables, DurationOpt timeout)
     {
-      auto* sched = Scheduler::scheduler();
-      ELLE_ASSERT(sched);
-      auto* current = sched->current();
+      auto& sched = scheduler();
+      auto* current = sched.current();
       ELLE_ASSERT(current);
       return current->wait(waitables, timeout);
     }
@@ -768,9 +763,8 @@ namespace elle
     run_later(std::string const& name,
               std::function<void ()> const& f)
     {
-      auto* sched = Scheduler::scheduler();
-      ELLE_ASSERT(sched);
-      sched->run_later(name, f);
+      auto& sched = scheduler();
+      sched.run_later(name, f);
     }
   }
 }
@@ -785,7 +779,7 @@ namespace elle
 # error "Unsupported platform"
 #endif
 
-#if defined(ELLE_MACOS)
+#if defined ELLE_MACOS
 // libc++
 # include <elle/reactor/libcxx-exceptions/cxa_exception.hpp>
 # define THROW_SPEC
@@ -797,11 +791,10 @@ namespace elle
 
 #endif
 
-/* Override _cxa_get_globals from libc++/libstdc++
- * which uses TLS.
- * Add a per-scheduler-thread entry. Otherwise, std::current_exception leaks
- * between coroutines.
- */
+// Override _cxa_get_globals from libc++/libstdc++ which uses TLS.
+//
+// Add a per-scheduler-thread entry. Otherwise, std::current_exception
+// leaks between coroutines.
 
 using CXAThreadMap = std::unordered_map<std::thread::id,
   std::unique_ptr<__cxxabiv1::__cxa_eh_globals>>;
@@ -825,7 +818,7 @@ namespace __cxxabiv1
     {
       // Always fetch the map to avoid static initialization fiascos.
       CXAThreadMap& map = cxa_thread_map();
-      elle::reactor::Scheduler* sched = elle::reactor::Scheduler::scheduler();
+      auto sched = elle::reactor::Scheduler::scheduler();
       elle::reactor::backend::Thread* t = nullptr;
       if (sched != nullptr)
         t = sched->manager().current();

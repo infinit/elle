@@ -8,6 +8,7 @@
 #include <elle/format/hexadecimal.hh>
 #include <elle/log.hh>
 #include <elle/os/environ.hh>
+#include <elle/print.hh>
 #include <elle/service/aws/Exceptions.hh>
 #include <elle/service/aws/Keys.hh>
 #include <elle/service/aws/S3.hh>
@@ -20,6 +21,9 @@
 #include <elle/reactor/scheduler.hh>
 
 ELLE_LOG_COMPONENT("elle.services.aws.S3");
+
+
+namespace http = elle::reactor::http;
 
 namespace elle
 {
@@ -76,6 +80,24 @@ namespace elle
         return std::chrono::milliseconds(factor * 100);
       }
 
+      std::string
+      to_string(S3::StorageClass c)
+      {
+        switch (c)
+        {
+        case S3::StorageClass::Standard:
+          return "STANDARD";
+        case S3::StorageClass::StandardIA:
+          return "STANDARD_IA";
+        case S3::StorageClass::ReducedRedundancy:
+          return "REDUCED_REDUNDANCY";
+        case S3::StorageClass::Default:
+          return "default";
+        }
+        elle::unreachable();
+      }
+
+
       /*-------------.
       | Construction |
       `-------------*/
@@ -85,32 +107,34 @@ namespace elle
         , _query_credentials()
       {}
 
-      S3::S3(std::function<Credentials(bool)> query_credentials)
+      S3::S3(QueryCredentials query_credentials)
         : S3(query_credentials(true))
       {
         this->_query_credentials = query_credentials;
       }
 
+      // FIXME: CanonicalRequest::_canonical_query_string.
       static std::string query_parameters(RequestQuery const& query)
       {
-        using elle::reactor::http::EscapedString;
+        using http::EscapedString;
         if (query.empty())
           return "";
         std::string res = "?";
         for (auto const& parameter: query)
-        {
-          res += elle::sprintf("%s=%s&",
-                               EscapedString(parameter.first),
-                               EscapedString(parameter.second));
-        }
+          res += elle::print("%s=%s&",
+                             EscapedString(parameter.first),
+                             EscapedString(parameter.second));
         res = res.substr(0, res.size() - 1);
         return res;
       }
+
+
       /*-----------.
       | Operations |
       `-----------*/
 
-      std::string S3::put_object(
+      std::string
+      S3::put_object(
         elle::ConstWeakBuffer const& object,
         std::string const& object_name,
         RequestQuery const& query,
@@ -122,32 +146,16 @@ namespace elle
 
         // Make headers.
         RequestHeaders headers;
-        switch (storage_class)
-        {
-          case StorageClass::Standard:
-            headers["x-amz-storage-class"] = std::string("STANDARD");
-            break;
-          case StorageClass::StandardIA:
-            headers["x-amz-storage-class"] = std::string("STANDARD_IA");
-            break;
-          case StorageClass::ReducedRedundancy:
-            headers["x-amz-storage-class"] = std::string("REDUCED_REDUNDANCY");
-            break;
-
-          default:
-            break;
-        }
-        auto url = elle::sprintf(
-          "/%s/%s",
-          this->_credentials.folder(),
-          object_name
-        );
+        if (storage_class != StorageClass::Default)
+          headers["x-amz-storage-class"] = to_string(storage_class);
+        auto const url = elle::print("/%s/%s",
+                                     this->_credentials.folder(), object_name);
         ELLE_DEBUG("url: %s", url);
 
         auto request = _build_send_request(
           RequestKind::data, url,
-          elle::sprintf("put_object(%s)", query),
-          elle::reactor::http::Method::PUT,
+          elle::print("put_object(%s)", query),
+          http::Method::PUT,
           query, headers,
           "binary/octet-stream",
           object,
@@ -161,30 +169,32 @@ namespace elle
           return etag->second;
       }
 
-      std::vector<std::pair<std::string, S3::FileSize>>
+      auto
       S3::list_remote_folder(std::string const& marker)
+        -> List
       {
         ELLE_TRACE_SCOPE("%s: LIST remote folder", *this);
 
-        RequestQuery query;
-        query["prefix"] = elle::sprintf("%s/", this->_credentials.folder());
-        query["delimiter"] = "/";
-        if (marker.size() > 0)
-        {
+        auto query = RequestQuery
+          {
+            {"prefix", elle::print("%s/", this->_credentials.folder())},
+            {"delimiter", "/"},
+         };
+        if (!marker.empty())
           query["marker"] =
-            elle::sprintf("%s/%s", this->_credentials.folder(), marker);
-        }
+            elle::print("%s/%s", this->_credentials.folder(), marker);
         auto request = this->_build_send_request(
-          RequestKind::data, "/", "list", elle::reactor::http::Method::GET, query);
+          RequestKind::data, "/", "list", http::Method::GET, query);
         return this->_parse_list_xml(*request);
        }
 
-      std::vector<std::pair<std::string, S3::FileSize>>
+      auto
       S3::list_remote_folder_full()
+        -> List
       {
         std::string marker;
-        std::vector<std::pair<std::string, S3::FileSize>> result;
-        std::vector<std::pair<std::string, S3::FileSize>> chunk;
+        auto result = List{};
+        auto chunk = List{};
         do
         {
           chunk = this->list_remote_folder(marker);
@@ -201,9 +211,11 @@ namespace elle
       S3::get_object_chunk(std::string const& object_name,
                            FileSize offset, FileSize size)
       {
-        RequestHeaders headers;
-        headers["Range"] = elle::sprintf("bytes=%s-%s", offset,
-                                         offset + size - 1);
+        auto headers = RequestHeaders
+          {
+            {"Range", elle::print("bytes=%s-%s", offset,
+                                  offset + size - 1)},
+          };
         return this->get_object(object_name, headers);
       }
 
@@ -213,17 +225,14 @@ namespace elle
       {
         ELLE_TRACE_SCOPE("%s: GET remote object", *this);
 
-        auto url = elle::sprintf(
-          "/%s/%s",
-          this->_credentials.folder(),
-          object_name
-        );
+        auto const url = elle::print("/%s/%s",
+                                     this->_credentials.folder(), object_name);
         ELLE_DEBUG("url: %s", url);
 
         auto request =
           this->_build_send_request(RequestKind::data, url,
-                                    elle::sprintf("get_object(%s)", headers),
-                                    elle::reactor::http::Method::GET,
+                                    elle::print("get_object(%s)", headers),
+                                    http::Method::GET,
                                     RequestQuery(),
                                     headers);
         auto response = request->response();
@@ -236,11 +245,9 @@ namespace elle
           // AWS sends as ETAG for ranged get FULLMD5-CHUNK, we cannot validate
           // it.
           if (aws_md5.find('-') == std::string::npos && calcd_md5 != aws_md5)
-          {
             throw aws::CorruptedData(
-              elle::sprintf("%s: GET data corrupt: %s != %s", *this, calcd_md5,
+              elle::print("%s: GET data corrupt: %s != %s", *this, calcd_md5,
                             aws_md5));
-          }
         }
         else
           ELLE_DUMP("server did not include ETag");
@@ -252,8 +259,7 @@ namespace elle
       S3::delete_folder()
       {
         ELLE_DEBUG("%s: fetching folder content", *this);
-        std::vector<std::pair<std::string, S3::FileSize>> content =
-          this->list_remote_folder_full();
+        auto content = this->list_remote_folder_full();
         ELLE_DEBUG("%s: deleting %s objects", *this, content.size());
         // multi-delete has a limit at 1000 items...in theory. But passing 1000
         // objects asplode the AWS xml parser.
@@ -284,7 +290,7 @@ namespace elle
           this->_build_send_request(RequestKind::control,
                                     "/",
                                     "delete_folder",
-                                    elle::reactor::http::Method::POST,
+                                    http::Method::POST,
                                     query,
                                     headers,
                                     "text/xml",
@@ -300,13 +306,13 @@ namespace elle
         ELLE_TRACE_SCOPE("%s: DELETE remote object", *this);
 
         auto url =
-          elle::sprintf("/%s/%s", this->_credentials.folder(), object_name);
+          elle::print("/%s/%s", this->_credentials.folder(), object_name);
         ELLE_DEBUG("url: %s", url);
 
         this->_build_send_request(RequestKind::control,
                                   url,
                                   "delete",
-                                  elle::reactor::http::Method::DELETE,
+                                  http::Method::DELETE,
                                   query);
       }
 
@@ -317,24 +323,11 @@ namespace elle
       {
         ELLE_TRACE_SCOPE("%s: initialize multipart: %s", *this, object_name);
         RequestHeaders headers;
-        switch (storage_class)
-        {
-          case StorageClass::Standard:
-            headers["x-amz-storage-class"] = std::string("STANDARD");
-            break;
-          case StorageClass::StandardIA:
-            headers["x-amz-storage-class"] = std::string("STANDARD_IA");
-            break;
-          case StorageClass::ReducedRedundancy:
-            headers["x-amz-storage-class"] = std::string("REDUCED_REDUNDANCY");
-            break;
-
-          default:
-            break;
-        }
+        if (storage_class != StorageClass::Default)
+          headers["x-amz-storage-class"] = to_string(storage_class);
         RequestQuery query;
         query["uploads"] = "";
-        auto url = elle::sprintf(
+        auto url = elle::print(
           "/%s/%s",
           this->_credentials.folder(),
           object_name
@@ -345,7 +338,7 @@ namespace elle
           RequestKind::control,
           url,
           "multipart_initialize",
-          elle::reactor::http::Method::POST,
+          http::Method::POST,
           query,
           headers,
           mime_type);
@@ -384,7 +377,7 @@ namespace elle
         xchunks = "<CompleteMultipartUpload>";
         for (auto const& chunk: chunks)
         {
-          xchunks += elle::sprintf(
+          xchunks += elle::print(
             "<Part><PartNumber>%s</PartNumber><ETag>%s</ETag></Part>",
             chunk.first + 1, chunk.second);
         }
@@ -392,7 +385,7 @@ namespace elle
         RequestQuery query;
         query["uploadId"] = upload_key;
 
-        auto url = elle::sprintf(
+        auto url = elle::print(
           "/%s/%s",
           this->_credentials.folder(),
           object_name
@@ -404,7 +397,7 @@ namespace elle
             RequestKind::control,
             url,
             "multipart_finalize",
-            elle::reactor::http::Method::POST,
+            http::Method::POST,
             query,
             RequestHeaders(),
             "text/xml",
@@ -418,7 +411,7 @@ namespace elle
               response.find("CompleteMultipartUploadResult") == response.not_found())
           {
             throw aws::RequestError(
-              elle::sprintf("%s: during S3 finalize on %s:%s",
+              elle::print("%s: during S3 finalize on %s:%s",
                             *this, object_name, request->response()));
           }
         }
@@ -452,14 +445,14 @@ namespace elle
            query["uploadId"] = upload_key;
           if (max_id != -1)
             query["part-number-marker"] = std::to_string(max_id);
-          auto url = elle::sprintf("/%s/%s",
-                                   this->_credentials.folder(),
-                                   object_name);
+          auto url = elle::print("/%s/%s",
+                                 this->_credentials.folder(),
+                                 object_name);
 
           auto request = this->_build_send_request(RequestKind::data,
                                                    url,
                                                    "multipart_list",
-                                                   elle::reactor::http::Method::GET,
+                                                   http::Method::GET,
                                                    query);
 
           using boost::property_tree::ptree;
@@ -550,10 +543,11 @@ namespace elle
         return res;
       }
 
-      std::vector<std::pair<std::string, S3::FileSize>>
+      auto
       S3::_parse_list_xml(std::istream& stream)
+        -> List
       {
-        std::vector<std::pair<std::string, FileSize>> res;
+        auto res = List{};
         using boost::property_tree::ptree;
         ptree file_list;
         read_xml(stream, file_list);
@@ -561,21 +555,20 @@ namespace elle
         {
           if (base_element.first == "Contents")
           {
-            std::string fname = base_element.second.get<std::string>("Key");
-            if (fname != elle::sprintf("%s/", this->_credentials.folder()))
+            auto fname = base_element.second.get<std::string>("Key");
+            if (fname != elle::print("%s/", this->_credentials.folder()))
             {
               int pos = this->_credentials.folder().size() + 1;
               fname = fname.substr(pos, fname.size() - pos);
               FileSize fsize = base_element.second.get<FileSize>("Size");
-              std::pair<std::string, S3::FileSize> file_pair(fname, fsize);
-              res.push_back(file_pair);
+              res.emplace_back(fname, fsize);
             }
           }
         }
         return res;
       }
 
-      elle::reactor::http::Request::Configuration
+      http::Request::Configuration
       S3::_initialize_request(RequestKind kind,
                               RequestTime request_time,
                               CanonicalRequest const& canonical_request,
@@ -597,23 +590,19 @@ namespace elle
         // Make authentication string.
         // Order matters for services like minio.
         // Add credential string.
-        std::string auth_str = elle::sprintf(
+        auto auth_str = elle::print(
           "AWS4-HMAC-SHA256 Credential=%s",
           this->_credentials.credential_string(request_time, aws::Service::s3));
         // Add signed headers string.
         std::string signed_headers_str;
         for (auto const& header: headers)
-        {
-          auto key = header.first;
-          boost::algorithm::to_lower(key);
-          signed_headers_str += elle::sprintf("%s;", key);
-        }
+          signed_headers_str += elle::print("%s;", boost::to_lower_copy(header.first));
         signed_headers_str =
           signed_headers_str.substr(0, signed_headers_str.size() - 1);
-        auth_str += elle::sprintf(", SignedHeaders=%s", signed_headers_str);
+        auth_str += elle::print(", SignedHeaders=%s", signed_headers_str);
         // Add signature string.
-        auth_str += elle::sprintf(", Signature=%s",
-                                  key.sign_message(string_to_sign.string()));
+        auth_str += elle::print(", Signature=%s",
+                                key.sign_message(string_to_sign.string()));
         ELLE_DUMP("Final authorization string: '%s'", auth_str);
         headers["Authorization"] = auth_str;
 
@@ -624,21 +613,22 @@ namespace elle
         else
           stall_timeout = timeout;
 
-        elle::reactor::http::Request::Configuration cfg(total_timeout,
-                                                  stall_timeout,
-                                                  elle::reactor::http::Version::v11);
+        auto res =
+          http::Request::Configuration(total_timeout,
+                                       stall_timeout,
+                                       http::Version::v11);
         // Add headers to request.
         for (auto header: headers)
-          cfg.header_add(header.first, header.second);
-        return cfg;
+          res.header_add(header.first, header.second);
+        return res;
       }
 
-      /* Get the redirect host from the error message.
-       * See: http://docs.aws.amazon.com/AmazonS3/latest/dev/Redirects.html
-       */
-      inline
+      /// Get the redirect host from the error message.
+      /// See: http://docs.aws.amazon.com/AmazonS3/latest/dev/Redirects.html
+namespace
+{
       std::string
-      handle_temporary_redirect(elle::reactor::http::Request& request)
+      handle_temporary_redirect(http::Request& request)
       {
         // The "Location" header contains the complete URL which means we would
         // need to parse it to get the hostname which is used for signing.
@@ -648,17 +638,15 @@ namespace elle
         return response.get<std::string>("Error.Endpoint");
       }
 
-      /* Check request status and eventual error payload.
-       * Throws appropriate RequestError in case of failure. Set fatal to true
-       * if error is not recoverable
-       */
-      inline
+      /// Check request status and eventual error payload.
+      /// Throws appropriate RequestError in case of failure. Set fatal to true
+      /// if error is not recoverable
       void
-      check_request_status(elle::reactor::http::Request& request,
+      check_request_status(http::Request& request,
                            std::string const& url,
                            bool& fatal)
       {
-        using StatusCode = elle::reactor::http::StatusCode;
+        using StatusCode = http::StatusCode;
         auto status = request.status();
         fatal = false; // if true, exception is not known to be recoverable
 
@@ -683,7 +671,7 @@ namespace elle
             std::string code = response.get<std::string>("Error.Code", "");
             ELLE_DEBUG("S3: Bad request reply with error code: %s", code);
             if (code == "ExpiredToken" || code == "TokenRefreshRequired")
-              throw CredentialsExpired(elle::sprintf(
+              throw CredentialsExpired(elle::print(
                 "credentials expired with %s",
                 code));
             std::stringstream payload;
@@ -695,12 +683,12 @@ namespace elle
 
             throw RequestError(payload.str(), status, code);
           }
-          case elle::reactor::http::StatusCode::Not_Found:
+          case http::StatusCode::Not_Found:
             fatal = true;
             throw aws::FileNotFound(
-              elle::sprintf("error on %s: object not found",
+              elle::print("error on %s: object not found",
                             url));
-          case elle::reactor::http::StatusCode::Forbidden:
+          case http::StatusCode::Forbidden:
           {
             // Consider a RequestTimeTooSkewed error as a "credentials expired",
             // Refetching will recompute the time skew.
@@ -719,7 +707,7 @@ namespace elle
             ELLE_TRACE("S3: Forbidden with payload: %s", payload.str());
             throw CredentialsNotValid(payload.str(), status, code);
           }
-          case elle::reactor::http::StatusCode::Temporary_Redirect:
+          case http::StatusCode::Temporary_Redirect:
           {
             std::string host = handle_temporary_redirect(request);
             if (host.empty())
@@ -731,9 +719,9 @@ namespace elle
             ELLE_TRACE("S3: temporary redirect to host: %s", host);
             throw TemporaryRedirect(request.response().string(), host, status);
           }
-          case elle::reactor::http::StatusCode::OK:
-          case elle::reactor::http::StatusCode::No_Content:
-          case elle::reactor::http::StatusCode::Partial_Content:
+          case http::StatusCode::OK:
+          case http::StatusCode::No_Content:
+          case http::StatusCode::Partial_Content:
             break;
           default:
             fatal = true;
@@ -741,9 +729,10 @@ namespace elle
         }
         // ok case returns here, all other cases throw
       }
+}
 
       void
-      S3::_check_request_status(elle::reactor::http::Request& request,
+      S3::_check_request_status(http::Request& request,
                                 std::string const& url)
       {
         bool fatal;
@@ -771,12 +760,12 @@ namespace elle
                <<    " remote_folder=" << this->_credentials.folder();
       }
 
-      std::unique_ptr<elle::reactor::http::Request>
+      std::unique_ptr<http::Request>
       S3::_build_send_request(
         RequestKind kind,
         std::string const& uri,
         std::string const& operation,
-        elle::reactor::http::Method method,
+        http::Method method,
         RequestQuery const& query,
         RequestHeaders const& extra_headers,
         std::string const& content_type,
@@ -820,16 +809,16 @@ namespace elle
 
           std::string canonical_uri = uri;
           if (!hostname.path.empty())
-            canonical_uri = elle::sprintf("%s%s", hostname.path, uri);
+            canonical_uri = elle::print("%s%s", hostname.path, uri);
           // false means no encoding the slashes, see:
           // http://docs.aws.amazon.com/AmazonS3/latest/API/sig-v4-header-based-auth.html
           CanonicalRequest canonical_request(
             method, uri_encode(canonical_uri, false), query, headers,
             this->_signed_headers(headers), this->_sha256_hexdigest(payload)
           );
-          elle::reactor::http::Request::Configuration cfg(this->_initialize_request(
+          http::Request::Configuration cfg(this->_initialize_request(
             kind, request_time, canonical_request, headers, timeout));
-          std::string full_url = elle::sprintf(
+          std::string full_url = elle::print(
             "%s%s%s",
             hostname.join(),
             uri_encode(uri, false),
@@ -838,15 +827,15 @@ namespace elle
           ELLE_DEBUG("full url: %s", full_url);
           for (auto const& h: headers)
             ELLE_DUMP("header %s: %s", h.first, h.second);
-          std::unique_ptr<elle::reactor::http::Request> request;
+          std::unique_ptr<http::Request> request;
           try
           {
             request =
-              std::make_unique<elle::reactor::http::Request>(full_url, method, cfg);
+              std::make_unique<http::Request>(full_url, method, cfg);
             if (progress_callback)
             {
               request->progress_changed().connect(
-                [&progress_callback] (elle::reactor::http::Request::Progress const& p)
+                [&progress_callback] (http::Request::Progress const& p)
                 {
                   progress_callback.get()(p.upload_current);
                 });
@@ -878,7 +867,7 @@ namespace elle
               continue;
             }
           }
-          catch (elle::reactor::http::RequestError const& e)
+          catch (http::RequestError const& e)
           {
             ++attempt;
             // we have nothing better to do, so keep retrying
@@ -980,7 +969,7 @@ namespace elle
             scheme = host.substr(0, pos + 3);
             host = host.substr(pos + 3, host.size());
           }
-          return URL{scheme, host, elle::sprintf("/%s", credentials.bucket())};
+          return URL{scheme, host, elle::print("/%s", credentials.bucket())};
         }
         else // We're using AWS.
         {
@@ -991,11 +980,11 @@ namespace elle
           // us-east-1 is the exception.
           std::string host = override_host
             ? override_host.get()
-            : elle::sprintf(
+            : elle::print(
               "%s.s3%s.amazonaws.com",
               credentials.bucket(),
               credentials.region() != us_east_1
-              ? elle::sprintf("-%s", credentials.region())
+              ? elle::print("-%s", credentials.region())
               : std::string{});
           return URL{"https://", host, ""};
         }

@@ -1,6 +1,6 @@
 #include <curl/curl.h>
 
-#include <elle/printf.hh>
+#include <elle/print.hh>
 #include <elle/reactor/http/exceptions.hh>
 
 namespace elle
@@ -9,25 +9,24 @@ namespace elle
   {
     namespace http
     {
-      RequestError::RequestError(std::string const& url,
-                                 std::string const& error)
-        : Super(elle::sprintf("error requesting %s: %s", url, error))
-        , _url(url)
-        , _error(error)
+      RequestError::RequestError(std::string url, std::string error)
+        : Super{elle::print("error requesting %s: %s", url, error)}
+        , _url{std::move(url)}
+        , _error{std::move(error)}
       {}
 
-      EmptyResponse::EmptyResponse(std::string const& url)
-        : Super(curl_easy_strerror(CURLE_GOT_NOTHING), url)
+      EmptyResponse::EmptyResponse(std::string url)
+        : Super{curl_easy_strerror(CURLE_GOT_NOTHING), std::move(url)}
       {}
 
-      Timeout::Timeout(std::string const& url,
+      Timeout::Timeout(std::string url,
                        reactor::Duration const& timeout)
-        : Super(url, elle::sprintf("timeout with delay %s", timeout))
+        : Super{std::move(url), elle::print("timeout with delay %s", timeout)}
         , _timeout(timeout)
       {}
 
-      ResolutionFailure::ResolutionFailure(std::string const& url)
-        : Super(url, "resolution failure")
+      ResolutionFailure::ResolutionFailure(std::string url)
+        : Super(std::move(url), "resolution failure")
       {}
     }
   }
