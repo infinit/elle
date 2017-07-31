@@ -13,15 +13,10 @@ namespace elle
       {
         switch (request_type)
         {
-          case RequestType::aws4:
-            stream << "aws4_request";
-            break;
-
-          default:
-            stream << "unknown AWS request type";
-            elle::unreachable();
+        case RequestType::aws4:
+          return stream << "aws4_request";
         }
-        return stream;
+        elle::unreachable();
       }
 
       std::ostream&
@@ -29,21 +24,14 @@ namespace elle
       {
         switch (service)
         {
-          case Service::iam:
-            stream << "iam";
-            break;
-          case Service::s3:
-            stream << "s3";
-            break;
-          case Service::sts:
-            stream << "sts";
-            break;
-
-          default:
-            stream << "unknown AWS service";
-            elle::unreachable();
+        case Service::iam:
+          return stream << "iam";
+        case Service::s3:
+          return stream << "s3";
+        case Service::sts:
+          return stream << "sts";
         }
-        return stream;
+        elle::unreachable();
       }
 
       std::ostream&
@@ -51,15 +39,10 @@ namespace elle
       {
         switch (signing_method)
         {
-          case SigningMethod::aws4_hmac_sha256:
-            stream << "AWS4-HMAC-SHA256";
-            break;
-
-          default:
-            stream << "unknown AWS signing method";
-            elle::unreachable();
+        case SigningMethod::aws4_hmac_sha256:
+          return stream << "AWS4-HMAC-SHA256";
         }
-        return stream;
+        elle::unreachable();
       }
     }
   }
