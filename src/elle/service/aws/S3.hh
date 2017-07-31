@@ -28,8 +28,9 @@ namespace elle
         std::string
         join() const;
       };
-      class S3:
-        public elle::Printable
+
+      class S3
+        : public elle::Printable
       {
         /*------.
         | Types |
@@ -45,8 +46,13 @@ namespace elle
           StandardIA,
           ReducedRedundancy,
 
-          Default, // Do not set the x-amz-storage-class header.
+          Default, /// Do not set the x-amz-storage-class header.
         };
+
+        /// Conversion to the syntax expected in headers, except for
+        /// `Default` (mapped to `"default"`), which should not be
+        /// used in x-amz-storage-class.
+        friend std::string to_string(StorageClass c);
 
         /*-------------.
         | Construction |
@@ -61,7 +67,8 @@ namespace elle
         /// Version taking a function able to refresh credentials.
         /// Bool argument is true on the first call, false on call caused by
         /// expiration of current cached creds.
-        S3(std::function<Credentials(bool)> query_credentials);
+        S3(std::function<auto (bool) -> Credentials> query_credentials);
+
         /*-----------.
         | Operations |
         `-----------*/
@@ -74,26 +81,27 @@ namespace elle
         put_object(
           elle::ConstWeakBuffer const& object,
           std::string const& object_name,
-          RequestQuery const& query = RequestQuery(),
+          RequestQuery const& query = {},
           StorageClass storage_class = StorageClass::Default,
           boost::optional<ProgressCallback> const& progress_callback = {});
 
-        /// Returns a list of all files names and their respective sizes inside
+        /// A list of all files names and their respective sizes inside
         /// the remote folder.
+        ///
         /// This is limited to 1000 results but a starting offset (marker) can
-        /// be used if more are required. It is important to note that the files
-        /// are listed in alphabetical order.
-        std::vector<std::pair<std::string, FileSize>>
-        list_remote_folder(std::string const& marker = "");
+        /// be used if more are required. The files are listed in alphabetical
+        /// order.
+        List
+        list_remote_folder(std::string const& marker = {});
         /// List the full folder content.
-        std::vector<std::pair<std::string, FileSize>>
+        List
         list_remote_folder_full();
         /// Fetch an object from the remote folder.
         /// The fetch is done in a single GET.
         elle::Buffer
         get_object(std::string const& object_name,
                    RequestHeaders headers = RequestHeaders());
-        /// Fetch one chunk of an object
+        /// Fetch one chunk of an object.
         elle::Buffer
         get_object_chunk(std::string const& object_name,
                          FileSize offset, FileSize size);
@@ -181,7 +189,7 @@ namespace elle
         _make_string_to_sign(RequestTime const& request_time,
                              std::string const& canonical_request_sha256);
 
-        std::vector<std::pair<std::string, FileSize>>
+        List
         _parse_list_xml(std::istream& stream);
 
         elle::reactor::http::Request::Configuration
