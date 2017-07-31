@@ -29,14 +29,11 @@ namespace
 {
   auto const _bucket_name = std::string("us-east-1-buffer-dev-infinit-io");
 
-static
-boost::posix_time::ptime _now =
-  boost::posix_time::second_clock::universal_time();
+  auto const _now = boost::posix_time::second_clock::universal_time();
 
-static
-boost::posix_time::ptime _later = _now + boost::posix_time::hours(1);
+  auto const _later = _now + boost::posix_time::hours(1);
 
-  elle::service::aws::Credentials _GET_credentials(
+  auto const _GET_credentials = elle::service::aws::Credentials(
     "ASIAJOU5RQKL2N6YKOXQ",
     "9yC/yEGXvjH+3At0p6GOt04K8cgeol+klLlrFkLY",
     "AQoDYXdzEGIagAPirqRMvxZjBVQrtGqwzzTKcfyU0cn+a5uyJPto88J09j/WYZdqrQ8YEr6MAk3sXcWlgtZ+k259fkSCqfkwg1ntS/SkrtDaC7GokhnOMRXsqGYV7Hf48QyWV3XpnIp3x0XgJKOvq2Mwfn1ZuFy7364Qk/5lkYLuQ/i2EqMXRgzZFH2TPkYk8+k4l4sNJf1c4/Vl9FapstpbwYha96oAFbZSd9GfTIkFXXhXMCxykE9uDxM2STYGkoFkE37doZUoZB3n6pjPdnV60Hn/KmgRTEC8fn/SdYrmpnpXIRcPi8tL+iOa3x74LcUv0KysNqVZuBIScVCmVnjNxhueSz7BdM9Zo7NsGNzrWBTUShjoXmw+a92eINvCKRv+buD4PYNGk+HekJxF3IGjUGaoBYJkfpwCYJMDsfs/R7DPG3qzqJN465bXDj/8RZmps7qb3ew8AhasWT8cMUDPr2ClGUwLaVkyH1KBvKxc6hhxzZOPuJq4ZzGQ/4axoM1CtP0UjerJdNMg/oDMmQU=",
@@ -47,8 +44,7 @@ boost::posix_time::ptime _later = _now + boost::posix_time::hours(1);
     _now
   );
 
-
-  elle::service::aws::Credentials _PUT_credentials(
+  auto const _PUT_credentials = elle::service::aws::Credentials(
     "ASIAJAGQUOJVE3HO46ZA",
     "pG1iz87bCYOZ9sQ4fkryBgiS/wnS7K+2MJUmS7Hb",
     "AQoDYXdzEGIawAIayH3x2pmusA2EhnhOK+42f07Y0cQILf7yltnXMG6sJ6sbE+o0IgZW8lEkCcZRGcXD1fM6pGAEBEYgO9ZJVXvRG5+riMGXmb7RHWGEEYRidqylFqK7vepkU2+ocFBshxKoSOJMCl5yjU351J3INvkkeTNJ9lpz0mPBWpEv82uBYzo6j0oDJMJutaiFvmRfpS79KWHemOcgUxbjTKChms3askIDJf6zgDTyIymWaIGquFgKwNgCO6UNk2zCCiWf3vtryuPxrlERz/Xm9cCejC4B4FiTjes6fWH7jlxbDu0s+6s7ivdSga68Ex4OJbetpYIn3vOTMTRzyUN/0TvMJPZFRn8joW3cjnJOQNMtoEmtS7Hp1fvOBkk/f1qWAM/GrMvbcJThOAjPuhqbJY7DpP4SNQtGgdwhOjC04Z3fUDgqnyDR/8uZBQ==",
@@ -83,7 +79,7 @@ _make_canonical_request()
     };
   std::vector<std::string> signed_headers;
   std::string signed_headers_str;
-  for (auto header: headers)
+  for (auto const& header: headers)
   {
     signed_headers.push_back(header.first);
     signed_headers_str += elle::sprintf("%s;", header.first);
@@ -96,7 +92,7 @@ _make_canonical_request()
   auto digest = elle::cryptography::hash(content,
                                          elle::cryptography::Oneway::sha256);
 
-  elle::service::aws::CanonicalRequest request(
+  auto res = elle::service::aws::CanonicalRequest(
     elle::reactor::http::Method::POST,
     "/",
     query,
@@ -104,8 +100,8 @@ _make_canonical_request()
     signed_headers,
     elle::format::hexadecimal::encode(digest)
   );
-  ELLE_DEBUG("canonical request: %s", request);
-  return request;
+  ELLE_DEBUG("canonical request: %s", res);
+  return res;
 }
 
 // http://docs.aws.amazon.com/general/latest/gr/sigv4-create-string-to-sign.html
@@ -117,14 +113,16 @@ _make_string_to_sign()
     boost::gregorian::date(2011, boost::gregorian::Sep, 9),
     boost::posix_time::hours(23) + boost::posix_time::minutes(36)
   );
-  elle::service::aws::CanonicalRequest canonical_request = _make_canonical_request();
-  elle::service::aws::CredentialScope credential_scope(request_time, elle::service::aws::Service::iam,
+  auto canonical_request = _make_canonical_request();
+  auto credential_scope =
+    elle::service::aws::CredentialScope(request_time, elle::service::aws::Service::iam,
                                         "us-east-1");
-  elle::service::aws::StringToSign string_to_sign(request_time, credential_scope,
-                                   canonical_request.sha256_hash(),
-                                   elle::service::aws::SigningMethod::aws4_hmac_sha256);
-  ELLE_DEBUG("string to sign: %s", string_to_sign);
-  return string_to_sign;
+  auto res =
+    elle::service::aws::StringToSign(request_time, credential_scope,
+                                     canonical_request.sha256_hash(),
+                                     elle::service::aws::SigningMethod::aws4_hmac_sha256);
+  ELLE_DEBUG("string to sign: %s", res);
+  return res;
 }
 
 ELLE_TEST_SCHEDULED(canonical_request)
