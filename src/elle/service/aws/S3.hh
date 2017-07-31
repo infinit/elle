@@ -64,10 +64,12 @@ namespace elle
         /// Use of this should be optimised based on S3 pricing:
         /// http://aws.amazon.com/s3/pricing/
         S3(Credentials const& credentials);
+
+        using QueryCredentials = std::function<auto (bool) -> Credentials>;
         /// Version taking a function able to refresh credentials.
         /// Bool argument is true on the first call, false on call caused by
         /// expiration of current cached creds.
-        S3(std::function<auto (bool) -> Credentials> query_credentials);
+        S3(QueryCredentials query_credentials);
 
         /*-----------.
         | Operations |
@@ -161,7 +163,7 @@ namespace elle
         hostname(Credentials const& credentials,
                  boost::optional<std::string> override_host = {}) const;
         ELLE_ATTRIBUTE(Credentials, credentials);
-        ELLE_ATTRIBUTE(std::function<Credentials(bool)>, query_credentials);
+        ELLE_ATTRIBUTE(QueryCredentials, query_credentials);
 
         /*--------.
         | Helpers |
