@@ -1,5 +1,5 @@
 #include <elle/log.hh>
-#include <elle/printf.hh>
+#include <elle/print.hh>
 #include <elle/serialization/Serializer.hh>
 #include <elle/serialization/SerializerIn.hh>
 #include <elle/service/aws/Credentials.hh>
@@ -13,21 +13,21 @@ namespace elle
   {
     namespace aws
     {
-      Credentials::Credentials(std::string const& access_key_id,
-                               std::string const& secret_access_key,
-                               std::string const& session_token,
-                               std::string const& region,
-                               std::string const& bucket,
-                               std::string const& folder,
+      Credentials::Credentials(std::string access_key_id,
+                               std::string secret_access_key,
+                               std::string session_token,
+                               std::string region,
+                               std::string bucket,
+                               std::string folder,
                                boost::posix_time::ptime expiration,
                                boost::posix_time::ptime server_time,
                                boost::optional<std::string> endpoint)
-        : _access_key_id(access_key_id)
-        , _secret_access_key(secret_access_key)
-        , _session_token(session_token)
-        , _region(region)
-        , _bucket(bucket)
-        , _folder(folder)
+        : _access_key_id{std::move(access_key_id)}
+        , _secret_access_key{std::move(secret_access_key)}
+        , _session_token{std::move(session_token)}
+        , _region{std::move(region)}
+        , _bucket{std::move(bucket)}
+        , _folder{std::move(folder)}
         , _server_time(std::move(server_time))
         , _expiry(std::move(expiration))
         , _skew()
@@ -37,18 +37,17 @@ namespace elle
         this->_initialize();
       }
 
-      Credentials::Credentials(std::string const& access_key_id,
-                               std::string const& secret_access_key,
-                               std::string const& region,
-                               std::string const& bucket,
-                               std::string const& folder,
+      Credentials::Credentials(std::string access_key_id,
+                               std::string secret_access_key,
+                               std::string region,
+                               std::string bucket,
+                               std::string folder,
                                boost::optional<std::string> endpoint)
-        : _access_key_id(access_key_id)
-        , _secret_access_key(secret_access_key)
-        , _session_token()
-        , _region(region)
-        , _bucket(bucket)
-        , _folder(folder)
+        : _access_key_id{std::move(access_key_id)}
+        , _secret_access_key{std::move(secret_access_key)}
+        , _region{std::move(region)}
+        , _bucket{std::move(bucket)}
+        , _folder{std::move(folder)}
         , _server_time(boost::posix_time::second_clock::universal_time())
         , _expiry(boost::posix_time::pos_infin)
         , _skew()
@@ -75,25 +74,20 @@ namespace elle
 
       std::string
       Credentials::credential_string(RequestTime const& request_time,
-                                     Service const& aws_service)
+                                     Service const& aws_service) const
       {
-        std::string date_str = boost::posix_time::to_iso_string(request_time);
-        date_str = date_str.substr(0, 8);
-        std::string res = elle::sprintf(
-          "%s/%s/%s/%s/aws4_request",
-          this->_access_key_id,
-          date_str,
-          this->_region,
-          aws_service
-        );
-        return res;
+        auto date = boost::posix_time::to_iso_string(request_time);
+        date = date.substr(0, 8);
+        return elle::print("%s/%s/%s/%s/aws4_request",
+                           this->_access_key_id, date, this->_region,
+                           aws_service);
       }
 
       bool
       Credentials::valid()
       {
         using namespace boost::posix_time;
-        ptime now = second_clock::universal_time();
+        auto const now = second_clock::universal_time();
         if (this->_expiry < now)
         {
           ELLE_DEBUG("%s: credentials have expired", this);
@@ -139,15 +133,15 @@ namespace elle
 
 
       void
-      Credentials::print(std::ostream& stream) const
+      Credentials::print(std::ostream& os) const
       {
-        stream << "aws::Credentials(access_id = \""
-               << this->_access_key_id << "\"";
+        elle::print(os, "aws::Credentials(access_id = \"%s\"",
+                    this->_access_key_id);
         if (this->federated_user())
-          stream << ", expiry = " << this->_expiry;
+          os << ", expiry = " << this->_expiry;
         if (this->endpoint())
-          stream << ", endpoint = " << this->endpoint().get();
-        stream << ")";
+          os << ", endpoint = " << this->endpoint().get();
+        os << ')';
       }
     }
   }
