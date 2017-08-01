@@ -114,21 +114,11 @@ namespace elle
         }
         catch (reactor::Terminate const&)
         {
-          // GCC 6.3 thinks that this `throw` escapes from this
-          // dtor.  See
-          // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81632.
-#if defined __GNUC__ and not defined __clang__ and 6 <= __GNUC__
-# pragma GCC diagnostic push
-# pragma GCC diagnostic ignored "-Wterminate"
-#endif
           if (!reactor::scheduler().current()->terminating())
             throw;
           else
             ELLE_WARN("%s: ignore stacked thread termination during SSL "
                       "shutdown", this);
-#if defined __GNUC__ and not defined __clang__ and 6 <= __GNUC__
-# pragma GCC diagnostic pop
-#endif
         }
         catch (...)
         {
