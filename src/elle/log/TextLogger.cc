@@ -172,7 +172,8 @@ namespace elle
             {
               // strlen("2017-07-31 05:24:53") = 20;
               auto buf = std::array<char, 24>{};
-              std::strftime(buf.data(), buf.size(), "%F %T", tm);
+              // Mingw does not support "%F %T".
+              std::strftime(buf.data(), buf.size(), "%Y-%m-%d %H:%M:%S", tm);
               os << buf.data();
             }
             if (this->time_microsec())
