@@ -1442,6 +1442,7 @@ json_optionals()
       serializer.serialize("value", o);
     }
     auto json = elle::json::read(stream);
+    BOOST_REQUIRE(json.type() == typeid(elle::json::Object));
     BOOST_CHECK_EQUAL(boost::any_cast<elle::json::Object&>(json).size(), 0);
   }
 }
