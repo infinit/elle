@@ -847,9 +847,7 @@ namespace elle
     void
     Serializer::serialize(std::string const& name, DurationOpt& opt)
     {
-      ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-      ELLE_TRACE_SCOPE("%s: serialize option \"%s\"", *this, name);
-      Details::serialize_named_option<S>(*this, name, opt);
+      this->serialize<S>(name, static_cast<boost::optional<Duration>&>(opt));
     }
 
     // std::unique_ptr
