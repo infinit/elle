@@ -212,7 +212,7 @@ namespace elle
         auto& str = this->_check_type<std::string>();
         try
         {
-          time = to_posix_time(str);
+          time = iso8601_to_posix_time(str);
         }
         catch (elle::Error const& e)
         {

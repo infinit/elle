@@ -261,7 +261,7 @@ namespace elle
           auto socket_raw = this->_socket.get();
           auto socket = elle::utility::move_on_copy(this->_socket);
           auto timer = elle::utility::move_on_copy(
-            std::make_unique<WTimer>(
+            std::make_unique<AsioTimer>(
               reactor::scheduler().io_service()));
           auto timer_raw = (*timer).get();
           auto over = std::make_shared<bool>(false);

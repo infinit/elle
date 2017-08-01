@@ -227,7 +227,7 @@ namespace elle
       void
       SerializerOut::_serialize(boost::posix_time::ptime& time)
       {
-        auto s = to_string(time);
+        auto s = to_iso8601(time);
         this->_serialize(s);
       }
 

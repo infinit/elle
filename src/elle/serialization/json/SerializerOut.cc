@@ -230,7 +230,7 @@ namespace elle
       void
       SerializerOut::_serialize(boost::posix_time::ptime& time)
       {
-        this->_get_current() = to_string(time);
+        this->_get_current() = to_iso8601(time);
       }
 
       void

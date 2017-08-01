@@ -67,7 +67,7 @@ namespace elle
       age() const
       {
         if (_timestamp == Time{})
-          return Duration{0s};
+          return 0s;
         else
           return std::max(Duration{1s},
                           Clock::now() - _timestamp);

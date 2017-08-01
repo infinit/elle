@@ -1269,7 +1269,7 @@ test_timeout_aborted()
 {
   elle::reactor::Scheduler sched;
 
-  elle::reactor::WTimer(sched.io_service());
+  elle::reactor::AsioTimer(sched.io_service());
   elle::reactor::Thread t1(sched, "John", &connor);
   elle::reactor::Thread t2(sched, "Terminator", &schwarzy);
   sched.run();

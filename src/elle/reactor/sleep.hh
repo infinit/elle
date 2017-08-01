@@ -48,7 +48,7 @@ namespace elle
 
     private:
       Duration _duration;
-      WTimer _timer;
+      AsioTimer _timer;
     };
   }
 }

@@ -64,7 +64,7 @@ namespace elle
       std::string _name;
       Action _action;
       std::unique_ptr<Thread> _thread;
-      WTimer _timer;
+      AsioTimer _timer;
       bool _finished;
     };
   }

@@ -12,7 +12,7 @@ namespace elle
     /// A reference date.
     using elle::Time;
     /// The type of our timers.
-    using WTimer = boost::asio::basic_waitable_timer<Clock>;
+    using AsioTimer = boost::asio::basic_waitable_timer<Clock>;
 
     using elle::Duration;
     using elle::DurationOpt;

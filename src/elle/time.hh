@@ -44,9 +44,9 @@ namespace elle
 
   /// Parse a date in ISO 8601 format.
   boost::posix_time::ptime
-  to_posix_time(std::string const& str);
+  iso8601_to_posix_time(std::string const& str);
 
   /// Convert to ISO 8601.
   std::string
-  to_string(boost::posix_time::ptime const& t);
+  to_iso8601(boost::posix_time::ptime const& t);
 }

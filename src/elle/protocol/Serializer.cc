@@ -386,7 +386,7 @@ namespace elle
       /// A reference date.
       using Time = elle::Time;
       /// The type of our timers.
-      using Timer = elle::reactor::WTimer;
+      using Timer = elle::reactor::AsioTimer;
 
       ELLE_ATTRIBUTE(elle::reactor::Scheduler&, scheduler);
       ELLE_ATTRIBUTE(int, pings);

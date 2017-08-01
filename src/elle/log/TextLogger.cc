@@ -163,7 +163,6 @@ namespace elle
           if (this->_enable_time)
           {
             using namespace std::chrono;
-            using namespace date; // floor
             auto const t = Clock::to_time_t(msg.time);
             auto const tm
               = (this->time_universal() ? std::gmtime : std::localtime)(&t);

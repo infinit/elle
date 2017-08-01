@@ -54,7 +54,7 @@ extern "C"
     auto& ios = elle::reactor::scheduler().io_service();
     boost::asio::posix::stream_descriptor s(ios);
     s.assign(epfd);
-    elle::reactor::WTimer timer(ios);
+    elle::reactor::AsioTimer timer(ios);
     elle::reactor::Barrier b;
     bool timer_running = true;
     bool socket_running = true;

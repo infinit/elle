@@ -194,7 +194,7 @@ namespace elle
         this->_serialize(str);
         try
         {
-          time = to_posix_time(str);
+          time = iso8601_to_posix_time(str);
         }
         catch (elle::Error const& e)
         {

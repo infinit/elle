@@ -114,7 +114,7 @@ namespace elle
         unset_timeout();
         void
         handle_timeout(const boost::system::error_code& error);
-        WTimer _timer;
+        AsioTimer _timer;
 
       /*-----.
       | Info |

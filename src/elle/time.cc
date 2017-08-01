@@ -5,7 +5,7 @@
 namespace elle
 {
   boost::posix_time::ptime
-  to_posix_time(std::string const& str)
+  iso8601_to_posix_time(std::string const& str)
   {
     boost::posix_time::ptime res;
     // Use the ISO extended input facet to interpret the string.
@@ -48,7 +48,7 @@ namespace elle
   }
 
   std::string
-  to_string(boost::posix_time::ptime const& time)
+  to_iso8601(boost::posix_time::ptime const& time)
   {
     std::stringstream ss;
     auto output_facet = std::make_unique<boost::posix_time::time_facet>();
