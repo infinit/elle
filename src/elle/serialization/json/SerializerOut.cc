@@ -295,6 +295,9 @@ namespace elle
       {
         if (filled)
           f();
+        // Create an empty object if held options are null.
+        else if (this->_current.back()->type() == typeid(void))
+          *this->_current.back() = elle::json::Object();
       }
 
       void
