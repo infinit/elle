@@ -11,6 +11,7 @@ namespace elle
       : public Logger
     {
     public:
+      using Super = Logger;
       using Loggers = std::vector<std::unique_ptr<Logger>>;
       CompositeLogger(Loggers l);
       CompositeLogger();

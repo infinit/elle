@@ -41,6 +41,7 @@ namespace elle
 
     TextLogger::TextLogger(std::ostream& out,
                            std::string const& log_level,
+                           std::string const& envvar,
                            bool display_type,
                            bool enable_pid,
                            bool enable_tid,
@@ -48,7 +49,7 @@ namespace elle
                            bool universal_time,
                            bool microsec_time,
                            bool warn_err_only)
-      : Logger(log_level)
+      : Super{log_level, envvar}
       , _output(out)
       , _display_type(os::getenv("ELLE_LOG_DISPLAY_TYPE", display_type))
       , _enable_pid(os::getenv("ELLE_LOG_PID", enable_pid))

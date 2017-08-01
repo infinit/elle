@@ -107,10 +107,11 @@ namespace elle
         if (auto file = elle::tail(dest, "file://"))
         {
           auto const append = get(args, "append", false);
+          auto const envvar = get(args, "var", "ELLE_LOG_LEVEL"s);
           auto const size = convert_capacity(get(args, "size", "0b"s));
           auto const rotate = get(args, "rotate", 0);
           return std::make_unique<FileLogger>(*file, level,
-                                              size, rotate, append);
+                                              size, rotate, append, envvar);
         }
         else if (dest == "stderr://")
           return std::make_unique<TextLogger>(std::cerr, level);

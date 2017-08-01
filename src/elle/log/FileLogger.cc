@@ -10,8 +10,9 @@ namespace elle
                            std::string const& log_level,
                            size_t size,
                            size_t rotate,
-                           bool append)
-      : Super{log_level}
+                           bool append,
+                           std::string const& envvar)
+      : Super{log_level, envvar}
       , _base{std::move(base)}
       , _size{size}
       , _rotate{rotate}
@@ -28,7 +29,7 @@ namespace elle
         this->_fstream.open(this->base(),
                             std::fstream::trunc | std::fstream::out);
       this->_logger
-        = std::make_unique<TextLogger>(this->_fstream, log_level);
+        = std::make_unique<TextLogger>(this->_fstream, log_level, envvar);
     }
 
     void

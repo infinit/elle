@@ -32,8 +32,11 @@ namespace elle
     /// <DEST> is:
     /// `stderr://`: goes to std::cerr.
     /// `file://NAME`: create file `NAME`.
-    /// `file://NAME?append`: append to file `NAME`.
+    /// `file://NAME?append`: append to existing file `NAME` rather
+    ///       than creating a new one.
     /// `file://BASE?rotate=10`: create `BASE.0`, `BASE.1`, etc.
+    /// `file://BASE?var=MY_LOG_LEVEL`: override log_level with MY_LOG_LEVEL
+    ///       rather than ELLE_LOG_LEVEL.
     /// `syslog://NAME`: to syslog, tagged with `NAME[PID]`.
     std::unique_ptr<Logger>
     make_logger(std::string const& targets);

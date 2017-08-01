@@ -9,12 +9,12 @@ namespace elle
   namespace log
   {
     CompositeLogger::CompositeLogger(Loggers l)
-      : Logger("LOG")
+      : Super{"LOG"}
       , _loggers{std::move(l)}
     {}
 
     CompositeLogger::CompositeLogger()
-      : Logger("LOG")
+      : Super{"LOG"}
     {}
 
     void
@@ -32,9 +32,12 @@ namespace elle
                              unsigned int line,
                              std::string const& function)
     {
-      // We bounce to message and not _message so that each child logger can
-      // have its own settings.
-      // We must reproduce Send's behavior regarding indent and categories.
+      // We bounce to `Logger::message` and not `Logger::_message` so
+      // that each child logger can have its own settings (in
+      // particular its log_level).
+      //
+      // We must reproduce Send's behavior regarding indent and
+      // categories.
       for (auto& l: this->_loggers)
       {
         l->component_level(component); // for max size computation

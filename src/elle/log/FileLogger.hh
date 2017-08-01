@@ -25,11 +25,14 @@ namespace elle
       ///               0 to never remove.
       ///               (same name as logrotate)
       /// @param append whether to append to the last log.
+      /// @param envvar  the name of the environment variable that
+      ///            overrides the specified log level.
       FileLogger(fs::path base,
                  std::string const& log_level = "LOG",
                  size_t size = 0,
                  size_t rotate = 0,
-                 bool append = false);
+                 bool append = false,
+                 std::string const& envvar = "ELLE_LOG_LEVEL");
 
       /// Change the family name.  Renames the current file.
       void base(fs::path base);

@@ -12,8 +12,10 @@ namespace elle
       : public Logger
     {
     public:
+      using Super = Logger;
       TextLogger(std::ostream& out,
                  std::string const& log_level = "",
+                 std::string const& envvar = "ELLE_LOG_LEVEL",
                  bool display_type = false,
                  bool enable_pid = false,
                  bool enable_tid = false,
