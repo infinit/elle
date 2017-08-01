@@ -599,38 +599,6 @@ namespace elle
     };
 
     template <>
-    struct Serialize<DurationOpt>
-    {
-      static
-      void
-      serialize(DurationOpt const& o,
-                elle::serialization::SerializerOut& s)
-      {
-        s._serialize_option(
-          bool(o),
-          [&]
-          {
-            Serializer::serialize_switch(s, elle::unconst(*o));
-          });
-      }
-
-      static
-      DurationOpt
-      deserialize(elle::serialization::SerializerIn& s)
-      {
-        DurationOpt res;
-        s._serialize_option(
-          false,
-          [&]
-          {
-            res.emplace(Serializer::Details::deserialize<Duration>(
-                          static_cast<SerializerIn&>(s), 42));
-          });
-        return res;
-      }
-    };
-
-    template <>
     struct Serialize<Time>
     {
       using Type = boost::posix_time::ptime;
