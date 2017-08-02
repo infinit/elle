@@ -23,7 +23,8 @@ namespace elle
     void
     SerializerOut::serialize(std::string const& name, T const& v)
     {
-      this->Serializer::serialize<S>(name, const_cast<T&>(v));
+      if (auto entry = this->enter(name))
+        this->serialize_switch<S>(*this, const_cast<T&>(v));
     }
   }
 }
