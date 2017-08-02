@@ -596,6 +596,78 @@ namespace elle
           }
         }
       };
+
+      // Serializations overrides
+
+      template <typename Impl, typename T, typename S>
+      static
+      void
+      serialize(S& self, std::string const& name, T& v)
+      {
+        static_assert(
+          !virtually<T>(),
+          "serialize VirtuallySerializable objects through a pointer type");
+        if (auto entry = self.enter(name))
+        {
+          ELLE_LOG_COMPONENT("elle.serialization.Serializer");
+          ELLE_DUMP("type: %s", elle::type_info<T>());
+          Serializer::serialize_switch<Impl>(self, v);
+        }
+      }
+
+      template <typename Impl = void, typename T, typename S>
+      static
+      void
+      serialize(S& self, std::string const& name, boost::optional<T>& v)
+      {
+        ELLE_LOG_COMPONENT("elle.serialization.Serializer");
+        ELLE_TRACE_SCOPE("%s: serialize option \"%s\"", self, name);
+        Details::serialize_named_option<Impl>(self, name, v);
+      }
+
+      template <typename Impl = void, typename S>
+      static
+      void
+      serialize(S& self, std::string const& name, DurationOpt& v)
+      {
+        Details::serialize<Impl>(
+          self, name, static_cast<boost::optional<Duration>&>(v));
+      }
+
+      template <typename Impl = void, typename T, typename D, typename S>
+      static
+      void
+      serialize(S& self, std::string const& name, std::unique_ptr<T, D>& v)
+      {
+        ELLE_LOG_COMPONENT("elle.serialization.Serializer");
+        ELLE_TRACE_SCOPE("%s: serialize unique pointer \"%s\"", self, name);
+        Details::serialize_named_option<Impl>(self, name, v);
+      }
+
+      template <typename Impl = void, typename T, typename S>
+      static
+      void
+      serialize(S& self, std::string const& name, std::shared_ptr<T>& v)
+      {
+        ELLE_LOG_COMPONENT("elle.serialization.Serializer");
+        ELLE_TRACE_SCOPE("%s: serialize shared pointer to %s \"%s\"",
+                         self, elle::type_info<T>(), name);
+        Details::serialize_named_option<Impl>(self, name, v);
+      }
+
+      // Raw pointers
+      // std::enable_if short-circuits serialization explicit pointer
+      // specialization such as BIGNUM*
+      template <typename Impl = void, typename T, typename S>
+      static
+      std::enable_if_t<
+        !_details::has_serialize_convert_api<T*, void>(), void>
+      serialize(S& self, std::string const& name, T*& v)
+      {
+        ELLE_LOG_COMPONENT("elle.serialization.Serializer");
+        ELLE_TRACE_SCOPE("%s: serialize raw pointer \"%s\"", self, name);
+        Details::serialize_named_option<Impl>(self, name, v);
+      }
     };
 
     template <>
@@ -757,18 +829,11 @@ namespace elle
     | Serialization |
     `--------------*/
 
-    template <typename S, typename T>
+    template <typename Impl, typename T>
     void
     Serializer::serialize(std::string const& name, T& v)
     {
-      static_assert(!virtually<T>(),
-        "serialize VirtuallySerializable objects through a pointer type");
-      if (auto entry = this->enter(name))
-      {
-        ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-        ELLE_DUMP("type: %s", elle::type_info<T>());
-        Serializer::serialize_switch<S>(*this, v);
-      }
+      Details::serialize<Impl>(*this, name, v);
     }
 
     /*------------------------------------.
@@ -798,61 +863,6 @@ namespace elle
         ELLE_DEBUG("reset option");
         _details::option_reset(opt);
       }
-    }
-
-    // boost::optional
-
-    template <typename S, typename T>
-    void
-    Serializer::serialize(std::string const& name, boost::optional<T>& opt)
-    {
-      ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-      ELLE_TRACE_SCOPE("%s: serialize option \"%s\"", *this, name);
-      Details::serialize_named_option<S>(*this, name, opt);
-    }
-
-    template <typename S>
-    void
-    Serializer::serialize(std::string const& name, DurationOpt& opt)
-    {
-      this->serialize<S>(name, static_cast<boost::optional<Duration>&>(opt));
-    }
-
-    // std::unique_ptr
-
-    template <typename S, typename T, typename D>
-    void
-    Serializer::serialize(std::string const& name,
-                          std::unique_ptr<T, D>& opt)
-    {
-      ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-      ELLE_TRACE_SCOPE("%s: serialize unique pointer \"%s\"", *this, name);
-      Details::serialize_named_option<S>(*this, name, opt);
-    }
-
-    // std::shared_ptr
-
-    template <typename S, typename T>
-    void
-    Serializer::serialize(std::string const& name, std::shared_ptr<T>& opt)
-    {
-      ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-      ELLE_TRACE_SCOPE("%s: serialize shared pointer to %s \"%s\"",
-                       *this, elle::type_info<T>(), name);
-      Details::serialize_named_option<S>(*this, name, opt);
-    }
-
-    // Raw pointers
-    // std::enable_if short-circuits serialization explicit pointer
-    // specialization such as BIGNUM*
-
-    template <typename S, typename T>
-    std::enable_if_t<!_details::has_serialize_convert_api<T*, void>(), void>
-    Serializer::serialize(std::string const& name, T*& opt)
-    {
-      ELLE_LOG_COMPONENT("elle.serialization.Serializer");
-      ELLE_TRACE_SCOPE("%s: serialize raw pointer \"%s\"", *this, name);
-      Details::serialize_named_option<S>(*this, name, opt);
     }
 
     /*------.

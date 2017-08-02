@@ -389,57 +389,6 @@ namespace elle
       template <typename Serializer = void, typename T>
       void
       serialize(std::string const& name, T& v);
-      /// Serialize or deserialize an arbitrary boost::optional.
-      ///
-      /// @tparam Serializer The type of Serializer.
-      /// @tparam T The type of the boost::optional underlying data to
-      ///           (de)serialize.
-      /// @param name The name of the entry.
-      /// @param v The variable to serialize or to deserialize to.
-      template <typename Serializer = void, typename T>
-      void
-      serialize(std::string const& name, boost::optional<T>& v);
-
-      /// Serialize or deserialize an optional Duration.
-      ///
-      /// @tparam Serializer The type of Serializer.
-      /// @param name The name of the entry.
-      /// @param v The variable to serialize or to deserialize to.
-      template <typename Serializer = void>
-      void
-      serialize(std::string const& name, DurationOpt& v);
-
-      /// Serialize or deserialize an arbitrary std::unique_ptr.
-      ///
-      /// @tparam Serializer The type of Serializer.
-      /// @tparam T The type of the object managed by the std::unique_ptr.
-      /// @tparam D The type of the deleter used by the std::unique_ptr.
-      /// @param name The name of the entry.
-      /// @param v The variable to serialize or to deserialize to.
-      template <typename Serializer = void, typename T, typename D>
-      void
-      serialize(std::string const& name, std::unique_ptr<T, D>& v);
-
-      /// Serialize or deserialize an arbitrary std::shared_ptr.
-      ///
-      /// @tparam Serializer The type of Serializer.
-      /// @tparam T The type of the object managed by the std::shared_ptr.
-      /// @param name The name of the entry.
-      /// @param v The variable to serialize or to deserialize to.
-      template <typename Serializer = void, typename T>
-      void
-      serialize(std::string const& name, std::shared_ptr<T>& v);
-
-      /// Serialize or deserialize a naked pointer.
-      ///
-      /// @tparam Serializer The type of Serializer.
-      /// @tparam T The type of the pointer.
-      /// @param name The name of the entry.
-      /// @param v The variable to serialize or to deserialize to.
-      template <typename Serializer = void, typename T>
-      std::enable_if_t<
-        !_details::has_serialize_convert_api<T*, void>(), void>
-      serialize(std::string const& name, T*& v);
 
       /// Serialize or deserialize a object as a given type As.
       ///
