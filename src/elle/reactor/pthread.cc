@@ -89,7 +89,7 @@ reactor_pthread_cond_timedwait(reactor_pthread_cond_t * c,
   msDelta += timeout->tv_nsec/1000000 - now.tv_usec / 1000;
   (*m)->release();
   try {
-    elle::reactor::wait(**c, boost::posix_time::millisec(msDelta));
+    elle::reactor::wait(**c, std::chrono::milliseconds(msDelta));
   }
   catch(...) {}
   elle::reactor::wait(**m);
@@ -119,7 +119,7 @@ reactor_mixed_pthread_cond_timedwait(reactor_pthread_cond_t * c,
   msDelta += timeout->tv_nsec/1000000 - now.tv_usec / 1000;
   pthread_mutex_unlock(m);
   try {
-    elle::reactor::wait(**c, boost::posix_time::millisec(msDelta));
+    elle::reactor::wait(**c, std::chrono::milliseconds(msDelta));
   }
   catch(...) {}
   pthread_mutex_lock(m);

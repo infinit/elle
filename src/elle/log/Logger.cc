@@ -184,21 +184,6 @@ namespace elle
     namespace
     {
       auto
-      now(bool microsec, bool universal)
-      {
-        using namespace boost::posix_time;
-        if (universal && microsec)
-          return microsec_clock::universal_time();
-        else if (universal && !microsec)
-          return second_clock::universal_time();
-        else if (!universal && microsec)
-          return microsec_clock::local_time();
-        else if (!universal && !microsec)
-          return second_clock::local_time();
-        elle::unreachable();
-      }
-
-      auto
       make_tags()
       {
         auto res = Tags{};
@@ -222,6 +207,7 @@ namespace elle
                          std::string const& function)
       -> Message
     {
+      auto const now = Clock::now();
       auto res = Message
         {
           level,
@@ -232,7 +218,7 @@ namespace elle
           line,
           function,
           this->indentation() - 1, // FIXME: Why this convention?
-          now(this->_time_microsec, this->_time_universal),
+          now,
           make_tags(),
         };
       if (0 <= res.indentation)
@@ -249,7 +235,7 @@ namespace elle
             line,
             function,
             0,
-            now(this->_time_microsec, this->_time_universal),
+            now,
             make_tags(),
           };
         this->_message(err);

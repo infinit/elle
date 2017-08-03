@@ -17,6 +17,7 @@
 # include <boost/multi_index_container.hpp>
 
 # include <elle/Buffer.hh>
+# include <elle/Duration.hh> // elle::Time
 # include <elle/TypeInfo.hh>
 # include <elle/Version.hh>
 # include <elle/attribute.hh>
@@ -388,45 +389,7 @@ namespace elle
       template <typename Serializer = void, typename T>
       void
       serialize(std::string const& name, T& v);
-      /// Serialize or deserialize an arbitrary boost::optional.
-      ///
-      /// @tparam Serializer The type of Serializer.
-      /// @tparam T The type of the boost::optional underlying data to
-      ///           (de)serialize.
-      /// @param name The name of the entry.
-      /// @param v The variable to serialize or to deserialize to.
-      template <typename Serializer = void, typename T>
-      void
-      serialize(std::string const& name, boost::optional<T>& opt);
-      /// Serialize or deserialize an arbitrary std::unique_ptr.
-      ///
-      /// @tparam Serializer The type of Serializer.
-      /// @tparam T The type of the object managed by the std::unique_ptr.
-      /// @tparam D The type of the deleter used by the std::unique_ptr.
-      /// @param name The name of the entry.
-      /// @param v The variable to serialize or to deserialize to.
-      template <typename Serializer = void, typename T, typename D>
-      void
-      serialize(std::string const& name, std::unique_ptr<T, D>& opt);
-      /// Serialize or deserialize an arbitrary std::shared_ptr.
-      ///
-      /// @tparam Serializer The type of Serializer.
-      /// @tparam T The type of the object managed by the std::shared_ptr.
-      /// @param name The name of the entry.
-      /// @param v The variable to serialize or to deserialize to.
-      template <typename Serializer = void, typename T>
-      void
-      serialize(std::string const& name, std::shared_ptr<T>& opt);
-      /// Serialize or deserialize a naked pointer.
-      ///
-      /// @tparam Serializer The type of Serializer.
-      /// @tparam T The type of the pointer.
-      /// @param name The name of the entry.
-      /// @param v The variable to serialize or to deserialize to.
-      template <typename Serializer = void, typename T>
-      std::enable_if_t<
-        !_details::has_serialize_convert_api<T*, void>(), void>
-      serialize(std::string const& name, T*& opt);
+
       /// Serialize or deserialize a object as a given type As.
       ///
       /// @tparam Serializer The type of Serializer.
@@ -708,10 +671,12 @@ namespace elle
       virtual
       void
       _serialize(boost::posix_time::ptime& v) = 0;
+
       /// Serialize or deserialize an elle::Duration.
       template <typename Repr, typename Ratio>
       void
       _serialize(std::chrono::duration<Repr, Ratio>& duration);
+
       /// Serialize or deserialize a Duration type from its ticks, numerator
       /// and denominator.
       ///
@@ -734,6 +699,7 @@ namespace elle
       _serialize_named_option(std::string const& name,
                               bool present,
                               std::function<void ()> const& f) = 0;
+
       /// Serialize an anonymous optional entry.
       ///
       /// @param present Whether the option is present of not.
@@ -742,6 +708,7 @@ namespace elle
       void
       _serialize_option(bool present,
                         std::function<void ()> const& f) = 0;
+
       /// Serialize or deserialize a variant (such as elle::Option).
       ///
       /// @param names The names of the types the variant can take.

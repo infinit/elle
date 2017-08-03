@@ -18,7 +18,7 @@ std::unique_ptr<elle::reactor::Barrier> exit_request;
 static void send(std::string const& data)
 {
   while (utpsocket == nullptr)
-    elle::reactor::sleep(100_ms);
+    elle::reactor::sleep(100ms);
   ELLE_TRACE("pushing data");
   utpsocket->write(elle::ConstWeakBuffer(data));
 }

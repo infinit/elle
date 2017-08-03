@@ -13,13 +13,15 @@
 #include <elle/serialization/json/Error.hh>
 #include <elle/test.hh>
 
+using namespace std::literals;
+
 ELLE_LOG_COMPONENT("elle.serialization.test");
 
 namespace
 {
   template <typename Format, typename T>
-  void
-  round_trip(T const& value)
+  T
+  do_round_trip(T const& value)
   {
     ELLE_LOG("round-trip: {} ({})", value, elle::type_info(value));
     std::stringstream stream;
@@ -31,8 +33,15 @@ namespace
       T res;
       typename Format::SerializerIn input(stream);
       input.serialize("value", res);
-      BOOST_TEST(value == res);
+      return res;
     }
+  }
+
+  template <typename Format, typename T>
+  void
+  round_trip(T const& value)
+  {
+    BOOST_TEST(value == do_round_trip<Format>(value));
   }
 }
 
@@ -543,6 +552,18 @@ namespace
   check_date()
   {
     round_trip<Format>(boost::posix_time::microsec_clock().local_time());
+    round_trip<Format>(elle::Duration{123min});
+    // elle::Time.
+    {
+      // The precision of this clock is 1ns on GNU/Linux, but our
+      // serialization's acuracy is 1us.
+      auto const now = elle::Clock::now();
+      auto const val = do_round_trip<Format>(now);
+      BOOST_TEST(val - 1us <= now);
+      BOOST_TEST(now <= val  + 1us);
+    }
+    round_trip<Format>(elle::DurationOpt{2h});
+    round_trip<Format>(elle::DurationOpt{});
   }
 
   template <typename Format>
@@ -557,7 +578,7 @@ namespace
   chrono()
   {
     round_trip<Format>(std::chrono::system_clock::duration(601));
-    round_trip<Format>(std::chrono::high_resolution_clock::duration(602));
+    round_trip<Format>(std::chrono::steady_clock::duration(602));
     round_trip<Format>(std::chrono::nanoseconds(603));
     round_trip<Format>(std::chrono::microseconds(604));
     round_trip<Format>(std::chrono::milliseconds(605));
@@ -1421,6 +1442,7 @@ json_optionals()
       serializer.serialize("value", o);
     }
     auto json = elle::json::read(stream);
+    BOOST_REQUIRE(json.type() == typeid(elle::json::Object));
     BOOST_CHECK_EQUAL(boost::any_cast<elle::json::Object&>(json).size(), 0);
   }
 }

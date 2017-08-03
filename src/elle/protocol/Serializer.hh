@@ -18,7 +18,7 @@ namespace elle
 {
   namespace protocol
   {
-    /// A serializer that wrap a std::iostream and is in charge of:
+    /// A serializer that wraps a std::iostream and is in charge of:
     /// - negotiating the version of the protocol.
     /// - splitting packets into small chunks.
     /// - write and read control bytes (e. Transfer is interrupted without
@@ -28,9 +28,9 @@ namespace elle
     ///
     /// When a serializer is constructed on top a std::iostream, it will push
     /// its version and read the peer version in order to agree what version to
-    /// use (actually, the smaller of the versions).
+    /// use (the smallest).
     ///
-    /// \code{.cc}
+    /// @code{.cc}
     ///
     /// elle::reactor::network::TCPSocket socket("127.0.0.1", 8182);
     /// elle::protocol::Serializer serializer(socket, elle::Version{0, 3, 0},
@@ -38,7 +38,7 @@ namespace elle
     /// // On top of that Serializer, you can create a ChanneledStream.
     /// elle::protocol::ChanneledStream cstream(serializer);
     ///
-    /// \endcode
+    /// @endcode
     class ELLE_API Serializer
       : public Stream
     {
@@ -67,8 +67,8 @@ namespace elle
       Serializer(std::iostream& stream,
                  elle::Version const& version = elle::Version(0, 1, 0),
                  bool checksum = true,
-                 boost::optional<std::chrono::milliseconds> ping_period = {},
-                 boost::optional<std::chrono::milliseconds> ping_timeout = {},
+                 elle::DurationOpt ping_period = {},
+                 elle::DurationOpt ping_timeout = {},
                  elle::Buffer::Size chunk_size = 2 << 16);
       ~Serializer();
 

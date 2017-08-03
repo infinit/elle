@@ -109,12 +109,12 @@ namespace elle
                          long ms,
                          void* userp);
         void
-        set_timeout(boost::posix_time::time_duration const& timeout);
+        set_timeout(Duration const& timeout);
         void
         unset_timeout();
         void
         handle_timeout(const boost::system::error_code& error);
-        boost::asio::deadline_timer _timer;
+        AsioTimer _timer;
 
       /*-----.
       | Info |

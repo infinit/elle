@@ -26,3 +26,6 @@
 	path = src/elle/cryptography/modules/dopenssl
 	url = https://github.com/infinit/dopenssl
 	fetchRecurseSubmodules = false
+[submodule "src/elle/date"]
+	path = src/elle/date
+	url = https://github.com/HowardHinnant/date.git

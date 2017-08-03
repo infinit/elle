@@ -9,6 +9,7 @@
 #include <boost/noncopyable.hpp>
 #include <boost/signals2.hpp> // scoped_connection, for plugins.
 
+#include <elle/Duration.hh>
 #include <elle/attribute.hh>
 #include <elle/log/fwd.hh>
 #include <elle/memory.hh>
@@ -141,7 +142,8 @@ namespace elle
     `----------*/
     public:
       using Tags = std::vector<std::pair<std::string, std::string>>;
-      using Time = boost::posix_time::ptime;
+      using Clock = elle::Clock;
+      using Time = Clock::time_point;
       struct Message
       {
         Level level;
@@ -180,7 +182,6 @@ namespace elle
       /// @param file    the source file from which comes the message
       /// @param line    and its line number
       /// @param function and the name of the calling function
-      virtual // FIXME: should not be virtual.
       void message(Level level,
                    Type type,
                    std::string const& component,

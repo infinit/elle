@@ -72,8 +72,8 @@ namespace elle
           ///
           /// @param timeout Initial value of the timeout attribute.
           /// @param version Initial value of the version attribute.
-          Configuration(DurationOpt timeout = 30_sec,
-                        DurationOpt stall_timeout = DurationOpt(),
+          Configuration(DurationOpt timeout = 30s,
+                        DurationOpt stall_timeout = {},
                         Version version = Version::v11,
                         bool keep_alive = true,
                         boost::optional<Proxy> proxy = boost::none);

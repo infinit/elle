@@ -6,6 +6,8 @@
 
 #include <elle/test.hh>
 
+using namespace std::literals;
+
 using elle::reactor::fsm::Machine;
 using elle::reactor::fsm::State;
 using elle::reactor::fsm::Transition;
@@ -157,7 +159,7 @@ test_run_transition_signal()
       auto& current = *sched.current();
       current.wait(s1.done());
       BOOST_CHECK(beacon1);
-      BOOST_CHECK(!current.wait(s1.exited(), 500_ms));
+      BOOST_CHECK(!current.wait(s1.exited(), 500ms));
       BOOST_CHECK(!beacon2);
       trigger.signal();
       current.wait(s2.exited());

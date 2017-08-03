@@ -60,7 +60,7 @@ namespace elle
         void
         rdv_connect(std::string const& id,
                     std::string const& address,
-                    DurationOpt timeout = DurationOpt());
+                    DurationOpt timeout = {});
         /// @see RDVSocket::set_local_id.
         void
         set_local_id(std::string const& id);

@@ -27,7 +27,7 @@ namespace elle
     ///       [&b]
     ///       {
     ///         std::cout << "[one sleep] "
-    ///         elle::reactor::sleep(50_ms);
+    ///         elle::reactor::sleep(50ms);
     ///         b.open();
     ///         std::cout << "[one done] "
     ///       });

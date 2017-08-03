@@ -31,18 +31,18 @@ namespace elle
         ///                times out.
         TCPSocket(const std::string& hostname,
                   const std::string& port,
-                  DurationOpt timeout = DurationOpt());
+                  DurationOpt timeout = {});
         /// @see TCPSocket::TCPSocket.
         TCPSocket(const std::string& hostname,
                   int port,
-                  DurationOpt timeout = DurationOpt());
+                  DurationOpt timeout = {});
         /// Construct a TCPSocket.
         ///
         /// \param endpoint The EndPoint of the host.
         /// \param timeout The maximum duration before the connection attempt
         ///                times out.
         TCPSocket(boost::asio::ip::tcp::endpoint const& endpoint,
-                  DurationOpt timeout = DurationOpt());
+                  DurationOpt timeout = {});
         TCPSocket(TCPSocket&& src);
         ~TCPSocket() override;
       private:

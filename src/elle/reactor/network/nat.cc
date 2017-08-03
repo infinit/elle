@@ -348,7 +348,7 @@ namespace elle
           auto b = elle::WeakBuffer(spMsg->GetData(), spMsg->GetAllocatedSize());
           try
           {
-            int size = this->_handle->receive_from(b, remote_stun, 500_ms);
+            int size = this->_handle->receive_from(b, remote_stun, 500ms);
             CSocketAddress addrRemote(*remote_stun.data());
             CSocketAddress addrLocal(*this->_handle->local_endpoint().data());
             spMsg->SetSize(size);

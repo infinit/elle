@@ -131,9 +131,9 @@ namespace
     {
       BOOST_TEST_MESSAGE("msg: {" << line << "}");
       auto const re =
-        std::regex{"(.*?-.*?-.*?)"                       // 1: date.
-                   " "
-                   "(?:"
+        std::regex{"(?:"
+                   "" "(.*?-.*?-.*?)"                       // 1: date.
+                   "" " "
                    "" "([0-9][0-9]:[0-9][0-9]:[0-9][0-9])"  // 2: time in secs.
                    "" "(?:\\.([0-9]{6}))?"                  // 3: microseconds.
                    "" ": "
@@ -142,13 +142,15 @@ namespace
                    "" "\\[(.*?)\\]"                         // 4: component.
                    ")?"
                    " "
-                   "(.*)"};                              // 5: message.
+                   "(.*)"};                                 // 5: message.
       auto m = std::smatch{};
       BOOST_REQUIRE(std::regex_match(line, m, re));
       ELLE_LOG("date: {}, time: {}, microsec: {}, component: {}, message: {}",
                m[1], m[2], m[3], m[4], m[5]);
-      this->date = m[1];
-      this->time = m[2];
+      if (m[1].length())
+        this->date = m[1];
+      if (m[2].length())
+        this->time = m[2];
       if (m[3].length())
         this->microsec = m[3];
       if (m[4].length())
@@ -244,7 +246,7 @@ _environment_format_test(bool env)
   ELLE_LOG("Test 2");
   // FIXME: Checking time printing is non-deterministic.
   // res << "[1m"
-  //     << boost::posix_time::second_clock::universal_time() << ": "
+  //     << Clock::now() << ": "
   //     << "[Test] Test 2\n[0m";
   res << "[1m[Test] Test 2\n[0m";
   BOOST_CHECK_EQUAL(ss.str(), res.str());
@@ -317,7 +319,7 @@ _environment_format_test(bool env)
   ELLE_LOG("Test 4");
   // FIXME: Checking time printing is non-deterministic.
   // res << "[1m"
-  //     << boost::posix_time::second_clock::universal_time() << ": "
+  //     << Clock::now() << ": "
   //     << "[Test] [" << boost::lexical_cast<std::string>(getpid()) << "] "
   //     << "Test 4\n[0m";
   res << "[1m[Test] [" << boost::lexical_cast<std::string>(getpid()) << "] "
@@ -758,7 +760,8 @@ namespace
       {
         std::stringstream output;
         elle::os::setenv("ELLE_LOG_LEVEL", "DUMP");
-        auto prev = elle::log::logger(std::make_unique<elle::log::TextLogger>(output));
+        auto prev
+          = elle::log::logger(std::make_unique<elle::log::TextLogger>(output));
         ELLE_LOG_COMPONENT("multiline");
         ELLE_TRACE("This message\nis\nsplitted\n\ninto\r\n5 lines\n\n\r\n\r\r");
         elle::log::logger(std::move(prev));
@@ -781,7 +784,7 @@ namespace
       // We get an empty line at the end.
       if (lines.back().empty())
         lines.pop_back();
-      for (auto line: lines)
+      for (auto const& line: lines)
       {
         auto logm = LogMessage{line};
         BOOST_TEST(!logm.time.empty());
@@ -897,7 +900,7 @@ trim()
   elle::log::logger(std::make_unique<elle::log::TextLogger>(output));
   ELLE_LOG_COMPONENT("trim");
   ELLE_TRACE("   \n\t\t\tThis message is trimmed !    \n\n\r\n\r\r\t ");
-  BOOST_CHECK_EQUAL(output.str(), "[trim] This message is trimmed !\n");
+  BOOST_TEST(output.str() == "[trim] This message is trimmed !\n");
 }
 
 /*---------------------.

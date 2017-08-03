@@ -96,7 +96,7 @@ struct Record
   Record(std::string const& name)
     : _name(name)
     , _id(elle::UUID::random())
-    , _date(boost::posix_time::second_clock::universal_time())
+    , _date(Clock::now())
   {}
 
   // ...

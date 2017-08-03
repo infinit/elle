@@ -23,6 +23,8 @@
 
 ELLE_LOG_COMPONENT("elle.reactor.network.SSL.test");
 
+using namespace std::literals;
+
 using elle::reactor::network::FingerprintedSocket;
 using elle::reactor::network::SSLCertificate;
 using elle::reactor::network::Socket;
@@ -278,7 +280,7 @@ ELLE_TEST_SCHEDULED(encryption)
 
 ELLE_TEST_SCHEDULED(handshake_timeout)
 {
-  auto const timeout = valgrind(10_ms);
+  auto const timeout = valgrind(10ms);
   elle::reactor::Barrier listening;
   elle::reactor::Barrier timed_out;
   int port = 0;
@@ -297,9 +299,7 @@ ELLE_TEST_SCHEDULED(handshake_timeout)
       });
     elle::reactor::wait(listening);
     BOOST_CHECK_THROW(
-      SSLSocket("127.0.0.1",
-                std::to_string(port),
-                timeout),
+      SSLSocket("127.0.0.1", std::to_string(port), timeout),
       elle::reactor::network::TimeOut);
     timed_out.open();
     elle::reactor::wait(scope);
@@ -469,7 +469,7 @@ ELLE_TEST_SCHEDULED(shutdown_timeout)
   {
     elle::reactor::network::SSLSocket valid(
       "127.0.0.1", std::to_string(server.port()));
-    BOOST_CHECK(!elle::reactor::wait(server_thread, 1_sec));
+    BOOST_CHECK(!elle::reactor::wait(server_thread, 1s));
   }
   elle::reactor::wait(server_thread);
 }
@@ -559,11 +559,11 @@ ELLE_TEST_SCHEDULED(shutdown_asynchronous)
         "127.0.0.1", std::to_string(forwarder.port()));
       forwarding.close();
       connected1.open();
-      BOOST_CHECK_THROW(synchronous.read(1, 1_sec),
+      BOOST_CHECK_THROW(synchronous.read(1, 1s),
                         elle::reactor::network::TimeOut);
       BOOST_CHECK(!shutdown1.opened());
       forwarding.open();
-      BOOST_CHECK_THROW(synchronous.read(1, 1_sec),
+      BOOST_CHECK_THROW(synchronous.read(1, 1s),
                         elle::reactor::network::ConnectionClosed);
     }
     elle::reactor::wait(shutdown1);
@@ -573,11 +573,11 @@ ELLE_TEST_SCHEDULED(shutdown_asynchronous)
         "127.0.0.1", std::to_string(forwarder.port()));
       forwarding.close();
       connected2.open();
-      BOOST_CHECK_THROW(asynchronous.read(1, 1_sec),
+      BOOST_CHECK_THROW(asynchronous.read(1, 1s),
                         elle::reactor::network::TimeOut);
       elle::reactor::wait(shutdown2);
       forwarding.open();
-      BOOST_CHECK_THROW(asynchronous.read(1, 1_sec),
+      BOOST_CHECK_THROW(asynchronous.read(1, 1s),
                         elle::reactor::network::ConnectionClosed);
     }
     forwarder_thread.terminate();
@@ -665,7 +665,7 @@ ELLE_TEST_SCHEDULED(shutdown_asynchronous_timeout)
     ELLE_LOG("connect client")
     {
       elle::reactor::network::SSLSocket client(
-        "127.0.0.1", std::to_string(port), valgrind(200_ms));
+        "127.0.0.1", std::to_string(port), valgrind(200ms));
       client.shutdown_asynchronous(true);
     }
     ELLE_LOG("wait for SSL shutdown timeout")
@@ -700,7 +700,7 @@ ELLE_TEST_SCHEDULED(shutdown_asynchronous_concurrent)
     {
       elle::reactor::network::SSLSocket client(
         "127.0.0.1", std::to_string(port),
-        valgrind(500_ms, 5));
+        valgrind(500ms, 5));
       client.shutdown_asynchronous(true);
       elle::reactor::wait(closed);
     }

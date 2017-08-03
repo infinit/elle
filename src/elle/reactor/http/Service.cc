@@ -300,12 +300,12 @@ namespace elle
         if (ms == -1)
           self->unset_timeout();
         else
-          self->set_timeout(boost::posix_time::milliseconds(ms));
+          self->set_timeout(std::chrono::milliseconds(ms));
         return 0;
       }
 
       void
-      Service::set_timeout(boost::posix_time::time_duration const& timeout)
+      Service::set_timeout(Duration const& timeout)
       {
         ELLE_DEBUG("%s: set timeout to %s", *this, timeout);
         this->_timer.cancel();

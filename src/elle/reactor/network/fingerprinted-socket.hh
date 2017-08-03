@@ -24,7 +24,7 @@ namespace elle
         /// \param timeout @see SSLSocket::SSLSocket.
         FingerprintedSocket(SSLEndPoint const& endpoint,
                             std::vector<unsigned char>  fingerprint,
-                            DurationOpt timeout = DurationOpt());
+                            DurationOpt timeout = {});
 
         /// Create a FingerprintedSocket to a host:port.
         ///
@@ -35,7 +35,7 @@ namespace elle
         FingerprintedSocket(const std::string& hostname,
                             const std::string& port,
                             std::vector<unsigned char> const& fingerprint,
-                            DurationOpt timeout = DurationOpt());
+                            DurationOpt timeout = {});
 
         ~FingerprintedSocket();
 
