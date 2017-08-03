@@ -48,7 +48,8 @@ namespace
       logger = std::make_unique<elle::log::TextLogger>(ss);
     }
     else
-      logger = std::make_unique<elle::log::TextLogger>(ss, "DUMP", true);
+      logger = std::make_unique<elle::log::TextLogger>(ss, "DUMP", "ELLE_LOG_LEVEL",
+                                                       true);
     BOOST_TEST(logger->component_level("Test") == Level::dump);
 
     auto prev = elle::log::logger(std::move(logger));
@@ -190,12 +191,11 @@ _environment_format_test(bool env)
     logger = new elle::log::TextLogger(
       ss,
       "",     // log_level
+      "ELLE_LOG_LEVEL", // envvar
       false,  // display_type
       false,  // enable_pid
       false,  // enable_tid
-      // FIXME: Checking time printing is non-deterministic.
-      // true,   // enable_time
-      false,
+      false, // true, enable_time. FIXME: Checking time printing is non-deterministic.
       false   // universal_time
     );
   }
@@ -227,6 +227,7 @@ _environment_format_test(bool env)
     logger = new elle::log::TextLogger(
       ss,
       "",     // log_level
+      "ELLE_LOG_LEVEL", // envvar
       false,  // display_type
       false,  // enable_pid
       false,  // enable_tid
@@ -264,6 +265,7 @@ _environment_format_test(bool env)
     logger = new elle::log::TextLogger(
       ss,
       "",     // log_level
+      "ELLE_LOG_LEVEL", // envvar
       false,  // display_type
       true,   // enable_pid
       false,  // enable_tid
@@ -298,6 +300,7 @@ _environment_format_test(bool env)
     logger = new elle::log::TextLogger(
       ss,
       "",     // log_level
+      "ELLE_LOG_LEVEL", // envvar
       false,  // display_type
       true,   // enable_pid
       false,  // enable_tid
@@ -339,6 +342,7 @@ _environment_format_test(bool env)
     logger = new elle::log::TextLogger(
       ss,
       "",     // log_level
+      "ELLE_LOG_LEVEL", // envvar
       false,  // display_type
       true,   // enable_pid
       false,  // enable_tid
@@ -375,6 +379,7 @@ _environment_format_test(bool env)
     logger = new elle::log::TextLogger(
       ss,
       "",     // log_level
+      "ELLE_LOG_LEVEL", // envvar
       true,   // display_type
       false,  // enable_pid
       false,  // enable_tid
