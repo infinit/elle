@@ -139,7 +139,9 @@ namespace elle
       json_spirit::Value value;
       if (!json_spirit::read(stream, value))
         throw ParseError(elle::sprintf("JSON error"));
-      return from_spirit(value);
+      auto res = from_spirit(value);
+      ELLE_DUMP("read json: {}", pretty_print(res));
+      return res;
     }
 
     Json
@@ -155,6 +157,7 @@ namespace elle
       return res;
     }
 
+    // FIXME: xalloc for pretty-printing.
     void
     write(std::ostream& stream,
           Json const& any,

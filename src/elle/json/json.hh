@@ -31,6 +31,7 @@ namespace elle
       return {begin(c), end(c)};
     }
 
+    /// Map `fun` on the elements of `c`, and return as a Json array.
     template <typename Cont, typename Fun>
     auto
     make_array(const Cont& c, Fun&& fun)
