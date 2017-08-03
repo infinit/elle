@@ -35,10 +35,10 @@
 /// There are two supported ways to define your tests:
 /// 1. Using BOOST_AUTO_TEST_CASE and generated test suite:
 /// {{{
-///     #define ELLE_TEST_MODULE "My module"
+///     #define ELLE_TEST_MODULE MyModule
 ///     #include <elle/test.hh>
 ///     BOOST_AUTO_TEST_CASE(SimpleCase) { /* Test your code here */ }
-///.}}}
+/// }}}
 ///
 /// 2. By Defining your own test suite:
 /// {{{
@@ -58,7 +58,22 @@
 #endif
 #include <boost/test/unit_test.hpp>
 
-static std::string test_binary;
+namespace
+{
+  namespace _detail
+  {
+    // A readable timestamp, printable with elle::print.
+    auto
+    now()
+    {
+      using namespace boost::posix_time;
+      return microsec_clock::local_time();
+    }
+  }
+
+  /// Name of this executable (argv[0]).
+  std::string test_binary;
+}
 
 #define ELLE_TEST_CASE(F, ...)                                          \
   boost::unit_test::make_test_case(                                     \
@@ -174,11 +189,12 @@ namespace
     _exit(70); // EX_SOFTWARE
   }
 
+  /// Called when the test unit's credit has expired.
   ELLE_COMPILER_ATTRIBUTE_MAYBE_UNUSED
   void alarm_handler(std::string const& name)
   {
     ELLE_LOG_COMPONENT("elle.Test");
-    ELLE_ERR("test %s timeout: SIGALRM", name);
+    ELLE_ERR("%s: test %s timeout: SIGALRM", _detail::now(), name);
     // Give us some time to teardown properly, dump stuff etc., then
     // exit brutally.  The buildfarm has been stuck several times for
     // hours because of a signal handling that did not finish.
@@ -196,43 +212,43 @@ namespace
 
 
 
-#define ELLE_TEST_SCHEDULED_HELPER(Name, Args)                        \
-static                                                                \
-void                                                                  \
-BOOST_PP_CAT(Name,_impl)(ELLE_TEST_PROTOTYPE(Args));                  \
-                                                                      \
-static                                                                \
-void                                                                  \
-Name(ELLE_TEST_PROTOTYPE(Args))                                       \
-{                                                                     \
-  elle::reactor::Scheduler sched;                                     \
-  ELLE_TEST_HANDLE_SIGALRM(sched, Name);                              \
-  elle::reactor::Thread main(                                         \
-    sched, "main",                                                    \
-    [&]                                                               \
-    {                                                                 \
-      ELLE_LOG_COMPONENT("elle.Test");                                \
-      ELLE_LOG("starting test: %s (%s)", BOOST_PP_STRINGIZE(Name),      \
-               boost::unit_test::framework::current_test_case().full_name())\
-        BOOST_PP_CAT(Name,_impl)(ELLE_TEST_CALL(Args));               \
-    });                                                               \
-  try                                                                 \
-  {                                                                   \
-    sched.run();                                                      \
-  }                                                                   \
-  catch (elle::Error const& e)                                        \
-  {                                                                   \
-    ELLE_LOG_COMPONENT("elle.Test");                                  \
-    ELLE_ERR("exception escaped test %s: %s",                         \
-             BOOST_PP_STRINGIZE(Name), e);                            \
-    ELLE_ERR("%s", e.backtrace());                                    \
-    throw;                                                            \
-  }                                                                   \
-}                                                                     \
-                                                                      \
-static                                                                \
-void                                                                  \
-BOOST_PP_CAT(Name, _impl)(ELLE_TEST_PROTOTYPE(Args))                  \
+#define ELLE_TEST_SCHEDULED_HELPER(Name, Args)                          \
+static                                                                  \
+void                                                                    \
+BOOST_PP_CAT(Name,_impl)(ELLE_TEST_PROTOTYPE(Args));                    \
+                                                                        \
+static                                                                  \
+void                                                                    \
+Name(ELLE_TEST_PROTOTYPE(Args))                                         \
+{                                                                       \
+  ELLE_LOG_COMPONENT("elle.Test");                                      \
+  elle::reactor::Scheduler sched;                                       \
+  ELLE_TEST_HANDLE_SIGALRM(sched, Name);                                \
+  elle::reactor::Thread main(                                           \
+    sched, "main",                                                      \
+    [&]                                                                 \
+    {                                                                   \
+      ELLE_LOG("%s: starting test: %s (%s)",                            \
+               _detail::now(),                                          \
+               BOOST_PP_STRINGIZE(Name),                                \
+               boost::unit_test::framework::current_test_case().full_name()) \
+        BOOST_PP_CAT(Name,_impl)(ELLE_TEST_CALL(Args));                 \
+    });                                                                 \
+  try                                                                   \
+  {                                                                     \
+    sched.run();                                                        \
+  }                                                                     \
+  catch (elle::Error const& e)                                          \
+  {                                                                     \
+    ELLE_ERR("exception escaped test %s: %s", BOOST_PP_STRINGIZE(Name), e); \
+    ELLE_ERR("%s", e.backtrace());                                      \
+    throw;                                                              \
+  }                                                                     \
+}                                                                       \
+                                                                        \
+static                                                                  \
+void                                                                    \
+BOOST_PP_CAT(Name, _impl)(ELLE_TEST_PROTOTYPE(Args))
 
 #define ELLE_TEST_SCHEDULED_THROWS(Name, _exception_type_)            \
 static                                                                \
