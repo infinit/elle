@@ -110,7 +110,7 @@ namespace elle
           set_result(Endpoint endpoint);
           Barrier barrier;
           boost::optional<Endpoint> result;
-          boost::posix_time::ptime result_time;
+          Time result_time;
           int waiters;
         };
         using Contacts = std::unordered_map<std::string, ContactInfo>;

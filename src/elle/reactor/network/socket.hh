@@ -100,7 +100,7 @@ namespace elle
         virtual
         void
         read(elle::WeakBuffer buffer,
-             DurationOpt timeout = DurationOpt(),
+             DurationOpt timeout = {},
              int* bytes_read = nullptr);
         /// Read some data and return the number of bytes read.
         ///
@@ -111,7 +111,7 @@ namespace elle
         /// @returns The number of bytes read.
         virtual
         Size
-        read_some(elle::WeakBuffer buffer, DurationOpt timeout = DurationOpt(),
+        read_some(elle::WeakBuffer buffer, DurationOpt timeout = {},
                   int* bytes_read = nullptr) = 0;
         /// Convenience wrapper around ::read returning an elle::Buffer.
         ///
@@ -120,7 +120,7 @@ namespace elle
         ///                not enough data is available.
         /// @returns An elle::Buffer containing the data.
         elle::Buffer
-        read(Size size, DurationOpt timeout = DurationOpt());
+        read(Size size, DurationOpt timeout = {});
         /// Convenience wrapper around ::read_some returning an elle::Buffer.
         ///
         /// @param size The maximum number of byte to read.
@@ -128,7 +128,7 @@ namespace elle
         ///                no data is available.
         /// @returns An elle::Buffer containing the data.
         elle::Buffer
-        read_some(Size size, DurationOpt timeout = DurationOpt());
+        read_some(Size size, DurationOpt timeout = {});
         /// Read until the delimiter is found.
         ///
         /// Delimiter is included in the resulting Buffer.
@@ -140,7 +140,7 @@ namespace elle
         virtual
         elle::Buffer
         read_until(std::string const& delimiter,
-                   DurationOpt opt = DurationOpt()) = 0;
+                   DurationOpt opt = {}) = 0;
 
      /*----------------.
      | Pretty printing |
@@ -303,19 +303,19 @@ namespace elle
         ///
         /// This actually call Self::_read.
         void
-        read(elle::WeakBuffer buffer, DurationOpt timeout = DurationOpt(),
+        read(elle::WeakBuffer buffer, DurationOpt timeout = {},
              int* bytes_read = nullptr) override;
         using Super::read_some;
         /// @see Socket::read_some.
         ///
         /// This actually call Self::_read.
         Size
-        read_some(elle::WeakBuffer buffer, DurationOpt timeout = DurationOpt(),
+        read_some(elle::WeakBuffer buffer, DurationOpt timeout = {},
                   int* bytes_read = nullptr) override;
         /// @see Socket::read_until.
         elle::Buffer
         read_until(std::string const& delimiter,
-                   DurationOpt opt = DurationOpt()) override;
+                   DurationOpt opt = {}) override;
 
       private:
         /// Read data from the Socket.

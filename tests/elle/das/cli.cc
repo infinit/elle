@@ -4,9 +4,12 @@
 
 #include <boost/range/numeric.hpp> // boost::accumulate
 
+#include <elle/Duration.hh>
 #include <elle/Exception.hh>
 #include <elle/printf.hh>
 #include <elle/test.hh>
+
+using namespace std::literals;
 
 ELLE_LOG_COMPONENT("tests.das.cli");
 
@@ -251,6 +254,19 @@ namespace conversions
     BOOST_TEST(call(proto, f, {"--foo", "2", "--foo", "3"})
                == std::vector<int>({2, 3}));
   }
+
+  static
+  void
+  durations()
+  {
+    using elle::das::cli::call;
+    auto const f = [] (elle::Duration d) { return d; };
+    auto const proto = elle::das::named::prototype(foo);
+    BOOST_TEST_MESSAGE(call(proto, f, {"--foo", "10ms"}));
+    BOOST_TEST(call(proto, f, {"--foo", "10ms"}) == 10ms);
+    BOOST_TEST(call(proto, f, {"--foo", "123min"}) == 123min);
+    BOOST_TEST(call(proto, f, {"--foo", "10h"}) == 10h);
+  }
 }
 
 static
@@ -484,6 +500,7 @@ ELLE_TEST_SUITE()
     conversions->add(BOOST_TEST_CASE(boolean));
     conversions->add(BOOST_TEST_CASE(multiple_strings));
     conversions->add(BOOST_TEST_CASE(multiple_integers));
+    conversions->add(BOOST_TEST_CASE(durations));
   }
   master.add(BOOST_TEST_CASE(defaults));
   master.add(BOOST_TEST_CASE(defaulted));

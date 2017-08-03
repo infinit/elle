@@ -57,16 +57,15 @@ namespace elle
         req.command = rdv::Command::ping;
         req.id = id;
         elle::Buffer buf = elle::serialization::json::serialize(req, false);
-        auto now = boost::posix_time::second_clock::universal_time();
+        auto now = Clock::now();
         while (true)
         {
           this->_send_to_failsafe(
             elle::ConstWeakBuffer(buf.contents(), buf.size()),
             ep);
-          if (reactor::wait(_server_reached, 500_ms))
+          if (reactor::wait(_server_reached, 500ms))
             return;
-          if (timeout &&
-              boost::posix_time::second_clock::universal_time() - now > *timeout)
+          else if (timeout && Clock::now() - now > *timeout)
             throw TimeOut();
         }
       }
@@ -227,7 +226,7 @@ namespace elle
             if (--it->second.waiters <= 0)
               this->_contacts.erase(it);
           });
-        auto now = boost::posix_time::second_clock::universal_time();
+        auto now = Clock::now();
         while (true)
         {
           if (!endpoints.empty())
@@ -243,9 +242,7 @@ namespace elle
               && this->_server_reached.opened()
               && !id.empty())
           {
-            if (c.result
-                && boost::posix_time::second_clock::local_time() - c.result_time
-                   < 10_sec)
+            if (c.result && Clock::now() - c.result_time < 10s)
             {
               // RDV gave us an enpoint, but we are not connected to it yet,
               // ping it.
@@ -261,7 +258,7 @@ namespace elle
               this->_send_to_failsafe(buf, _server);
             }
           }
-          if (reactor::wait(this->_contacts.at(contactid).barrier, 500_ms))
+          if (reactor::wait(this->_contacts.at(contactid).barrier, 500ms))
           {
             auto& c = _contacts.at(contactid);
             if (c.result)
@@ -272,8 +269,7 @@ namespace elle
             else
               throw elle::Error(elle::sprintf("contact(%s) aborted", id));
           }
-          if (timeout &&
-              boost::posix_time::second_clock::universal_time() - now > *timeout)
+          else if (timeout && Clock::now() - now > *timeout)
             throw TimeOut();
         }
       }
@@ -323,7 +319,7 @@ namespace elle
           }
           for (auto const& ep: to_ping)
             this->_send_ping(ep);
-          reactor::sleep(500_ms);
+          reactor::sleep(500ms);
         }
       }
 
@@ -334,7 +330,7 @@ namespace elle
         while (true)
         {
           this->_send_ping(_server);
-          reactor::sleep(30_sec);
+          reactor::sleep(30s);
         }
       }
 
@@ -388,7 +384,7 @@ namespace elle
       RDVSocket::ContactInfo::set_result(Endpoint ep)
       {
         this->result = ep;
-        this->result_time = boost::posix_time::second_clock::local_time();
+        this->result_time = Clock::now();
       }
     }
   }

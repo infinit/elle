@@ -1,7 +1,10 @@
 #include <elle/log/TextLogger.hh>
 
-#include <iostream>
 #include <unistd.h>
+
+#include <array>
+//#include <iomanip> // put_time
+#include <iostream>
 
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/split.hpp>
@@ -151,26 +154,55 @@ namespace elle
                       res);
         }
 
-        // Time
-        if (this->_enable_time)
-          res = print("%s: %s", msg.time, res);
-
         return res;
       }();
 
+      // The prefix related to time.
+      auto const time_prefix = [&] () -> std::string
+        {
+          if (this->_enable_time)
+          {
+            using namespace std::chrono;
+            auto const t = Clock::to_time_t(msg.time);
+            auto const tm
+              = (this->time_universal() ? std::gmtime : std::localtime)(&t);
+            auto&& os = std::ostringstream{};
+            // GCC 4.9 does not support put_time.
+            // os << std::put_time(tm, "%F %T");
+            {
+              // strlen("2017-07-31 05:24:53") = 20;
+              auto buf = std::array<char, 24>{};
+              // Mingw does not support "%F %T".
+              std::strftime(buf.data(), buf.size(), "%Y-%m-%d %H:%M:%S", tm);
+              os << buf.data();
+            }
+            if (this->time_microsec())
+            {
+              auto const ms =
+                (time_point_cast<microseconds>(msg.time)
+                 - time_point_cast<seconds>(msg.time))
+                .count();
+              os << '.' << std::setfill('0') << std::setw(6) << ms;
+            }
+            os << ": ";
+            return os.str();
+          }
+          else
+            return ""s;
+        }();
+
       auto const color_code = get_color_code(msg.level, msg.type);
-      this->_output << color_code << first_line << '\n';
+      this->_output << color_code << time_prefix << first_line << '\n';
 
       if (2 <= lines.size())
       {
         ELLE_ASSERT_GTE(first_line.size(), lines[0].size());
         // We repeat the time on each subsequent line, so that sorting
         // log files on time keeps these lines together.
-        auto const time = this->_enable_time ? print("%s: ", msg.time) : "";
         auto const indent
-          = std::string(first_line.size() - lines[0].size() - time.size(), ' ');
+          = std::string(first_line.size() - lines[0].size(), ' ');
         for (auto i = 1u; i < lines.size(); i++)
-          this->_output << time << indent << lines[i] << '\n';
+          this->_output << time_prefix << indent << lines[i] << '\n';
       }
       if (!color_code.empty())
         this->_output << "[0m";

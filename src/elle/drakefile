@@ -225,6 +225,7 @@ def configure(zlib_lib,
     'chrono.hh',
     'chrono.hxx',
     'compiler.hh',
+    'date/date.h',
     'err.cc',
     'err.hh',
     'factory.hh',
@@ -322,6 +323,7 @@ def configure(zlib_lib,
     'system/unistd.cc',
     'system/unistd.hh',
     'system/user_paths.hh',
+    'time.cc',
     'time.hh',
     'unordered_map.hh',
     'unreachable.hh',
@@ -448,11 +450,7 @@ def configure(zlib_lib,
 
   # Archive
   cxx_archive_config = cxx_config_libs + libarchive_config
-  for f in (
-      'archive',
-      'tar',
-      'zip',
-  ):
+  for f in ('archive', 'tar', 'zip'):
     sources.append(drake.node('archive/%s.hh' % f))
     sources.append(
       drake.cxx.Object(drake.node('archive/%s.cc' % f),
@@ -540,6 +538,7 @@ def configure(zlib_lib,
     'Backtrace.cc',
     'Buffer.cc',
     'Defaulted.cc',
+    'Duration.cc',
     'Exception.cc',
     'IOStream.cc',
     'Lazy.cc',

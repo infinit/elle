@@ -23,6 +23,8 @@
 
 #include <elle/reactor/network/http-server.hh>
 
+using namespace std::literals;
+
 ELLE_LOG_COMPONENT("elle.reactor.http.test");
 
 using HTTPServer = elle::reactor::network::HttpServer;
@@ -30,7 +32,7 @@ using HTTPServer = elle::reactor::network::HttpServer;
   do                                                       \
   {                                                        \
   for (unsigned i=0; i<20 && !((a) == (b)); ++i)           \
-    elle::reactor::sleep(boost::posix_time::milliseconds(50));   \
+    elle::reactor::sleep(50ms);   \
   BOOST_CHECK_EQUAL(a, b);                                 \
   }                                                        \
   while(0)
@@ -250,7 +252,7 @@ concurrent()
     {
       auto url = elle::sprintf("http://127.0.0.1:%s/some/path", port);
       auto res = elle::reactor::http::get(
-        url, elle::reactor::http::Request::Configuration(100_sec));
+        url, elle::reactor::http::Request::Configuration(100s));
       BOOST_CHECK_EQUAL(res.string().substr(0, 4), "lol\n");
     };
 
@@ -286,7 +288,7 @@ timeout()
     sig.signal();
     std::unique_ptr<elle::reactor::network::Socket> socket(serv.accept());
     while (true)
-      elle::reactor::sleep(1_sec);
+      elle::reactor::sleep(1s);
   };
   elle::reactor::Thread tcp(sched, "tcp", tcp_serv);
   auto run_test = [&]
@@ -295,7 +297,7 @@ timeout()
     auto* current = sched.current();
     current->wait(sig);
     auto url = elle::sprintf("http://127.0.0.1:%d/", port);
-    elle::reactor::http::Request::Configuration conf(500_ms);
+    elle::reactor::http::Request::Configuration conf(500ms);
     BOOST_CHECK_THROW(elle::reactor::http::get(url, conf), elle::reactor::http::Timeout);
     tcp.terminate_now();
   };
@@ -377,54 +379,54 @@ post(elle::reactor::http::Request::Configuration conf,
 
 ELLE_TEST_SCHEDULED(post_no_body)
 {
-  elle::reactor::http::Request::Configuration conf;
+  auto conf = elle::reactor::http::Request::Configuration{};
   conf.version(elle::reactor::http::Version::v10);
   post(conf, "HTTP/1.0", elle::reactor::http::Method::POST, false, false, false);
 }
 
 ELLE_TEST_SCHEDULED(post_10)
 {
-  elle::reactor::http::Request::Configuration conf;
+  auto conf = elle::reactor::http::Request::Configuration{};
   conf.version(elle::reactor::http::Version::v10);
   post(conf, "HTTP/1.0", elle::reactor::http::Method::POST, false, false);
 }
 
 ELLE_TEST_SCHEDULED(post_11)
 {
-  elle::reactor::http::Request::Configuration conf;
+  auto conf = elle::reactor::http::Request::Configuration{};
   post(conf, "HTTP/1.1", elle::reactor::http::Method::POST, true, false);
 }
 
 ELLE_TEST_SCHEDULED(post_11_chunked)
 {
-  elle::reactor::http::Request::Configuration conf;
+  auto conf = elle::reactor::http::Request::Configuration{};
   conf.chunked_transfers(true);
   post(conf, "HTTP/1.1", elle::reactor::http::Method::POST, true, true);
 }
 
 ELLE_TEST_SCHEDULED(put_no_body)
 {
-  elle::reactor::http::Request::Configuration conf;
+  auto conf = elle::reactor::http::Request::Configuration{};
   conf.version(elle::reactor::http::Version::v10);
   post(conf, "HTTP/1.0", elle::reactor::http::Method::PUT, false, false, false);
 }
 
 ELLE_TEST_SCHEDULED(put_10)
 {
-  elle::reactor::http::Request::Configuration conf;
+  auto conf = elle::reactor::http::Request::Configuration{};
   conf.version(elle::reactor::http::Version::v10);
   post(conf, "HTTP/1.0", elle::reactor::http::Method::PUT, false, false);
 }
 
 ELLE_TEST_SCHEDULED(put_11)
 {
-  elle::reactor::http::Request::Configuration conf;
+  auto conf = elle::reactor::http::Request::Configuration{};
   post(conf, "HTTP/1.1", elle::reactor::http::Method::PUT, true, false);
 }
 
 ELLE_TEST_SCHEDULED(put_11_chunked)
 {
-  elle::reactor::http::Request::Configuration conf;
+  auto conf = elle::reactor::http::Request::Configuration{};
   conf.chunked_transfers(true);
   post(conf, "HTTP/1.1", elle::reactor::http::Method::PUT, true, true);
 }
@@ -470,7 +472,7 @@ ELLE_TEST_SCHEDULED(cookies)
   }
 
   {
-    elle::reactor::http::Request::Configuration conf;
+    auto conf = elle::reactor::http::Request::Configuration{};
     conf.cookies()["shitload"] = "of";
     elle::reactor::http::Request r(server.url("cookies"),
                              elle::reactor::http::Method::GET,
@@ -543,7 +545,7 @@ ELLE_TEST_SCHEDULED(interrupted)
     r << "{}";
     r.finalize();
     elle::reactor::wait(server.serving());
-    elle::reactor::sleep(500_ms); // FIXME: wait for Curl to read
+    elle::reactor::sleep(500ms); // FIXME: wait for Curl to read
   }
 }
 
@@ -587,12 +589,13 @@ ELLE_TEST_SCHEDULED(no_header_answer)
 }
 
 /// Wait on a barrier between each send of a reply chunk
-class SlowHttpServer:
-  public HTTPServer
+class SlowHttpServer
+  : public HTTPServer
 {
 public:
   SlowHttpServer(std::string reply, int chunk,
-                 bool wait_sem = true, elle::reactor::DurationOpt delay=elle::reactor::DurationOpt())
+                 bool wait_sem = true,
+                 elle::reactor::DurationOpt delay = {})
     : _reply(std::move(reply))
     , _chunk(chunk)
     , _wait_sem(wait_sem)
@@ -636,7 +639,7 @@ ELLE_TEST_SCHEDULED(download_progress)
   { // Lets not make too strong hypothesis about sched implementation details.
     for (unsigned i=0; i<10; ++i)
       elle::reactor::yield();
-    elle::reactor::sleep(boost::posix_time::milliseconds(100));
+    elle::reactor::sleep(100ms);
     for (unsigned i=0; i<10; ++i)
       elle::reactor::yield();
   };
@@ -677,9 +680,11 @@ ELLE_TEST_SCHEDULED(download_stall)
   for (unsigned i=0; i<100 + header.size() / 10; ++i)
     server.sem.release();
   // Careful, stall timeout has only second resolution.
-  elle::reactor::http::Request::Configuration conf(elle::reactor::DurationOpt(), 1_sec);
-  elle::reactor::http::Request r(server.url("whatever"), elle::reactor::http::Method::GET,
-                           conf);
+  auto const conf
+    = elle::reactor::http::Request::Configuration({}, 1s);
+  elle::reactor::http::Request r(server.url("whatever"),
+                                 elle::reactor::http::Method::GET,
+                                 conf);
   r.finalize();
   // CURL takes some time to trigger the stall detection timeout, take margins.
   BOOST_CHECK_THROW(elle::reactor::wait(r), elle::reactor::http::Timeout);
@@ -747,10 +752,9 @@ ELLE_TEST_SCHEDULED(keep_alive)
   std::string content;
   r_keep_alive >> content;
   BOOST_CHECK_EQUAL(content, "alive");
-  elle::reactor::http::Request::Configuration conf(30_sec,
-                                             elle::reactor::DurationOpt(),
-                                             elle::reactor::http::Version::v11,
-                                             false);
+  auto const conf
+    = elle::reactor::http::Request::Configuration
+    (30s, {}, elle::reactor::http::Version::v11, false);
   elle::reactor::http::Request r_close(server.url("dead"),
                                  elle::reactor::http::Method::GET,
                                  conf);

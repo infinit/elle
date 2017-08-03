@@ -5,8 +5,7 @@ namespace elle
 {
   namespace reactor
   {
-    Backoff::Backoff(std::chrono::milliseconds base,
-                     std::chrono::milliseconds max)
+    Backoff::Backoff(Duration base, Duration  max)
       : _times_backed(0)
       , _base_backoff(base)
       , _max_backoff(max)
@@ -18,8 +17,7 @@ namespace elle
       ++this->_times_backed;
       const auto delay =
         this->_base_backoff * int(std::pow(2, this->_times_backed));
-      elle::reactor::sleep(boost::posix_time::millisec(
-                             std::min(delay, this->_max_backoff).count()));
+      elle::reactor::sleep(std::min(delay, this->_max_backoff));
     }
   }
 }

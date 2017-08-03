@@ -85,7 +85,7 @@ namespace elle
         /// In UDPSocket, this means read data from a connected Socket.
         elle::Buffer
         read_until(std::string const& delimiter,
-                   DurationOpt opt = DurationOpt()) override;
+                   DurationOpt opt = {}) override;
         /// Read data from an EndPoint.
         ///
         /// \param buffer The destination buffer.

@@ -1,3 +1,4 @@
+#include <elle/Duration.hh>
 #include <elle/log.hh>
 #include <elle/print.hh>
 #include <elle/serialization/Serializer.hh>
@@ -19,8 +20,8 @@ namespace elle
                                std::string region,
                                std::string bucket,
                                std::string folder,
-                               boost::posix_time::ptime expiration,
-                               boost::posix_time::ptime server_time,
+                               Time expiration,
+                               Time server_time,
                                boost::optional<std::string> endpoint)
         : _access_key_id{std::move(access_key_id)}
         , _secret_access_key{std::move(secret_access_key)}
@@ -48,8 +49,8 @@ namespace elle
         , _region{std::move(region)}
         , _bucket{std::move(bucket)}
         , _folder{std::move(folder)}
-        , _server_time(boost::posix_time::second_clock::universal_time())
-        , _expiry(boost::posix_time::pos_infin)
+        , _server_time(elle::Clock::now())
+        , _expiry(Time::max())
         , _skew()
         , _federated_user(false)
         , _endpoint(endpoint)
@@ -61,8 +62,7 @@ namespace elle
       Credentials::_initialize()
       {
         // Assume creation time is now, and compute skew with local clock
-        this->_skew =
-          boost::posix_time::second_clock::universal_time() - this->_server_time;
+        this->_skew = elle::Clock::now() - this->_server_time;
         ELLE_TRACE("Computed clock skew of %s", this->_skew);
         if (!this->valid())
         {
@@ -76,19 +76,15 @@ namespace elle
       Credentials::credential_string(RequestTime const& request_time,
                                      Service const& aws_service) const
       {
-        auto date = boost::posix_time::to_iso_string(request_time);
-        date = date.substr(0, 8);
         return elle::print("%s/%s/%s/%s/aws4_request",
-                           this->_access_key_id, date, this->_region,
+          this->_access_key_id, format("%Y%m%d", request_time), this->_region,
                            aws_service);
       }
 
       bool
       Credentials::valid()
       {
-        using namespace boost::posix_time;
-        auto const now = second_clock::universal_time();
-        if (this->_expiry < now)
+        if (this->_expiry < Clock::now())
         {
           ELLE_DEBUG("%s: credentials have expired", this);
           return false;
@@ -123,8 +119,8 @@ namespace elle
         }
         else if (s.in())
         {
-          this->_expiry = boost::posix_time::pos_infin;
-          this->_server_time = boost::posix_time::second_clock::universal_time();
+          this->_expiry = Time::max();
+          this->_server_time = elle::Clock::now();
         }
         s.serialize("endpoint", this->_endpoint);
         if (s.in())

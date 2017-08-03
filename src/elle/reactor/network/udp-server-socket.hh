@@ -37,11 +37,11 @@ namespace elle
         public:
           void
           read(Buffer buffer,
-               DurationOpt timeout = DurationOpt(),
+               DurationOpt timeout = {},
                int* bytes_read = nullptr) override;
           Size
           read_some(Buffer buffer,
-                    DurationOpt timeout = DurationOpt(),
+                    DurationOpt timeout = {},
                     int* bytes_read = nullptr) override;
         private:
           friend class UDPServer;

@@ -13,7 +13,7 @@ rdv::Endpoint remote;
 static void send(std::string const& data)
 {
   while (rdvsocket == nullptr)
-    elle::reactor::sleep(100_ms);
+    elle::reactor::sleep(100ms);
   rdvsocket->send_to(elle::ConstWeakBuffer(data), remote);
 }
 

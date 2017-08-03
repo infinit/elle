@@ -56,7 +56,7 @@ namespace elle
              int local_port = 0);
       private:
         boost::asio::ip::udp::endpoint
-        _punch(unsigned short port, boost::posix_time::seconds timeout = 10_sec);
+        _punch(unsigned short port, boost::posix_time::seconds timeout = 10s);
       };
 
 #if defined(REACTOR_HAVE_STUN)

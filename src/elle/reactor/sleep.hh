@@ -16,7 +16,7 @@ namespace elle
     ///
     /// std::time_t start = std::time(NULL);
     /// auto sleep = elle::reactor::Sleep{elle::reactor::Scheduler::scheduler(),
-    ///                                   2_sec};
+    ///                                   2s};
     /// sleep.run();
     /// std::cout << std::difftime(std::time(NULL), start) << " s";
     ///
@@ -48,7 +48,7 @@ namespace elle
 
     private:
       Duration _duration;
-      boost::asio::deadline_timer _timer;
+      AsioTimer _timer;
     };
   }
 }

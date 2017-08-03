@@ -898,9 +898,6 @@ namespace elle
   }
 }
 
-#define ELLE_DAS_CLI_SYMBOL(Name, ...)                  \
-  ELLE_DAS_CLI_SYMBOL_NAMED(Name, Name, __VA_ARGS__)
-
 #define ELLE_DAS_CLI_SYMBOL_NAMED_5(Name, CName, Short, Help, Pos)      \
   ELLE_DAS_SYMBOL_TYPE_NAMED(Name, CName);                              \
   class CS_##Name                                                       \
@@ -935,7 +932,7 @@ namespace elle
       return Pos;                                                       \
     }                                                                   \
   };                                                                    \
-  constexpr static CS_##Name CName = {};
+  constexpr static CS_##Name CName = {}
 
 // Default is non-positional: Pos = false.
 #define ELLE_DAS_CLI_SYMBOL_NAMED_4(Name, CName, Short, Help)   \
@@ -947,3 +944,6 @@ namespace elle
 
 #define ELLE_DAS_CLI_SYMBOL_NAMED(...)                  \
   BOOST_PP_OVERLOAD(ELLE_DAS_CLI_SYMBOL_NAMED_,__VA_ARGS__)(__VA_ARGS__)
+
+#define ELLE_DAS_CLI_SYMBOL(Name, ...)                  \
+  ELLE_DAS_CLI_SYMBOL_NAMED(Name, Name, __VA_ARGS__)

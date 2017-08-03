@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-#include <boost/date_time/posix_time/posix_time.hpp>
+#include <elle/Duration.hh>
 
 namespace elle
 {
@@ -10,7 +10,7 @@ namespace elle
   {
     namespace aws
     {
-      using RequestTime = boost::posix_time::ptime;
+      using RequestTime = elle::Time;
       using RequestHeaders = std::map<std::string, std::string>;
       using RequestQuery = std::map<std::string, std::string>;
 

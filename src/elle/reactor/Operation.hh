@@ -35,7 +35,7 @@ namespace elle
       /// \param timeout The maximum duration the Operation has to perform.
       /// \returns True if the operation complete, false if it timed out.
       bool
-      run(DurationOpt timeout = DurationOpt());
+      run(DurationOpt timeout = {});
       /// Set _running to true and start the operation by running
       /// _start().
       void
@@ -45,7 +45,7 @@ namespace elle
       /// \param   timeout Time to wait before giving up.
       /// \returns whether It did not time out.
       bool
-      join(DurationOpt timeout = DurationOpt());
+      join(DurationOpt timeout = {});
 
       ELLE_ATTRIBUTE_R(bool, running);
 
