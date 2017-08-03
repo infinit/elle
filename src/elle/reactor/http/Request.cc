@@ -5,7 +5,7 @@
 
 #include <elle/Exception.hh>
 #include <elle/log.hh>
-#include <elle/printf.hh>
+#include <elle/print.hh>
 #include <elle/reactor/http/RequestImpl.hh>
 #include <elle/reactor/http/Service.hh>
 #include <elle/reactor/http/exceptions.hh>
@@ -34,27 +34,6 @@ namespace elle
             throw RequestError("unable to set request option: %s",
                                curl_easy_strerror(res));
         }
-      }
-
-      /*-----------.
-      | StatusCode |
-      `-----------*/
-
-      std::ostream&
-      operator << (std::ostream& output, Request::Progress const& progress)
-      {
-        return elle::fprintf(output, "(DL %s/%s  UL %s/%s)",
-          progress.download_current, progress.download_total,
-          progress.upload_current, progress.upload_total);
-      }
-
-      bool
-      Request::Progress::operator ==(Progress const& b) const
-      {
-        return download_current == b.download_current
-          && download_total == b.download_total
-          && upload_current == b.upload_current
-          && upload_total == b.upload_total;
       }
 
       /*--------------.
@@ -267,8 +246,8 @@ namespace elle
                                          CURLINFO_COOKIELIST,
                                          &cookies_list);
         if (res != CURLE_OK)
-          throw elle::Exception(elle::sprintf("retrieval of cookies failed: %s",
-                                              curl_easy_strerror(res)));
+          throw elle::Exception(elle::print("retrieval of cookies failed: %s",
+                                            curl_easy_strerror(res)));
         for (curl_slist* it = cookies_list; it; it = it->next)
         {
           auto chunks = std::vector<std::string>{};
@@ -297,8 +276,8 @@ namespace elle
         auto res = curl_easy_setopt(this->_handle,
                                     CURLOPT_COOKIELIST, line.c_str());
         if (res != CURLE_OK)
-          throw elle::Exception(elle::sprintf("failed to set cookie: %s",
-                                              curl_easy_strerror(res)));
+          throw elle::Exception(elle::print("failed to set cookie: %s",
+                                            curl_easy_strerror(res)));
       }
 
       void
@@ -306,7 +285,7 @@ namespace elle
       {
         // Set URL.
         if (!this->_query_string.empty())
-          this->_url = elle::sprintf("%s?%s", this->_url, this->_query_string);
+          this->_url = elle::print("%s?%s", this->_url, this->_query_string);
         setopt(this->_handle, CURLOPT_URL, this->_url.c_str());
         for (auto const& cookie: this->_conf.cookies())
           this->cookie_add(cookie.first, cookie.second);
@@ -325,7 +304,7 @@ namespace elle
                                 std::string const& content)
       {
         ELLE_DEBUG("%s: add header %s: %s", *this, header, content);
-        auto line = elle::sprintf("%s: %s", header, content);
+        auto line = elle::print("%s: %s", header, content);
         this->_headers.reset(curl_slist_append(this->_headers.release(),
                                                line.c_str()));
       }
@@ -334,7 +313,7 @@ namespace elle
       Request::Impl::header_remove(std::string const& header)
       {
         ELLE_DEBUG("%s: remove header %s", *this, header);
-        auto line = elle::sprintf("%s:", header);
+        auto line = elle::print("%s:", header);
         this->_headers.reset(curl_slist_append(this->_headers.release(),
                                                line.c_str()));
       }
@@ -345,7 +324,7 @@ namespace elle
                                      size_t count,
                                      void* userdata)
       {
-        Request::Impl& self = *reinterpret_cast<Request::Impl*>(userdata);
+        auto& self = *reinterpret_cast<Request::Impl*>(userdata);
         auto size = chunks * count;
         self.read_header(elle::WeakBuffer(ptr, size));
         return size;
@@ -372,7 +351,7 @@ namespace elle
                                  curlsocktype purpose,
                                  struct curl_sockaddr *address)
       {
-        Request::Impl& self = *reinterpret_cast<Request::Impl*>(data);
+        auto& self = *reinterpret_cast<Request::Impl*>(data);
         if (purpose == CURLSOCKTYPE_IPCXN)
         {
           if (address->family != AF_INET && address->family != AF_INET6)
@@ -400,7 +379,7 @@ namespace elle
         // request is thus invalid in this concept, hence the use of a map in
         // the Service to hold sockets. It seems that Curl does this to reuse
         // sockets between requests in some cases.
-        Service& service = *reinterpret_cast<Service*>(data);
+        auto& service = *reinterpret_cast<Service*>(data);
         ELLE_TRACE_SCOPE("%s: close socket %s", service, fd);
         ELLE_ASSERT_CONTAINS(service._sockets, fd);
         ELLE_ENFORCE(service._sockets.erase(fd));
@@ -485,7 +464,7 @@ namespace elle
                                     size_t count,
                                     void* userdata)
       {
-        Request::Impl& self = *reinterpret_cast<Request::Impl*>(userdata);
+        auto& self = *reinterpret_cast<Request::Impl*>(userdata);
         auto size = chunk * count;
         self.enqueue_data(elle::Buffer(ptr, size));
         return size;
@@ -515,7 +494,7 @@ namespace elle
                                    size_t count,
                                    void* userdata)
       {
-        Request::Impl& self = *reinterpret_cast<Request::Impl*>(userdata);
+        auto& self = *reinterpret_cast<Request::Impl*>(userdata);
         auto size = chunk * count;
         return self.read_data(elle::WeakBuffer(ptr, size));
       }
@@ -574,7 +553,7 @@ namespace elle
                                        curl_off_t dltotal, curl_off_t dlnow,
                                        curl_off_t ultotal, curl_off_t ulnow)
       {
-        Request::Impl& self = *reinterpret_cast<Request::Impl*>(userdata);
+        auto& self = *reinterpret_cast<Request::Impl*>(userdata);
         self.progress_set(dltotal, dlnow, ultotal, ulnow);
         return 0;
       }
@@ -586,6 +565,21 @@ namespace elle
         this->_progress = Progress {dlnow, dltotal, ulnow, ultotal};
         ELLE_DEBUG("%s: progress set to %s", *this->_request, this->_progress);
         this->_progress_changed(this->_progress);
+      }
+
+      std::ostream&
+      operator << (std::ostream& os, Request::Progress const& p)
+      {
+        return elle::print(os, "(DL %s/%s  UL %s/%s)",
+                           p.download_current, p.download_total,
+                           p.upload_current, p.upload_total);
+      }
+
+      bool
+      Request::Progress::operator ==(Progress const& b) const
+      {
+        return std::tie(download_current, download_total, upload_current, upload_total)
+          == std::tie(b.download_current, b.download_total, b.upload_current, b.upload_total);
       }
 
       /*---------.
@@ -678,9 +672,9 @@ namespace elle
             curl_free(cp);
             return res;
           };
-        for (auto pair: query_dict)
-          res += elle::sprintf("%s=%s&",
-                               curl(pair.first), curl(pair.second));
+        for (auto const& pair: query_dict)
+          res += elle::print("%s=%s&",
+                             curl(pair.first), curl(pair.second));
         this->_query_string = res.substr(0, res.length() - 1);
         this->_impl->_query_string = this->_query_string;
       }
@@ -706,8 +700,8 @@ namespace elle
         curl_easy_pause(this->_impl->_handle, CURLPAUSE_CONT);
         if (!this->_impl->_conf.chunked_transfers())
         {
-          this->_impl->header_add(
-            "Content-Length", std::to_string(this->_impl->_output.size()));
+          this->_impl->header_add("Content-Length",
+                                  std::to_string(this->_impl->_output.size()));
           this->_impl->start();
         }
       }
@@ -719,13 +713,13 @@ namespace elle
         ELLE_TRACE_SCOPE("%s: complete with code %s", *this, code);
         curl_easy_getinfo(this->_impl->_handle,
                           CURLINFO_RESPONSE_CODE, &this->_status);
-        std::string message;
-        // Distinguishing stall timeout and 'total time limit' timeouts
-        // is tricky and requires parsing the error string.
-        // Be robust to detection failure
+        // Distinguishing stall timeout and 'total time limit'
+        // timeouts is tricky and requires parsing the error string.
+        // Be robust to detection failure.
         bool is_stall = false;
-        auto set_exception = [&]
+        auto set_exception = [&](std::string const& msg = "")
           {
+            ELLE_WARN("%s: done with error: %s", *this, msg);
             if (code == CURLE_GOT_NOTHING)
               this->_raise<EmptyResponse>(this->_url);
             else if (code == CURLE_OPERATION_TIMEDOUT)
@@ -738,41 +732,35 @@ namespace elle
               this->_raise<Timeout>(this->_url, value);
             }
             else if (code == CURLE_COULDNT_RESOLVE_HOST)
-            {
               this->_raise<ResolutionFailure>(this->_url);
-            }
             else
-              this->_raise<RequestError>(this->_url, message);
+              this->_raise<RequestError>(this->_url, msg);
           };
         bool exception = false;
         if (code != CURLE_OK)
         {
           exception = true;
-          message = elle::sprintf("%s: %s",
-                                  curl_easy_strerror(CURLcode(code)),
-                                  this->_impl->_error);
-          is_stall = (message.find("too slow") != message.npos);
-          ELLE_WARN("%s: done with error: %s", *this, message);
-          set_exception();
+          auto const msg
+            = elle::print("%s: %s",
+                          curl_easy_strerror(CURLcode(code)),
+                          this->_impl->_error);
+          is_stall = (msg.find("too slow") != msg.npos);
+          set_exception(msg);
         }
         else if (this->_impl->_conf.expected_status() &&
                  this->_impl->_conf.expected_status().get() != this->_status)
         {
           exception = true;
-          message = elle::sprintf("got unexpected status %s instead of %s",
-                                  this->_status,
-                                  this->_impl->_conf.expected_status().get());
-          ELLE_WARN("%s: done with error: %s", *this, message);
-          set_exception();
+          set_exception(elle::print("got unexpected status %s instead of %s",
+                                    this->_status,
+                                    this->_impl->_conf.expected_status().get()));
         }
         else
           ELLE_TRACE_SCOPE("%s: done with status %s", *this, this->_status);
         if (!exception && this->_status == static_cast<StatusCode>(0))
         {
           exception = true;
-          message = "server response has no status";
-          ELLE_WARN("%s: done with error: %s", *this, message);
-          set_exception();
+          set_exception("server response has no status");
         }
         this->_impl->_debug2 = 2;
         this->_signal();

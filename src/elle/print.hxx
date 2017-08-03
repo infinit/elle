@@ -279,10 +279,11 @@ namespace elle
   `-----------*/
 
   template <typename ... Args>
-  void
+  std::ostream&
   print(std::ostream& o, std::string const& fmt, Args&& ... args)
   {
     _details::print(o, fmt, _details::erasure(args...), {});
+    return o;
   }
 
   template <typename ... Args>
@@ -299,12 +300,13 @@ namespace elle
   `------*/
 
   inline
-  void
+  std::ostream&
   print(std::ostream& o,
         std::string const& fmt,
         _details::NamedArguments const& args)
   {
     _details::print(o, fmt, {}, args);
+    return o;
   }
 
   inline

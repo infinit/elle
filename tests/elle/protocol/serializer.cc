@@ -762,7 +762,7 @@ ELLE_TEST_SCHEDULED(message)
       {
         chunk_size = s.chunk_size();
         auto buf = s.read();
-        ELLE_LOG("recieved %f (size %s)", buf, buf.size());
+        ELLE_LOG("received %f (size %s)", buf, buf.size());
         elle::Buffer expected{std::string(chunk_size * 2, 'y')};
         BOOST_CHECK_EQUAL(buf.size(), expected.size());
         BOOST_CHECK_EQUAL(buf, expected);

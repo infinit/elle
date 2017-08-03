@@ -77,7 +77,7 @@ namespace elle
                         Version version = Version::v11,
                         bool keep_alive = true,
                         boost::optional<Proxy> proxy = boost::none);
-          /// Configuration are not copiable.
+          /// Copy a configuration.
           Configuration(Configuration const&) = default;
           /// Move a configuration.
           Configuration(Configuration&&) = default;
@@ -124,7 +124,7 @@ namespace elle
           using Headers = std::unordered_map<std::string, std::string>;
           /// The additional HTTP headers to include in the request.
           ELLE_ATTRIBUTE_R(Headers, headers);
-          /// Whether to used HTTP 1.1 chunked transfers.
+          /// Whether to use HTTP 1.1 chunked transfers.
           ///
           /// False by default. This enable to not send a Content-Length header
           /// and stream the outgoing body without knowing its total size
