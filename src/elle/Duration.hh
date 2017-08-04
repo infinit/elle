@@ -12,6 +12,13 @@ namespace elle
 {
   using namespace std::literals;
 
+  /// Whether T is a std::duration.
+  template <typename T>
+  struct is_duration : std::false_type {};
+
+  template <typename... Args>
+  struct is_duration<std::chrono::duration<Args...>> : std::true_type {};
+
   /// A clock.
   using Clock = std::chrono::system_clock;
   /// A reference date.

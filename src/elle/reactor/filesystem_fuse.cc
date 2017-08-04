@@ -28,9 +28,10 @@
 ELLE_LOG_COMPONENT("elle.reactor.filesystem.fuse");
 
 
-#define BENCH(name)                                      \
-  static auto bench = elle::Bench("bench.fs." name, std::chrono::seconds(10000)); \
-  auto bs = elle::Bench::BenchScope(bench)
+#define BENCH(name)                                     \
+  using Bench = elle::Bench<>;                          \
+  static auto bench = Bench("bench.fs." name, 10000s);  \
+  auto bs = bench.scoped()
 
 namespace elle
 {
