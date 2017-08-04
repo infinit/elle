@@ -1822,6 +1822,7 @@ def command_flatten(command, env = None):
 
 @contextlib.contextmanager
 def log_time(runner):
+  '''Display running times periodically.'''
   start_time = time.time()
   timer = [None]
   def start_timer(first = True):
@@ -1829,6 +1830,11 @@ def log_time(runner):
       print("{}: running for {} already"
             .format(runner, duration(start_time)))
     timer[0] = threading.Timer(5 * 60, lambda: start_timer(False))
+    # Let sys.exit kill these timers.  Otherwise, in case of an error,
+    # they stay alive and "monitor" drake jobs that will not be
+    # triggered anyway.  So these threads run endlessly and prevent
+    # termination.
+    timer[0].daemon = True
     timer[0].start()
   start_timer()
   try:
