@@ -41,8 +41,7 @@ def configure(cxx_toolkit,
   ## Library ##
   ## ------- ##
 
-
-  if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
+  if not boost.prefer_shared:
     local_config += boost.config_system(static = True)
   else:
     local_config += boost.config_system(link = False)

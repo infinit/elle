@@ -1,0 +1,180 @@
+diff --git a/drakefile b/drakefile
+index 90429e6..37b9960 100644
+--- a/drakefile
++++ b/drakefile
+@@ -817,13 +817,14 @@ def configure(cxx_toolkit = None,
+   ## Boost ##
+   ## ----- ##
+ 
++  boost_static = cxx_toolkit.os in [drake.os.ios, drake.os.windows]
+   boost_version = drake.Version(1, 60, 0)
+   if boost is not None:
+     boost = drake.cxx.boost.Boost(
+       cxx_toolkit = cxx_toolkit,
+       prefix = boost,
+       version_effective = boost_version,
+-      prefer_shared = cxx_toolkit.os not in [drake.os.windows, drake.os.ios],
++      prefer_shared = not boost_static,
+     )
+   else:
+     boost_basename = 'boost_%s' % str(boost_version).replace('.', '_')
+@@ -1043,6 +1044,8 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
+           '--disable-icu',
+           '--user-config=user-config.jam',
+         ]
++        for opt in ['link', 'runtime-link']:
++          self.__command.append('{}={}'.format(opt, 'static' if boost_static else 'shared'))
+         if windows:
+           self.__command += [
+             'target-os=windows',
+@@ -1050,8 +1053,6 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
+             'threadapi=win32',
+             'abi=ms',
+             'binary-format=pe',
+-            'link=static',
+-            'runtime-link=static',
+             '--layout=tagged',
+             '--prefix=%s' % boost_prefix_abs,
+             '-sBUILD=<define>BOOST_USE_WINDOWS_H=1',
+@@ -1071,8 +1072,6 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
+             'cxxflags=-stdlib=libc++ -std=c++11',
+             'linkflags=-stdlib=libc++ -std=c++11',
+             'toolset=darwin',
+-            'link=static',
+-            'runtime-link=static',
+             '--layout=tagged',
+             '--prefix=%s' % boost_prefix_abs,
+             'target-os=iphone',
+@@ -1152,7 +1151,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
+       cxx_toolkit = cxx_toolkit,
+       prefix = boost_prefix,
+       version_effective = boost_version,
+-      prefer_shared = cxx_toolkit.os not in [drake.os.windows, drake.os.ios],
++      prefer_shared = not boost_static,
+     )
+     boost_rule = drake.Rule('boost')
+     boost_rule << boost_headers_
+@@ -1533,7 +1532,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
+   example_config = drake.cxx.Config(cxx_config)
+   example_config += das.config + elle.config + reactor.config + \
+                     cryptography.config
+-  if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
++  if not boost.prefer_shared:
+     example_config += boost.config_system(static = True)
+   else:
+     example_config.library_add(boost.system_dynamic)
+diff --git a/src/elle/athena/drakefile b/src/elle/athena/drakefile
+index 4a846c0..855811e 100644
+--- a/src/elle/athena/drakefile
++++ b/src/elle/athena/drakefile
+@@ -41,8 +41,7 @@ def configure(cxx_toolkit,
+   ## Library ##
+   ## ------- ##
+ 
+-
+-  if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
++  if not boost.prefer_shared:
+     local_config += boost.config_system(static = True)
+   else:
+     local_config += boost.config_system(link = False)
+diff --git a/src/elle/cryptography/drakefile b/src/elle/cryptography/drakefile
+index 24e31da..941610c 100644
+--- a/src/elle/cryptography/drakefile
++++ b/src/elle/cryptography/drakefile
+@@ -69,7 +69,7 @@ def configure(openssl_config,
+       dopenssl_library = dopenssl_lib_dynamic
+ 
+   boost = boost or drake.cxx.boost.Boost()
+-  if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
++  if not boost.prefer_shared:
+     if python is not None and build_python_module:
+       boost_python = boost.config_python(link = False, static = True)
+       boost_python.library_add(drake.copy(boost.python_static, lib_path, strip_prefix = True))
+@@ -114,7 +114,7 @@ def configure(openssl_config,
+   cxx_config = drake.cxx.Config(cxx_config)
+   cxx_config += config
+   cxx_config += boost.config()
+-  if cxx_toolkit.os in [drake.os.ios, drake.os.windows, drake.os.android]:
++  if not boost.prefer_shared:
+     cxx_config += boost.config_system(link = False, static = True)
+   else:
+     cxx_config.library_add(
+diff --git a/src/elle/das/drakefile b/src/elle/das/drakefile
+index 836ec58..08e83cd 100644
+--- a/src/elle/das/drakefile
++++ b/src/elle/das/drakefile
+@@ -119,7 +119,7 @@ def configure(cxx_toolkit,
+   config_examples = drake.cxx.Config(local_config)
+   example_libs = [elle.library]
+   for example in examples:
+-    if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
++    if not boost.prefer_shared:
+       config_examples += boost.config_date_time(static = True)
+     else:
+       example_libs += [boost.date_time_dynamic]
+diff --git a/src/elle/drakefile b/src/elle/drakefile
+index 2c12caf..2254bf6 100644
+--- a/src/elle/drakefile
++++ b/src/elle/drakefile
+@@ -61,7 +61,7 @@ def configure(zlib_lib,
+   # Boost
+   boost = boost or drake.cxx.boost.Boost()
+   cxx_config += boost.config()
+-  if cxx_toolkit.os in [drake.os.macos, drake.os.windows, drake.os.ios, drake.os.android]:
++  if cxx_toolkit.os in [drake.os.macos] or not boost.prefer_shared:
+     cxx_config += boost.config_filesystem(link = False, static = True)
+     cxx_config.library_add(
+       drake.copy(boost.filesystem_static, lib_path, strip_prefix = True))
+@@ -69,7 +69,7 @@ def configure(zlib_lib,
+     cxx_config += boost.config_filesystem(link = False)
+     cxx_config.library_add(drake.copy(boost.filesystem_dynamic,
+                                       lib_path, strip_prefix = True))
+-  if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
++  if not boost.prefer_shared:
+     cxx_config += boost.config_system(link = False, static = True)
+     cxx_config.library_add(
+       drake.copy(boost.system_static, lib_path, strip_prefix = True))
+@@ -88,7 +88,7 @@ def configure(zlib_lib,
+       cxx_config.library_add(
+         drake.copy(boost.python_static, lib_path, strip_prefix = True))
+   else:
+-    if python3 is not None:
++    if python3 is not None and cxx_toolkit.os is not drake.os.windows:
+       boost_python = drake.cxx.Config(
+         boost.config_system(link = False))
+       boost_python.library_add(
+@@ -666,7 +666,7 @@ def configure(zlib_lib,
+   ]
+   cxx_config_examples = drake.cxx.Config(cxx_config)
+   cxx_config_examples.enable_debug_symbols()
+-  if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
++  if not boost.prefer_shared:
+     cxx_config_examples += boost.config_date_time(static = True)
+   else:
+     cxx_config_examples.library_add(
+diff --git a/src/elle/reactor/drakefile b/src/elle/reactor/drakefile
+index 418955d..6b33797 100644
+--- a/src/elle/reactor/drakefile
++++ b/src/elle/reactor/drakefile
+@@ -259,7 +259,7 @@ def configure(curl_config,
+   # Boost
+   boost = boost or drake.cxx.boost.Boost()
+   local_cxx_config += boost.config()
+-  if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
++  if not boost.prefer_shared:
+     def import_lib(l):
+       local_cxx_config.library_add(
+         drake.copy(l, lib_path,
+diff --git a/src/elle/service/aws/drakefile b/src/elle/service/aws/drakefile
+index ca2d257..e131717 100644
+--- a/src/elle/service/aws/drakefile
++++ b/src/elle/service/aws/drakefile
+@@ -53,7 +53,7 @@ def configure(cryptography,
+   local_cxx_config.enable_debug_symbols()
+   local_cxx_config += config
+ 
+-  if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
++  if not boost.prefer_shared:
+     local_cxx_config += boost.config_date_time(static = True)
+   else:
+     local_cxx_config += boost.config_date_time(link = False)

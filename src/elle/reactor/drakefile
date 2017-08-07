@@ -259,7 +259,7 @@ def configure(curl_config,
   # Boost
   boost = boost or drake.cxx.boost.Boost()
   local_cxx_config += boost.config()
-  if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
+  if not boost.prefer_shared:
     def import_lib(l):
       local_cxx_config.library_add(
         drake.copy(l, lib_path,

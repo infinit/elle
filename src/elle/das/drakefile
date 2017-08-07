@@ -119,7 +119,7 @@ def configure(cxx_toolkit,
   config_examples = drake.cxx.Config(local_config)
   example_libs = [elle.library]
   for example in examples:
-    if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
+    if not boost.prefer_shared:
       config_examples += boost.config_date_time(static = True)
     else:
       example_libs += [boost.date_time_dynamic]

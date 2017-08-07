@@ -1,0 +1,96 @@
+diff --git a/drakefile b/drakefile
+index 37b9960..a3d6de3 100644
+--- a/drakefile
++++ b/drakefile
+@@ -817,7 +817,7 @@ def configure(cxx_toolkit = None,
+   ## Boost ##
+   ## ----- ##
+ 
+-  boost_static = cxx_toolkit.os in [drake.os.ios, drake.os.windows]
++  boost_static = cxx_toolkit.os in [drake.os.ios]
+   boost_version = drake.Version(1, 60, 0)
+   if boost is not None:
+     boost = drake.cxx.boost.Boost(
+@@ -914,9 +914,14 @@ def configure(cxx_toolkit = None,
+         '%%s/lib/libboost_%%s-%s_%s.dylib' % \
+         (boost_version.major, boost_version.minor)
+     elif windows:
+-      boost_static_format = '%s/lib/libboost_%s-mt-s.a'
+-      boost_dynamic_format = None
+-      boost_dynamic_versioned_format = None
++      if boost_static:
++        boost_static_format = '%s/lib/libboost_%s-mt-s.a'
++        boost_dynamic_format = None
++        boost_dynamic_versioned_format = None
++      else:
++        boost_static_format = '%s/lib/libboost_%s-mt.dll.a'
++        boost_dynamic_format = '%s/lib/libboost_%s-mt.dll'
++        boost_dynamic_versioned_format = None
+     elif cxx_toolkit.os is drake.os.ios:
+       boost_static_format = '%s/lib/libboost_%s-mt-s.a'
+       boost_dynamic_format = None
+@@ -960,7 +965,7 @@ def configure(cxx_toolkit = None,
+       @property
+       def format(self):
+         res = '''\
+-using %(compiler)s : : %(cxx)s ;
++using %(compiler)s : : %(cxx)s : <linkflags>-static-libgcc <linkflags>-Wl,-Bstatic <linkflags>-lstdc++ <linkflags>-lpthread <linkflags>-Wl,-Bdynamic ;
+ '''
+         if python3 is not None:
+           res += '''\
+diff --git a/src/elle/athena/drakefile b/src/elle/athena/drakefile
+index 855811e..0c78c4b 100644
+--- a/src/elle/athena/drakefile
++++ b/src/elle/athena/drakefile
+@@ -96,9 +96,15 @@ def configure(cxx_toolkit,
+   local_config_tests += boost.config_timer(
+     static = not boost.prefer_shared or None,
+     link = not boost.prefer_shared)
++  local_config_tests += boost.config_thread(
++    static = not boost.prefer_shared or None,
++    link = not boost.prefer_shared)
++  local_config_tests += boost.config_filesystem(
++    static = not boost.prefer_shared or None,
++    link = not boost.prefer_shared)
+   if boost.prefer_shared:
+     test_libs += list(map(lambda x: drake.copy(x, lib_path, strip_prefix = True),
+-                          [boost.timer_dynamic, boost.test_dynamic]))
++                          [boost.timer_dynamic, boost.test_dynamic, boost.thread_dynamic, boost.filesystem_dynamic]))
+   local_config_tests.lib_path_runtime(
+     drake.Path('../../..') / library.path().dirname())
+   env = {
+@@ -106,6 +112,8 @@ def configure(cxx_toolkit,
+     'BOOST_TEST_LOG_LEVEL': 'all',
+     'BOOST_TEST_LOG_SINK': 'stderr',  # Keep our logs, and Boost's, together.
+   }
++  if cxx_toolkit.os is drake.os.windows:
++    env.update({'Path': drake.path_build(lib_path)})
+   for name in tests:
+     test = drake.cxx.Executable(
+       '%s/%s' % (tests_path, name),
+diff --git a/src/elle/drakefile b/src/elle/drakefile
+index 2254bf6..0b8c058 100644
+--- a/src/elle/drakefile
++++ b/src/elle/drakefile
+@@ -642,6 +642,8 @@ def configure(zlib_lib,
+       'BOOST_TEST_LOG_SINK': 'stderr',  # Keep our logs, and Boost's, together.
+       'TEST_DIR': drake.path_build(tests_path),
+     }
++    if cxx_toolkit.os is drake.os.windows:
++      env.update({'Path': drake.path_build(lib_path)})
+     if valgrind_tests and valgrind_this_test:
+       runner = drake.valgrind.ValgrindRunner(exe = test,
+                                              valgrind = valgrind,
+diff --git a/src/elle/reactor/drakefile b/src/elle/reactor/drakefile
+index 6b33797..53744f0 100644
+--- a/src/elle/reactor/drakefile
++++ b/src/elle/reactor/drakefile
+@@ -879,6 +879,8 @@ def configure(curl_config,
+       'BOOST_TEST_LOG_SINK': 'stderr',  # Keep our logs, and Boost's, together.
+       'SOURCE_DIR': drake.path_source(),
+     }
++    if cxx_toolkit.os is drake.os.windows:
++      env.update({'Path': drake.path_build(lib_path)})
+     if cxx_toolkit.os is drake.os.windows and sys.platform is 'linux':
+       env['RUNNING_ON_WINE'] = '1'
+     # Disable valgrind for tests using fuse.

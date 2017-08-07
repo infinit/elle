@@ -69,7 +69,7 @@ def configure(openssl_config,
       dopenssl_library = dopenssl_lib_dynamic
 
   boost = boost or drake.cxx.boost.Boost()
-  if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
+  if not boost.prefer_shared:
     if python is not None and build_python_module:
       boost_python = boost.config_python(link = False, static = True)
       boost_python.library_add(drake.copy(boost.python_static, lib_path, strip_prefix = True))
@@ -114,7 +114,7 @@ def configure(openssl_config,
   cxx_config = drake.cxx.Config(cxx_config)
   cxx_config += config
   cxx_config += boost.config()
-  if cxx_toolkit.os in [drake.os.ios, drake.os.windows, drake.os.android]:
+  if not boost.prefer_shared:
     cxx_config += boost.config_system(link = False, static = True)
   else:
     cxx_config.library_add(
