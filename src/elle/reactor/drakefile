@@ -879,6 +879,8 @@ def configure(curl_config,
       'BOOST_TEST_LOG_SINK': 'stderr',  # Keep our logs, and Boost's, together.
       'SOURCE_DIR': drake.path_source(),
     }
+    if cxx_toolkit.os is drake.os.windows:
+      env.update({'Path': drake.path_build(lib_path)})
     if cxx_toolkit.os is drake.os.windows and sys.platform is 'linux':
       env['RUNNING_ON_WINE'] = '1'
     # Disable valgrind for tests using fuse.
