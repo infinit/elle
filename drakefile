@@ -1548,6 +1548,8 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     example_config += boost.config_system(static = True)
   else:
     example_config.library_add(boost.system_dynamic)
+    example_config.library_add(boost.thread_dynamic)
+    example_config.library_add(boost.filesystem_dynamic)
   examples = [
     'samples/http_get_signed_json',
     'samples/get_wikipedia',
