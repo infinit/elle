@@ -7,6 +7,14 @@ using namespace elle::meta;
 
 namespace list
 {
+  namespace size
+  {
+    using l1 = List<int, float, double>;
+    using l2 = List<int, float, double, l1>;
+    static_assert(l1::size == 3);
+    static_assert(l1::size - l2::size == -1);
+  }
+
   namespace apply
   {
     template <typename ... Args>
