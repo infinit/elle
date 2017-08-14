@@ -342,6 +342,9 @@ def configure(openssl_config,
                             lib_path, strip_prefix = True)
   else:
     test_libs += [boost.filesystem_static]
+  tests_env = {}
+  if cxx_toolkit.os is drake.os.windows:
+    tests_env.update({'Path': drake.path_build(lib_path)})
   for test in tests:
     config_test_local = drake.cxx.Config(config_tests)
     path = drake.Path(tests_path / test)
@@ -353,9 +356,10 @@ def configure(openssl_config,
     rule_tests << bin
     if valgrind_tests:
       runner = drake.valgrind.ValgrindRunner(exe = bin,
-                                             valgrind = valgrind)
+                                             valgrind = valgrind,
+                                             env = tests_env)
     else:
-      runner = drake.Runner(exe = bin)
+      runner = drake.Runner(exe = bin, env = tests_env)
     runner.reporting = drake.Runner.Reporting.on_failure
     rule_check << runner.status
   if python is not None and build_python_module:
@@ -389,7 +393,7 @@ def configure(openssl_config,
       ] + openssl_libs,
       cxx_toolkit, exe_cxx_config)
     rule_examples << example
-    runner = drake.Runner(exe = example, args = args)
+    runner = drake.Runner(exe = example, args = args, env = tests_env)
     runner.reporting = drake.Runner.Reporting.on_failure
     rule_examples << runner.status
   rule_build << rule_examples

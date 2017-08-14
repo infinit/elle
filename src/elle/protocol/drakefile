@@ -126,17 +126,23 @@ def configure(cryptography,
                                           link = not boost.prefer_shared)
   cxx_config_tests += boost.config_signals(static = not boost.prefer_shared or None,
                                            link = not boost.prefer_shared)
+  cxx_config_tests += boost.config_filesystem(static = not boost.prefer_shared or None,
+                                              link = not boost.prefer_shared)
   if boost.prefer_shared:
     test_libs += [
       boost.test_dynamic,
       boost.timer_dynamic,
       boost.system_dynamic,
       boost.thread_dynamic,
-      boost.signals_dynamic
+      boost.signals_dynamic,
+      boost.filesystem_dynamic
     ]
   if cxx_toolkit.os == drake.os.android:
     cxx_config_tests.lib('stdc++')
     cxx_config_tests.lib('atomic')
+  env = dict()
+  if cxx_toolkit.os is drake.os.windows:
+      env.update({'Path': drake.path_build(lib_path)})
   for name in tests:
     test = drake.cxx.Executable(
       '%s/%s' % (tests_path, name),
@@ -148,11 +154,12 @@ def configure(cryptography,
     if valgrind_tests:
       runner = drake.valgrind.ValgrindRunner(
         exe = test,
+        env = env,
         valgrind = valgrind,
         valgrind_args = ['--suppressions=%s' % (drake.path_source('../../../valgrind.suppr'))]
         )
     else:
-      runner = drake.Runner(exe = test)
+      runner = drake.Runner(exe = test, env = env)
     runner.reporting = drake.Runner.Reporting.on_failure
     rule_check << runner.status
 

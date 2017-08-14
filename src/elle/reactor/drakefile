@@ -259,36 +259,23 @@ def configure(curl_config,
   # Boost
   boost = boost or drake.cxx.boost.Boost()
   local_cxx_config += boost.config()
-  if not boost.prefer_shared:
-    def import_lib(l):
-      local_cxx_config.library_add(
-        drake.copy(l, lib_path,
-                   strip_prefix = True))
-
-    if backend == Backends.boost:
-      local_cxx_config += boost.config_context(link = False, static = True)
-      import_lib(boost.context_static)
-    local_cxx_config += boost.config_signals(link = False, static = True)
-    import_lib(boost.signals_static)
-    local_cxx_config += boost.config_system(link = False, static = True)
-    import_lib(boost.system_static)
-    local_cxx_config += boost.config_thread(link = False, static = True)
-    import_lib(boost.thread_static)
-  else:
-    def import_lib(l):
-      local_cxx_config.library_add(
-        drake.copy(l, lib_path,
+  def import_lib(l, cfg):
+    if boost.prefer_shared:
+      cfg += getattr(boost, 'config_%s' % l)(link = False, static = False)
+      cfg.library_add(
+        drake.copy(getattr(boost, '%s_dynamic' % l), lib_path,
                    strip_prefix = True,
                    post_process = set_local_libcxx(cxx_toolkit)))
-    if backend == Backends.boost:
-      local_cxx_config += boost.config_context(link = False)
-      import_lib(boost.context_dynamic)
-    local_cxx_config += boost.config_signals(link = False)
-    import_lib(boost.signals_dynamic)
-    local_cxx_config += boost.config_system(link = False)
-    import_lib(boost.system_dynamic)
-    local_cxx_config += boost.config_thread(link = False)
-    import_lib(boost.thread_dynamic)
+      return cfg
+    else:
+      cfg += getattr(boost, 'config_%s' % l)(link = True, static = True)
+      # cfg.library_add(getattr(boost, '%s_static' % l))
+      return cfg
+  if backend == Backends.boost:
+    local_cxx_config = import_lib('context', local_cxx_config)
+  local_cxx_config = import_lib('signals', local_cxx_config)
+  local_cxx_config = import_lib('system', local_cxx_config)
+  local_cxx_config = import_lib('thread', local_cxx_config)
   if backend == Backends.io:
     local_cxx_config.define('REACTOR_CORO_BACKEND_IO')
   else:
@@ -775,6 +762,7 @@ def configure(curl_config,
   ]
   cxx_config_bin = drake.cxx.Config(local_cxx_config)
   cxx_config_bin.lib_path_runtime('../lib')
+  cxx_config_bin = import_lib('filesystem', cxx_config_bin)
   for name in binaries_config:
     bin = drake.cxx.Executable(
       'bin/%s' % name,
@@ -927,6 +915,7 @@ def configure(curl_config,
   ## -------- ##
 
   cxx_config_examples = drake.cxx.Config(local_cxx_config)
+  cxx_config_examples = import_lib('filesystem', cxx_config_examples)
   rule_examples = drake.Rule('examples')
   examples_path = drake.Path('../../../examples')
   examples = [

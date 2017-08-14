@@ -77,16 +77,24 @@ def configure(cxx_toolkit,
   config_tests.add_local_include_path(elle_tests_path)
   test_libs = [elle.library]
   config_tests += boost.config_test(
-    static = not boost.prefer_shared or None,
+    static = not boost.prefer_shared,
     link = not boost.prefer_shared)
   config_tests += boost.config_timer(
-    static = not boost.prefer_shared or None,
+    static = not boost.prefer_shared,
+    link = not boost.prefer_shared)
+  config_tests += boost.config_filesystem(
+    static = not boost.prefer_shared,
+    link = not boost.prefer_shared)
+  config_tests += boost.config_thread(
+    static = not boost.prefer_shared,
     link = not boost.prefer_shared)
   if boost.prefer_shared:
     test_libs += [
-      boost.timer_dynamic,
+      boost.filesystem_dynamic,
       boost.system_dynamic,
       boost.test_dynamic,
+      boost.timer_dynamic,
+      boost.thread_dynamic,
     ]
   if cxx_toolkit.os is drake.os.android:
     config_tests.lib('stdc++')
@@ -96,6 +104,8 @@ def configure(cxx_toolkit,
     'BOOST_TEST_LOG_LEVEL': 'all',
     'BOOST_TEST_LOG_SINK': 'stderr',  # Keep our logs, and Boost's, together.
   }
+  if cxx_toolkit.os is drake.os.windows:
+    env.update({'Path': drake.path_build(lib_path)})
   for name in tests:
     test = drake.cxx.Executable(
       tests_path / name,
@@ -116,8 +126,14 @@ def configure(cxx_toolkit,
   examples = [
     'samples/elle/das/das'
   ]
-  config_examples = drake.cxx.Config(local_config)
+  config_examples = drake.cxx.Config(config_tests)
   example_libs = [elle.library]
+  if boost.prefer_shared:
+    example_libs += [
+      boost.filesystem_dynamic,
+      boost.system_dynamic,
+      boost.thread_dynamic,
+    ]
   for example in examples:
     if not boost.prefer_shared:
       config_examples += boost.config_date_time(static = True)
