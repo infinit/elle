@@ -15,6 +15,23 @@ namespace elle
               int Index,
               typename ... Types>
     class OptionHelper;
+    template <typename T>
+    struct is_result
+    {
+      using type = boost::optional<T&>;
+    };
+
+    template <>
+    struct is_result<void>
+    {
+      using type = bool;
+    };
+
+    template <>
+    struct is_result<void const>
+    {
+      using type = bool;
+    };
   }
 
   /// A generic type, based on a finite subset of types.
@@ -77,26 +94,33 @@ namespace elle
     /// Assignment operator.
     Self&
     operator =(Self const& option);
-    /// Try to get the underlying value as a given Type.
+    /// Get the underlying value as a given Type.
     ///
     /// @tparam T The expected type.
     /// @return A reference to the underlying value.
     template <typename T>
     T&
     get();
-    /// Try to get the underlying value as a given Type.
+    /// Get the underlying value as a given Type.
     ///
     /// @tparam T The expected type.
     /// @return A const-reference to the underlying value.
     template <typename T>
     T const&
     get() const;
-    /// Check if the type of the value of the Option is the one given.
+    /// Try to get the underlying value as a given Type.
     ///
     /// @tparam T The expected type.
-    /// @return Whether the underlying value is from the given type.
+    /// @return A reference to the underlying value.
     template <typename T>
-    bool
+    typename _details::is_result<T>::type
+    is();
+    /// Try to get the underlying value as a given Type.
+    ///
+    /// @tparam T The expected type.
+    /// @return A const-reference to the underlying value.
+    template <typename T>
+    typename _details::is_result<T const>::type
     is() const;
     /// Update the underlying value.
     template <typename T>
