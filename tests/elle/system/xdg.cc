@@ -68,27 +68,27 @@ BOOST_AUTO_TEST_CASE(base)
   test(xdg, elle::system::home_directory());
 }
 
-#ifndef ELLE_MACOS
 BOOST_AUTO_TEST_CASE(global_env)
 {
   elle::filesystem::TemporaryDirectory d;
-  elle::os::setenv("ELLE_HOME", d.path().string());
+  auto const path = bfs::canonical(d.path()).string();
+  elle::os::setenv("ELLE_HOME", path);
   auto xdg = elle::system::XDG("infinit", "elle");
-  test(xdg, d.path());
+  test(xdg, path);
 }
 
 BOOST_AUTO_TEST_CASE(specific_env)
 {
   elle::filesystem::TemporaryDirectory d;
+  auto const path = bfs::canonical(d.path()).string();
   auto set = [&] (std::string var) {
-    elle::os::setenv(var, d.path().string());
+    elle::os::setenv(var, path);
     return elle::system::XDG(company, product);
   };
-  BOOST_CHECK_EQUAL(set("ELLE_DATA_HOME").data_dir(), d.path().string());
-  BOOST_CHECK_EQUAL(set("ELLE_CACHE_HOME").cache_dir(), d.path().string());
-  BOOST_CHECK_EQUAL(set("ELLE_STATE_HOME").state_dir(), d.path().string());
-  BOOST_CHECK_EQUAL(set("ELLE_CONFIG_HOME").config_dir(), d.path().string());
-  BOOST_CHECK_EQUAL(set("ELLE_RUNTIME_DIR").runtime_dir(), d.path().string());
-  BOOST_CHECK_EQUAL(set("TMPDIR").tmp_dir(), d.path().string());
+  BOOST_CHECK_EQUAL(set("ELLE_DATA_HOME").data_dir(), path);
+  BOOST_CHECK_EQUAL(set("ELLE_CACHE_HOME").cache_dir(), path);
+  BOOST_CHECK_EQUAL(set("ELLE_STATE_HOME").state_dir(), path);
+  BOOST_CHECK_EQUAL(set("ELLE_CONFIG_HOME").config_dir(), path);
+  BOOST_CHECK_EQUAL(set("ELLE_RUNTIME_DIR").runtime_dir(), path);
+  BOOST_CHECK_EQUAL(set("TMPDIR").tmp_dir(), path);
 }
-#endif
