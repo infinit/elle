@@ -11,8 +11,9 @@ namespace list
   {
     using l1 = List<int, float, double>;
     using l2 = List<int, float, double, l1>;
-    static_assert(l1::size == 3);
-    static_assert(l1::size - l2::size == -1);
+    static_assert(l1::size == 3, "l1::size should be 3");
+    static_assert(l1::size - l2::size == -1,
+                  "Difference of sizes should be -1");
   }
 
   namespace apply
