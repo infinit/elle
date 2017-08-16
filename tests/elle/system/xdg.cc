@@ -68,6 +68,7 @@ BOOST_AUTO_TEST_CASE(base)
   test(xdg, elle::system::home_directory());
 }
 
+#ifndef ELLE_MACOS
 BOOST_AUTO_TEST_CASE(global_env)
 {
   elle::filesystem::TemporaryDirectory d;
@@ -90,3 +91,4 @@ BOOST_AUTO_TEST_CASE(specific_env)
   BOOST_CHECK_EQUAL(set("ELLE_RUNTIME_DIR").runtime_dir(), d.path().string());
   BOOST_CHECK_EQUAL(set("TMPDIR").tmp_dir(), d.path().string());
 }
+#endif
