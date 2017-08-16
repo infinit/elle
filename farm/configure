@@ -98,7 +98,7 @@ if %(beyond_public)r and project in ['filesystem', 'memo']:
 if project == 'elle':
   extra_args['enable_cryptographic_rotation'] = False
 
-if os == 'windows':
+if os_ == 'windows':
   cxx_config.define('ELLE_TEST_NO_MEMFRY=1')
 
 if project in ['filesystem', 'memo']:
