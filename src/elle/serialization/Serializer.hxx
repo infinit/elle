@@ -1373,18 +1373,17 @@ namespace elle
       static
       std::map<TypeInfo,
                std::function<std::exception_ptr (elle::Exception&&)> >&
-      _map()
-      {
-        static std::map<
-          TypeInfo,
-          std::function<std::exception_ptr (elle::Exception&&)> > map;
-        return map;
-      }
+      _map();
     };
 
     /*----------.
     | Hierarchy |
     `----------*/
+
+    std::unordered_map<std::string, boost::any>&
+    hierarchy_map();
+    std::unordered_map<std::string, std::map<TypeInfo, std::string>>&
+    hierarchy_rmap();
 
     template <typename T>
     class ELLE_API Hierarchy
@@ -1429,40 +1428,24 @@ namespace elle
       using TypeMap =
         std::unordered_map<std::string,
                            std::function<std::unique_ptr<T>(SerializerIn&)>>;
-#ifdef ELLE_WINDOWS
-# ifdef ELLE_SERIALIZATION_USE_DLL
-  __declspec(dllimport) static TypeMap& _map();
-  __declspec(dllimport) static std::map<TypeInfo, std::string>&_rmap();
-# else
-  __declspec(dllexport) static TypeMap& _map()
-  {
-    static TypeMap res;
-    return res;
-  }
-  __declspec(dllexport) static std::map<TypeInfo, std::string>&
-  _rmap()
-  {
-    static std::map<TypeInfo, std::string> res;
-    return res;
-  }
-# endif
-#else
-      static
-      TypeMap&
-      _map()
-      {
-        static TypeMap res;
-        return res;
-      }
 
-      static
-      std::map<TypeInfo, std::string>&
-      _rmap()
+      static TypeMap& _map()
       {
-        static std::map<TypeInfo, std::string> res;
-        return res;
-      }
-#endif
+        auto tn = type_info<T>().name();
+        auto& hm = hierarchy_map();
+        auto it = hm.find(tn);
+        if (it == hm.end())
+        {
+          hm[tn] = TypeMap();
+          return boost::any_cast<TypeMap&>(hm[tn]);
+        }
+        return boost::any_cast<TypeMap&>(it->second);
+     }
+     static std::map<TypeInfo, std::string>&
+     _rmap()
+     {
+       return hierarchy_rmap()[type_info<T>().name()];
+     }
     };
 
     /*--------.

@@ -182,5 +182,29 @@ namespace elle
       elle::SafeFinally leave([&] { this->_leave("value");});
       f(index);
     }
+
+    std::unordered_map<std::string, boost::any>&
+    hierarchy_map()
+    {
+      static std::unordered_map<std::string, boost::any> value;
+      return value;
+    }
+
+    std::unordered_map<std::string, std::map<TypeInfo, std::string>>&
+    hierarchy_rmap()
+    {
+      static std::unordered_map<std::string, std::map<TypeInfo, std::string>> value;
+      return value;
+    }
+
+    std::map<TypeInfo,
+             std::function<std::exception_ptr (elle::Exception&&)> >&
+    ExceptionMaker<elle::Exception>::_map()
+    {
+      static std::map<
+        TypeInfo,
+        std::function<std::exception_ptr (elle::Exception&&)> > map;
+      return map;
+    }
   }
 }
