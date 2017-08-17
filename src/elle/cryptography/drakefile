@@ -119,6 +119,8 @@ def configure(openssl_config,
   else:
     cxx_config.library_add(
       drake.copy(boost.system_dynamic, lib_path, strip_prefix = True))
+    cxx_config.library_add(
+      drake.copy(boost.filesystem_dynamic, lib_path, strip_prefix = True))
   cxx_config += elle.config
   cxx_config += openssl_config
   if enable_rotation:
@@ -258,7 +260,7 @@ def configure(openssl_config,
 
   rule_build = drake.Rule('build')
   rule_build << lib_static
-  if cxx_toolkit.os not in [drake.os.windows, drake.os.ios, drake.os.android]:
+  if cxx_toolkit.os not in [drake.os.ios, drake.os.android]:
     rule_build << lib_dynamic
     library = lib_dynamic
   else:

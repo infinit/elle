@@ -475,7 +475,7 @@ def configure(zlib_lib,
 
   rule_build = drake.Rule('build')
   rule_build << lib_static
-  if cxx_toolkit.os not in [drake.os.windows, drake.os.ios, drake.os.android]:
+  if cxx_toolkit.os not in [drake.os.ios, drake.os.android]:
     rule_build << lib_dynamic
     library = lib_dynamic
   else:

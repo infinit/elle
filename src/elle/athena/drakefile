@@ -66,7 +66,7 @@ def configure(cxx_toolkit,
     cxx_toolkit, local_config)
   rule_build = drake.Rule('build')
   if cxx_toolkit.os in [
-      drake.os.windows, drake.os.ios, drake.os.android]:
+      drake.os.ios, drake.os.android]:
     library = lib_static
   else:
     library = lib_dynamic

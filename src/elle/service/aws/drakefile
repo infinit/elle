@@ -59,6 +59,9 @@ def configure(cryptography,
     local_cxx_config += boost.config_date_time(link = False)
     local_cxx_config.library_add(drake.copy(boost.date_time_dynamic,
                                             lib_path, strip_prefix = True))
+    local_cxx_config += boost.config_system(link = False)
+    local_cxx_config.library_add(drake.copy(boost.system_dynamic,
+                                            lib_path, strip_prefix = True))
 
   sources = drake.nodes(
     'CanonicalRequest.cc',
@@ -92,7 +95,7 @@ def configure(cryptography,
   global rule_build
   rule_build = drake.Rule('build')
   rule_build << lib_static
-  if cxx_toolkit.os not in [drake.os.windows, drake.os.ios, drake.os.android]:
+  if cxx_toolkit.os not in [drake.os.ios, drake.os.android]:
     rule_build << lib_dynamic
     library = lib_dynamic
   else:
