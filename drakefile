@@ -49,7 +49,7 @@ def configure(cxx_toolkit,
   local_config = drake.cxx.Config(config)
   local_config.add_local_include_path('sys')
   local_config.add_local_include_path('dokan')
-  local_config.warnings.sign_compare = None
+  local_config.warnings.sign_compare = False
   local_config.warnings.missing_declarations = None
   local_config.define('UNICODE')
   local_config.define('_UNICODE')
