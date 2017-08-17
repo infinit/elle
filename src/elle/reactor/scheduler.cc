@@ -845,3 +845,18 @@ namespace __cxxabiv1
     }
   }
 }
+
+
+namespace elle
+{
+  namespace reactor
+  {
+    __cxxabiv1::__cxa_eh_globals*
+    cxa_get_globals() THROW_SPEC;
+    __cxxabiv1::__cxa_eh_globals*
+    cxa_get_globals() THROW_SPEC
+    {
+      return __cxxabiv1::__cxa_get_globals();
+    }
+  }
+}

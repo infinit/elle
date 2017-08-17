@@ -26,6 +26,8 @@
 #include <elle/reactor/Thread.hh>
 #include <elle/reactor/timer.hh>
 
+#include <elle/reactor/cxa_get_globals.hh>
+
 using namespace std::literals;
 
 ELLE_LOG_COMPONENT("Test");
