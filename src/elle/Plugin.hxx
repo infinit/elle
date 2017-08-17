@@ -41,8 +41,17 @@ namespace elle
   Plugin<T>::plugins()
     -> Plugins&
   {
-    static auto res = Plugins{};
-    return res;
+    using SPlugins = std::shared_ptr<Plugins>;
+    auto& pm = plugins_map();
+    auto k = elle::type_info<T>().name();
+    auto it = pm.find(k);
+    if (it == pm.end())
+    {
+      boost::any v(std::make_shared<Plugins>());
+      pm.emplace(k, std::move(v));
+      return *boost::any_cast<SPlugins>(pm[k]);
+    }
+    return *boost::any_cast<SPlugins>(it->second);
   }
 
   template <typename ... Args>
@@ -60,7 +69,17 @@ namespace elle
   boost::signals2::signal<void (T&)>&
   Plugin<T>::hook_added()
   {
-    static boost::signals2::signal<void (T&)> res;
-    return res;
+    using Hook = boost::signals2::signal<void (T&)>;
+    using SHook = std::shared_ptr<Hook>;
+    auto& hm = hooks_map();
+    auto k = elle::type_info<T>().name();
+    auto it = hm.find(k);
+    if (it == hm.end())
+    {
+      boost::any v(std::make_shared<Hook>());
+      hm.emplace(k, std::move(v));
+      return *boost::any_cast<SHook>(hm[k]);
+    }
+    return *boost::any_cast<SHook>(it->second);
   }
 }
