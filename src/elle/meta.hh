@@ -36,6 +36,9 @@ namespace elle
       template <template <typename> class P>
       using filter = typename filter_helper<List<>, List<Elts...>, P>::type;
 
+      /// Size.
+      static const int size = sizeof...(Elts);
+
       /// The position of T in List
       template <typename T>
       struct

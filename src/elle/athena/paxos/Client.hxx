@@ -1,8 +1,12 @@
 #pragma once
 
+#include <boost/range/adaptor/filtered.hpp>
+
 #include <elle/With.hh>
 #include <elle/cryptography/random.hh>
 #include <elle/find.hh>
+#include <elle/find_if.hh>
+#include <elle/max_element.hh>
 #include <elle/reactor/Scope.hh>
 #include <elle/reactor/for-each.hh>
 #include <elle/reactor/scheduler.hh>
@@ -104,8 +108,9 @@ namespace elle
       `----------*/
 
       template <typename T, typename Version, typename ClientId>
-      boost::optional<typename Client<T, Version, ClientId>::Accepted>
-      Client<T, Version, ClientId>::choose(elle::Option<T, Quorum> const& value)
+      auto
+      Client<T, Version, ClientId>::choose(Value const& value)
+        -> Choice
       {
         return this->choose(Version(), std::move(value));
       }
@@ -140,10 +145,11 @@ namespace elle
       }
 
       template <typename T, typename Version, typename ClientId>
-      boost::optional<typename Client<T, Version, ClientId>::Accepted>
+      auto
       Client<T, Version, ClientId>::choose(
         elle::_detail::attribute_r_t<Version> version,
-        elle::Option<T, Quorum> const& value)
+        Value const& value)
+        -> Choice
       {
         ELLE_LOG_COMPONENT("athena.paxos.Client");
         ELLE_TRACE_SCOPE("%s: choose %f", *this, value);
@@ -152,17 +158,18 @@ namespace elle
         for (auto const& peer: this->_peers)
           q.insert(peer->id());
         ELLE_DUMP("quorum: %s", q);
-        boost::optional<Accepted> previous;
+        boost::optional<Value> replace;
         while (true)
         {
           ++this->_round;
           std::set<Peer*> unavailables;
-          Proposal proposal(std::move(version), this->_round, this->_id);
+          auto const proposal =
+            Proposal(std::move(version), this->_round, this->_id);
           ELLE_DEBUG("%s: send proposal: %s", *this, proposal)
           {
             int reached = 0;
             std::exception_ptr weak_error;
-            elle::reactor::for_each_parallel(
+            auto responses = elle::reactor::for_each_parallel(
               this->_peers,
               [&] (std::unique_ptr<Peer>& peer)
               {
@@ -170,17 +177,9 @@ namespace elle
                 {
                   ELLE_DEBUG_SCOPE("%s: send proposal %s to %s",
                                    *this, proposal, peer);
-                  if (auto p = peer->propose(q, proposal))
-                  {
-                    if (!previous || *previous < p)
-                    {
-                      // FIXME: what if previous was accepted and p is not?
-                      ELLE_DEBUG_SCOPE("%s: value already accepted at %f: %f",
-                                       *this, p->proposal, p->value);
-                      previous = std::move(p);
-                    }
-                  }
+                  auto response = peer->propose(q, proposal);
                   ++reached;
+                  return response;
                 }
                 catch (Unavailable const& e)
                 {
@@ -196,31 +195,59 @@ namespace elle
                   if (!weak_error)
                     weak_error = e.exception();
                 }
+                elle::reactor::continue_parallel();
               },
               std::string("send proposal"));
-            if (previous && previous->confirmed)
-              return previous;
+            ELLE_DUMP("proposal responses: {}", responses);
+            auto const confirmed = [] (Response const& r)
+              {
+                return r.value() && r.confirmed();
+              };
+            if (auto r = elle::find_if(responses, confirmed))
+              return Choice(*r->proposal(), *r->value());
             this->_check_headcount(q, reached, weak_error, false);
-            if (previous)
-            {
-              ELLE_DEBUG("replace value with %s", previous->value);
-              if (proposal == previous->proposal)
+            auto const valued = [] (Response const& l, Response const& r)
               {
-                this->_round = previous->proposal.round + 1;
-                ELLE_DEBUG("retry at version %s round %s",
-                           version, this->_round);
-                continue;
-
-              }
-              if (proposal < previous->proposal)
+                if (l.value() && r.value())
+                  return
+                    ELLE_ENFORCE(l.proposal()) < ELLE_ENFORCE(r.proposal());
+                else
+                  return bool(l.value()) < bool(r.value());
+              };
+            if (auto r = elle::max_element(responses, valued))
+              if (r->value())
               {
-                version = previous->proposal.version;
-                this->_round = previous->proposal.round;
-                ELLE_DEBUG("retry at version %s round %s",
-                           version, this->_round);
-                continue;
+                ELLE_DEBUG_SCOPE("%s: value already accepted at %f: %f",
+                                 this, r->proposal(), r->value());
+                replace = std::move(r->value());
               }
-            }
+            auto const proposed = [] (Response const& l, Response const& r)
+              {
+                if (l.proposal() && r.proposal())
+                  return
+                    ELLE_ENFORCE(l.proposal()) < ELLE_ENFORCE(r.proposal());
+                else
+                  return bool(l.proposal()) < bool(r.proposal());
+              };
+            if (auto r = elle::max_element(responses, proposed))
+              if (r->proposal())
+              {
+                if (proposal == r->proposal())
+                {
+                  this->_round = r->proposal()->round + 1;
+                  ELLE_DEBUG("self conflict, retry at version {} round {}",
+                             version, this->_round);
+                  continue;
+                }
+                if (proposal < r->proposal())
+                {
+                  version = r->proposal()->version;
+                  this->_round = r->proposal()->round;
+                  ELLE_DEBUG("retry at version %s round %s",
+                             version, this->_round);
+                  continue;
+                }
+              }
           }
           ELLE_DEBUG("%s: send acceptation", *this)
           {
@@ -238,7 +265,7 @@ namespace elle
                   ELLE_DEBUG_SCOPE("%s: send acceptation %s to %s",
                                    *this, proposal, *peer);
                   auto minimum = peer->accept(
-                    q, proposal, previous ? previous->value : value);
+                    q, proposal, replace ? *replace : value);
                   // FIXME: If the majority doesn't conflict, the value was
                   // still chosen - right ? Take that in account.
                   if (proposal < minimum)
@@ -285,7 +312,7 @@ namespace elle
             else
               this->_check_headcount(q, reached, weak_error, false);
           }
-          ELLE_TRACE("%s: chose %f", this, previous ? previous->value : value);
+          ELLE_TRACE("%s: chose %f", this, replace ? *replace : value);
           ELLE_DEBUG("%s: send confirmation", *this)
           {
             auto reached = 0;
@@ -321,9 +348,11 @@ namespace elle
               std::string("send confirmation"));
             this->_check_headcount(q, reached, weak_error, false);
           }
-          break;
+          if (replace)
+            return Choice(proposal, *replace);
+          else
+            return Choice(proposal);
         }
-        return previous;
       }
 
       template <typename T, typename Version, typename ClientId>
@@ -421,6 +450,40 @@ namespace elle
       Client<T, Version, CId>::print(std::ostream& output) const
       {
         elle::fprintf(output, "paxos::Client(%f)", this->_id);
+      }
+
+      /*-------.
+      | Choice |
+      `-------*/
+
+      template <typename T, typename Version, typename ClientId>
+      Client<T, Version, ClientId>::Choice::Choice(Proposal proposal)
+        : _proposal(std::move(proposal))
+        , _conflicted(false)
+        , _value()
+      {}
+
+      template <typename T, typename Version, typename ClientId>
+      Client<T, Version, ClientId>::Choice::Choice(
+        Proposal proposal,
+        Value value)
+        : _proposal(std::move(proposal))
+        , _conflicted(true)
+        , _value(std::move(value))
+      {}
+
+      template <typename T, typename Version, typename ClientId>
+      Client<T, Version, ClientId>::Choice::operator bool() const
+      {
+        return this->_conflicted;
+      }
+
+      template <typename T, typename Version, typename ClientId>
+      auto
+      Client<T, Version, ClientId>::Choice::operator ->() const
+        -> Value const*
+      {
+        return &this->_value.get();
       }
     }
   }

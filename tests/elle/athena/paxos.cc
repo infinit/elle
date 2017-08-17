@@ -49,7 +49,7 @@ public:
   {}
 
 
-  boost::optional<typename Client::Accepted>
+  typename Client::Response
   propose(
     typename paxos::Server<T, Version, ServerId>::Quorum const& q,
     typename Client::Proposal const& p) override
@@ -87,6 +87,74 @@ public:
   ELLE_ATTRIBUTE_RW((paxos::Server<T, Version, ServerId>&), paxos);
 };
 
+using Server = paxos::Server<int, int, int>;
+using Client = paxos::Client<int, int, int>;
+using Peers = Client::Peers;
+
+class YAInstrumentedPeer
+  : public Peer<int, int, int>
+{
+public:
+  using Super = Peer<int, int, int>;
+  using Client = paxos::Client<int, int, int>;
+
+  using Super::Super;
+
+  typename Client::Response
+  propose(typename Client::Quorum const& q,
+          typename Client::Proposal const& p) override
+  {
+    this->_proposing(p);
+    auto res = Super::propose(q, p);
+    this->_proposed(p);
+    return res;
+  }
+
+  typename Client::Proposal
+  accept(typename Client::Quorum const& q,
+         typename Client::Proposal const& p,
+         elle::Option<int, typename Client::Quorum> const& value) override
+  {
+    this->_accepting(p);
+    auto res = Super::accept(q, p, value);
+    this->_accepted(p);
+    return res;
+  }
+
+
+  void
+  confirm(typename Client::Quorum const& q,
+          typename Client::Proposal const& p) override
+  {
+    this->_confirming(p);
+    Super::confirm(q, p);
+    this->_confirmed(p);
+  }
+
+  ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (Server::Proposal const&)>,
+                    proposing);
+  ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (Server::Proposal const&)>,
+                    proposed);
+  ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (Server::Proposal const&)>,
+                    accepting);
+  ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (Server::Proposal const&)>,
+                    accepted);
+  ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (Server::Proposal const&)>,
+                    confirming);
+  ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (Server::Proposal const&)>,
+                    confirmed);
+};
+
+template <typename Peer = YAInstrumentedPeer, typename Servers>
+Client
+make_client(int id, Servers&& servers)
+{
+  auto peers = Peers();
+  for (auto& s: servers)
+    peers.emplace_back(new Peer(s.id(), s));
+  return Client(id, std::move(peers));
+}
+
 ELLE_TEST_SCHEDULED(all_is_well)
 {
   paxos::Server<int, int, int> server_1(11, {11, 12, 13});
@@ -122,7 +190,7 @@ public:
   {}
 
 
-  boost::optional<typename Client::Accepted>
+  typename Client::Response
   propose(typename Client::Quorum const& q,
           typename Client::Proposal const& p) override
   {
@@ -183,25 +251,25 @@ ELLE_TEST_SCHEDULED(one_of_three)
 
 ELLE_TEST_SCHEDULED(already_chosen)
 {
-  paxos::Server<int, int, int> server_1(11, {11, 12, 13});
-  paxos::Server<int, int, int> server_2(12, {11, 12, 13});
-  paxos::Server<int, int, int> server_3(13, {11, 12, 13});
-  using Peers = paxos::Client<int, int, int>::Peers;
-  auto peers_1 = Peers{};
-  peers_1.emplace_back(std::make_unique<Peer<int, int, int>>(11, server_1));
-  peers_1.emplace_back(std::make_unique<Peer<int, int, int>>(12, server_2));
-  peers_1.emplace_back(std::make_unique<Peer<int, int, int>>(13, server_3));
-  paxos::Client<int, int, int> client_1(1, std::move(peers_1));
-  auto peers_2 = Peers{};
-  peers_2.emplace_back(std::make_unique<Peer<int, int, int>>(11, server_1));
-  peers_2.emplace_back(std::make_unique<Peer<int, int, int>>(12, server_2));
-  peers_2.emplace_back(std::make_unique<Peer<int, int, int>>(13, server_3));
-  paxos::Client<int, int, int> client_2(2, std::move(peers_2));
-  BOOST_CHECK(!client_1.choose(42));
-  auto chosen = client_2.choose(43);
-  BOOST_CHECK(chosen);
-  BOOST_CHECK(chosen->value.is<int>());
-  BOOST_CHECK_EQUAL(chosen->value.get<int>(), 42);
+  std::vector<Server> servers
+  {
+    {11, {11, 12, 13}},
+    {12, {11, 12, 13}},
+    {13, {11, 12, 13}},
+  };
+  ELLE_LOG("chose 42 from client 1")
+  {
+    auto client_1 = make_client(1, servers);
+    BOOST_CHECK(!client_1.choose(42));
+  }
+  ELLE_LOG("chose 43 from client 2")
+  {
+    auto client_2 = make_client(2, servers);
+    auto chosen = client_2.choose(43);
+    BOOST_REQUIRE(chosen);
+    BOOST_CHECK(chosen->is<int>());
+    BOOST_CHECK_EQUAL(chosen->get<int>(), 42);
+  }
 }
 
 template <typename T, typename Version, typename ServerId>
@@ -232,7 +300,7 @@ public:
   {}
 
 
-  boost::optional<typename Client::Accepted>
+  typename Client::Response
   propose(
     typename Client::Quorum const& q,
     typename Client::Proposal const& p) override
@@ -285,23 +353,22 @@ public:
 
 ELLE_TEST_SCHEDULED(concurrent)
 {
-  paxos::Server<int, int, int> server_1(11, {11, 12, 13});
-  paxos::Server<int, int, int> server_2(12, {11, 12, 13});
-  paxos::Server<int, int, int> server_3(13, {11, 12, 13});
-  auto peer_1_2 = new InstrumentedPeer<int, int, int>(12, server_2);
-  auto peer_1_3 = new InstrumentedPeer<int, int, int>(13, server_3);
+  std::vector<Server> servers
+  {
+    {11, {11, 12, 13}},
+    {12, {11, 12, 13}},
+    {13, {11, 12, 13}},
+  };
+  auto peer_1_2 = new InstrumentedPeer<int, int, int>(12, servers[1]);
+  auto peer_1_3 = new InstrumentedPeer<int, int, int>(13, servers[2]);
   using Peers = paxos::Client<int, int, int>::Peers;
   auto peers_1 = Peers{};
-  peers_1.emplace_back(std::make_unique<Peer<int, int, int>>(11, server_1));
+  peers_1.emplace_back(std::make_unique<Peer<int, int, int>>(11, servers[0]));
   peers_1.emplace_back(std::unique_ptr<paxos::Client<int, int, int>::Peer>(peer_1_2));
   peers_1.emplace_back(std::unique_ptr<paxos::Client<int, int, int>::Peer>(peer_1_3));
   paxos::Client<int, int, int> client_1(1, std::move(peers_1));
   client_1.conflict_backoff(false);
-  auto peers_2 = Peers{};
-  peers_2.emplace_back(std::make_unique<Peer<int, int, int>>(11, server_1));
-  peers_2.emplace_back(std::make_unique<Peer<int, int, int>>(12, server_2));
-  peers_2.emplace_back(std::make_unique<Peer<int, int, int>>(13, server_3));
-  paxos::Client<int, int, int> client_2(2, std::move(peers_2));
+  auto client_2 = make_client(2, servers);
   client_2.conflict_backoff(false);
   peer_1_2->propose_barrier.open();
   peer_1_2->accept_barrier.open();
@@ -312,12 +379,13 @@ ELLE_TEST_SCHEDULED(concurrent)
       [&]
       {
         auto chosen = client_1.choose(42);
-        BOOST_CHECK_EQUAL(chosen->value.get<int>(), 42);
+        BOOST_CHECK_EQUAL(chosen->get<int>(), 42);
       }));
   elle::reactor::wait(
     elle::reactor::Waitables({&peer_1_2->accept_signal, &peer_1_3->accept_signal}));
   auto chosen = client_2.choose(43);
-  BOOST_CHECK_EQUAL(chosen->value.get<int>(), 42);
+  BOOST_REQUIRE(chosen);
+  BOOST_CHECK_EQUAL(chosen->get<int>(), 42);
   peer_1_3->accept_barrier.open();
   elle::reactor::wait(*t1);
 }
@@ -352,7 +420,7 @@ ELLE_TEST_SCHEDULED(conflict)
       [&]
       {
         auto chosen = client_1.choose(43);
-        BOOST_CHECK_EQUAL(chosen->value.get<int>(), 42);
+        BOOST_CHECK_EQUAL(chosen->get<int>(), 42);
       }));
   elle::reactor::wait(
     elle::reactor::Waitables({&peer_1_2->accept_signal, &peer_1_3->accept_signal}));
@@ -429,7 +497,7 @@ ELLE_TEST_SCHEDULED(versions_partial)
                         {
                           auto chosen = client_1.choose(2, 2);
                           BOOST_CHECK(chosen);
-                          BOOST_CHECK_EQUAL(chosen->value.get<int>(), 2);
+                          BOOST_CHECK_EQUAL(chosen->get<int>(), 2);
                         }));
   elle::reactor::wait(peer_1_1->accept_signal);
   //        11        12        13
@@ -449,7 +517,7 @@ ELLE_TEST_SCHEDULED(versions_partial)
     paxos::Client<int, int, int> client_3(3, std::move(peers_3));
     auto chosen = client_3.choose(1, 1);
     client_3.conflict_backoff(false);
-    BOOST_CHECK_EQUAL(chosen->value.get<int>(), 2);
+    BOOST_CHECK_EQUAL(chosen->get<int>(), 2);
   }
   //        11        12        13
   //   +---------+---------+---------+
@@ -573,10 +641,10 @@ ELLE_TEST_SCHEDULED(elect_extend)
   //   |  1:1:1  |
   //   +---------+
   ELLE_LOG("fail choosing 1 for version 0")
-    BOOST_CHECK_EQUAL(client.choose(0, 1)->value.get<int>(), 0);
+    BOOST_CHECK_EQUAL(client.choose(0, 1)->get<int>(), 0);
   ELLE_LOG("fail choosing quorum of 2 for version 0");
     BOOST_CHECK_EQUAL(
-      client.choose(0, Client::Quorum{11, 12})->value.get<int>(), 0);
+      client.choose(0, Client::Quorum{11, 12})->get<int>(), 0);
   ELLE_LOG("choose quorum of 2 for version 1")
     BOOST_CHECK(!client.choose(1, Client::Quorum{11, 12}));
   //        11
@@ -588,7 +656,7 @@ ELLE_TEST_SCHEDULED(elect_extend)
   //   |  0:1:1  |
   //   +---------+
   ELLE_LOG("fail choosing 1 for version 1")
-    BOOST_CHECK_EQUAL(client.choose(1, 1)->value.get<Client::Quorum>(),
+    BOOST_CHECK_EQUAL(client.choose(1, 1)->get<Client::Quorum>(),
                       Client::Quorum({11, 12}));
   ELLE_LOG("fail choosing 2 for version 2 with partial quorum")
     BOOST_CHECK_THROW(client.choose(2, 2), Server::WrongQuorum);
@@ -713,10 +781,8 @@ ELLE_TEST_SCHEDULED(evict_down_lag_behind)
     {
       auto res = make_2client().choose(2, 21);
       BOOST_CHECK(res);
-      BOOST_CHECK(res->confirmed);
-      BOOST_CHECK(res->value.template is<Client::Quorum>());
-      BOOST_CHECK_EQUAL(res->value.template get<Client::Quorum>(),
-                        (Client::Quorum{11, 12}));
+      BOOST_CHECK(res->is<Client::Quorum>());
+      BOOST_CHECK_EQUAL(res->get<Client::Quorum>(), (Client::Quorum{11, 12}));
     }
     catch (Server::WrongQuorum const& e)
     {
@@ -727,9 +793,9 @@ ELLE_TEST_SCHEDULED(evict_down_lag_behind)
   {
     auto chosen = make_partial_client().choose(2, 21);
     BOOST_CHECK(chosen);
-    BOOST_CHECK_EQUAL(chosen->value.get<Client::Quorum>(),
+    BOOST_CHECK_EQUAL(chosen->get<Client::Quorum>(),
                       (Client::Quorum{11, 12}));
-    BOOST_CHECK_EQUAL(chosen->proposal.version, 3);
+    BOOST_CHECK_EQUAL(chosen.proposal().version, 3);
   }
   ELLE_LOG("choose 4 for version 4")
     BOOST_CHECK(!make_2client().choose(4, 4));
@@ -935,7 +1001,7 @@ ELLE_TEST_SCHEDULED(serialization)
     peers.emplace_back(new Peer(11, server_1));
     peers.emplace_back(new Peer(12, server_2));
     paxos::Client<int, int, int> client(1, std::move(peers));
-    BOOST_CHECK_EQUAL(client.choose(1, 0)->value.template get<int>(), 1);
+    BOOST_CHECK_EQUAL(client.choose(1, 0)->template get<int>(), 1);
     BOOST_CHECK(!client.choose(2, 2));
   }
 }
@@ -1042,80 +1108,12 @@ ELLE_TEST_SCHEDULED(non_partial_state)
       [&]
       {
         elle::reactor::wait(p1->confirm_signal);
-        BOOST_CHECK_EQUAL(c2.choose(1, 2)->value.get<int>(), 1);
+        BOOST_CHECK_EQUAL(c2.choose(1, 2)->get<int>(), 1);
       });
     elle::reactor::wait(p2->accept_signal);
     p1->confirm_barrier.open();
     elle::reactor::wait(scope);
   };
-}
-
-using Server = paxos::Server<int, int, int>;
-using Client = paxos::Client<int, int, int>;
-using Peers = Client::Peers;
-
-class YAInstrumentedPeer
-  : public Peer<int, int, int>
-{
-public:
-  using Super = Peer<int, int, int>;
-  using Client = paxos::Client<int, int, int>;
-
-  using Super::Super;
-
-  boost::optional<typename Client::Accepted>
-  propose(typename Client::Quorum const& q,
-          typename Client::Proposal const& p) override
-  {
-    this->_proposing(p);
-    auto res = Super::propose(q, p);
-    this->_proposed(p);
-    return res;
-  }
-
-  typename Client::Proposal
-  accept(typename Client::Quorum const& q,
-         typename Client::Proposal const& p,
-         elle::Option<int, typename Client::Quorum> const& value) override
-  {
-    this->_accepting(p);
-    auto res = Super::accept(q, p, value);
-    this->_accepted(p);
-    return res;
-  }
-
-
-  void
-  confirm(typename Client::Quorum const& q,
-          typename Client::Proposal const& p) override
-  {
-    this->_confirming(p);
-    Super::confirm(q, p);
-    this->_confirmed(p);
-  }
-
-  ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (Server::Proposal const&)>,
-                    proposing);
-  ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (Server::Proposal const&)>,
-                    proposed);
-  ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (Server::Proposal const&)>,
-                    accepting);
-  ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (Server::Proposal const&)>,
-                    accepted);
-  ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (Server::Proposal const&)>,
-                    confirming);
-  ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (Server::Proposal const&)>,
-                    confirmed);
-};
-
-template <typename Peer = YAInstrumentedPeer, typename Servers>
-Client
-make_client(int id, Servers&& servers)
-{
-  auto peers = Peers();
-  for (auto& s: servers)
-    peers.emplace_back(new Peer(s.id(), s));
-  return Client(id, std::move(peers));
 }
 
 // Proposing on a wrong quorum used to commit the previous value - thus emptying
@@ -1186,7 +1184,7 @@ ELLE_TEST_SCHEDULED(partial_conflict)
         {
           auto c = make_client(1, servers);
           BOOST_CHECK_EQUAL(
-            c.choose(1, 1187)->value.get<Server::Quorum>(),
+            c.choose(1, 1187)->get<Server::Quorum>(),
             (Server::Quorum{11, 12}));
         }
         {
@@ -1340,7 +1338,7 @@ ELLE_TEST_SCHEDULED(self_conflict)
           });
         auto r = c.choose(0, 1331);
         BOOST_REQUIRE(r);
-        BOOST_CHECK_EQUAL(r->value.get<int>(), 1331);
+        BOOST_CHECK_EQUAL(r->get<int>(), 1331);
       });
     scope.run_background(
       "second",
@@ -1350,7 +1348,56 @@ ELLE_TEST_SCHEDULED(self_conflict)
         auto c = make_client(0, servers);
         auto r = c.choose(0, 1349);
         BOOST_REQUIRE(r);
-        BOOST_CHECK_EQUAL(r->value.get<int>(), 1331);
+        BOOST_CHECK_EQUAL(r->get<int>(), 1331);
+        first.open();
+      });
+    elle::reactor::wait(scope);
+  };
+}
+
+ELLE_TEST_SCHEDULED(self_conflict2)
+{
+  std::vector<Server> servers{
+    {11, Server::Quorum{11, 12, 13}},
+    {12, Server::Quorum{11, 12, 13}},
+    {13, Server::Quorum{11, 12, 13}},
+  };
+  elle::reactor::Barrier first, second;
+  elle::With<elle::reactor::Scope>() << [&] (elle::reactor::Scope& scope)
+  {
+    scope.run_background(
+      "first",
+      [&]
+      {
+        auto c = make_client(0, servers);
+        static_cast<YAInstrumentedPeer&>(*c.peers()[0]).accepting().connect(
+          [&] (Client::Proposal const& p)
+          {
+            elle::reactor::wait(first);
+          });
+        static_cast<YAInstrumentedPeer&>(*c.peers()[1]).accepting().connect(
+          [&] (Client::Proposal const& p)
+          {
+            elle::reactor::wait(first);
+          });
+        static_cast<YAInstrumentedPeer&>(*c.peers()[2]).accepting().connect(
+          [&] (Client::Proposal const& p)
+          {
+            second.open();
+            elle::reactor::wait(first);
+          });
+        auto r = c.choose(0, 1389);
+        BOOST_REQUIRE(r);
+        BOOST_CHECK_EQUAL(r->get<int>(), 1400);
+      });
+    scope.run_background(
+      "second",
+      [&]
+      {
+        elle::reactor::wait(second);
+        auto c = make_client(0, servers);
+        auto r = c.choose(0, 1400);
+        BOOST_CHECK(!r);
         first.open();
       });
     elle::reactor::wait(scope);
@@ -1378,6 +1425,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(partial_interleave), 0, valgrind(5));
   suite.add(BOOST_TEST_CASE(partial_in_progress), 0, valgrind(5));
   suite.add(BOOST_TEST_CASE(self_conflict), 0, valgrind(5));
+  suite.add(BOOST_TEST_CASE(self_conflict2), 0, valgrind(5));
   {
     auto quorum = BOOST_TEST_SUITE("quorum");
     suite.add(quorum);

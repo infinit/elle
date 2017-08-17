@@ -74,7 +74,7 @@ namespace elle
         typename T, typename Version, typename ClientId, typename ServerId>
       Server<T, Version, ClientId, ServerId>::Accepted::Accepted(
         Proposal proposal_,
-        elle::Option<T, Quorum> value_,
+        Value value_,
         bool confirmed_)
         : proposal(std::move(proposal_))
         , value(std::move(value_))
@@ -338,8 +338,9 @@ namespace elle
 
       template <
         typename T, typename Version, typename ClientId, typename ServerId>
-      boost::optional<typename Server<T, Version, ClientId, ServerId>::Accepted>
+      auto
       Server<T, Version, ClientId, ServerId>::propose(Quorum q, Proposal p)
+        -> Response
       {
         ELLE_LOG_COMPONENT("athena.paxos.Server");
         ELLE_TRACE_SCOPE("%s: get proposal: %s ", *this, p);
@@ -350,7 +351,9 @@ namespace elle
           ELLE_DEBUG(
             "refuse proposal for version %s in favor of version %s",
             p.version, this->_state->accepted->proposal.version);
-          return this->_state->accepted;
+          return Response(this->_state->accepted->proposal,
+                          this->_state->accepted->value,
+                          this->_state->accepted->confirmed);
         }
         if (_Details::check_confirmed(*this, p))
         {
@@ -382,24 +385,38 @@ namespace elle
         if (!this->_state)
         {
           ELLE_DEBUG("accept first proposal for version %s", p.version);
+          this->_state.reset();
           this->_state.emplace(std::move(p));
-          return {};
+          return Response(boost::none, boost::none, false);
         }
         else
         {
           if (this->_state->proposal < p)
           {
             ELLE_DEBUG("update minimum proposal for version %s", p.version);
+            auto previous_proposal = this->_state->proposal;
             this->_state->proposal = std::move(p);
+            if (this->_state->accepted)
+              return Response(previous_proposal,
+                              this->_state->accepted->value,
+                              this->_state->accepted->confirmed);
+            else
+              return Response(boost::none, boost::none, false);
           }
-          return this->_state->accepted;
+          else if (this->_state->accepted)
+            return Response(
+              this->_state->proposal,
+              this->_state->accepted->value,
+              this->_state->accepted->confirmed);
+          else
+            return Response(this->_state->proposal, boost::none, false);
         }
       }
 
       template <typename T, typename Version, typename CId, typename SId>
       typename Server<T, Version, CId, SId>::Proposal
       Server<T, Version, CId, SId>::accept(
-        Quorum q, Proposal p, elle::Option<T, Quorum> value)
+        Quorum q, Proposal p, Value value)
       {
         ELLE_LOG_COMPONENT("athena.paxos.Server");
         ELLE_TRACE_SCOPE("%s: accept for %f: %f", *this, p, value);
