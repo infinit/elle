@@ -935,9 +935,9 @@ class GccToolkit(Toolkit):
               else:
                 pre.append(e)
           cmd = pre
-          if self.os is drake.os.windows:
-            cmd.append('-Wl,--export-all-symbols')
           cmd += ['-Wl,--whole-archive'] + ar + ['-Wl,--no-whole-archive'] + post
+      if self.os is drake.os.windows:
+        cmd.append('-Wl,--export-all-symbols')
       return cmd
 
   def libname_static(self, cfg, path):
