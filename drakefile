@@ -956,7 +956,6 @@ def configure(cxx_toolkit = None,
                     'Generate Boost user configuration')
         with open(str(self.__user_config.path()), 'w') as f:
           params = self.params
-          params = self.params
           params['linkflags'] = ' '.join(
             '<linkflags>%s' % f for f in params['linkflags'])
           print(self.format % params, file = f)
