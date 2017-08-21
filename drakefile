@@ -926,12 +926,14 @@ def configure(cxx_toolkit = None,
       boost_dynamic_format = '%s/lib/libboost_%s.so'
       boost_dynamic_versioned_format = \
         '%%s/lib/libboost_%%s.so.%s' % boost_version
+    if boost_static:
+      boost_fmt = ((drake.cxx.StaticLib, boost_static_format),)
+    else:
+      boost_fmt = ((drake.cxx.DynLib, boost_dynamic_format),
+           (drake.cxx.DynLib, boost_dynamic_versioned_format))
     boost_libraries = (
       [t(fmt % (boost_prefix, name))
-       for t, fmt in (
-           (drake.cxx.StaticLib, boost_static_format),
-           (drake.cxx.DynLib, boost_dynamic_format),
-           (drake.cxx.DynLib, boost_dynamic_versioned_format))
+       for t, fmt in boost_fmt
        if fmt is not None]
       for name in boost_library_names)
     boost_libraries = list(chain(*boost_libraries))
