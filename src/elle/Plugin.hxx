@@ -41,17 +41,17 @@ namespace elle
   Plugin<T>::plugins()
     -> Plugins&
   {
-    using SPlugins = std::shared_ptr<Plugins>;
     auto& pm = plugins_map();
     auto k = elle::type_info<T>().name();
-    auto it = pm.find(k);
-    if (it == pm.end())
+    auto it = pm.emplace(k, nullptr);
+    if (it.second)
     {
-      boost::any v(std::make_shared<Plugins>());
-      pm.emplace(k, std::move(v));
-      return *boost::any_cast<SPlugins>(pm[k]);
+      auto v = std::make_shared<Plugins>();
+      it.first->second = v;
+      return *v;
     }
-    return *boost::any_cast<SPlugins>(it->second);
+    else
+      return *boost::any_cast<std::shared_ptr<Plugins>>(it.first->second);
   }
 
   template <typename ... Args>
