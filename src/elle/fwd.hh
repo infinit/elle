@@ -16,6 +16,7 @@ namespace elle
 
   std::string
   exception_string(std::exception_ptr err);
+
   inline
   std::string
   exception_string()
