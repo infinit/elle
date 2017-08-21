@@ -7,6 +7,7 @@
 #include <boost/signals2.hpp>
 #include <boost/any.hpp>
 
+#include <elle/TypeInfo.hh>
 #include <elle/compiler.hh>
 
 namespace elle
@@ -63,10 +64,10 @@ namespace elle
     hook_added();
   };
 
-  std::unordered_map<std::string, boost::any>&
+  std::unordered_map<elle::TypeInfo, boost::any>&
   plugins_map();
 
-  std::unordered_map<std::string, boost::any>&
+  std::unordered_map<elle::TypeInfo, boost::any>&
   hooks_map();
 
   class ELLE_API PluginLoad

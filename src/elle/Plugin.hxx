@@ -42,8 +42,7 @@ namespace elle
     -> Plugins&
   {
     auto& pm = plugins_map();
-    auto k = elle::type_info<T>().name();
-    auto it = pm.emplace(k, nullptr);
+    auto it = pm.emplace(elle::type_info<T>(), nullptr);
     if (it.second)
     {
       auto v = std::make_shared<Plugins>();
@@ -72,7 +71,7 @@ namespace elle
     using Hook = boost::signals2::signal<void (T&)>;
     using SHook = std::shared_ptr<Hook>;
     auto& hm = hooks_map();
-    auto k = elle::type_info<T>().name();
+    auto k = elle::type_info<T>();
     auto it = hm.find(k);
     if (it == hm.end())
     {
