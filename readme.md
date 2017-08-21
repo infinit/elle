@@ -43,7 +43,7 @@ git clone https://github.com/infinit/elle --recursive # Clone elle and its submo
 
 > *Note:* If you cloned it using the GitHub "clone" button, do not forget to run `git submodule update --init --recursive`!
 
-> *Note:* If you *forked* Elle, you'll also need to fork the following repositories too: `drake`, `dokan`, `libutp`, `miniupnp`. The reason why is detailed on following GitHub issue: `https://github.com/infinit/elle/issues/6`.
+> *Note:* If you *forked* Elle, you'll also need to fork the following repositories too: `drake`, `dokan`, `libutp`, `miniupnp`. The reason why is detailed on following [GitHub issue](https://github.com/infinit/elle/issues/6).
 
 ## Structure
 
