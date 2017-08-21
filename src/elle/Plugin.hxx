@@ -69,16 +69,15 @@ namespace elle
   Plugin<T>::hook_added()
   {
     using Hook = boost::signals2::signal<void (T&)>;
-    using SHook = std::shared_ptr<Hook>;
     auto& hm = hooks_map();
-    auto k = elle::type_info<T>();
-    auto it = hm.find(k);
-    if (it == hm.end())
+    auto it = hm.emplace(elle::type_info<T>(), nullptr);
+    if (it.second)
     {
-      boost::any v(std::make_shared<Hook>());
-      hm.emplace(k, std::move(v));
-      return *boost::any_cast<SHook>(hm[k]);
+      auto v = std::make_shared<Hook>();
+      it.first->second = v;
+      return *v;
     }
-    return *boost::any_cast<SHook>(it->second);
+    else
+      return *boost::any_cast<std::shared_ptr<Hook>>(it.first->second);
   }
 }
