@@ -1380,8 +1380,9 @@ namespace elle
     | Hierarchy |
     `----------*/
 
-    std::unordered_map<std::string, boost::any>&
+    std::unordered_map<elle::TypeInfo, boost::any>&
     hierarchy_map();
+
     std::unordered_map<std::string, std::map<TypeInfo, std::string>>&
     hierarchy_rmap();
 
@@ -1429,9 +1430,11 @@ namespace elle
         std::unordered_map<std::string,
                            std::function<std::unique_ptr<T>(SerializerIn&)>>;
 
-      static TypeMap& _map()
+      static
+      TypeMap&
+      _map()
       {
-        auto tn = type_info<T>().name();
+        auto tn = type_info<T>();
         auto& hm = hierarchy_map();
         auto it = hm.find(tn);
         if (it == hm.end())
@@ -1441,6 +1444,7 @@ namespace elle
         }
         return boost::any_cast<TypeMap&>(it->second);
      }
+
      static std::map<TypeInfo, std::string>&
      _rmap()
      {

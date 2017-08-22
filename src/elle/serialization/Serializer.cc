@@ -183,10 +183,10 @@ namespace elle
       f(index);
     }
 
-    std::unordered_map<std::string, boost::any>&
+    std::unordered_map<elle::TypeInfo, boost::any>&
     hierarchy_map()
     {
-      static std::unordered_map<std::string, boost::any> value;
+      static std::unordered_map<elle::TypeInfo, boost::any> value;
       return value;
     }
 
