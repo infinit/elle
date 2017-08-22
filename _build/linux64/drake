@@ -17,5 +17,8 @@ try:
 except:
   valgrind = None
 
+cfg = drake.cxx.Config()
+cfg.enable_debug_symbols()
+
 with drake.Drake('../..') as d:
-  d.run(valgrind = valgrind)
+  d.run(cxx_config = cfg, valgrind = valgrind)

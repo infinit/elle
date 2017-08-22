@@ -41,8 +41,14 @@ namespace elle
     {
       if (path != this->path())
       {
+#ifdef ELLE_WINDOWS
+        this->close();
+#endif
         fs::rename(this->path(), path);
         this->_path = std::move(path);
+#ifdef ELLE_WINDOWS
+        this->open(this->_path, std::ios::app | std::ios::out);
+#endif
       }
     }
 

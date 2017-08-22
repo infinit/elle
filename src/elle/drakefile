@@ -102,6 +102,10 @@ def configure(zlib_lib,
     cxx_config += boost.config_chrono(link = False)
     cxx_config.library_add(drake.copy(boost.chrono_dynamic,
                                       lib_path, strip_prefix = True))
+    if cxx_toolkit.os is drake.os.windows:
+      cxx_config += boost.config_locale(link = False)
+      cxx_config.library_add(drake.copy(boost.locale_dynamic,
+                                        lib_path, strip_prefix = True))
 
   # JSON spirit
   cxx_config.add_local_include_path('json/modules/json-spirit/include')
@@ -473,7 +477,7 @@ def configure(zlib_lib,
 
   rule_build = drake.Rule('build')
   rule_build << lib_static
-  if cxx_toolkit.os not in [drake.os.windows, drake.os.ios, drake.os.android]:
+  if cxx_toolkit.os not in [drake.os.ios, drake.os.android]:
     rule_build << lib_dynamic
     library = lib_dynamic
   else:
@@ -646,6 +650,8 @@ def configure(zlib_lib,
       'BOOST_TEST_LOG_SINK': 'stderr',  # Keep our logs, and Boost's, together.
       'TEST_DIR': drake.path_build(tests_path),
     }
+    if cxx_toolkit.os is drake.os.windows:
+      env.update({'Path': drake.path_build(lib_path)})
     if valgrind_tests and valgrind_this_test:
       runner = drake.valgrind.ValgrindRunner(exe = test,
                                              valgrind = valgrind,
@@ -668,6 +674,9 @@ def configure(zlib_lib,
     'samples/elle/printable',
     'samples/elle/log',
   ]
+  examples_env = {}
+  if cxx_toolkit.os is drake.os.windows:
+    examples_env.update({'Path': drake.path_build(lib_path)})
   cxx_config_examples = drake.cxx.Config(cxx_config)
   cxx_config_examples.enable_debug_symbols()
   if not boost.prefer_shared:
@@ -684,7 +693,7 @@ def configure(zlib_lib,
       ],
       cxx_toolkit, config_examples)
     rule_examples << example
-    runner = drake.Runner(exe = example)
+    runner = drake.Runner(exe = example, env = examples_env)
     runner.reporting = drake.Runner.Reporting.on_failure
     rule_examples << runner.status
   rule_build << rule_examples

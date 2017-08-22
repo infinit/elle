@@ -259,36 +259,23 @@ def configure(curl_config,
   # Boost
   boost = boost or drake.cxx.boost.Boost()
   local_cxx_config += boost.config()
-  if not boost.prefer_shared:
-    def import_lib(l):
-      local_cxx_config.library_add(
-        drake.copy(l, lib_path,
-                   strip_prefix = True))
-
-    if backend == Backends.boost:
-      local_cxx_config += boost.config_context(link = False, static = True)
-      import_lib(boost.context_static)
-    local_cxx_config += boost.config_signals(link = False, static = True)
-    import_lib(boost.signals_static)
-    local_cxx_config += boost.config_system(link = False, static = True)
-    import_lib(boost.system_static)
-    local_cxx_config += boost.config_thread(link = False, static = True)
-    import_lib(boost.thread_static)
-  else:
-    def import_lib(l):
-      local_cxx_config.library_add(
-        drake.copy(l, lib_path,
+  def import_lib(l, cfg):
+    if boost.prefer_shared:
+      cfg += getattr(boost, 'config_%s' % l)(link = False, static = False)
+      cfg.library_add(
+        drake.copy(getattr(boost, '%s_dynamic' % l), lib_path,
                    strip_prefix = True,
                    post_process = set_local_libcxx(cxx_toolkit)))
-    if backend == Backends.boost:
-      local_cxx_config += boost.config_context(link = False)
-      import_lib(boost.context_dynamic)
-    local_cxx_config += boost.config_signals(link = False)
-    import_lib(boost.signals_dynamic)
-    local_cxx_config += boost.config_system(link = False)
-    import_lib(boost.system_dynamic)
-    local_cxx_config += boost.config_thread(link = False)
-    import_lib(boost.thread_dynamic)
+      return cfg
+    else:
+      cfg += getattr(boost, 'config_%s' % l)(link = True, static = True)
+      # cfg.library_add(getattr(boost, '%s_static' % l))
+      return cfg
+  if backend == Backends.boost:
+    local_cxx_config = import_lib('context', local_cxx_config)
+  local_cxx_config = import_lib('signals', local_cxx_config)
+  local_cxx_config = import_lib('system', local_cxx_config)
+  local_cxx_config = import_lib('thread', local_cxx_config)
   if backend == Backends.io:
     local_cxx_config.define('REACTOR_CORO_BACKEND_IO')
   else:
@@ -713,6 +700,10 @@ def configure(curl_config,
     miniupnpc_lib,
     utp_lib,
   ]
+  if boost.prefer_shared:
+    lib_cxx_config += boost.config_filesystem(link = False)
+    lib_cxx_config.library_add(
+        drake.copy(boost.filesystem_dynamic, lib_path, strip_prefix = True))
   if backend == Backends.io:
     lib_dynamic_link_libs.append(libcoroutine)
     lib_dynamic_link_libs.append(backend_coro_io)
@@ -727,6 +718,8 @@ def configure(curl_config,
     lib_dynamic_link_libs.append(fuse_lib)
   if dokan_lib:
     lib_static_link_libs.append(dokan_lib)
+    lib_cxx_config.library_add(
+      drake.copy(dokan_lib, lib_path, strip_prefix = True))
   if cxx_toolkit.os in [drake.os.macos]:
     lib_cxx_config.framework_add('DiskArbitration')
     pass #lib_cxx_config.use_local_libcxx = True
@@ -739,7 +732,7 @@ def configure(curl_config,
     sources + lib_static_link_libs + openssl_libs,
     cxx_toolkit, lib_cxx_config)
   rule_build << lib_static
-  if cxx_toolkit.os in [drake.os.windows, drake.os.ios, drake.os.android]:
+  if cxx_toolkit.os in [drake.os.ios, drake.os.android]:
     library = lib_static
   else:
     rule_build << lib_dynamic
@@ -775,6 +768,7 @@ def configure(curl_config,
   ]
   cxx_config_bin = drake.cxx.Config(local_cxx_config)
   cxx_config_bin.lib_path_runtime('../lib')
+  cxx_config_bin = import_lib('filesystem', cxx_config_bin)
   for name in binaries_config:
     bin = drake.cxx.Executable(
       'bin/%s' % name,
@@ -879,6 +873,8 @@ def configure(curl_config,
       'BOOST_TEST_LOG_SINK': 'stderr',  # Keep our logs, and Boost's, together.
       'SOURCE_DIR': drake.path_source(),
     }
+    if cxx_toolkit.os is drake.os.windows:
+      env.update({'Path': drake.path_build(lib_path)})
     if cxx_toolkit.os is drake.os.windows and sys.platform is 'linux':
       env['RUNNING_ON_WINE'] = '1'
     # Disable valgrind for tests using fuse.
@@ -925,6 +921,7 @@ def configure(curl_config,
   ## -------- ##
 
   cxx_config_examples = drake.cxx.Config(local_cxx_config)
+  cxx_config_examples = import_lib('filesystem', cxx_config_examples)
   rule_examples = drake.Rule('examples')
   examples_path = drake.Path('../../../examples')
   examples = [
@@ -937,8 +934,12 @@ def configure(curl_config,
     ]]
   rule_examples << examples
   echo_server = examples[0]
+  env = dict()
+  if cxx_toolkit.os is drake.os.windows:
+    env.update({'Path': drake.path_build(lib_path)})
   runner = drake.Runner(
     exe = drake.node(examples_path / 'demo/elle/reactor/test_echo_server'),
+    env = env,
     args = [echo_server.path()],
     sources = [echo_server])
   runner.reporting = drake.Runner.Reporting.on_failure

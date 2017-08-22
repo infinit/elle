@@ -59,6 +59,9 @@ def configure(cryptography,
     local_cxx_config += boost.config_date_time(link = False)
     local_cxx_config.library_add(drake.copy(boost.date_time_dynamic,
                                             lib_path, strip_prefix = True))
+    local_cxx_config += boost.config_system(link = False)
+    local_cxx_config.library_add(drake.copy(boost.system_dynamic,
+                                            lib_path, strip_prefix = True))
 
   sources = drake.nodes(
     'CanonicalRequest.cc',
@@ -92,7 +95,7 @@ def configure(cryptography,
   global rule_build
   rule_build = drake.Rule('build')
   rule_build << lib_static
-  if cxx_toolkit.os not in [drake.os.windows, drake.os.ios, drake.os.android]:
+  if cxx_toolkit.os not in [drake.os.ios, drake.os.android]:
     rule_build << lib_dynamic
     library = lib_dynamic
   else:
@@ -126,18 +129,25 @@ def configure(cryptography,
   cxx_config_tests += boost.config_thread(
     static = not boost.prefer_shared or None,
     link = not boost.prefer_shared)
+  cxx_config_tests += boost.config_filesystem(
+    static = not boost.prefer_shared or None,
+    link = not boost.prefer_shared)
   if boost.prefer_shared:
     test_libs += [
       boost.test_dynamic,
       boost.timer_dynamic,
       boost.system_dynamic,
-      boost.thread_dynamic
+      boost.thread_dynamic,
+      boost.filesystem_dynamic
     ]
   if cxx_toolkit.os == drake.os.android:
     cxx_config_tests.lib('stdc++')
     cxx_config_tests.lib('atomic')
   test_libs_path = tests_path / lib_path
   cxx_config_tests.add_local_include_path(elle_tests_path)
+  env = dict()
+  if cxx_toolkit.os is drake.os.windows:
+    env.update({'Path': drake.path_build(lib_path)})
   for name in tests:
     test = drake.cxx.Executable(
       tests_path / name,
@@ -149,11 +159,12 @@ def configure(cryptography,
     if valgrind_tests:
       runner = drake.valgrind.ValgrindRunner(
         exe = test,
+        env = env,
         valgrind = valgrind,
         valgrind_args = ['--suppressions=%s' % (drake.path_source('../../../../valgrind.suppr'))]
         )
     else:
-      runner = drake.Runner(exe = test)
+      runner = drake.Runner(exe = test, env=env)
     runner.reporting = drake.Runner.Reporting.on_failure
     rule_check << runner.status
 

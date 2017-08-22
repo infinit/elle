@@ -15,7 +15,14 @@ namespace elle
   class WeakBuffer;
 
   std::string
-  exception_string(std::exception_ptr err = std::exception_ptr{});
+  exception_string(std::exception_ptr err);
+
+  inline
+  std::string
+  exception_string()
+  {
+    return exception_string(std::current_exception());
+  }
 }
 
 // Keep after the previous fwd decls.
