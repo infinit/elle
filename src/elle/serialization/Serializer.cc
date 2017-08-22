@@ -190,20 +190,21 @@ namespace elle
       return value;
     }
 
-    std::unordered_map<std::string, std::map<TypeInfo, std::string>>&
+    std::unordered_map<
+      std::string, std::unordered_map<TypeInfo, std::string>>&
     hierarchy_rmap()
     {
-      static std::unordered_map<std::string, std::map<TypeInfo, std::string>> value;
+      static std::unordered_map<
+        std::string, std::unordered_map<TypeInfo, std::string>> value;
       return value;
     }
 
-    std::map<TypeInfo,
-             std::function<std::exception_ptr (elle::Exception&&)> >&
+    std::unordered_map<
+      TypeInfo, std::function<std::exception_ptr (elle::Exception&&)>>&
     ExceptionMaker<elle::Exception>::_map()
     {
-      static std::map<
-        TypeInfo,
-        std::function<std::exception_ptr (elle::Exception&&)> > map;
+      static std::unordered_map<
+        TypeInfo, std::function<std::exception_ptr (elle::Exception&&)>> map;
       return map;
     }
   }

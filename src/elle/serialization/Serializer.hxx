@@ -1371,8 +1371,8 @@ namespace elle
       }
 
       static
-      std::map<TypeInfo,
-               std::function<std::exception_ptr (elle::Exception&&)> >&
+      std::unordered_map<
+        TypeInfo, std::function<std::exception_ptr (elle::Exception&&)> >&
       _map();
     };
 
@@ -1383,7 +1383,7 @@ namespace elle
     std::unordered_map<elle::TypeInfo, boost::any>&
     hierarchy_map();
 
-    std::unordered_map<std::string, std::map<TypeInfo, std::string>>&
+    std::unordered_map<std::string, std::unordered_map<TypeInfo, std::string>>&
     hierarchy_rmap();
 
     template <typename T>
@@ -1445,7 +1445,7 @@ namespace elle
         return boost::any_cast<TypeMap&>(it->second);
      }
 
-     static std::map<TypeInfo, std::string>&
+     static std::unordered_map<TypeInfo, std::string>&
      _rmap()
      {
        return hierarchy_rmap()[type_info<T>().name()];
