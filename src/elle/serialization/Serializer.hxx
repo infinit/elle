@@ -1434,22 +1434,15 @@ namespace elle
       TypeMap&
       _map()
       {
-        auto tn = type_info<T>();
-        auto& hm = hierarchy_map();
-        auto it = hm.find(tn);
-        if (it == hm.end())
-        {
-          hm[tn] = TypeMap();
-          return boost::any_cast<TypeMap&>(hm[tn]);
-        }
-        return boost::any_cast<TypeMap&>(it->second);
-     }
+        auto insertion = hierarchy_map().emplace(type_info<T>(), TypeMap());
+        return boost::any_cast<TypeMap&>(insertion.first->second);
+      }
 
-     static std::unordered_map<TypeInfo, std::string>&
-     _rmap()
-     {
-       return hierarchy_rmap()[type_info<T>().name()];
-     }
+      static std::unordered_map<TypeInfo, std::string>&
+        _rmap()
+      {
+        return hierarchy_rmap()[type_info<T>().name()];
+      }
     };
 
     /*--------.
