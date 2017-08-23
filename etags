@@ -1,0 +1,2 @@
+#!/bin/sh
+etags $(find . -name _build -prune -a -false -o -regex '.*\.py' -prune)
