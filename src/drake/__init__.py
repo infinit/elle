@@ -2243,7 +2243,7 @@ class Builder:
             logger.log('drake.Builder',
                        drake.log.LogLevel.debug,
                        '%s: everything is up to date', self)
-      except Exception as e:
+      except BaseException as e:
         logger.log('drake.Builder',
                    drake.log.LogLevel.trace,
                    '%s: exception: %s', self, e)

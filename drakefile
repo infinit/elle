@@ -73,6 +73,7 @@ def configure(prefix = '.'):
     'base/change-dynamic-dependency',
     'base/command-line',
     'base/dependency',
+    'base/dynamic-termination',
     'base/failure',
     'base/failure-cmd',
     'base/interrupt-dynamic-dependency',
