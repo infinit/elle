@@ -35,7 +35,7 @@ namespace elle
             std::reference_wrapper<std::remove_reference_t<decltype(elt)>>,
             decltype(elt)>;
           scope.run_background(
-            elle::print("{}: {}: {}",
+            elle::print("{}: {}: %f",
                         reactor::scheduler().current()->name(),
                         name.empty() ? "for-each" : name,
                         elt),
