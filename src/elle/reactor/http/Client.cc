@@ -46,9 +46,13 @@ namespace elle
         ELLE_ATTRIBUTE(elle::generic_unique_ptr<CURLSH>, share);
       };
 
-      Client::Client(std::string  user_agent):
-        _impl(new Impl),
-        _user_agent(std::move(user_agent))
+      Client::Client()
+        : Client(elle::print("elle/{}", elle::version_describe()))
+      {}
+
+      Client::Client(std::string user_agent)
+        : _impl(new Impl)
+        , _user_agent(std::move(user_agent))
       {}
 
       Client::~Client()
