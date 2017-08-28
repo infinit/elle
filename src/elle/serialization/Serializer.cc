@@ -9,16 +9,16 @@ namespace elle
   namespace serialization
   {
     Serializer::Serializer(bool versioned)
-      : _versioned(versioned)
-    {
-      static_assert(Details::api<int>() == Details::pod, "");
-      static_assert(Details::api<unsigned long>() == Details::pod, "");
-    }
+      : Serializer(Versions(), versioned)
+    {}
 
     Serializer::Serializer(Versions versions, bool versioned)
       : _versioned(versioned)
       , _versions(std::move(versions))
-    {}
+    {
+      static_assert(Details::api<int>() == Details::pod, "");
+      static_assert(Details::api<unsigned long>() == Details::pod, "");
+    }
 
     /*--------------.
     | Enter / leave |
