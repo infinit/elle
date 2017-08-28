@@ -25,8 +25,7 @@
 
 (c++-project
  '(
-   "elle/src"
-   "cryptography/sources"
+   "src"
    )
  "_build/linux64"
  "./drake -j 4 //build"
