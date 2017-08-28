@@ -1,3 +1,7 @@
+#include <boost/asio/ssl.hpp>
+
+#include <elle/reactor/network/SocketOperation.hh>
+#include <elle/reactor/scheduler.hh>
 
 namespace elle
 {

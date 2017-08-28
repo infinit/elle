@@ -1,6 +1,7 @@
 #include <elle/log.hh>
 #include <elle/reactor/network/SocketOperation.hh>
 #include <elle/reactor/network/Error.hh>
+#include <elle/reactor/network/SSLHandshake.hh>
 #include <elle/reactor/network/ssl-socket.hh>
 #include <elle/reactor/scheduler.hh>
 #include <elle/utility/Move.hh>
@@ -151,51 +152,13 @@ namespace elle
       | SSL connection |
       `---------------*/
 
-      class SSLHandshake
-        : public SocketOperation<boost::asio::ip::tcp::socket>
-      {
-      public:
-        SSLHandshake(SSLSocket& socket,
-                     SSLStream::handshake_type const& type)
-          : SocketOperation(socket.socket()->next_layer())
-          , _socket(socket)
-          , _type(type)
-        {}
-
-        void
-        print(std::ostream& stream) const override
-        {
-          elle::fprintf(stream, "SSL handshake %s", this->_socket);
-        }
-
-      protected:
-        void
-        _start() override
-        {
-          this->_socket.socket()->async_handshake(
-            this->_type,
-            [this](const boost::system::error_code& error)
-            {
-              this->_wakeup(error);
-            });
-        }
-
-      private:
-        void
-        _handle_error(boost::system::error_code const& error) override
-        {
-          this->_raise<SSLHandshakeError>(error.message());
-        }
-
-        ELLE_ATTRIBUTE(SSLSocket&, socket);
-        ELLE_ATTRIBUTE(SSLStream::handshake_type, type);
-      };
-
       void
       SSLSocket::_client_handshake()
       {
         ELLE_TRACE_SCOPE("%s: handshake as client", *this);
-        SSLHandshake handshaker(*this, SSLStream::handshake_type::client);
+        auto handshaker =
+          SSLHandshake<SSLStream>(*this->_socket,
+                                  SSLStream::handshake_type::client);
         if (!handshaker.run(this->_timeout))
           throw TimeOut();
       }
@@ -204,7 +167,9 @@ namespace elle
       SSLSocket::_server_handshake(reactor::DurationOpt const& timeout)
       {
         ELLE_TRACE_SCOPE("%s: handshake as server", *this);
-        SSLHandshake handshaker(*this, SSLStream::handshake_type::server);
+        auto handshaker =
+          SSLHandshake<SSLStream>(*this->_socket,
+                                  SSLStream::handshake_type::server);
         if (!handshaker.run(timeout))
           throw TimeOut();
       }

@@ -1,3 +1,5 @@
+#include <elle/Lazy.hh>
+#include <elle/format/hexadecimal.hh>
 #include <elle/reactor/network/SocketOperation.hxx>
 
 namespace elle
