@@ -1326,6 +1326,14 @@ namespace elle
     }
 
     template <typename T>
+    T
+    Serializer::serialize_context()
+    {
+      ELLE_ASSERT(this->in());
+      return this->_context.get<T>();
+    }
+
+    template <typename T>
     void
     Serializer::set_context(T&& value)
     {

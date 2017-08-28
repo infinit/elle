@@ -110,14 +110,24 @@ namespace elle
       ///
       /// @param value A reference to a value to be filled.
       template <typename T>
-      void
-      get(T& value)
+      T
+      get()
       {
         auto ti = type_info<T>();
         auto it = this->_value.find(ti);
         if (it == this->_value.end())
           elle::err("missing serialization context for %s", ti.name());
-        value = boost::any_cast<T>(it->second);
+        return boost::any_cast<T>(it->second);
+      }
+
+      /// Get @a value from the context.
+      ///
+      /// @param value A reference to a value to be filled.
+      template <typename T>
+      void
+      get(T& value)
+      {
+        value = this->get<T>();
       }
 
       /// Get @a value from the Context. If it's not in the Context, use @a
@@ -475,6 +485,14 @@ namespace elle
       template <typename T>
       void
       serialize_context(T& value);
+      /// The value of type T from the Context.
+      ///
+      /// N.B. If the serializer is in input mode, this method does nothing.
+      ///
+      /// @param T The type of the value to get from the context.
+      template <typename T>
+      T
+      serialize_context();
       /// Set a value for a given type T in the Context.
       ///
       /// @tparam T The type of the value to store.
