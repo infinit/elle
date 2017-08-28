@@ -5,6 +5,7 @@
 #include <boost/any.hpp>
 
 #include <elle/attribute.hh>
+#include <elle/json/json.hh>
 #include <elle/serialization/SerializerOut.hh>
 
 namespace elle
@@ -137,8 +138,8 @@ namespace elle
       | JSON |
       `-----*/
       private:
-        ELLE_ATTRIBUTE(boost::any, json);
-        ELLE_ATTRIBUTE(std::vector<boost::any*>, current);
+        ELLE_ATTRIBUTE(elle::json::Json, json);
+        ELLE_ATTRIBUTE(std::vector<elle::json::Json*>, current);
         ELLE_ATTRIBUTE(bool, pretty);
         ELLE_ATTRIBUTE_R(std::ostream&, output);
       };
