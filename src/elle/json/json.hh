@@ -94,6 +94,9 @@ namespace elle
     pretty_print(Json const& any);
 
     std::ostream&
+    operator <<(std::ostream& stream, Json const& json);
+
+    std::ostream&
     operator <<(std::ostream& stream, elle::json::Object const& obj);
 
     std::ostream&

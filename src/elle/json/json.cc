@@ -203,6 +203,13 @@ namespace elle
     }
 
     std::ostream&
+    operator <<(std::ostream& stream, Json const& json)
+    {
+      write(stream, json, false);
+      return stream;
+    }
+
+    std::ostream&
     operator <<(std::ostream& stream, Object const& obj)
     {
       write(stream, obj, false);
