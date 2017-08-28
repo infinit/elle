@@ -421,6 +421,9 @@ def configure(curl_config,
   elle = elle or drake.include('../../../elle')
   local_cxx_config += elle.config
 
+  # Beast
+  local_cxx_config.add_local_include_path('modules/Beast/include')
+
   # cpp-netlib
   local_cxx_config.add_local_include_path(
     'modules/cpp-netlib/uri/include')
