@@ -18,7 +18,7 @@ namespace elle
       public:
         /// Create a Client.
         Client();
-        /// Create a Client and pick user angent.
+        /// Create a Client and pick user agent.
         Client(std::string user_agent);
         /// Dispose of a Client.
         ~Client();

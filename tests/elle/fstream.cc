@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE(rotate)
   {
     auto&& o = elle::ofstream(elle::print("%s.0", family.string()));
     BOOST_TEST(o.good());
-    for (auto _: boost::irange(0, 1000))
+    for (int i = 0; i < 1000; ++i)
     {
       // End with a period, rather than a \n, to avoid getting
       // a different size on Windows.
