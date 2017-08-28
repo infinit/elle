@@ -18,6 +18,24 @@ namespace elle
   {
     using Config = json_spirit::Config_map<std::string>;
 
+    Json::operator bool() const
+    {
+      // FIXME: handle more cases maybe.
+      return boost::any_cast<bool>(*this);
+    }
+
+    Json&
+    Json::operator[] (std::string const& key)
+    {
+      return boost::any_cast<Object&>(*this)[key];
+    }
+
+    Json const&
+    Json::operator[] (std::string const& key) const
+    {
+      return elle::unconst(*this)[key];
+    }
+
     namespace
     {
       Json
@@ -33,7 +51,7 @@ namespace elle
               // Enforce evulation order.
               auto key = Config::get_name(element);
               auto value = from_spirit(Config::get_value(element));
-              res.emplace(key, value);
+              res.emplace(key, std::move(value));
             }
             return res;
           }
@@ -196,6 +214,30 @@ namespace elle
     {
       write(stream, obj, false);
       return stream;
+    }
+
+    Array::iterator
+    Json::begin()
+    {
+      return boost::any_cast<Array&>(*this).begin();
+    }
+
+    Array::iterator
+    Json::end()
+    {
+      return boost::any_cast<Array&>(*this).end();
+    }
+
+    Array::const_iterator
+    Json::begin() const
+    {
+      return elle::unconst(*this).begin();
+    }
+
+    Array::const_iterator
+    Json::end() const
+    {
+      return elle::unconst(*this).end();
     }
   }
 }

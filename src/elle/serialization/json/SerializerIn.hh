@@ -41,9 +41,6 @@ namespace elle
         /// @param versioned Whether the Serializer will read the version of
         ///                  objects.
         SerializerIn(elle::json::Json input, bool versioned = true);
-      private:
-        void
-        _load_json(std::istream& input);
 
       /*--------------.
       | Configuration |
@@ -105,8 +102,8 @@ namespace elle
         void
         _leave(std::string const& name) override;
 
-        ELLE_ATTRIBUTE(boost::any, json);
-        ELLE_ATTRIBUTE(std::vector<boost::any*>, current);
+        ELLE_ATTRIBUTE(elle::json::Json, json);
+        ELLE_ATTRIBUTE(std::vector<elle::json::Json*>, current);
       private:
         template <typename T, typename ... Alternatives>
         T&

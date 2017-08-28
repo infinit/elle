@@ -28,19 +28,29 @@ namespace elle
 
       SerializerIn::SerializerIn(std::istream& input,
                                  bool versioned)
-        : Super(versioned)
-        , _partial(false)
-      {
-        this->_load_json(input);
-      }
+        : SerializerIn(input, Versions(), versioned)
+      {}
 
       SerializerIn::SerializerIn(std::istream& input,
                                  Versions versions,
                                  bool versioned)
         : Super(std::move(versions), versioned)
         , _partial(false)
+        , _json([&]
+                {
+                  try
+                  {
+                    return elle::json::read(input);
+                  }
+                  catch (elle::json::ParseError const& e)
+                  {
+                    Error exception("json parse error");
+                    exception.inner_exception(std::current_exception());
+                    throw exception;
+                  }
+                }())
       {
-        this->_load_json(input);
+        this->_current.push_back(&this->_json);
       }
 
       SerializerIn::SerializerIn(elle::json::Json input, bool versioned)
@@ -49,22 +59,6 @@ namespace elle
         , _json(std::move(input))
       {
         this->_current.push_back(&this->_json);
-      }
-
-      void
-      SerializerIn::_load_json(std::istream& input)
-      {
-        try
-        {
-          this->_json = elle::json::read(input);
-          this->_current.push_back(&this->_json);
-        }
-        catch (elle::json::ParseError const& e)
-        {
-          Error exception("json parse error");
-          exception.inner_exception(std::current_exception());
-          throw exception;
-        }
       }
 
       void
