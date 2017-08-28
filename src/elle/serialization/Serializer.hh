@@ -101,9 +101,9 @@ namespace elle
       /// @param value The value to register.
       template <typename T>
       void
-      set(T value)
+      set(T&& value)
       {
-        this->_value[type_info<T>()] = std::move(value);
+        this->_value[type_info<T>()] = std::forward<T>(value);
       }
 
       /// Get @a value from the context.
@@ -481,7 +481,7 @@ namespace elle
       /// @param value The value to store.
       template <typename T>
       void
-      set_context(T value);
+      set_context(T&& value);
       /// Add @a given Context to our Context.
       ///
       /// @param context The Context to add.

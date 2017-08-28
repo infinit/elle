@@ -1327,9 +1327,9 @@ namespace elle
 
     template <typename T>
     void
-    Serializer::set_context(T value)
+    Serializer::set_context(T&& value)
     {
-      this->_context.set<T>(value);
+      this->_context.set<T>(std::forward<T>(value));
     }
 
     template <typename T>
