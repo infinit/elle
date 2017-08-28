@@ -421,6 +421,10 @@ def configure(curl_config,
   elle = elle or drake.include('../../../elle')
   local_cxx_config += elle.config
 
+  # cpp-netlib
+  local_cxx_config.add_local_include_path(
+    'modules/cpp-netlib/uri/include')
+
   # elle_lib = drake.copy(elle.library, lib_path, strip_prefix = True, post_process = set_local_libcxx(cxx_toolkit))
 
   # miniupnpc
@@ -624,6 +628,19 @@ def configure(curl_config,
     'http/url.cc',
     'http/url.hh',
   )
+
+  # cpp-netlib
+  netlib_sources = drake.nodes(
+    'modules/cpp-netlib/uri/src/detail/uri_advance_parts.cpp',
+    'modules/cpp-netlib/uri/src/detail/uri_normalize.cpp',
+    'modules/cpp-netlib/uri/src/detail/uri_parse.cpp',
+    'modules/cpp-netlib/uri/src/detail/uri_parse_authority.cpp',
+    'modules/cpp-netlib/uri/src/detail/uri_resolve.cpp',
+    'modules/cpp-netlib/uri/src/uri.cpp',
+    'modules/cpp-netlib/uri/src/uri_builder.cpp',
+    'modules/cpp-netlib/uri/src/uri_errors.cpp',
+  )
+
   connectivity_sources = drake.nodes(
     'connectivity/connectivity.cc',
     'connectivity/connectivity.hh',
@@ -725,6 +742,13 @@ def configure(curl_config,
   if cxx_toolkit.os in [drake.os.macos]:
     lib_cxx_config.framework_add('DiskArbitration')
     pass #lib_cxx_config.use_local_libcxx = True
+  netlib_cxx_config = drake.cxx.Config(lib_cxx_config)
+  netlib_cxx_config.define('network_boost', 'boost')
+  netlib_cxx_config.warnings.missing_declarations = False
+  sources += [
+    drake.cxx.Object(s, cxx_toolkit, netlib_cxx_config)
+    for s in netlib_sources
+  ]
   lib_dynamic = drake.cxx.DynLib(
     lib_path + '/elle_reactor',
     sources + lib_dynamic_link_libs + openssl_libs + cxx_libs,
