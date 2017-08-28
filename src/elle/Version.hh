@@ -99,6 +99,14 @@ namespace elle
     std::string
     to_string(elle::Version const& version);
   };
+
+  /// The version of this build.
+  Version
+  version();
+
+  /// The git description of this build.
+  std::string
+  version_describe();
 }
 
 /*-----.

@@ -1,7 +1,11 @@
 #include <elle/Version.hh>
-#include <elle/serialization/Serializer.hh>
-#include <boost/algorithm/string.hpp>
+
 #include <string>
+
+#include <boost/algorithm/string.hpp>
+
+#include <elle/elle.hh>
+#include <elle/serialization/Serializer.hh>
 
 ELLE_LOG_COMPONENT("elle.Version");
 
@@ -115,6 +119,18 @@ namespace elle
                          version.major(),
                          version.minor(),
                          version.subminor());
+  }
+
+  Version
+  version()
+  {
+    return Version(ELLE_MAJOR, ELLE_MINOR, ELLE_SUBMINOR);
+  }
+
+  std::string
+  version_describe()
+  {
+    return ELLE_VERSION;
   }
 }
 
