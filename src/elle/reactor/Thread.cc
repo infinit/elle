@@ -127,9 +127,9 @@ namespace elle
     }
 
     void
-    Thread::name(std::string const& name)
+    Thread::name(std::string name)
     {
-      _thread->name(name);
+      _thread->name(std::move(name));
     }
 
     void

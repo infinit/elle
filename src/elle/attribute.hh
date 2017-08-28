@@ -109,8 +109,7 @@
   ELLE_ATTRIBUTE_PROPERTIES_PREFUN(                                 \
     BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))                          \
   void                                                              \
-  Name(typename boost::call_traits                                  \
-         <ELLE_ATTRIBUTE_STRIP_PARENS(Type)>::param_type name)      \
+  Name(ELLE_ATTRIBUTE_STRIP_PARENS(Type) value)                     \
   ELLE_ATTRIBUTE_PROPERTIES_POSTFUN(                                \
     BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))                          \
 
@@ -128,7 +127,7 @@
 #define ELLE_attribute_W(Type, Name, ...)                           \
   ELLE_attribute_w(Type, Name, __VA_ARGS__)                         \
   {                                                                 \
-    this->BOOST_PP_CAT(_, Name) = name;                             \
+    this->BOOST_PP_CAT(_, Name) = std::move(value);                 \
   }                                                                 \
 
 /// Define a private attribute _Name and define its setter.
@@ -500,7 +499,7 @@
   {                                                                 \
     std::unique_lock<elle::threading::write_mutex> lock             \
       (this->BOOST_PP_CAT(BOOST_PP_CAT(_, Name), _mutex));          \
-    this->BOOST_PP_CAT(_, Name) = name;                             \
+    this->BOOST_PP_CAT(_, Name) = std::move(value);                 \
   }                                                                 \
 
 #define ELLE_ATTRIBUTE_RW_TS_ACCESSORS(Type, Name)                  \
