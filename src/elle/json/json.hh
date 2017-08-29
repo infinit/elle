@@ -19,6 +19,7 @@ namespace elle
     public:
       Json() = default;
       Json(Json&& j) = default;
+      Json(Json& j) = default;
       Json(Json const& j) = default;
       template <typename T>
       Json(T&& v);
