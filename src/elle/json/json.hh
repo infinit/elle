@@ -17,11 +17,11 @@ namespace elle
       : public boost::any
     {
     public:
-      using boost::any::any;
-
       Json() = default;
       Json(Json&& j) = default;
       Json(Json const& j) = default;
+      template <typename T>
+      Json(T&& v);
 
       Json&
       operator =(Json const&) = default;
@@ -103,3 +103,5 @@ namespace elle
     operator <<(std::ostream& stream, elle::json::OrderedObject const& obj);
   }
 }
+
+#include <elle/json/json.hxx>
