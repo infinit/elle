@@ -131,7 +131,7 @@ namespace elle
         _serialize_option(bool filled,
                           std::function<void ()> const& f) override;
       private:
-        boost::any&
+        elle::json::Json&
         _get_current();
 
       /*-----.

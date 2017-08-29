@@ -75,7 +75,7 @@ namespace elle
             return false;
           else
           {
-            auto it = object.emplace(name, boost::any());
+            auto it = object.emplace(name, elle::json::Json());
             this->_current.push_back(&it.first->second);
             return true;
           }
@@ -320,7 +320,7 @@ namespace elle
         }
       }
 
-      boost::any&
+      elle::json::Json&
       SerializerOut::_get_current()
       {
         ELLE_ASSERT(!this->_current.empty());
