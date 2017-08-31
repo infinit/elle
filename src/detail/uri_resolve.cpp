@@ -26,6 +26,7 @@ void remove_last_segment(std::string& path) {
 }
 
 // implementation of http://tools.ietf.org/html/rfc3986#section-5.2.4
+static
 std::string remove_dot_segments(std::string input) {
   std::string result;
 
