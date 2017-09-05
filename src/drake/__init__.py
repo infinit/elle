@@ -3936,6 +3936,10 @@ class Runner(Builder):
                runs = 1,
                name = None,
                timeout = TIMEOUT,
+               out = None,
+               err = None,
+               status = None,
+               bench = None
   ):
     '''
     name -- the basename for the output files, defaults to exe
@@ -3950,12 +3954,11 @@ class Runner(Builder):
     # The basename for the output files, e.g. `tests/overlay-kelips`.
     # Used by `_node` to forge output Nodes such as
     # `tests/overlay-kelips.out`.
-    self.__basename = (self.__exe.name_relative.dirname()
-                       / (name or self.__exe.path().basename()))
-    self.__out = self._node('out')
-    self.__err = self._node('err')
-    self.__status = self._node('status')
-    self.__bench = self._node('bench')
+    self.__basename = Runner.basename(exe, name)
+    self.__out = out or self._node('out')
+    self.__err = err or self._node('err')
+    self.__status = status or self._node('status')
+    self.__bench = bench or self._node('bench')
     self.__sources = [exe] + sources
     self.__env = env
     self.__timeout = timeout
@@ -3978,6 +3981,10 @@ class Runner(Builder):
     super().__init__(
       self.__sources,
       [self.__out, self.__err, self.__status, self.__bench] + (targets or []))
+
+  @staticmethod
+  def basename(exe, name = None):
+    return exe.name_relative.dirname() / (name or exe.path().basename())
 
   @property
   def status(self):
