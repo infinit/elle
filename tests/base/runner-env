@@ -1,0 +1,27 @@
+#!/usr/bin/env python3
+
+'''Check the build chain stops when a builder fails.'''
+
+import drake
+import stat
+
+from utils import *
+
+def configure(foo: bool):
+  assert foo is False
+
+print(__file__)
+
+with Drake() as d:
+  os.environ.update({'FOO': 'bar'})
+  os.environ.update({'BAZ': 'nope'})
+  exe = drake.node('test')
+  drake.WriteBuilder(
+    '''#!/bin/sh -e
+test $FOO = bar
+test $BAZ = quux''',
+    exe,
+    permissions = stat.S_IXUSR)
+  r = drake.Runner(exe,
+                   env = {'BAZ': 'quux'})
+  r.status.build()

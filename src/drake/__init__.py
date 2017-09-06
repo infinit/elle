@@ -2007,10 +2007,16 @@ class Builder:
               stdout = stack.enter_context(open(out_file, 'w'))
             else:
               stdout = None
+            if env is not None:
+              os_env = os.environ.copy()
+              os_env.update(env)
+              my_env = os_env
+            else:
+              my_env = env
             if not run_command(c,
                            cwd = cwd,
                            stdout = stdout, stderr = stderr,
-                           env = env):
+                           env = my_env):
               if throw:
                 raise Exception(
                   'command failed: %s' % command_flatten(c, env))
