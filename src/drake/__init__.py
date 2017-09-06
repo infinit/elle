@@ -3486,7 +3486,7 @@ class WriteBuilder(Builder):
     Hello world!
     """
 
-    def __init__(self, input, nodes):
+    def __init__(self, input, nodes, permissions = None):
         """Create a WriteBuilder.
 
         input -- Text or bytes.
@@ -3500,17 +3500,24 @@ class WriteBuilder(Builder):
         for node in nodes:
             assert isinstance(node, Node)
         Builder.__init__(self, [], nodes)
+        self.__permissions = permissions
 
     def execute(self):
         """Create all the non-existent target nodes as empty files."""
         pretty = 'Write' if len(self.__input) else 'Touch'
-        self.output('%s %s' % (pretty, ', '.join(map(str, self.targets()))))
+        self.output(
+          '%s %s' % (pretty, ', '.join(map(str, self.targets()))))
         for node in self.targets():
-            assert isinstance(node, Node)
-            node.path().touch()
-            with WritePermissions(node):
-              with open(str(node.path()), 'wb') as f:
-                f.write(self.__input)
+          path = str(node.path())
+          assert isinstance(node, Node)
+          node.path().touch()
+          with WritePermissions(node):
+            with open(path, 'wb', stat.S_IWUSR) as f:
+              f.write(self.__input)
+          if self.__permissions is not None:
+            _OS.chmod(
+              path,
+              _OS.stat(path).st_mode | self.__permissions)
         return True
 
 def write(body, path):
