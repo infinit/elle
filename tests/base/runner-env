@@ -12,6 +12,20 @@ def configure(foo: bool):
 
 print(__file__)
 
+class CommandBuilder(drake.Builder):
+
+  def __init__(self, exe, target):
+    super().__init__([exe], [target])
+    self.__exe = exe
+    self.__target = target
+
+  def execute(self):
+    self.cmd(pretty = 'Execute {}'.format(self.__exe),
+             cmd = ['./{}'.format(self.__exe)],
+             env = {'BAZ': 'quux'}, throw = True)
+    self.__target.path().touch()
+    return True
+
 with Drake() as d:
   os.environ.update({'FOO': 'bar'})
   os.environ.update({'BAZ': 'nope'})
@@ -25,3 +39,6 @@ test $BAZ = quux''',
   r = drake.Runner(exe,
                    env = {'BAZ': 'quux'})
   r.status.build()
+  beacon = drake.node('beacon')
+  r = CommandBuilder(exe, beacon)
+  beacon.build()
