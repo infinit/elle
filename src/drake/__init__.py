@@ -39,8 +39,8 @@ from drake.utils import property_memoize, pretty_listing
 
 # The default timeout value for shell commands, in seconds.
 TIMEOUT = int(_OS.getenv('DRAKE_TIMEOUT', '3600'))
-PRETTY = 'DRAKE_PRETTY' in os.environ
-PROFILE = 'DRAKE_PROFILE' in os.environ
+PRETTY = 'DRAKE_PRETTY' in _OS.environ
+PROFILE = 'DRAKE_PROFILE' in _OS.environ
 
 
 def _scheduled():
@@ -2008,7 +2008,7 @@ class Builder:
             else:
               stdout = None
             if env is not None:
-              os_env = os.environ.copy()
+              os_env = _OS.environ.copy()
               os_env.update(env)
               my_env = os_env
             else:
