@@ -1623,10 +1623,13 @@ class StaticLibLinker(Builder):
 
   def execute(self):
     # Our 'ar' command apends files to the target, so we must rm it first
+    path = str(self.__library.path())
     try:
-      os.remove(str(self.__library.path()))
+      os.remove(path)
     except:
       pass
+    # Make sure the destination dir exists.
+    os.makedirs(os.path.dirname(path), exist_ok=True)
     return self.cmd('Archive %s' % self.__library, self.command)
 
   @property_memoize
