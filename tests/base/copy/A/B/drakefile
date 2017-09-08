@@ -1,0 +1,8 @@
+import drake
+
+src = None
+
+def configure():
+
+  global src
+  src = drake.Node('src.txt')

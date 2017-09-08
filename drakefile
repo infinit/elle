@@ -101,6 +101,7 @@ def configure(prefix = '.'):
   # Old style tests
 
   tests = [
+    'base/copy',
     'base/deps-dyn',
     'base/no-builder-to-make',
     'base/path',

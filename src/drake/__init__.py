@@ -3327,7 +3327,7 @@ def __copy(sources, to, strip_prefix, builder, post_process, follow_symlinks):
 
 __copy_stripped_cache = {}
 def __copy_stripped(source, to, strip_prefix, builder, post_process, follow_symlinks):
-  key = (source, to, strip_prefix, builder)
+  key = (source, to, Drake.current.prefix, strip_prefix, builder)
   cache = __copy_stripped_cache.get(key)
   if cache is not None:
     return cache
