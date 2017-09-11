@@ -1758,7 +1758,7 @@ class Binary(Node):
         self.src_add(source, self.tk, self.cfg)
       for lib in cfg.libraries:
         self.src_add(lib, self.tk, self.cfg)
-    for lib in chain(self.dynamic_libraries, self.static_libraries):
+    for lib in chain(self.dynamic_libraries):
       self.dependency_add(lib)
 
   def clone(self, path):
