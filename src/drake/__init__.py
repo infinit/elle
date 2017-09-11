@@ -4133,8 +4133,10 @@ class Runner(Builder):
     return str(self.__name)
 
   def hash(self):
-    return self.command
-
+    return {
+      'command': self.command,
+      'env': self.__env,
+    }
 
 class TestSuite(Rule):
 

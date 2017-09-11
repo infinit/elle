@@ -1,16 +1,13 @@
 #!/usr/bin/env python3
 
-'''Check the build chain stops when a builder fails.'''
+'''Check Runner.env works, check global environment is preserved,
+check builder is re-run if the environment changes.'''
 
 import drake
 import stat
+import tempfile
 
 from utils import *
-
-def configure(foo: bool):
-  assert foo is False
-
-print(__file__)
 
 class CommandBuilder(drake.Builder):
 
@@ -26,9 +23,10 @@ class CommandBuilder(drake.Builder):
     self.__target.path().touch()
     return True
 
-with Drake() as d:
-  os.environ.update({'FOO': 'bar'})
-  os.environ.update({'BAZ': 'nope'})
+os.environ.update({'FOO': 'bar'})
+os.environ.update({'BAZ': 'nope'})
+
+def configure(env):
   exe = drake.node('test')
   drake.WriteBuilder(
     '''#!/bin/sh -e
@@ -36,9 +34,23 @@ test $FOO = bar
 test $BAZ = quux''',
     exe,
     permissions = stat.S_IXUSR)
-  r = drake.Runner(exe,
-                   env = {'BAZ': 'quux'})
-  r.status.build()
-  beacon = drake.node('beacon')
-  r = CommandBuilder(exe, beacon)
-  beacon.build()
+  r = drake.Runner(exe, env = env)
+  return exe, r
+
+with tempfile.TemporaryDirectory() as wd:
+
+  with Drake(wd) as d:
+    exe, r = configure({'BAZ': 'quux'})
+    r.status.build()
+    beacon = drake.node('beacon')
+    r = CommandBuilder(exe, beacon)
+    beacon.build()
+
+  with Drake(wd) as d:
+    exe, r = configure({'BAZ': 'delta charlie delta'})
+    try:
+      r.status.build()
+    except drake.Builder.Failed:
+      pass
+    else:
+      raise Exception('builder should have rerun and failed')
