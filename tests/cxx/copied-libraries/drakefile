@@ -1,0 +1,62 @@
+import drake
+import drake.cxx
+from functools import partial
+
+def assertEq(l, r):
+  if l != r:
+    raise AssertionError("{} != {}".format(l, r))
+
+def check_files(folder, expected):
+  import os
+  s = set()
+  for path, folders, files in os.walk(str(folder)):
+    for f in files:
+      s.add(path + '/' + f)
+  assertEq(s, expected)
+
+def configure():
+
+  cxx_config = drake.cxx.Config()
+  cxx_toolkit = drake.cxx.Toolkit()
+
+  DynLib = partial(drake.cxx.DynLib,
+                   tk = cxx_toolkit,
+                   cfg = cxx_config)
+
+  StaticLib = partial(drake.cxx.StaticLib,
+                      tk = cxx_toolkit,
+                      cfg = cxx_config)
+
+  copy = partial(drake.copy, strip_prefix = True)
+
+  # Build two libraries, one static, one dynamic.
+  dyn = DynLib('libraries/dyn', drake.nodes('dyn.cc',
+                                            'dyn.hh'))
+  sta = StaticLib('libraries/sta', drake.nodes('sta.cc',
+                                               'sta.hh'))
+
+  # Build two libaries, one static, one dynamic which both depend on the
+  # matching  previously built libraries.
+  lib_dynamic = DynLib('libraries/lib',
+                       drake.nodes('lib.cc', ) + [dyn])
+  lib_static = StaticLib('libraries/lib',
+                         drake.nodes('lib.cc', ) + [sta])
+
+  # Copy those libraries.
+  copied_dyn = copy(lib_dynamic, 'dynamic')
+  copied_dyn.build()
+  copied_sta = copy(lib_static, 'static')
+  copied_sta.build()
+
+  # Check copied files.
+  check_files(copied_dyn.path().dirname(),
+              {
+                'dynamic/' + str(cxx_toolkit.libname_dyn('dyn').basename()),
+                'dynamic/' + str(cxx_toolkit.libname_dyn('lib').basename()),
+              })
+  check_files(copied_sta.path().dirname(),
+              {
+                'static/' + str(
+                  cxx_toolkit.libname_static(cxx_config, 'lib').basename()
+                ),
+              })

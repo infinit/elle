@@ -107,6 +107,7 @@ def configure(prefix = '.'):
     'base/path',
     'base/runner',
     'cxx/boost',
+    'cxx/copied-libraries',
     'cxx/cyclic-dependencies',
     'cxx/dependency-directory-clash',
     'cxx/find_library',
