@@ -94,7 +94,7 @@ def configure(prefix = '.'):
     test.dependencies_add(sources)
     runner = drake.Runner(
       test,
-      env = {'PYTHONPATH': PYTHONPATH},
+      env = {'PYTHONPATH': '{}:{}'.format(PYTHONPATH, drake.path_source('tests'))},
     )
     runner.reporting = drake.Runner.Reporting.on_failure
     check << runner.status
