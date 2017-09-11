@@ -1,6 +1,0 @@
-#!/usr/bin/env python3
-
-import drake
-
-with drake.Drake('.') as d:
-  d.run()

@@ -1,10 +1,10 @@
+#!/usr/bin/env python3
+
 import drake
 import drake.cxx
-from functools import partial
 
-def assertEq(l, r):
-  if l != r:
-    raise AssertionError("{} != {}".format(l, r))
+from functools import partial
+from utils import *
 
 def check_files(folder, expected):
   import os
@@ -14,7 +14,23 @@ def check_files(folder, expected):
       s.add(path + '/' + f)
   assertEq(s, expected)
 
-def configure():
+with Drake() as d:
+
+  for name in ['dyn', 'sta']:
+    with open('{}.cc'.format(name), 'w') as f:
+      f.write('#include "{}.hh"\n void {}() {{}}'.format(name, name))
+    with open('{}.hh'.format(name), 'w') as f:
+      f.write('void {}();'.format(name))
+  with open('lib.cc', 'w') as f:
+    f.write('''#include "dyn.hh"
+#include "sta.hh"
+
+void
+lib()
+{
+  dyn();
+  sta();
+}''')
 
   cxx_config = drake.cxx.Config()
   cxx_toolkit = drake.cxx.Toolkit()
