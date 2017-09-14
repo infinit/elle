@@ -1542,20 +1542,23 @@ class Linker(Builder):
       self,
       chain(target.sources,
             target.dynamic_libraries,
-            target.static_libraries),
+            self.__fetch_static(target.static_libraries)),
       [target])
     self.__strip = strip
 
+  def __fetch_static(self, libs):
+    for l in libs:
+      yield l
+      yield from self.__fetch_static(l.static_libraries)
+
   @property
   def command(self):
-    objects = \
-      self.__target.sources + \
-      list(self.__target.dynamic_libraries) + \
-      list(self.__target.static_libraries)
-    cmd = self.toolkit_cmd(
-      self.config,
-      objects + list(self.sources_dynamic()),
-      self.__target)
+    objects = chain(
+      self.__target.sources,
+      self.__target.dynamic_libraries,
+      self.__fetch_static(self.__target.static_libraries),
+      self.sources_dynamic())
+    cmd = self.toolkit_cmd(self.config, list(objects), self.__target)
     cmd = (cmd,)
     if self.__strip:
       cmd = cmd + (

@@ -83,6 +83,7 @@ def configure(prefix = '.'):
     'base/termination',
     'base/termination-keep-successful',
     'cxx/copied-libraries',
+    'cxx/chained-static-libraries',
     'doctest',
     'git/base',
     'sched',
