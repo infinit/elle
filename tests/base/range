@@ -1,0 +1,77 @@
+#!/usr/bin/env python3
+
+'''Test drake.Range.'''
+
+from drake import Range
+import utils
+
+#
+# Comparisons.
+#
+
+# Equality.
+utils.assertEq(Range(1, 10), Range(1, 10))
+utils.assertEq(Range(10, 10), Range(10))
+utils.assertNotEq(Range(10), Range(11))
+utils.assertNotEq(Range(1, 10), Range(10, 10))
+utils.assertNotEq(Range(10, 11), Range(10, 10))
+# Gt.
+utils.assertGt(Range(10), Range(9))
+utils.assertGt(Range(10), Range(9, 200))
+utils.assertNotGt(Range(10), Range(10))
+utils.assertNotGt(Range(10), Range(11))
+# Ge
+utils.assertGe(Range(10), Range(10))
+utils.assertGe(Range(10, 12), Range(10, 13))
+utils.assertGe(Range(10, 12), Range(10, 11))
+utils.assertNotGe(Range(9), Range(10))
+# Lt
+utils.assertLt(Range(10), Range(11))
+utils.assertLt(Range(10), Range(11, 200))
+utils.assertNotLt(Range(10), Range(10))
+utils.assertNotLt(Range(11), Range(10))
+# Le
+utils.assertLe(Range(10), Range(10))
+utils.assertLe(Range(10, 13), Range(10, 12))
+utils.assertLe(Range(10, 11), Range(10, 12))
+utils.assertNotLe(Range(10), Range(9))
+
+#
+# Inclusion.
+#
+
+# Value.
+utils.assertIn(10, Range(10))
+utils.assertNotIn(10, Range(9))
+utils.assertNotIn(10, Range(11))
+utils.assertIn(10, Range(10, 100))
+utils.assertIn(100, Range(10, 100))
+utils.assertNotIn(9, Range(10, 100))
+utils.assertNotIn(101, Range(10, 100))
+# Range.
+utils.assertIn(Range(9), Range(9))
+utils.assertNotIn(Range(9), Range(10))
+utils.assertIn(Range(9), Range(8, 10))
+utils.assertIn(Range(8), Range(8, 10))
+utils.assertIn(Range(10), Range(8, 10))
+utils.assertNotIn(Range(7), Range(8, 10))
+utils.assertNotIn(Range(11), Range(8, 10))
+utils.assertIn(Range(10, 12), Range(10, 12))
+utils.assertIn(Range(10, 12), Range(10, 13))
+utils.assertIn(Range(10, 12), Range(9, 12))
+utils.assertNotIn(Range(10, 12), Range(10, 11))
+utils.assertNotIn(Range(9, 11), Range(10, 11))
+
+#
+# Printers.
+#
+
+# str.
+utils.assertEq(str(Range(10)), '10')
+utils.assertEq(str(Range(10, 10)), '10')
+utils.assertEq(str(Range(10, 12)), '[10, 12]')
+
+# repr.
+utils.assertEq(repr(Range(10)), 'Range(10)')
+utils.assertEq(repr(Range(10, 10)), 'Range(10)')
+utils.assertEq(repr(Range(10, 12)), 'Range(10, 12)')

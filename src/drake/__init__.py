@@ -3744,12 +3744,15 @@ class Range:
     def __contains__(self, val):
       """Whether val is included in self."""
       if isinstance(val, Range):
-        return val.inf() in self
+        return val.inf() in self and val.sup() in self
       sup = (self.__sup is None or val <= self.__sup)
       return val >= self.__inf and sup
 
     def __eq__(self, rhs):
+      if isinstance(rhs, Range):
         return self.__inf == rhs.__inf and self.__sup == rhs.__sup
+      else:
+        return self.__inf == self.__sup == rhs
 
     def __ge__(self, rhs):
         return self.__inf >= rhs.__sup
