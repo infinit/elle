@@ -83,6 +83,7 @@ def configure(prefix = '.'):
     'base/symlink',
     'base/termination',
     'base/termination-keep-successful',
+    'base/version',
     'cxx/copied-libraries',
     'cxx/chained-static-libraries',
     'doctest',

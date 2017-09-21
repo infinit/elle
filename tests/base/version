@@ -1,0 +1,86 @@
+#!/usr/bin/env python3
+
+'''Test drake.Version and drake.version.VersionGenerator.'''
+
+import drake
+import drake.version
+import drake.git
+import utils
+
+#
+# Version.
+#
+
+def check_version(v, major, minor = None, subminor = None, repr = None):
+  utils.assertEq(v.major, major)
+  if minor:
+    utils.assertEq(v.minor, minor)
+  if subminor:
+    utils.assertEq(v.subminor, subminor)
+  if repr:
+    utils.assertEq(str(v), repr)
+
+check_version(drake.Version(0), 0, repr = '0')
+check_version(drake.Version(1), 1, repr = '1')
+check_version(drake.Version(1, 0), 1, 0, repr = '1.0')
+check_version(drake.Version(1, 1), 1, 1, repr = '1.1')
+check_version(drake.Version(1, 1, 0), 1, 1, 0, repr = '1.1.0')
+check_version(drake.Version(1, 1, 1), 1, 1, 1, repr = '1.1.1')
+
+# XXX: Implement <, <=, =>, >.
+
+#
+# Version Generator.
+#
+
+class FakeGit(drake.VirtualNode):
+
+  def __init__(self, version, revision = ''):
+    super().__init__('%s%s' % (version, revision) + '/fakegit')
+    self.__version = version
+    self.__revision = revision
+
+  def description(self):
+    return '-'.join([self.__version, self.__revision])
+
+  def version(self):
+    return self.description()
+
+# NotImplementedError is thrown if VersionGenerator._variable is not
+# redefined.
+with utils.Drake() as d:
+
+  impossible = drake.node('impossible')
+  drake.version.VersionGenerator(git = FakeGit('0.0.1', ''),
+                                 output = impossible)
+  try:
+    impossible.build()
+    assert False
+  except drake.Builder.Failed:
+    pass
+
+# Test expectations.
+class DummyVersionGenerator(drake.version.VersionGenerator):
+
+  def _variable(self, name, value):
+    return '%s<placeholder>%s' % (name, value)
+
+with utils.Drake() as d:
+  for version, revision in [
+      ('0.0.0', ''),
+      ('0.0.1', '1-gea5154b')
+  ]:
+    fake_git = FakeGit(version, revision)
+    output = drake.node('%s-%s' % (version, revision))
+    gen = DummyVersionGenerator(git = fake_git,
+                                output = output)
+    output.build()
+    import os
+    assert os.path.exists(str(output))
+    with open(str(output)) as version_file:
+      utils.assertEq(version_file.read(),
+'''version<placeholder>%s
+major<placeholder>%s
+minor<placeholder>%s
+subminor<placeholder>%s
+''' % ('-'.join([version, revision]), *version.split('.')))
