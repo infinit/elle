@@ -69,3 +69,7 @@ tests/dopenssl/rand.status: tests/dopenssl/rand lib/libdopenssl.dylib
 tests/dopenssl/bn.status: tests/dopenssl/bn lib/libdopenssl.dylib
 	@mkdir -p tests/dopenssl
 	tests/dopenssl/bn
+
+sample:
+	${CC} -Wall -coverage -fPIC -isystem ${OPENSSL_INCLUDE_DIRECTORY} -isystem . -I ../../src -I src -O2 -c ../../src/sample.c -o src/sample.o
+	${CC} -L lib -L ${OPENSSL_LIBRARY_DIRECTORY} -Wl,-rpath,@loader_path -Wl,-rpath,@loader_path/../lib -undefined dynamic_lookup src/sample.o -o src/sample -lssl -lcrypto -ldopenssl

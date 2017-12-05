@@ -69,3 +69,7 @@ tests/dopenssl/rand.status: tests/dopenssl/rand lib/libdopenssl.so
 tests/dopenssl/bn.status: tests/dopenssl/bn lib/libdopenssl.so
 	@mkdir -p tests/dopenssl
 	tests/dopenssl/bn
+
+sample:
+	${CC} -Wall -fprofile-arcs -ftest-coverage -fPIC -isystem . -isystem ${OPENSSL_INCLUDE_DIRECTORY} -I ../../src -I src -O2 -c ../../src/sample.c -o src/sample.o
+	${CC} -L lib -L ${OPENSSL_LIBRARY_DIRECTORY} -Wl,-rpath-link,lib '-Wl,-rpath,$$ORIGIN' '-Wl,-rpath,$$ORIGIN/../lib' -fprofile-arcs -lgcov --coverage src/sample.o -o src/sample -lcrypto -ldopenssl -lssl

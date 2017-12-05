@@ -1,8 +1,11 @@
-sudo: false
+sudo: required
 language: c
 compiler: gcc
+services:
+  - docker
 script:
   - cd _build/linux64
   - make check
+  - ./src/sample test
 after_success:
   - bash <(curl -s https://codecov.io/bash)
