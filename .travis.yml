@@ -7,9 +7,7 @@ script:
   - cd _build/linux64
   - make tests
   - make check
-  - ls -lRa
-  - pwd
   - make sample
-  - ./src/sample test
+  - ./src/sample "chiche donne nous tout"
 after_success:
   - bash <(curl -s https://codecov.io/bash)
