@@ -6,6 +6,7 @@ services:
 script:
   - cd _build/linux64
   - make check
+  - make sample
   - ls -lR
   - ./src/sample test
 after_success:
