@@ -1,6 +1,6 @@
 FROM ubuntu:17.10
 
-RUN apt-get install openssl
+RUN apt-get install -y openssl
 
 WORKDIR /app
 
