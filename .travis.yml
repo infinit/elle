@@ -13,7 +13,7 @@ script:
   - ./src/sample "chiche donne nous tout"
   - ls -lRa
   - ls -lRa /var/lib/docker
-  - docker build -t ${DOCKER_IMAGE} _build/
+  - docker build -t ${DOCKER_IMAGE} ../_build/
 after_success:
   - bash <(curl -s https://codecov.io/bash)
   - docker login -u "${DOCKER_USERNAME}" -p "${DOCKER_PASSWORD}"
