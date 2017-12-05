@@ -1,4 +1,4 @@
-[![codecov](https://codecov.io/gh/infinit/dopenssl/branch/master/graph/badge.svg)](https://codecov.io/gh/infinit/dopenssl)
+[![Build](https://travis-ci.org/infinit/dopenssl.svg?branch=master)](https://travis-ci.org/infinit/dopenssl) [![Code Coverage](https://codecov.io/gh/infinit/dopenssl/branch/master/graph/badge.svg)](https://codecov.io/gh/infinit/dopenssl)
 
 dOpenSSL
 ========
