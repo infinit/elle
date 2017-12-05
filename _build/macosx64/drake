@@ -23,6 +23,7 @@ with drake.Drake('../..') as d:
 
   cxx_config.flag('-fPIC')
   cxx_config.flag('-Wall')
+  cxx_config.flag('-coverage')
   cxx_config.enable_debug_symbols(False)
   cxx_config.enable_optimization(True)
 

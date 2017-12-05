@@ -11,7 +11,7 @@ build: lib/libdopenssl.a lib/libdopenssl.so
 
 lib/libdopenssl.so: src/dopenssl/rand.o src/dopenssl/bn.o src/dopenssl/rsa.o
 	@mkdir -p lib
-	${CC} -Wall -fPIC -L lib -L ${OPENSSL_LIBRARY_DIRECTORY} '-Wl,-rpath,$$ORIGIN' src/dopenssl/bn.o src/dopenssl/rand.o src/dopenssl/rsa.o -shared -o lib/libdopenssl.so -lcrypto -lssl
+	${CC} -Wall -coverage -fPIC -L lib -L ${OPENSSL_LIBRARY_DIRECTORY} '-Wl,-rpath,$$ORIGIN' src/dopenssl/bn.o src/dopenssl/rand.o src/dopenssl/rsa.o -shared -o lib/libdopenssl.so -lcrypto -lssl
 
 lib/libdopenssl.a: src/dopenssl/rand.o src/dopenssl/bn.o src/dopenssl/rsa.o
 	@mkdir -p lib
@@ -20,15 +20,15 @@ lib/libdopenssl.a: src/dopenssl/rand.o src/dopenssl/bn.o src/dopenssl/rsa.o
 
 src/dopenssl/bn.o: ../../src/dopenssl/bn.c
 	@mkdir -p src/dopenssl
-	${CC} -Wall -fPIC -isystem . -isystem ${OPENSSL_INCLUDE_DIRECTORY} -I ../../src -I src -O2 -Wall -fPIC -c ../../src/dopenssl/bn.c -o src/dopenssl/bn.o
+	${CC} -Wall -coverage -fPIC -isystem . -isystem ${OPENSSL_INCLUDE_DIRECTORY} -I ../../src -I src -O2 -fPIC -c ../../src/dopenssl/bn.c -o src/dopenssl/bn.o
 
 src/dopenssl/rand.o: ../../src/dopenssl/rand.c
 	@mkdir -p src/dopenssl
-	${CC} -Wall -fPIC -isystem . -isystem ${OPENSSL_INCLUDE_DIRECTORY} -I ../../src -I src -O2 -Wall -fPIC -c ../../src/dopenssl/rand.c -o src/dopenssl/rand.o
+	${CC} -Wall -coverage -fPIC -isystem . -isystem ${OPENSSL_INCLUDE_DIRECTORY} -I ../../src -I src -O2 -fPIC -c ../../src/dopenssl/rand.c -o src/dopenssl/rand.o
 
 src/dopenssl/rsa.o: ../../src/dopenssl/rsa.c
 	@mkdir -p src/dopenssl
-	${CC} -Wall -fPIC -isystem . -isystem ${OPENSSL_INCLUDE_DIRECTORY} -I ../../src -I src -O2 -Wall -fPIC -c ../../src/dopenssl/rsa.c -o src/dopenssl/rsa.o
+	${CC} -Wall -coverage -fPIC -isystem . -isystem ${OPENSSL_INCLUDE_DIRECTORY} -I ../../src -I src -O2 -fPIC -c ../../src/dopenssl/rsa.c -o src/dopenssl/rsa.o
 
 tests: tests/dopenssl/bn tests/dopenssl/rand tests/dopenssl/rsa
 
@@ -48,15 +48,15 @@ tests/dopenssl/rsa: tests/dopenssl/rsa.o lib/libdopenssl.so
 
 tests/dopenssl/bn.o: ../../tests/dopenssl/bn.c
 	@mkdir -p tests/dopenssl
-	${CC} -Wall -fPIC -isystem . -isystem ${OPENSSL_INCLUDE_DIRECTORY} -I ../../src -I src -O2 -Wall -c ../../tests/dopenssl/bn.c -o tests/dopenssl/bn.o
+	${CC} -Wall -coverage -fPIC -isystem . -isystem ${OPENSSL_INCLUDE_DIRECTORY} -I ../../src -I src -O2 -c ../../tests/dopenssl/bn.c -o tests/dopenssl/bn.o
 
 tests/dopenssl/rand.o: ../../tests/dopenssl/rand.c
 	@mkdir -p tests/dopenssl
-	${CC} -Wall -fPIC -isystem . -isystem ${OPENSSL_INCLUDE_DIRECTORY} -I ../../src -I src -O2 -Wall -c ../../tests/dopenssl/rand.c -o tests/dopenssl/rand.o
+	${CC} -Wall -coverage -fPIC -isystem . -isystem ${OPENSSL_INCLUDE_DIRECTORY} -I ../../src -I src -O2 -c ../../tests/dopenssl/rand.c -o tests/dopenssl/rand.o
 
 tests/dopenssl/rsa.o: ../../tests/dopenssl/rsa.c
 	@mkdir -p tests/dopenssl
-	${CC} -Wall -fPIC -isystem . -isystem ${OPENSSL_INCLUDE_DIRECTORY} -I ../../src -I src -O2 -Wall -c ../../tests/dopenssl/rsa.c -o tests/dopenssl/rsa.o
+	${CC} -Wall -coverage -fPIC -isystem . -isystem ${OPENSSL_INCLUDE_DIRECTORY} -I ../../src -I src -O2 -c ../../tests/dopenssl/rsa.c -o tests/dopenssl/rsa.o
 
 tests/dopenssl/rsa.status: tests/dopenssl/rsa lib/libdopenssl.so
 	@mkdir -p tests/dopenssl
