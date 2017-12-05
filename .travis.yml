@@ -5,6 +5,7 @@ services:
   - docker
 script:
   - cd _build/linux64
+  - make tests
   - make check
   - ls -lRa
   - pwd
