@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/gh/infinit/dopenssl/branch/master/graph/badge.svg)](https://codecov.io/gh/infinit/dopenssl)
+
 dOpenSSL
 ========
 
