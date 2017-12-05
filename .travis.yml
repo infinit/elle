@@ -3,11 +3,6 @@ language: c
 compiler: gcc
 script:
   - cd _build/linux64
-#  - make check
-  - make tests/dopenssl/bn
-  - make tests/dopenssl/rand
-  - make tests/dopenssl/rsa
-  - ls -lR
   - make check
 after_success:
   - bash <(curl -s https://codecov.io/bash)

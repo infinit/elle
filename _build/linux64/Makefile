@@ -58,14 +58,14 @@ tests/dopenssl/rsa.o: ../../tests/dopenssl/rsa.c
 	@mkdir -p tests/dopenssl
 	${CC} -Wall -fPIC -isystem . -isystem ${OPENSSL_INCLUDE_DIRECTORY} -I ../../src -I src -O2 -Wall -c ../../tests/dopenssl/rsa.c -o tests/dopenssl/rsa.o
 
-tests/dopenssl/rsa.status: tests/dopenssl/rsa lib/libdopenssl.dylib
+tests/dopenssl/rsa.status: tests/dopenssl/rsa lib/libdopenssl.so
 	@mkdir -p tests/dopenssl
 	tests/dopenssl/rsa
 
-tests/dopenssl/rand.status: tests/dopenssl/rand lib/libdopenssl.dylib
+tests/dopenssl/rand.status: tests/dopenssl/rand lib/libdopenssl.so
 	@mkdir -p tests/dopenssl
 	tests/dopenssl/rand
 
-tests/dopenssl/bn.status: tests/dopenssl/bn lib/libdopenssl.dylib
+tests/dopenssl/bn.status: tests/dopenssl/bn lib/libdopenssl.so
 	@mkdir -p tests/dopenssl
 	tests/dopenssl/bn
