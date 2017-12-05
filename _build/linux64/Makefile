@@ -48,11 +48,11 @@ tests/dopenssl/rsa: tests/dopenssl/rsa.o lib/libdopenssl.so
 
 tests/dopenssl/bn.o: ../../tests/dopenssl/bn.c
 	@mkdir -p tests/dopenssl
-	${CC} -Wall -fPIC -isystem . -isystem ${OPENSSL_INCLUDE_DIRECTORY} -I ../../src -I src -O2 -Wall -c ../../tests/dopenssl/rsa.c -o tests/dopenssl/rsa.o
+	${CC} -Wall -fPIC -isystem . -isystem ${OPENSSL_INCLUDE_DIRECTORY} -I ../../src -I src -O2 -Wall -c ../../tests/dopenssl/bn.c -o tests/dopenssl/bn.o
 
 tests/dopenssl/rand.o: ../../tests/dopenssl/rand.c
 	@mkdir -p tests/dopenssl
-	${CC} -Wall -fPIC -isystem . -isystem ${OPENSSL_INCLUDE_DIRECTORY} -I ../../src -I src -O2 -Wall -c ../../tests/dopenssl/rsa.c -o tests/dopenssl/rsa.o
+	${CC} -Wall -fPIC -isystem . -isystem ${OPENSSL_INCLUDE_DIRECTORY} -I ../../src -I src -O2 -Wall -c ../../tests/dopenssl/rand.c -o tests/dopenssl/rand.o
 
 tests/dopenssl/rsa.o: ../../tests/dopenssl/rsa.c
 	@mkdir -p tests/dopenssl
