@@ -3,11 +3,16 @@ language: c
 compiler: gcc
 services:
   - docker
+env:
+  - DOCKER_IMAGE="${DOCKER_USERNAME}/dopenssl:${TRAVIS_COMMIT}"
 script:
   - cd _build/linux64
   - make tests
   - make check
   - make sample
   - ./src/sample "chiche donne nous tout"
+  - docker build -t ${DOCKER_IMAGE} _build/
 after_success:
   - bash <(curl -s https://codecov.io/bash)
+  - docker login -u "${DOCKER_USERNAME}" -p "${DOCKER_PASSWORD}"
+  - docker push ${DOCKER_IMAGE}
