@@ -61,7 +61,7 @@ OutputIterator decode(InputIterator in_begin, InputIterator in_end,
       }
       char c = '\0';
       it = decode_char(it, &c);
-      out = c;
+      *out = c;
       ++out;
     } else {
       *out++ = *it++;
