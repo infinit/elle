@@ -1,8 +1,8 @@
-# Drake [![Build Status](https://travis-ci.org/mefyl/drake.svg?branch=master)](https://travis-ci.org/mefyl/drake)
+# <img src="docs/static_files/drake_logotype@2x.png" alt="Logo - Drake" title="Drake logotype" width="300" style="max-width:300px;">
 
 The well-formed build system.
 
-<img src="docs/static_files/drake_logotype@2x.png" alt="Logo - Drake" title="Drake logotype" width="300" style="max-width:300px;">
+[![Build Status](https://travis-ci.org/mefyl/drake.svg?branch=master)](https://travis-ci.org/mefyl/drake)
 
 ## About
 
