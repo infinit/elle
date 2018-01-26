@@ -253,16 +253,6 @@ class Drake:
           name = match.group(1)
           value = match.group(2)
           if name in specs.args:
-            if name in specs.annotations:
-              t = specs.annotations[name]
-              if t is bool:
-                if value.lower() in ['true', 'yes']:
-                  value = True
-                elif value.lower() in ['false', 'no']:
-                  value = False
-                else:
-                  raise Exception('invalid value for '
-                                  'boolean option %s: %s' % (name, value))
             kwcfg[name] = value
             del args[i]
             continue
@@ -278,6 +268,30 @@ class Drake:
             callbacks.append(cb)
           continue
         i += 1
+      # Load default values
+      if specs.defaults is not None:
+        for arg, d in zip(reversed(specs.args),
+                          reversed(specs.defaults)):
+          if arg not in kwcfg:
+            kwcfg[arg] = d
+      # Apply annotations
+      for name in list(kwcfg):
+        if name in specs.annotations:
+          value = kwcfg[name]
+          t = specs.annotations[name]
+          if t is bool:
+            if value.lower() in ['true', 'yes']:
+              value = True
+            elif value.lower() in ['false', 'no']:
+              value = False
+            else:
+              raise Exception('invalid value for '
+                              'boolean option %s: %s' % (name, value))
+          elif hasattr(t, '__drake_configure__'):
+            value = getattr(t, '__drake_configure__')(t, value)
+          else:
+            value = t(value)
+          kwcfg[name] = value
       # Configure
       with self:
         configure(*cfg, **kwcfg)
