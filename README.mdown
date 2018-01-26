@@ -2,7 +2,7 @@
 
 The well-formed build system.
 
-[![Build Status](https://travis-ci.org/mefyl/drake.svg?branch=master)](https://travis-ci.org/mefyl/drake)
+[![pipeline status](https://gitlab.gruntech.org/mefyl/drake/badges/master/pipeline.svg)](https://gitlab.gruntech.org/mefyl/drake/commits/master)
 
 ## About
 
