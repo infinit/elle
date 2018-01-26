@@ -1,5 +1,3 @@
-_build/
 *.pyc
-.drake
-.DS_Store
 TAGS
+_build/
