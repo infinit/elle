@@ -27,6 +27,7 @@ import threading
 import time
 import types
 
+from drake.deprecation import deprecated
 from drake.sched import Coroutine, Scheduler
 from drake.enumeration import Enumerated
 from itertools import chain
@@ -3741,6 +3742,18 @@ class Range:
 class Version:
 
     def __init__(self, major = None, minor = None, subminor = None):
+      ''' A version or range of versions.
+
+      >>> Version('1.2')
+      Version(1, 2)
+      '''
+      if isinstance(major, str) and \
+         minor is None and subminor is None:
+        try:
+          self.__init__(*(int(c) for c in major.split('.')))
+        except Exception as e:
+          raise Exception('invalid version: %r', major) from e
+      else:
         assert major is not None or minor is None and subminor is None
         assert minor is not None or subminor is None
         self.__major = major and Range(major)
@@ -3748,10 +3761,17 @@ class Version:
         self.__subminor = subminor and Range(subminor)
 
     @staticmethod
+    @deprecated
     def load(string):
+      # Uh ?
       if string == str(Version()):
         return Version()
+      # Wait what ? What if there is garbage at the end ?
       v = string.split('.')[0:3]
+      # Seriously what is this shit. This bullshit function would
+      # accept a man page as an input. Literally, it would accept
+      # "4.8. 3-way merges in git. [...]" and consider it to be
+      # version 4.8.3. Go play tag blindfolded on the highway.
       if len(v) == 3:
         v[2] = v[2].split('-')[0]
       return drake.Version(*[int(x) for x in v])
