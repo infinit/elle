@@ -3747,7 +3747,10 @@ class Version:
       >>> Version('1.2')
       Version(1, 2)
       '''
-      if isinstance(major, str) and \
+      if isinstance(major, Version) and \
+         minor is None and subminor is None:
+        self.__init__(*major)
+      elif isinstance(major, str) and \
          minor is None and subminor is None:
         try:
           self.__init__(*(int(c) for c in major.split('.')))
@@ -3759,6 +3762,11 @@ class Version:
         self.__major = major and Range(major)
         self.__minor = minor and Range(minor)
         self.__subminor = subminor and Range(subminor)
+
+    def __iter__(self):
+      yield self.major
+      yield self.minor
+      yield self.subminor
 
     @staticmethod
     @deprecated
