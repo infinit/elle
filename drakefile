@@ -81,6 +81,7 @@ def configure(prefix = '.'):
     'base/termination',
     'base/termination-keep-successful',
     'doctest',
+    'git/base',
     'sched',
     'threadpool',
   ]

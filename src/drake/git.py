@@ -6,12 +6,21 @@
 #
 # See the LICENSE file for more information.
 
-from datetime import date
 import drake
-from functools import lru_cache
+import drake.command
 import os
 import subprocess
+
 from . import VirtualNode, Path
+from datetime import date
+from functools import lru_cache
+
+class GitCommand(drake.command.Command):
+
+  name = 'git'
+
+  def _parse_version(self, v):
+    return drake.Version(v.split(' ')[-1])
 
 class Git(VirtualNode):
 
@@ -42,7 +51,7 @@ class Git(VirtualNode):
 
     # >>> node.description()
     """
-    def __init__(self, path = None):
+    def __init__(self, path = None, command = GitCommand()):
         """Create a GitVersion.
 
         path -- path to the repository; the source dir by default.

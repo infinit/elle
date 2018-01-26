@@ -45,3 +45,11 @@ class BeaconException(Exception):
 def assertEq(a, b):
   if a != b:
     raise Exception('%r != %r' % (a, b))
+
+def assertExcept(f):
+  try:
+    f()
+  except:
+    pass
+  else:
+    raise Exception('%s did not except', f)
