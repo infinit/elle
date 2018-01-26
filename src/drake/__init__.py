@@ -1802,7 +1802,7 @@ def nodes(*paths, type = None):
     return list(map(lambda p: node(p, type = type), paths))
 
 
-def command(cmd, cwd = None, env = None, timeout = TIMEOUT,
+def run_command(cmd, cwd = None, env = None, timeout = TIMEOUT,
             **kwargs):
   """Run the shell command.
 
@@ -1994,7 +1994,7 @@ class Builder:
             stdout = stack.enter_context(open(out_file, 'w'))
           else:
             stdout = None
-          if not command(c,
+          if not run_command(c,
                          cwd = cwd,
                          stdout = stdout, stderr = stderr,
                          env = env):
