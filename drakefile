@@ -92,9 +92,9 @@ def configure(prefix = '.'):
     runner = drake.Runner(
       test,
       env = {'PYTHONPATH': PYTHONPATH},
-    ).status
+    )
     runner.reporting = drake.Runner.Reporting.on_failure
-    check << runner
+    check << runner.status
   # Old style tests
 
   tests = [
