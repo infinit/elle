@@ -232,6 +232,13 @@ class Drake:
       g = self.__globals
       module = self.__module
       configure = self.__configure
+      specs = inspect.getfullargspec(configure)
+      # Load positional arguments
+      for effective, formal in zip(cfg, specs.args):
+        if formal in kwcfg:
+          raise TypeError("%s() got multiple values for argument %r", specs.name, formal)
+        else:
+          kwcfg[formal] = effective
       # Parse arguments
       options = {
         '--jobs': lambda j: self.jobs_set(j),
@@ -243,7 +250,6 @@ class Drake:
         '--complete-nodes': complete_nodes,
       }
       arguments_re = re.compile('--(\\w+)=(.*)')
-      specs = inspect.getfullargspec(configure)
       callbacks = []
       i = 0
       args = sys.argv[1:]
@@ -294,7 +300,7 @@ class Drake:
           kwcfg[name] = value
       # Configure
       with self:
-        configure(*cfg, **kwcfg)
+        configure(**kwcfg)
       # Run callbacks.
       for cb in callbacks:
         cb()
