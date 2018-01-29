@@ -696,7 +696,6 @@ def configure(zlib_lib,
     runner = drake.Runner(exe = example, env = examples_env)
     runner.reporting = drake.Runner.Reporting.on_failure
     rule_examples << runner.status
-  rule_build << rule_examples
 
   ## ------- ##
   ## Install ##

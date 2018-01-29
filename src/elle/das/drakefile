@@ -145,7 +145,6 @@ def configure(cxx_toolkit,
       example,
       [drake.node('%s/%s.cc' % (examples_path, example))] + example_libs,
       cxx_toolkit, config_examples)
-  rule_build << rule_examples
 
   ## ------- ##
   ## Install ##

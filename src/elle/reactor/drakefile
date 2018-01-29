@@ -973,7 +973,6 @@ def configure(curl_config,
     sources = [echo_server])
   runner.reporting = drake.Runner.Reporting.on_failure
   rule_examples << runner.status
-  rule_build << rule_examples
 
   ## ------- ##
   ## Install ##
