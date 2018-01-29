@@ -135,8 +135,6 @@ def configure(cxx_toolkit = None,
 
   if prefix is not False:
     prefix = drake.Path(prefix)
-    if not prefix.absolute():
-      prefix = drake.Path('..') / prefix
 
   if python3 is not False:
     if python_version is None:
