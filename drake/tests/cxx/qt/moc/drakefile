@@ -1,0 +1,13 @@
+import drake, drake.cxx, drake.cxx.qt
+
+def configure(cxx_toolkit = None, qt = None):
+  if cxx_toolkit is None:
+    cxx_toolkit = drake.cxx.Toolkit()
+  if qt is None:
+    qt = drake.cxx.qt.Qt(cxx_toolkit)
+  cfg = drake.cxx.Config()
+  cfg += qt.config()
+  cfg += qt.config_core()
+  qt.plug(cxx_toolkit)
+  sources = drake.nodes('main.cc', 'widget.cc')
+  executable = drake.cxx.Executable('main', sources, cxx_toolkit, cfg)

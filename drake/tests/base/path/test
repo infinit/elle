@@ -1,0 +1,8 @@
+#!/usr/bin/env python3
+
+import drake
+import sys
+
+sys.argv += ['--clean']
+
+drake.run('.')

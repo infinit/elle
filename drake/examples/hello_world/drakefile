@@ -1,0 +1,31 @@
+import drake
+import drake.cxx
+
+def configure(cxx_toolkit = None,
+              cxx_config = drake.cxx.Config()):
+
+  # Create a default C++ toolkit if none is provided.
+  # This will use the default system compiler.
+  cxx_toolkit = cxx_toolkit or drake.cxx.GccToolkit()
+
+  # List the sources required.
+  sources = drake.nodes(
+    'hello_world.cc',
+  )
+
+  # Declare a builder to create our 'hello_world' executable.
+  hello_world = drake.cxx.Executable(
+    path = drake.Path('hello_world'), # Path in the build directory where the
+                                      # executable will be output.
+    sources = sources, # Sources on which the executable depends
+    tk = cxx_toolkit,  # C++ toolkit to use.
+    cfg = cxx_config,  # C++ compiler configuration to use.
+  )
+
+  # Create a 'build' rule.
+  # Invoking this rule using //build will build all the targets (and their
+  # dependencies).
+  build = drake.Rule('build')
+
+  # Add the 'hello_world' executable to the rule's targets.
+  build << hello_world

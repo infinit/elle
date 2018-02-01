@@ -1,0 +1,9 @@
+import drake
+import drake.cxx
+
+def configure():
+
+  cfg = drake.cxx.Config()
+  cfg.add_local_include_path('.')
+  sources = drake.nodes('foo.cc')
+  foo = drake.cxx.Executable('foo', sources, drake.cxx.Toolkit(), cfg)

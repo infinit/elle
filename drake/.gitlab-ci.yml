@@ -1,0 +1,12 @@
+stages:
+  - check
+
+variables:
+  PYTHONUNBUFFERED: "1"
+
+check:x86_64-trusty-gcc4:
+  stage: check
+  image: registry.gitlab.gruntech.org/mefyl/drake/trusty-ci
+  script:
+    - pip3 install -r requirements.txt
+    - cd _build && ./drake //check

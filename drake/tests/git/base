@@ -1,0 +1,30 @@
+#!/usr/bin/env python3
+
+'''Check git command detection.'''
+
+import drake.git
+import os
+import sys
+
+from utils import *
+
+git = drake.git.GitCommand()
+v = drake.git.GitCommand(git).version
+assertEq(git.version, drake.git.GitCommand(git).version)
+
+assertExcept(lambda: drake.git.GitCommand('/bin/true'))
+
+with Drake() as d:
+  def configure(g : drake.git.GitCommand = None):
+    assertEq(g.version, v)
+  d.configure = configure
+  d.run()
+
+with Drake() as d:
+  def configure(g : drake.git.GitCommand = None):
+    assertEq(g, None)
+  d.configure = configure
+  d.run(g = False)
+
+os.environ['PATH'] = ''
+assertExcept(drake.git.GitCommand)

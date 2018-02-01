@@ -1,0 +1,12 @@
+import drake
+import drake.cxx
+import sys
+
+def configure():
+  tk = drake.cxx.Toolkit()
+  cfg = drake.cxx.Config()
+  cfg.lib_path_runtime('.')
+  lib = drake.cxx.DynLib('lib', drake.nodes('lib.cc'), tk, cfg)
+  exe = drake.cxx.Executable('main', [lib, drake.node('main.cc')], tk, cfg)
+  runner = drake.Runner(exe)
+  assert lib in runner.sources().values()

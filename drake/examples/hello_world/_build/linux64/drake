@@ -1,0 +1,14 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+
+# Add drake to the Python path.
+# You could also use your PYTHONPATH to specify where drake is.
+sys.path.insert(0, os.path.realpath('../../../../src'))
+
+import drake
+
+# Instantiate drake to look for a drakefile at '../../drakefile'.
+with drake.Drake('../..') as d:
+  d.run()

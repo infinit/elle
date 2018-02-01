@@ -1,0 +1,153 @@
+import drake
+import os
+import shutil
+import sys
+
+# Put ourselves in the path.
+PYTHONPATH = ''
+if 'PYTHONPATH' in os.environ:
+  PYTHONPATH = os.environ['PYTHONPATH']
+source = '%s/%s' % (os.getcwd(), drake.path_source('src'))
+PYTHONPATH = '%s:%s' % (source, PYTHONPATH)
+os.environ['PYTHONPATH'] = PYTHONPATH
+
+def configure(prefix = '.'):
+
+  """Configure drake.
+
+  prefix -- The prefix where to install.
+  """
+
+  prefix = drake.Path(prefix)
+
+  # Sources
+  sources = drake.nodes(
+     'src/drake/__init__.py',
+     'src/drake/air.py',
+     'src/drake/enumeration.py',
+     'src/drake/docker.py',
+     'src/drake/imagemagick.py',
+     'src/drake/cxx/__init__.py',
+     'src/drake/cxx/bison.py',
+     'src/drake/cxx/boost.py',
+     'src/drake/cxx/curl.py',
+     'src/drake/cxx/flex.py',
+     'src/drake/cxx/ipp.py',
+     'src/drake/cxx/opengl.py',
+     'src/drake/cxx/qt.py',
+     'src/drake/cxx/sdl.py',
+     'src/drake/cxx/sofia_sip.py',
+     'src/drake/debug.py',
+     'src/drake/flex.py',
+     'src/drake/git.py',
+     'src/drake/go/__init__.py',
+     'src/drake/log.py',
+     'src/drake/opencv.py',
+     'src/drake/python/__init__.py',
+     'src/drake/sched.py',
+     'src/drake/templating.py',
+     'src/drake/threadpool.py',
+     'src/drake/urbi/__init__.py',
+     'src/drake/utils.py',
+     'src/drake/valgrind.py',
+     'src/drake/which.py',
+  )
+  command = drake.node('src/bin/drake')
+
+  # Install
+  lib = drake.Path('lib/python%s.%s/site-packages' % \
+                     (sys.version_info[0], sys.version_info[1]))
+  install = drake.Rule('install')
+  install << drake.copy(sources, prefix / lib, 'src')
+  install << drake.copy(command, prefix/'bin', 'src/bin')
+
+
+  ## ----- ##
+  ## Tests ##
+  ## ----- ##
+
+  check = drake.Rule('check')
+
+  tests = [
+    'base/obsolete-path-cache',
+    'base/change-dynamic-dependency',
+    'base/command-line',
+    'base/dependency',
+    'base/failure',
+    'base/failure-cmd',
+    'base/interrupt-dynamic-dependency',
+    'base/mtime',
+    'base/symlink',
+    'base/termination',
+    'base/termination-keep-successful',
+    'doctest',
+    'git/base',
+    'sched',
+    'threadpool',
+  ]
+
+  for test in tests:
+    test = drake.node('tests/%s' % test)
+    test.dependencies_add(sources)
+    runner = drake.Runner(
+      test,
+      env = {'PYTHONPATH': PYTHONPATH},
+    )
+    runner.reporting = drake.Runner.Reporting.on_failure
+    check << runner.status
+  # Old style tests
+
+  tests = [
+    'base/deps-dyn',
+    'base/no-builder-to-make',
+    'base/path',
+    'base/runner',
+    'cxx/boost',
+    'cxx/cyclic-dependencies',
+    'cxx/dependency-directory-clash',
+    'cxx/find_library',
+    'cxx/headers-deps',
+    'cxx/generated-headers-deps',
+    # FIXME: not CI friendly
+    # 'cxx/pkg-config',
+    # 'cxx/qt/moc',
+    ]
+
+  class Tester(drake.Builder):
+
+    def __init__(self, name):
+      self.__name = name
+      path = drake.Path('tests') / drake.Path(name)
+      self.__exe = drake.node(path / 'test')
+      self.__target = drake.node(path.with_extension('tst'))
+      drake.Builder.__init__(self, [self.__exe] + sources, [self.__target])
+
+    def execute(self):
+      fr = str(self.__exe.path().dirname())
+      to = str(self.__exe.name().dirname())
+      try:
+        shutil.rmtree(to)
+      except OSError as e:
+        if e.errno == 2:
+          pass
+        else:
+          raise
+      shutil.copytree(fr, to)
+      res = self.cmd('Test %s' % self.__name,
+                     # Use an absolute path, because we chdir, and
+                     # "./test" isn't very helpful in backtraces.
+                     [str(drake.Path(os.getcwd()) / self.__exe.path())],
+                     cwd = to)
+      if res:
+        self.__target.path().touch()
+      return res
+
+    def target(self):
+      return self.__target
+
+  for test in tests:
+    check << Tester(test).target()
+
+# Local Variables:
+# mode: python
+# End:

@@ -1,0 +1,5 @@
+Name: somelib
+Description: Some library for testing purpose.
+Version: 1.2.3
+Libs: -L/beacon/lib
+Cflags: -I/beacon/include

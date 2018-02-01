@@ -1,0 +1,13 @@
+#!/usr/bin/env python3
+# -*- python -*-
+
+import drake
+import drake.cxx
+import os
+
+try:
+    os.chdir('_build')
+    drake.run('..')
+except drake.Exception as e:
+    print('%s: %s' % (sys.argv[0], e), file = sys.stderr)
+    exit(1)

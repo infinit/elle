@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+
+'''Check the build chain stops when a builder fails.'''
+
+import drake
+import utils
+
+class FailBuilder(drake.Builder):
+
+  def execute(self):
+    return False
+
+
+class SuccessBuilder(drake.Builder):
+
+  def execute(self):
+    return True
+
+
+with utils.Drake() as d:
+  source = drake.touch('source')
+  intermediate = drake.node('intermediate')
+  fail = FailBuilder([source], [intermediate])
+  target = drake.node('target')
+  SuccessBuilder([intermediate], [target])
+  try:
+    target.build()
+  except drake.Builder.Failed as e:
+    assert e.builder is fail
+  else:
+    raise Exception('build should have failed')

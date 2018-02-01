@@ -1,0 +1,57 @@
+#!/usr/bin/env python3
+
+import doctest
+import os
+import os.path
+import sys
+import unittest
+
+import drake
+import drake.cxx
+import drake.cxx.boost
+import drake.git
+import drake.go
+import drake.python
+import drake.utils
+import sched
+
+
+def test_suite():
+  tests = []
+
+  instance = [None]
+  def setup(test):
+    instance[0] = drake.Drake()
+    instance[0].__enter__()
+
+  def teardown(test):
+    instance[0].__exit__(None, None, None)
+    instance[0] = None
+
+  tests = [doctest.DocTestSuite(module = m,
+                                setUp = setup, tearDown = teardown)
+           for m in [
+               drake,
+               drake.cxx,
+               drake.cxx.boost,
+               drake.git,
+               drake.go,
+               drake.python,
+               drake.utils,
+               sched,
+           ]]
+  return unittest.TestSuite(tests)
+
+
+# The test suite does not expect the time reports:
+#
+# Expected:
+#     Touch /tmp/.drake.polish
+#     Polishing.
+# Got:
+#     Touch /tmp/.drake.polish
+#     Finished TouchBuilder([/tmp/.drake.polish]) (0:00:00)
+#     Polishing.
+os.environ['DRAKE_NO_TIME_REPORTS'] = '1'
+
+unittest.main(defaultTest='test_suite')

@@ -1,0 +1,15 @@
+#!/usr/bin/env python3
+# -*- python -*-
+
+import drake, drake.cxx, drake.cxx.qt, subprocess, sys
+
+with drake.Drake():
+  sys.argv = ['main']
+  drake.run('.')
+  assert subprocess.check_output(['./main']) == b'test!\n'
+
+with drake.Drake():
+  with open('test.hh', 'w') as f:
+      print('#define MESSAGE "updated"', file = f)
+  drake.run('.')
+  assert subprocess.check_output(['./main']) == b'updated!\n'
