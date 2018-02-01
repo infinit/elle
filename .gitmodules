@@ -1,7 +1,3 @@
-[submodule "drake"]
-	path = drake
-	url = ../drake
-	fetchRecurseSubmodules = false
 [submodule "json-spirit"]
 	path = src/elle/json/modules/json-spirit
 	url = https://github.com/infinitdotio/json-spirit
