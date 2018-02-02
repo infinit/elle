@@ -67,7 +67,8 @@ import drake.go
 
 os.environ.update(%(environ)r)
 
-cxx_toolkit = drake.cxx.GccToolkit(compiler = %(compiler)r)
+cxx_toolkit = drake.cxx.GccToolkit(
+  compiler = %(compiler)r, compiler_wrappers = %(compiler_wrappers)r)
 cxx_config = drake.cxx.Config()
 cxx_config.enable_debug_symbols()
 cxx_config.enable_optimization(True)
@@ -146,6 +147,7 @@ if options.os in ['macosx', 'macosx64', 'osx']:
 
 parameters = {
   'compiler': None,
+  'compiler_wrappers': [],
   'environ': {},
   'flags': (),
   'boost': None,
@@ -174,6 +176,7 @@ elif options.os == 'centos6':
 elif options.os == 'jessie':
   pass
 elif options.os in ['trusty', 'xenial']:
+  parameters['compiler_wrappers'] = ['ccache']
   parameters['valgrind'] = True
 elif options.os == 'macos':
   parameters['compiler'] = 'clang++'

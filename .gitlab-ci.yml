@@ -19,24 +19,33 @@ build:
   image: registry.gitlab.gruntech.org/mefyl/elle/trusty-ci
   script:
     - farm/configure --arch x86_64 --os xenial --compiler gcc4 --project $PROJECT --source-dir "$CI_PROJECT_DIR" --build-dir "$BUILD_DIR" --install-dir "$INSTALL_DIR"
+    - ccache --set-config=cache_dir="$CI_PROJECT_DIR/.ccache"
     - cd "$BUILD_DIR" && python3 drake -j $NPROC //build
   artifacts:
     name: "${CI_JOB_STAGE}_${CI_COMMIT_REF_NAME}"
     paths:
       - _build
+  cache:
+    paths:
+      - .ccache
 
 examples:
   stage: check
   image: registry.gitlab.gruntech.org/mefyl/elle/trusty-ci
   script:
+    - ccache --set-config=cache_dir="$CI_PROJECT_DIR/.ccache"
     - cd "$BUILD_DIR" && python3 drake -j $NPROC //examples
   dependencies:
     - build
+  cache:
+    paths:
+      - .ccache
 
 check:
   stage: check
   image: registry.gitlab.gruntech.org/mefyl/elle/trusty-ci
   script:
+    - ccache --set-config=cache_dir="$CI_PROJECT_DIR/.ccache"
     - cd "$BUILD_DIR" && python3 drake -j $NPROC //check
   dependencies:
     - build
@@ -44,3 +53,6 @@ check:
     name: "${CI_JOB_STAGE}_${CI_COMMIT_REF_NAME}"
     paths:
       - _build
+  cache:
+    paths:
+      - .ccache
