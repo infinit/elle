@@ -555,6 +555,7 @@ class GccToolkit(Toolkit):
   def __init__(self,
                compiler = None,
                compiler_c = None,
+               compiler_wrappers = [],
                os = None,
                archiver = None,
                archiver_flags = [],
@@ -566,6 +567,7 @@ class GccToolkit(Toolkit):
     self.__include_path = None
     self.__recursive_linkage = False
     self.cxx = compiler or 'g++'
+    self.__compiler_wrappers = compiler_wrappers
     self.__patchelf = drake.Path('patchelf')
     self.__splitted = None
     try:
@@ -669,9 +671,8 @@ class GccToolkit(Toolkit):
     return reversed(content[-len(vars):])
 
   def preprocess(self, code, config = Config()):
-    cmd = [self.cxx]
-    cmd += self.cppflags(config)
-    cmd +=['-x',  'c++', '-E', '-']
+    cmd = self.__compiler_wrappers + [self.cxx] + \
+          self.cppflags(config) + ['-x',  'c++', '-E', '-']
     p = subprocess.Popen(cmd,
                          stdin = subprocess.PIPE,
                          stdout = subprocess.PIPE,
@@ -776,9 +777,9 @@ class GccToolkit(Toolkit):
     extraflags = []
     if pic and self.os is not drake.os.windows:
       extraflags.append('-fPIC')
-    return [c and self.c or self.cxx] + cfg.flags + \
-        self.cppflags(cfg) + self.cflags(cfg) + \
-        extraflags + ['-c', str(src), '-o', str(obj)]
+    return self.__compiler_wrappers + [self.c if c else self.cxx] + \
+      cfg.flags + self.cppflags(cfg) + self.cflags(cfg) + \
+      extraflags + ['-c', str(src), '-o', str(obj)]
 
   def render_resource(self, src, obj):
     return [self.res, src, '-O', 'coff', '-o', str(obj)]
@@ -848,7 +849,8 @@ class GccToolkit(Toolkit):
     return rpath, rpath_link
 
   def link(self, cfg, objs, exe):
-      cmd = [self.cxx] + cfg.flags + self.ldflags(cfg)
+      cmd = self.__compiler_wrappers + [self.cxx] + \
+            cfg.flags + self.ldflags(cfg)
       for framework in cfg.frameworks():
           cmd += ['-framework', framework]
       for path in cfg.library_path:
@@ -891,7 +893,8 @@ class GccToolkit(Toolkit):
       return cmd
 
   def dynlink(self, cfg, objs, exe):
-      cmd = [self.cxx] + cfg.flags + self.ldflags(cfg)
+      cmd = self.__compiler_wrappers + [self.cxx] + \
+            cfg.flags + self.ldflags(cfg)
       for framework in cfg.frameworks():
           cmd += ['-framework', framework]
       for path in cfg.library_path:
