@@ -254,7 +254,7 @@ def configure(cxx_toolkit = None,
     zlib_configure_call = None
     zlib_configure_args = ['--static']
   else:
-    zlib_env['CC'] = cxx_toolkit.c
+    zlib_env['CC'] = ' '.join(cxx_toolkit.command_c)
     zlib_env['CFLAGS'] = '-fPIC -w'
     zlib_makefile = None
     zlib_configure_call = zlib_configure
