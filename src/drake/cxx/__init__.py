@@ -650,6 +650,10 @@ class GccToolkit(Toolkit):
     return self.__compiler_cxx
 
   @property
+  def command_cxx(self):
+    return self.__compiler_wrappers + [self.compiler_cxx]
+
+  @property
   @deprecated
   def cxx(self):
     return self.compiler_cxx
@@ -657,6 +661,10 @@ class GccToolkit(Toolkit):
   @property
   def compiler_c(self):
     return self.__compiler_c
+
+  @property
+  def command_c(self):
+    return self.__compiler_wrappers + [self.compiler_c]
 
   @property
   @deprecated
@@ -690,7 +698,7 @@ class GccToolkit(Toolkit):
     return reversed(content[-len(vars):])
 
   def preprocess(self, code, config = Config()):
-    cmd = self.__compiler_wrappers + [self.__compiler_cxx] + \
+    cmd = self.command_cxx + \
           self.cppflags(config) + ['-x',  'c++', '-E', '-']
     p = subprocess.Popen(cmd,
                          stdin = subprocess.PIPE,
@@ -796,7 +804,7 @@ class GccToolkit(Toolkit):
     extraflags = []
     if pic and self.os is not drake.os.windows:
       extraflags.append('-fPIC')
-    return self.__compiler_wrappers + [self.__compiler_c if c else self.__compiler_cxx] + \
+    return (self.command_c if c else self.command_cxx) + \
       cfg.flags + self.cppflags(cfg) + self.cflags(cfg) + \
       extraflags + ['-c', str(src), '-o', str(obj)]
 
@@ -868,8 +876,7 @@ class GccToolkit(Toolkit):
     return rpath, rpath_link
 
   def link(self, cfg, objs, exe):
-      cmd = self.__compiler_wrappers + [self.__compiler_cxx] + \
-            cfg.flags + self.ldflags(cfg)
+      cmd = self.command_cxx + cfg.flags + self.ldflags(cfg)
       for framework in cfg.frameworks():
           cmd += ['-framework', framework]
       for path in cfg.library_path:
@@ -912,8 +919,7 @@ class GccToolkit(Toolkit):
       return cmd
 
   def dynlink(self, cfg, objs, exe):
-      cmd = self.__compiler_wrappers + [self.__compiler_cxx] + \
-            cfg.flags + self.ldflags(cfg)
+      cmd = self.command_cxx + cfg.flags + self.ldflags(cfg)
       for framework in cfg.frameworks():
           cmd += ['-framework', framework]
       for path in cfg.library_path:
