@@ -17,6 +17,7 @@ import subprocess
 import sys
 import tempfile
 
+from drake.deprecation import deprecated
 from drake.utils import property_memoize
 from itertools import chain
 
@@ -566,14 +567,14 @@ class GccToolkit(Toolkit):
     self.os = os
     self.__include_path = None
     self.__recursive_linkage = False
-    self.cxx = compiler or 'g++'
+    self.__compiler_cxx = compiler or 'g++'
     self.__compiler_wrappers = compiler_wrappers
     self.__patchelf = drake.Path('patchelf')
     self.__splitted = None
     try:
-      version = subprocess.check_output([self.cxx, '--version'])
+      version = subprocess.check_output([self.__compiler_cxx, '--version'])
     except:
-      raise Exception('Unable to find compiler: %s' % self.cxx)
+      raise Exception('Unable to find compiler: %s' % self.__compiler_cxx)
     apple, win32, win64, linux, android, gnuc, clang, x86_64, arm = \
       self.preprocess_isdef((
         '__APPLE__',
@@ -623,7 +624,7 @@ class GccToolkit(Toolkit):
       self.__version = tuple(map(int, self.preprocess_values(vars)))
     else:
       raise Exception('unknown GCC kind')
-    self.c = compiler_c or '%s%s%s' % (self.prefix,
+    self.__compiler_c = compiler_c or '%s%s%s' % (self.prefix,
                                        self.basename
                                        # Order matters.
                                        .replace('clang++', 'clang')
@@ -643,6 +644,24 @@ class GccToolkit(Toolkit):
       self.ranlib = ranlib
     if self.os == drake.os.windows:
       self.res = '%swindres' % self.prefix
+
+  @property
+  def compiler_cxx(self):
+    return self.__compiler_cxx
+
+  @property
+  @deprecated
+  def cxx(self):
+    return self.compiler_cxx
+
+  @property
+  def compiler_c(self):
+    return self.__compiler_c
+
+  @property
+  @deprecated
+  def c(self):
+    return self.compiler_c
 
   def preprocess_istrue(self, vars, **kwargs):
     return map(lambda e: bool(int(e)),
@@ -671,7 +690,7 @@ class GccToolkit(Toolkit):
     return reversed(content[-len(vars):])
 
   def preprocess(self, code, config = Config()):
-    cmd = self.__compiler_wrappers + [self.cxx] + \
+    cmd = self.__compiler_wrappers + [self.__compiler_cxx] + \
           self.cppflags(config) + ['-x',  'c++', '-E', '-']
     p = subprocess.Popen(cmd,
                          stdin = subprocess.PIPE,
@@ -777,7 +796,7 @@ class GccToolkit(Toolkit):
     extraflags = []
     if pic and self.os is not drake.os.windows:
       extraflags.append('-fPIC')
-    return self.__compiler_wrappers + [self.c if c else self.cxx] + \
+    return self.__compiler_wrappers + [self.__compiler_c if c else self.__compiler_cxx] + \
       cfg.flags + self.cppflags(cfg) + self.cflags(cfg) + \
       extraflags + ['-c', str(src), '-o', str(obj)]
 
@@ -849,7 +868,7 @@ class GccToolkit(Toolkit):
     return rpath, rpath_link
 
   def link(self, cfg, objs, exe):
-      cmd = self.__compiler_wrappers + [self.cxx] + \
+      cmd = self.__compiler_wrappers + [self.__compiler_cxx] + \
             cfg.flags + self.ldflags(cfg)
       for framework in cfg.frameworks():
           cmd += ['-framework', framework]
@@ -893,7 +912,7 @@ class GccToolkit(Toolkit):
       return cmd
 
   def dynlink(self, cfg, objs, exe):
-      cmd = self.__compiler_wrappers + [self.cxx] + \
+      cmd = self.__compiler_wrappers + [self.__compiler_cxx] + \
             cfg.flags + self.ldflags(cfg)
       for framework in cfg.frameworks():
           cmd += ['-framework', framework]
@@ -1013,9 +1032,9 @@ class GccToolkit(Toolkit):
         '(?:-mp)?' # On MacPorts, compilers are named clang++-mp-3.9, g++-mp-6, etc.
         '-(?:devel|[0-9]+(\.[.0-9]+)?)'
         ')?')
-      match = r.match(self.cxx)
+      match = r.match(self.__compiler_cxx)
       if not match:
-        raise Exception('unrecognized compiler name: %s' % self.cxx)
+        raise Exception('unrecognized compiler name: %s' % self.__compiler_cxx)
       self.__splitted = [s or '' for s in match.groups()[:3]]
     return self.__splitted
 
@@ -1041,7 +1060,7 @@ class GccToolkit(Toolkit):
   @property
   def include_path(self):
     if self.__include_path is None:
-      cmd = [self.cxx, '-v', '-x', 'c++', '-E', '-']
+      cmd = [self.__compiler_cxx, '-v', '-x', 'c++', '-E', '-']
       p = subprocess.Popen(cmd,
                            stdin = subprocess.PIPE,
                            stdout = subprocess.PIPE,
