@@ -788,7 +788,7 @@ def configure(cxx_toolkit = None,
                         output_headers = libarchive_prefix)
   else:
     libarchive_env.update({
-      'CC': cxx_toolkit.c,
+      'CC': ' '.join(cxx_toolkit.command_c),
     })
     GNUBuilder(
       cxx_toolkit,
