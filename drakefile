@@ -587,7 +587,7 @@ def configure(cxx_toolkit = None,
   #   curl_configure_args.append(
   #     'LDFLAGS=-Wl,-rpath-link,%s -ldl' % (openssl_prefix / 'lib'))
   curl_env = {
-    'CC': cxx_toolkit.c,
+    'CC': ' '.join(cxx_toolkit.command_c),
     'CFLAGS': '-w',
     # Be sure to control pkg-config, otherwise, because curl's
     # configure.ac checks pkg-config *before* --with-zlib, we might
