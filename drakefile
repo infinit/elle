@@ -210,7 +210,7 @@ def configure(cxx_toolkit = None,
     configure = patchelf_configure,
     configure_args = [
       '--prefix=%s' % patchelf_prefix_absolute,
-      'CXX=%s' % cxx_toolkit_host.cxx,
+      'CXX=%s' % ' '.join(cxx_toolkit_host.command_cxx),
     ],
     targets = [patchelf],
     sources = [],
