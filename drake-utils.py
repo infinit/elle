@@ -23,24 +23,29 @@ _DEFAULT_MAKE_BINARY = _default_make_binary()
 
 class GNUBuilder(drake.Builder):
 
-  def __init__(self,
-               cxx_toolkit,
-               targets = [],
-               configure: """Configure script path (or None if no configure
-                             step is needed)""" = None,
-               working_directory: "Deduced from configure" = None,
-               configure_args: "Arguments of the configure script" = [],
-               sources = [],
-               make_binary: "Make binary" = _DEFAULT_MAKE_BINARY,
-               makefile: "Makefile filename, used if not None" = None,
-               build_args: "Additional arguments for the make command" = ['install'],
-               additional_env: "Additional environment variables" = {},
-               configure_interpreter = None,
-               patch = None):
+  def __init__(
+      self,
+      cxx_toolkit,
+      targets = [],
+      configure: """Configure script path (or None if no configure
+      step is needed)""" = None,
+      working_directory: "Deduced from configure" = None,
+      configure_args: "Arguments of the configure script" = [],
+      sources = [],
+      make_binary: "Make binary" = _DEFAULT_MAKE_BINARY,
+      makefile: "Makefile filename, used if not None" = None,
+      build_args: "Additional arguments for the make command" = ['install'],
+      additional_env: "Additional environment variables" = {},
+      configure_interpreter = None,
+      patch = None,
+      configure_stdout: 'Show configure standard output' = False,
+      build_stdout: 'Show build standard output' = False):
     self.__toolkit = cxx_toolkit
+    self.__build_stdout = build_stdout
     self.__configure = configure
-    self.__configure_interpreter = configure_interpreter
     self.__configure_args = configure_args
+    self.__configure_interpreter = configure_interpreter
+    self.__configure_stdout = configure_stdout
     self.__targets = list(targets)
     self.__make_binary = make_binary
     self.__makefile = makefile
@@ -86,14 +91,14 @@ class GNUBuilder(drake.Builder):
                          self.command_configure,
                          cwd = self.work_directory,
                          env = env,
-                         leave_stdout = False):
+                         leave_stdout = self.__configure_stdout):
              return False
       # Build step
       if not self.cmd('Build %s' % self.work_directory,
                       self.command_build,
                       cwd = self.work_directory,
                       env = env,
-                      leave_stdout = False):
+                      leave_stdout = self.__build_stdout):
         return False
     for target in self.__targets:
       path = target.path().without_prefix(self.work_directory)
