@@ -413,7 +413,7 @@ def configure(cxx_toolkit = None,
   from drake.cxx import DynLib, StaticLib
   openssl_shared = True
   openssl_env = {
-    'CC': cxx_toolkit.c + ' -w',
+    'CC': ' '.join(cxx_toolkit.command_c + ['-w']),
     'PERL': 'perl',
   }
   if cxx_toolkit.os in [drake.os.linux]:
