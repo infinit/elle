@@ -119,6 +119,9 @@ namespace elle
           case StatusCode::Expectation_Failed:
             output << "Expectation Failed";
             break;
+          case StatusCode::Unprocessable_Entity:
+            output << "Unprocessable Entity";
+            break;
           case StatusCode::Too_Many_Requests:
             output << "Too Many Requests";
             break;
