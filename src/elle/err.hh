@@ -3,7 +3,7 @@
 #include <utility>
 
 #include <elle/compiler.hh>
-#include <elle/printf-fwd.hh>
+#include <elle/print-fwd.hh>
 
 namespace elle
 {
@@ -19,7 +19,7 @@ namespace elle
   void
   err(std::string const& fmt, Args&& ... args)
   {
-    elle::err(sprintf(fmt, std::forward<Args>(args)...));
+    elle::err(print(fmt, std::forward<Args>(args)...));
   }
 
   /// Format and throw an exception of type \E.
@@ -28,6 +28,8 @@ namespace elle
   void
   err(std::string const& fmt, Args&& ... args)
   {
-    throw E(sprintf(fmt, std::forward<Args>(args)...));
+    throw E(print(fmt, std::forward<Args>(args)...));
   }
 }
+
+#include <elle/print.hh>

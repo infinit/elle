@@ -38,24 +38,24 @@ BOOST_AUTO_TEST_CASE(ExceptionBacktrace)
 BOOST_AUTO_TEST_CASE(err)
 {
   using boost::starts_with;
-#define CHECK_THROW(Statement, Exception, Message)      \
-  try                                                   \
-  {                                                     \
-    BOOST_CHECK_THROW(Statement, Exception);            \
-    Statement;                                          \
-  }                                                     \
-  catch (Exception const& e)                            \
-  {                                                     \
-    BOOST_CHECK(starts_with(e.what(), Message));        \
+#define CHECK_THROW(Statement, Exception, Message)                      \
+  try                                                                   \
+  {                                                                     \
+    BOOST_CHECK_THROW(Statement, Exception);                            \
+    Statement;                                                          \
+  }                                                                     \
+  catch (Exception const& e)                                            \
+    {                                                                   \
+    if (!starts_with(e.what(), Message))                                \
+      BOOST_ERROR(elle::print(                                          \
+        "%r does not start with %r", e.what(), Message));               \
   }
 
   CHECK_THROW(elle::err("foo"), elle::Error, "foo");
   CHECK_THROW(elle::err("foo %s", 3), elle::Error, "foo 3");
   CHECK_THROW(elle::err("%s bar", 3), elle::Error, "3 bar");
   CHECK_THROW(elle::err("%s bar %s", 3, 3), elle::Error, "3 bar 3");
-  CHECK_THROW(elle::err("%s", 3, 3), elle::Exception,
-    "format error with \"%s\": boost::too_many_args:");
-  CHECK_THROW(elle::err("%s %s", 3), elle::Exception,
-    "format error with \"%s %s\": boost::too_few_args:");
+  CHECK_THROW(elle::err("%s", 3, 3), elle::Exception, "too many arguments");
+  CHECK_THROW(elle::err("%s %s", 3), elle::Exception, "too few arguments");
   CHECK_THROW(elle::err("%s"), elle::Error, "%s");
 }
