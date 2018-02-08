@@ -119,6 +119,9 @@ namespace elle
           case StatusCode::Expectation_Failed:
             output << "Expectation Failed";
             break;
+          case StatusCode::Too_Many_Requests:
+            output << "Too Many Requests";
+            break;
           case StatusCode::Internal_Server_Error:
             output << "Internal Server Error";
             break;
