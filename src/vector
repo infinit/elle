@@ -3,7 +3,7 @@
 #include <ostream>
 #include_next <vector>
 
-#include <elle/printf-fwd.hh>
+#include <elle/print-fwd.hh>
 
 namespace std
 {
@@ -16,7 +16,7 @@ namespace std
     auto* sep = "";
     for (auto const& e: s)
     {
-      elle::fprintf(out, format, sep, e);
+      elle::print(out, format, sep, e);
       sep = ", ";
     }
     out << ']';

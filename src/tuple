@@ -1,7 +1,7 @@
 #pragma once
 
 #include_next <tuple>
-#include <elle/printf-fwd.hh>
+#include <elle/print-fwd.hh>
 
 namespace std
 {
@@ -17,9 +17,9 @@ namespace std
     print_tuple(std::ostream& s, T const& v, bool first)
     {
       if (!first)
-        elle::fprintf(s, ", %s", get<idx>(v));
+        elle::print(s, ", %s", get<idx>(v));
       else
-        elle::fprintf(s, "%s", get<idx>(v));
+        elle::print(s, "%s", get<idx>(v));
       print_tuple<idx + 1, T>(s, v, false);
     };
 
@@ -54,9 +54,9 @@ namespace std
   ostream&
   operator <<(ostream& out, tuple<Elts...> const& v)
   {
-    elle::fprintf(out, "(");
+    elle::print(out, "(");
     print_tuple<0, tuple<Elts...>>(out, v, true);
-    elle::fprintf(out, ")");
+    elle::print(out, ")");
     return out;
   }
 

@@ -2,7 +2,7 @@
 
 #include_next <iosfwd>
 #include_next <utility>
-#include <elle/printf-fwd.hh>
+#include <elle/print-fwd.hh>
 
 namespace std
 {
@@ -10,9 +10,9 @@ namespace std
   std::basic_ostream<charT, traits>&
   operator <<(std::basic_ostream<charT, traits>& o, std::pair<T1, T2> const& p)
   {
-    return elle::fprintf(o,
-                         is_fixed(o) ? "(%f, %f)" : "(%s, %s)",
-                         p.first, p.second);
+    return elle::print(o,
+                       is_fixed(o) ? "(%f, %f)" : "(%s, %s)",
+                       p.first, p.second);
   }
 }
 

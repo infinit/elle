@@ -9,6 +9,7 @@
 
 #include <elle/err.hh>
 #include <elle/meta.hh>
+#include <elle/print-fwd.hh>
 
 namespace std
 {
@@ -33,13 +34,13 @@ namespace std
       auto const significant = int(std::pow(10, std::max(log - 3, 0.)));
       auto const pretty = double(t.count() / significant) * significant;
       if (Den / Num / significant >= 1000'000'000)
-        elle::fprintf(o, "%sns", pretty * Num * 1000'000'000 / Den);
+        elle::print(o, "%sns", pretty * Num * 1000'000'000 / Den);
       else if (Den / Num / significant >= 1'000'000)
-        elle::fprintf(o, "%sus", pretty * Num * 1'000'000 / Den);
+        elle::print(o, "%sus", pretty * Num * 1'000'000 / Den);
       else if (Den / Num / significant >= 1000)
-        elle::fprintf(o, "%sms", pretty * Num * 1000 / Den);
+        elle::print(o, "%sms", pretty * Num * 1000 / Den);
       else
-        elle::fprintf(o, "%ss", pretty * Num / Den);
+        elle::print(o, "%ss", pretty * Num / Den);
       return o;
     }
 

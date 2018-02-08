@@ -5,7 +5,7 @@
 
 #include <elle/compiler.hh>
 #include <elle/fwd.hh>
-#include <elle/printf.hh>
+#include <elle/print.hh>
 #include <elle/unreachable.hh>
 
 namespace elle ELLE_API
@@ -58,7 +58,7 @@ namespace elle ELLE_API
 
 
 #define ELLE_ABORT(...)                                         \
-  ::elle::_abort(elle::sprintf(__VA_ARGS__), __FILE__, __LINE__)
+  ::elle::_abort(elle::print(__VA_ARGS__), __FILE__, __LINE__)
 
 /// Enforce a condition is true (always present in the code)
 /// @see ELLE_ASSERT for debug only assertions.
@@ -83,8 +83,8 @@ namespace elle ELLE_API
   catch(...)                                                            \
   {                                                                     \
     ::elle::_elle_assert(                                               \
-      false, elle::sprintf("Expected no more exception, got '%s'",      \
-                           elle::exception_string()),                   \
+      false, elle::print("Expected no more exception, got '%s'",        \
+                         elle::exception_string()),                     \
       __FILE__, __LINE__);                                              \
   }
 
@@ -151,11 +151,12 @@ namespace elle
                           int line)                                     \
   {                                                                     \
     if (not (std::forward<A>(a) _op_ std::forward<B>(b)))               \
-      _elle_assert(false,                                               \
-              elle::sprintf("%s " #_op_ " %s is false: (%s=%s, %s=%s)", \
-                            a_str, b_str, a_str, a, b_str, b),          \
-              file,                                                     \
-              line);                                                    \
+      _elle_assert(                                                     \
+        false,                                                          \
+        elle::print("%s " #_op_ " %s is false: (%s=%s, %s=%s)",         \
+                    a_str, b_str, a_str, a, b_str, b),                  \
+        file,                                                           \
+        line);                                                          \
   }
 
   // Dump assert functions for each operator.
@@ -178,8 +179,8 @@ namespace elle
     if (container.find(element) == container.end())
       _elle_assert(
         false,
-        elle::sprintf("%s does not contain %s: (%s=%s, %s=%s)",
-                      c_str, e_str, c_str, container, e_str, element),
+        elle::print("%s does not contain %s: (%s=%s, %s=%s)",
+                    c_str, e_str, c_str, container, e_str, element),
         file,
         line);
   }
@@ -195,8 +196,8 @@ namespace elle
     if (container.find(element) != container.end())
       _elle_assert(
         false,
-        elle::sprintf("%s contains %s: (%s=%s, %s=%s)",
-                      c_str, e_str, c_str, container, e_str, element),
+        elle::print("%s contains %s: (%s=%s, %s=%s)",
+                    c_str, e_str, c_str, container, e_str, element),
         file,
         line);
   }

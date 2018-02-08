@@ -3,7 +3,7 @@
 #include <ostream>
 #include_next <unordered_map>
 
-#include <elle/printf-fwd.hh>
+#include <elle/print-fwd.hh>
 
 namespace std
 {
@@ -17,7 +17,7 @@ namespace std
     auto* sep = "";
     for (auto const& e: s)
     {
-      elle::fprintf(out, format, sep, e.first, e.second);
+      elle::print(out, format, sep, e.first, e.second);
       sep = ", ";
     }
     out << '}';
