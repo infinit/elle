@@ -1,14 +1,13 @@
 #include <cstring>
 #include <iostream>
+#include <memory>
 #include <string>
 #include <sstream>
 #include <unordered_map>
 #include <vector>
+#include <typeinfo>
 
-#include <boost/format.hpp>
-
-#include <elle/TypeInfo.hh>
-#include <elle/err.hh>
+#include <elle/compiler.hh>
 
 // Work around Clang 3.5.0 bug where having this helper in the elle namespace
 // will find a << overload for elle::serialization::Serializer::SerializerIn
@@ -46,6 +45,15 @@ namespace elle
 {
   namespace _details
   {
+    /// Default print for non-streamable objects.
+    void
+    default_print(std::ostream& o, std::type_info const& info, void const* p);
+
+    /// Fail because a type has no truth value.
+    ELLE_COMPILER_ATTRIBUTE_NORETURN
+    void
+    err_nonbool(std::type_info const& info);
+
     /*--------.
     | Helpers |
     `--------*/
@@ -102,8 +110,7 @@ namespace elle
     bool
     branch_test(T const& t, ...)
     {
-      elle::err(elle::print("type is not a truth value: {}",
-                            elle::type_info<T>()));
+      _details::err_nonbool(typeid(T));
     }
 
     /*--------------------------.
@@ -121,11 +128,10 @@ namespace elle
     std::enable_if_t<!_elle_print_details::is_streamable<T>(), void>
     print(std::ostream& o, T&& value)
     {
-      static auto const parsed = boost::format("%f(%x)");
-      auto format = parsed;
-      format % elle::type_info(value);
-      format % reinterpret_cast<const void*>(&value);
-      o << format;
+      _details::default_print(
+        o,
+        typeid(T),
+        reinterpret_cast<void const*>(&value));
     }
 
     inline

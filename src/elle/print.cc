@@ -2,10 +2,12 @@
 
 #include <boost/bind.hpp>
 #include <boost/config/warning_disable.hpp>
+#include <boost/format.hpp>
 #include <boost/phoenix.hpp>
 #include <boost/spirit/include/qi.hpp>
 
 #include <elle/Printable.hh>
+#include <elle/TypeInfo.hh>
 #include <elle/assert.hh>
 #include <elle/err.hh>
 #include <elle/log.hh>
@@ -21,6 +23,22 @@ namespace elle
 {
   namespace _details
   {
+    void
+    default_print(std::ostream& o, std::type_info const& info, void const* p)
+    {
+      static auto const parsed = boost::format("%f(%x)");
+      auto format = parsed;
+      format % elle::type_info(&info);
+      format % p;
+      o << format;
+    }
+
+    void
+    err_nonbool(std::type_info const& info)
+    {
+      elle::err("type is not a truth value: {}", elle::type_info(&info));
+    }
+
     /*----.
     | AST |
     `----*/
