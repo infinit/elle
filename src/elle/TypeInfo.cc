@@ -11,6 +11,12 @@
 
 namespace elle
 {
+  TypeInfo
+  type_info(std::type_info const& i)
+  {
+    return &i;
+  }
+
   std::string
   TypeInfo::name() const
   {

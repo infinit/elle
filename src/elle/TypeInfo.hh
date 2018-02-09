@@ -60,6 +60,7 @@ namespace elle
     friend TypeInfo type_info();
     template <typename T>
     friend TypeInfo type_info(T const&);
+    friend TypeInfo type_info(std::type_info const&);
     ELLE_ATTRIBUTE(std::type_index, info);
     friend struct std::hash<TypeInfo>;
   };
@@ -69,7 +70,7 @@ namespace elle
   std::ostream&
   operator << (std::ostream& s, TypeInfo const& ti);
 
-  /// Return the TypeInfo for the given type.
+  /// The TypeInfo for the given type.
   ///
   /// @tparam T The type.
   template <typename T>
@@ -83,6 +84,10 @@ namespace elle
   template <typename T>
   TypeInfo
   type_info(T const& v);
+
+  /// The TypeInfo for a given std::type_info.
+  TypeInfo
+  type_info(std::type_info const& i);
 }
 
 namespace std
