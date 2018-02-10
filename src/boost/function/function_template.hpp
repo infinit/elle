@@ -569,7 +569,8 @@ namespace network_boost {
         void 
         assign_functor(FunctionObj f, function_buffer& functor, mpl::true_) const
         {
-          new (reinterpret_cast<void*>(&functor.data)) FunctionObj(f);
+          void *address = &functor.data;
+          new (address) FunctionObj(f);
         }
         template<typename FunctionObj,typename Allocator>
         void 
