@@ -166,13 +166,13 @@ void uri::initialize(optional<string_type> scheme,
   }
 }
 
-uri::uri() : uri_view_(uri_), uri_parts_() {}
+uri::uri() : uri_view_(uri_) {}
 
-uri::uri(const uri &other) : uri_(other.uri_), uri_view_(uri_), uri_parts_() {
+uri::uri(const uri &other) : uri_(other.uri_), uri_view_(uri_) {
   detail::advance_parts(uri_view_, uri_parts_, other.uri_parts_);
 }
 
-uri::uri(const uri_builder &builder) : uri_parts_() {
+uri::uri(const uri_builder &builder) {
   initialize(builder.scheme_, builder.user_info_, builder.host_, builder.port_,
              builder.path_, builder.query_, builder.fragment_);
 }
@@ -194,11 +194,12 @@ uri &uri::operator=(uri other) {
 }
 
 void uri::swap(uri &other) noexcept {
-  auto parts = uri_parts_;
-  advance_parts(other.uri_view_, uri_parts_, other.uri_parts_);
   uri_.swap(other.uri_);
   uri_view_.swap(other.uri_view_);
-  advance_parts(other.uri_view_, other.uri_parts_, parts);
+
+  const auto this_parts = uri_parts_;
+  detail::advance_parts(uri_view_, uri_parts_, other.uri_parts_);
+  detail::advance_parts(other.uri_view_, other.uri_parts_, this_parts);
 }
 
 uri::const_iterator uri::begin() const noexcept { return uri_view_.begin(); }

@@ -444,7 +444,7 @@ TEST(uri_test, swap_test) {
   ASSERT_TRUE(original.has_path());
   EXPECT_EQ("file", original.scheme());
   EXPECT_EQ("", original.host());
-  EXPECT_EQ("/something/different", original.path());
+  EXPECT_EQ("/something/different/", original.path());
 
   ASSERT_TRUE(instance.has_scheme());
   ASSERT_TRUE(instance.has_host());
