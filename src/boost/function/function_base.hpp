@@ -308,7 +308,8 @@ namespace network_boost {
           if (op == clone_functor_tag || op == move_functor_tag) {
             const functor_type* in_functor =
               reinterpret_cast<const functor_type*>(&in_buffer.data);
-            new (reinterpret_cast<void*>(&out_buffer.data)) functor_type(*in_functor);
+            void *address = &out_buffer.data;
+            new (address) functor_type(*in_functor);
 
             if (op == move_functor_tag) {
               functor_type* f = reinterpret_cast<functor_type*>(&in_buffer.data);
