@@ -13,6 +13,14 @@ namespace elle
 {
   namespace json ELLE_API
   {
+    class NullType
+    {};
+
+    using Boolean = bool;
+    using Integer = int64_t;
+    using Real = double;
+    using String = std::string;
+
     class Json
       : public boost::any
     {
@@ -21,7 +29,19 @@ namespace elle
       Json(Json&& j) = default;
       Json(Json& j) = default;
       Json(Json const& j) = default;
+      Json(Boolean v);
+      Json(Integer v);
+      Json(uint64_t v);
+      Json(int32_t v);
+      Json(uint32_t v);
+      Json(NullType v);
+      Json(Real v);
+      Json(std::map<std::string, Json> v);
+      Json(std::string v);
+      Json(std::unordered_map<std::string, Json> v);
+      Json(std::vector<Json> v);
       template <typename T>
+      explicit
       Json(T&& v);
 
       Json&
@@ -51,9 +71,6 @@ namespace elle
     using Array = std::vector<Json>;
     using Object = std::unordered_map<std::string, Json>;
     using OrderedObject = std::map<std::string, Json>;
-
-    class NullType
-    {};
 
     template <typename Cont>
     auto

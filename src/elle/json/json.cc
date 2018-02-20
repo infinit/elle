@@ -18,6 +18,49 @@ namespace elle
   {
     using Config = json_spirit::Config_map<std::string>;
 
+    Json::Json(Object v)
+      : boost::any(std::move(v))
+    {}
+
+    Json::Json(OrderedObject v)
+      : boost::any(std::move(v))
+    {}
+
+    Json::Json(Array v)
+      : boost::any(std::move(v))
+    {}
+
+    Json::Json(Boolean v)
+      : boost::any(std::move(v))
+    {}
+
+    Json::Json(int64_t v)
+      : boost::any(std::move(v))
+    {}
+
+    Json::Json(uint64_t v)
+      : boost::any(std::move(v))
+    {}
+
+    Json::Json(int32_t v)
+      : boost::any(std::move(v))
+    {}
+
+    Json::Json(uint32_t v)
+      : boost::any(std::move(v))
+    {}
+
+    Json::Json(std::string v)
+      : boost::any(std::move(v))
+    {}
+
+    Json::Json(Real v)
+      : boost::any(std::move(v))
+    {}
+
+    Json::Json(NullType v)
+      : boost::any(std::move(v))
+    {}
     Json::operator bool() const
     {
       // FIXME: handle more cases maybe.
