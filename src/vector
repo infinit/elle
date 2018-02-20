@@ -3,7 +3,7 @@
 #include <ostream>
 #include_next <vector>
 
-#include <elle/print-fwd.hh>
+#include <elle/print/object.hh>
 
 namespace std
 {
@@ -11,12 +11,12 @@ namespace std
   ostream&
   operator <<(ostream& out, vector<Args...> const& s)
   {
-    auto const format = is_fixed(out) ? "%s%f" : "%s%s";
     out << '[';
     auto* sep = "";
     for (auto const& e: s)
     {
-      elle::print(out, format, sep, e);
+      elle::_details::print(out, sep);
+      elle::_details::print(out, e);
       sep = ", ";
     }
     out << ']';
