@@ -61,6 +61,52 @@ namespace elle
     Json::Json(NullType v)
       : boost::any(std::move(v))
     {}
+
+    Integer&
+    Json::integer()
+    {
+      if (this->type() == typeid(Integer))
+        return boost::any_cast<Integer&>(*this);
+      else
+        elle::err("JSON value {} is not an integer", *this);
+    }
+
+    Integer const&
+    Json::integer() const
+    {
+      return elle::unconst(this)->integer();
+    }
+
+    String&
+    Json::string()
+    {
+      if (this->type() == typeid(String))
+        return boost::any_cast<String&>(*this);
+      else
+        elle::err("JSON value {} is not a string", *this);
+    }
+
+    String const&
+    Json::string() const
+    {
+      return elle::unconst(this)->string();
+    }
+
+    Array&
+    Json::array()
+    {
+      if (this->type() == typeid(Array))
+        return boost::any_cast<Array&>(*this);
+      else
+        elle::err("JSON value {} is not an array", *this);
+    }
+
+    Array const&
+    Json::array() const
+    {
+      return elle::unconst(this)->array();
+    }
+
     Json::operator bool() const
     {
       // FIXME: handle more cases maybe.
@@ -70,7 +116,10 @@ namespace elle
     Json&
     Json::operator[] (std::string const& key)
     {
-      return boost::any_cast<Object&>(*this)[key];
+      if (this->type() == typeid(Object))
+        return boost::any_cast<Object&>(*this)[key];
+      else
+        elle::err("JSON value {} is not an object", *this);
     }
 
     Json const&
@@ -269,25 +318,25 @@ namespace elle
     Array::iterator
     Json::begin()
     {
-      return boost::any_cast<Array&>(*this).begin();
+      return this->array().begin();
     }
 
     Array::iterator
     Json::end()
     {
-      return boost::any_cast<Array&>(*this).end();
+      return this->array().end();
     }
 
     Array::const_iterator
     Json::begin() const
     {
-      return elle::unconst(*this).begin();
+      return this->array().begin();
     }
 
     Array::const_iterator
     Json::end() const
     {
-      return elle::unconst(*this).end();
+      return this->array().end();
     }
   }
 }

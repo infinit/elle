@@ -44,6 +44,21 @@ namespace elle
       explicit
       Json(T&& v);
 
+      Integer&
+      integer();
+      Integer const&
+      integer() const;
+
+      String&
+      string();
+      String const&
+      string() const;
+
+      std::vector<Json>&
+      array();
+      std::vector<Json> const&
+      array() const;
+
       Json&
       operator =(Json const&) = default;
 
