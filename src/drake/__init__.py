@@ -4157,7 +4157,7 @@ class HTTPDownload(Builder):
             break
       if response is None:
         raise Exception(
-          'Unable to download {}'.format(
+          'unable to download {}'.format(
             pretty_listing(
               self.__urls, any = True, quantifier = True)))
       return response.status_code, response.content
