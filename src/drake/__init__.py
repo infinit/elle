@@ -33,7 +33,7 @@ from drake.enumeration import Enumerated
 from itertools import chain
 
 from drake.sched import logger
-from drake.utils import property_memoize
+from drake.utils import property_memoize, pretty_listing
 
 # The default timeout value for shell commands, in seconds.
 TIMEOUT = int(_OS.getenv('DRAKE_TIMEOUT', '3600'))
@@ -3566,9 +3566,8 @@ class Configuration:
           return where, res
     raise Exception(
       'unable to find %s in %s.' % \
-        (self._format_search((self.__split(what)[1]
-                              for what in whats)),
-         self._format_search(where)))
+        (pretty_listing((self.__split(what)[1] for what in whats)),
+         pretty_listing(where)))
 
   def __search(self, what, where, all):
     what = Path(what)
@@ -3595,7 +3594,7 @@ class Configuration:
     if len(res) > 0:
       return res
     raise Exception('Unable to find %s in %s.' % \
-                    (what, self._format_search(where)))
+                    (what, pretty_listing(where)))
 
   def _search_all(self, what, where):
     return self.__search(what, where, all = True)
@@ -3614,8 +3613,7 @@ class Configuration:
         pass
     if len(res) == 0:
       raise Exception('Unable to find %s in %s.' % \
-                      (self._format_search(whats),
-                       self._format_search(where)))
+                      (pretty_listing(whats), pretty_listing(where)))
     if not all:
       assert prefer is not None
       for prefix, what in res:
@@ -3631,17 +3629,6 @@ class Configuration:
   def _search_many_one(self, whats, where, prefer = None):
     return self._search_many(whats, where,
                              all = False, prefer = prefer)
-
-  def _format_search(self, where):
-    import types
-    if isinstance(where, types.GeneratorType):
-      where = list(where)
-    elif not isinstance(where, (list, tuple)):
-      return str(where)
-    if len(where) == 1:
-      return str(where[0])
-    return 'any of %s and %s' % (', '.join(map(str, where[:-1])),
-                                 where[-1])
 
   def __search_version(self, what, where, major, minor, subminor):
     """ """
