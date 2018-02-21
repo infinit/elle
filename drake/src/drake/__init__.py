@@ -18,6 +18,7 @@ import pickle
 import pipes
 import platform
 import re
+import requests
 import shutil
 import stat
 import string
@@ -33,7 +34,7 @@ from drake.enumeration import Enumerated
 from itertools import chain
 
 from drake.sched import logger
-from drake.utils import property_memoize
+from drake.utils import property_memoize, pretty_listing
 
 # The default timeout value for shell commands, in seconds.
 TIMEOUT = int(_OS.getenv('DRAKE_TIMEOUT', '3600'))
@@ -1883,7 +1884,9 @@ class Builder:
       self.__builder = builder
 
     def __str__(self):
-      return '%s failed' % self.builder
+      ctx = self.__context__
+      return '{} failed{}'.format(
+        self.builder, (': ' + str(ctx)) if ctx is not None else '')
 
     @property
     def builder(self):
@@ -3566,9 +3569,8 @@ class Configuration:
           return where, res
     raise Exception(
       'unable to find %s in %s.' % \
-        (self._format_search((self.__split(what)[1]
-                              for what in whats)),
-         self._format_search(where)))
+        (pretty_listing((self.__split(what)[1] for what in whats)),
+         pretty_listing(where)))
 
   def __search(self, what, where, all):
     what = Path(what)
@@ -3595,7 +3597,7 @@ class Configuration:
     if len(res) > 0:
       return res
     raise Exception('Unable to find %s in %s.' % \
-                    (what, self._format_search(where)))
+                    (what, pretty_listing(where)))
 
   def _search_all(self, what, where):
     return self.__search(what, where, all = True)
@@ -3614,8 +3616,7 @@ class Configuration:
         pass
     if len(res) == 0:
       raise Exception('Unable to find %s in %s.' % \
-                      (self._format_search(whats),
-                       self._format_search(where)))
+                      (pretty_listing(whats), pretty_listing(where)))
     if not all:
       assert prefer is not None
       for prefix, what in res:
@@ -3631,17 +3632,6 @@ class Configuration:
   def _search_many_one(self, whats, where, prefer = None):
     return self._search_many(whats, where,
                              all = False, prefer = prefer)
-
-  def _format_search(self, where):
-    import types
-    if isinstance(where, types.GeneratorType):
-      where = list(where)
-    elif not isinstance(where, (list, tuple)):
-      return str(where)
-    if len(where) == 1:
-      return str(where[0])
-    return 'any of %s and %s' % (', '.join(map(str, where[:-1])),
-                                 where[-1])
 
   def __search_version(self, what, where, major, minor, subminor):
     """ """
@@ -4156,19 +4146,21 @@ class HTTPDownload(Builder):
     def job():
       self.output('Download %s to %s' % (self.__urls, self.__dest),
                   'Download %s' % self.__dest)
-      import urllib.request
       response = None
       for url in self.__urls:
         try:
-          response = urllib.request.urlopen(url)
+          response = requests.get(url)
         except:
-          pass
+          continue
         else:
-          if response.status == 200:
+          if response.status_code == 200:
             break
       if response is None:
-        raise Exception('Unable to download %s' % self.__urls)
-      return response.status, response.read()
+        raise Exception(
+          'unable to download {}'.format(
+            pretty_listing(
+              self.__urls, any = True, quantifier = True)))
+      return response.status_code, response.content
     status, content = self._run_job(job)
     if status != 200:
       print('download failed with status %s' % status,
@@ -4180,9 +4172,8 @@ class HTTPDownload(Builder):
       d.update(content)
       h = d.hexdigest()
       if h != self.__fingerprint:
-        print('wrong checksum for %s: %s' % (self.__dest, h),
-              file = sys.stderr)
-        return False
+        raise Exception(
+          'wrong checksum for %s: %s' % (self.__dest, h))
     with open(str(self.__dest.path()), 'wb') as f:
       f.write(content)
     return True
@@ -4194,7 +4185,7 @@ class HTTPDownload(Builder):
     return 'HTTPDownload(%s, %s)' % (self.__urls, self.__dest)
 
 def download(url,
-             fingerprint,
+             fingerprint = None,
              where = drake.Path('.'),
              name = None,
              disable_ssl_certificate_validation = False,
@@ -4203,13 +4194,13 @@ def download(url,
   if name is None:
     from urllib.parse import urlparse
     name = drake.Path(urlparse(url).path).basename()
-    target = drake.node(where / name)
-    downloader = drake.HTTPDownload(
-      url,
-      target,
-      fingerprint = fingerprint,
-      disable_ssl_certificate_validation = disable_ssl_certificate_validation,
-    )
+  target = drake.node(where / name)
+  downloader = drake.HTTPDownload(
+    url,
+    target,
+    fingerprint = fingerprint,
+    disable_ssl_certificate_validation = disable_ssl_certificate_validation,
+  )
   return target
 
 

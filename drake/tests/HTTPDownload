@@ -1,0 +1,81 @@
+#!/usr/bin/env python3
+
+'''Check HTTPDownload.'''
+
+import drake
+
+from utils import *
+
+content = b'HTTPDownload test payload'
+
+import http.server
+import socketserver
+
+beacons = set()
+
+class Handler(http.server.BaseHTTPRequestHandler):
+
+  def _set_headers(self):
+    if 'fail' in self.requestline:
+      beacons.add('fail')
+      self.send_response(404)
+      return
+    self.send_response(200)
+    if 'binary' in self.requestline:
+      beacons.add('binary')
+      self.send_header('Content-type', 'application/octet-stream')
+    elif 'html' in self.requestline:
+      beacons.add('html')
+      self.send_header('Content-type', 'text/html')
+    else:
+      self.send_header('Content-type', 'text/plain')
+    self.end_headers()
+
+  def do_GET(self):
+    path = self.requestline.split(' ')[1]
+    self._set_headers()
+    self.wfile.write(content)
+    self.wfile.write(b'\n')
+    self.wfile.write(path.encode('latin-1'))
+
+httpd = socketserver.TCPServer(("", 0), Handler)
+
+import threading
+class HTTPThread(threading.Thread):
+
+  def run(self):
+    httpd.serve_forever()
+
+HTTPThread(daemon = True).start()
+port = httpd.server_address[1]
+
+with Drake() as d:
+  def download(path = 'some/path', fail = False, *args, **kwargs):
+    url = 'http://localhost:{}/{}'.format(port, path)
+    f = drake.download(url, *args, **kwargs)
+    try:
+      f.build()
+    except Exception as e:
+      if fail:
+        return str(e.__context__)
+      else:
+        raise
+    else:
+      assert not fail
+      with open(str(f.path()), 'rb') as f:
+        assertEq(f.read(), content + b'\n/' + path.encode('latin-1'))
+  download('path')
+  download('subdir/rename', where = 'subdir', name = 'rename')
+  fp = '4d70b1b5648a8a5408cb0ec07ef38477'
+  download('subdir/rename', name = 'fingerprinted',
+           fingerprint = fp)
+  assert fp in download(
+    'subdir/rename', name = 'wrong_fingerprint',
+    fingerprint = '00000000000000000000000000000000',
+    fail = True)
+  download('binary', name = 'binary')
+  download('html', name = 'html')
+  assert 'fail' in download('fail', name = '404', fail = True)
+  assert 'binary' in beacons
+  assert 'fail' in beacons
+  assert 'html' in beacons

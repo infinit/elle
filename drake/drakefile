@@ -84,6 +84,7 @@ def configure(prefix = '.'):
     'git/base',
     'sched',
     'threadpool',
+    'HTTPDownload',
   ]
 
   for test in tests:

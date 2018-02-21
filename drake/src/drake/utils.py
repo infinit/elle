@@ -74,3 +74,32 @@ def property_memoize(f):
       setattr(self, prop, f(self))
     return getattr(self, prop)
   return property(result)
+
+def pretty_listing(c, any = False, quantifier = None):
+  '''
+  Format a collection of items into a human readable listing.
+
+  >>> pretty_listing(['foo'])
+  'foo'
+  >>> pretty_listing(['foo', 'bar'])
+  'foo and bar'
+  >>> pretty_listing(['foo', 'bar', 'baz'])
+  'foo, bar and baz'
+  >>> pretty_listing(['foo', 'bar', 'baz'], any = True)
+  'foo, bar or baz'
+  >>> pretty_listing(['foo', 'bar', 'baz'], quantifier = True)
+  'all of foo, bar and baz'
+  >>> pretty_listing(['foo', 'bar', 'baz'],
+  ...                any = True, quantifier = True)
+  'any of foo, bar or baz'
+  '''
+  import types
+  if isinstance(c, types.GeneratorType):
+    c = list(c)
+  elif not isinstance(c, (list, tuple)):
+    return str(c)
+  if len(c) == 1:
+    return str(c[0])
+  return '{}{} {} {}'.format(
+    '{} of '.format('any' if any else 'all') if quantifier else '',
+    ', '.join(map(str, c[:-1])), 'or' if any else 'and', c[-1])
