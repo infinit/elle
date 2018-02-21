@@ -18,6 +18,7 @@ import pickle
 import pipes
 import platform
 import re
+import requests
 import shutil
 import stat
 import string
@@ -4143,22 +4144,21 @@ class HTTPDownload(Builder):
     def job():
       self.output('Download %s to %s' % (self.__urls, self.__dest),
                   'Download %s' % self.__dest)
-      import urllib.request
       response = None
       for url in self.__urls:
         try:
-          response = urllib.request.urlopen(url)
+          response = requests.get(url)
         except:
-          pass
+          continue
         else:
-          if response.status == 200:
+          if response.status_code == 200:
             break
       if response is None:
         raise Exception(
           'Unable to download {}'.format(
             pretty_listing(
-              self.__urls, any = True, quantifier = True))
-      return response.status, response.read()
+              self.__urls, any = True, quantifier = True)))
+      return response.status_code, response.content
     status, content = self._run_job(job)
     if status != 200:
       print('download failed with status %s' % status,
