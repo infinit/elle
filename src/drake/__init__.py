@@ -4184,7 +4184,7 @@ class HTTPDownload(Builder):
     return 'HTTPDownload(%s, %s)' % (self.__urls, self.__dest)
 
 def download(url,
-             fingerprint,
+             fingerprint = None,
              where = drake.Path('.'),
              name = None,
              disable_ssl_certificate_validation = False,
