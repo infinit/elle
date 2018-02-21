@@ -4154,7 +4154,10 @@ class HTTPDownload(Builder):
           if response.status == 200:
             break
       if response is None:
-        raise Exception('Unable to download %s' % self.__urls)
+        raise Exception(
+          'Unable to download {}'.format(
+            pretty_listing(
+              self.__urls, any = True, quantifier = True))
       return response.status, response.read()
     status, content = self._run_job(job)
     if status != 200:
