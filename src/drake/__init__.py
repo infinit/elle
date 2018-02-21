@@ -4193,13 +4193,13 @@ def download(url,
   if name is None:
     from urllib.parse import urlparse
     name = drake.Path(urlparse(url).path).basename()
-    target = drake.node(where / name)
-    downloader = drake.HTTPDownload(
-      url,
-      target,
-      fingerprint = fingerprint,
-      disable_ssl_certificate_validation = disable_ssl_certificate_validation,
-    )
+  target = drake.node(where / name)
+  downloader = drake.HTTPDownload(
+    url,
+    target,
+    fingerprint = fingerprint,
+    disable_ssl_certificate_validation = disable_ssl_certificate_validation,
+  )
   return target
 
 
