@@ -4172,9 +4172,8 @@ class HTTPDownload(Builder):
       d.update(content)
       h = d.hexdigest()
       if h != self.__fingerprint:
-        print('wrong checksum for %s: %s' % (self.__dest, h),
-              file = sys.stderr)
-        return False
+        raise Exception(
+          'wrong checksum for %s: %s' % (self.__dest, h))
     with open(str(self.__dest.path()), 'wb') as f:
       f.write(content)
     return True
