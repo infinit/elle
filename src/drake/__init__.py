@@ -1884,7 +1884,9 @@ class Builder:
       self.__builder = builder
 
     def __str__(self):
-      return '%s failed' % self.builder
+      ctx = self.__context__
+      return '{} failed{}'.format(
+        self.builder, (': ' + str(ctx)) if ctx is not None else '')
 
     @property
     def builder(self):
