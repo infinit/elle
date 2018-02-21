@@ -16,6 +16,10 @@ beacons = set()
 class Handler(http.server.BaseHTTPRequestHandler):
 
   def _set_headers(self):
+    if 'fail' in self.requestline:
+      beacons.add('fail')
+      self.send_response(404)
+      return
     self.send_response(200)
     if 'binary' in self.requestline:
       beacons.add('binary')
@@ -43,28 +47,35 @@ class HTTPThread(threading.Thread):
     httpd.serve_forever()
 
 HTTPThread(daemon = True).start()
+port = httpd.server_address[1]
 
 with Drake() as d:
   def download(path = 'some/path', fail = False, *args, **kwargs):
-    url = 'http://localhost:{}/{}'.format(
-      httpd.server_address[1], path)
+    url = 'http://localhost:{}/{}'.format(port, path)
     f = drake.download(url, *args, **kwargs)
     try:
       f.build()
-    except:
-      if not fail:
+    except Exception as e:
+      if fail:
+        return str(e.__context__)
+      else:
         raise
     else:
+      assert not fail
       with open(str(f.path()), 'rb') as f:
         assertEq(f.read(), content + b'\n/' + path.encode('latin-1'))
   download('path')
   download('subdir/rename', where = 'subdir', name = 'rename')
+  fp = '4d70b1b5648a8a5408cb0ec07ef38477'
   download('subdir/rename', name = 'fingerprinted',
-           fingerprint = '4d70b1b5648a8a5408cb0ec07ef38477')
-  download('subdir/rename', name = 'wrong_fingerprint',
-           fingerprint = '00000000000000000000000000000000',
-           fail = True)
+           fingerprint = fp)
+  assert fp in download(
+    'subdir/rename', name = 'wrong_fingerprint',
+    fingerprint = '00000000000000000000000000000000',
+    fail = True)
   download('binary', name = 'binary')
   download('html', name = 'html')
+  assert 'fail' in download('fail', name = '404', fail = True)
   assert 'binary' in beacons
+  assert 'fail' in beacons
   assert 'html' in beacons
