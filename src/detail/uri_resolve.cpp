@@ -6,10 +6,18 @@
 
 #include "uri_resolve.hpp"
 #include <algorithm>
+
+#ifdef NETWORK_URI_EXTERNAL_BOOST
+#include <boost/algorithm/string/find.hpp>
+#include <boost/algorithm/string/erase.hpp>
+#include <boost/algorithm/string/replace.hpp>
+#include <boost/algorithm/string/predicate.hpp>
+#else   // NETWORK_URI_EXTERNAL_BOOST
 #include "../boost/algorithm/string/find.hpp"
 #include "../boost/algorithm/string/erase.hpp"
 #include "../boost/algorithm/string/replace.hpp"
 #include "../boost/algorithm/string/predicate.hpp"
+#endif  // NETWORK_URI_EXTERNAL_BOOST
 
 namespace network {
 namespace detail {

@@ -6,8 +6,15 @@
 #include <iterator>
 #include <vector>
 #include <algorithm>
+
+#ifdef NETWORK_URI_EXTERNAL_BOOST
+#include <boost/algorithm/string/split.hpp>
+#include <boost/algorithm/string/join.hpp>
+#else   // NETWORK_URI_EXTERNAL_BOOST
 #include "../boost/algorithm/string/split.hpp"
 #include "../boost/algorithm/string/join.hpp"
+#endif  // NETWORK_URI_EXTERNAL_BOOST
+
 #include "uri_normalize.hpp"
 #include "uri_percent_encode.hpp"
 #include "algorithm.hpp"
