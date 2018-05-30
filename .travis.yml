@@ -6,5 +6,4 @@ install:
   - "git config --global user.email mefyl@gruntech.org"
   - "git config --global user.name mefyl"
 script:
-  - tests/test.py
   - cd _build && ./drake //check
