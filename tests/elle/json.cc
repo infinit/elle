@@ -24,14 +24,15 @@ read_long()
   BOOST_CHECK_EQUAL(boost::any_cast<int64_t>(json), 9437196296);
 }
 
+template <typename T>
 static
 bool
-cycle(boost::any& v)
+cycle(T&& v)
 {
   try
   {
     std::stringstream s;
-    elle::json::write(s, v);
+    elle::json::write(s, std::forward<T>(v));
     elle::json::read(s);
     return true;
   }
@@ -46,30 +47,15 @@ static
 void
 write_ints()
 {
-  // test our test
-  {
-    struct Foo{int bar;};
-    boost::any v = Foo{};
-    BOOST_CHECK(!cycle(v));
-  }
-  boost::any v = 1;
-  BOOST_CHECK(cycle(v));
-  v = 1L;
-  BOOST_CHECK(cycle(v));
-  v = 1LL;
-  BOOST_CHECK(cycle(v));
-  v = 1UL;
-  BOOST_CHECK(cycle(v));
-  v = 1ULL;
-  BOOST_CHECK(cycle(v));
-  v = (unsigned long)1;
-  BOOST_CHECK(cycle(v));
-  v = (unsigned long long)1;
-  BOOST_CHECK(cycle(v));
-  v = (long)1;
-  BOOST_CHECK(cycle(v));
-  v = (long long)1;
-  BOOST_CHECK(cycle(v));
+  BOOST_CHECK(cycle(1));
+  BOOST_CHECK(cycle(1L));
+  BOOST_CHECK(cycle(1LL));
+  BOOST_CHECK(cycle(1UL));
+  BOOST_CHECK(cycle(1ULL));
+  BOOST_CHECK(cycle((unsigned long)1));
+  BOOST_CHECK(cycle((unsigned long long)1));
+  BOOST_CHECK(cycle((long)1));
+  BOOST_CHECK(cycle((long long)1));
 }
 
 static

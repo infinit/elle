@@ -30,10 +30,12 @@ namespace elle
       Json(Json& j) = default;
       Json(Json const& j) = default;
       Json(Boolean v);
-      Json(Integer v);
-      Json(uint64_t v);
       Json(int32_t v);
       Json(uint32_t v);
+      Json(int64_t v);
+      Json(uint64_t v);
+      Json(long long int v);
+      Json(long long unsigned int v);
       Json(NullType v);
       Json(Real v);
       Json(std::map<std::string, Json> v);

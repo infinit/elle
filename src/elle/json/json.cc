@@ -34,6 +34,14 @@ namespace elle
       : boost::any(std::move(v))
     {}
 
+    Json::Json(int32_t v)
+      : boost::any(std::move(v))
+    {}
+
+    Json::Json(uint32_t v)
+      : boost::any(std::move(v))
+    {}
+
     Json::Json(int64_t v)
       : boost::any(std::move(v))
     {}
@@ -42,11 +50,11 @@ namespace elle
       : boost::any(std::move(v))
     {}
 
-    Json::Json(int32_t v)
+    Json::Json(long long int v)
       : boost::any(std::move(v))
     {}
 
-    Json::Json(uint32_t v)
+    Json::Json(long long unsigned int v)
       : boost::any(std::move(v))
     {}
 
