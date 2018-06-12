@@ -156,7 +156,6 @@ class Config:
         'long_long',
         'main',
         'maybe_uninitialized',
-        'maybe_uninitialized',
         'mismatched_tags',
         'missing_braces',
         'missing_declarations',
