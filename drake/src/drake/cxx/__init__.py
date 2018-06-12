@@ -91,6 +91,25 @@ class Config:
 
     class Warnings:
 
+      '''Warnings let you control compiler warnings.
+
+      True forces a warning, False disables it and Warnings.Error makes it an
+      error.
+
+      >>> cfg = drake.cxx.Config()
+      >>> cfg.warnings.mismatched_tags is None
+      True
+      >>> cfg.warnings.mismatched_tags = True
+      >>> cfg.warnings.mismatched_tags is True
+      True
+      >>> cfg.warnings.mismatched_tags = False
+      >>> cfg.warnings.mismatched_tags is False
+      True
+      >>> cfg.warnings.mismatched_tags = drake.cxx.Config.Warnings.Error
+      >>> cfg.warnings.mismatched_tags is drake.cxx.Config.Warnings.Error
+      True
+      '''
+
       Error = object()
 
       def __init__(self, model = None):
@@ -137,7 +156,7 @@ class Config:
         'long_long',
         'main',
         'maybe_uninitialized',
-        'maybe_uninitialized',
+        'misleading_indentation',
         'mismatched_tags',
         'missing_braces',
         'missing_declarations',
@@ -213,7 +232,7 @@ class Config:
       ]
 
       def __name(self, name):
-        if name not in self.known_warnings:
+        if name not in drake.cxx.Config.Warnings.known_warnings:
           raise Exception('unknown warning: %s' % name)
         return name.replace('_', '-')
 
@@ -223,14 +242,14 @@ class Config:
         except:
           return super().__setattr__(name, value)
 
-      def __getattr__(self, name):
-        wname = super().__getattr__('_Config__name')(name)
+      def __getattribute__(self, name):
         try:
-          return super().__getattr__('_Warnings__warnings')[wname]
+          wname = super().__getattribute__('_Warnings__name')(name)
+          return super().__getattribute__('_Warnings__warnings')[wname]
         except KeyError:
           return None
         except:
-          return (self, name)
+          return super().__getattribute__(name)
 
       def __bool__(self):
         return self.__default
@@ -370,25 +389,49 @@ class Config:
         Traceback (most recent call last):
             ...
         Exception: redefinition of B from 0 to 1
+
+        Likewise, warnings are merged:
+
+        >>> cfg1 = drake.cxx.Config()
+        >>> cfg1.warnings.parentheses = False
+        >>> cfg2 = drake.cxx.Config()
+        >>> cfg2.warnings.return_type = True
+        >>> sum = cfg1 + cfg2
+        >>> sum.warnings.parentheses
+        False
+        >>> sum.warnings.return_type
+        True
+        >>> cfg1.warnings.return_type = False
+        >>> cfg1 + cfg2
+        Traceback (most recent call last):
+        ...
+        Exception: incompatible C++ configuration for warning 'return-type'
         """
+        def merge(name, l, r):
+          if l is None:
+            return r
+          elif r is None:
+            return l
+          else:
+            if l is r:
+              return l
+            else:
+              raise Exception('incompatible C++ configuration '
+                              'for %s' % name)
         def merge_bool(attr):
           mine = getattr(self, attr, None)
           hers = getattr(rhs, attr, None)
-          if mine is None:
-            return hers
-          elif hers is None:
-            return mine
-          else:
-            if mine is hers:
-              return hers
-            else:
-              raise Exception('incompatible C++ configuration '
-                              'for attribute %s' % attr)
+          return merge('attribute %s'.format(attr), mine, hers)
 
         res = Config(self)
         res.__debug = self.__debug or rhs.__debug
         res.__export_dynamic = merge_bool('export_dynamic')
         res.__use_local_libcxx = merge_bool('_Config__use_local_libcxx')
+
+        for w in chain(self.__warnings._Warnings__warnings,
+                       rhs.__warnings._Warnings__warnings):
+          res.__warnings._Warnings__warnings[w] = merge(
+            'warning {!r}'.format(w), self.__warnings._Warnings__warnings.get(w), rhs.__warnings._Warnings__warnings.get(w))
 
         for key, value in rhs.__defines.items():
           if key in res.__defines:
