@@ -1256,8 +1256,11 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
   cxx_config.warnings.parentheses = False
   cxx_config.warnings.empty_body = False
   # Clang/GCC disagree on std::hash struct versus class.
-  Warnings = drake.cxx.Config.Warnings
   cxx_config.warnings.mismatched_tags = False
+  # GCC 6 warns of misleading indentation on all "if (...) {} else" macros
+  # (e.g. ELLE_LOG_LEVEL).
+  cxx_config.warnings.misleading_indentation = False
+  Warnings = drake.cxx.Config.Warnings
   cxx_config.warnings.missing_declarations = Warnings.Error
   cxx_config.warnings.return_type = Warnings.Error
   cxx_config.warnings.delete_virtual_dtor = Warnings.Error
