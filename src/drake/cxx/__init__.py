@@ -91,6 +91,25 @@ class Config:
 
     class Warnings:
 
+      '''Warnings let you control compiler warnings.
+
+      True forces a warning, False disables it and Warnings.Error makes it an
+      error.
+
+      >>> cfg = drake.cxx.Config()
+      >>> cfg.warnings.mismatched_tags is None
+      True
+      >>> cfg.warnings.mismatched_tags = True
+      >>> cfg.warnings.mismatched_tags is True
+      True
+      >>> cfg.warnings.mismatched_tags = False
+      >>> cfg.warnings.mismatched_tags is False
+      True
+      >>> cfg.warnings.mismatched_tags = drake.cxx.Config.Warnings.Error
+      >>> cfg.warnings.mismatched_tags is drake.cxx.Config.Warnings.Error
+      True
+      '''
+
       Error = object()
 
       def __init__(self, model = None):
@@ -213,7 +232,7 @@ class Config:
       ]
 
       def __name(self, name):
-        if name not in self.known_warnings:
+        if name not in drake.cxx.Config.Warnings.known_warnings:
           raise Exception('unknown warning: %s' % name)
         return name.replace('_', '-')
 
@@ -223,14 +242,14 @@ class Config:
         except:
           return super().__setattr__(name, value)
 
-      def __getattr__(self, name):
-        wname = super().__getattr__('_Config__name')(name)
+      def __getattribute__(self, name):
         try:
-          return super().__getattr__('_Warnings__warnings')[wname]
+          wname = super().__getattribute__('_Warnings__name')(name)
+          return super().__getattribute__('_Warnings__warnings')[wname]
         except KeyError:
           return None
         except:
-          return (self, name)
+          return super().__getattribute__(name)
 
       def __bool__(self):
         return self.__default
