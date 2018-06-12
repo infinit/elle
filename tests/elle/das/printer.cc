@@ -16,6 +16,7 @@ struct NoModel
   int foo, bar;
 };
 
+static
 void
 no_model()
 {
@@ -31,6 +32,7 @@ struct BuiltinModel
     elle::das::Model<BuiltinModel, elle::meta::List<Symbol_foo, Symbol_bar>>;
 };
 
+static
 void
 builtin_model()
 {
@@ -47,6 +49,7 @@ ELLE_DAS_MODEL_DEFAULT(
   ExternalModel,
   (elle::das::Model<ExternalModel, elle::meta::List<Symbol_foo, Symbol_bar>>));
 
+static
 void
 external_model()
 {
