@@ -1,7 +1,3 @@
-[submodule "libutp"]
-	path = src/elle/reactor/modules/libutp
-	url = ../libutp
-	fetchRecurseSubmodules = false
 [submodule "osxfuse"]
 	path = src/elle/reactor/modules/osxfuse
 	url = https://github.com/osxfuse/osxfuse
