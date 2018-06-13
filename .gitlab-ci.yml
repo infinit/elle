@@ -9,7 +9,7 @@ variables:
   INSTALL_DIR: _install
   PROJECT: "elle"
   PYTHONUNBUFFERED: "1"
-  GIT_SUBMODULE_STRATEGY: "recursive"
+  GIT_SUBMODULE_STRATEGY: "none"
 
 before_script:
   - NPROC=$(nproc)
