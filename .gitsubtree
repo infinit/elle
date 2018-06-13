@@ -1,6 +1,9 @@
 [beast]
 	path = src/elle/reactor/modules/Beast
 	url = https://github.com/vinniefalco/Beast.git
+[cpp-netlib/uri]
+	path = src/elle/reactor/modules/cpp-netlib/uri
+	url = https://github.com/cpp-netlib/uri
 [date]
 	path = src/elle/date
 	url = https://github.com/HowardHinnant/date.git
