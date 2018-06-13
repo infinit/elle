@@ -1,0 +1,36 @@
+import drake
+import drake.cxx
+
+import os
+import sys
+
+library = None
+
+
+def configure(cxx_toolkit = None,
+              cxx_config = drake.cxx.Config(),
+              archs = []):
+  global library
+  sources = drake.nodes(
+     'utp_internal.cpp',
+     'utp_utils.cpp',
+     'utp_hash.cpp',
+     'utp_callbacks.cpp',
+     'utp_api.cpp',
+     'utp_packedsockaddr.cpp',
+  )
+  if cxx_toolkit.os is drake.os.windows:
+    sources += drake.nodes('libutp_inet_ntop.cpp')
+  local_config = drake.cxx.Config(cxx_config)
+  if cxx_toolkit.os is drake.os.ios:
+    for arch in archs:
+      local_config.flag('-arch')
+      local_config.flag(arch)
+    local_config.flag('-miphoneos-version-min=7.0')
+    local_config.flag('--sysroot=%s' % os.environ['SDKROOT'])
+  local_config.define('POSIX')
+  local_config.define('_DEBUG') # for libutp stats
+  library = drake.cxx.StaticLib(
+    'lib/utp',
+    sources,
+    cxx_toolkit, local_config)

@@ -16,6 +16,9 @@
 [json-spirit]
 	path = src/elle/json/modules/json-spirit
 	url = https://github.com/infinitdotio/json-spirit
+[libutp]
+	path = src/elle/reactor/modules/libutp
+	url = https://github.com/bittorrent/libutp
 [miniupnp]
 	path = src/elle/reactor/modules/miniupnp
 	url = https://github.com/miniupnp/miniupnp
