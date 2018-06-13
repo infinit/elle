@@ -1,7 +1,3 @@
-[submodule "osxfuse"]
-	path = src/elle/reactor/modules/osxfuse
-	url = https://github.com/osxfuse/osxfuse
-	fetchRecurseSubmodules = false
 [submodule "dokany"]
 	path = src/elle/reactor/modules/dokany
 	url = ../dokan
