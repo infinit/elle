@@ -1,3 +1,6 @@
+[beast]
+	path = src/elle/reactor/modules/Beast
+	url = https://github.com/vinniefalco/Beast.git
 [date]
 	path = src/elle/date
 	url = https://github.com/HowardHinnant/date.git
