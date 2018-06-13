@@ -22,3 +22,6 @@
 [miniupnp]
 	path = src/elle/reactor/modules/miniupnp
 	url = https://github.com/miniupnp/miniupnp
+[osxfuse]
+	path = src/elle/reactor/modules/osxfuse
+        url = https://github.com/osxfuse/osxfuse
