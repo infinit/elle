@@ -18,9 +18,6 @@
 	path = src/elle/reactor/modules/dokany
 	url = ../dokan
 	fetchRecurseSubmodules = false
-[submodule "src/elle/date"]
-	path = src/elle/date
-	url = https://github.com/HowardHinnant/date.git
 [submodule "src/elle/reactor/modules/Beast"]
 	path = src/elle/reactor/modules/Beast
 	url = https://github.com/vinniefalco/Beast.git
