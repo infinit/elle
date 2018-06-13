@@ -1,4 +1,0 @@
-[submodule "dokany"]
-	path = src/elle/reactor/modules/dokany
-	url = ../dokan
-	fetchRecurseSubmodules = false
