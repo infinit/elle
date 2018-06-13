@@ -1,0 +1,23 @@
+
+LIBRARY	dokan1
+
+EXPORTS
+
+DokanMain
+DokanUnmount
+DokanIsNameInExpression
+DokanServiceInstall
+DokanServiceDelete
+DokanVersion
+DokanDriverVersion
+DokanResetTimeout
+DokanNetworkProviderInstall
+DokanNetworkProviderUninstall
+DokanSetDebugMode
+DokanOpenRequestorToken
+DokanRemoveMountPoint
+DokanUseStdErr
+DokanDebugMode
+DokanMapKernelToUserCreateFileFlags
+DokanGetMountPointList
+DokanNtStatusFromWin32
