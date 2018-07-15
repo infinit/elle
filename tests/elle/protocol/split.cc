@@ -266,7 +266,9 @@ ELLE_TEST_SUITE()
   auto& suite = boost::unit_test::framework::master_test_suite();
   using versions = std::initializer_list<elle::Version>;
   for (auto const& v: versions{{0, 1, 0}, {0, 2, 0}})
-    suite.add(BOOST_TEST_CASE(std::bind(run_version, v)), 0, valgrind(5, 25));
+    suite.add(
+      ELLE_TEST_CASE(std::bind(run_version, v), elle::print("version-{}", v)),
+      0, valgrind(5, 25));
   suite.add(BOOST_TEST_CASE(kill_reader), 0, valgrind(5, 25));
   suite.add(BOOST_TEST_CASE(nonempty_queue), 0, valgrind(5, 25));
 }
