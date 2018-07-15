@@ -139,7 +139,7 @@ test_cmp()
     auto b1 = Buffer(mkbuf<Buffer>(16));
     auto b2 = Buffer(mkbuf<Buffer>(16));
 
-    BOOST_TEST(b1 == b2);
+    BOOST_CHECK_EQUAL(b1, b2);
     BOOST_CHECK_GE(b1, b2);
     BOOST_CHECK_LE(b1, b2);
 
@@ -161,9 +161,9 @@ test_cmp()
     auto b1 = Buffer(mkbuf<Buffer>(4));
     auto b2 = Buffer(mkbuf<Buffer>(8));
 
-    BOOST_TEST(b1 != b2);
-    BOOST_TEST(b1 < b2);
-    BOOST_TEST(b1 <= b2);
+    BOOST_CHECK_NE(b1, b2);
+    BOOST_CHECK_LT(b1, b2);
+    BOOST_CHECK_LE(b1, b2);
 
     Delete(b1.mutable_contents());
     Delete(b2.mutable_contents());
@@ -173,9 +173,9 @@ test_cmp()
     auto b1 = Buffer(mkbuf<Buffer>(8));
     auto b2 = Buffer(mkbuf<Buffer>(4));
 
-    BOOST_TEST(b1 != b2);
-    BOOST_TEST(b1 > b2);
-    BOOST_TEST(b1 >= b2);
+    BOOST_CHECK_NE(b1, b2);
+    BOOST_CHECK_GT(b1, b2);
+    BOOST_CHECK_GE(b1, b2);
 
     Delete(b1.mutable_contents());
     Delete(b2.mutable_contents());

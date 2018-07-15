@@ -103,10 +103,10 @@ namespace algorithm
   {
     std::vector<int> v{0, 1, 2};
     auto it = elle::find_if(v, [] (int i) { return i % 2; });
-    BOOST_TEST(it);
-    BOOST_TEST(*it == 1);
-    BOOST_TEST(
-      !elle::find_if(std::vector<int> {0, 2}, [] (int i) { return i % 2; }););
+    BOOST_CHECK(it);
+    BOOST_CHECK_EQUAL(*it, 1);
+    BOOST_CHECK(
+      !elle::find_if(std::vector<int> {0, 2}, [] (int i) { return i % 2; }));
   }
 }
 
