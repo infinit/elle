@@ -200,8 +200,8 @@ namespace elle
         auto const level = os::getenv("ELLE_LOG_LEVEL", "LOG"s);
         _logger() = std::make_unique<TextLogger>(std::cerr, level);
         auto const ts = os::getenv("ELLE_LOG_TARGETS", "stderr://?" + level);
-        ELLE_DUMP("building main logger: {}", ts)
         _logger() = make_logger(ts);
+        ELLE_DUMP("built main logger: {}", ts);
       }
       return *_logger();
     }
