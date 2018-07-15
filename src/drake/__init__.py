@@ -4144,8 +4144,9 @@ class HTTPDownload(Builder):
 
   def execute(self):
     def job():
-      self.output('Download %s to %s' % (self.__urls, self.__dest),
-                  'Download %s' % self.__dest)
+      self.output('Download {} to {}'.format(
+        pretty_listing(self.__urls, any = True), self.__dest),
+                  'Download {}'.format(self.__dest))
       response = None
       for url in self.__urls:
         try:
