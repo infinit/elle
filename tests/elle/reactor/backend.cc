@@ -129,8 +129,7 @@ namespace
 
 ELLE_TEST_SUITE()
 {
-  boost::unit_test::test_suite* backend = BOOST_TEST_SUITE("Backend");
-  boost::unit_test::framework::master_test_suite().add(backend);
+  auto& suite = boost::unit_test::framework::master_test_suite();
 
 #if defined REACTOR_CORO_BACKEND_IO
   using Backend = elle::reactor::backend::coro_io::Backend;
@@ -139,7 +138,7 @@ ELLE_TEST_SUITE()
 #endif
 
 #define TEST(Name)                                                     \
-  backend->add(ELLE_TEST_CASE(test_ ## Name<Backend>, #Name), 0, 10)
+  suite.add(ELLE_TEST_CASE(test_ ## Name<Backend>, #Name), 0, 10)
 
   TEST(die);
   TEST(deadlock_creation);
