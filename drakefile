@@ -187,8 +187,8 @@ def configure(cxx_toolkit = None,
   patchelf_version = drake.Version(0, 9)
   patchelf_basename = 'patchelf-%s' % patchelf_version
   patchelf_url = \
-    'http://releases.nixos.org/patchelf/%s/%s.tar.bz2' % \
-    (patchelf_basename, patchelf_basename)
+    'https://nixos.org/releases/patchelf/{}/{}.tar.bz2'.format(
+      patchelf_basename, patchelf_basename)
   patchelf_tarball = \
     drake.node('patchelf/%s.tar.bz2' % patchelf_basename)
   patchelf_configure = \
