@@ -51,6 +51,7 @@ class Boost(drake.Configuration):
     'coroutine': 'coroutine',
     'iostreams': 'iostreams',
     'python': (
+      'python36',
       'python-3.5',
       'python-3.4',
       'python-3.3',
