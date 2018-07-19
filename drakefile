@@ -816,7 +816,7 @@ def configure(cxx_toolkit = None,
   ## ----- ##
 
   boost_static = cxx_toolkit.os in [drake.os.ios]
-  boost_version = drake.Version(1, 60, 0)
+  boost_version = drake.Version(1, 67, 0)
   if boost is not None:
     boost = drake.cxx.boost.Boost(
       cxx_toolkit = cxx_toolkit,
@@ -830,20 +830,17 @@ def configure(cxx_toolkit = None,
     boost_prefix = drake.Path('boost')
     boost_prefix_abs = drake.Path(os.getcwd()) / drake.path_build() / boost_prefix
     boost_host = \
-      'https://storage.googleapis.com/sh_infinit_releases/boost'
+      'https://dl.bintray.com/boostorg/release/1.67.0/source/'
     boost_url = '%s/%s.tar.gz' % (boost_host, boost_basename)
     drake.HTTPDownload(
       boost_url,
       boost_tarball,
-      fingerprint = '28f58b9a33469388302110562bdf6188',
+      fingerprint = '4850fceb3f2222ee011d4f3ea304d2cb',
     )
     boost_patches = [
       (drake.Node('.patches/boost_asio_ssl.patch'), 1),
-      (drake.Node('.patches/boost_crypt.patch'), 1),
-      (drake.Node('.patches/boost_datetime_facet.patch'), 1),
       (drake.Node('.patches/boost_optional.patch'), 1),
       (drake.Node('.patches/boost_warnings.patch'), 1),
-      (drake.Node('.patches/boost_asio_poll.patch'), 1),
     ]
     boost_locale_enabled = cxx_toolkit.os in [drake.os.windows]
     boost_attributes = {}
@@ -901,8 +898,7 @@ def configure(cxx_toolkit = None,
       boost_bootstrap_command.append('--with-python=%s' % python_version)
     boost_bjam = drake.node('boost/%s/b2' % boost_basename)
     if python3 is not None and not windows:
-      boost_library_names.append('python')
-      boost_library_names.append('python3')
+      boost_library_names.append('python{}{}'.format(python3.version.major, python3.version.minor))
     if boost_locale_enabled:
       boost_library_names.append('locale')
     if cxx_toolkit.os is drake.os.macos:

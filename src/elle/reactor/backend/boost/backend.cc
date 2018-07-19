@@ -1,4 +1,5 @@
-#include <boost/context/fcontext.hpp>
+#include <boost/context/all.hpp>
+#include <boost/context/protected_fixedsize_stack.hpp>
 
 #ifdef VALGRIND
 # include <valgrind/valgrind.h>
@@ -32,80 +33,22 @@ namespace elle
     {
       namespace boost
       {
-        /*----------------.
-        | Stack Allocator |
-        `----------------*/
-        template <std::size_t Max, std::size_t Default, std::size_t Min>
-        class TemplatedStackAllocator
-        {
-        public:
-          static
-          std::size_t
-          maximum_stack_size()
-          {
-            return Max;
-          }
-
-          static
-          std::size_t
-          default_stack_size()
-          {
-            return Default;
-          }
-
-          static
-          std::size_t
-          minimum_stack_size()
-          {
-            return Min;
-          }
-
-          void*
-          allocate(std::size_t size) const
-          {
-            ELLE_ASSERT(minimum_stack_size() <= size);
-            ELLE_ASSERT(size <= maximum_stack_size());
-
-            if (auto base = std::malloc(size))
-              return static_cast<char*>(base) + size;
-            else
-              throw std::bad_alloc();
-          }
-
-          void
-          deallocate(void* sp, std::size_t size) const
-          {
-            ELLE_ASSERT(sp);
-            ELLE_ASSERT(minimum_stack_size() <= size);
-            ELLE_ASSERT(size <= maximum_stack_size());
-
-            void* base = static_cast<char*>(sp) - size;
-            std::free(base);
-          }
-        };
-
         /*-------.
         | Thread |
         `-------*/
-        /// Default allocator type.
-        using StackAllocator = TemplatedStackAllocator<
-          8 * 1024 * 1024,  // Max: 8 MiB
-          4 * 128 * 1024,   // Default: 128 kiB
-          8 * 1024          // Min: 8 kiB
-          >;
+
+        namespace ctx = ::boost::context;
+
+        static auto&
+        stack_allocator()
+        {
+          // 128 kiB
+          static auto alloc = ctx::protected_fixedsize_stack(4 * 128 * 1024);
+          return alloc;
+        }
+
         /// Type of context pointer used.
-        using Context = ::boost::context::fcontext_t;
-
-        /// Allocator.
-        static StackAllocator stack_allocator;
-
-        /// Invoke thread_ptr->_run().
-        static
-        void
-        wrapped_run(intptr_t thread_ptr);
-
-        using ::boost::context::make_fcontext;
-        using ::boost::context::jump_fcontext;
+        using Context = ctx::fiber;
 
         class Backend::Thread
           : public backend::Thread
@@ -125,18 +68,29 @@ namespace elle
                  Action action)
             : Super(name, std::move(action))
             , _backend(backend)
-            , _stack_pointer(stack_allocator.allocate(this->_stack_size))
-            , _context(make_fcontext(this->_stack_pointer,
-                                     this->_stack_size, wrapped_run))
+            , _stack(stack_allocator().allocate())
+            , _context([this] {
+                auto& stack = this->_stack;
+#ifdef VALGRIND
+                // Allocating a fiber jumps the SP once, so it is important to
+                // register with valgrind first.
+                this->_valgrind_stack =
+                  VALGRIND_STACK_REGISTER(this->_base_pointer(), stack.sp);
+#endif
+                return ctx::fiber(
+                  std::allocator_arg,
+                  ctx::preallocated(stack.sp, stack.size, stack),
+                  stack_allocator(),
+                  [this] (Context&& caller)
+                  {
+                    this->_caller->_context = std::move(caller);
+                    return this->_run();
+                  });
+              }())
             , _root(false)
           {
-#ifdef VALGRIND
-            this->_valgrind_stack =
-              VALGRIND_STACK_REGISTER(this->_base_pointer(),
-                                      this->_stack_pointer);
-#endif
-            ELLE_DUMP("%s: create: sp = %x, ss = %x",
-                      this, this->_stack_pointer, this->_stack_size);
+            ELLE_DUMP("{}: create: sp = {}, ss = {}",
+                      this, this->_stack.sp, this->_stack.size);
           }
 
           ~Thread() override
@@ -146,12 +100,10 @@ namespace elle
                         this->_root);
             ELLE_TRACE("%s: die", this);
             ELLE_DUMP("%s: die: sp = %x, ss = %x",
-                      this, this->_stack_pointer, this->_stack_size);
+                      this, this->_stack.sp, this->_stack.size);
             if (this->_context)
             {
-              this->_context = nullptr;
-              stack_allocator.deallocate(this->_stack_pointer,
-                                         this->_stack_size);
+              this->_context = Context();
             }
 #ifdef VALGRIND
             VALGRIND_STACK_DEREGISTER(this->_valgrind_stack);
@@ -170,19 +122,18 @@ namespace elle
           /// The bottom of the stack.
           void* _base_pointer() const
           {
-            return static_cast<char*>(this->_stack_pointer) - this->_stack_size;
+            return static_cast<char*>(this->_stack.sp) - this->_stack.size;
           }
 
           /// Pass the execution from @from to @to.
           void _jump(Thread* from, Thread* to)
           {
             ELLE_DUMP("%s: %s: _jump: start: sp = %x, ss = %x",
-                      from, to, to->_stack_pointer, to->_stack_size);
+                      from, to, to->_stack.sp, to->_stack.size);
             __sanitizer_start_switch_fiber(nullptr,
                                            to->_base_pointer(),
-                                           to->_stack_size);
-            jump_fcontext(&from->_context, to->_context,
-                          reinterpret_cast<intptr_t>(this));
+                                           to->_stack.size);
+            to->_context = std::move(to->_context).resume();
             ELLE_DUMP("%s: %s: _jump: finish", from, to);
             __sanitizer_finish_switch_fiber(nullptr, nullptr, nullptr);
           }
@@ -206,6 +157,7 @@ namespace elle
             current->_unwinding = std::uncaught_exception();
             if (current->_unwinding)
               ELLE_DUMP("step %s with in-flight exception", *current);
+            // FIXME: factor ?
             if (starting)
             {
               this->status(Status::running);
@@ -249,8 +201,7 @@ namespace elle
 
             if (this->_unwinding)
               ELLE_DUMP("yielding %s with in-flight exception", this);
-            auto& next = this->_backend._current;
-            this->_jump(this, next);
+            this->_jump(this, this->_backend._current);
 
             if (this->_backend._current->_unwinding != std::uncaught_exception())
             {
@@ -268,7 +219,7 @@ namespace elle
           /// Let the backend use our private constructor.
           friend class Backend;
           /// Main routine of this thread of execution.
-          void
+          Context
           _run()
           {
             this->status(Status::running);
@@ -308,35 +259,24 @@ namespace elle
             this->status(Status::done);
             this->_backend._current = caller;
             ELLE_TRACE("%s: done", this);
-            this->_jump(this, caller);
+            return std::move(caller->_context);
           }
 
           /// Owning backend.
           Backend& _backend;
-          /// Context stack size.
-          std::size_t const _stack_size = StackAllocator::default_stack_size();
-          /// Context stack pointer.
-          void* _stack_pointer;
-          /// Underlying IO context.
+          /// Stack
+          ctx::stack_context _stack;
+          /// Underlying context.
           Context _context;
           /// The thread that stepped us.
           Thread* _caller = nullptr;
           /// Wrap run function so that it can be passed when doing
           /// make_fcontext.
-          friend void wrapped_run(intptr_t);
           ELLE_ATTRIBUTE(bool, root);
 #ifdef VALGRIND
           ELLE_ATTRIBUTE(unsigned int, valgrind_stack);
 #endif
         };
-
-        static
-        void
-        wrapped_run(intptr_t thread_ptr)
-        {
-          auto* thread = reinterpret_cast<Backend::Thread*>(thread_ptr);
-          thread->_run();
-        }
 
         /*--------.
         | Backend |
