@@ -28,7 +28,7 @@ namespace elle
     {
       static auto const parsed = boost::format("%f(%x)");
       auto format = parsed;
-      format % elle::type_info(&info);
+      format % elle::type_info(info);
       format % p;
       o << format;
     }

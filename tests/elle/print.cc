@@ -178,6 +178,17 @@ namespace
   }
 }
 
+struct Default{};
+
+static
+void
+default_print()
+{
+  Default d;
+  BOOST_CHECK_EQUAL(elle::print("{}", d),
+                    elle::print("Default({})", reinterpret_cast<void*>(&d)));
+}
+
 
 ELLE_TEST_SUITE()
 {
@@ -196,4 +207,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(conditional));
   suite.add(BOOST_TEST_CASE(conditional_positional));
   suite.add(BOOST_TEST_CASE(legacy));
+  suite.add(BOOST_TEST_CASE(default_print));
 }
