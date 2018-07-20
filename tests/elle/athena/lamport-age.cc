@@ -114,6 +114,6 @@ serialization()
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
-  suite.add(BOOST_TEST_CASE(compare), 0, 3);
-  suite.add(BOOST_TEST_CASE(serialization), 0, 3);
+  suite.add(BOOST_TEST_CASE(compare), 0, valgrind(3));
+  suite.add(BOOST_TEST_CASE(serialization), 0, valgrind(5));
 }
