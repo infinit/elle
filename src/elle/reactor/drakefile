@@ -849,6 +849,7 @@ def configure(curl_config,
     ('rdv-cat', [], None),
     ('rdv-utp-cat', [], None),
     ('utp-chat', [], None),
+    ('websocket', [], None),
   ]
   if cxx_toolkit.os in [drake.os.linux, drake.os.macos]:
     tests.append(('fdstream', [], None))
