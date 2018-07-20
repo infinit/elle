@@ -1064,8 +1064,8 @@ ELLE_TEST_SCHEDULED(test_sleep_timing)
     auto start = elle::Clock::now();
     elle::reactor::sleep(delay);
     auto elapsed = elle::Clock::now() - start;
-    BOOST_CHECK(delay <= elapsed);
-    BOOST_CHECK(elapsed <= delay + 25ms);
+    BOOST_CHECK_LE(delay, elapsed);
+    BOOST_CHECK_LE(elapsed - delay, 50ms);
   }
 }
 
