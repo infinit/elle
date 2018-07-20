@@ -45,6 +45,6 @@ ELLE_TEST_SCHEDULED(destruction_segv)
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
-  suite.add(BOOST_TEST_CASE(basics), 0, 1);
-  suite.add(BOOST_TEST_CASE(destruction_segv), 0, 1);
+  suite.add(BOOST_TEST_CASE(basics), 0, valgrind(3));
+  suite.add(BOOST_TEST_CASE(destruction_segv), 0, valgrind(3));
 }
