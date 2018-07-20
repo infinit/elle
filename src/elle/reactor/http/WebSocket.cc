@@ -1,17 +1,19 @@
+#include <boost/beast/core.hpp>
+#include <boost/beast/websocket.hpp>
+#include <boost/beast/websocket/ssl.hpp>
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/range/numeric.hpp>
 
 #include <network/uri.hpp>
 
-#include <boost/beast/core.hpp>
-#include <boost/beast/websocket.hpp>
-#include <boost/beast/websocket/ssl.hpp>
-
+#include <elle/log.hh>
 #include <elle/reactor/http/WebSocket.hh>
 #include <elle/reactor/network/SSLHandshake.hh>
 #include <elle/reactor/network/resolve.hh>
 #include <elle/reactor/network/socket.hxx>
 #include <elle/reactor/scheduler.hh>
+
+ELLE_LOG_COMPONENT("elle.reactor.http.WebSocket")
 
 namespace elle
 {
@@ -42,6 +44,7 @@ namespace elle
           boost::beast::websocket::stream<Socket&>, websocket_plain)
         ELLE_ATTRIBUTE_RX(
           boost::beast::websocket::stream<SSL&>, websocket_ssl)
+        ELLE_ATTRIBUTE_R(bool, is_ssl)
       };
 
       WebSocket::WebSocket(std::string const& uri)
@@ -74,13 +77,19 @@ namespace elle
         void
         _start() override
         {
-          this->_socket.websocket_ssl().async_handshake(
-            this->_host,
-            this->_path,
-            [&] (boost::system::error_code const& e)
-            {
-              this->_wakeup(e);
-            });
+          auto connect = [this] (auto& sock) {
+            sock.async_handshake(
+              this->_host,
+              this->_path,
+              [&] (boost::system::error_code const& e)
+              {
+                this->_wakeup(e);
+              });
+          };
+          if (this->_socket.is_ssl())
+            connect(this->_socket.websocket_ssl());
+          else
+            connect(this->_socket.websocket_plain());
         }
 
         ELLE_ATTRIBUTE(WebSocket::Impl&, socket);
@@ -109,15 +118,18 @@ namespace elle
               return scheme;
           }();
         auto const ep = network::resolve_tcp(host, port)[0];
+        this->_is_ssl = ep.port() == 443;
         auto c = network::Connection<Socket>(this->_socket, ep);
         c.run();
-        if (ep.port() == 443)
+        if (this->_is_ssl)
         {
+          ELLE_DEBUG_SCOPE("{}: SSL handshake", this);
           auto handshake = network::SSLHandshake<SSL>(
             this->_ssl, network::SSLStream::handshake_type::client);
           handshake.run();
         }
         {
+          ELLE_DEBUG_SCOPE("{}: websocket handshake", this);
           auto handshake = WebSocketHandshake(*this, host, path);
           handshake.run();
         }
@@ -138,12 +150,18 @@ namespace elle
         void
         _start() override
         {
-          this->_socket.websocket_ssl().async_read(
-            this->_buffer,
-            [this] (boost::system::error_code const& e, std::size_t)
-            {
-              this->_wakeup(e);
-            });
+          auto read = [this] (auto& sock) {
+            sock.async_read(
+              this->_buffer,
+              [this] (boost::system::error_code const& e, std::size_t)
+              {
+                this->_wakeup(e);
+              });
+          };
+          if (this->_socket.is_ssl())
+            read(this->_socket.websocket_ssl());
+          else
+            read(this->_socket.websocket_plain());
         }
 
         ELLE_ATTRIBUTE(WebSocket::Impl&, socket);
@@ -182,12 +200,18 @@ namespace elle
         void
         _start() override
         {
-          this->_socket.websocket_ssl().async_write(
-            this->_buffer,
-            [&] (boost::system::error_code const& e, std::size_t)
-            {
-              this->_wakeup(e);
-            });
+          auto write = [this] (auto& sock) {
+            sock.async_write(
+              this->_buffer,
+              [&] (boost::system::error_code const& e, std::size_t)
+              {
+                this->_wakeup(e);
+              });
+          };
+          if (this->_socket.is_ssl())
+            write(this->_socket.websocket_ssl());
+          else
+            write(this->_socket.websocket_plain());
         }
 
         ELLE_ATTRIBUTE(WebSocket::Impl&, socket);
