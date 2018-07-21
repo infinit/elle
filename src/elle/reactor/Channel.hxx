@@ -190,7 +190,7 @@ namespace elle
       while (!this->_read_barrier.opened())
       {
         ELLE_TRACE_SCOPE("wait for data");
-        reactor::wait(this->_read_barrier);
+        reactor::wait(elle::unconst(this->_read_barrier));
       }
       ELLE_ASSERT(!this->_queue.empty());
       return details::queue_front(this->_queue);
