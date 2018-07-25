@@ -357,9 +357,13 @@ def configure(openssl_config,
       cxx_toolkit, config_test_local)
     rule_tests << bin
     if valgrind_tests:
-      runner = drake.valgrind.ValgrindRunner(exe = bin,
-                                             valgrind = valgrind,
-                                             env = tests_env)
+      runner = drake.valgrind.ValgrindRunner(
+        exe = bin,
+        valgrind = valgrind,
+        valgrind_args = [
+          '--suppressions=%s' % drake.path_source('../../../valgrind.suppr'),
+        ],
+        env = tests_env)
     else:
       runner = drake.Runner(exe = bin, env = tests_env)
     runner.reporting = drake.Runner.Reporting.on_failure
