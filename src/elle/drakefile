@@ -653,9 +653,13 @@ def configure(zlib_lib,
     if cxx_toolkit.os is drake.os.windows:
       env.update({'Path': drake.path_build(lib_path)})
     if valgrind_tests and valgrind_this_test:
-      runner = drake.valgrind.ValgrindRunner(exe = test,
-                                             valgrind = valgrind,
-                                             env = env)
+      runner = drake.valgrind.ValgrindRunner(
+        exe = test,
+        valgrind = valgrind,
+        valgrind_args = [
+          '--suppressions=%s' % drake.path_source('../../valgrind.suppr'),
+        ],
+        env = env)
     else:
       runner = drake.Runner(exe = test, env = env)
     runner.reporting = drake.Runner.Reporting.on_failure
