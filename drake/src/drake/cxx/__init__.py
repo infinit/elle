@@ -562,33 +562,37 @@ class _ToolkitType(type):
 
 class Toolkit(metaclass = _ToolkitType):
 
-    def __init__(self):
-        self.includes = []
-        self._hook_object_deps = []
-        self._hook_bin_deps = []
-        self._hook_bin_src = []
+  def __drake_configure_describe__(self):
+    return 'compiler-path'
 
-    @classmethod
-    def default(self):
-        return GccToolkit()
+  def __init__(self):
+      self.includes = []
+      self._hook_object_deps = []
+      self._hook_bin_deps = []
+      self._hook_bin_src = []
 
-    def hook_object_deps_add(self, f):
-        self._hook_object_deps.append(f)
+  @classmethod
+  def default(self):
+      return GccToolkit()
 
-    def hook_object_deps(self):
-        return self._hook_object_deps
+  def hook_object_deps_add(self, f):
+      self._hook_object_deps.append(f)
 
-    def hook_bin_deps_add(self, f):
-        self._hook_bin_deps.append(f)
+  def hook_object_deps(self):
+      return self._hook_object_deps
 
-    def hook_bin_deps(self):
-        return self._hook_bin_deps
+  def hook_bin_deps_add(self, f):
+      self._hook_bin_deps.append(f)
 
-    def hook_bin_src_add(self, f):
-        self._hook_bin_src.append(f)
+  def hook_bin_deps(self):
+      return self._hook_bin_deps
 
-    def hook_bin_src(self):
-        return self._hook_bin_src
+  def hook_bin_src_add(self, f):
+      self._hook_bin_src.append(f)
+
+  def hook_bin_src(self):
+      return self._hook_bin_src
+
 
 class GccToolkit(Toolkit):
 
@@ -1994,9 +1998,8 @@ def find_library(token = None,
                                 name = name,
                                 prefix = prefix,
                                 include_dir = include_dir,
-                                libs = libs,
-                                toolkit = toolkit)
-    return conf.config()
+                                libs = libs)
+    return conf.config(toolkit)
   else:
     return prefix
 
@@ -2078,73 +2081,82 @@ class LibraryConfiguration(drake.Configuration):
 
   """Configuration for a classical C/C++ library."""
 
-  def __init__(self, token = None, name = None, prefix = None,
-               include_dir = None, libs = None,
-               toolkit = None):
+  def __drake_configure_describe__(self):
+    return '{}-prefix'.format(self.__name__)
+
+  def __init__(self,
+               token = None,
+               name = None,
+               prefix = None,
+               include_dir = None,
+               libs = None):
     """Find and create a configuration for the library.
 
     prefix -- Where to find the library.
     token --  Which file to look for (typically, the main header).
     """
+    self.__libs = None
     self.__config = drake.cxx.Config()
     # Search the library with pkg-config
-    if PkgConfig.available and name is not None:
+    if prefix is None and PkgConfig.available and name is not None:
       pkg_config = PkgConfig(name)
       if pkg_config.exists:
+        self.__prefix = pkg_config.prefix
         for include_path in pkg_config.include_path:
           self.__config.add_system_include_path(include_path)
-          self.__prefix_symbolic = include_path / '..'
-          self.__prefix = self.__prefix_symbolic
         self.__libraries_path = []
         for library_path in pkg_config.library_path:
           self.__config.lib_path(library_path)
           self.__libraries_path.append(library_path)
         for library in pkg_config.library:
           self.__config.lib(library)
-        return
-    # Search the library manually.
-    if token is not None:
-      include_dir = include_dir or 'include'
-      if not isinstance(include_dir, list):
-        include_dir = [include_dir]
-      include_dir = [drake.Path(p) for p in include_dir]
-      # Make prefix absolute wrt the source dir
-      prefix_symbolic = None
-      if prefix is not None:
-        prefix_symbolic = drake.Path(prefix)
-        prefix = drake.Path(prefix)
-        if not prefix.absolute():
-          prefix = drake.path_source(prefix)
-      # Compute the search path.
-      if prefix is None:
-        test = [Path('/usr'), Path('/usr/local')]
-      else:
-        test = [Path(prefix)]
-      prefix, include_dir = self._search_many_all(
-          [p / token for p in include_dir], test)[0]
-      include_dir = include_dir.without_suffix(token)
-      include_path = prefix / include_dir
-      if not include_path.absolute():
-        include_path = include_path.without_prefix(drake.path_source())
-      self.__prefix = prefix
-      self.__config.add_system_include_path(include_path)
-      self.__prefix_symbolic = prefix_symbolic or self.__prefix
-      self.__libraries_path = self.__prefix_symbolic / 'lib'
-      self.__config.lib_path(self.__prefix / 'lib')
-    if libs is None:
-      libs = ()
-    for choices in libs:
-      if not isinstance(choices, tuple):
-        choices = (choices,)
-      where, lib = self._search_any(
-        [(choice, toolkit.libname_dyn(choice)) for choice in choices],
-        (prefix / 'lib',))
-      self.__config.lib(lib)
+    else:
+      # Search the library manually.
+      if token is not None:
+        include_dir = include_dir or 'include'
+        if not isinstance(include_dir, list):
+          include_dir = [include_dir]
+        include_dir = [drake.Path(p) for p in include_dir]
+        # Make prefix absolute wrt the source dir
+        prefix_symbolic = None
+        if prefix is not None:
+          prefix_symbolic = drake.Path(prefix)
+          prefix = drake.Path(prefix)
+          if not prefix.absolute():
+            prefix = drake.path_source(prefix)
+        # Compute the search path.
+        if prefix is None:
+          test = [Path('/usr'), Path('/usr/local')]
+        else:
+          test = [Path(prefix)]
+        prefix, include_dir = self._search_many_all(
+            [p / token for p in include_dir], test)[0]
+        include_dir = include_dir.without_suffix(token)
+        include_path = prefix / include_dir
+        if not include_path.absolute():
+          include_path = include_path.without_prefix(drake.path_source())
+        self.__prefix = prefix
+        self.__config.add_system_include_path(include_path)
+        self.__prefix_symbolic = prefix_symbolic or self.__prefix
+        self.__libraries_path = self.__prefix_symbolic / 'lib'
+        self.__config.lib_path(self.__prefix / 'lib')
+        self.__libs = libs
     self.__config.prefix = self.__prefix
     self.__config.include_dir = include_dir
 
-  def config(self):
-    return self.__config
+  def config(self, cxx_toolkit):
+    config = drake.cxx.Config(self.__config)
+    config.prefix = self.__config.prefix
+    config.include_dir = self.__config.include_dir
+    if self.__libs is not None:
+      for choices in libs:
+        if not isinstance(choices, tuple):
+          choices = (choices,)
+          where, lib = self._search_any(
+            [(choice, toolkit.libname_dyn(choice)) for choice in choices],
+            (prefix / 'lib',))
+          config.lib(lib)
+    return config
 
   def __repr__(self):
     return '%s(prefix = %s)' % (self.__class__, repr(self.__prefix))

@@ -27,6 +27,7 @@ import sys
 import threading
 import time
 import types
+import warnings
 
 from drake.deprecation import deprecated
 from drake.sched import Coroutine, Scheduler
@@ -1987,32 +1988,35 @@ class Builder:
     if not isinstance(cmd, tuple):
       cmd = (cmd,)
     def fun():
-      if not _RAW and pretty is not None:
-        self.output(pretty)
-      for c in cmd:
-        def convert(e):
-          if isinstance(e, Node):
-            return str(e.path())
-          else:
-            return str(e)
-        c = list(map(convert, c))
-        if _RAW or pretty is None:
-          self.output(command_flatten(c, env))
-        with contextlib.ExitStack() as stack:
-          if out_file:
-            stdout = stack.enter_context(open(out_file, 'w'))
-          else:
-            stdout = None
-          if not run_command(c,
-                         cwd = cwd,
-                         stdout = stdout, stderr = stderr,
-                         env = env):
-            if throw:
-              raise Exception(
-                'command failed: %s' % command_flatten(c, env))
+      with contextlib.ExitStack() as ctx:
+        if cwd is not None:
+          ctx.enter_context(CWDPrinter(drake.path_build(cwd, absolute = True)))
+        if not _RAW and pretty is not None:
+          self.output(pretty)
+        for c in cmd:
+          def convert(e):
+            if isinstance(e, Node):
+              return str(e.path())
             else:
-              return False
-      return True
+              return str(e)
+          c = list(map(convert, c))
+          if _RAW or pretty is None:
+            self.output(command_flatten(c, env))
+          with contextlib.ExitStack() as stack:
+            if out_file:
+              stdout = stack.enter_context(open(out_file, 'w'))
+            else:
+              stdout = None
+            if not run_command(c,
+                           cwd = cwd,
+                           stdout = stdout, stderr = stderr,
+                           env = env):
+              if throw:
+                raise Exception(
+                  'command failed: %s' % command_flatten(c, env))
+              else:
+                return False
+        return True
     return self._run_job(fun)
 
   def output(self, raw, pretty = None):
@@ -2469,6 +2473,7 @@ class ShellCommand(Builder):
     def __init__(self, sources, targets, command,
                  pretty = None,
                  cwd = None,
+                 workdir = None,
                  environment = None,
                  stdout = None):
         """Create a builder that runs command.
@@ -2485,7 +2490,13 @@ class ShellCommand(Builder):
         Builder.__init__(self, sources, targets)
         self.__command = command
         self.__pretty = pretty
-        self.__cwd = cwd
+        if cwd is not None:
+          warnings.warn(
+            'drake.ShellCommand `cwd` argument is deprecated in favor of `workdir`',
+            DeprecationWarning)
+          self.__workdir = cwd
+        else:
+          self.__workdir = workdir
         self.__environment = environment
         self.__stdout = stdout
 
@@ -2494,7 +2505,7 @@ class ShellCommand(Builder):
         """Run the command given at construction time."""
         return self.cmd(self.__pretty or ' '.join(self.command),
                         self.command,
-                        cwd = self.__cwd,
+                        cwd = self.__workdir,
                         env = self.__environment,
                         redirect_stdout = self.__stdout)
 
@@ -3025,10 +3036,17 @@ OPTIONS:
     type = str
     if arg in specs.annotations:
       type = specs.annotations[arg]
-    if type is str:
+    if hasattr(type, '__drake_configure_describe__'):
+      if callable(type.__drake_configure_describe__):
+        type = type.__drake_configure_describe__(type)
+      else:
+        type = type.__drake_configure_describe__
+    elif type is str:
       type = 'string'
     elif type is bool:
       type = 'boolean'
+    elif hasattr(type, '__name__'):
+      type = type.__name__
     sys.stdout.write('\t--%s=%s' % (arg, type))
     if arg in doc:
       print(': %s' % doc[arg])
@@ -3070,8 +3088,8 @@ def add_default_node(node):
 
 
 def run(root, *cfg, **kwcfg):
-  drake = Drake(root)
-  drake.run(*cfg, **kwcfg)
+  with Drake(root) as d:
+    d.run(*cfg, **kwcfg)
 
 
 class WritePermissions:
