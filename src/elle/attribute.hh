@@ -1,6 +1,7 @@
 #pragma once
 
 #include <type_traits>
+#include <utility>
 
 #include <boost/call_traits.hpp>
 #include <boost/preprocessor/seq/cat.hpp>
