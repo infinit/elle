@@ -562,33 +562,37 @@ class _ToolkitType(type):
 
 class Toolkit(metaclass = _ToolkitType):
 
-    def __init__(self):
-        self.includes = []
-        self._hook_object_deps = []
-        self._hook_bin_deps = []
-        self._hook_bin_src = []
+  def __drake_configure_describe__(self):
+    return 'compiler-path'
 
-    @classmethod
-    def default(self):
-        return GccToolkit()
+  def __init__(self):
+      self.includes = []
+      self._hook_object_deps = []
+      self._hook_bin_deps = []
+      self._hook_bin_src = []
 
-    def hook_object_deps_add(self, f):
-        self._hook_object_deps.append(f)
+  @classmethod
+  def default(self):
+      return GccToolkit()
 
-    def hook_object_deps(self):
-        return self._hook_object_deps
+  def hook_object_deps_add(self, f):
+      self._hook_object_deps.append(f)
 
-    def hook_bin_deps_add(self, f):
-        self._hook_bin_deps.append(f)
+  def hook_object_deps(self):
+      return self._hook_object_deps
 
-    def hook_bin_deps(self):
-        return self._hook_bin_deps
+  def hook_bin_deps_add(self, f):
+      self._hook_bin_deps.append(f)
 
-    def hook_bin_src_add(self, f):
-        self._hook_bin_src.append(f)
+  def hook_bin_deps(self):
+      return self._hook_bin_deps
 
-    def hook_bin_src(self):
-        return self._hook_bin_src
+  def hook_bin_src_add(self, f):
+      self._hook_bin_src.append(f)
+
+  def hook_bin_src(self):
+      return self._hook_bin_src
+
 
 class GccToolkit(Toolkit):
 
@@ -2077,6 +2081,9 @@ class PkgConfig():
 class LibraryConfiguration(drake.Configuration):
 
   """Configuration for a classical C/C++ library."""
+
+  def __drake_configure_describe__(self):
+    return '{}-prefix'.format(self.__name__)
 
   def __init__(self, token = None, name = None, prefix = None,
                include_dir = None, libs = None,
