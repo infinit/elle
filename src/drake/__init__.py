@@ -3070,8 +3070,8 @@ def add_default_node(node):
 
 
 def run(root, *cfg, **kwcfg):
-  drake = Drake(root)
-  drake.run(*cfg, **kwcfg)
+  with Drake(root) as d:
+    d.run(*cfg, **kwcfg)
 
 
 class WritePermissions:
