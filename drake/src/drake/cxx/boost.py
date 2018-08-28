@@ -51,8 +51,8 @@ class Boost(drake.Configuration):
     'coroutine': 'coroutine',
     'iostreams': 'iostreams',
     'python': list(itertools.chain(
-      *(('python3{}'.format(v), 'python-3.{}'.format(v)) for v in range(7)),
-      ['python3', 'python']))
+      *(('python3{}'.format(v), 'python-3.{}'.format(v)) for v in range(7)))) \
+      + ['python3', 'python']
     }
 
   def __init__(self,
