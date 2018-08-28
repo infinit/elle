@@ -3025,10 +3025,17 @@ OPTIONS:
     type = str
     if arg in specs.annotations:
       type = specs.annotations[arg]
-    if type is str:
+    if hasattr(type, '__drake_configure_describe__'):
+      if callable(type.__drake_configure_describe__):
+        type = type.__drake_configure_describe__(type)
+      else:
+        type = type.__drake_configure_describe__
+    elif type is str:
       type = 'string'
     elif type is bool:
       type = 'boolean'
+    elif hasattr(type, '__name__'):
+      type = type.__name__
     sys.stdout.write('\t--%s=%s' % (arg, type))
     if arg in doc:
       print(': %s' % doc[arg])
