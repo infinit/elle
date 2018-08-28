@@ -27,6 +27,7 @@ import sys
 import threading
 import time
 import types
+import warnings
 
 from drake.deprecation import deprecated
 from drake.sched import Coroutine, Scheduler
@@ -2469,6 +2470,7 @@ class ShellCommand(Builder):
     def __init__(self, sources, targets, command,
                  pretty = None,
                  cwd = None,
+                 workdir = None,
                  environment = None,
                  stdout = None):
         """Create a builder that runs command.
@@ -2485,7 +2487,13 @@ class ShellCommand(Builder):
         Builder.__init__(self, sources, targets)
         self.__command = command
         self.__pretty = pretty
-        self.__cwd = cwd
+        if cwd is not None:
+          warnings.warn(
+            'drake.ShellCommand `cwd` argument is deprecated in favor of `workdir`',
+            DeprecationWarning)
+          self.__workdir = cwd
+        else:
+          self.__workdir = workdir
         self.__environment = environment
         self.__stdout = stdout
 
@@ -2494,7 +2502,7 @@ class ShellCommand(Builder):
         """Run the command given at construction time."""
         return self.cmd(self.__pretty or ' '.join(self.command),
                         self.command,
-                        cwd = self.__cwd,
+                        cwd = self.__workdir,
                         env = self.__environment,
                         redirect_stdout = self.__stdout)
 
