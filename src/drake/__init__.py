@@ -1988,32 +1988,35 @@ class Builder:
     if not isinstance(cmd, tuple):
       cmd = (cmd,)
     def fun():
-      if not _RAW and pretty is not None:
-        self.output(pretty)
-      for c in cmd:
-        def convert(e):
-          if isinstance(e, Node):
-            return str(e.path())
-          else:
-            return str(e)
-        c = list(map(convert, c))
-        if _RAW or pretty is None:
-          self.output(command_flatten(c, env))
-        with contextlib.ExitStack() as stack:
-          if out_file:
-            stdout = stack.enter_context(open(out_file, 'w'))
-          else:
-            stdout = None
-          if not run_command(c,
-                         cwd = cwd,
-                         stdout = stdout, stderr = stderr,
-                         env = env):
-            if throw:
-              raise Exception(
-                'command failed: %s' % command_flatten(c, env))
+      with contextlib.ExitStack() as ctx:
+        if cwd is not None:
+          ctx.enter_context(CWDPrinter(drake.path_build(cwd, absolute = True)))
+        if not _RAW and pretty is not None:
+          self.output(pretty)
+        for c in cmd:
+          def convert(e):
+            if isinstance(e, Node):
+              return str(e.path())
             else:
-              return False
-      return True
+              return str(e)
+          c = list(map(convert, c))
+          if _RAW or pretty is None:
+            self.output(command_flatten(c, env))
+          with contextlib.ExitStack() as stack:
+            if out_file:
+              stdout = stack.enter_context(open(out_file, 'w'))
+            else:
+              stdout = None
+            if not run_command(c,
+                           cwd = cwd,
+                           stdout = stdout, stderr = stderr,
+                           env = env):
+              if throw:
+                raise Exception(
+                  'command failed: %s' % command_flatten(c, env))
+              else:
+                return False
+        return True
     return self._run_job(fun)
 
   def output(self, raw, pretty = None):
