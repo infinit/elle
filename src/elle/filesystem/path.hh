@@ -4,12 +4,12 @@
 
 #include <boost/filesystem/path.hpp>
 
+#include <elle/filesystem.hh>
+#include <elle/serialization/Serializer.hh>
 #include <elle/serialization/Serializer.hh>
 
 namespace elle
 {
-  namespace fs = boost::filesystem;
-
   /// The base of the version family to which this file belongs.
   /// The base includes the (possible) directory.
   ///

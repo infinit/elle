@@ -131,7 +131,7 @@ namespace elle
                 int size, int rotate, bool append)
     {
       ELLE_LOG_COMPONENT("elle.fstream");
-      auto const version = [&](int i)
+      auto const version = [&](int i) -> fs::path
         {
           return elle::print("{}.{}", base.string(), i);
         };
