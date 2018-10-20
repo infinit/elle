@@ -1,0 +1,42 @@
+import drake
+
+library = None
+
+def configure(cxx_toolkit,
+              cxx_config,
+              boost,
+              elle,
+              reactor,
+              prefix,
+              valgrind,
+              valgrind_tests):
+
+  global library
+
+  local_config = drake.cxx.Config(cxx_config)
+  local_config.add_local_include_path('src')
+  local_config += boost.config()
+
+  ## ------- ##
+  ## Library ##
+  ## ------- ##
+
+  libs = [drake.copy(l, 'lib') for l in [elle.library, reactor.library]]
+  sources = drake.nodes(
+    'src/elle/nbd/Server.cc',
+    'src/elle/nbd/Server.hh',
+  )
+  library = drake.cxx.DynLib('lib/nbd', sources, cxx_toolkit, local_config)
+
+  ## -------- ##
+  ## Binaries ##
+  ## -------- ##
+
+  nbd_file = drake.cxx.Executable(
+    'bin/nbd-file',
+    drake.nodes('bin/nbd-file.cc') + [library] + libs,
+    cxx_toolkit,
+    local_config +
+    boost.config_system() +
+    boost.config_filesystem() +
+    elle.config)
