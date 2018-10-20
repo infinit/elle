@@ -16,6 +16,10 @@ namespace boost
     /// Remove file, logging failures but proceeding anyway.
     void
     try_remove(path const& path);
+
+    /// Get the underlying OS handle for a file.
+    int
+    get_native_handle(std::fstream const& f);
   }
 }
 

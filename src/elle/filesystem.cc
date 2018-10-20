@@ -23,5 +23,18 @@ namespace boost
       if (erc)
         ELLE_WARN("cannot remove file %s: %s", path, erc.message());
     }
+
+    int
+    get_native_handle(std::fstream const& f)
+    {
+      // Hackish, but safe.
+      class filebuf_hack
+        : public std::filebuf
+      {
+      public:
+        int handle() { return _M_file.fd(); }
+      };
+      return static_cast<filebuf_hack&>(*f.rdbuf()).handle();
+    }
   }
 }
