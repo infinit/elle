@@ -49,7 +49,7 @@ namespace elle
     /// Construct an Exit Exception with a given return code.
     ///
     /// @parma return_code The return code.
-    Exit(int return_code);
+    Exit(int return_code = 0);
     ELLE_ATTRIBUTE_R(int, return_code);
   };
 }
