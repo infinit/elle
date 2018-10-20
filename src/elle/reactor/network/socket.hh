@@ -86,6 +86,15 @@ namespace elle
         virtual
         void
         write(elle::ConstWeakBuffer buffer) = 0;
+        /// Write 64 bits to the Socket.
+        void
+        write(uint64_t i);
+        /// Write 32 bits to the Socket.
+        void
+        write(uint32_t i);
+        /// Write 16 bits to the Socket.
+        void
+        write(uint16_t i);
 
       /*-----.
       | Read |
@@ -342,6 +351,7 @@ namespace elle
         /// @Socket::write.
         void
         write(elle::ConstWeakBuffer buffer) override;
+        using Super::write;
       protected:
         void
         _final_flush();

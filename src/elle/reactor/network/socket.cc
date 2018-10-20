@@ -130,6 +130,24 @@ namespace elle
       Socket::~Socket()
       = default;
 
+      void
+      Socket::write(uint64_t i)
+      {
+        this->write(ConstWeakBuffer(&i, sizeof(i)));
+      }
+
+      void
+      Socket::write(uint32_t i)
+      {
+        this->write(ConstWeakBuffer(&i, sizeof(i)));
+      }
+
+      void
+      Socket::write(uint16_t i)
+      {
+        this->write(ConstWeakBuffer(&i, sizeof(i)));
+      }
+
       std::unique_ptr<Socket>
       Socket::create(Protocol protocol,
                      const std::string& hostname,
