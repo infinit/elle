@@ -1431,6 +1431,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     cryptography,
     das,
     elle,
+    nbd,
     protocol,
     reactor,
   ]

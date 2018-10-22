@@ -1,6 +1,11 @@
 import drake
 
+headers = None
 library = None
+rule_build = None
+rule_check = None
+rule_install = None
+rule_tests = None
 
 def configure(cxx_toolkit,
               cxx_config,
@@ -17,6 +22,19 @@ def configure(cxx_toolkit,
   local_config.add_local_include_path('src')
   local_config += boost.config()
 
+  ## ----- ##
+  ## Rules ##
+  ## ----- ##
+
+  global rule_build
+  rule_build = drake.Rule('build')
+  global rule_check
+  rule_check = drake.Rule('check')
+  global rule_install
+  rule_install = drake.Rule('install')
+  global rule_tests
+  rule_tests = drake.Rule('tests')
+
   ## ------- ##
   ## Library ##
   ## ------- ##
@@ -27,6 +45,7 @@ def configure(cxx_toolkit,
     'src/elle/nbd/Server.hh',
   )
   library = drake.cxx.DynLib('lib/nbd', sources, cxx_toolkit, local_config)
+  rule_build << library
 
   ## -------- ##
   ## Binaries ##
@@ -40,3 +59,18 @@ def configure(cxx_toolkit,
     boost.config_system() +
     boost.config_filesystem() +
     elle.config)
+  rule_build << nbd_file
+
+  ## ------- ##
+  ## Install ##
+  ## ------- ##
+
+  global headers
+  headers = (node for node in sources if isinstance(node, drake.cxx.Header))
+
+  if prefix is not False:
+    prefix = drake.Path(prefix)
+    rule_install << drake.install(library, prefix / 'lib', strip_prefix = True)
+    rule_install << drake.install(
+      headers, prefix / 'include', strip_prefix = 'src')
+    rule_install << drake.install(nbd_file, prefix / 'bin', strip_prefix = True)
