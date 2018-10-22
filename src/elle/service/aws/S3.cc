@@ -7,6 +7,7 @@
 #include <elle/format/base64.hh>
 #include <elle/format/hexadecimal.hh>
 #include <elle/log.hh>
+#include <elle/make-vector.hh>
 #include <elle/os/environ.hh>
 #include <elle/print.hh>
 #include <elle/service/aws/Exceptions.hh>

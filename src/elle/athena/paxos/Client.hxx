@@ -6,6 +6,7 @@
 #include <elle/cryptography/random.hh>
 #include <elle/find.hh>
 #include <elle/find_if.hh>
+#include <elle/make-vector.hh>
 #include <elle/max_element.hh>
 #include <elle/reactor/Scope.hh>
 #include <elle/reactor/for-each.hh>
