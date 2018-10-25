@@ -56,6 +56,7 @@ As mentioned earlier, Elle is composed of a set of sub-libraries, designed to ea
 - [athena](src/elle/athena): Byzantine environment algorithms (Paxos)
 - service/[aws](src/elle/service/aws): *reactorified* AWS API wrapper
 - service/[dropbox](src/elle/service/dropbox): *reactorified* Dropbox API wrapper
+- [nbd](nbd): A Network Block Device implementation.
 
 ## How to build Elle (or parts of Elle)
 

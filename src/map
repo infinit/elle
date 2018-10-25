@@ -1,10 +1,12 @@
 #pragma once
 
+// Keep those dependencies to the strict minimum, this header is often injected
+// very high.
+
 #include <ostream>
 #include_next <map>
 #include <vector>
 
-#include <elle/make-vector.hh>
 #include <elle/printf-fwd.hh>
 
 namespace std
@@ -41,8 +43,11 @@ namespace elle
   keys(std::map<K, Args...> const& m)
     -> std::vector<K>
   {
-    return make_vector(m,
-                       [](const auto& p) { return p.first; });
+    auto res = std::vector<K>();
+    res.reserve(m.size());
+    for (auto const& e: m)
+      res.emplace_back(e.first);
+    return res;
   }
 }
 

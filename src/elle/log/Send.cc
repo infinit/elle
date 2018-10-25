@@ -15,6 +15,7 @@
 #include <elle/log/Send.hh>
 #include <elle/log/SysLogger.hh>
 #include <elle/log/TextLogger.hh>
+#include <elle/make-vector.hh>
 #include <elle/os/environ.hh>
 #include <elle/printf.hh>
 #include <elle/system/getpid.hh>

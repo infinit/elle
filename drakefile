@@ -1403,6 +1403,17 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     valgrind = valgrind,
     valgrind_tests = valgrind_tests,
   )
+  nbd = drake.include(
+    'nbd',
+    cxx_toolkit = cxx_toolkit,
+    cxx_config = cxx_config,
+    boost = boost,
+    elle = elle,
+    reactor = reactor,
+    prefix = prefix,
+    valgrind = valgrind,
+    valgrind_tests = valgrind_tests,
+  )
 
   ## ------- ##
   ## Install ##
@@ -1420,6 +1431,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     cryptography,
     das,
     elle,
+    nbd,
     protocol,
     reactor,
   ]
