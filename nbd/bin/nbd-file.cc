@@ -12,6 +12,7 @@ ELLE_DAS_SYMBOL(file);
 ELLE_DAS_SYMBOL(help);
 ELLE_DAS_SYMBOL(interface);
 ELLE_DAS_SYMBOL(port);
+ELLE_DAS_SYMBOL(port_file);
 
 ELLE_LOG_COMPONENT("nbd-file");
 
@@ -70,7 +71,10 @@ public:
 
 static
 void
-_nbd_file(elle::fs::path path, std::string interface, int port)
+_nbd_file(elle::fs::path path,
+          std::string interface,
+          int port,
+          boost::optional<std::string> port_file)
 {
   auto addr = [&]
               {
@@ -85,13 +89,27 @@ _nbd_file(elle::fs::path path, std::string interface, int port)
                 }
               }();
   elle::nbd::Server server(addr, port);
+  if (port_file)
+    server.listening().connect(
+      [path = *port_file] (int port)
+      {
+        elle::fs::fstream f(path, std::ios::out);
+        if (!f)
+          elle::err("unable to open port file: {}", path);
+        elle::print(f, "{}\n", port);
+        if (f.fail())
+          elle::err("unable to write port to {}", path);
+      });
   FileDevice d(path);
   server.add(d);
   server.run();
 }
 
 auto const nbd_file = elle::das::named::function(
-  _nbd_file, file, interface = "0.0.0.0", port = 10809);
+  _nbd_file, file,
+  interface = "0.0.0.0",
+  port = 10809,
+  port_file = boost::none);
 
 int main(int argc, char** argv)
 {
@@ -105,6 +123,7 @@ int main(int argc, char** argv)
         {"file", {'f', "File to serve"}},
         {"interface", {'i', "Interface to serve on"}},
         {"port", {'p', "Port to serve on"}},
+        {"port_file", {'o', "File to write the port we listen on to"}},
       };
       elle::das::cli::call(
         proto,

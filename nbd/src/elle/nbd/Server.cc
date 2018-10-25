@@ -166,6 +166,7 @@ namespace elle
     Server::run()
     {
       this->_server.listen(this->_host, this->_port);
+      this->_listening(this->_server.port());
       elle::With<elle::reactor::Scope>() <<
         [&] (elle::reactor::Scope& scope)
         {

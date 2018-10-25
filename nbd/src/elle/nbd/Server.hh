@@ -1,5 +1,7 @@
 #pragma once
 
+#include <boost/signals2.hpp>
+
 #include <elle/attribute.hh>
 #include <elle/reactor/network/TCPServer.hh>
 
@@ -107,6 +109,7 @@ namespace elle
       void
       run();
       /// Signal that we are extended on the given port.
+      ELLE_ATTRIBUTE_RX(boost::signals2::signal<void (int)>, listening);
     private:
       Device&
       _options_haggling(reactor::network::Socket& sock, bool zeroes);
