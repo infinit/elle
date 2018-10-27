@@ -22,6 +22,7 @@ def configure(cxx_toolkit,
               boost,
               prefix = '/usr',
               valgrind = None,
+              valgrind_suppr = None,
               valgrind_tests = True):
 
   global lib_dynamic, lib_static
@@ -33,8 +34,9 @@ def configure(cxx_toolkit,
   ## ----------------- ##
 
   config = elle.config + das.config + reactor.config + cryptography.config
+  config.add_local_include_path('src')
   local_config = drake.cxx.Config(config) + cxx_config
-  lib_path = '../../../lib'
+  lib_path = drake.Path('lib')
   local_config.warnings.parentheses = False
 
   ## ------- ##
@@ -47,21 +49,22 @@ def configure(cxx_toolkit,
     local_config += boost.config_system(link = False)
     local_config.library_add(
       drake.copy(boost.system_dynamic, lib_path, strip_prefix = True))
-  sources = drake.nodes(
-    'LamportAge.hh',
-    'paxos/Client.cc',
-    'paxos/Client.hh',
-    'paxos/Client.hxx',
-    'paxos/Server.hh',
-    'paxos/Server.hxx',
-  )
+  sources = drake.nodes(*(
+    drake.Path('src/elle/athena') / p for p in [
+      'LamportAge.hh',
+      'paxos/Client.cc',
+      'paxos/Client.hh',
+      'paxos/Client.hxx',
+      'paxos/Server.hh',
+      'paxos/Server.hxx',
+      ]))
   dependencies = [elle.library, reactor.library, cryptography.library]
   lib_dynamic = drake.cxx.DynLib(
-    lib_path + '/elle_athena',
+    lib_path / '/elle_athena',
     sources + dependencies,
     cxx_toolkit, local_config)
   lib_static = drake.cxx.StaticLib(
-    lib_path + '/elle_athena',
+    lib_path / '/elle_athena',
     sources + dependencies,
     cxx_toolkit, local_config)
   rule_build = drake.Rule('build')
@@ -78,8 +81,7 @@ def configure(cxx_toolkit,
 
   rule_tests = drake.Rule('tests')
   rule_check = drake.TestSuite('check')
-  elle_tests_path = drake.Path('../../../tests')
-  tests_path = elle_tests_path / 'elle/athena'
+  tests_path = drake.Path('tests')
 
   tests = [
     'paxos',
@@ -87,7 +89,6 @@ def configure(cxx_toolkit,
   ]
 
   local_config_tests = drake.cxx.Config(local_config)
-  local_config_tests.add_local_include_path(elle_tests_path)
   local_config_tests.enable_debug_symbols()
   test_libs = copy.copy(dependencies) + [library]
   local_config_tests += boost.config_test(
@@ -105,8 +106,8 @@ def configure(cxx_toolkit,
   if boost.prefer_shared:
     test_libs += list(map(lambda x: drake.copy(x, lib_path, strip_prefix = True),
                           [boost.timer_dynamic, boost.test_dynamic, boost.thread_dynamic, boost.filesystem_dynamic]))
-  local_config_tests.lib_path_runtime(
-    drake.Path('../../..') / library.path().dirname())
+  # local_config_tests.lib_path_runtime(
+  #   drake.Path('../../..') / library.path().dirname())
   env = {
     'BOOST_TEST_COLOR_OUTPUT': '1',
     'BOOST_TEST_LOG_LEVEL': 'all',
@@ -116,8 +117,8 @@ def configure(cxx_toolkit,
     env.update({'Path': drake.path_build(lib_path)})
   for name in tests:
     test = drake.cxx.Executable(
-      '%s/%s' % (tests_path, name),
-      [drake.node('%s/%s.cc' % (tests_path, name))] + test_libs,
+      tests_path / name,
+      [drake.node(tests_path / '{}.cc'.format(name))] + test_libs,
       cxx_toolkit,
       local_config_tests)
     rule_tests << test
@@ -125,8 +126,8 @@ def configure(cxx_toolkit,
       runner = drake.valgrind.ValgrindRunner(
         exe = test,
         valgrind_args = [
-          '--suppressions=%s' % drake.path_source('../../../valgrind.suppr'),
-        ],
+          '--suppressions={}'.format(valgrind_suppr.path()),
+        ] if valgrind_suppr is not None else [],
         env = env,
       )
     else:

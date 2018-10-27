@@ -119,6 +119,8 @@ def configure(cxx_toolkit = None,
   else:
     valgrind = None
   set_valgrind(valgrind)
+  valgrind_suppr = drake.node('valgrind.supp')
+
   config = drake.cxx.Config()
   config.add_local_include_path('src')
   cxx_config = drake.cxx.Config(cxx_config)
@@ -1360,7 +1362,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     codesign = codesign,
   )
   athena = drake.include(
-    'src/elle/athena',
+    'athena',
     cxx_toolkit = cxx_toolkit,
     cxx_config = cxx_config,
     elle = elle,
@@ -1370,6 +1372,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     boost = boost,
     prefix = prefix,
     valgrind = valgrind,
+    valgrind_suppr = valgrind_suppr,
     valgrind_tests = valgrind_tests,
   )
   dropbox = drake.include(
