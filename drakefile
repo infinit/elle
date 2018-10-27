@@ -1530,12 +1530,12 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
           libs = [lib] + list(filter(
             lambda lib: not isinstance(lib, drake.cxx.StaticLib),
             lib.dependencies_recursive))
-          libs += list(chain(*map(symlink_versionned_libs, libs)))
-          yield from drake.install(
-            libs,
-            prefix / 'lib',
-            strip_prefix = True,
-            follow_symlinks = False)
+          for lib in drake.install(libs,
+                                   prefix / 'lib',
+                                   strip_prefix = True,
+                                   follow_symlinks = False):
+            yield lib
+            yield from symlink_versionned_libs(lib)
 
   if prefix:
     rule_install << install(prefix)
