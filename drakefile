@@ -1311,7 +1311,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     openssl_lib_ssl = openssl_lib_ssl,
   )
   cryptography = drake.include(
-    'src/elle/cryptography',
+    'cryptography',
     cxx_toolkit = cxx_toolkit,
     cxx_config = cxx_config,
     openssl_config = openssl_config,
@@ -1580,9 +1580,9 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
   examples = drake.nodes(
     *[
       'examples/%s.cc' % x for x in
-      list(chain(examples, elle.examples,
-                 [x[0] for x in cryptography.examples], das.examples))
+      list(chain(examples, elle.examples, das.examples))
     ])
+  examples += [drake.copy(s, drake.Path('examples')) for s in cryptography.examples_sources]
 
   with drake.templating.Context(content = {
       'prefix': '/usr/elle',
