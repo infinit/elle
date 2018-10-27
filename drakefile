@@ -1106,36 +1106,41 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
                           self.__command,
                           self.__cwd):
             return False
-        if cxx_toolkit.os is drake.os.macos:
-          for target in self.__targets:
-            if isinstance(target, drake.cxx.DynLib):
+        def patch_lib(l):
+          if cxx_toolkit.os is drake.os.macos:
+            cmd = ['install_name_tool',
+                   '-id', '@rpath/%s' % target.name().basename(),
+                    str(target.path())]
+            if not self.cmd('Fix id of %s' % target.path(), cmd):
+              return False
+            if cxx_toolkit.kind is drake.cxx.GccToolkit.Kind.clang:
+              # Use our libc++.
               cmd = ['install_name_tool',
-                     '-id', '@rpath/%s' % target.name().basename(),
-                      str(target.path())]
-              if not self.cmd('Fix id of %s' % target.path(), cmd):
+                     '-change', '/usr/lib/libc++.1.dylib',
+                     '@rpath/libc++.1.dylib',
+                     str(target)]
+              if not self.cmd('Use our libc++ for %s' % target, cmd):
                 return False
-              if cxx_toolkit.kind is drake.cxx.GccToolkit.Kind.clang:
-                # Use our libc++.
-                cmd = ['install_name_tool',
-                       '-change', '/usr/lib/libc++.1.dylib',
-                       '@rpath/libc++.1.dylib',
-                       str(target)]
-                if not self.cmd('Use our libc++ for %s' % target, cmd):
-                  return False
-              for dep in (t for t in self.__targets if isinstance(t, drake.cxx.DynLib)):
-                cmd = [
-                  'install_name_tool',
-                  '-change',
-                  '%s' % dep.name().basename(),
-                  '@rpath/%s' % dep.name().basename(),
-                  str(target.path()),
-                ]
-                if not self.cmd('Fix %s path for %s' % (target, dep), cmd):
-                  return False
+            for dep in (t for t in self.__targets if isinstance(t, drake.cxx.DynLib)):
+              cmd = [
+                'install_name_tool',
+                '-change',
+                '%s' % dep.name().basename(),
+                '@rpath/%s' % dep.name().basename(),
+                str(target.path()),
+              ]
+              self.cmd('Fix %s path for %s' % (target, dep), cmd, throw = True)
+          else:
+            self.cmd('Fix rpath of {}'.format(l),
+                     cxx_toolkit.rpath_set_command(l.path(), drake.Path.dot),
+                     throw = True)
+        [patch_lib(l)
+         for l in self.__targets if isinstance(l, drake.cxx.DynLib)]
         return True
 
       def hash(self):
         return self.__command
+
     boost_patched_sources = [
       drake.node('boost/%s/%s' % (boost_basename, f))
         for f in boost_attributes['patched_sources']
