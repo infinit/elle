@@ -3345,7 +3345,7 @@ def __copy_stripped(source, to, strip_prefix, builder, post_process, follow_syml
     res = builder(source, path, post_process, follow_symlinks).target
     if res is source:
       raise Exception(
-        'copy source and destination are the same: %s', res)
+        'copy source and destination are the same: {}'.format(res))
     for dep in source.dependencies:
       if not dep.name_absolute().absolute():
         node = __copy_stripped(dep, to, strip_prefix, builder, post_process, follow_symlinks)
