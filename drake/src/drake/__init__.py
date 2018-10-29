@@ -1603,6 +1603,9 @@ class VirtualNode(BaseNode):
         path = drake.Path(path._Path__path, False, True)
         BaseNode.__init__(self, path)
 
+drake_debug_node = os.environ.get('DRAKE_DEBUG_NODE')
+if drake_debug_node is not None:
+  drake_debug_node = drake.Path(drake_debug_node)
 
 class Node(BaseNode):
 
@@ -1616,6 +1619,10 @@ class Node(BaseNode):
     self.__mtime = None
     self.__path = None
     self.__path_absolute = None
+    if path is drake_debug_node:
+      print('{} was defined from:'.format(self), file = sys.stderr)
+      import traceback
+      traceback.print_stack(file = sys.stderr)
 
   def clone(self, path):
         """Clone of this node, with an other path."""
