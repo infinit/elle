@@ -3614,8 +3614,8 @@ class Configuration:
             return rel
     if len(res) > 0:
       return res
-    raise Exception('Unable to find %s in %s.' % \
-                    (what, pretty_listing(where)))
+    raise RuntimeError('Unable to find %s in %s.' % \
+                       (what, pretty_listing(where)))
 
   def _search_all(self, what, where):
     return self.__search(what, where, all = True)
@@ -3633,8 +3633,8 @@ class Configuration:
       except Exception:
         pass
     if len(res) == 0:
-      raise Exception('Unable to find %s in %s.' % \
-                      (pretty_listing(whats), pretty_listing(where)))
+      raise RuntimeError('Unable to find %s in %s.' % \
+                         (pretty_listing(whats), pretty_listing(where)))
     if not all:
       assert prefer is not None
       for prefix, what in res:
