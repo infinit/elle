@@ -1,0 +1,24 @@
+#!/usr/bin/env python3
+
+import os, sys
+sys.path.insert(
+    0,
+    os.path.abspath(
+        os.path.join(os.path.dirname(__file__), '../../drake/src')
+    )
+)
+
+import drake
+import drake.cxx
+import drake.valgrind
+
+try:
+  valgrind = drake.valgrind.Valgrind()
+except:
+  valgrind = None
+
+cfg = drake.cxx.Config()
+cfg.enable_debug_symbols()
+
+with drake.Drake('../..') as d:
+  d.run(cxx_config = cfg, valgrind = valgrind)

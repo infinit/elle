@@ -3781,9 +3781,9 @@ class Version:
       elif isinstance(major, str) and \
          minor is None and subminor is None:
         try:
-          self.__init__(*(int(c) for c in major.split('.')))
-        except Exception as e:
-          raise Exception('invalid version: %r', major) from e
+          self.__init__(*(int(c) for c in major.split('.', 3)))
+        except ValueError as e:
+          raise RuntimeError('invalid version: %r' % major) from e
       else:
         assert major is not None or minor is None and subminor is None
         assert minor is not None or subminor is None
