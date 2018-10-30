@@ -4,6 +4,7 @@ import drake.cxx
 import drake.docker
 import drake.cxx.boost
 import os
+import shutil
 import sys
 
 from itertools import chain
@@ -138,7 +139,8 @@ def configure(cxx_toolkit = None,
 
   if python3 is not False:
     if python_version is None:
-      python_version = (drake.Version(3, 6),
+      python_version = (drake.Version(3, 7),
+                        drake.Version(3, 6),
                         drake.Version(3, 5),
                         drake.Version(3, 4),
                         drake.Version(3, 3),
@@ -156,10 +158,19 @@ def configure(cxx_toolkit = None,
         if pkg.exists:
           python3 = pkg.prefix
           break
+    # on some distros (looking at you, OS X), and depending on how python
+    # was installed, the header files might be in an exotic `include` dir;
+    # but that include dir will be two levels up from where the main
+    # binary lives
+    py_bin_path = os.path.abspath(os.path.realpath(shutil.which('python3')))
+    # the bin is in root_path/bin/
+    py_root_path = os.path.dirname(os.path.dirname(py_bin_path))
     include_dir = list(itertools.chain(
-      ('include',),
-      *(('include/python%s' % v,
-         'include/python%sm' % v) for v in python_version)))
+      *(list(itertools.chain(
+        ('%sinclude' % include_root_dir,),
+        *(('%sinclude/python%s' % (include_root_dir, v),
+           '%sinclude/python%sm' % (include_root_dir, v)) for v in python_version)))
+      for include_root_dir in ('', py_root_path + os.sep))))
     python3 = drake.cxx.find_library(
       'pyconfig.h',
       prefix = python3,

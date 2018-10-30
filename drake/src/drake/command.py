@@ -47,7 +47,7 @@ class Command:
         self.__version = self._parse_version(output)
       except RuntimeError as e:
         raise RuntimeError('Unable to parse %s version from %r: %s' % \
-                        (self.__class__.name, output, e)) from e
+                           (self.__class__.name, output, e)) from e
 
   def _get_version(self):
     return subprocess.check_output(
