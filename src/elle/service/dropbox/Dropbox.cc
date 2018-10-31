@@ -13,6 +13,7 @@ ELLE_LOG_COMPONENT("elle.services.dropbox.Dropbox");
 
 namespace bfs = boost::filesystem;
 
+static
 std::string
 to_lower(bfs::path const& p)
 {
