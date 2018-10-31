@@ -1,0 +1,10 @@
+import drake
+
+B = None
+
+def configure():
+
+  global B
+  B = drake.include('B')
+
+  drake.copy(B.src, 'lib', strip_prefix = True)

@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+
+import drake
+import drake.cxx
+
+from functools import partial
+from utils import *
+
+def check_files(folder, expected):
+  import os
+  s = set()
+  for path, folders, files in os.walk(str(folder)):
+    for f in files:
+      s.add(path + '/' + f)
+  assertEq(s, expected)
+
+with Drake() as d:
+
+  with open('a.cc', 'w') as f:
+    f.write('int a() { return 1; }')
+  with open('b.cc', 'w') as f:
+    f.write('int a(); int b() { return a() + 1; }')
+  with open('main.cc', 'w') as f:
+    f.write('int b(); int main() { return b() == 2; }')
+  cxx_config = drake.cxx.Config()
+  cxx_toolkit = drake.cxx.Toolkit()
+
+
+  StaticLib, Executable = (
+    partial(f, tk = cxx_toolkit, cfg = cxx_config)
+    for f in [drake.cxx.StaticLib, drake.cxx.Executable])
+  a = StaticLib('a', drake.nodes('a.cc'))
+  b = StaticLib('b', [drake.node('b.cc'), a])
+  exe = Executable('exe', [drake.node('main.cc'), b])
+  exe.build()

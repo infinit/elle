@@ -54,7 +54,7 @@ class DockerFile(drake.Node):
       for node in nodes:
         self.add(node, path)
     else:
-      self.__adds.setdefault(drake.Path(path), []).append(nodes)
+      self.__adds.setdefault(drake.Path(path), set()).add(nodes)
 
   def cmd(self, cmd):
     if isinstance(cmd, list):

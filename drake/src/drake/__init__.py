@@ -39,8 +39,8 @@ from drake.utils import property_memoize, pretty_listing
 
 # The default timeout value for shell commands, in seconds.
 TIMEOUT = int(_OS.getenv('DRAKE_TIMEOUT', '3600'))
-PRETTY = 'DRAKE_PRETTY' in os.environ
-PROFILE = 'DRAKE_PROFILE' in os.environ
+PRETTY = 'DRAKE_PRETTY' in _OS.environ
+PROFILE = 'DRAKE_PROFILE' in _OS.environ
 
 
 def _scheduled():
@@ -287,7 +287,7 @@ class Drake:
         if name in specs.annotations:
           value = kwcfg[name]
           t = specs.annotations[name]
-          if t is bool:
+          if t is bool and isinstance(value, str):
             if value.lower() in ['true', 'yes']:
               value = True
             elif value.lower() in ['false', 'no']:
@@ -2007,10 +2007,16 @@ class Builder:
               stdout = stack.enter_context(open(out_file, 'w'))
             else:
               stdout = None
+            if env is not None:
+              os_env = _OS.environ.copy()
+              os_env.update(env)
+              my_env = os_env
+            else:
+              my_env = env
             if not run_command(c,
                            cwd = cwd,
                            stdout = stdout, stderr = stderr,
-                           env = env):
+                           env = my_env):
               if throw:
                 raise Exception(
                   'command failed: %s' % command_flatten(c, env))
@@ -2243,7 +2249,7 @@ class Builder:
             logger.log('drake.Builder',
                        drake.log.LogLevel.debug,
                        '%s: everything is up to date', self)
-      except Exception as e:
+      except BaseException as e:
         logger.log('drake.Builder',
                    drake.log.LogLevel.trace,
                    '%s: exception: %s', self, e)
@@ -3321,7 +3327,7 @@ def __copy(sources, to, strip_prefix, builder, post_process, follow_symlinks):
 
 __copy_stripped_cache = {}
 def __copy_stripped(source, to, strip_prefix, builder, post_process, follow_symlinks):
-  key = (source, to, strip_prefix, builder)
+  key = (source, to, Drake.current.prefix, strip_prefix, builder)
   cache = __copy_stripped_cache.get(key)
   if cache is not None:
     return cache
@@ -3486,7 +3492,7 @@ class WriteBuilder(Builder):
     Hello world!
     """
 
-    def __init__(self, input, nodes):
+    def __init__(self, input, nodes, permissions = None):
         """Create a WriteBuilder.
 
         input -- Text or bytes.
@@ -3500,17 +3506,24 @@ class WriteBuilder(Builder):
         for node in nodes:
             assert isinstance(node, Node)
         Builder.__init__(self, [], nodes)
+        self.__permissions = permissions
 
     def execute(self):
         """Create all the non-existent target nodes as empty files."""
         pretty = 'Write' if len(self.__input) else 'Touch'
-        self.output('%s %s' % (pretty, ', '.join(map(str, self.targets()))))
+        self.output(
+          '%s %s' % (pretty, ', '.join(map(str, self.targets()))))
         for node in self.targets():
-            assert isinstance(node, Node)
-            node.path().touch()
-            with WritePermissions(node):
-              with open(str(node.path()), 'wb') as f:
-                f.write(self.__input)
+          path = str(node.path())
+          assert isinstance(node, Node)
+          node.path().touch()
+          with WritePermissions(node):
+            with open(path, 'wb', stat.S_IWUSR) as f:
+              f.write(self.__input)
+          if self.__permissions is not None:
+            _OS.chmod(
+              path,
+              _OS.stat(path).st_mode | self.__permissions)
         return True
 
 def write(body, path):
@@ -3731,12 +3744,15 @@ class Range:
     def __contains__(self, val):
       """Whether val is included in self."""
       if isinstance(val, Range):
-        return val.inf() in self
+        return val.inf() in self and val.sup() in self
       sup = (self.__sup is None or val <= self.__sup)
       return val >= self.__inf and sup
 
     def __eq__(self, rhs):
+      if isinstance(rhs, Range):
         return self.__inf == rhs.__inf and self.__sup == rhs.__sup
+      else:
+        return self.__inf == self.__sup == rhs
 
     def __ge__(self, rhs):
         return self.__inf >= rhs.__sup
@@ -3936,6 +3952,10 @@ class Runner(Builder):
                runs = 1,
                name = None,
                timeout = TIMEOUT,
+               out = None,
+               err = None,
+               status = None,
+               bench = None
   ):
     '''
     name -- the basename for the output files, defaults to exe
@@ -3950,12 +3970,11 @@ class Runner(Builder):
     # The basename for the output files, e.g. `tests/overlay-kelips`.
     # Used by `_node` to forge output Nodes such as
     # `tests/overlay-kelips.out`.
-    self.__basename = (self.__exe.name_relative.dirname()
-                       / (name or self.__exe.path().basename()))
-    self.__out = self._node('out')
-    self.__err = self._node('err')
-    self.__status = self._node('status')
-    self.__bench = self._node('bench')
+    self.__basename = Runner.basename(exe, name)
+    self.__out = out or self._node('out')
+    self.__err = err or self._node('err')
+    self.__status = status or self._node('status')
+    self.__bench = bench or self._node('bench')
     self.__sources = [exe] + sources
     self.__env = env
     self.__timeout = timeout
@@ -3978,6 +3997,10 @@ class Runner(Builder):
     super().__init__(
       self.__sources,
       [self.__out, self.__err, self.__status, self.__bench] + (targets or []))
+
+  @staticmethod
+  def basename(exe, name = None):
+    return exe.name_relative.dirname() / (name or exe.path().basename())
 
   @property
   def status(self):
@@ -4113,8 +4136,10 @@ class Runner(Builder):
     return str(self.__name)
 
   def hash(self):
-    return self.command
-
+    return {
+      'command': self.command,
+      'env': self.__env,
+    }
 
 class TestSuite(Rule):
 
@@ -4228,6 +4253,7 @@ class ArchiveExtractor(Builder):
   def __init__(self, tarball, targets = [],
                patches = None, patch_dir = drake.Path('.')):
     """ Constructor
+        @param targets: list of paths (not nodes)
         @param patches: list of (patch_node, strip_level)
     """
     self.__tarball = tarball

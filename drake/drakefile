@@ -73,13 +73,19 @@ def configure(prefix = '.'):
     'base/change-dynamic-dependency',
     'base/command-line',
     'base/dependency',
+    'base/dynamic-termination',
     'base/failure',
     'base/failure-cmd',
     'base/interrupt-dynamic-dependency',
     'base/mtime',
+    'base/range',
+    'base/runner-env',
     'base/symlink',
     'base/termination',
     'base/termination-keep-successful',
+    'base/version',
+    'cxx/copied-libraries',
+    'cxx/chained-static-libraries',
     'doctest',
     'git/base',
     'sched',
@@ -92,13 +98,14 @@ def configure(prefix = '.'):
     test.dependencies_add(sources)
     runner = drake.Runner(
       test,
-      env = {'PYTHONPATH': PYTHONPATH},
+      env = {'PYTHONPATH': '{}:{}'.format(PYTHONPATH, drake.path_source('tests'))},
     )
     runner.reporting = drake.Runner.Reporting.on_failure
     check << runner.status
   # Old style tests
 
   tests = [
+    'base/copy',
     'base/deps-dyn',
     'base/no-builder-to-make',
     'base/path',
