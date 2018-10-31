@@ -287,7 +287,7 @@ class Drake:
         if name in specs.annotations:
           value = kwcfg[name]
           t = specs.annotations[name]
-          if t is bool:
+          if t is bool and isinstance(value, str):
             if value.lower() in ['true', 'yes']:
               value = True
             elif value.lower() in ['false', 'no']:
