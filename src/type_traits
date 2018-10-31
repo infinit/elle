@@ -22,6 +22,10 @@ namespace std
   template <typename T>
   using remove_cv_reference_t = typename remove_cv_reference<T>::type;
 
+  /// C++20 proposal
+  template <typename T>
+  using remove_cvref_t = typename remove_cv_reference<T>::type;
+
   template <typename T>
   struct identity
   {
