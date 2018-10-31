@@ -28,10 +28,6 @@ namespace elle
       , _set{set}
     {}
 
-    Defaulted(Defaulted const&) = default;
-
-    Defaulted(Defaulted&&) = default;
-
     Defaulted&
     operator=(Defaulted const&) = default;
 
@@ -43,12 +39,6 @@ namespace elle
       this->_value = std::forward<U>(u);
       this->_set = true;
       return *this;
-    }
-
-    /// Whether explicitly defined by the user.
-    operator bool() const
-    {
-      return this->_set;
     }
 
     /// The value, readonly.
@@ -72,12 +62,18 @@ namespace elle
       return &this->_value;
     }
 
+    /// Conversion to the value.
+    operator T const&() const
+    {
+      return this->_value;
+    }
+
   private:
     /// The value.
     ELLE_ATTRIBUTE(T, value);
     /// Whether a value was specified (as opposed to remaining equal
     /// to the initial value).
-    bool _set = false;
+    ELLE_ATTRIBUTE_R(bool, set);
   };
 
   template <typename T>
@@ -85,7 +81,7 @@ namespace elle
   operator <<(std::ostream& out, Defaulted<T> const& t)
   {
     elle::print(out, "%s", t.get());
-    if (repr(out) && !t)
+    if (repr(out) && !t.set())
       elle::print(out, " (default)");
     return out;
   }
