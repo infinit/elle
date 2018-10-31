@@ -4187,6 +4187,7 @@ class HTTPDownload(Builder):
       return False
     if self.__fingerprint is not None:
       import hashlib
+      # FIXME: we should get a more secure hashing algo here
       d = hashlib.md5()
       d.update(content)
       h = d.hexdigest()

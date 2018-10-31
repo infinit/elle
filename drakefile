@@ -532,13 +532,13 @@ def configure(cxx_toolkit = None,
   ## Curl ##
   ## ---- ##
 
-  curl_basename = 'curl-7.51.0'
+  curl_basename = 'curl-7.61.1'
   curl_tarball = drake.node('curl/%s.tar.gz' % curl_basename)
   curl_prefix = drake.Path('curl')
   curl_build = curl_prefix / curl_basename
   curl_url = 'http://curl.haxx.se/download/%s.tar.gz' % curl_basename
   drake.HTTPDownload(curl_url, curl_tarball,
-                     fingerprint = '490e19a8ccd1f4a244b50338a0eb9456')
+                     fingerprint = '4762f41ef0dba751d1c7a3060a1c6ec6')
   drake.TarballExtractor(
     curl_tarball,
     targets = ['%s/%s' % (curl_basename, f) for f in (
@@ -623,14 +623,14 @@ def configure(cxx_toolkit = None,
       str(drake.path_build(curl_prefix / 'lib', absolute = True))
   curl_dependency_libs = curl_openssl_libs + curl_zlib_libs
   curl_headers = [
-    'include/curl/typecheck-gcc.h',
-    'include/curl/stdcheaders.h',
-    'include/curl/easy.h',
-    'include/curl/mprintf.h',
     'include/curl/curl.h',
     'include/curl/curlver.h',
+    'include/curl/easy.h',
+    'include/curl/mprintf.h',
     'include/curl/multi.h',
-    'include/curl/curlrules.h'
+    'include/curl/stdcheaders.h',
+    'include/curl/system.h',
+    'include/curl/typecheck-gcc.h'
   ]
   if cxx_toolkit.os is drake.os.ios and archs:
     curl_arch_libs = []
@@ -1293,6 +1293,8 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     'src/vector',
     type = drake.cxx.Header
   )
+  
+  return # TODO wkpo
 
   ## -------------- ##
   ## Subdirectories ##
