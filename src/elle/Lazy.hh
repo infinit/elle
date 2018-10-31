@@ -21,7 +21,7 @@ namespace elle
     /// Self type.
     using Self = Lazy<Value>;
     /// Function type to generate our value.
-    using Lambda = std::function<auto () -> Value>;
+    using Lambda = std::function<Value ()>;
 
   /*-------------.
   | Construction |
@@ -67,8 +67,8 @@ namespace elle
   ///
   /// @return Lazy(@a f).
   template <typename F>
-  auto
-  lazy(F&& f) -> Lazy<decltype(f())>;
+  Lazy<decltype(std::declval<F>()())>
+  lazy(F&& f);
 }
 
 #include <elle/Lazy.hxx>

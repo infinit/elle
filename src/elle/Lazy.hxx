@@ -45,8 +45,8 @@ namespace elle
   }
 
   template <typename F>
-  auto
-  lazy(F&& f) -> Lazy<decltype(f())>
+  Lazy<decltype(std::declval<F>()())>
+  lazy(F&& f)
   {
     return Lazy<decltype(f())>(std::forward<F>(f));
   }
