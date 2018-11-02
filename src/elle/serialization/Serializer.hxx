@@ -196,7 +196,7 @@ namespace elle
 
         friend
         std::ostream&
-        operator <<(std::ostream& s, current_name& c)
+        operator <<(std::ostream& s, current_name const& c)
         {
           auto name = c._serializer.current_name();
           if (!name.empty())
