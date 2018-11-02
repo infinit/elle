@@ -18,4 +18,9 @@ RUN git checkout _build
 # compiling elle itself, thus using the build cache much more
 # efficiently)
 
+# always nice to have drake tell us what it's doing
+ENV DRAKE_DEBUG=1
+ENV DRAKE_DEBUG_BACKTRACE=1
+ENV DRAKE_RAW=1
+
 RUN cd _build/linux64 && ./drake //build
