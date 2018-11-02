@@ -22,4 +22,4 @@ if [[ "$ELLE_BUILD_USE_VENV" ]]; then
   fi
 fi
 
-exec "$ARCH_DIR/run"
+exec "$ARCH_DIR/run" "$@"

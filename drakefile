@@ -1293,8 +1293,6 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
     'src/vector',
     type = drake.cxx.Header
   )
-  
-  return # TODO wkpo
 
   ## -------------- ##
   ## Subdirectories ##
