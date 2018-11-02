@@ -46,9 +46,8 @@ serialize()
   auto t = elle::das::make_tuple(foo = 3, bar = std::string("lol"));
   auto s = elle::serialization::json::serialize(t);
   auto j = elle::json::read(s.string());
-  auto & o = boost::any_cast<elle::json::Object&>(j);
-  BOOST_CHECK(boost::any_cast<int64_t>(o["foo"]) == 3);
-  BOOST_CHECK(boost::any_cast<std::string>(o["bar"]) == "lol");
+  BOOST_CHECK(j["foo"] == 3);
+  BOOST_CHECK(j["bar"] == "lol");
   auto d = elle::serialization::json::deserialize<decltype(t)>(s);
   BOOST_CHECK(d.foo == t.foo);
   BOOST_CHECK(d.bar == t.bar);

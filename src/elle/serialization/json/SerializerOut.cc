@@ -43,7 +43,7 @@ namespace elle
 
       SerializerOut::~SerializerOut() noexcept(false)
       {
-        ELLE_TRACE_SCOPE("%s: write JSON %s", this, this->output());
+        ELLE_TRACE_SCOPE("{}: write JSON", this);
         ELLE_DUMP("%s", elle::json::pretty_print(this->_json));
         if (this->_pretty)
           this->output() << elle::json::pretty_print(this->_json);
@@ -58,45 +58,40 @@ namespace elle
       bool
       SerializerOut::_enter(std::string const& name)
       {
-        ELLE_ASSERT(!this->_current.empty());
         auto& current = *this->_current.back();
-        if (current.empty())
+        if (current.is_null())
         {
           ELLE_DEBUG("create current object");
-          current = elle::json::Object();
+          current = nlohmann::json::object();
         }
-        if (current.type() == typeid(elle::json::Object))
+        if (current.is_object())
         {
           ELLE_DEBUG_SCOPE("insert key \"%s\"", name);
-          auto& object = boost::any_cast<elle::json::Object&>(current);
           // FIXME: hackish way to not serialize version twice when
           // serialize_forward is used.
-          if (name == ".version" && find(object, name))
+          if (name == ".version" && find(current, name))
             return false;
           else
           {
-            auto it = object.emplace(name, elle::json::Json());
-            this->_current.push_back(&it.first->second);
+            auto it = current.emplace(name, elle::json::Json());
+            this->_current.push_back(&it.first.value());
             return true;
           }
         }
-        else if (current.type() == typeid(elle::json::Array))
+        else if (current.is_array())
         {
           ELLE_DEBUG_SCOPE("insert array element");
-          auto& array = boost::any_cast<elle::json::Array&>(current);
-          array.emplace_back();
-          this->_current.push_back(&array.back());
+          current.emplace_back();
+          this->_current.push_back(&current.back());
           return true;
         }
         else
-          ELLE_ABORT("cannot serialize a composite and a fundamental object "
-                     "in key %s", name);
+          elle::err("cannot serialize key {} in JSON object {}", name, current);
       }
 
       void
       SerializerOut::_leave(std::string const& name)
       {
-        ELLE_ASSERT(!this->_current.empty());
         this->_current.pop_back();
       }
 
@@ -104,10 +99,9 @@ namespace elle
       SerializerOut::_serialize_array(int size,
                                       std::function<void ()> const& f)
       {
-        ELLE_ASSERT(!this->_current.empty());
         auto& current = *this->_current.back();
-        ELLE_ASSERT(current.empty());
-        current = elle::json::Array();
+        ELLE_ASSERT(current.is_null());
+        current = nlohmann::json::array();
         f();
       }
 
@@ -296,8 +290,8 @@ namespace elle
         if (filled)
           f();
         // Create an empty object if held options are null.
-        else if (this->_current.back()->type() == typeid(void))
-          *this->_current.back() = elle::json::Object();
+        else if (this->_current.back()->is_null())
+          *this->_current.back() = nlohmann::json::object();
       }
 
       void
@@ -308,14 +302,13 @@ namespace elle
           f();
         else
         {
-          *this->_current.back() = elle::json::NullType();
+          *this->_current.back() = nullptr;
           if (!this->_names.empty())
           {
             ELLE_ASSERT_GT(signed(this->_current.size()), 1);
             auto& last = *this->_current[this->_current.size() - 2];
-            if (last.type() == typeid(elle::json::Object))
-              ELLE_ENFORCE(boost::any_cast<elle::json::Object&>(last).erase(
-                             this->_names.back()));
+            if (last.is_object())
+              ELLE_ENFORCE(last.erase(this->_names.back()));
           }
         }
       }
@@ -323,7 +316,6 @@ namespace elle
       elle::json::Json&
       SerializerOut::_get_current()
       {
-        ELLE_ASSERT(!this->_current.empty());
         auto& current = *this->_current.back();
         if (!current.empty())
         {

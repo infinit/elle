@@ -10,18 +10,16 @@ namespace elle
       , _field(field)
     {}
 
-    TypeError::TypeError(std::string const& field,
-                         std::type_info const& expected,
-                         std::type_info const& effective)
+    TypeError::TypeError(std::string field,
+                         std::string expected,
+                         std::string effective)
       : Error(
         elle::sprintf(
           "invalid type for key \"%s\", expected a %s got a %s",
-          field,
-          elle::demangle(expected.name()),
-          elle::demangle(effective.name())))
-      , _field(field)
-      , _expected(&expected)
-      , _effective(&effective)
+          field, expected, effective))
+      , _field(std::move(field))
+      , _expected(std::move(expected))
+      , _effective(std::move(effective))
     {}
 
     namespace json

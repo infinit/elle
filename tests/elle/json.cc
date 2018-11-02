@@ -12,7 +12,7 @@ read_int()
 {
   std::stringstream input("42");
   auto json = elle::json::read(input);
-  BOOST_CHECK_EQUAL(boost::any_cast<int64_t>(json), 42);
+  BOOST_CHECK(json == 42);
 }
 
 static
@@ -21,7 +21,7 @@ read_long()
 {
   std::stringstream input("9437196296");
   auto json = elle::json::read(input);
-  BOOST_CHECK_EQUAL(boost::any_cast<int64_t>(json), 9437196296);
+  BOOST_CHECK(json == 9437196296);
 }
 
 template <typename T>
@@ -63,12 +63,12 @@ void
 read_object()
 {
   std::stringstream input("{\"pastis\": 51, \"Paul\": \"Ricard\"}");
-  auto object = boost::any_cast<elle::json::Object>(elle::json::read(input));
+  auto object = elle::json::read(input);
   BOOST_CHECK_EQUAL(object.size(), 2);
   BOOST_CHECK(object.find("pastis") != object.end());
   BOOST_CHECK(object.find("Paul") != object.end());
-  BOOST_CHECK_EQUAL(boost::any_cast<int64_t>(object["pastis"]), 51);
-  BOOST_CHECK_EQUAL(boost::any_cast<std::string>(object["Paul"]), "Ricard");
+  BOOST_CHECK(object["pastis"] == 51);
+  BOOST_CHECK(object["Paul"] == "Ricard");
 }
 
 static
@@ -77,8 +77,8 @@ null()
 {
   std::stringstream input("null");
   auto json = elle::json::read(input);
-  boost::any_cast<elle::json::NullType>(json);
-  BOOST_CHECK_EQUAL(elle::json::pretty_print(json), "null");
+  BOOST_CHECK(json.is_null());
+  BOOST_CHECK(elle::json::pretty_print(json) == "null");
 }
 
 static
@@ -86,11 +86,10 @@ void
 read_utf_8()
 {
   std::stringstream input("{\"utf-8\": \"Средня Азиdoc\"}");
-  auto object = boost::any_cast<elle::json::Object>(elle::json::read(input));
+  auto object = elle::json::read(input);
   BOOST_CHECK_EQUAL(object.size(), 1);
   BOOST_CHECK(object.find("utf-8") != object.end());
-  BOOST_CHECK_EQUAL(boost::any_cast<std::string>(object["utf-8"]),
-                    "Средня Азиdoc");
+  BOOST_CHECK(object["utf-8"] == "Средня Азиdoc");
 }
 
 static
@@ -99,11 +98,10 @@ read_escaped_utf_8()
 {
   std::stringstream input(
     "{\"utf-8\": \"\\u0421\\u0440\\u0435\\u0434\\u043d\\u044f \\u0410\\u0437\\u0438doc\"}");
-  auto object = boost::any_cast<elle::json::Object>(elle::json::read(input));
+  auto object = elle::json::read(input);
   BOOST_CHECK_EQUAL(object.size(), 1);
   BOOST_CHECK(object.find("utf-8") != object.end());
-  BOOST_CHECK_EQUAL(boost::any_cast<std::string>(object["utf-8"]),
-                    "Средня Азиdoc");
+  BOOST_CHECK(object["utf-8"] == "Средня Азиdoc");
 }
 
 static
@@ -111,7 +109,7 @@ void
 write_utf_8()
 {
   std::stringstream output;
-  elle::json::Object input;
+  elle::json::Json input;
   input["utf-8"] = std::string("Средня Азиdoc");
   elle::json::write(output, input);
   BOOST_CHECK_EQUAL(output.str(), "{\"utf-8\":\"Средня Азиdoc\"}\n");
@@ -121,14 +119,40 @@ static
 void
 pretty_printer_utf_8()
 {
-  elle::json::Object object;
+  elle::json::Json object;
   std::string name = "Bôb";
   object["utf-8"] = name;
   auto pretty_str = elle::json::pretty_print(object);
   std::stringstream stream(pretty_str);
-  auto read_object =
-    boost::any_cast<elle::json::Object>(elle::json::read(stream));
-  BOOST_CHECK_EQUAL(boost::any_cast<std::string>(read_object["utf-8"]), name);
+  auto read_object = elle::json::read(stream);
+  BOOST_CHECK(read_object["utf-8"] == name);
+}
+
+static
+void
+pretty_print_stream_states()
+{
+  std::stringstream s;
+  BOOST_CHECK(s.width() == 0);
+  elle::json::write(s, R"({"i" : 0})"_json, false, true);
+  BOOST_CHECK(s.width() == 0);
+}
+
+static
+void
+multiple_values()
+{
+  std::stringstream input("{\"i\": 0}{\"i\": 1}");
+  BOOST_CHECK(elle::json::read(input)["i"] == 0);
+  BOOST_CHECK(elle::json::read(input)["i"] == 1);
+}
+
+static
+void
+leftover()
+{
+  std::string input("{\"i\": 0}{");
+  BOOST_CHECK_THROW(elle::json::read(input), elle::Error);
 }
 
 ELLE_TEST_SUITE()
@@ -145,4 +169,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(read_escaped_utf_8), 0, timeout);
   suite.add(BOOST_TEST_CASE(write_utf_8), 0, timeout);
   suite.add(BOOST_TEST_CASE(pretty_printer_utf_8), 0, timeout);
+  suite.add(BOOST_TEST_CASE(pretty_print_stream_states), 0, timeout);
+  suite.add(BOOST_TEST_CASE(multiple_values), 0, timeout);
+  suite.add(BOOST_TEST_CASE(leftover), 0, timeout);
 }

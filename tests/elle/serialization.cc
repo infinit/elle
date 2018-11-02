@@ -29,6 +29,7 @@ namespace
       typename Format::SerializerOut output(stream);
       output.serialize("value", value);
     }
+    ELLE_LOG("serialized: {}", elle::ConstWeakBuffer(stream.str()));
     {
       T res;
       typename Format::SerializerIn input(stream);
@@ -529,7 +530,7 @@ unordered_map_string_legacy()
                 [\"screenshot_modal_20141104\",\"b\"],\
                 [\"drip_ghost-reminder_template\",\"control\"],\
                 [\"drip_delight-sender_template\",\"a\"]\
-                ],}";
+                ]}";
   auto input = elle::serialization::json::SerializerIn{stream};
   BOOST_CHECK_EQUAL(reference,
                     input.deserialize<Map>("features"));
@@ -1192,9 +1193,9 @@ json_type_error()
   }
   catch (elle::serialization::TypeError const& e)
   {
-    BOOST_CHECK_EQUAL(e.field(), "int");
-    BOOST_CHECK(*e.expected() == typeid(int64_t));
-    BOOST_CHECK(*e.effective() == typeid(bool));
+    BOOST_TEST(e.field() == "int");
+    BOOST_TEST(e.expected() == "integer");
+    BOOST_TEST(e.effective() == "boolean");
     return;
   }
   BOOST_FAIL("type error expected");
@@ -1267,7 +1268,7 @@ json_overflows()
     "  \"ulong_min\": " + std::to_string(lim<unsigned long>::min()) + ","
     "  \"ulong_max\": " + std::to_string(lim<unsigned long>::max()) + ","
     "  \"size_t_min\": " + std::to_string(lim<size_t>::min()) + ","
-    "  \"size_t_max\": " + std::to_string(lim<size_t>::max()) + ","
+    "  \"size_t_max\": " + std::to_string(lim<size_t>::max()) +
     "}"
     );
   auto input = typename elle::serialization::json::SerializerIn(stream);
@@ -1349,9 +1350,7 @@ json_iso8601()
       output.serialize("date", date);
     }
     auto json = elle::json::read(stream);
-    auto object = boost::any_cast<elle::json::Object>(json);
-    auto str = boost::any_cast<std::string>(object.at("date"));
-    //BOOST_CHECK_EQUAL(str, "2014-11-05T11:36:10");
+    BOOST_CHECK(json.at("date") == "2014-11-05T11:36:10");
   }
 }
 
@@ -1442,8 +1441,8 @@ json_optionals()
       serializer.serialize("value", o);
     }
     auto json = elle::json::read(stream);
-    BOOST_REQUIRE(json.type() == typeid(elle::json::Object));
-    BOOST_CHECK_EQUAL(boost::any_cast<elle::json::Object&>(json).size(), 0);
+    BOOST_REQUIRE(json.is_object());
+    BOOST_CHECK_EQUAL(json.size(), 0);
   }
 }
 

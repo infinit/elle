@@ -105,9 +105,8 @@ namespace elle
         ELLE_ATTRIBUTE(elle::json::Json, json);
         ELLE_ATTRIBUTE(std::vector<elle::json::Json*>, current);
       private:
-        template <typename T, typename ... Alternatives>
-        T&
-        _check_type();
+        elle::json::Json&
+        _check_type(elle::json::Type t);
         template <typename T>
         void
         _serialize_int(T& v);
