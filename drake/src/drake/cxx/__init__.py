@@ -613,7 +613,6 @@ class GccToolkit(Toolkit):
     Toolkit.__init__(self)
     self.os = os
     self.__include_path = None
-    self.__recursive_linkage = False
     self.__compiler_cxx = compiler or 'g++'
     self.__compiler_wrappers = compiler_wrappers
     self.__patchelf = drake.Path('patchelf')
@@ -759,9 +758,6 @@ class GccToolkit(Toolkit):
             (p.returncode, code, stderr))
     return stdout.decode("utf-8")
 
-  def enable_recursive_linkage(self, doit = True):
-      self.__recursive_linkage = doit
-
   def object_extension(self):
 
       return 'o'
@@ -869,15 +865,19 @@ class GccToolkit(Toolkit):
 
   def __libraries_flags(self, cfg, libraries, cmd):
     for lib in libraries:
-      if isinstance(lib, (StaticLib, DynLib)):
+      if isinstance(lib, DynLib):
         cmd.append(lib.path())
+      elif isinstance(lib, StaticLib):
+        rec = [str(d.path()) for d in lib.dependencies_recursive
+               if isinstance(d, (StaticLib, DynLib))]
+        if lib.cyclic_dependencies and rec:
+          cmd.append('-Wl,-(')
+        cmd.append(lib.path())
+        cmd += rec
+        if lib.cyclic_dependencies and rec:
+          cmd.append('-Wl,-)')
       else:
         raise Exception('cannot link a %s' % type(lib))
-      if isinstance(lib, StaticLib):
-        cmd += [str(d.path()) for d in lib.dependencies_recursive
-                if isinstance(d, (StaticLib, DynLib))]
-    if self.__recursive_linkage:
-      cmd.append('-Wl,-(')
     for lib in cfg.libs_dynamic:
       cmd.append('-l%s' % lib)
     # XXX Should refer to libraries with path on MacOS.
@@ -902,8 +902,6 @@ class GccToolkit(Toolkit):
                 break
           if not found:
             raise Exception('cannot find static version of %s' % lib)
-    if self.__recursive_linkage:
-      cmd.append('-Wl,-)')
 
   def __compute_rpaths(self, exe, cfg, objs):
     rpath = sched.OrderedSet(cfg._Config__rpath)
@@ -962,7 +960,6 @@ class GccToolkit(Toolkit):
               else:
                 pre.append(e)
           cmd = pre + ['-Wl,--whole-archive'] + ar + ['-Wl,--no-whole-archive'] + post
-
       return cmd
 
   def dynlink(self, cfg, objs, exe):
@@ -1534,147 +1531,124 @@ class Compiler(_Compiler):
   def hash(self):
     return self.command
 
-# FIXME: a lot of code duplication with DynLibLinker!
+
 class Linker(Builder):
+
+  def __init__(self, target, tk, cfg, strip = False):
+    self.__target = target
+    self.toolkit = tk
+    self.config = Config(cfg)
+    Builder.__init__(
+      self,
+      chain(target.sources,
+            target.dynamic_libraries,
+            self.__fetch_static(target.static_libraries)),
+      [target])
+    self.__strip = strip
+
+  def __fetch_static(self, libs):
+    for l in libs:
+      yield l
+      yield from self.__fetch_static(l.static_libraries)
+
+  @property
+  def command(self):
+    objects = chain(
+      self.__target.sources,
+      self.__target.dynamic_libraries,
+      self.__fetch_static(self.__target.static_libraries),
+      self.sources_dynamic())
+    cmd = self.toolkit_cmd(self.config, list(objects), self.__target)
+    cmd = (cmd,)
+    if self.__strip:
+      cmd = cmd + (
+        ['%sstrip' % self.toolkit.prefix, self.__target.path()],)
+    if self.config.use_local_libcxx and self.toolkit.os == drake.os.macos:
+      cmd = cmd + (['install_name_tool',
+                   '-change', '/usr/lib/libc++.1.dylib',
+                   '@rpath/libc++.1.dylib',
+                   self.__target.path()
+                   ],)
+    return cmd
+
+  def execute(self):
+    return self.cmd('Link %s' % self.__target, self.command)
+
+  def dependencies(self):
+    for hook in self.toolkit.hook_bin_deps():
+      hook(self)
+
+  def hash(self):
+    return self.command
+
+  def __repr__(self):
+    return '{}({})'.format(self.__class__.__name__, self.__target)
+
+  def __str__(self):
+    return '{} of {}'.format(self.__class__.name, self.__target)
+
+
+class ExecutableLinker(Linker):
 
   name = 'executable linkage'
 
-  def hash(self):
-    return self.command
-
-  def dependencies(self):
-    for hook in self.toolkit.hook_bin_deps():
-      hook(self)
-
-  def __init__(self, exe, tk, cfg, strip = False):
-    # FIXME: factor with DynLibLinker
-    self.exe = exe
-    self.toolkit = tk
-    self.config = drake.cxx.Config(cfg)
-    Builder.__init__(self, chain(exe.sources, exe.dynamic_libraries),
-                     [exe])
-    self.__strip = strip
-
-  def execute(self):
-    return self.cmd('Link %s' % self.exe, self.command)
-
   @property
-  def command(self):
-    objects = self.exe.sources + list(self.exe.dynamic_libraries)
-    cmd = self.toolkit.link(
-      self.config,
-      objects + list(sorted(self.sources_dynamic())),
-      self.exe)
-    cmd = (cmd,)
-    if self.__strip:
-      cmd = cmd + (['%sstrip' % self.toolkit.prefix, self.exe.path()],)
-    if self.config.use_local_libcxx and self.toolkit.os == drake.os.macos:
-      cmd = cmd + (['install_name_tool',
-                   '-change', '/usr/lib/libc++.1.dylib',
-                   '@rpath/libc++.1.dylib',
-                   self.exe.path()
-                   ],)
-    return cmd
-
-  def __repr__(self):
-    return 'Linker(%s)' % self.exe
-
-  def __str__(self):
-    return 'Linker(%s)' % self.exe
+  def toolkit_cmd(self):
+    return self.toolkit.link
 
 
-class DynLibLinker(Builder):
+class DynLibLinker(Linker):
 
   name = 'dynamic library linkage'
 
+  @property
+  def toolkit_cmd(self):
+    return self.toolkit.dynlink
+
+
+class StaticLibLinker(Builder):
+
+  name = 'static library archiving'
+
   def dependencies(self):
     for hook in self.toolkit.hook_bin_deps():
       hook(self)
 
-  def __init__(self, lib, tk, cfg, strip = False):
-    self.lib = lib
-    self.toolkit = tk
-    self.config = Config(cfg)
+  def __init__(self, objs, lib, tk, cfg):
+    self.objs = objs
     self.__library = lib
-    # This duplicates self.__sources, but preserves the order.
-    self.__objects = lib.sources
-    self.__dynamic_libraries = lib.dynamic_libraries
-    Builder.__init__(self,
-                     chain(self.__objects, lib.dynamic_libraries),
-                     [lib])
-    self.__strip = strip
+    for o in self.objs:
+      if isinstance(o, StaticLib):
+        lib.dependency_add(o)
+    self.toolkit = tk
+    self.config = cfg
+    super().__init__(objs, [lib], None)
 
   def execute(self):
-    return self.cmd('Link %s' % self.lib, self.command)
+    # Our 'ar' command apends files to the target, so we must rm it first
+    path = self.__library.path()
+    try:
+      os.remove(str(path))
+    except:
+      pass
+    # Make sure the destination dir exists.
+    os.makedirs(str(path.dirname()), exist_ok = True)
+    return self.cmd('Archive %s' % self.__library, self.command)
+
+  @property_memoize
+  def command(self):
+    return self.toolkit.archive(
+      self.objs + list(self.sources_dynamic()), self.__library)
 
   @property
-  def command(self):
-    objects = self.__objects + list(self.__dynamic_libraries)
-    cmd = self.toolkit.dynlink(
-      self.config,
-      objects + list(self.sources_dynamic()),
-      self.lib)
-    cmd = (cmd,)
-    if self.__strip:
-      cmd = cmd + (['%sstrip' % self.toolkit.prefix, self.lib.path()],)
-    if self.config.use_local_libcxx and self.toolkit.os == drake.os.macos:
-      cmd = cmd + (['install_name_tool',
-                   '-change', '/usr/lib/libc++.1.dylib',
-                   '@rpath/libc++.1.dylib',
-                   self.lib.path()
-                   ],)
-    return cmd
-
-  def __repr__(self):
-    return 'Linker for %s' % self.lib
+  def library(self):
+    return self.__library
 
   def hash(self):
     return self.command
 
   def __str__(self):
-    return 'dynamic linkage of %s' % self.lib
-
-
-class StaticLibLinker(ShellCommand):
-
-    name = 'static library archiving'
-
-    def dependencies(self):
-      for hook in self.toolkit.hook_bin_deps():
-        hook(self)
-
-    def __init__(self, objs, lib, tk, cfg):
-      self.objs = objs
-      self.__library = lib
-      for o in self.objs:
-        if isinstance(o, StaticLib):
-          lib.dependency_add(o)
-      self.toolkit = tk
-      self.config = cfg
-      super().__init__(objs, [lib], None)
-
-    def execute(self):
-      # Our 'ar' command apends files to the target, so we must rm it first
-      try:
-        os.remove(str(self.__library.path()))
-      except:
-        pass
-      return self.cmd('Archive %s' % self.__library, self.command)
-
-    @property_memoize
-    def command(self):
-      return self.toolkit.archive(
-        self.objs + list(self.sources_dynamic()), self.__library)
-
-    @property
-    def library(self):
-      return self.__library
-
-    def hash(self):
-      return self.command
-
-    def __str__(self):
-      return 'StaticLibLinker(%s)' % self.__library
+    return 'StaticLibLinker(%s)' % self.__library
 
 
 class Source(Node):
@@ -1779,6 +1753,7 @@ class Binary(Node):
     self.cfg = cfg
     Node.__init__(self, path)
     self.__dynamic_libraries = sched.OrderedSet()
+    self.__static_libraries = sched.OrderedSet()
     self.sources = None
     if sources is not None:
       self.sources = []
@@ -1786,6 +1761,8 @@ class Binary(Node):
         self.src_add(source, self.tk, self.cfg)
       for lib in cfg.libraries:
         self.src_add(lib, self.tk, self.cfg)
+    for lib in chain(self.dynamic_libraries):
+      self.dependency_add(lib)
 
   def clone(self, path):
     return self.__class__(path)
@@ -1794,6 +1771,10 @@ class Binary(Node):
   def dynamic_libraries(self):
     return self.__dynamic_libraries
 
+  @property
+  def static_libraries(self):
+    return self.__static_libraries
+
   def src_add(self, source, tk, cfg):
     pointee = source
     while isinstance(pointee, drake.Symlink):
@@ -1801,7 +1782,7 @@ class Binary(Node):
     if isinstance(pointee, Object):
       self.sources.append(source)
     elif isinstance(pointee, StaticLib):
-      self.sources.append(source)
+      self.__static_libraries.add(source)
     elif isinstance(pointee, Source):
       # FIXME: factor
       p = source.name_relative.with_extension('o')
@@ -1834,22 +1815,23 @@ class Binary(Node):
 
   def dependency_add(self, dependency):
     if dependency not in self.dependencies:
-      if isinstance(dependency, DynLib):
+      if isinstance(dependency, (DynLib, Module)):
         self.__dynamic_libraries.add(dependency)
+      if isinstance(dependency, StaticLib):
+        self.__static_libraries.add(dependency)
       super().dependency_add(dependency)
 
 class Library(Binary):
   pass
 
 class DynLib(Library):
+
   def __init__(self, path, sources = None, tk = None, cfg = None,
                preserve_filename = False, strip = False):
     path = Path(path)
     if not preserve_filename and tk is not None:
       path = tk.libname_dyn(path, cfg)
     Binary.__init__(self, path, sources, tk, cfg)
-    for lib in self.dynamic_libraries:
-      self.dependency_add(lib)
     if tk is not None and cfg is not None and sources is not None:
       DynLibLinker(self, self.tk, self.cfg, strip = strip)
 
@@ -1878,8 +1860,6 @@ class Module(Library):
     if not preserve_filename and tk is not None:
       path = tk.libname_module(cfg, path)
     Binary.__init__(self, path, sources, tk, cfg)
-    for lib in self.dynamic_libraries:
-      self.dependency_add(lib)
     if tk is not None and cfg is not None and sources is not None:
       DynLibLinker(self, self.tk, self.cfg)
 
@@ -1892,7 +1872,19 @@ class Module(Library):
 
 class StaticLib(Library):
 
-  def __init__(self, path, sources = None, tk = None, cfg = None):
+  def __init__(self,
+               path,
+               sources = None,
+               tk = None,
+               cfg = None,
+               cyclic_dependencies = False):
+    '''A static library node.
+
+    cyclic_dependencies -- Whether static dependencies have
+                           cyclic symbol dependencies, requiring
+                           multi-pass link.
+    '''
+    self.__cyclic_dependencies = cyclic_dependencies
     if tk is not None:
       path = tk.libname_static(cfg, path)
     Binary.__init__(self, path, sources, tk, cfg)
@@ -1900,6 +1892,10 @@ class StaticLib(Library):
       assert tk is not None
       assert cfg is not None
       StaticLibLinker(self.sources, self, self.tk, self.cfg)
+
+  @property
+  def cyclic_dependencies(self):
+    return self.__cyclic_dependencies
 
 
 Node.extensions['a'] = StaticLib
@@ -1912,10 +1908,8 @@ class Executable(Binary):
     if tk is not None:
       path = tk.exename(cfg, path)
     Binary.__init__(self, path, sources, tk, cfg)
-    for lib in self.dynamic_libraries:
-      self.dependency_add(lib)
     if sources is not None:
-      Linker(self, self.tk, self.cfg, strip = strip)
+      ExecutableLinker(self, self.tk, self.cfg, strip = strip)
 
 
 def deps_merge(nodes):

@@ -610,10 +610,11 @@ namespace elle
   {
     auto const saver = boost::io::ios_all_saver(stream);
     auto const max_length = 20;
+    auto const printable = [] (char c) { return ::isprint(c) || c == '\n'; };
     auto const hex =
       stream.flags() & std::ios::hex
       || buffer.empty()
-      || float(boost::count_if(buffer, ::isprint)) / buffer.size() < 0.9;
+      || float(boost::count_if(buffer, printable)) / buffer.size() < 0.9;
     if (is_fixed(stream) && signed(buffer.size()) > max_length)
     {
       put(stream, buffer.range(0, max_length / 2), hex);

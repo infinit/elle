@@ -92,18 +92,18 @@ namespace elle
         using swallow = int[];
         (void) swallow
         {
-          (this->set(std::forward<Args>(args)), 0)...
+          (this->set<std::remove_cvref_t<Args>>(std::forward<Args>(args)), 0)...
         };
       }
 
       /// Register @a value to the context.
       ///
       /// @param value The value to register.
-      template <typename T>
+      template <typename T, typename A>
       void
-      set(T&& value)
+      set(A&& value)
       {
-        this->_value[type_info<T>()] = std::forward<T>(value);
+        this->_value[type_info<T>()] = std::forward<A>(value);
       }
 
       /// Get @a value from the context.

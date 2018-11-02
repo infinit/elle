@@ -58,7 +58,7 @@ class CoroutineDone(Exception):
 class CoroutineFrozen(Exception):
   pass
 
-class Terminate(Exception):
+class Terminate(BaseException):
 
   def __init__(self, coroutine):
     self.__coroutine = coroutine
@@ -96,6 +96,8 @@ class Scope:
     try:
       exception = None
       if value is not None:
+        logger.log('drake.scheduler', drake.log.LogLevel.trace,
+                   '%s: terminate on exception %s' % (self, value))
         self.terminate()
       else:
         while True:

@@ -7,7 +7,7 @@ namespace
   int
   f(boost::optional<int> env, elle::Defaulted<int> x = elle::defaulted(42))
   {
-    if (x || !env)
+    if (x.set() || !env)
       return x.get();
     else
       return env.get();

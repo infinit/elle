@@ -160,10 +160,17 @@ namespace elle
 
       struct Option
       {
-        Option(char short_name = 0,
+        Option(char short_name,
                std::string help = "",
                bool positional = false)
           : short_name(short_name)
+          , help(std::move(help))
+          , positional(positional)
+        {}
+
+        Option(std::string help = "",
+               bool positional = false)
+          : short_name(0)
           , help(std::move(help))
           , positional(positional)
         {}

@@ -1,0 +1,7 @@
+import drake
+
+def configure():
+
+  A = drake.include('A')
+  src = drake.copy(A.B.src, 'lib', strip_prefix = True)
+  assert(src.path() ==  'lib/src.txt')

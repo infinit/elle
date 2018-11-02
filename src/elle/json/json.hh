@@ -8,6 +8,7 @@
 #include <boost/any.hpp>
 
 #include <elle/compiler.hh>
+#include <elle/sfinae.hh>
 
 namespace elle
 {
@@ -20,6 +21,12 @@ namespace elle
     using Integer = int64_t;
     using Real = double;
     using String = std::string;
+
+
+    class Json;
+
+    ELLE_STATIC_PREDICATE(is_jsonifiable,
+                          decltype(Json(std::declval<T const&>())));
 
     class Json
       : public boost::any
@@ -42,6 +49,9 @@ namespace elle
       Json(std::string v);
       Json(std::unordered_map<std::string, Json> v);
       Json(std::vector<Json> v);
+      template <typename T>
+      Json(std::vector<T> v,
+           std::enable_if_t<is_jsonifiable<T>(), bool> = false);
       template <typename T>
       explicit
       Json(T&& v);

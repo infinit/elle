@@ -1,0 +1,42 @@
+#!/usr/bin/env python3
+
+'''Check that terminating a build while within a dynamic dependency
+build is not considered as that dependency having failed, thus
+retriggering the parent object build.'''
+
+import drake
+from utils import *
+
+
+sem = drake.sched.Semaphore()
+
+class LockedBuilder(drake.Builder):
+
+  def execute(self):
+    sem.lock()
+
+beacon = False
+
+class Builder(drake.Builder):
+
+  def execute(self):
+    global beacon
+    beacon = True
+
+
+with Drake(jobs = 2, kill_builders_on_failure = True) as d:
+  root = drake.node('root')
+  fail = drake.node('fail')
+  interrupted = drake.node('interrupted')
+  dyn = drake.node('dyn')
+  LockedBuilder([], [dyn])
+  Builder([], [interrupted]).add_dynsrc('test', drake.node('dyn'))
+  drake.Builder([interrupted, fail], [root])
+  failer = FailBuilder([], [fail])
+  try:
+    root.build()
+  except drake.Builder.Failed as e:
+    assert e.builder is failer
+    assert not beacon
+  else:
+    raise Exception('should have failed')

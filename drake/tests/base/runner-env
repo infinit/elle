@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+
+'''Check Runner.env works, check global environment is preserved,
+check builder is re-run if the environment changes.'''
+
+import drake
+import stat
+import tempfile
+
+from utils import *
+
+class CommandBuilder(drake.Builder):
+
+  def __init__(self, exe, target):
+    super().__init__([exe], [target])
+    self.__exe = exe
+    self.__target = target
+
+  def execute(self):
+    self.cmd(pretty = 'Execute {}'.format(self.__exe),
+             cmd = ['./{}'.format(self.__exe)],
+             env = {'BAZ': 'quux'}, throw = True)
+    self.__target.path().touch()
+    return True
+
+os.environ.update({'FOO': 'bar'})
+os.environ.update({'BAZ': 'nope'})
+
+def configure(env):
+  exe = drake.node('test')
+  drake.WriteBuilder(
+    '''#!/bin/sh -e
+test $FOO = bar
+test $BAZ = quux''',
+    exe,
+    permissions = stat.S_IXUSR)
+  r = drake.Runner(exe, env = env)
+  return exe, r
+
+with tempfile.TemporaryDirectory() as wd:
+
+  with Drake(wd) as d:
+    exe, r = configure({'BAZ': 'quux'})
+    r.status.build()
+    beacon = drake.node('beacon')
+    r = CommandBuilder(exe, beacon)
+    beacon.build()
+
+  with Drake(wd) as d:
+    exe, r = configure({'BAZ': 'delta charlie delta'})
+    try:
+      r.status.build()
+    except drake.Builder.Failed:
+      pass
+    else:
+      raise Exception('builder should have rerun and failed')
