@@ -50,6 +50,7 @@ namespace elle
                   }
                 }())
       {
+        ELLE_DUMP("{}: parsed JSON: {}", *this, this->_json);
         this->_current.push_back(&this->_json);
       }
 
@@ -64,7 +65,7 @@ namespace elle
       void
       SerializerIn::_serialize(int64_t& v)
       {
-        v = this->_check_type<int64_t>();
+        v = this->_check_type(elle::json::Type::number_integer);
       }
 
       void
@@ -148,13 +149,13 @@ namespace elle
       void
       SerializerIn::_serialize(double& v)
       {
-        v = this->_check_type<double, int64_t>();
+        v = this->_check_type(elle::json::Type::number_float);
       }
 
       void
       SerializerIn::_serialize(bool& v)
       {
-        v = this->_check_type<bool>();
+        v = this->_check_type(elle::json::Type::boolean);
       }
 
       void
@@ -162,7 +163,7 @@ namespace elle
                                             bool,
                                             std::function<void ()> const& f)
       {
-        auto& object = this->_check_type<elle::json::Object>();
+        auto& object = this->_check_type(elle::json::Type::object);
         auto it = object.find(name);
         if (it != object.end())
           f();
@@ -174,22 +175,23 @@ namespace elle
       SerializerIn::_serialize_option(bool,
                                       std::function<void ()> const& f)
       {
-        if (this->_current.back()->type() != typeid(elle::json::NullType))
-          f();
-        else
+        if (this->_current.back()->is_null())
           ELLE_DEBUG("skip option as JSON value is null");
+        else
+          f();
       }
 
       void
       SerializerIn::_serialize(std::string& v)
       {
-        v = this->_check_type<std::string>();
+        v = this->_check_type(elle::json::Type::string);
       }
 
       void
       SerializerIn::_serialize(elle::Buffer& buffer)
       {
-        auto& str = this->_check_type<std::string>();
+        // FIXME: don't copy
+        std::string str = this->_check_type(elle::json::Type::string);
         std::stringstream encoded(str);
         elle::format::base64::Stream base64(encoded);
         {
@@ -203,7 +205,7 @@ namespace elle
       void
       SerializerIn::_serialize(boost::posix_time::ptime& time)
       {
-        auto& str = this->_check_type<std::string>();
+        auto& str = this->_check_type(elle::json::Type::string);
         try
         {
           time = iso8601_to_posix_time(str);
@@ -219,14 +221,14 @@ namespace elle
                                              std::int64_t& num,
                                              std::int64_t& denom)
       {
-        auto const repr = this->_check_type<std::string>();
+        auto const repr = this->_check_type(elle::json::Type::string);
         elle::chrono::duration_parse(repr, ticks, num, denom);
       }
 
       bool
       SerializerIn::_enter(std::string const& name)
       {
-        auto& object = this->_check_type<elle::json::Object>();
+        auto& object = this->_check_type(elle::json::Type::object);
         auto it = object.find(name);
         if (it == object.end())
           if (this->_partial)
@@ -235,7 +237,7 @@ namespace elle
             throw MissingKey(name);
         else
         {
-          this->_current.push_back(&it->second);
+          this->_current.push_back(&*it);
           return true;
         }
       }
@@ -251,7 +253,7 @@ namespace elle
         int size,
         std::function<void ()> const& serialize_element)
       {
-        auto& array = this->_check_type<elle::json::Array>();
+        auto& array = this->_check_type(elle::json::Type::array);
         for (auto& elt: array)
         {
           this->_current.push_back(&elt);
@@ -265,32 +267,37 @@ namespace elle
         std::function<void (std::string const&)> const& f)
       {
         auto& current = *this->_current.back();
-        if (current.type() == typeid(elle::json::Object))
+        auto name = this->_names.empty() ? "" : this->_names.back();
+        if (current.is_object())
         {
-          const auto& object = boost::any_cast<elle::json::Object>(current);
-          for (auto& elt: object)
-            if (this->_enter(elt.first))
+          for (auto it = current.begin(); it != current.end(); ++it)
+            if (this->_enter(it.key()))
             {
-              elle::SafeFinally leave([&] { this->_leave(elt.first); });
-              f(elt.first);
+              elle::SafeFinally leave([&] { this->_leave(it.key()); });
+              f(it.key());
             }
         }
-        else if (current.type() == typeid(elle::json::Array))
+        else if (current.is_array())
         {
-          auto& array = boost::any_cast<elle::json::Array&>(current);
-          for (auto& elt: array)
+          for (auto& elt: current)
           {
-            if (elt.type() == typeid(elle::json::Array))
+            if (elt.is_array())
             {
-              auto& subarray = boost::any_cast<elle::json::Array&>(elt);
-              if (subarray.size() == 2
-                  && subarray.front().type() == typeid(std::string))
+              if (elt.size() != 2)
+                throw FieldError(
+                  name,
+                  elle::print("element has size {} instead of 2", elt.size()));
+              if (elt.front().is_string())
               {
-                auto key = boost::any_cast<std::string>(subarray.front());
+                auto key = std::string(elt.front());
                 elle::SafeFinally leave([&] { this->_leave(key); });
-                this->_current.push_back(&subarray.back());
+                this->_current.push_back(&elt.back());
                 f(key);
               }
+              else
+                throw TypeError(name,
+                                elle::print("{}", elle::json::Type::string),
+                                elle::print("{}", elt.front().type()));
             }
           }
         }
@@ -326,15 +333,18 @@ namespace elle
         }
       };
 
-      template <typename T, typename ... Alternatives>
-      T&
-      SerializerIn::_check_type()
+      elle::json::Json&
+      SerializerIn::_check_type(elle::json::Type t)
       {
-        auto& current = *this->_current.back();
+        using elle::json::Type;
+        auto& c = *this->_current.back();
         auto name = this->_names.empty() ? "" : this->_names.back();
-        if (current.type() == typeid(T))
-          return boost::any_cast<T&>(current);
-        return any_casts<T, Alternatives ...>::cast(name, current);
+        if (c.type() == t ||
+            t == Type::number_integer && c.type() == Type::number_unsigned)
+          return c;
+        else
+          throw TypeError(
+            name, elle::print("{}", t), elle::print("{}", c.type()));
       }
     }
   }

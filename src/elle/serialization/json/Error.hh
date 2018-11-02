@@ -31,12 +31,12 @@ namespace elle
       : public Error
     {
     public:
-      TypeError(std::string const& field,
-                std::type_info const& expected,
-                std::type_info const& effective);
+      TypeError(std::string field,
+                std::string expected,
+                std::string effective);
       ELLE_ATTRIBUTE_R(std::string, field);
-      ELLE_ATTRIBUTE_R(std::type_info const*, expected);
-      ELLE_ATTRIBUTE_R(std::type_info const*, effective);
+      ELLE_ATTRIBUTE_R(std::string, expected);
+      ELLE_ATTRIBUTE_R(std::string, effective);
     };
 
     namespace json

@@ -107,14 +107,8 @@ def configure(zlib_lib,
       cxx_config.library_add(drake.copy(boost.locale_dynamic,
                                         lib_path, strip_prefix = True))
 
-  # JSON spirit
-  cxx_config.add_local_include_path('json/modules/json-spirit/include')
-  cxx_config.define('JSON_SPIRIT_WVALUE_DISABLED')
-
-  if cxx_toolkit.os in [drake.os.windows, drake.os.ios]:
-    cxx_config.define('JSON_SPIRIT_STATIC_LINKED')
-
   config = drake.cxx.Config()
+  config.add_local_include_path('json/modules/nlohmann/single_include')
   config.standard = drake.cxx.Config.cxx_14
   config.lib_path(lib_path)
   config.define('BOOST_PP_VARIADICS')
@@ -372,26 +366,9 @@ def configure(zlib_lib,
     sources += drake.nodes(
       'network/ifaddrs_android.c',
     )
-  # JSON Spirit
+  # JSON
   sources += drake.nodes(
-    'json/modules/json-spirit/include/json_spirit/json_spirit.h',
-    'json/modules/json-spirit/include/json_spirit/parse_error.h',
-    'json/modules/json-spirit/include/json_spirit/path_error.h',
-    'json/modules/json-spirit/include/json_spirit/platform.h',
-    'json/modules/json-spirit/include/json_spirit/reader.h',
-    'json/modules/json-spirit/include/json_spirit/reader_template.h',
-    'json/modules/json-spirit/include/json_spirit/stream_reader.h',
-    'json/modules/json-spirit/include/json_spirit/value.h',
-    'json/modules/json-spirit/include/json_spirit/writer.h',
-    'json/modules/json-spirit/include/json_spirit/writer_options.h',
-    'json/modules/json-spirit/include/json_spirit/writer_template.h',
-    'json/modules/json-spirit/src/reader.cpp',
-    'json/modules/json-spirit/src/value.cpp',
-    'json/modules/json-spirit/src/writer.cpp',
-  )
-
-  # JSON Wrapper
-  sources += drake.nodes(
+    'json/modules/nlohmann/single_include/nlohmann/json.hpp',
     'json/exceptions.cc',
     'json/exceptions.hh',
     'json/json.cc',
