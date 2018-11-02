@@ -265,7 +265,17 @@ namespace print
     elle::ConstWeakBuffer buffer(data);
     BOOST_TEST(elle::sprintf("%x", buffer) ==
                       "0x736f6d656461746120736f6d656461746120736f6d6564617461");
-    boost::format fmt("%s");
+  }
+
+  static
+  void
+  printable()
+  {
+    static const std::string print("a\nb\nc");
+    static const std::string noprint("\x01\x02\x03""abc");
+    BOOST_TEST(elle::print("{}", elle::ConstWeakBuffer(print)) == print);
+    BOOST_TEST(
+      elle::print("{}", elle::ConstWeakBuffer(noprint)) == "0x010203616263");
   }
 }
 
@@ -404,6 +414,7 @@ ELLE_TEST_SUITE()
     print->add(BOOST_TEST_CASE(string));
     print->add(BOOST_TEST_CASE(string_fixed));
     print->add(BOOST_TEST_CASE(hexadecimal));
+    print->add(BOOST_TEST_CASE(printable));
   }
 
   master.add(BOOST_TEST_CASE(hash), 0, 1);
