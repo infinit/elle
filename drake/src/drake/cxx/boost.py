@@ -51,7 +51,9 @@ class Boost(drake.Configuration):
     'coroutine': 'coroutine',
     'iostreams': 'iostreams',
     'python': list(itertools.chain(
-      *(('python3{}'.format(v), 'python-3.{}'.format(v)) for v in range(7)))) \
+      # FIXME: define in a central place what currently is the maximum
+      # version of python3 that we support... (that's 7 + 1, below)
+      *(('python3{}'.format(v), 'python-3.{}'.format(v)) for v in range(8)))) \
       + ['python3', 'python']
     }
 

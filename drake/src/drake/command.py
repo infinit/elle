@@ -6,8 +6,10 @@
 #
 # See the LICENSE file for more information.
 
-import drake
 import subprocess
+
+import drake
+
 
 def _find_command(t, v):
   if v is False:
@@ -22,6 +24,7 @@ def _find_command(t, v):
         return None
   else:
     return t(v)
+
 
 class Command:
 
@@ -38,13 +41,13 @@ class Command:
         self.__path = drake.Path(path)
       try:
         output = self._get_version()
-      except Exception as e:
-        raise Exception('Unable to find %s' % self.path) from e
+      except RuntimeError as e:
+        raise RuntimeError('Unable to find %s' % self.path) from e
       try:
         self.__version = self._parse_version(output)
-      except Exception as e:
-        raise Exception('Unable to parse %s version from %r' % \
-                        (self.__class.name, output)) from e
+      except RuntimeError as e:
+        raise RuntimeError('Unable to parse %s version from %r: %s' % \
+                           (self.__class__.name, output, e)) from e
 
   def _get_version(self):
     return subprocess.check_output(

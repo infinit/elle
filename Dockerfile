@@ -1,5 +1,26 @@
-FROM ubuntu:16.04 AS trusty-ci
+FROM python:3.7
 
-RUN apt-get update && apt-get install -y ccache fuse git python3.5 python3-pip valgrind && rm -rf /var/lib/apt/lists/*
-ADD drake/requirements.txt .
+WORKDIR /elle
+
+COPY drake/requirements.txt .
+
 RUN pip3 install -r requirements.txt
+
+COPY . .
+
+# since Drake writes all its temp files right into the build dir,
+# we have to have it on the .dockerignore file
+# but at the same time we also want build scripts in the image, so...
+RUN git checkout _build
+# (yes, this is a bit shitty, maybe we want to have drake use a working
+# dir well separated from anything checked in - this would also allow
+# first building the base image with just the dependencies compiled, then
+# compiling elle itself, thus using the build cache much more
+# efficiently)
+
+# always nice to have drake tell us what it's doing
+ENV DRAKE_DEBUG=1
+ENV DRAKE_DEBUG_BACKTRACE=1
+ENV DRAKE_RAW=1
+
+RUN cd _build/linux64 && ./drake //build

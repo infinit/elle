@@ -6,21 +6,37 @@
 #
 # See the LICENSE file for more information.
 
+import os
+import re
+import subprocess
+
 import drake
 import drake.command
-import os
-import subprocess
 
 from . import VirtualNode, Path
 from datetime import date
 from functools import lru_cache
 
+
 class GitCommand(drake.command.Command):
 
   name = 'git'
 
-  def _parse_version(self, v):
-    return drake.Version(v.split(' ')[-1])
+  # used in `_parse_version` just below
+  # git version outputs may vary, it can be of the form
+  # "git version 1.9.1"
+  # or
+  # "git version 2.15.2 (Apple Git-101.1)"
+  # or just plain
+  # "1.5"
+  __GIT_VERSION_REGEX=re.compile(r'^(?:git\s+version\s+)?([0-9]+\.[0-9]+(?:\.[0-9]+)?)(?:$|\s)')
+
+  def _parse_version(self, output):
+    match = self.__GIT_VERSION_REGEX.match(output)
+    if match:
+      return drake.Version(match[1])
+    raise RuntimeError('Unexpected output from `git --version`')
+
 
 class Git(VirtualNode):
 
