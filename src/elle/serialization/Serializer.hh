@@ -117,7 +117,15 @@ namespace elle
         auto it = this->_value.find(ti);
         if (it == this->_value.end())
           elle::err("missing serialization context for %s", ti.name());
-        return boost::any_cast<T>(it->second);
+        try
+        {
+          return boost::any_cast<T>(it->second);
+        }
+        catch (boost::bad_any_cast const&)
+        {
+          ELLE_ABORT("unexpected context type {} instead of {}",
+                     elle::type_info(it->second.type()), ti);
+        }
       }
 
       /// Get @a value from the context.
