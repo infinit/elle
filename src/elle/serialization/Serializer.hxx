@@ -1333,11 +1333,11 @@ namespace elle
       return this->_context.get<T>();
     }
 
-    template <typename T>
+    template <typename T, typename A>
     void
-    Serializer::set_context(T&& value)
+    Serializer::set_context(A&& value)
     {
-      this->_context.set<T>(std::forward<T>(value));
+      this->_context.set<T>(std::forward<A>(value));
     }
 
     template <typename T>

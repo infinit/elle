@@ -497,9 +497,9 @@ namespace elle
       ///
       /// @tparam T The type of the value to store.
       /// @param value The value to store.
-      template <typename T>
+      template <typename T, typename A>
       void
-      set_context(T&& value);
+      set_context(A&& value);
       /// Add @a given Context to our Context.
       ///
       /// @param context The Context to add.

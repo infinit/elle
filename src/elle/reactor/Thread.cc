@@ -74,14 +74,26 @@ namespace elle
 
     Thread::~Thread()
     {
-      if (this->state() != State::done)
+      try
       {
-        if (reactor::scheduler().current() == this)
-          ELLE_ABORT("%s: destroyed from itself in state %s",
-                     this, this->state());
-        this->terminate_now(false);
+        if (this->state() != State::done)
+        {
+          if (reactor::scheduler().current() == this)
+            ELLE_ABORT("%s: destroyed from itself in state %s",
+                       this, this->state());
+          this->terminate_now(false);
+        }
+        this->_destructed();
       }
-      this->_destructed();
+      catch (reactor::Terminate const&)
+      {
+        // if (!this->_terminating)
+        // {
+          ELLE_ABORT(
+            "{}: terminated in destructor of thread {}",
+            *reactor::scheduler().current(), *this);
+        // }
+      }
     }
 
     void

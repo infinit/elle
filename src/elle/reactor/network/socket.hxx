@@ -396,16 +396,9 @@ namespace elle
             *bytes_read = read.read();
           throw TimeOut();
         }
-        ELLE_TRACE("%s: completed read of %s bytes", *this, read.read());
-        ELLE_DUMP(": %s", buf);
-
+        ELLE_TRACE("{}: completed read of {} bytes", *this, read.read());
         auto data = elle::ConstWeakBuffer(buf.contents(), read.read());
-        elle::Lazy<std::string> hex(
-          [&data]
-          {
-            return elle::format::hexadecimal::encode(data);
-          });
-        ELLE_DUMP("%s: data: 0x%s", *this, hex);
+        ELLE_DUMP("{}: data: {}", *this, data);
         if (bytes_read)
           *bytes_read = read.read();
         return read.read();
