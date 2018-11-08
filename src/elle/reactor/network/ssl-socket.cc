@@ -116,15 +116,12 @@ namespace elle
         catch (reactor::Terminate const&)
         {
           if (!reactor::scheduler().current()->terminating())
-            throw;
-          else
-            ELLE_WARN("%s: ignore stacked thread termination during SSL "
-                      "shutdown", this);
+            ELLE_ABORT("{}: terminated during SSL shutdown", *this);
         }
         catch (...)
         {
-          ELLE_ABORT("unexpected error in SSL shutdown: %s",
-                     elle::exception_string());
+          ELLE_ABORT("{}: unexpected error in SSL shutdown: %s",
+                     *this, elle::exception_string());
         }
       }
 
