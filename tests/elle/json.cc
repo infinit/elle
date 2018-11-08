@@ -36,7 +36,7 @@ cycle(T&& v)
     elle::json::read(s);
     return true;
   }
-  catch (std::exception const& e)
+  catch (elle::Error const& e)
   {
     ELLE_WARN("%s", e.what());
     return false;
