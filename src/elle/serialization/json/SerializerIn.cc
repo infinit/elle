@@ -40,10 +40,7 @@ namespace elle
                 {
                   try
                   {
-                    ELLE_LOG("PARSE");
-                    auto json = elle::json::read(input);
-                    ELLE_LOG("PARSED: {}", json);
-                    return json;
+                    return elle::json::read(input);
                   }
                   catch (elle::json::ParseError const& e)
                   {
