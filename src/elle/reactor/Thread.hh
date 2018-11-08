@@ -7,12 +7,12 @@
 #include <elle/With.hh>
 #include <elle/das/Symbol.hh>
 #include <elle/das/named.hh>
+#include <elle/reactor/Waitable.hh>
 #include <elle/reactor/asio.hh>
 #include <elle/reactor/backend/fwd.hh>
 #include <elle/reactor/duration.hh>
 #include <elle/reactor/fwd.hh>
 #include <elle/reactor/signals.hh>
-#include <elle/reactor/Waitable.hh>
 
 namespace elle
 {
