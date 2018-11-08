@@ -149,10 +149,12 @@ multiple_values()
 
 static
 void
-leftover()
+errors()
 {
-  std::string input("{\"i\": 0}{");
-  BOOST_CHECK_THROW(elle::json::read(input), elle::Error);
+  // Parse error
+  BOOST_CHECK_THROW(elle::json::read("{0:1}"), elle::Error);
+  // Leftover in string
+  BOOST_CHECK_THROW(elle::json::read("{\"i\": 0}{"), elle::Error);
 }
 
 ELLE_TEST_SUITE()
@@ -171,5 +173,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(pretty_printer_utf_8), 0, timeout);
   suite.add(BOOST_TEST_CASE(pretty_print_stream_states), 0, timeout);
   suite.add(BOOST_TEST_CASE(multiple_values), 0, timeout);
-  suite.add(BOOST_TEST_CASE(leftover), 0, timeout);
+  suite.add(BOOST_TEST_CASE(errors), 0, timeout);
 }
