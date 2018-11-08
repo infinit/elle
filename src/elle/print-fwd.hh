@@ -41,4 +41,8 @@ namespace elle
   /// Set whether a stream is set for debugging output.
   void
   repr(std::ostream& o, bool debugging);
+
+  template <typename T>
+  std::string
+  to_string(T&& o);
 }

@@ -189,6 +189,18 @@ default_print()
                     elle::print("Default({})", reinterpret_cast<void*>(&d)));
 }
 
+static
+void
+to_string()
+{
+  auto const check = [] (auto a)
+                     {
+                       BOOST_TEST(elle::to_string(a) == elle::print("{}", a));
+                     };
+  check(42);
+  check("foo");
+  check(Default());
+}
 
 ELLE_TEST_SUITE()
 {
@@ -208,4 +220,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(conditional_positional));
   suite.add(BOOST_TEST_CASE(legacy));
   suite.add(BOOST_TEST_CASE(default_print));
+  suite.add(BOOST_TEST_CASE(to_string));
 }

@@ -187,4 +187,15 @@ namespace elle
     print(output, fmt, args);
     return output.str();
   }
+
+  /*----------.
+  | to_string |
+  `----------*/
+
+  template <typename T>
+  std::string
+  to_string(T&& o)
+  {
+    return elle::print("{}", std::forward<T>(o));
+  }
 }
