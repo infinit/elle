@@ -2379,6 +2379,39 @@ ELLE_TEST_SCHEDULED(test_terminate_twice)
   elle::reactor::wait(thread);
 }
 
+namespace terminate
+{
+  // Check a terminate from within a thread destructor is delayed.
+  ELLE_TEST_SCHEDULED(thread_destructor)
+  {
+    auto& main = *elle::reactor::scheduler().current();
+    {
+      elle::reactor::Barrier sleeping;
+      elle::reactor::Thread t(
+        "delayer",
+        [&]
+        {
+          try
+          {
+            sleeping.open();
+            elle::reactor::sleep();
+          }
+          catch (elle::reactor::Terminate const&)
+          {
+            // At this point, main in the destructor of t.
+            main.terminate();
+            elle::reactor::yield();
+            elle::reactor::yield();
+            elle::reactor::yield();
+          }
+        });
+      elle::reactor::wait(sleeping);
+    }
+    elle::reactor::yield();
+    BOOST_FAIL("should not be reached");
+  }
+}
+
 // Check exception swallowing mechanism false positives.
 ELLE_TEST_SCHEDULED(test_terminate_not_swallowed_unwinding)
 {
@@ -3488,6 +3521,10 @@ ELLE_TEST_SUITE()
   // terminate->add(BOOST_TEST_CASE(test_terminate_swallowed), 0, valgrind(1, 5));
   terminate->add(BOOST_TEST_CASE(test_terminate_not_swallowed_unwinding), 0, valgrind(1, 5));
   terminate->add(BOOST_TEST_CASE(test_terminate_not_swallowed_catch), 0, valgrind(1, 5));
+  {
+    using namespace terminate;
+    terminate->add(BOOST_TEST_CASE(thread_destructor), 0, valgrind(1, 5));
+  }
 
   boost::unit_test::test_suite* ni = BOOST_TEST_SUITE("non_interruptible");
   boost::unit_test::framework::master_test_suite().add(ni);

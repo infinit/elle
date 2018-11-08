@@ -74,26 +74,16 @@ namespace elle
 
     Thread::~Thread()
     {
-      try
-      {
-        if (this->state() != State::done)
-        {
-          if (reactor::scheduler().current() == this)
-            ELLE_ABORT("%s: destroyed from itself in state %s",
-                       this, this->state());
-          this->terminate_now(false);
-        }
-        this->_destructed();
-      }
-      catch (reactor::Terminate const&)
-      {
-        // if (!this->_terminating)
-        // {
-          ELLE_ABORT(
-            "{}: terminated in destructor of thread {}",
-            *reactor::scheduler().current(), *this);
-        // }
-      }
+      if (this->state() != State::done)
+        elle::With<NonInterruptible>(false) <<
+          [this]
+          {
+            if (reactor::scheduler().current() == this)
+              ELLE_ABORT("%s: destroyed from itself in state %s",
+                         this, this->state());
+            this->terminate_now(false);
+          };
+      this->_destructed();
     }
 
     void
@@ -275,18 +265,21 @@ namespace elle
     }
 
     void
-    Thread::interruptible(bool state)
+    Thread::interruptible(bool state, bool raise)
     {
       ELLE_DEBUG("%s: set interruptible to %s", *this, state);
       this->_interruptible = state;
       if (state && this->_exception)
-      {
-        ELLE_TRACE("%s: interruptible: re-raise exception: %s",
-                   *this, elle::exception_string(this->_exception));
-        std::exception_ptr tmp = this->_exception;
-        this->_exception = std::exception_ptr{};
-        std::rethrow_exception(tmp);
-      }
+        if (raise)
+        {
+          ELLE_TRACE("%s: interruptible: re-raise exception: %s",
+                     *this, elle::exception_string(this->_exception));
+          std::exception_ptr tmp = this->_exception;
+          this->_exception = std::exception_ptr{};
+          std::rethrow_exception(tmp);
+        }
+        else
+          ELLE_WARN("{}: terminate exception delayed", *this);
     }
 
     /*-----------.
@@ -528,14 +521,15 @@ namespace elle
     | Context |
     `--------*/
 
-    Thread::Context::Context()
+    Thread::Context::Context(bool raise)
       : _current(*reactor::scheduler().current())
       , _interruptible(_current.interruptible())
+      , _raise(raise)
     {}
 
     Thread::Context::~Context() noexcept(false)
     {
-      this->_current.interruptible(this->_interruptible);
+      this->_current.interruptible(this->_interruptible, this->_raise);
     }
 
     bool
@@ -547,12 +541,14 @@ namespace elle
       return prev;
     }
 
-    Thread::NonInterruptible::NonInterruptible()
+    Thread::NonInterruptible::NonInterruptible(bool raise)
+      : Super(raise)
     {
       this->interruptible(false);
     }
 
     Thread::Interruptible::Interruptible()
+      : Super(true)
     {
       this->interruptible(true);
     }
