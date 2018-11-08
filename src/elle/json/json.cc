@@ -13,27 +13,42 @@ namespace elle
 {
   namespace json
   {
-    Json
-    read(std::istream& stream)
-    {
-      ELLE_TRACE_SCOPE("read json from stream");
-      Json res;
-      stream >> res;
-      ELLE_DUMP("read json: {}", res);
-      return res;
-    }
-
-    Json
-    read(std::string const& json)
+    static
+    auto
+    wrap_errors(auto f)
     {
       try
       {
-        return nlohmann::json::parse(json);
+        return f();
       }
       catch (nlohmann::json::exception const& e)
       {
         elle::err("JSON parse error: {}", e.what());
       }
+    }
+
+    Json
+    read(std::istream& stream)
+    {
+      return wrap_errors(
+        [&]
+        {
+          ELLE_TRACE_SCOPE("read json from stream");
+          Json res;
+          stream >> res;
+          return res;
+        });
+    }
+
+    Json
+    read(std::string const& json)
+    {
+      return wrap_errors(
+        [&]
+        {
+          ELLE_TRACE_SCOPE("read json from string");
+          return nlohmann::json::parse(json);
+        });
     }
 
     // FIXME: xalloc for pretty-printing.
