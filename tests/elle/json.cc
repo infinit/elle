@@ -149,6 +149,17 @@ multiple_values()
 
 static
 void
+eoi()
+{
+  std::stringstream s("{}");
+  elle::json::read(s);
+  BOOST_CHECK_THROW(elle::json::read(s), elle::Error);
+  BOOST_CHECK_THROW(elle::json::read(s), elle::Error);
+  BOOST_CHECK(s.eof());
+}
+
+static
+void
 errors()
 {
   // Parse error
@@ -173,5 +184,6 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(pretty_printer_utf_8), 0, timeout);
   suite.add(BOOST_TEST_CASE(pretty_print_stream_states), 0, timeout);
   suite.add(BOOST_TEST_CASE(multiple_values), 0, timeout);
+  suite.add(BOOST_TEST_CASE(eoi), 0, timeout);
   suite.add(BOOST_TEST_CASE(errors), 0, timeout);
 }
