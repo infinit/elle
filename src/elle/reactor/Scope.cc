@@ -193,9 +193,8 @@ namespace elle
     void
     Scope::print(std::ostream& stream) const
     {
-      stream << "Scope";
-      if (!this->name().empty())
-        stream << " (" << this->name() << ")";
+      elle::print(stream, "Scope({}{?, {1}})",
+                  reinterpret_cast<void const*>(this), this->name());
     }
   }
 }
