@@ -16,9 +16,11 @@ namespace elle
       : elle::Exception("continue")
     {}
 
+
+
     template <typename C, typename F>
     auto
-    for_each_parallel(C&& c, F const& f, std::string const& name)
+    _for_each_parallel(C&& c, F const& f, std::string const& name)
       -> decltype(details::for_each_parallel_result(f, std::forward<C>(c)))
     {
       using Type = decltype(f(*std::begin(c)));
@@ -84,6 +86,24 @@ namespace elle
       return elle::meta::static_if<valued>(
         [] (auto& res) { return res; },
         [] (auto& res) {})(res);
+    }
+
+    template <typename C, typename F>
+    auto
+    for_each_parallel(C&& c, F const& f, std::string const& name)
+      -> decltype(details::for_each_parallel_result(f, std::forward<C>(c)))
+    {
+      return _for_each_parallel(c, f, name);
+    }
+
+    template <typename E, typename F>
+    auto
+    for_each_parallel(std::initializer_list<E> const& c,
+                      F const& f, std::string const& name)
+      -> decltype(details::for_each_parallel_result(f, c))
+
+    {
+      return _for_each_parallel<std::initializer_list<E> const&, F>(c, f, name);
     }
 
     inline

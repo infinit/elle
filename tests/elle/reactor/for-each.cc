@@ -158,6 +158,18 @@ ELLE_TEST_SCHEDULED(parallel_break)
 //   }
 // }
 
+ELLE_TEST_SCHEDULED(initializer_list)
+{
+  auto res = 0;
+  elle::reactor::for_each_parallel(
+    {0, 1, 2},
+    [&] (int i)
+    {
+      res += i;
+    });
+  BOOST_TEST(res == 3);
+}
+
 ELLE_TEST_SUITE()
 {
   auto& master = boost::unit_test::framework::master_test_suite();
@@ -170,4 +182,5 @@ ELLE_TEST_SUITE()
   master.add(BOOST_TEST_CASE(valued_continue));
   master.add(BOOST_TEST_CASE(parallel_break));
   // master.add(BOOST_TEST_CASE(moved_not_copiable));
+  master.add(BOOST_TEST_CASE(initializer_list));
 }
