@@ -27,6 +27,7 @@ namespace elle
       /// - close
       class Socket
         : public elle::IOStream
+        , public elle::Printable
       {
       /*------.
       | Types |
@@ -169,7 +170,6 @@ namespace elle
                 typename EndPoint_ = typename AsioSocket_::endpoint_type>
       class PlainSocket
         : public Socket
-        , public elle::Printable
       {
       /*--------.
       | Types.  |
