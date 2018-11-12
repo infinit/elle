@@ -127,6 +127,16 @@ namespace elle
 
     inline
     void
+    print(std::ostream& o, void const* value)
+    {
+      if (value)
+        o << value;
+      else
+        o << "nullptr";
+    }
+
+    inline
+    void
     print(std::ostream& o, void* value)
     {
       if (value)

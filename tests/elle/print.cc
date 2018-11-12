@@ -189,6 +189,26 @@ default_print()
                     elle::print("Default({})", reinterpret_cast<void*>(&d)));
 }
 
+template <typename T>
+static
+std::string
+sstream_print(T&& o)
+{
+  std::stringstream s;
+  s << std::forward<T>(o);
+  return s.str();
+}
+
+static
+void
+void_pointers()
+{
+  void* mp = &mp;
+  void const* cp = &cp;
+  BOOST_TEST(elle::print("{}", mp) == sstream_print(mp));
+  BOOST_TEST(elle::print("{}", cp) == sstream_print(cp));
+}
+
 static
 void
 to_string()
@@ -221,4 +241,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(legacy));
   suite.add(BOOST_TEST_CASE(default_print));
   suite.add(BOOST_TEST_CASE(to_string));
+  suite.add(BOOST_TEST_CASE(void_pointers));
 }
