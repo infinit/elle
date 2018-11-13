@@ -160,6 +160,7 @@ class RoundRobin(SchedulingPolicy):
 
   def round(self):
     for coro in list(self.__coroutines):
+      assert coro is not None
       yield coro
 
 
@@ -189,10 +190,15 @@ class DepthFirst(SchedulingPolicy):
     self.__coroutines.add(coroutine)
 
   def round(self):
-    return (self.__round(self.__hierarchy.get(None, ())),)
+    c = self.__round(self.__hierarchy.get(None, ()))
+    if c is None:
+      return ()
+    else:
+      return (c,)
 
   def __round(self, coroutines):
     for coroutine in coroutines:
+      assert coroutines is not None
       active = coroutine in self.__coroutines
       if active and coroutine.exception:
         return coroutine
