@@ -159,7 +159,7 @@ parameters = {
   'os': options.os,
   'drake_utils': '%s/../drake-utils.py' % os.path.dirname(__file__),
   'project': options.project.lower(),
-  'go_path': '%s/go-dependencies' % options.build_dir,
+  'go_path': os.path.abspath('%s/go-dependencies' % options.build_dir),
   'source_dir': options.source_dir,
   'install_dir': options.install_dir,
 }
