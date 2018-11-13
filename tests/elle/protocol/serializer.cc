@@ -733,19 +733,19 @@ ELLE_TEST_SCHEDULED(eof)
     std::stringstream input(packet);
     {
       elle::protocol::Serializer s(input);
-      BOOST_CHECK_THROW(s.read(), elle::protocol::Serializer::EOF);
+      BOOST_CHECK_THROW(s.read(), elle::protocol::Serializer::EOS);
     }
   }
   {
     std::stringstream input;
     elle::protocol::Serializer s(input);
-    BOOST_CHECK_THROW(s.read(), elle::protocol::Serializer::EOF);
+    BOOST_CHECK_THROW(s.read(), elle::protocol::Serializer::EOS);
   }
   {
    std::stringstream input(valid_packet);
    elle::protocol::Serializer s(input);
    BOOST_CHECK_NO_THROW(s.read());
-   BOOST_CHECK_THROW(s.read(), elle::protocol::Serializer::EOF);
+   BOOST_CHECK_THROW(s.read(), elle::protocol::Serializer::EOS);
   }
 }
 

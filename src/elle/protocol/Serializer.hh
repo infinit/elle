@@ -10,10 +10,6 @@
 
 #include <elle/protocol/Stream.hh>
 
-#ifdef EOF
-# undef EOF
-#endif
-
 namespace elle
 {
   namespace protocol
@@ -47,11 +43,12 @@ namespace elle
     `------*/
     public:
       using Super = Stream;
-      class EOF
+      /// End of stream.
+      class EOS
         : public elle::Error
       {
       public:
-        EOF();
+        EOS();
       };
 
     /*-------------.

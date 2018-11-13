@@ -55,7 +55,7 @@ namespace elle
         elle::IOStreamClear clearer(stream);
         nread += std::readsome(stream, where, size - nread);
         if (stream.eof())
-          throw Serializer::EOF();
+          throw Serializer::EOS();
       }
     }
 
@@ -322,7 +322,7 @@ namespace elle
         {
           ELLE_DUMP_SCOPE("read control");
           if (this->_stream.peek() == std::iostream::traits_type::eof())
-            throw Serializer::EOF();
+            throw Serializer::EOS();
           char control = static_cast<char>(Control::max + 1);
           this->_stream.read(&control, 1);
           if (control > Control::max)
@@ -488,7 +488,7 @@ namespace elle
     | Types |
     `------*/
 
-    Serializer::EOF::EOF()
+    Serializer::EOS::EOS()
       : elle::Error("end of serializer stream")
     {}
 

@@ -136,7 +136,7 @@ namespace elle
           throw elle::Exception("stream is not good");
         s.read(reinterpret_cast<char*>(&res), sizeof(res));
         if (s.gcount() != signed(sizeof(res)))
-          throw Serializer::EOF();
+          throw Serializer::EOS();
         return ntohl(res);
       }
     }
