@@ -53,6 +53,13 @@ c_string()
 
 static
 void
+formats()
+{
+  BOOST_TEST(elle::print("{0} {0!f}", 3.14159) == "3.14159 3.141590");
+}
+
+static
+void
 too_few()
 {
   BOOST_CHECK_THROW(elle::print("{}{}", "foo"), std::exception);
@@ -231,6 +238,7 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(string));
   suite.add(BOOST_TEST_CASE(null_string));
   suite.add(BOOST_TEST_CASE(c_string));
+  suite.add(BOOST_TEST_CASE(formats));
   suite.add(BOOST_TEST_CASE(too_few));
   suite.add(BOOST_TEST_CASE(scoped));
   suite.add(BOOST_TEST_CASE(boolean));

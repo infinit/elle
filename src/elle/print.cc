@@ -4,6 +4,7 @@
 #include <boost/config/warning_disable.hpp>
 #include <boost/format.hpp>
 #include <boost/phoenix.hpp>
+#include <boost/scope_exit.hpp>
 #include <boost/spirit/include/qi.hpp>
 
 #include <elle/Printable.hh>
@@ -108,8 +109,57 @@ namespace elle
       std::shared_ptr<Expression> then;
     };
 
-    class Index
+    class Variable
       : public Expression
+    {
+    public:
+      Variable(char fmt = '\0')
+        : fmt(fmt)
+      {}
+
+      void
+      apply_fmt(std::ostream& s) const
+      {
+        switch (auto c = this->fmt)
+        {
+          case 'd':
+          case 'i':
+          case 'u':
+            s << std::dec;
+            break;
+          case 'e':
+            s << std::scientific;
+            break;
+          case 'f':
+            s << std::fixed;
+            break;
+          case 'o':
+            s << std::oct;
+            break;
+          case 'p':
+          case 'x':
+            s << std::hex;
+            break;
+          case 'r':
+            repr(s, true);
+            break;
+          case 's':
+            break;
+          case '\0':
+            break;
+          default:
+            ELLE_WARN("unsupported legacy format: %s", c)
+            // FIXME
+            break;
+        }
+      }
+
+      /// The format request: 's' for %s, 'd' for %d, etc.
+      char fmt = '\0';
+    };
+
+    class Index
+      : public Variable
     {
     public:
       Index(int n)
@@ -134,7 +184,7 @@ namespace elle
     };
 
     class Next
-      : public Expression
+      : public Variable
     {
     public:
       Next()
@@ -155,18 +205,43 @@ namespace elle
       }
     };
 
+    class Name
+      : public Variable
+    {
+    public:
+      Name(std::string n)
+        : n(std::move(n))
+      {}
+
+      static
+      std::shared_ptr<Name>
+      make(std::string& n)
+      {
+        return std::make_shared<Name>(n);
+      }
+
+      virtual
+      void
+      print(std::ostream& s) const override
+      {
+        s << "Name(" << n << ')';
+      }
+
+      std::string n;
+    };
+
     /// A formatting request a la printf: %s, %d, etc.
     ///
     /// Also supports %r, like in Python, which is for debugging.
     class Legacy
-      : public Expression
+      : public Variable
     {
     public:
       Legacy(std::vector<char> const& flags,
              boost::optional<unsigned> width,
              char fmt)
-        : width(width)
-        , fmt(fmt)
+        : Variable(fmt)
+        , width(width)
       {
         for (auto c: flags)
           switch (c)
@@ -205,35 +280,8 @@ namespace elle
       Positioning positioning = internal;
       /// The width.
       boost::optional<unsigned> width;
-      /// The format request: 's' for %s, 'd' for %d, etc.
-      char fmt;
       char padding = ' ';
       bool showpos = false;
-    };
-
-    class Name
-      : public Expression
-    {
-    public:
-      Name(std::string n)
-        : n(std::move(n))
-      {}
-
-      static
-      std::shared_ptr<Name>
-      make(std::string& n)
-      {
-        return std::make_shared<Name>(n);
-      }
-
-      virtual
-      void
-      print(std::ostream& s) const override
-      {
-        s << "Name(" << n << ')';
-      }
-
-      std::string n;
     };
 
     class Literal
@@ -276,13 +324,16 @@ namespace elle
     }
 
     std::shared_ptr<Expression>
-    make_fmt(std::shared_ptr<Expression> fmt,
+    make_fmt(std::shared_ptr<Variable> var,
+             boost::optional<char> fmt,
              boost::optional<std::shared_ptr<Composite>> then = boost::none)
     {
+      if (fmt)
+        var->fmt = fmt.get();
       if (then)
-        return std::make_shared<Branch>(std::move(fmt), std::move(then.get()));
+        return std::make_shared<Branch>(std::move(var), std::move(then.get()));
       else
-        return fmt;
+        return var;
     }
 
     /// Generate our format parser.
@@ -301,26 +352,31 @@ namespace elle
 
       using Res = std::shared_ptr<Expression>;
       using Exp = qi::rule<Iterator, Res()>;
+      using Var = qi::rule<Iterator, std::shared_ptr<Variable>()>;
       using Chr = qi::rule<Iterator, char()>;
       using Str = qi::rule<Iterator, std::string()>;
       using Phr = qi::rule<Iterator, std::shared_ptr<Composite>()>;
 
       static Phr phrase;
       static Chr escape
-        = (qi::char_('\\') >> qi::char_("\\{}%"))[qi::_val = _2];
+        = (qi::char_('\\') >> qi::char_("\\{}%"))[qi::_val = _2]
+        | qi::lit("%%")[qi::_val = '%'];
       static Str literal
-        = *(escape | (qi::char_  - '{' - '}' - '\\' - '%') );
+        = *(escape | (qi::char_  - '{' - '}' - '\\' - '%'));
       static Exp plain
         = literal[qi::_val = phoenix::bind(&Literal::make, _1)];
       static Str identifier
         = ascii::alpha >> *ascii::alnum;
-      static Exp var
+      static Var var
         = identifier [qi::_val = phoenix::bind(&Name::make, _1)]
         | qi::int_   [qi::_val = phoenix::bind(&Index::make, _1)]
         | qi::eps    [qi::_val = phoenix::bind(&Next::make)];
       static Exp fmt
-        = (var >> -("?" >> phrase))
-        [qi::_val = phoenix::bind(&make_fmt, _1, _2)];
+        = (
+          var
+          >> -("!" >> qi::char_("cdefgioprsuxCEGSX"))
+          >> -("?" >> phrase)
+          )[qi::_val = phoenix::bind(&make_fmt, _1, _2, _3)];
       static Exp legacy
         = ("%"
            >> *qi::char_("-+# 0'") // flags
@@ -383,84 +439,62 @@ namespace elle
           s.write(ast.as<Literal>().text.c_str(),
                   ast.as<Literal>().text.size());
       }
-      else if (id == &typeid(Next))
+      else if (id == &typeid(Index) ||
+               id == &typeid(Legacy) ||
+               id == &typeid(Name) ||
+               id == &typeid(Next))
       {
-        if (p)
-          nth(count)(s);
-        ++count;
-      }
-      else if (id == &typeid(Legacy))
-      {
-        auto& leg = ast.as<Legacy>();
-        if (p)
+        auto& var = ast.as<Variable>();
+        // FIXME: we need a saver that also deals with `repr`.
+        auto const saver = boost::io::ios_all_saver(s);
+        auto const old_repr = repr(s);
+        // Don't use SafeFinally, which uses a log, which uses print, hence
+        // infinite recursion.
+        BOOST_SCOPE_EXIT(&s, old_repr) {
+            repr(s, old_repr);
+        } BOOST_SCOPE_EXIT_END
+        var.apply_fmt(s);
+        if (id == &typeid(Legacy))
         {
-          // FIXME: we need a saver that also deals with `repr`.
-          auto const saver = boost::io::ios_all_saver(s);
-          auto const old_repr = repr(s);
-          if (leg.positioning == Legacy::left)
-            s << std::left;
-          else if (leg.positioning == Legacy::internal)
-            s << std::internal;
-          else if (leg.positioning == Legacy::right)
-            s << std::right;
-          if (leg.showpos)
-            s << std::showpos;
-          if (leg.width)
-            s << std::setw(*leg.width);
-          s << std::setfill(leg.padding);
-          switch (auto c = leg.fmt)
+          auto& leg = ast.as<Legacy>();
+          if (p)
           {
-            case 'd':
-            case 'i':
-            case 'u':
-              s << std::dec;
-              break;
-            case 'e':
-              s << std::scientific;
-              break;
-            case 'f':
-              s << std::fixed;
-              break;
-            case 'o':
-              s << std::oct;
-              break;
-            case 'p':
-            case 'x':
-              s << std::hex;
-              break;
-            case 'r':
-              repr(s, true);
-              break;
-            case 's':
-              break;
-            case '%':
-              s << '%';
-              repr(s, old_repr);
-              return;
-            default:
-              ELLE_WARN("unsupported legacy format: %s", c)
-              // FIXME
-              break;
+            if (leg.positioning == Legacy::left)
+              s << std::left;
+            else if (leg.positioning == Legacy::internal)
+              s << std::internal;
+            else if (leg.positioning == Legacy::right)
+              s << std::right;
+            if (leg.showpos)
+              s << std::showpos;
+            if (leg.width)
+              s << std::setw(*leg.width);
+            s << std::setfill(leg.padding);
+            nth(count)(s);
           }
-          nth(count)(s);
-          repr(s, old_repr);
+          ++count;
         }
-        ++count;
-      }
-      else if (id == &typeid(Index))
-      {
-        full_positional = false;
-        if (p)
-          nth(ast.as<Index>().n)(s);
-      }
-      else if (id == &typeid(Name))
-      {
-        auto const& name = ast.as<Name>().n;
-        auto const it = named.find(name);
-        if (it == named.end())
-          elle::err("missing named format argument: %s", name);
-        else if (p)
-          it->second(s);
+        else if (id == &typeid(Next))
+        {
+          if (p)
+            nth(count)(s);
+          ++count;
+        }
+        else if (id == &typeid(Index))
+        {
+          full_positional = false;
+          if (p)
+            nth(ast.as<Index>().n)(s);
+        }
+        else if (id == &typeid(Name))
+        {
+          auto const& name = ast.as<Name>().n;
+          auto const it = named.find(name);
+          if (it == named.end())
+            elle::err("missing named format argument: %s", name);
+          else if (p)
+            it->second(s);
+        }
       }
       else if (id == &typeid(Branch))
       {
