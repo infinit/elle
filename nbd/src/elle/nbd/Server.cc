@@ -389,19 +389,19 @@ namespace elle
               auto& device =
                 [&] () -> Device&
                 {
-                  if (this->_devices.empty())
-                    elle::err("no devices available");
-                  if (data == elle::ConstWeakBuffer(""))
+                  if (data == elle::ConstWeakBuffer("") && !this->_devices.empty())
                     return this->_devices.front().get();
+                  auto res = boost::range::find_if(
+                    this->_devices,
+                    [&] (Device const& d)
+                    { return data == d.name(); });
+                  if (res != this->_devices.end())
+                    return (*res).get();
                   else
                   {
-                    auto res = boost::range::find_if(
-                      this->_devices,
-                      [&] (Device const& d)
-                      { return data == d.name(); });
-                    if (res != this->_devices.end())
-                      return (*res).get();
-                    elle::err("no such device: {}", data);
+                    auto& res = this->_device_not_found(data.string());
+                    this->add(res);
+                    return res;
                   }
                 }();
               ELLE_TRACE_SCOPE("export volume {}", device.name());
@@ -482,6 +482,12 @@ namespace elle
             }
           }
         }
+    }
+
+    Server::Device&
+    Server::_device_not_found(std::string name)
+    {
+      elle::err("no such device: {}", name);
     }
 
     void

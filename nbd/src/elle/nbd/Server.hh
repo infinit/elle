@@ -90,8 +90,8 @@ namespace elle
         /// it to memory for instance could speed up things. Takin no action,
         /// which is the default implementation, is correct.
         ///
-        /// @param offset Index of the first byte to cache.  @param length
-        /// Number of bytes to cache.
+        /// @param offset Index of the first byte to cache.
+        /// @param length Number of bytes to cache.
         virtual
         void
         cache(uint64_t offset, uint32_t length);
@@ -99,6 +99,17 @@ namespace elle
       /// Register a device to be exposed by the server.
       void
       add(Device& d);
+      /// Called when a requested device is not found.
+      ///
+      /// Subclasses may return a dynamically allocated device or throw an
+      /// exception to refuse doing so, which is the default behavior.
+      ///
+      /// @param name The name of the device that was requested and not found.
+      /// @return The device for that name.
+      /// @throw elle::Error Signifies the device does not exist.
+      virtual
+      Device&
+      _device_not_found(std::string name);
       ELLE_ATTRIBUTE_R(std::vector<std::reference_wrapper<Device>>, devices);
 
     /*-------.
