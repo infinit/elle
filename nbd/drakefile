@@ -1,7 +1,9 @@
 import drake
 
+config = None
 headers = None
 library = None
+lib_dynamic = None
 rule_build = None
 rule_check = None
 rule_install = None
@@ -16,10 +18,12 @@ def configure(cxx_toolkit,
               valgrind,
               valgrind_tests):
 
-  global library
+  global config, library, lib_dynamic
 
+  config = drake.cxx.Config()
+  config.add_local_include_path('src')
   local_config = drake.cxx.Config(cxx_config)
-  local_config.add_local_include_path('src')
+  local_config += config
   local_config += boost.config()
 
   ## ----- ##
@@ -45,6 +49,7 @@ def configure(cxx_toolkit,
     'src/elle/nbd/Server.hh',
   )
   library = drake.cxx.DynLib('lib/nbd', sources, cxx_toolkit, local_config)
+  lib_dynamic = library
   rule_build << library
 
   ## -------- ##

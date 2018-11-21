@@ -24,6 +24,7 @@ dropbox = None
 elle = None
 libarchive_config = None
 libarchive_lib = None
+nbd = None
 openssl_config = None
 openssl_lib_crypto = None
 openssl_lib_ssl = None
@@ -85,6 +86,7 @@ def configure(cxx_toolkit = None,
   global das
   global dropbox
   global elle
+  global nbd
   global protocol
   global reactor
 
