@@ -34,6 +34,7 @@ class CMakeBuilder(drake.Builder):
         'CMAKE_RC_COMPILER': self.toolkit.cxx[0:-3] + 'windres',
         'CMAKE_SYSTEM_NAME': 'Windows',
       })
+    dsts = list(dsts)
     dsts.append(self.__cmake_cache)
     # Call __init__ last, make __cmake_cache is declared a dsts, so
     # that it has a build-tree path, not a source-tree one.
