@@ -4,14 +4,6 @@
 #include <cerrno>
 #include <sys/types.h>
 
-/*
-#ifdef ELLE_LINUX
-# include <attr/xattr.h>
-#else
-# include <sys/xattr.h>
-#endif
-*/
-
 #include <unordered_map>
 
 #include <fuse/fuse.h>
