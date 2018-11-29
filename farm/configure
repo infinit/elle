@@ -86,6 +86,9 @@ if os_ == 'alpine':
   # inhibit major and minor macros
   cxx_config.define('_SYS_SYSMACROS_H')
 
+if project in ['filesystem', 'memo']:
+  extra_args['beyond'] = False
+
 if os_ == 'alpine' and project in ['filesystem', 'memo']:
   extra_args['enable_crash_report'] = False
 
