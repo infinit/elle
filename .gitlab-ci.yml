@@ -16,7 +16,7 @@ before_script:
 
 build:
   stage: build
-  image: registry.gitlab.gruntech.org/mefyl/elle/trusty-ci
+  image: registry.gitlab.gruntech.org/infinit/elle/trusty-ci
   script:
     - farm/configure --arch x86_64 --os xenial --compiler gcc4 --project $PROJECT --source-dir "$CI_PROJECT_DIR" --build-dir "$BUILD_DIR" --install-dir "$INSTALL_DIR"
     - ccache --set-config=cache_dir="$CI_PROJECT_DIR/.ccache"
@@ -33,7 +33,7 @@ build:
 
 examples:
   stage: check
-  image: registry.gitlab.gruntech.org/mefyl/elle/trusty-ci
+  image: registry.gitlab.gruntech.org/infinit/elle/trusty-ci
   script:
     - ccache --set-config=cache_dir="$CI_PROJECT_DIR/.ccache"
     - ccache -z
@@ -47,7 +47,7 @@ examples:
 
 check:
   stage: check
-  image: registry.gitlab.gruntech.org/mefyl/elle/trusty-ci
+  image: registry.gitlab.gruntech.org/infinit/elle/trusty-ci
   script:
     - ccache --set-config=cache_dir="$CI_PROJECT_DIR/.ccache"
     - ccache -z
