@@ -35,6 +35,7 @@ reactor = None
 rule_check = None
 rule_tests = None
 valgrind = None
+valgrind_suppressions = None
 zlib_config = None
 zlib_lib = None
 
@@ -94,6 +95,7 @@ def configure(cxx_toolkit = None,
   global openssl_config, openssl_lib_ssl, openssl_lib_crypto, openssl_libs_eay
   global zlib_config, zlib_lib
   global libarchive_config, libarchive_lib
+  global valgrind_suppressions
 
   ## ------------- ##
   ## Architectures ##
@@ -121,6 +123,7 @@ def configure(cxx_toolkit = None,
   else:
     valgrind = None
   set_valgrind(valgrind)
+  valgrind_suppressions = drake.node('valgrind.suppr')
   config = drake.cxx.Config()
   config.add_local_include_path('src')
   cxx_config = drake.cxx.Config(cxx_config)
