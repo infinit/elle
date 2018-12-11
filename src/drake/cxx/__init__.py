@@ -717,6 +717,10 @@ class GccToolkit(Toolkit):
   def c(self):
     return self.compiler_c
 
+  @property
+  def compiler_wrappers(self):
+    return list(self.__compiler_wrappers)
+
   def preprocess_istrue(self, vars, **kwargs):
     return map(lambda e: bool(int(e)),
                self.preprocess_values(vars, **kwargs))
