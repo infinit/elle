@@ -1,5 +1,6 @@
 import drake
 from functools import lru_cache
+from itertools import chain
 import os
 
 class CMakeBuilder(drake.Builder):
@@ -21,8 +22,8 @@ class CMakeBuilder(drake.Builder):
         else drake.path_source() / self.__prefix
     self.__env = dict(os.environ)
     self.__env.update({
-      'CC': self.toolkit.c,
-      'CXX': self.toolkit.cxx,
+      'CC': ' '.join(toolkit.command_c),
+      'CXX': ' '.join(toolkit.command_cxx),
     })
     self.__cmake_cache = drake.node('CMakeCache.txt')
     self.__targets = targets
@@ -49,21 +50,20 @@ class CMakeBuilder(drake.Builder):
     cpath = str(self.__cmake_cache.path())
     if os.path.exists(cpath):
       os.unlink(cpath)
-    with drake.CWDPrinter(self.__prefix):
-      if not self.cmd(' '.join(self.cmake_cmd),
-                      self.cmake_cmd,
-                      cwd = self.__prefix,
-                      env = self.__env):
+    if not self.cmd(' '.join(self.cmake_cmd),
+                    self.cmake_cmd,
+                    cwd = self.__prefix,
+                    env = self.__env):
+      return False
+    if self.__targets is None:
+      return self.cmd('make', self.make_cmd, cwd = self.__prefix)
+    for t in self.__targets:
+      if isinstance(t, str):
+        wd, tgt = '', t
+      else:
+        wd, tgt = t[0], t[1]
+      if not self.cmd('make %s' % tgt, ['make', tgt], cwd = self.__prefix / wd):
         return False
-      if self.__targets is None:
-        return self.cmd('make', self.make_cmd, cwd = self.__prefix)
-      for t in self.__targets:
-        if isinstance(t, str):
-          wd, tgt = '', t
-        else:
-          wd, tgt = t[0], t[1]
-        if not self.cmd('make %s' % tgt, ['make', tgt], cwd = self.__prefix / wd):
-          return False
     return True
 
   @property
