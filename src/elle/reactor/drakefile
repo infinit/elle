@@ -4,6 +4,8 @@ import drake.cxx.boost
 import drake.templating
 import sys
 import os
+
+from drake.gnu import GNUBuilder
 from itertools import chain
 
 config = None

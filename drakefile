@@ -1,11 +1,12 @@
 import collections
 import drake
 import drake.cxx
-import drake.docker
 import drake.cxx.boost
+import drake.docker
 import os
 import sys
 
+from drake.gnu import GNUBuilder
 from itertools import chain
 
 MACOSX_DEPLOYMENT_TARGET = '10.7'
