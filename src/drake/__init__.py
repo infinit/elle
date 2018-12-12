@@ -295,8 +295,6 @@ class Drake:
             else:
               raise Exception('invalid value for '
                               'boolean option %s: %s' % (name, value))
-          elif hasattr(t, '__drake_configure__'):
-            value = getattr(t, '__drake_configure__')(t, value)
           else:
             value = config(value, t)
           kwcfg[name] = value
