@@ -235,12 +235,6 @@ class Drake:
       module = self.__module
       configure = self.__configure
       specs = inspect.getfullargspec(configure)
-      # Load positional arguments
-      for effective, formal in zip(cfg, specs.args):
-        if formal in kwcfg:
-          raise TypeError("%s() got multiple values for argument %r", specs.name, formal)
-        else:
-          kwcfg[formal] = effective
       # Parse arguments
       options = {
         '--jobs': lambda j: self.jobs_set(j),
@@ -276,31 +270,25 @@ class Drake:
             callbacks.append(cb)
           continue
         i += 1
-      # Load default values
-      if specs.defaults is not None:
-        for arg, d in zip(reversed(specs.args),
-                          reversed(specs.defaults)):
-          if arg not in kwcfg:
-            kwcfg[arg] = d
+      # Map arguments
+      effective = inspect.getcallargs(configure, *cfg, **kwcfg)
       # Apply annotations
-      for name in list(kwcfg):
-        if name in specs.annotations:
-          value = kwcfg[name]
-          t = specs.annotations[name]
+      for name, value in effective.items():
+        t = specs.annotations.get(name)
+        if t is not None:
           if t is bool and isinstance(value, str):
             if value.lower() in ['true', 'yes']:
-              value = True
+              effective[name] = True
             elif value.lower() in ['false', 'no']:
-              value = False
+              effective[name] = False
             else:
               raise Exception('invalid value for '
                               'boolean option %s: %s' % (name, value))
           else:
-            value = config(value, t)
-          kwcfg[name] = value
+            effective[name] = config(value, t)
       # Configure
       with self:
-        configure(**kwcfg)
+        configure(**effective)
       # Run callbacks.
       for cb in callbacks:
         cb()
