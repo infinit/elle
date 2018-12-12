@@ -4596,3 +4596,63 @@ class Symlink(Node):
   @property
   def target(self):
     return self.__target
+
+
+def config(c, t, force = False):
+  '''Convert a configure argument to type t.
+
+  It is intended to be systematically used on configure arguments as follow:
+
+  def configure(some_arg):
+    some_arg = drake.config(some_arg, expected_type)
+
+  The semantics of the argument is:
+
+  None requests a default value if possible, by calling t(). In case of an
+  exception, None is returned to disable the feature.
+
+  >>> config(None, list)
+  []
+  >>> config(None, sum) is None
+  True
+
+  False systematically disables the feature by returning None.
+
+  >>> config(False, list) is None
+  True
+
+  True enforces the default value. That is, a default value is constructed by
+  calling t(), but exception will pass through.
+
+  >>> config(True, list)
+  []
+  >>> def f(): raise Exception()
+  >>> config(True, f)
+  Traceback (most recent call last):
+  ...
+  Exception
+
+  A value of the expected type is taken verbatim.
+
+  >>> v = [0, 1]
+  >>> config(v, list) is v
+  True
+
+  Any other value is converted to the expected type by calling t(c).
+
+  >>> config([(0, 1)], dict)
+  {0: 1}
+  '''
+  if c is not False:
+    try:
+      if c is True or c is None:
+        return t()
+      elif isinstance(c, t):
+        return c
+      else:
+        return t(c)
+    except Exception:
+      if c is True:
+        raise
+  if force:
+    raise Exception('{} is required'.format(t.__name__))
