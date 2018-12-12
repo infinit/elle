@@ -2880,7 +2880,14 @@ def _raw_include(path, *args, **kwargs):
     exec(compile('__file__ = "%s"\n' % (path) + f.read(), path, 'exec'), g)
   res = _Module(g)
   if 'configure' in res:
-    res.configure(*args, **kwargs)
+    configure = res.configure
+    effective = inspect.getcallargs(configure, *args, **kwargs)
+    specs = inspect.getfullargspec(configure)
+    for name, value in effective.items():
+      t = specs.annotations.get(name)
+      if t is not None:
+        effective[name] = config(value, t)
+    res.configure(**effective)
   return res
 
 def dot(node, *filters):
