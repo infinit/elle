@@ -19,7 +19,20 @@ namespace elle
     {
       return true;
     };
+  }
 
+  template <typename T>
+  void
+  default_print(std::ostream& o, T&& value)
+  {
+    _details::default_print(
+      o,
+      typeid(T),
+      reinterpret_cast<void const*>(&value));
+  }
+
+  namespace _details
+  {
     template <typename T>
     constexpr
     bool
@@ -51,10 +64,7 @@ namespace elle
     std::enable_if_t<!is_streamable<T>(), void>
     print(std::ostream& o, T&& value)
     {
-      _details::default_print(
-        o,
-        typeid(T),
-        reinterpret_cast<void const*>(&value));
+      elle::default_print(o, std::forward<T>(value));
     }
 
     inline
