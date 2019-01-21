@@ -8,6 +8,7 @@ import sys
 
 
 def bool_cli(foo: bool):
+  print('plop:', foo)
   assert foo is False
 
 with utils.Drake() as d:
@@ -16,12 +17,12 @@ with utils.Drake() as d:
   d.run()
   del sys.argv[-1]
 
-def positional(a = 0, b = 1):
+def positional(a : int = 0, b : int = '1'):
   assert a == b
 
 with utils.Drake() as d:
   d.configure = positional
-  d.run(a = 1)
+  d.run(a = '1')
 
 with utils.Drake() as d:
   d.configure = positional
