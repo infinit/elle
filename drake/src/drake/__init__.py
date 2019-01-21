@@ -235,12 +235,6 @@ class Drake:
       module = self.__module
       configure = self.__configure
       specs = inspect.getfullargspec(configure)
-      # Load positional arguments
-      for effective, formal in zip(cfg, specs.args):
-        if formal in kwcfg:
-          raise TypeError("%s() got multiple values for argument %r", specs.name, formal)
-        else:
-          kwcfg[formal] = effective
       # Parse arguments
       options = {
         '--jobs': lambda j: self.jobs_set(j),
@@ -276,33 +270,25 @@ class Drake:
             callbacks.append(cb)
           continue
         i += 1
-      # Load default values
-      if specs.defaults is not None:
-        for arg, d in zip(reversed(specs.args),
-                          reversed(specs.defaults)):
-          if arg not in kwcfg:
-            kwcfg[arg] = d
+      # Map arguments
+      effective = inspect.getcallargs(configure, *cfg, **kwcfg)
       # Apply annotations
-      for name in list(kwcfg):
-        if name in specs.annotations:
-          value = kwcfg[name]
-          t = specs.annotations[name]
+      for name, value in effective.items():
+        t = specs.annotations.get(name)
+        if t is not None:
           if t is bool and isinstance(value, str):
             if value.lower() in ['true', 'yes']:
-              value = True
+              effective[name] = True
             elif value.lower() in ['false', 'no']:
-              value = False
+              effective[name] = False
             else:
               raise Exception('invalid value for '
                               'boolean option %s: %s' % (name, value))
-          elif hasattr(t, '__drake_configure__'):
-            value = getattr(t, '__drake_configure__')(t, value)
           else:
-            value = t(value)
-          kwcfg[name] = value
+            effective[name] = config(value, t)
       # Configure
       with self:
-        configure(**kwcfg)
+        configure(**effective)
       # Run callbacks.
       for cb in callbacks:
         cb()
@@ -2894,7 +2880,14 @@ def _raw_include(path, *args, **kwargs):
     exec(compile('__file__ = "%s"\n' % (path) + f.read(), path, 'exec'), g)
   res = _Module(g)
   if 'configure' in res:
-    res.configure(*args, **kwargs)
+    configure = res.configure
+    effective = inspect.getcallargs(configure, *args, **kwargs)
+    specs = inspect.getfullargspec(configure)
+    for name, value in effective.items():
+      t = specs.annotations.get(name)
+      if t is not None:
+        effective[name] = config(value, t)
+    res.configure(**effective)
   return res
 
 def dot(node, *filters):
@@ -4596,3 +4589,63 @@ class Symlink(Node):
   @property
   def target(self):
     return self.__target
+
+
+def config(c, t, force = False):
+  '''Convert a configure argument to type t.
+
+  It is intended to be systematically used on configure arguments as follow:
+
+  def configure(some_arg):
+    some_arg = drake.config(some_arg, expected_type)
+
+  The semantics of the argument is:
+
+  None requests a default value if possible, by calling t(). In case of an
+  exception, None is returned to disable the feature.
+
+  >>> config(None, list)
+  []
+  >>> config(None, sum) is None
+  True
+
+  False systematically disables the feature by returning None.
+
+  >>> config(False, list) is None
+  True
+
+  True enforces the default value. That is, a default value is constructed by
+  calling t(), but exception will pass through.
+
+  >>> config(True, list)
+  []
+  >>> def f(): raise Exception()
+  >>> config(True, f)
+  Traceback (most recent call last):
+  ...
+  Exception
+
+  A value of the expected type is taken verbatim.
+
+  >>> v = [0, 1]
+  >>> config(v, list) is v
+  True
+
+  Any other value is converted to the expected type by calling t(c).
+
+  >>> config([(0, 1)], dict)
+  {0: 1}
+  '''
+  if c is not False:
+    try:
+      if c is True or c is None:
+        return t()
+      elif isinstance(c, t):
+        return c
+      else:
+        return t(c)
+    except Exception:
+      if c is True:
+        raise
+  if force:
+    raise Exception('{} is required'.format(t.__name__))
