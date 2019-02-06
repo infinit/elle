@@ -210,6 +210,21 @@ ambivalent_ptr()
   }
 }
 
+static
+void
+make_shared_from_unique()
+{
+  auto constexpr wish = 5271009;
+  auto ptr = std::make_unique<decltype(wish)>(wish);
+  BOOST_CHECK(*ptr == wish);
+  auto s1 = std::make_shared(std::move(ptr));
+  BOOST_CHECK(!ptr);
+  BOOST_CHECK(*s1 == wish);
+  auto s2 = s1;
+  s1.reset();
+  BOOST_CHECK(*s2 == wish);
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -217,4 +232,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(generic_unique_ptr));
   suite.add(BOOST_TEST_CASE(dynamic_pointer_cast));
   suite.add(BOOST_TEST_CASE(ambivalent_ptr));
+  suite.add(BOOST_TEST_CASE(make_shared_from_unique));
 }
