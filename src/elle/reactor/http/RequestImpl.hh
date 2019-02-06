@@ -70,7 +70,7 @@ namespace elle
         write_buffer() override;
         void
         flush(StreamBuffer::Size size) override;
-        elle::WeakBuffer
+        elle::ConstWeakBuffer
         read_buffer() override;
         static
         size_t

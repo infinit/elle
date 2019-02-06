@@ -434,7 +434,7 @@ namespace elle
         }
       }
 
-      elle::WeakBuffer
+      elle::ConstWeakBuffer
       Request::Impl::read_buffer()
       {
         if (!this->_input_available.opened())

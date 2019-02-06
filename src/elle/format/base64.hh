@@ -23,7 +23,7 @@ namespace elle
       `-------------------*/
       public:
         virtual
-        WeakBuffer
+        ConstWeakBuffer
         read_buffer();
         virtual
         WeakBuffer

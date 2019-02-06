@@ -83,7 +83,7 @@ namespace elle
     WeakBuffer
     write_buffer();
     virtual
-    WeakBuffer
+    ConstWeakBuffer
     read_buffer();
     virtual
     void
@@ -105,7 +105,7 @@ namespace elle
     WeakBuffer
     write_buffer();
     virtual
-    WeakBuffer
+    ConstWeakBuffer
     read_buffer();
     virtual
     void
@@ -132,7 +132,7 @@ namespace elle
     WeakBuffer
     write_buffer();
     virtual
-    WeakBuffer
+    ConstWeakBuffer
     read_buffer();
     virtual
     void
@@ -671,7 +671,7 @@ namespace elle
   }
 
   template <typename BufferType>
-  WeakBuffer
+  ConstWeakBuffer
   InputStreamBuffer<BufferType>::read_buffer()
   {
     if (this->_pos < signed(this->_buffers.size()))
@@ -719,7 +719,7 @@ namespace elle
   }
 
   template <typename BufferType>
-  WeakBuffer
+  ConstWeakBuffer
   OutputStreamBuffer<BufferType>::read_buffer()
   {
     throw Exception("buffer is in output mode");
@@ -748,7 +748,7 @@ namespace elle
     return _buffer;
   }
 
-  WeakBuffer
+  ConstWeakBuffer
   OutputStreamBuffer<WeakBuffer>::read_buffer()
   {
     throw Exception("the buffer is in output mode");

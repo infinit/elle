@@ -34,7 +34,7 @@ class ReadStreamBuffer: public elle::StreamBuffer
     {}
 
     virtual
-    elle::WeakBuffer
+    elle::ConstWeakBuffer
     read_buffer()
     {
       if (_read_pos == _read_data.size())
@@ -103,7 +103,7 @@ class WriteStreamBuffer: public elle::StreamBuffer
     }
 
     virtual
-    elle::WeakBuffer
+    elle::ConstWeakBuffer
     read_buffer()
     {
       return elle::WeakBuffer(nullptr, 0);
@@ -151,7 +151,7 @@ class ExceptionBuffer:
   }
 
   virtual
-  elle::WeakBuffer
+  elle::ConstWeakBuffer
   read_buffer()
   {
     throw BeaconException();
