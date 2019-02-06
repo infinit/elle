@@ -6,14 +6,14 @@ namespace elle
 {
   namespace log
   {
-    FileLogger::FileLogger(fs::path base,
+    FileLogger::FileLogger(fs::path base_path,
                            std::string const& log_level,
                            size_t size,
                            size_t rotate,
                            bool append,
                            std::string const& envvar)
       : Super{log_level, envvar}
-      , _base{std::move(base)}
+      , _base{std::move(base_path)}
       , _size{size}
       , _rotate{rotate}
       , _append{append}
