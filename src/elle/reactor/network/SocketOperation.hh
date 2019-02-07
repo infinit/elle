@@ -15,10 +15,13 @@ namespace elle
       /// Abstract specialization of Operation for Sockets.
       ///
       /// This implements Operation::_abort.
-      template <typename AsioSocket>
+      template <typename S>
       class SocketOperation
         : public Operation
       {
+      public:
+        using AsioSocket = S;
+
       public:
         /// Create a SocketOperation.
         ///
