@@ -105,7 +105,7 @@ namespace elle
       | Buffer |
       `-------*/
 
-      WeakBuffer
+      ConstWeakBuffer
       StreamBuffer::read_buffer()
       {
         static auto const size = sizeof(this->_buffer_read) / 3 * 4;

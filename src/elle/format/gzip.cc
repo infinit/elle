@@ -26,7 +26,7 @@ namespace elle
         ~StreamBuffer();
 
         virtual WeakBuffer write_buffer();
-        virtual WeakBuffer read_buffer();
+        virtual ConstWeakBuffer read_buffer();
         virtual void flush(Size size);
 
       private:
@@ -113,7 +113,7 @@ namespace elle
         return WeakBuffer(this->_buffer);
       }
 
-      WeakBuffer
+      ConstWeakBuffer
       StreamBuffer::read_buffer()
       {
         throw elle::Exception("Gzip decompression not handled yet");

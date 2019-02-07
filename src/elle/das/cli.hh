@@ -354,7 +354,7 @@ namespace elle
             {
               return elle::from_string<bool>(v);
             }
-            catch (std::invalid_argument)
+            catch (std::invalid_argument const&)
             {
               throw OptionValueError(this->_option, v, "invalid boolean");
             }
@@ -388,11 +388,11 @@ namespace elle
             {
               return to_int<I>(v, this->_option);
             }
-            catch (std::invalid_argument)
+            catch (std::invalid_argument const&)
             {
               throw OptionValueError(this->_option, v, "invalid integer");
             }
-            catch (std::out_of_range)
+            catch (std::out_of_range const&)
             {
               throw OptionValueError(this->_option, v, "integer out of range");
             }

@@ -74,6 +74,23 @@ namespace std
     return std::make_shared<T, T&&>(std::forward<T>(o));
   }
 
+  /** Make a unique pointer a shared pointer.
+   *
+   *  Dispenses the client code from having to express the pointee type:
+   *
+   *  auto shared = make_shared(unique);
+   *
+   *  As opposed to:
+   *
+   *  std::shared_ptr<Type> shared = unique;
+   */
+  template<typename T>
+  std::shared_ptr<T>
+  make_shared(std::unique_ptr<T> p)
+  {
+    return p;
+  }
+
   template <typename T>
   class ambivalent_ptr
     : public weak_ptr<T>

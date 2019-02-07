@@ -9,23 +9,7 @@
 import drake
 import subprocess
 
-def _find_command(t, v):
-  if v is False:
-    return None
-  elif v is True or v is None:
-    try:
-      return t()
-    except Exception as e:
-      if v is True:
-        raise
-      else:
-        return None
-  else:
-    return t(v)
-
 class Command:
-
-  __drake_configure__ = _find_command
 
   def __init__(self, path = None):
     if isinstance(path, self.__class__):

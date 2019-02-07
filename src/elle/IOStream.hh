@@ -67,7 +67,7 @@ namespace elle
     ///
     /// @return A WeakBuffer from where to read data.
     virtual
-    WeakBuffer
+    ConstWeakBuffer
     read_buffer()  = 0;
 
     /// Synchronize the write buffer to the underlying implementation.
@@ -141,7 +141,7 @@ namespace elle
   protected:
     WeakBuffer
     write_buffer() override;
-    WeakBuffer
+    ConstWeakBuffer
     read_buffer() override;
     void
     flush(Size size) override;
@@ -182,7 +182,7 @@ namespace elle
     void
     write(char* buffer, Size size) = 0;
     // @see PlainStreamBuffer::read_buffer.
-    WeakBuffer
+    ConstWeakBuffer
     read_buffer() override;
     // @see PlainStreamBuffer::write_buffer.
     WeakBuffer

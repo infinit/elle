@@ -657,7 +657,7 @@ ELLE_TEST_SCHEDULED(download_progress)
         server.sem.release();
       delay();
       PERSIST_CHECK_EQUAL(r.progress(), (Request::Progress{0,payload_length,0,0}));
-      for (unsigned i=0; i < payload_length; ++i)
+      for (int i = 0; i < payload_length; ++i)
       {
         server.sem.release();
         delay();

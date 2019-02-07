@@ -68,7 +68,7 @@ namespace elle
   StreamBuffer::underflow()
   {
     ELLE_TRACE_SCOPE("%s: underflow", *this);
-    WeakBuffer b = this->read_buffer();
+    auto b = this->read_buffer();
     if (b.empty())
     {
       setg(0, 0, 0);
@@ -76,7 +76,7 @@ namespace elle
     }
     else
     {
-      auto cp = reinterpret_cast<char*>(b.mutable_contents());
+      auto cp = reinterpret_cast<char*>(elle::unconst(b.contents()));
       setg(cp, cp, cp + b.size());
       return static_cast<unsigned char>(b.contents()[0]);
     }
@@ -116,14 +116,14 @@ namespace elle
   | PlainStreamBuffer |
   `------------------*/
 
-  WeakBuffer
+  ConstWeakBuffer
   PlainStreamBuffer::read_buffer()
   {
     ELLE_TRACE("read at most %s bytes", this->_bufsize)
     {
       Size size = this->read(this->_ibuf.data(), this->_bufsize);
       ELLE_TRACE("got %s bytes", size);
-      return WeakBuffer(this->_ibuf.data(), size);
+      return {this->_ibuf.data(), size};
     }
   }
 
@@ -156,14 +156,14 @@ namespace elle
     delete [] this->_obuf;
   }
 
-  WeakBuffer
+  ConstWeakBuffer
   DynamicStreamBuffer::read_buffer()
   {
     ELLE_TRACE("read at most %s bytes", this->_bufsize)
     {
       Size size = this->read((char *)this->_ibuf, this->_bufsize);
       ELLE_TRACE("got %s bytes", size);
-      return WeakBuffer{this->_ibuf, size};
+      return {this->_ibuf, size};
     }
   }
 
