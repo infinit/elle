@@ -555,6 +555,7 @@ class Path:
     self.__str = None
     self.__virtual = virtual
     self.__volume = volume
+    self.__saved_cwd = []
 
   def canonize(self):
     if self.__canonized is None:
@@ -1084,6 +1085,14 @@ class Path:
 
   def __setstate__(self):
     pass
+
+  def __enter__(self):
+    self.__saved_cwd.append(os.getcwd())
+    os.chdir(str(self))
+    return self
+
+  def __exit__(self, exc_type, exc_value, traceback):
+    os.chdir(self.__saved_cwd.pop())
 
 Path.dot = Path('.')
 Path.dotdot = Path('..')
