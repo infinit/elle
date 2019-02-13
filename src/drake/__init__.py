@@ -257,14 +257,14 @@ class Drake:
           '--complete-options': complete_options,
           '--complete-nodes': complete_nodes,
         }
-        arguments_re = re.compile('--(\\w+)=(.*)')
+        arguments_re = re.compile('--([a-zA-Z0-9_-]+)=(.*)')
         callbacks = []
         i = 0
         args = sys.argv[1:]
         while i < len(args):
           match = arguments_re.match(args[i])
           if match:
-            name = match.group(1)
+            name = match.group(1).replace('-', '_')
             value = match.group(2)
             if name in specs.args:
               kwcfg[name] = value
