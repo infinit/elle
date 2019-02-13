@@ -845,6 +845,14 @@ class Path:
                   virtual = self.__virtual,
                   volume = self.__volume)
 
+  def realpath(self):
+    """The absolute path of the real file represented by this path.
+
+    >>> Path('./foo/../bar').realpath() == '{}/bar'.format(_OS.getcwd())
+    True
+    """
+    return Path(_OS.path.realpath(str(self)))
+
   def touch(self):
       """Create the designated file if it does not exists.
 
