@@ -149,44 +149,51 @@ class Drake:
   def __init__(self,
                root = None,
                jobs = None,
+               workdir = None,
                kill_builders_on_failure = False,
                use_mtime = None,
                adjust_mtime = None,
                adjust_mtime_future = None,
                adjust_mtime_second = None,
   ):
-    if root is None:
-      root = drake.Path('.')
-    self.__jobs = 1
-    self.__jobs_lock = None
-    self.__kill_builders_on_failure = kill_builders_on_failure
-    self.__nodes = {}
-    self.__prefix = drake.Path('.')
-    self.__scheduler = Scheduler(policy = sched.DepthFirst())
-    self.__source = drake.Path(root)
-    self.__use_mtime = self.__option(
-      'MTIME', True, use_mtime)
-    self.__adjust_mtime = self.__option(
-      'ADJUST_MTIME', True, adjust_mtime)
-    self.__adjust_mtime_future = self.__option(
-      'ADJUST_MTIME_FUTURE', False, adjust_mtime_future)
-    self.__adjust_mtime_second = self.__option(
-      'ADJUST_MTIME_SECOND', False, adjust_mtime_second)
-    # Load the root drakefile
-    self.__globals = {}
-    path = str(self.path_source / 'drakefile')
-    if _OS.path.exists(path):
-      with open(path, 'r') as drakefile:
-        with self:
-          exec(compile(drakefile.read(), path, 'exec'),
-               self.__globals)
-      self.__module = _Module(self.__globals)
-      self.__configure = self.__module.configure
-    else:
-      self.__module = _Module({})
-      self.__configure = None
-    if jobs is not None:
-      self.jobs_set(jobs)
+    root = Path(root) if root is not None else Path.dot
+    with contextlib.ExitStack() as ctx:
+      if workdir is not None:
+        self.__workdir = drake.Path(workdir)
+        ctx.enter_context(self.__workdir)
+        root = root.without_prefix(self.__workdir).canonize()
+      else:
+        self.__workdir = None
+      self.__jobs = 1
+      self.__jobs_lock = None
+      self.__kill_builders_on_failure = kill_builders_on_failure
+      self.__nodes = {}
+      self.__prefix = drake.Path('.')
+      self.__scheduler = Scheduler(policy = sched.DepthFirst())
+      self.__source = root
+      self.__use_mtime = self.__option(
+        'MTIME', True, use_mtime)
+      self.__adjust_mtime = self.__option(
+        'ADJUST_MTIME', True, adjust_mtime)
+      self.__adjust_mtime_future = self.__option(
+        'ADJUST_MTIME_FUTURE', False, adjust_mtime_future)
+      self.__adjust_mtime_second = self.__option(
+        'ADJUST_MTIME_SECOND', False, adjust_mtime_second)
+      # Load the root drakefile
+      self.__globals = {}
+      path = str(self.path_source / 'drakefile')
+      if _OS.path.exists(path):
+        with open(path, 'r') as drakefile:
+          with self:
+            exec(compile(drakefile.read(), path, 'exec'),
+                 self.__globals)
+        self.__module = _Module(self.__globals)
+        self.__configure = self.__module.configure
+      else:
+        self.__module = _Module({})
+        self.__configure = None
+      if jobs is not None:
+        self.jobs_set(jobs)
 
   @property
   def kill_builders_on_failure(self):
@@ -229,102 +236,107 @@ class Drake:
       _OS.system(cmd)
 
   def run(self, *cfg, **kwcfg):
-    start = time.time()
-    try:
-      g = self.__globals
-      module = self.__module
-      configure = self.__configure
-      specs = inspect.getfullargspec(configure)
-      # Parse arguments
-      options = {
-        '--jobs': lambda j: self.jobs_set(j),
-        '-j'    : lambda j : self.jobs_set(j),
-        '--help': help,
-        '-h'    : help,
-        '--complete-modes': complete_modes,
-        '--complete-options': complete_options,
-        '--complete-nodes': complete_nodes,
-      }
-      arguments_re = re.compile('--(\\w+)=(.*)')
-      callbacks = []
-      i = 0
-      args = sys.argv[1:]
-      while i < len(args):
-        match = arguments_re.match(args[i])
-        if match:
-          name = match.group(1)
-          value = match.group(2)
-          if name in specs.args:
-            kwcfg[name] = value
+    with contextlib.ExitStack() as ctx:
+      if self.__workdir is not None:
+        ctx.enter_context(self.__workdir)
+      start = time.time()
+      try:
+        g = self.__globals
+        module = self.__module
+        configure = self.__configure
+        specs = inspect.getfullargspec(configure)
+        # Parse arguments
+        options = {
+          '--jobs'   : lambda j: self.jobs_set(j),
+          '-j'       : lambda j: self.jobs_set(j),
+          '--help'   : help,
+          '-h'       : help,
+          '--workdir': lambda w: None,
+          '-w'       : lambda w: None,
+          '--complete-modes': complete_modes,
+          '--complete-options': complete_options,
+          '--complete-nodes': complete_nodes,
+        }
+        arguments_re = re.compile('--([a-zA-Z0-9_-]+)=(.*)')
+        callbacks = []
+        i = 0
+        args = sys.argv[1:]
+        while i < len(args):
+          match = arguments_re.match(args[i])
+          if match:
+            name = match.group(1).replace('-', '_')
+            value = match.group(2)
+            if name in specs.args:
+              kwcfg[name] = value
+              del args[i]
+              continue
+          elif args[i] in options:
+            opt = args[i]
             del args[i]
+            opt_args = []
+            for a in inspect.getfullargspec(options[opt]).args:
+              opt_args.append(args[i])
+              del args[i]
+            cb = options[opt](*opt_args)
+            if cb is not None:
+              callbacks.append(cb)
             continue
-        elif args[i] in options:
-          opt = args[i]
-          del args[i]
-          opt_args = []
-          for a in inspect.getfullargspec(options[opt]).args:
-            opt_args.append(args[i])
-            del args[i]
-          cb = options[opt](*opt_args)
-          if cb is not None:
-            callbacks.append(cb)
-          continue
-        i += 1
-      # Map arguments
-      effective = inspect.getcallargs(configure, *cfg, **kwcfg)
-      # Apply annotations
-      for name, value in effective.items():
-        t = specs.annotations.get(name)
-        if t is not None:
-          if t is bool and isinstance(value, str):
-            if value.lower() in ['true', 'yes']:
-              effective[name] = True
-            elif value.lower() in ['false', 'no']:
-              effective[name] = False
-            else:
-              raise Exception('invalid value for '
-                              'boolean option %s: %s' % (name, value))
-          else:
-            effective[name] = config(value, t)
-      # Configure
-      with self:
-        configure(**effective)
-      # Run callbacks.
-      for cb in callbacks:
-        cb()
-      mode = _MODES['build']
-      i = 0
-      with self:
-        while True:
-          if i < len(args):
-            arg = args[i]
-            if arg[0:2] == '--':
-              arg = arg[2:]
-              if arg in _MODES:
-                mode = _MODES[arg]
+          i += 1
+        # Map arguments
+        effective = inspect.getcallargs(configure, *cfg, **kwcfg)
+        # Apply annotations
+        for name, value in effective.items():
+          t = specs.annotations.get(name)
+          if t is not None:
+            if t is bool and isinstance(value, str):
+              if value.lower() in ['true', 'yes']:
+                effective[name] = True
+              elif value.lower() in ['false', 'no']:
+                effective[name] = False
               else:
-                raise Exception('Unknown option: %s.' % arg)
+                raise Exception('invalid value for '
+                                'boolean option %s: %s' % (name, value))
+            else:
+              effective[name] = config(value, t)
+        # Configure
+        with self:
+          configure(**effective)
+        # Run callbacks.
+        for cb in callbacks:
+          cb()
+        mode = _MODES['build']
+        i = 0
+        with self:
+          while True:
+            if i < len(args):
+              arg = args[i]
+              if arg[0:2] == '--':
+                arg = arg[2:]
+                if arg in _MODES:
+                  mode = _MODES[arg]
+                else:
+                  raise Exception('Unknown option: %s.' % arg)
+                i += 1
+            nodes = []
+            while i < len(args) and args[i][0:2] != '--':
+              nodes.append(node(args[i]))
               i += 1
-          nodes = []
-          while i < len(args) and args[i][0:2] != '--':
-            nodes.append(node(args[i]))
-            i += 1
-          if not nodes:
-            nodes = _DEFAULTS
-          mode(nodes)
-          if i == len(args):
-            break
-    except Exception as e:
-      self.notify(1, str(e), start)
-      print('%s: %s' % (sys.argv[0], e))
-      if 'DRAKE_DEBUG_BACKTRACE' in _OS.environ:
-        import traceback
-        traceback.print_exc()
-      sys.exit(1)
-    except KeyboardInterrupt:
-      print('%s: interrupted.' % sys.argv[0])
-      sys.exit(1)
-    self.notify(0, ' '.join(args), start)
+            if not nodes:
+              nodes = _DEFAULTS
+            mode(nodes)
+            if i == len(args):
+              break
+      except Exception as e:
+        self.notify(1, str(e), start)
+        print('%s: %s' % (sys.argv[0], e))
+        if 'DRAKE_DEBUG_BACKTRACE' in _OS.environ:
+          import traceback
+          traceback.print_exc()
+        sys.exit(1)
+      except KeyboardInterrupt:
+        print('%s: interrupted.' % sys.argv[0])
+        sys.exit(1)
+      self.notify(0, ' '.join(args), start)
 
 EXPLAIN = 'DRAKE_EXPLAIN' in _OS.environ
 def explain(node, reason):
@@ -555,6 +567,7 @@ class Path:
     self.__str = None
     self.__virtual = virtual
     self.__volume = volume
+    self.__saved_cwd = []
 
   def canonize(self):
     if self.__canonized is None:
@@ -845,6 +858,14 @@ class Path:
                   virtual = self.__virtual,
                   volume = self.__volume)
 
+  def realpath(self):
+    """The absolute path of the real file represented by this path.
+
+    >>> Path('./foo/../bar').realpath() == '{}/bar'.format(_OS.getcwd())
+    True
+    """
+    return Path(_OS.path.realpath(str(self)))
+
   def touch(self):
       """Create the designated file if it does not exists.
 
@@ -1076,6 +1097,14 @@ class Path:
 
   def __setstate__(self):
     pass
+
+  def __enter__(self):
+    self.__saved_cwd.append(_OS.getcwd())
+    _OS.chdir(str(self))
+    return self
+
+  def __exit__(self, exc_type, exc_value, traceback):
+    _OS.chdir(self.__saved_cwd.pop())
 
 Path.dot = Path('.')
 Path.dotdot = Path('..')
@@ -3087,7 +3116,18 @@ def add_default_node(node):
 
 
 def run(root, *cfg, **kwcfg):
-  with Drake(root) as d:
+  args = sys.argv[1:]
+  workdir = None
+  for arg in args:
+    if workdir is True:
+      workdir = arg
+    if arg in ['--workdir', '-w']:
+      if workdir is not None:
+        raise Exception('duplicate option {}'.format(arg))
+      workdir = True
+  if workdir is True:
+    raise Exception('missing argument for option {}'.format(arg))
+  with Drake(root = root, workdir = workdir) as d:
     d.run(*cfg, **kwcfg)
 
 
