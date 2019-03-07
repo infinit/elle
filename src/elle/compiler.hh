@@ -9,6 +9,7 @@
 # define ELLE_COMPILER_ATTRIBUTE_NORETURN      __declspec(noreturn)
 # define ELLE_COMPILER_ATTRIBUTE_NO_INLINE     __declspec(noinline)
 # define ELLE_COMPILER_ATTRIBUTE_PURE
+# define ELLE_COMPILER_ATTRIBUTE_WARN_UNUSED_RESULT _Check_return_
 # define ELLE_COMPILER_PRETTY_FUNCTION         __FUNCSIG__
 # define constexpr
 #else // Gcc and clang.
@@ -20,6 +21,8 @@
 # define ELLE_COMPILER_ATTRIBUTE_NORETURN      __attribute__((noreturn))
 # define ELLE_COMPILER_ATTRIBUTE_NO_INLINE     __attribute__((noinline))
 # define ELLE_COMPILER_ATTRIBUTE_PURE          __attribute__((pure))
+# define ELLE_COMPILER_ATTRIBUTE_WARN_UNUSED_RESULT \
+  __attribute__((warn_unused_result))
 # define ELLE_COMPILER_PRETTY_FUNCTION         __PRETTY_FUNCTION__
 #endif
 
