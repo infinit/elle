@@ -45,7 +45,7 @@ namespace elle
         {
           res.emplace_back(from_string<int>(*n));
         }
-        catch (std::invalid_argument)
+        catch (std::invalid_argument const&)
         {}
     boost::sort(res);
     return res;
