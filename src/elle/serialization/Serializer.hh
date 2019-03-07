@@ -758,7 +758,10 @@ namespace elle
                 typename T, typename A>
       auto
       _serialize(C<T, A>& collection)
-        -> decltype(collection.size(), void());
+        -> std::enable_if_t<
+          !std::is_same<C<T, A>, std::unordered_map<T, A>>::value &&
+          !std::is_same<C<T, A>, std::unordered_set<T, A>>::value,
+          decltype(collection.size(), void())>;
 
       /// Serialize or deserialize an arbitrary collection.
       ///

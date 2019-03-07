@@ -1172,7 +1172,10 @@ namespace elle
               typename A>
     auto
     Serializer::_serialize(C<T, A>& collection)
-      -> decltype(collection.size(), void())
+      -> std::enable_if_t<
+        !std::is_same<C<T, A>, std::unordered_map<T, A>>::value &&
+        !std::is_same<C<T, A>, std::unordered_set<T, A>>::value,
+        decltype(collection.size(), void())>
     {
       this->_serialize_collection<S>(collection);
     }
