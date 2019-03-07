@@ -156,6 +156,7 @@ namespace elle
   }
 
   template <typename ... Args>
+  ELLE_COMPILER_ATTRIBUTE_WARN_UNUSED_RESULT
   std::string
   print(std::string const& fmt, Args&& ... args)
   {
