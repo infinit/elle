@@ -31,7 +31,7 @@ def configure(cryptography,
   # Public C++ configuration
   global config
   config = drake.cxx.Config()
-  config.standard = drake.cxx.Config.cxx_14
+  config.standard = drake.cxx.Config.cxx_17
   lib_path = '../../../lib'
 
   # Boost

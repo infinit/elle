@@ -62,7 +62,7 @@ def configure(curl_config,
 
   # Public C++ configuration
   config = drake.cxx.Config()
-  config.standard = drake.cxx.Config.cxx_14
+  config.standard = drake.cxx.Config.cxx_17
   lib_path = '../../../lib'
   config.lib_path(lib_path)
 

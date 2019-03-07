@@ -109,7 +109,7 @@ def configure(zlib_lib,
 
   config = drake.cxx.Config()
   config.add_local_include_path('json/modules/nlohmann/single_include')
-  config.standard = drake.cxx.Config.cxx_14
+  config.standard = drake.cxx.Config.cxx_17
   config.lib_path(lib_path)
   config.define('BOOST_PP_VARIADICS')
   config.define('BOOST_FILESYSTEM_NO_DEPRECATED', '1')

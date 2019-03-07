@@ -1,11 +1,11 @@
 #pragma once
 
 #include <iosfwd>
+#include <utility>
 
 #include <boost/format.hpp>
 
 #include <elle/TypeInfo.hh>
-#include <elle/utils.hh> // as_const
 
 // Work around Clang 3.5.0 bug where having this helper in the elle namespace
 // will find a << overload for elle::serialization::Serializer::SerializerIn
@@ -166,7 +166,7 @@ namespace elle
     feed(boost::format& fmt, T& value)
       -> std::enable_if_t<!std::is_const<T>{}>
     {
-      feed(fmt, as_const(value));
+      feed(fmt, std::as_const(value));
     }
 
     /// Create, feed and return a boost::format.

@@ -19,14 +19,4 @@ namespace elle
   {
     return const_cast<T*>(o);
   }
-
-  /// Add const.
-  /// See std::as_const in C++17.
-  template <typename T>
-  constexpr
-  std::add_const_t<T>&
-  as_const(T& t) noexcept
-  {
-    return t;
-  }
 }

@@ -1,11 +1,12 @@
-#include <elle/Buffer.hh>
 #include <elle/IOStream.hh>
-#include <elle/log.hh>
 
 #include <streambuf>
-
 #include <sys/types.h>
 #include <unistd.h>
+
+#include <elle/Buffer.hh>
+#include <elle/log.hh>
+#include <elle/utils.hh>
 
 ELLE_LOG_COMPONENT("elle.IOStream");
 

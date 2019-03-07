@@ -103,7 +103,7 @@ def configure(openssl_config,
 
   # Global Configuration
   config = drake.cxx.Config()
-  config.standard = drake.cxx.Config.cxx_14
+  config.standard = drake.cxx.Config.cxx_17
   config.lib_path(lib_path)
   config += openssl_config
   if enable_rotation:
