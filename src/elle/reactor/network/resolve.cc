@@ -153,7 +153,7 @@ namespace elle
               resolution.run();
               return resolution.end_points();
             }
-            catch (typename Resolution<Protocol>::TryAgain)
+            catch (typename Resolution<Protocol>::TryAgain const&)
             {
               ELLE_DUMP("trying again to resolve %s:%s", hostname, service);
               --opt.num_attempts;
