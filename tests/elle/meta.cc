@@ -132,6 +132,22 @@ namespace list
   }
 }
 
+namespace repeat
+{
+  static_assert(
+    std::is_same<elle::meta::repeat<int, 0>,
+    elle::meta::List<>>::value);
+  static_assert(
+    std::is_same<elle::meta::repeat<int, 1>,
+    elle::meta::List<int>>::value);
+  static_assert(
+    std::is_same<elle::meta::repeat<int, 3>,
+    elle::meta::List<int, int, int>>::value);
+  static_assert(
+    std::is_same<elle::meta::repeat<bool, 3>,
+    elle::meta::List<bool, bool, bool>>::value);
+}
+
 template <typename T, typename Token>
 struct print_type
 {

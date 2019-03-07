@@ -101,6 +101,24 @@ namespace elle
       static bool constexpr value = Head::value && All<Tail...>::value;
     };
 
+    /*-------.
+    | repeat |
+    `-------*/
+
+    template <typename T, int n, typename ... Head>
+    struct repeat_impl
+    {
+      using type = typename repeat_impl<T, n - 1, Head..., T>::type;
+    };
+
+    template <typename T, typename ... Head>
+    struct repeat_impl<T, 0, Head...>
+    {
+      using type = List<Head...>;
+    };
+
+    template <typename T, int n>
+    using repeat = typename repeat_impl<T, n>::type;
 
     /*------------.
     | static-if.  |
