@@ -187,7 +187,7 @@ namespace elle
           this->Waitable::_raise(this->_exception_thrown);
         this->Waitable::_signal();
       }
-      // Unfortunately, uncaught_exception is broken by elle::exception_string,
+      // Unfortunately, uncaught_exceptions is broken by elle::exception_string,
       // probably because of the coroutines. True on GCC libstdc++ 4.8 at least.
       else if (this->_terminating
                && this->interruptible()

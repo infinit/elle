@@ -32,7 +32,7 @@ namespace elle
         : _action(std::move(action))
         , _name(std::move(name))
         , _status(Status::starting)
-        , _unwinding(false)
+        , _unwinding(0)
         , _exception_storage(new __cxxabiv1::__cxa_eh_globals())
       {}
 

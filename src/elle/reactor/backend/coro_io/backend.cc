@@ -81,7 +81,7 @@ namespace elle
 
             bool starting = this->status() == Status::starting;
             Thread* current = _backend._current;
-            current->_unwinding = std::uncaught_exception();
+            current->_unwinding = std::uncaught_exceptions();
             _caller = current;
             _backend._current = this;
             if (current->_unwinding)
@@ -101,13 +101,13 @@ namespace elle
               ELLE_TRACE("%s: step from %s", *this, *_caller);
               Coro_switchTo_(current->_coro, _coro);
             }
-            // It is unclear whether an uncaught_exception mismatch has any
+            // It is unclear whether an uncaught exception mismatch has any
             // consequence if the code does not explicitly depend on its result.
             // Warn about it just in case.
-            if (_backend._current->_unwinding != std::uncaught_exception())
+            if (_backend._current->_unwinding != std::uncaught_exceptions())
               ELLE_TRACE("step %s: unwind mismatch, expect %s, got %s",
                 *_backend._current, _backend._current->_unwinding,
-                std::uncaught_exception());
+                std::uncaught_exceptions());
           }
 
           void
@@ -118,7 +118,7 @@ namespace elle
             ELLE_ASSERT_EQ(this->status(), Status::running);
             this->status(Status::waiting);
             // Store current exception and stack unwinding state
-            this->_unwinding = std::uncaught_exception();
+            this->_unwinding = std::uncaught_exceptions();
             this->_exception = std::current_exception();
             _backend._current = _caller;
             ELLE_TRACE("%s: yield back to %s", *this, *_backend._current);
@@ -127,10 +127,10 @@ namespace elle
             if (this->_unwinding)
               ELLE_DUMP("yielding %s with in-flight exception", *this);
             Coro_switchTo_(_coro, _backend._current->_coro);
-            if (_backend._current->_unwinding != std::uncaught_exception())
+            if (_backend._current->_unwinding != std::uncaught_exceptions())
               ELLE_TRACE("yield %s: unwind mismatch, expect %s, got %s",
                 *_backend._current, _backend._current->_unwinding,
-                std::uncaught_exception());
+                std::uncaught_exceptions());
           }
 
 

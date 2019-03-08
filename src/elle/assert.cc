@@ -72,7 +72,7 @@ namespace elle
   void
   _abort(std::string const& message, char const* file, int line)
   {
-    if (std::uncaught_exception())
+    if (std::uncaught_exceptions())
     {
       ELLE_WARN(
         "raising an assert (%s at %s:%s) with an exception already in flight",

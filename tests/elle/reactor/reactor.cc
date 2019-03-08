@@ -3516,9 +3516,10 @@ ELLE_TEST_SUITE()
   terminate->add(BOOST_TEST_CASE(test_exception_escape), 0, valgrind(1, 5));
   terminate->add(BOOST_TEST_CASE(test_exception_escape_collateral), 0, valgrind(1, 5));
   terminate->add(BOOST_TEST_CASE(test_terminate_twice), 0, valgrind(1, 5));
-  // See Thread::_step: uncaught_exception is broken, can't make this work. It's
-  // a security anyway ...
-  // terminate->add(BOOST_TEST_CASE(test_terminate_swallowed), 0, valgrind(1, 5));
+  // See Thread::_step: uncaught_exceptions is broken, can't make this
+  // work. It's a security anyway ...
+  // terminate->add(BOOST_TEST_CASE(test_terminate_swallowed), 0, valgrind(1,
+  // 5));
   terminate->add(BOOST_TEST_CASE(test_terminate_not_swallowed_unwinding), 0, valgrind(1, 5));
   terminate->add(BOOST_TEST_CASE(test_terminate_not_swallowed_catch), 0, valgrind(1, 5));
   {

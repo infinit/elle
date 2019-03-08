@@ -154,7 +154,7 @@ namespace elle
             auto const current = this->_backend._current;
             this->_caller = current;
             this->_backend._current = this;
-            current->_unwinding = std::uncaught_exception();
+            current->_unwinding = std::uncaught_exceptions();
             if (current->_unwinding)
               ELLE_DUMP("step %s with in-flight exception", *current);
             // FIXME: factor ?
@@ -173,14 +173,15 @@ namespace elle
               ELLE_TRACE("%s: step from %s", this, *_caller);
               this->_jump(current, this);
             }
-            // It is unclear whether an uncaught_exception mismatch has any
+            // It is unclear whether an uncaught exception mismatch has any
             // consequence if the code does not explicitly depend on its result.
             // Warn about it just in case.
-            if (this->_backend._current->_unwinding != std::uncaught_exception())
+            if (this->_backend._current->_unwinding !=
+                std::uncaught_exceptions())
             {
               ELLE_TRACE("step %s: unwind mismatch, expect %s, got %s",
                 *this->_backend._current, this->_backend._current->_unwinding,
-                std::uncaught_exception());
+                std::uncaught_exceptions());
             }
           }
 
@@ -193,7 +194,7 @@ namespace elle
             ELLE_ASSERT_EQ(this->status(), Status::running);
             this->status(Status::waiting);
             // Store current exception and stack unwinding state
-            this->_unwinding = std::uncaught_exception();
+            this->_unwinding = std::uncaught_exceptions();
             this->_exception = std::current_exception();
             this->_backend._current = this->_caller;
             ELLE_TRACE("%s: yield back to %s", this, *this->_backend._current);
@@ -203,11 +204,12 @@ namespace elle
               ELLE_DUMP("yielding %s with in-flight exception", this);
             this->_jump(this, this->_backend._current);
 
-            if (this->_backend._current->_unwinding != std::uncaught_exception())
+            if (this->_backend._current->_unwinding !=
+                std::uncaught_exceptions())
             {
               ELLE_TRACE("yield %s: unwind mismatch, expect %s, got %s",
                 *this->_backend._current, this->_backend._current->_unwinding,
-                std::uncaught_exception());
+                std::uncaught_exceptions());
             }
           }
 

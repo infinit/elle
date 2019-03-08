@@ -84,7 +84,7 @@ namespace elle
         ELLE_ATTRIBUTE_RW(std::string, name);
         /// Current status.
         ELLE_ATTRIBUTE_R(Status, status);
-        ELLE_ATTRIBUTE_R(bool, unwinding, protected);
+        ELLE_ATTRIBUTE_R(int, unwinding, protected);
         ELLE_ATTRIBUTE_R(std::exception_ptr, exception, protected); // stored when yielding
         ELLE_ATTRIBUTE_R(void*, exception_storage, protected);
       protected:
