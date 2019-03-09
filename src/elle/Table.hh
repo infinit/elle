@@ -10,6 +10,23 @@
 
 namespace elle
 {
+  namespace _details
+  {
+    namespace table
+    {
+      template <int index = 0, typename ... T>
+      constexpr
+      int
+      size(std::tuple<T...> const& t)
+      {
+        if constexpr(index == sizeof...(T))
+          return 1;
+        else
+          return std::get<index>(t) * size<index + 1>(t);
+      }
+    }
+  }
+
   template <typename T, typename ... Indexes>
   class TableImpl
   {
@@ -17,8 +34,12 @@ namespace elle
     using Index = std::tuple<Indexes...>;
 
     TableImpl(Indexes ... dimensions)
-      : _size((product(dimensions...)))
-      , _dimensions(std::forward<Indexes>(dimensions)...)
+      : TableImpl(std::make_tuple(std::forward<Indexes>(dimensions)...))
+    {}
+
+    TableImpl(std::tuple<Indexes...> dimensions)
+      : _size(_details::table::size(dimensions))
+      , _dimensions(std::move(dimensions))
       , _table(new T[this->_size])
     {}
 
