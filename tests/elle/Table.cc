@@ -75,6 +75,50 @@ align()
       BOOST_TEST(std::size_t(&table.at(i, j)) % alignment == 0);
 }
 
+struct Beacon
+{
+  static int instances;
+
+  Beacon(std::string s)
+    : str(s)
+  {
+    ++instances;
+  };
+
+  Beacon(Beacon const& b)
+    : Beacon(b.str)
+  {};
+
+  ~Beacon()
+  {
+    --instances;
+  };
+
+  std::string str;
+};
+
+int Beacon::instances = 0;
+
+static
+void
+initializer()
+{
+  {
+    elle::Table<Beacon, 2> table = {
+      {Beacon("0"), Beacon("1"), Beacon("2")},
+      {Beacon("3"), Beacon("4"), Beacon("5")},
+    };
+    BOOST_TEST(table.dimensions() == std::make_tuple(2, 3));
+    BOOST_TEST(table.at(0, 0).str == "0");
+    BOOST_TEST(table.at(0, 1).str == "1");
+    BOOST_TEST(table.at(0, 2).str == "2");
+    BOOST_TEST(table.at(1, 0).str == "3");
+    BOOST_TEST(table.at(1, 1).str == "4");
+    BOOST_TEST(table.at(1, 2).str == "5");
+  }
+  BOOST_TEST(Beacon::instances == 0);
+}
+
 ELLE_TEST_SUITE()
 {
   auto& master = boost::unit_test::framework::master_test_suite();
@@ -82,4 +126,5 @@ ELLE_TEST_SUITE()
   master.add(BOOST_TEST_CASE(object));
   master.add(BOOST_TEST_CASE(bounds));
   master.add(BOOST_TEST_CASE(align));
+  master.add(BOOST_TEST_CASE(initializer));
 }
