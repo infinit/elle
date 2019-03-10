@@ -117,6 +117,20 @@ initializer()
     BOOST_TEST(table.at(1, 2).str == "5");
   }
   BOOST_TEST(Beacon::instances == 0);
+  {
+    BOOST_CHECK_THROW(
+      (elle::Table<Beacon, 2>{
+        {Beacon("0"), Beacon("1"), Beacon("2")},
+        {Beacon("3"), Beacon("4"), Beacon("5"), Beacon("6")},
+      }), elle::Error);
+    BOOST_TEST(Beacon::instances == 0);
+    BOOST_CHECK_THROW(
+      (elle::Table<Beacon, 2>{
+        {Beacon("0"), Beacon("1"), Beacon("2")},
+        {Beacon("3"), Beacon("4")},
+      }), elle::Error);
+    BOOST_TEST(Beacon::instances == 0);
+  }
 }
 
 ELLE_TEST_SUITE()

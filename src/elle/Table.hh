@@ -2,13 +2,12 @@
 
 #include <memory>
 
-#include <boost/range/irange.hpp>
-
 #include <elle/assert.hh>
 #include <elle/attribute.hh>
 #include <elle/err.hh>
 #include <elle/math.hh>
 #include <elle/meta.hh>
+#include <elle/range.hh>
 
 namespace elle
 {
@@ -52,27 +51,31 @@ namespace elle
       using aligned =
         typename std::aligned_storage<sizeof(T), alignof(T)>::type;
 
-      template <typename T, int dimension>
+      template <typename T, typename Index, int index>
       struct Initializer
       {
+        static constexpr auto dimension = std::tuple_size<Index>::value;
+
         using type = std::initializer_list<
-          typename Initializer<T, dimension - 1>::type>;
+          typename Initializer<T, Index, index - 1>::type>;
         static
         void
-        distribute(type const& init, aligned<T>*& p)
+        distribute(Index const& dimensions, type const& init, aligned<T>*& p)
         {
+          if (init.size() != unsigned(std::get<dimension - index>(dimensions)))
+            elle::err("wrong row size in Table initializer");
           for (auto& e: init)
-            Initializer<T, dimension - 1>::distribute(e, p);
+            Initializer<T, Index, index - 1>::distribute(dimensions, e, p);
         }
       };
 
-      template <typename T>
-      struct Initializer<T, 0>
+      template <typename T, typename Index>
+      struct Initializer<T, Index, 0>
       {
         using type = T;
         static
         void
-        distribute(T const& e, aligned<T>*& p)
+        distribute(Index const& dimensions, T const& e, aligned<T>*& p)
         {
           new (p) T(e);
           p += 1;
@@ -101,18 +104,38 @@ namespace elle
         new (&this->_table[i]) T();
     }
 
-    TableImpl(typename _details::table::Initializer<T, dimension>::type init)
+    TableImpl(
+      typename _details::table::Initializer<T, Index, dimension>::type init)
       : TableImpl(_details::table::dimensions<dimension>(init), true)
     {
       Storage* p = &this->_table[0];
-      _details::table::Initializer<T, dimension>::distribute(
-        std::move(init), p);
+      try
+      {
+        _details::table::Initializer<T, Index, dimension>::distribute(
+          this->_dimensions, std::move(init), p);
+      }
+      catch (...)
+      {
+        for (auto& e : elle::as_range(&this->_table[0], p))
+        {
+          try
+          {
+            reinterpret_cast<T&>(e).~T();
+          }
+          catch (...)
+          {}
+        }
+        this->_table.reset();
+        throw;
+      }
     }
 
     ~TableImpl()
     {
-      for (auto i : boost::irange(0, this->size()))
-        reinterpret_cast<T&>(this->_table[i]).~T();
+      if (this->_table)
+        for (auto& e : elle::as_range(&this->_table[0],
+                                      &this->_table[this->size()]))
+          reinterpret_cast<T&>(e).~T();
     }
 
     T&
