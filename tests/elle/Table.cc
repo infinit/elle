@@ -56,10 +56,30 @@ bounds()
   BOOST_CHECK_THROW(table.at(0, -1), elle::Error);
 }
 
+auto constexpr alignment = 64;
+
+struct alignas(64) Aligned
+{
+  char c;
+};
+
+static
+void
+align()
+{
+  auto constexpr w = 2;
+  auto constexpr h = 2;
+  elle::Table<Aligned, 2> table(w, h);
+  for (auto i : boost::irange(0, w))
+    for (auto j : boost::irange(0, h))
+      BOOST_TEST(std::size_t(&table.at(i, j)) % alignment == 0);
+}
+
 ELLE_TEST_SUITE()
 {
   auto& master = boost::unit_test::framework::master_test_suite();
   master.add(BOOST_TEST_CASE(pod));
   master.add(BOOST_TEST_CASE(object));
   master.add(BOOST_TEST_CASE(bounds));
+  master.add(BOOST_TEST_CASE(align));
 }

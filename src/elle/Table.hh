@@ -2,6 +2,8 @@
 
 #include <memory>
 
+#include <boost/range/irange.hpp>
+
 #include <elle/assert.hh>
 #include <elle/attribute.hh>
 #include <elle/err.hh>
@@ -32,6 +34,7 @@ namespace elle
   {
   public:
     using Index = std::tuple<Indexes...>;
+    using Storage = typename std::aligned_storage<sizeof(T), alignof(T)>::type;
 
     TableImpl(Indexes ... dimensions)
       : TableImpl(std::make_tuple(std::forward<Indexes>(dimensions)...))
@@ -40,8 +43,17 @@ namespace elle
     TableImpl(std::tuple<Indexes...> dimensions)
       : _size(_details::table::size(dimensions))
       , _dimensions(std::move(dimensions))
-      , _table(new T[this->_size])
-    {}
+      , _table(new Storage[this->_size])
+    {
+      for (auto i : boost::irange(0, this->_size))
+        new (&this->_table[i]) T();
+    }
+
+    ~TableImpl()
+    {
+      for (auto i : boost::irange(0, this->size()))
+        reinterpret_cast<T&>(this->_table[i]).~T();
+    }
 
     T&
     at(Indexes const& ... indexes)
@@ -58,7 +70,7 @@ namespace elle
       // is still out of bounds.
       auto const i = this->_index(index, std::make_index_sequence<sizeof...(Indexes)>());
       ELLE_ASSERT_LT(i, this->_size);
-      return this->_table[i];
+      return reinterpret_cast<T&>(this->_table[i]);
     }
 
     T const&
@@ -93,7 +105,7 @@ namespace elle
 
     ELLE_ATTRIBUTE_R(int, size);
     ELLE_ATTRIBUTE_R(std::tuple<Indexes...>, dimensions);
-    ELLE_ATTRIBUTE(std::unique_ptr<T[]>, table);
+    ELLE_ATTRIBUTE(std::unique_ptr<Storage[]>, table);
   };
 
   template <typename T, int dimension, typename ... Indexes>
