@@ -4,8 +4,11 @@
 
 #include <boost/range/irange.hpp>
 
+#include <elle/log.hh>
 #include <elle/range.hh>
 #include <elle/test.hh>
+
+ELLE_LOG_COMPONENT("elle.Table.test");
 
 static
 void
@@ -82,6 +85,7 @@ struct Beacon
   Beacon(std::string s)
     : str(s)
   {
+    ELLE_TRACE("{}: increase Beacon count", this);
     ++instances;
   };
 
@@ -91,6 +95,7 @@ struct Beacon
 
   ~Beacon()
   {
+    ELLE_TRACE("{}: decrease Beacon count", this);
     --instances;
   };
 
@@ -104,7 +109,7 @@ void
 initializer()
 {
   {
-    elle::Table<Beacon, 2> table = {
+    elle::Table<Beacon, 2> table{
       {Beacon("0"), Beacon("1"), Beacon("2")},
       {Beacon("3"), Beacon("4"), Beacon("5")},
     };
@@ -133,6 +138,41 @@ initializer()
   }
 }
 
+struct Thrower
+  : public Beacon
+{
+  Thrower(bool raise)
+    : Beacon("")
+    , _raise(raise)
+  {}
+
+  Thrower(Thrower const& t)
+    : Beacon("")
+    , _raise(t._raise)
+  {
+    if (this->_raise)
+    {
+      ELLE_TRACE("{}: abort Thrower constructor", this);
+      elle::err("nope");
+    }
+  }
+
+  ELLE_ATTRIBUTE(bool, raise);
+};
+
+static
+void
+exceptions()
+{
+  {
+    BOOST_CHECK_THROW((elle::Table<Thrower, 2>({
+        {false, false, false},
+        {false, true, true},
+      })), elle::Error);
+    BOOST_TEST(Beacon::instances == 0);
+  }
+}
+
 ELLE_TEST_SUITE()
 {
   auto& master = boost::unit_test::framework::master_test_suite();
@@ -141,4 +181,5 @@ ELLE_TEST_SUITE()
   master.add(BOOST_TEST_CASE(bounds));
   master.add(BOOST_TEST_CASE(align));
   master.add(BOOST_TEST_CASE(initializer));
+  master.add(BOOST_TEST_CASE(exceptions));
 }
