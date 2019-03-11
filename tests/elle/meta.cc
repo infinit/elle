@@ -148,6 +148,19 @@ namespace repeat
     elle::meta::List<bool, bool, bool>>::value);
 }
 
+namespace fold1
+{
+  static_assert(
+    std::is_same<elle::meta::fold1<0, std::unique_ptr, int>,
+    int>::value);
+  static_assert(
+    std::is_same<elle::meta::fold1<1, std::unique_ptr, int>,
+    std::unique_ptr<int>>::value);
+  static_assert(
+    std::is_same<elle::meta::fold1<2, std::unique_ptr, int>,
+    std::unique_ptr<std::unique_ptr<int>>>::value);
+}
+
 template <typename T, typename Token>
 struct print_type
 {

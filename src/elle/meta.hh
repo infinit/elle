@@ -120,6 +120,28 @@ namespace elle
     template <typename T, int n>
     using repeat = typename repeat_impl<T, n>::type;
 
+    /*-----.
+    | fold |
+    `-----*/
+
+    template <int n, template <typename> typename F, typename I>
+    struct fold1_impl
+    {
+      using type = F<typename fold1_impl<n - 1, F, I>::type>;
+    };
+
+    template <template <typename> typename F, typename I>
+    struct fold1_impl<0, F, I>
+    {
+      using type = I;
+    };
+
+    /// Apply F to I, then to this result recursively `n` times.
+    ///
+    /// i.e. F(F(F(...(F(I))...)))
+    template <int n, template <typename> typename F, typename I>
+    using fold1 = typename fold1_impl<n, F, I>::type;
+
     /*------------.
     | static-if.  |
     `------------*/
