@@ -141,23 +141,36 @@ initializer()
 struct Thrower
   : public Beacon
 {
-  Thrower(bool raise)
+  Thrower(bool ctor, bool dtor)
     : Beacon("")
-    , _raise(raise)
+    , _ctor(ctor)
+    , _dtor(dtor)
   {}
 
   Thrower(Thrower const& t)
     : Beacon("")
-    , _raise(t._raise)
+    , _ctor(t._ctor)
+    , _dtor(t._dtor)
   {
-    if (this->_raise)
+    if (this->_ctor)
     {
       ELLE_TRACE("{}: abort Thrower constructor", this);
       elle::err("nope");
     }
+    elle::unconst(t)._dtor = false;
   }
 
-  ELLE_ATTRIBUTE(bool, raise);
+  ~Thrower() noexcept(false)
+  {
+    if (this->_dtor)
+    {
+      ELLE_TRACE("{}: abort Thrower destructor", this);
+      elle::err("nope");
+    }
+  }
+
+  ELLE_ATTRIBUTE(bool, ctor);
+  ELLE_ATTRIBUTE(bool, dtor);
 };
 
 static
@@ -166,11 +179,20 @@ exceptions()
 {
   {
     BOOST_CHECK_THROW((elle::Table<Thrower, 2>({
-        {false, false, false},
-        {false, true, true},
+        {{false, false}, {false, false}, {false, false}},
+        {{false, false}, {true, false}, {true, false}},
       })), elle::Error);
     BOOST_TEST(Beacon::instances == 0);
   }
+  BOOST_CHECK_THROW(([&]
+                     {
+                       elle::Table<Thrower, 2> t = {
+                         {{false, false}, {false, false}, {false, false}},
+                         {{false, false}, {false, true}, {false, true}},
+                       };
+                       BOOST_TEST(Beacon::instances == 6);
+                     }()), elle::Error);
+  BOOST_TEST(Beacon::instances == 0);
 }
 
 ELLE_TEST_SUITE()

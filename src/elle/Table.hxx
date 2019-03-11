@@ -1,5 +1,7 @@
 #include <boost/range/irange.hpp>
 
+#include <elle/log.hh>
+
 namespace elle
 {
   namespace _details
@@ -117,11 +119,27 @@ namespace elle
 
   template <typename T, typename ... Indexes>
   TableImpl<T, Indexes...>::~TableImpl()
+  noexcept(noexcept(std::declval<T>().~T()))
   {
+    ELLE_LOG_COMPONENT("elle.Table");
+    std::exception_ptr ptr;
     if (this->_table)
       for (auto& e : elle::as_range(&this->_table[0],
                                     &this->_table[this->size()]))
-        reinterpret_cast<T&>(e).~T();
+        try
+        {
+          reinterpret_cast<T&>(e).~T();
+        }
+        catch (...)
+        {
+          if (!ptr)
+            ptr = std::current_exception();
+          else
+            ELLE_WARN("ignoring additional exception destroying {}: {}",
+                      this, elle::exception_string());
+        }
+    if (ptr)
+      std::rethrow_exception(ptr);
   }
 
   template <typename T, typename ... Indexes>
