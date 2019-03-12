@@ -177,6 +177,13 @@ namespace elle
   {}
 
   template <typename T, typename ... Indexes>
+  TableImpl<T, Indexes...>::TableImpl(TableImpl&& src)
+    : _size(src._size)
+    , _dimensions(src._dimensions)
+    , _table(std::move(src._table))
+  {}
+
+  template <typename T, typename ... Indexes>
   template <std::size_t ... S>
   bool
   TableImpl<T, Indexes...>::_check_boundaries(Index const& index, std::index_sequence<S...>)
