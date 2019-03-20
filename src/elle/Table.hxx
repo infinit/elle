@@ -118,6 +118,32 @@ namespace elle
   }
 
   template <typename T, typename ... Indexes>
+  TableImpl<T, Indexes...>::TableImpl(TableImpl const& src)
+    : TableImpl(src._dimensions, true)
+  {
+    Storage* p;
+    try
+    {
+      for (p = &this->_table[0]; p < &this->_table[this->_size]; ++p)
+        new (p) T(reinterpret_cast<T const&>(src._table[p - &this->_table[0]]));
+    }
+    catch (...)
+    {
+      for (auto& e : elle::as_range(&this->_table[0], p))
+      {
+        try
+        {
+          reinterpret_cast<T&>(e).~T();
+        }
+        catch (...)
+        {}
+      }
+      this->_table.reset();
+      throw;
+    }
+  }
+
+  template <typename T, typename ... Indexes>
   TableImpl<T, Indexes...>::~TableImpl()
   noexcept(noexcept(std::declval<T>().~T()))
   {

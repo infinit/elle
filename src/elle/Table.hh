@@ -24,6 +24,7 @@ namespace elle
     TableImpl(std::tuple<Indexes...> dimensions);
     TableImpl(elle::meta::fold1<dimension, std::initializer_list, T> init);
     TableImpl(TableImpl&&);
+    TableImpl(TableImpl const&);
     ~TableImpl() noexcept(noexcept(std::declval<T>().~T()));
 
     T&

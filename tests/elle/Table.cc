@@ -195,6 +195,19 @@ exceptions()
   BOOST_TEST(Beacon::instances == 0);
 }
 
+static
+void
+copy()
+{
+  auto p = std::make_shared<int>(0);
+  {
+    elle::Table<std::shared_ptr<int>, 2> t1({{p, p}, {p, p}});
+    auto t2 = t1;
+    BOOST_TEST(p.use_count() == 9);
+  }
+  BOOST_TEST(p.use_count() == 1);
+}
+
 ELLE_TEST_SUITE()
 {
   auto& master = boost::unit_test::framework::master_test_suite();
@@ -204,4 +217,5 @@ ELLE_TEST_SUITE()
   master.add(BOOST_TEST_CASE(align));
   master.add(BOOST_TEST_CASE(initializer));
   master.add(BOOST_TEST_CASE(exceptions));
+  master.add(BOOST_TEST_CASE(copy));
 }
