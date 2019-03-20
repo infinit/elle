@@ -1,6 +1,7 @@
 #pragma once
 
-#include <elle/printf.hh>
+#include <elle/TypeInfo.hh>
+#include <elle/err.hh>
 
 namespace elle
 {
