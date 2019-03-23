@@ -1,6 +1,7 @@
 #include <boost/range/irange.hpp>
 
 #include <elle/log.hh>
+#include <elle/utils.hh>
 
 namespace elle
 {
@@ -193,6 +194,35 @@ namespace elle
   TableImpl<T, Indexes...>::at(Indexes const& ... indexes) const
   {
     return unconst(*this).at(indexes...);
+  }
+
+
+  template <typename T, typename ... Indexes>
+  T*
+  TableImpl<T, Indexes...>::begin()
+  {
+    return reinterpret_cast<T*>(&this->_table[0]);
+  }
+
+  template <typename T, typename ... Indexes>
+  T const*
+  TableImpl<T, Indexes...>::begin() const
+  {
+    return elle::unconst(*this).begin();
+  }
+
+  template <typename T, typename ... Indexes>
+  T*
+  TableImpl<T, Indexes...>::end()
+  {
+    return this->begin() + this->size();
+  }
+
+  template <typename T, typename ... Indexes>
+  T const*
+  TableImpl<T, Indexes...>::end() const
+  {
+    return elle::unconst(*this).end();
   }
 
   template <typename T, typename ... Indexes>

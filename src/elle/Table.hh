@@ -36,6 +36,15 @@ namespace elle
     T const&
     at(Indexes const& ... indexes) const;
 
+    T*
+    begin();
+    T const*
+    begin() const;
+    T*
+    end();
+    T const*
+    end() const;
+
   private:
     TableImpl(std::tuple<Indexes...> dimensions, bool);
 

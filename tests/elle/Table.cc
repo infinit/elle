@@ -12,6 +12,19 @@ ELLE_LOG_COMPONENT("elle.Table.test");
 
 static
 void
+orientation()
+{
+  auto constexpr w = 5;
+  auto constexpr h = 3;
+  elle::Table<bool, 2> t(w, h);
+  t.at(0, 0) = true;
+  t.at(0, 2) = true;
+  t.at(4, 0) = true;
+  t.at(4, 2) = true;
+}
+
+static
+void
 pod()
 {
   auto constexpr w = 3;
@@ -208,9 +221,26 @@ copy()
   BOOST_TEST(p.use_count() == 1);
 }
 
+static
+void
+iteration()
+{
+  auto constexpr w = 2;
+  auto constexpr h = 3;
+  elle::Table<int, 2> t(w, h);
+  int i = 0;
+  for (auto& e: t)
+    e = i++;
+  BOOST_TEST(i == 6);
+  for (auto i : boost::irange(0, w))
+    for (auto j : boost::irange(0, h))
+      BOOST_TEST(t.at(i, j) == h * i + j);
+}
+
 ELLE_TEST_SUITE()
 {
   auto& master = boost::unit_test::framework::master_test_suite();
+  master.add(BOOST_TEST_CASE(orientation));
   master.add(BOOST_TEST_CASE(pod));
   master.add(BOOST_TEST_CASE(object));
   master.add(BOOST_TEST_CASE(bounds));
@@ -218,4 +248,5 @@ ELLE_TEST_SUITE()
   master.add(BOOST_TEST_CASE(initializer));
   master.add(BOOST_TEST_CASE(exceptions));
   master.add(BOOST_TEST_CASE(copy));
+  master.add(BOOST_TEST_CASE(iteration));
 }
