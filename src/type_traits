@@ -31,6 +31,8 @@ namespace std
   {
     using type = T;
   };
+  template <typename T>
+  using identity_t = T;
 
   /// Extract the signature of a (monomophic) lambda.
   ///

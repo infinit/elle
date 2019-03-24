@@ -56,6 +56,9 @@ static_assert(
 static_assert(
   std::is_same<std::identity<Foo>::type, Foo>::value,
   "identity failed");
+static_assert(
+  std::is_same<std::identity_t<Foo>, Foo>::value,
+  "identity failed");
 
 namespace
 {
