@@ -300,7 +300,7 @@ namespace elle
               elle::IOStream input(content.istreambuf());
               auto json = elle::json::read(input);
             }
-            catch (elle::json::ParseError)
+            catch (elle::json::ParseError const&)
             {
               throw Exception(cmd.path(),
                               reactor::http::StatusCode::Bad_Request,
