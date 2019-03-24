@@ -297,6 +297,23 @@ namespace elle
   };
 
   template <typename T, typename ... Indexes>
+  elle::detail::range<T*>
+  TableImpl<T, Indexes...>::elements()
+  {
+    auto p = reinterpret_cast<T*>(&this->_table[0]);
+    return elle::as_range(p, p + this->size());
+  }
+
+  template <typename T, typename ... Indexes>
+  elle::detail::range<T const*>
+  TableImpl<T, Indexes...>::elements() const
+  {
+    auto p = reinterpret_cast<T const*>(&this->_table[0]);
+    return elle::as_range(p, p + this->size());
+  }
+
+
+  template <typename T, typename ... Indexes>
   TableImpl<T, Indexes...>::TableImpl(std::tuple<Indexes...> dimensions, bool)
     : _size(_details::table::size(dimensions))
     , _dimensions(std::move(dimensions))

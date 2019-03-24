@@ -229,10 +229,12 @@ iteration()
   auto constexpr h = 3;
   auto constexpr d = 4;
   elle::Table<int, 3> t(w, h, d);
-  int i = 0;
-  for (auto e: t)
-    e.second = i++;
-  BOOST_TEST(i == 24);
+  {
+    int i = 0;
+    for (auto e: t)
+      e.second = i++;
+    BOOST_TEST(i == 24);
+  }
   auto it = t.begin();
   for (auto i : boost::irange(0, w))
     for (auto j : boost::irange(0, h))
@@ -244,10 +246,24 @@ iteration()
         BOOST_TEST((*it).second == v);
         ++it;
       }
-  i = 0;
-  auto const& ct = t;
-  for (auto e: ct)
-    BOOST_TEST(e.second == i++);
+  {
+    int i = 0;
+    auto const& ct = t;
+    for (auto e: ct)
+      BOOST_TEST(e.second == i++);
+  }
+  {
+    int i = 0;
+    for (auto& e: t.elements())
+      e = i++;
+    BOOST_TEST(i == 24);
+  }
+  {
+    auto const& ct = t;
+    int i = 0;
+    for (auto const& e: ct.elements())
+      BOOST_TEST(e == i++);
+  }
 }
 
 ELLE_TEST_SUITE()

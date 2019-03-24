@@ -50,6 +50,11 @@ namespace elle
     const_iterator
     end() const;
 
+    elle::detail::range<T*>
+    elements();
+    elle::detail::range<T const*>
+    elements() const;
+
   private:
     TableImpl(std::tuple<Indexes...> dimensions, bool);
 
