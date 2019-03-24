@@ -227,14 +227,27 @@ iteration()
 {
   auto constexpr w = 2;
   auto constexpr h = 3;
-  elle::Table<int, 2> t(w, h);
+  auto constexpr d = 4;
+  elle::Table<int, 3> t(w, h, d);
   int i = 0;
-  for (auto& e: t)
-    e = i++;
-  BOOST_TEST(i == 6);
+  for (auto e: t)
+    e.second = i++;
+  BOOST_TEST(i == 24);
+  auto it = t.begin();
   for (auto i : boost::irange(0, w))
     for (auto j : boost::irange(0, h))
-      BOOST_TEST(t.at(i, j) == h * i + j);
+      for (auto k : boost::irange(0, d))
+      {
+        auto v = h * d * i + d * j + k;
+        BOOST_TEST(t.at(i, j, k) == v);
+        BOOST_TEST((*it).first == std::tuple(i, j, k));
+        BOOST_TEST((*it).second == v);
+        ++it;
+      }
+  i = 0;
+  auto const& ct = t;
+  for (auto e: ct)
+    BOOST_TEST(e.second == i++);
 }
 
 ELLE_TEST_SUITE()

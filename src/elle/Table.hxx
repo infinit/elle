@@ -1,3 +1,5 @@
+#include <type_traits>
+
 #include <boost/range/irange.hpp>
 
 #include <elle/log.hh>
@@ -196,34 +198,103 @@ namespace elle
     return unconst(*this).at(indexes...);
   }
 
+  /*----------.
+  | Iteration |
+  `----------*/
 
   template <typename T, typename ... Indexes>
-  T*
+  typename TableImpl<T, Indexes...>::iterator
   TableImpl<T, Indexes...>::begin()
   {
-    return reinterpret_cast<T*>(&this->_table[0]);
+    return iterator(*this, reinterpret_cast<T*>(&this->_table[0]));
   }
 
   template <typename T, typename ... Indexes>
-  T const*
-  TableImpl<T, Indexes...>::begin() const
-  {
-    return elle::unconst(*this).begin();
-  }
-
-  template <typename T, typename ... Indexes>
-  T*
+  typename TableImpl<T, Indexes...>::iterator
   TableImpl<T, Indexes...>::end()
   {
     return this->begin() + this->size();
   }
 
   template <typename T, typename ... Indexes>
-  T const*
+  typename TableImpl<T, Indexes...>::const_iterator
+  TableImpl<T, Indexes...>::begin() const
+  {
+    return const_iterator(*this, reinterpret_cast<T*>(&this->_table[0]));
+  }
+
+  template <typename T, typename ... Indexes>
+  typename TableImpl<T, Indexes...>::const_iterator
   TableImpl<T, Indexes...>::end() const
   {
-    return elle::unconst(*this).end();
+    return this->begin() + this->size();
   }
+
+  template <typename T, typename ... Indexes>
+  template <template <typename> class Const>
+  struct TableImpl<T, Indexes...>::iterator_base
+  {
+  public:
+    using iterator_category = std::input_iterator_tag;
+    using value_type = std::pair<Index, T>;
+    using difference_type = int;
+    using pointer = std::pair<Index, Const<T>*>;
+    using reference = std::pair<Index, Const<T>&>;
+
+    friend class TableImpl;
+
+    bool
+    operator !=(iterator_base rhs)
+    {
+      return this->_iterator != rhs._iterator;
+    }
+
+    iterator_base
+    operator ++()
+    {
+      ++this->_iterator;
+      return *this;
+    }
+
+    iterator_base
+    operator +(int o)
+    {
+      return {this->_table, this->_iterator + o};
+    }
+
+    reference
+    operator *()
+    {
+      auto offset =
+        this->_iterator - reinterpret_cast<Const<T>*>(&this->_table._table[0]);
+      return {
+        this->_index(offset, std::make_index_sequence<sizeof...(Indexes)>()),
+        *this->_iterator,
+      };
+    }
+
+  private:
+    iterator_base(Const<TableImpl>& table, Const<T>* iterator)
+      : _table(table)
+      , _iterator(iterator)
+    {}
+
+    template <std::size_t ... I>
+    TableImpl::Index
+    _index(int offset, std::index_sequence<I...>)
+    {
+      auto& t = this->_table;
+      return {
+        offset %
+        t._index_offset(std::make_index_sequence<sizeof...(Indexes) - I>()) /
+        t._index_offset(std::make_index_sequence<sizeof...(Indexes) - I - 1>())
+        ...
+      };
+    }
+
+    ELLE_ATTRIBUTE((Const<TableImpl>&), table);
+    ELLE_ATTRIBUTE(Const<T>*, iterator);
+  };
 
   template <typename T, typename ... Indexes>
   TableImpl<T, Indexes...>::TableImpl(std::tuple<Indexes...> dimensions, bool)
@@ -251,15 +322,19 @@ namespace elle
   template <typename T, typename ... Indexes>
   template <std::size_t ... S>
   int
-  TableImpl<T, Indexes...>::_index(Index const& index, std::index_sequence<S...>)
+  TableImpl<T, Indexes...>::_index(
+    Index const& index, std::index_sequence<S...>) const
   {
-    return sum((std::get<S>(index) * this->_index_offset(std::make_index_sequence<sizeof...(Indexes) - S - 1>()))...);
+    return sum(
+      (std::get<S>(index) *
+       this->_index_offset(
+         std::make_index_sequence<sizeof...(Indexes) - S - 1>()))...);
   }
 
   template <typename T, typename ... Indexes>
   template <std::size_t ... S>
   int
-  TableImpl<T, Indexes...>::_index_offset(std::index_sequence<S...>)
+  TableImpl<T, Indexes...>::_index_offset(std::index_sequence<S...>) const
   {
     return product(
       std::get<sizeof...(Indexes) - S - 1>(this->_dimensions)...);

@@ -36,13 +36,18 @@ namespace elle
     T const&
     at(Indexes const& ... indexes) const;
 
-    T*
+    template <template <typename> class Const>
+    class iterator_base;
+    using const_iterator = iterator_base<std::add_const_t>;
+    using iterator = iterator_base<std::identity_t>;;
+
+    iterator
     begin();
-    T const*
+    const_iterator
     begin() const;
-    T*
+    iterator
     end();
-    T const*
+    const_iterator
     end() const;
 
   private:
@@ -54,11 +59,10 @@ namespace elle
     template <std::size_t ... S>
 
     int
-    _index(Index const& index, std::index_sequence<S...>);
+    _index(Index const& index, std::index_sequence<S...>) const;
     template <std::size_t ... S>
-
     int
-    _index_offset(std::index_sequence<S...>);
+    _index_offset(std::index_sequence<S...>) const;
 
     ELLE_ATTRIBUTE_R(int, size);
     ELLE_ATTRIBUTE_R(std::tuple<Indexes...>, dimensions);
