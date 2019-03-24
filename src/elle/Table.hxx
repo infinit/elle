@@ -17,7 +17,7 @@ namespace elle
       size(std::tuple<T...> const& t)
       {
         if constexpr(index == sizeof...(T))
-                      return 1;
+          return 1;
         else
           return std::get<index>(t) * size<index + 1>(t);
       }
@@ -27,10 +27,10 @@ namespace elle
       _dimensions(I const& init, T& res)
       {
         if constexpr(dimension < std::tuple_size<T>::value)
-                    {
-                      std::get<dimension>(res) = init.size();
-                      _dimensions<dimension + 1>(*begin(init), res);
-                    }
+        {
+          std::get<dimension>(res) = init.size();
+          _dimensions<dimension + 1>(*begin(init), res);
+        }
       }
 
       template <int dimension, typename T>
