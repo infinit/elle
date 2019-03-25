@@ -186,7 +186,7 @@ namespace elle
       elle::err("{} is out on bounds ({})", index, this->_dimensions);
     // Don't just check index is in bound, because {2, 2} fits in {1, 100} but
     // is still out of bounds.
-    auto const i = this->_index(index, std::make_index_sequence<sizeof...(Indexes)>());
+    auto const i = this->index(index);
     ELLE_ASSERT_LT(i, this->_size);
     return reinterpret_cast<T&>(this->_table[i]);
   }
@@ -341,6 +341,13 @@ namespace elle
   {
     return ((std::get<S>(index) < std::get<S>(this->_dimensions) &&
              std::get<S>(index) >= 0) && ...);
+  }
+
+  template <typename T, typename ... Indexes>
+  int
+  TableImpl<T, Indexes...>::index(Index const& index) const
+  {
+    return this->_index(index, std::make_index_sequence<sizeof...(Indexes)>());
   }
 
   template <typename T, typename ... Indexes>

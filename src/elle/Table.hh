@@ -55,6 +55,9 @@ namespace elle
     elle::detail::range<T const*>
     elements() const;
 
+    int
+    index(Index const& index) const;
+
   private:
     TableImpl(std::tuple<Indexes...> dimensions, bool);
 

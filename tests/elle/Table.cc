@@ -266,6 +266,19 @@ iteration()
   }
 }
 
+static
+void
+table_index()
+{
+  elle::Table<int, 3> t(2, 3, 4);
+  BOOST_TEST(t.index({0, 0, 0}) == 0);
+  BOOST_TEST(t.index({1, 0, 0}) == 12);
+  BOOST_TEST(t.index({2, 0, 0}) == 24);
+  BOOST_TEST(t.index({0, 1, 0}) == 4);
+  BOOST_TEST(t.index({0, 1, 1}) == 5);
+  BOOST_TEST(t.index({0, 0, 3}) == 3);
+}
+
 ELLE_TEST_SUITE()
 {
   auto& master = boost::unit_test::framework::master_test_suite();
@@ -278,4 +291,5 @@ ELLE_TEST_SUITE()
   master.add(BOOST_TEST_CASE(exceptions));
   master.add(BOOST_TEST_CASE(copy));
   master.add(BOOST_TEST_CASE(iteration));
+  master.add(BOOST_TEST_CASE(table_index));
 }
