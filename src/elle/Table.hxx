@@ -180,7 +180,7 @@ namespace elle
 
   template <typename T, typename ... Indexes>
   T&
-  TableImpl<T, Indexes...>::at(std::tuple<Indexes...> const& index)
+  TableImpl<T, Indexes...>::at(Index const& index)
   {
     if (!this->_check_boundaries(index, std::make_index_sequence<sizeof...(Indexes)>()))
       elle::err("{} is out on bounds ({})", index, this->_dimensions);
@@ -196,6 +196,13 @@ namespace elle
   TableImpl<T, Indexes...>::at(Indexes const& ... indexes) const
   {
     return unconst(*this).at(indexes...);
+  }
+
+  template <typename T, typename ... Indexes>
+  T const&
+  TableImpl<T, Indexes...>::at(Index const& index) const
+  {
+    return unconst(*this).at(index);
   }
 
   /*----------.

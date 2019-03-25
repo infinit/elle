@@ -29,12 +29,12 @@ namespace elle
 
     T&
     at(Indexes const& ... indexes);
-
     T&
-    at(std::tuple<Indexes...> const& index);
-
+    at(Index const& index);
     T const&
     at(Indexes const& ... indexes) const;
+    T const&
+    at(Index const& index) const;
 
     template <template <typename> class Const>
     class iterator_base;
