@@ -100,8 +100,8 @@ namespace elle
     static
     void
     _archive_file(::archive* archive,
-                  bfs::path const& file,
-                  bfs::path const& relative_path)
+                  fs::path const& file,
+                  fs::path const& relative_path)
     {
       ELLE_TRACE_SCOPE("add %s as %s", file, relative_path);
       EntryPtr entry(archive_entry_new());
@@ -149,7 +149,7 @@ namespace elle
     void
     archive(Format format,
             Paths const& files,
-            bfs::path const& path,
+            fs::path const& path,
             Renamer const& renamer,
             Excluder const& excluder,
             bool ignore_failure)
@@ -195,8 +195,8 @@ namespace elle
 #endif
       auto do_archiving = [ignore_failure] (
         ::archive* archive,
-        bfs::path const& absolute,
-        bfs::path const& relative)
+        fs::path const& absolute,
+        fs::path const& relative)
         {
           try
           {
@@ -218,17 +218,17 @@ namespace elle
           root = renamer(root);
         root_entries.insert(root.string());
         ELLE_DEBUG("renamed %s to %s", path, root);
-        if (!bfs::exists(path))
+        if (!fs::exists(path))
         {
           if (ignore_failure)
             continue;
           else
             throw elle::Error(elle::sprintf("path %s does not exist", path));
         }
-        if (bfs::is_directory(path))
+        if (fs::is_directory(path))
         {
-          for (auto const& absolute: bfs::recursive_directory_iterator(path))
-            if (!bfs::is_directory(absolute))
+          for (auto const& absolute: fs::recursive_directory_iterator(path))
+            if (!fs::is_directory(absolute))
             {
               if (excluder && excluder(absolute))
                 ELLE_DEBUG("skipping %s", absolute);
@@ -262,8 +262,8 @@ namespace elle
       }
     }
 
-    void extract(bfs::path const& archive,
-                 boost::optional<bfs::path> const& output)
+    void extract(fs::path const& archive,
+                 boost::optional<fs::path> const& output)
     {
       ELLE_TRACE("[Archive] extracting %s", archive.string());
       ArchiveReadPtr a(archive_read_new());

@@ -1,10 +1,10 @@
 #include <elle/filesystem.hh>
 
 #include <string>
-
-#include <elle/test.hh>
+#include <fstream>
 
 #include <elle/filesystem/TemporaryFile.hh>
+#include <elle/test.hh>
 
 using namespace std::string_literals;
 
@@ -15,12 +15,12 @@ get_native_handle()
   auto const data = "file_descriptor"s;
   elle::filesystem::TemporaryFile file("fd");
   {
-    elle::fs::fstream s(file.path(), std::ios::out);
+    std::fstream s(file.path(), std::ios::out);
     auto fd = elle::fs::get_native_handle(s);
     BOOST_CHECK(write(fd, data.c_str(), data.size()) == signed(data.size()));
   }
   {
-    elle::fs::fstream s(file.path(), std::ios::in);
+    std::fstream s(file.path(), std::ios::in);
     char buf[128];
     s.read(buf, sizeof(buf));
     BOOST_CHECK(s.gcount() == signed(data.size()));

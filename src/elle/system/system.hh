@@ -1,6 +1,6 @@
 #pragma once
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 #include <elle/Buffer.hh>
 #include <elle/system/platform.hh>
@@ -38,17 +38,17 @@ namespace elle
     };
     /// Read a part of a file, from file_offset to either size bytes or EOF
     Buffer
-    read_file_chunk(boost::filesystem::path file_name,
+    read_file_chunk(std::filesystem::path file_name,
                     uint64_t file_offset,
                     uint64_t size);
 
     /// Write at the ond of the file
     void
-    write_file(boost::filesystem::path const& path,
+    write_file(std::filesystem::path const& path,
                Buffer const& buffer = elle::Buffer(0));
 
     void
-    truncate(boost::filesystem::path file_name,
+    truncate(std::filesystem::path file_name,
              uint64_t new_size);
 
     /// A portable FileHandle.
@@ -67,7 +67,7 @@ namespace elle
       ///
       /// @param path The path of the file.
       /// @param mode The OpenMode.
-      FileHandle(boost::filesystem::path const& path, OpenMode mode);
+      FileHandle(std::filesystem::path const& path, OpenMode mode);
       /// Construct a FileHandle from a moved FileHandle.
       FileHandle(FileHandle&& b);
       FileHandle(FileHandle const&) = delete;
@@ -101,7 +101,7 @@ namespace elle
 #endif
       NativeHandle _handle;
       static NativeHandle _invalid;
-      ELLE_ATTRIBUTE_R(boost::filesystem::path, path);
+      ELLE_ATTRIBUTE_R(std::filesystem::path, path);
     };
 
   }

@@ -16,7 +16,7 @@ namespace elle
     /// @param no_compression Whether the content of the archive should be
     ///                       compressed or not.
     void
-    zip(Paths const& files, bfs::path const& path,
+    zip(Paths const& files, fs::path const& path,
         Renamer const& renamer = {},
         bool no_compression = false);
 
@@ -24,6 +24,6 @@ namespace elle
     ///
     /// @see extract.
     void
-    unzip(bfs::path const& path);
+    unzip(fs::path const& path);
   }
 }

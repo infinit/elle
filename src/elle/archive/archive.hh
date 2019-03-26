@@ -12,7 +12,7 @@ namespace elle
 {
   namespace archive ELLE_API
   {
-    namespace bfs = boost::filesystem;
+    namespace fs = std::filesystem;
 
     enum class Format
     {
@@ -24,11 +24,11 @@ namespace elle
     };
 
     /// Set of files.
-    using Paths = std::vector<bfs::path>;
+    using Paths = std::vector<fs::path>;
     /// Map source names to names in the archive.
-    using Renamer = std::function<auto (bfs::path const&) -> bfs::path>;
+    using Renamer = std::function<auto (fs::path const&) -> fs::path>;
     /// Return true to exclude the file.
-    using Excluder = std::function<auto (bfs::path const&) -> bool>;
+    using Excluder = std::function<auto (fs::path const&) -> bool>;
 
     /// Create an archive containing @a list of files.
     ///
@@ -41,7 +41,7 @@ namespace elle
     void
     archive(Format format,
             Paths const& files,
-            bfs::path const& path,
+            fs::path const& path,
             Renamer const& renamer = {},
             Excluder const& excluder = {},
             bool ignore_failure = false);
@@ -55,7 +55,7 @@ namespace elle
     //                unspecified, archive will be extracted in its parent
     ///               folder.
     void
-    extract(bfs::path const& archive,
-            boost::optional<bfs::path> const& output = {});
+    extract(fs::path const& archive,
+            boost::optional<fs::path> const& output = {});
   }
 }

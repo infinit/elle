@@ -73,8 +73,7 @@ namespace elle
 namespace std
 {
   std::size_t
-  hash<boost::filesystem::path>::operator()(
-    boost::filesystem::path const& p) const
+  hash<std::filesystem::path>::operator()(std::filesystem::path const& p) const
   {
     return hash_value(p);
   }

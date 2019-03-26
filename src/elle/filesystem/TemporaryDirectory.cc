@@ -15,23 +15,25 @@ namespace elle
   {
     TemporaryDirectory::TemporaryDirectory()
     {
-      auto fpattern = "%%%%-%%%%-%%%%-%%%%"s;
-      try
-      {
-        fpattern = print("{}-{}",
-                         system::self_path().filename().string(), fpattern);
-      }
-      catch (...)
-      {
-        // No big deal.
-      }
-      auto pattern = fs::temp_directory_path() / fpattern;
-      do
-      {
-        this->_root = fs::unique_path(pattern);
-      }
-      while (!fs::create_directories(this->_root));
-      this->_path = this->_root;
+      auto fpattern =
+        []
+        {
+          try
+          {
+            return print("{}-XXXXXX", system::self_path().filename());
+          }
+          catch (...)
+          {
+            return "elle-XXXXXX"s;
+          }
+        }();
+      auto pattern = (fs::temp_directory_path() / fpattern).string();
+      char buf[pattern.size() + 1];
+      memcpy(buf, pattern.c_str(), pattern.size());
+      buf[pattern.size()] = 0;
+      if (!mkdtemp(buf))
+        elle::err("unable to create temporary directory: {}", strerror(errno));
+      this->_path = buf;
     }
 
     TemporaryDirectory::TemporaryDirectory(std::string const& name)
@@ -43,8 +45,8 @@ namespace elle
 
     TemporaryDirectory::~TemporaryDirectory()
     {
-      ELLE_DUMP("{}: cleaning", this->_root);
-      fs::remove_all(this->_root);
+      ELLE_DUMP("{}: cleaning", this->_path);
+      fs::remove_all(this->_path);
     }
   }
 }

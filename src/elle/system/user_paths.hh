@@ -1,7 +1,7 @@
 #ifndef ELLE_SYSTEM_USER_PATHS_HH
 # define ELLE_SYSTEM_USER_PATHS_HH
 
-# include <boost/filesystem/path.hpp>
+# include <filesystem>
 
 # include <elle/compiler.hh>
 
@@ -14,7 +14,7 @@ namespace elle
     /// environment variables. If that fails too, the last fallback is "/tmp"
     /// on Unix-like OSes, and "C:\" on Windows.
     ELLE_API
-    boost::filesystem::path
+    std::filesystem::path
     home_directory();
 
     /// Returns the user's download path.
@@ -22,7 +22,7 @@ namespace elle
     /// OS X: System call for download path.
     /// Other: home_directory() / Downloads
     ELLE_API
-    boost::filesystem::path
+    std::filesystem::path
     download_directory();
   }
 }

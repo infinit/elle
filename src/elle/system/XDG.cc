@@ -1,5 +1,4 @@
-#include <boost/filesystem/exception.hpp>
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 #include <elle/system/user_paths.hh>
 #include <elle/system/username.hh>
@@ -15,8 +14,8 @@ namespace elle
 {
   namespace system
   {
-    namespace bfs = ::boost::filesystem;
     using namespace std::literals;
+    namespace fs = std::filesystem;
 
     namespace
     {
@@ -32,42 +31,41 @@ namespace elle
 
     XDG::XDG(std::string const& company,
              std::string const& product,
-             boost::optional<std::string> const& prefix)
+             std::optional<std::string> const& prefix)
       : _company(company)
       , _product(product)
-      , _environment_variable_prefix(upper(prefix.get_value_or(product)))
+      , _environment_variable_prefix(upper(prefix.value_or(product)))
     {}
 
-    bfs::path
+    fs::path
     XDG::home_dir() const
     {
       auto const home =
         os::getenv(this->_environment_variable_prefix + "_HOME", ""s);
-      return home.empty() ? home_directory() : home;
+      return home.empty() ? home_directory() : fs::path(home);
     }
 
-    bfs::path
+    fs::path
     XDG::_xdg(std::string const& type,
-              bfs::path const& def) const
+              fs::path const& def) const
     {
       auto const from_env = elle::os::getenv(
         this->_environment_variable_prefix + "_" + type, ""s);
       auto const xdg = elle::os::getenv("XDG_" + type, ""s);
-      auto const dir = !from_env.empty()
-        ? from_env
-        :!xdg.empty()
-          ? bfs::path(xdg) / this->_company / this->_product
-          : def;
+      auto const dir = !from_env.empty() ?
+        fs::path(from_env) :
+        !xdg.empty() ?
+        fs::path(xdg) / this->_company / this->_product : def;
       try
       {
-        if (bfs::exists(dir) && !bfs::is_directory(dir))
+        if (exists(dir) && !is_directory(dir))
           elle::err("not a directory: %s", dir.string());
-        bfs::create_directories(dir);
-        boost::system::error_code erc;
-        bfs::permissions(dir, bfs::add_perms | bfs::owner_write, erc);
-        return bfs::canonical(dir);
+        create_directories(dir);
+        std::error_code erc;
+        permissions(dir, fs::perms::owner_write, fs::perm_options::add, erc);
+        return canonical(dir);
       }
-      catch (bfs::filesystem_error& e)
+      catch (fs::filesystem_error const& e)
       {
         std::string env = !from_env.empty()
           ? std::string{this->_environment_variable_prefix + "_"}
@@ -80,50 +78,49 @@ namespace elle
       }
     }
 
-    bfs::path
+    fs::path
     XDG::_xdg_home(std::string const& type,
-                   bfs::path const& def) const
+                   fs::path const& def) const
     {
       return this->_xdg(
         type + "_HOME",
         this->home_dir() / def / this->_company / this->_product);
     }
 
-    bfs::path
+    fs::path
     XDG::cache_dir() const
     {
       return this->_xdg_home("CACHE", ".cache");
     }
 
-    bfs::path
+    fs::path
     XDG::config_dir() const
     {
       return this->_xdg_home("CONFIG", ".config");
     }
 
-    bfs::path
+    fs::path
     XDG::data_dir() const
     {
       return this->_xdg_home("DATA", ".local/share");
     }
 
-    bfs::path
+    fs::path
     XDG::tmp_dir() const
     {
       return elle::os::getenv("TMPDIR", "/tmp");;
     }
 
-    bfs::path
-    XDG::runtime_dir(boost::optional<std::string> fallback) const
+    fs::path
+    XDG::runtime_dir(std::optional<std::string> fallback) const
     {
       return this->_xdg(
         "RUNTIME_DIR",
-        fallback
-        ? *fallback
-        : this->tmp_dir() / this->_product / elle::system::username());
+        fallback ? fs::path(*fallback) :
+        this->tmp_dir() / this->_product / elle::system::username());
     }
 
-    bfs::path
+    fs::path
     XDG::state_dir() const
     {
       return this->_xdg_home("STATE", ".local/state");

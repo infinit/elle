@@ -5,11 +5,9 @@
 
 using elle::filesystem::TemporaryDirectory;
 
-namespace fs = boost::filesystem;
-
 BOOST_AUTO_TEST_CASE(simple)
 {
-  auto path = fs::path{};
+  auto path = std::filesystem::path{};
   {
     TemporaryDirectory d;
     path = d.path();
@@ -20,7 +18,7 @@ BOOST_AUTO_TEST_CASE(simple)
 
 BOOST_AUTO_TEST_CASE(named)
 {
-  fs::path path;
+  std::filesystem::path path;
   {
     TemporaryDirectory d("some-name");
     path = d.path();

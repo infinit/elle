@@ -1,6 +1,6 @@
 #pragma once
 
-#include <boost/filesystem.hpp>
+#include <filesystem>
 
 #include <elle/cryptography/Cipher.hh>
 #include <elle/cryptography/fwd.hh>
@@ -32,16 +32,16 @@ namespace elle
 
       /// Import an EVP public key from a path.
       ::EVP_PKEY*
-      import_public(boost::filesystem::path const& path);
+      import_public(std::filesystem::path const& path);
       /// Import an EVP private key from a path, decrypting the
       /// key with the provided passphrase.
       ::EVP_PKEY*
-      import_private(boost::filesystem::path const& path,
+      import_private(std::filesystem::path const& path,
                      std::string const& passphrase);
       /// Export an EVP public key.
       void
       export_public(::EVP_PKEY* key,
-                    boost::filesystem::path const& path);
+                    std::filesystem::path const& path);
       /// Export an EVP private key, providing a passphrase and the cipher
       /// function to use to encrypt the key with..
       ///
@@ -50,7 +50,7 @@ namespace elle
       ///          mode.
       void
       export_private(::EVP_PKEY* key,
-                     boost::filesystem::path const& path,
+                     std::filesystem::path const& path,
                      std::string const& passphrase,
                      ::EVP_CIPHER const* cipher);
     }

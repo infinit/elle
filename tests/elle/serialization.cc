@@ -595,7 +595,7 @@ namespace
   void
   path()
   {
-    using boost::filesystem::path;
+    using std::filesystem::path;
     round_trip<Format>(path("/tmp/elle"));
     round_trip<Format>(path("../.."));
     round_trip<Format>(path("./elle"));

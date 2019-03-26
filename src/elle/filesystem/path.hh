@@ -1,8 +1,7 @@
 #pragma once
 
+#include <filesystem>
 #include <vector>
-
-#include <boost/filesystem/path.hpp>
 
 #include <elle/filesystem.hh>
 #include <elle/serialization/Serializer.hh>
@@ -47,9 +46,9 @@ namespace elle
 namespace std
 {
   template<>
-  struct ELLE_API hash<boost::filesystem::path>
+  struct ELLE_API hash<std::filesystem::path>
   {
     std::size_t
-    operator()(boost::filesystem::path const& p) const;
+    operator()(std::filesystem::path const& p) const;
   };
 }

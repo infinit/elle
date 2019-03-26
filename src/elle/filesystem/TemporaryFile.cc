@@ -1,3 +1,5 @@
+#include <fstream>
+
 #include <elle/filesystem/TemporaryFile.hh>
 
 namespace elle
@@ -8,8 +10,7 @@ namespace elle
       : _directory(name)
     {
       this->_path = this->_directory.path() / name;
-      // Check that it is ok.
-      fs::ofstream(this->_path);
+      std::ofstream(this->_path);
     }
   }
 }

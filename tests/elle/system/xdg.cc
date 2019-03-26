@@ -12,37 +12,36 @@
 #include <elle/os/environ.hh>
 #include <elle/system/XDG.hh>
 
-namespace bfs = ::boost::filesystem;
 using namespace std::literals;
 
 namespace suffixes
 {
   static
-  bfs::path
+  std::filesystem::path
   cache(std::string const& company, std::string const& product)
   {
-    return bfs::path(".cache"s) / company / product;
+    return std::filesystem::path(".cache"s) / company / product;
   }
 
   static
-  bfs::path
+  std::filesystem::path
   data(std::string const& company, std::string const& product)
   {
-    return bfs::path(".local"s) / "share" / company / product;
+    return std::filesystem::path(".local"s) / "share" / company / product;
   }
 
   static
-  bfs::path
+  std::filesystem::path
   state(std::string const& company, std::string const& product)
   {
-    return bfs::path(".local"s) / "state" / company / product;
+    return std::filesystem::path(".local"s) / "state" / company / product;
   }
 
   static
-  bfs::path
+  std::filesystem::path
   config(std::string const& company, std::string const& product)
   {
-    return bfs::path(".config"s) / company / product;
+    return std::filesystem::path(".config"s) / company / product;
   }
 }
 
@@ -52,7 +51,7 @@ static auto const product = "elle";
 static
 void
 test(elle::system::XDG const& xdg,
-     bfs::path const& home)
+     std::filesystem::path const& home)
 {
   BOOST_CHECK_EQUAL(xdg.cache_dir(), home / suffixes::cache(company, product));
   BOOST_CHECK_EQUAL(xdg.data_dir(), home / suffixes::data(company, product));
@@ -71,7 +70,7 @@ BOOST_AUTO_TEST_CASE(base)
 BOOST_AUTO_TEST_CASE(global_env)
 {
   elle::filesystem::TemporaryDirectory d;
-  auto const path = bfs::canonical(d.path()).string();
+  auto const path = canonical(d.path()).string();
   elle::os::setenv("ELLE_HOME", path);
   auto xdg = elle::system::XDG("infinit", "elle");
   test(xdg, path);
@@ -80,7 +79,7 @@ BOOST_AUTO_TEST_CASE(global_env)
 BOOST_AUTO_TEST_CASE(specific_env)
 {
   elle::filesystem::TemporaryDirectory d;
-  auto const path = bfs::canonical(d.path()).string();
+  auto const path = canonical(d.path()).string();
   auto set = [&] (std::string var) {
     elle::os::setenv(var, path);
     return elle::system::XDG(company, product);

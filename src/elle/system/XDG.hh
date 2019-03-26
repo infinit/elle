@@ -1,9 +1,7 @@
 #pragma once
 
+#include <optional>
 #include <string>
-
-#include <boost/optional.hpp>
-#include <boost/filesystem/path.hpp>
 
 #include <elle/attribute.hh>
 
@@ -33,41 +31,41 @@ namespace elle
       ///                                    be upper cased).
       XDG(std::string const& company,
           std::string const& product,
-          boost::optional<std::string> const& environment_variable_prefix = {});
+          std::optional<std::string> const& environment_variable_prefix = {});
 
       XDG(XDG const&) = default;
 
     public:
-      boost::filesystem::path
+      std::filesystem::path
       home_dir() const;
 
     public:
-      boost::filesystem::path
+      std::filesystem::path
       _xdg(std::string const& type,
-           boost::filesystem::path const& def) const;
+           std::filesystem::path const& def) const;
 
     protected:
-      boost::filesystem::path
+      std::filesystem::path
       _xdg_home(std::string const& type,
-                boost::filesystem::path const& def) const;
+                std::filesystem::path const& def) const;
 
     public:
-      boost::filesystem::path
+      std::filesystem::path
       cache_dir() const;
 
-      boost::filesystem::path
+      std::filesystem::path
       config_dir() const;
 
-      boost::filesystem::path
+      std::filesystem::path
       data_dir() const;
 
-      boost::filesystem::path
+      std::filesystem::path
       tmp_dir() const;
 
-      boost::filesystem::path
-      runtime_dir(boost::optional<std::string> fallback = {}) const;
+      std::filesystem::path
+      runtime_dir(std::optional<std::string> fallback = {}) const;
 
-      boost::filesystem::path
+      std::filesystem::path
       state_dir() const;
 
     private:

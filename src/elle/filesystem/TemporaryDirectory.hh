@@ -27,7 +27,6 @@ namespace elle
 
     private:
       ELLE_ATTRIBUTE_R(fs::path, path);
-      ELLE_ATTRIBUTE(fs::path, root);
     };
   }
 }

@@ -8,8 +8,6 @@
 
 using namespace std::literals;
 
-namespace bfs = boost::filesystem;
-
 BOOST_AUTO_TEST_CASE(content)
 {
   auto foo = elle::filesystem::TemporaryFile{"foo"};

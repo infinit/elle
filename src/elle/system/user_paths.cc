@@ -15,7 +15,7 @@ namespace elle
 {
   namespace system
   {
-    boost::filesystem::path
+    std::filesystem::path
     home_directory()
     {
 #if defined(ELLE_WINDOWS)
@@ -44,7 +44,7 @@ namespace elle
 #endif
     }
 
-    boost::filesystem::path
+    std::filesystem::path
     download_directory()
     {
       auto candidate_dir = home_directory() / "Downloads";

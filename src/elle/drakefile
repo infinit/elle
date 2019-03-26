@@ -113,6 +113,7 @@ def configure(zlib_lib,
   config.lib_path(lib_path)
   config.define('BOOST_PP_VARIADICS')
   config.define('BOOST_FILESYSTEM_NO_DEPRECATED', '1')
+  config.lib('stdc++fs')
   config += boost.config()
   if valgrind is not None:
     config.define('VALGRIND')
@@ -294,8 +295,6 @@ def configure(zlib_lib,
     'os/environ.hh',
     'os/exceptions.cc',
     'os/exceptions.hh',
-    'os/file.cc',
-    'os/file.hh',
     'os/locale.cc',
     'os/locale.hh',
     'print.cc',

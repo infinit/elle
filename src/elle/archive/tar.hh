@@ -10,13 +10,13 @@ namespace elle
     ///
     /// @see archive.
     void
-    tar(Paths const& files, bfs::path const& path,
+    tar(Paths const& files, fs::path const& path,
         Renamer const& renamer = {});
 
     /// Helper for tar extraction.
     ///
     /// @see extract.
     void
-    untar(bfs::path const& path);
+    untar(fs::path const& path);
   }
 }

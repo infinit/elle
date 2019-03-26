@@ -41,7 +41,7 @@ namespace elle
       `----------*/
 
       ::EVP_PKEY*
-      import_public(boost::filesystem::path const& path)
+      import_public(std::filesystem::path const& path)
       {
         // Make sure the cryptographic system is set up.
         cryptography::require();
@@ -80,7 +80,7 @@ namespace elle
       }
 
       ::EVP_PKEY*
-      import_private(boost::filesystem::path const& path,
+      import_private(std::filesystem::path const& path,
                      std::string const& passphrase)
       {
         // Make sure the cryptographic system is set up.
@@ -122,7 +122,7 @@ namespace elle
 
       void
       export_public(::EVP_PKEY* key,
-                    boost::filesystem::path const& path)
+                    std::filesystem::path const& path)
       {
         // Make sure the cryptographic system is set up.
         cryptography::require();
@@ -152,7 +152,7 @@ namespace elle
 
       void
       export_private(::EVP_PKEY* key,
-                     boost::filesystem::path const& path,
+                     std::filesystem::path const& path,
                      std::string const& passphrase,
                      ::EVP_CIPHER const* cipher)
       {

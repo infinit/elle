@@ -21,7 +21,7 @@ namespace elle
         `----------*/
 
         PublicKey
-        import_K(boost::filesystem::path const& path,
+        import_K(std::filesystem::path const& path,
                  Oneway const digest_algorithm)
         {
           ::EVP_PKEY* key = cryptography::pem::import_public(path);
@@ -37,7 +37,7 @@ namespace elle
         }
 
         PrivateKey
-        import_k(boost::filesystem::path const& path,
+        import_k(std::filesystem::path const& path,
                  std::string const& passphrase,
                  Oneway const digest_algorithm)
         {
@@ -55,7 +55,7 @@ namespace elle
         }
 
         KeyPair
-        import_keypair(boost::filesystem::path const& path,
+        import_keypair(std::filesystem::path const& path,
                        std::string const& passphrase,
                        Oneway const digest_algorithm)
         {
@@ -69,7 +69,7 @@ namespace elle
 
         void
         export_K(PublicKey const& K,
-                 boost::filesystem::path const& path)
+                 std::filesystem::path const& path)
         {
           cryptography::pem::export_public(K.key().get(),
                                            path);
@@ -77,7 +77,7 @@ namespace elle
 
         void
         export_k(PrivateKey const& k,
-                 boost::filesystem::path const& path,
+                 std::filesystem::path const& path,
                  std::string const& passphrase,
                  Cipher const& cipher,
                  Mode const& mode)
@@ -90,7 +90,7 @@ namespace elle
 
         void
         export_keypair(KeyPair const& keypair,
-                       boost::filesystem::path const& path,
+                       std::filesystem::path const& path,
                        std::string const& passphrase,
                        Cipher const& cipher,
                        Mode const& mode)

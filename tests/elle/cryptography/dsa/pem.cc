@@ -24,7 +24,7 @@
 
 static
 void
-_fill(boost::filesystem::path const& path,
+_fill(std::filesystem::path const& path,
       std::string const& content = "")
 {
   std::ofstream stream(path.generic_string(),
