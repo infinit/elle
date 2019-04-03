@@ -104,7 +104,7 @@ class Scope:
           try:
             self.__coroutine.wait(self.__coroutines)
             break
-          except Exception as e:
+          except BaseException as e:
             exception = e
             if self.__exception_join:
               continue
