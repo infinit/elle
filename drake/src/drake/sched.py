@@ -104,7 +104,7 @@ class Scope:
           try:
             self.__coroutine.wait(self.__coroutines)
             break
-          except Exception as e:
+          except BaseException as e:
             exception = e
             if self.__exception_join:
               continue
@@ -181,6 +181,9 @@ class DepthFirst(SchedulingPolicy):
 
   def remove(self, coroutine):
     self.__coroutines.remove(coroutine)
+    children = self.__hierarchy.pop(coroutine, None)
+    if children is not None:
+      assert len(children) == 0
     self.__hierarchy.get(coroutine.parent).remove(coroutine)
 
   def freeze(self, coroutine):
@@ -191,10 +194,8 @@ class DepthFirst(SchedulingPolicy):
 
   def round(self):
     c = self.__round(self.__hierarchy.get(None, ()))
-    if c is None:
-      return ()
-    else:
-      return (c,)
+    assert c is not None
+    return (c,)
 
   def __round(self, coroutines):
     for coroutine in coroutines:
@@ -207,6 +208,7 @@ class DepthFirst(SchedulingPolicy):
         return sub
       if active:
         return coroutine
+
 
 class Scheduler:
 

@@ -51,6 +51,7 @@ class Config:
         if model is None:
             self.__debug = False
             self.__export_dynamic = None
+            self.__pic = None
             self._includes = {}
             self.__local_includes = sched.OrderedSet()
             self.__optimization = 1
@@ -71,6 +72,7 @@ class Config:
         else:
             self.__debug = model.__debug
             self.__export_dynamic = model.__export_dynamic
+            self.__pic = model.__pic
             self._includes = dict(model._includes)
             self.__local_includes = sched.OrderedSet(model.__local_includes)
             self.__optimization = model.__optimization
@@ -426,6 +428,7 @@ class Config:
         res = Config(self)
         res.__debug = self.__debug or rhs.__debug
         res.__export_dynamic = merge_bool('export_dynamic')
+        res.__pic = merge_bool('pic')
         res.__use_local_libcxx = merge_bool('_Config__use_local_libcxx')
 
         for w in chain(self.__warnings._Warnings__warnings,
@@ -497,6 +500,14 @@ class Config:
     @export_dynamic.setter
     def export_dynamic(self, val):
         self.__export_dynamic = bool(val)
+
+    @property
+    def pic(self):
+        return self.__pic
+
+    @pic.setter
+    def pic(self, val):
+        self.__pic = bool(val)
 
     @property
     def libs(self):
@@ -767,7 +778,7 @@ class GccToolkit(Toolkit):
 
       return 'o'
 
-  def cppflags(self, cfg):
+  def cppflags(self, cfg, pic = False):
       res = []
       # Make it nicer to the human reader: sort.
       for name, v in sorted(cfg.defines().items()):
@@ -781,6 +792,10 @@ class GccToolkit(Toolkit):
           # have file appearing in both sides.
           res += [flag, utils.shell_escape(drake.path_source() / include)]
           res += [flag, utils.shell_escape(include)]
+      # Some libraries (eg Qt) check if PIC is enabled with macros, so enabling
+      # PIC even when preprocessing is important.
+      if pic or cfg.pic and self.os is not drake.os.windows:
+        res.append('-fPIC')
       return res
 
   def cflags(self, cfg):
@@ -851,12 +866,9 @@ class GccToolkit(Toolkit):
     return res
 
   def compile(self, cfg, src, obj, c = False, pic = False):
-    extraflags = []
-    if pic and self.os is not drake.os.windows:
-      extraflags.append('-fPIC')
     return (self.command_c if c else self.command_cxx) + \
-      cfg.flags + self.cppflags(cfg) + self.cflags(cfg) + \
-      extraflags + ['-c', str(src), '-o', str(obj)]
+      cfg.flags + self.cppflags(cfg, pic = pic) + self.cflags(cfg) + \
+      ['-c', str(src), '-o', str(obj)]
 
   def render_resource(self, src, obj):
     return [self.res, src, '-O', 'coff', '-o', str(obj)]
@@ -1282,7 +1294,7 @@ class VisualToolkit(Toolkit):
     return self.__version
 
 def deps_handler(builder, path, t, data):
-    return node(path, t)
+  return node(path, t)
 
 profile_deps = drake.Profile('C++ dependencies exploration')
 

@@ -311,4 +311,30 @@ class TestScheduler(unittest.TestCase):
     else:
       assert False
 
+  def test_terminate_scope(self):
+    sync1 = sched.Semaphore(0)
+    sync2 = sched.Semaphore(0)
+    beacon = [False]
+    scheduler = sched.Scheduler()
+    coro = None
+    def sub():
+      try:
+        sync1.unlock()
+        sync2.lock()
+        coro.terminate()
+        sched.Semaphore(0).lock()
+      finally:
+        beacon[0] = True
+    def main():
+      try:
+        with sched.Scope() as scope:
+          scope.run(sub, 'sub')
+          sync1.lock()
+          sync2.unlock()
+      except:
+        assert beacon[0]
+        raise
+    coro = sched.Coroutine(main, 'main', scheduler)
+    scheduler.run()
+
 unittest.main()
