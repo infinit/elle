@@ -79,6 +79,8 @@ def pretty_listing(c, any = False, quantifier = None):
   '''
   Format a collection of items into a human readable listing.
 
+  >>> pretty_listing([])
+  'none'
   >>> pretty_listing(['foo'])
   'foo'
   >>> pretty_listing(['foo', 'bar'])
@@ -98,7 +100,9 @@ def pretty_listing(c, any = False, quantifier = None):
     c = list(c)
   elif not isinstance(c, (list, tuple)):
     return str(c)
-  if len(c) == 1:
+  if len(c) == 0:
+    return 'none'
+  elif len(c) == 1:
     return str(c[0])
   return '{}{} {} {}'.format(
     '{} of '.format('any' if any else 'all') if quantifier else '',
