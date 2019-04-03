@@ -1,3 +1,5 @@
+#include <fstream>
+
 #include <boost/range/adaptor/transformed.hpp>
 
 #include <elle/das/cli.hh>
@@ -63,10 +65,10 @@ public:
   void
   sync() override
   {
-    ::fdatasync(get_native_handle(this->_f));
+    ::fdatasync(std::filesystem::get_native_handle(this->_f));
   }
 
-  ELLE_ATTRIBUTE(elle::fs::fstream, f);
+  ELLE_ATTRIBUTE(std::fstream, f);
 };
 
 static
@@ -93,7 +95,7 @@ _nbd_file(elle::fs::path path,
     server.listening().connect(
       [path = *port_file] (int port)
       {
-        elle::fs::fstream f(path, std::ios::out);
+        std::fstream f(path, std::ios::out);
         if (!f)
           elle::err("unable to open port file: {}", path);
         elle::print(f, "{}\n", port);
