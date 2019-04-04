@@ -35,20 +35,50 @@ namespace elle
 
     Indentation::~Indentation() = default;
 
+    // Boost thread local storage yields loads of valgrind error. The language
+    // feature does not, but performance should be checked.
+#ifndef ELLE_LOG_BOOST_TLS
+    static
+    auto
+    indentations()
+    {
+      static thread_local auto res =
+        std::make_shared<std::unordered_map<void*, std::unique_ptr<int>>>();
+      return res;
+    }
+#endif
+
     class PlainIndentation
       : public Indentation
     {
     public:
+#ifdef ELLE_LOG_BOOST_TLS
       PlainIndentation()
         : _indentation()
       {}
+#else
+      PlainIndentation()
+        : _indentations(indentations())
+        , _indentation(*this->_indentations->insert(
+                         {this, std::make_unique<int>(1)}).first->second)
+      {}
+
+      ~PlainIndentation()
+      {
+        this->_indentations->erase(this);
+      }
+#endif
 
       int&
       indentation() override
       {
+#ifdef ELLE_LOG_BOOST_TLS
         if (!this->_indentation.get())
           this->_indentation.reset(new int(1));
         return *this->_indentation;
+#else
+        return this->_indentation;
+#endif
       }
 
       void
@@ -70,8 +100,16 @@ namespace elle
         return std::make_unique<PlainIndentation>();
       }
 
+
     private:
-      boost::thread_specific_ptr<int> _indentation;
+#ifdef ELLE_LOG_BOOST_TLS
+      ELLE_ATTRIBUTE(boost::thread_specific_ptr<int>, indentation);
+#else
+      ELLE_ATTRIBUTE(
+        (std::shared_ptr<std::unordered_map<void*, std::unique_ptr<int>>>),
+        indentations);
+      ELLE_ATTRIBUTE(int&, indentation);
+#endif
     };
 
     int&
