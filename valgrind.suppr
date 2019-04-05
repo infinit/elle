@@ -43,7 +43,6 @@
    fun:__wcsnlen_avx2
    fun:wcsnrtombs
    fun:_ZNKSt7codecvtIwc11__mbstate_tE6do_outERS0_PKwS4_RS4_PcS6_RS6_
-   fun:_ZN5boost10filesystem11path_traits7convertEPKwS3_RNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERKSt7codecvtIwc11__mbstate_tE
    ...
 }
 
@@ -52,6 +51,5 @@
    Memcheck:Cond
    fun:__wmemchr_avx2
    fun:_ZNKSt7codecvtIwc11__mbstate_tE6do_outERS0_PKwS4_RS4_PcS6_RS6_
-   fun:_ZN5boost10filesystem11path_traits7convertEPKwS3_RNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEERKSt7codecvtIwc11__mbstate_tE
    ...
 }
