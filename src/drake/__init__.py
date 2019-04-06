@@ -1320,6 +1320,8 @@ class _BaseNodeType(type, metaclass = _BaseNodeTypeType):
         raise Exception('%s %s redefined as a %s' % fmt)
       return node
 
+_DEBUG_NODE_CREATION = \
+  [v for v in os.environ.get('DRAKE_DEBUG_NODE_CREATION', '').split(',') if v]
 
 class BaseNode(object, metaclass = _BaseNodeType):
 
@@ -1340,6 +1342,11 @@ class BaseNode(object, metaclass = _BaseNodeType):
   def __init__(self, name):
     """Create a node with the given name."""
     self.__name = name = name.canonize()
+    for n in _DEBUG_NODE_CREATION:
+      if self.__name == n:
+        import traceback
+        print('{} was instantiated at (most recent call last):'.format(self))
+        traceback.print_stack()
     if next(iter(name)) == '..':
       raise Exception('%s is outside the build directory' % name)
     if Drake.current.nodes.setdefault(self.__name, self) is not self:
