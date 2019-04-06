@@ -9,6 +9,7 @@
 import collections
 import greenlet
 import os
+import signal
 import sys
 import threading
 import time
@@ -163,6 +164,14 @@ class RoundRobin(SchedulingPolicy):
       assert coro is not None
       yield coro
 
+  def dump(self):
+    def dump(c, idt = 0):
+      print('{}{}{}'.format('  ' * idt, c, ' (frozen)' if c.frozen else ''))
+      for child in self.__hierarchy.get(c, []):
+        dump(child, idt + 1)
+    for root in self.__hierarchy.get(None, []):
+      dump(root)
+
 
 class DepthFirst(SchedulingPolicy):
 
@@ -209,6 +218,14 @@ class DepthFirst(SchedulingPolicy):
       if active:
         return coroutine
 
+  def dump(self):
+    def dump(c, idt = 0):
+      print('{}{}{}'.format('  ' * idt, c, ' (frozen)' if c.frozen else ''))
+      for child in self.__hierarchy.get(c, []):
+        dump(child, idt + 1)
+    for root in self.__hierarchy.get(None, []):
+      dump(root)
+
 
 class Scheduler:
 
@@ -225,9 +242,14 @@ class Scheduler:
     self.__lock = threading.Condition()
     self.__policy = policy or RoundRobin()
     self.__scheduled = []
+    signal.signal(signal.SIGHUP, lambda s, f: self.dump())
 
   def __str__(self):
     return 'Scheduler'
+
+  def dump(self):
+    print('SCHEDULER STATUS DUMP')
+    self.__policy.dump()
 
   def reset(self):
     self.__coroutines_frozen = set()
