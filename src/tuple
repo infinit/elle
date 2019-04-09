@@ -8,19 +8,14 @@ namespace std
   namespace
   {
     template <int idx, typename T>
-    std::enable_if_t<idx == tuple_size<T>::value, void>
-    print_tuple(std::ostream&, T const&, bool)
-    {};
-
-    template <int idx, typename T>
-    std::enable_if_t<idx < tuple_size<T>::value, void>
+    void
     print_tuple(std::ostream& s, T const& v, bool first)
     {
-      if (!first)
-        elle::print(s, ", %s", get<idx>(v));
-      else
-        elle::print(s, "%s", get<idx>(v));
-      print_tuple<idx + 1, T>(s, v, false);
+      if constexpr(idx < tuple_size<T>::value)
+      {
+        elle::print(s, first ? "{}" : ", {}", get<idx>(v));
+        print_tuple<idx + 1, T>(s, v, false);
+      }
     };
   }
 
