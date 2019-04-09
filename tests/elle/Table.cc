@@ -279,6 +279,23 @@ table_index()
   BOOST_TEST(t.index({0, 0, 3}) == 3);
 }
 
+static
+void
+assign()
+{
+  auto p = std::make_shared<int>();
+  elle::Table<std::shared_ptr<int>, 2> t = {
+    {p, p},
+    {p, p},
+  };
+  t = elle::Table<std::shared_ptr<int>, 2>(3, 3);
+  BOOST_TEST(t.dimensions() == std::tuple(3, 3));
+  BOOST_TEST(p.use_count() == 1);
+  BOOST_TEST(!t.at(0, 0));
+  BOOST_TEST(!t.at(1, 1));
+  BOOST_TEST(!t.at(2, 2));
+}
+
 ELLE_TEST_SUITE()
 {
   auto& master = boost::unit_test::framework::master_test_suite();
@@ -292,4 +309,5 @@ ELLE_TEST_SUITE()
   master.add(BOOST_TEST_CASE(copy));
   master.add(BOOST_TEST_CASE(iteration));
   master.add(BOOST_TEST_CASE(table_index));
+  master.add(BOOST_TEST_CASE(assign));
 }

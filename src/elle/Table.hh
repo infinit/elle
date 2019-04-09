@@ -58,6 +58,9 @@ namespace elle
     int
     index(Index const& index) const;
 
+    TableImpl&
+    operator =(TableImpl const& table);
+
   private:
     TableImpl(std::tuple<Indexes...> dimensions, bool);
 

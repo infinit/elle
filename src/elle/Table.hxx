@@ -351,6 +351,15 @@ namespace elle
   }
 
   template <typename T, typename ... Indexes>
+  TableImpl<T, Indexes...>&
+  TableImpl<T, Indexes...>::operator =(TableImpl const& table)
+  {
+    this->~TableImpl();
+    new (this) TableImpl(table);
+    return *this;
+  }
+
+  template <typename T, typename ... Indexes>
   template <std::size_t ... S>
   int
   TableImpl<T, Indexes...>::_index(
