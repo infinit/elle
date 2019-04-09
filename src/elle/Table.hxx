@@ -1,5 +1,8 @@
 #include <type_traits>
 
+#include <range/v3/numeric/accumulate.hpp>
+#include <range/v3/view/zip.hpp>
+
 #include <boost/range/irange.hpp>
 
 #include <elle/log.hh>
@@ -153,8 +156,7 @@ namespace elle
     ELLE_LOG_COMPONENT("elle.Table");
     std::exception_ptr ptr;
     if (this->_table)
-      for (auto& e : elle::as_range(&this->_table[0],
-                                    &this->_table[this->size()]))
+      for (auto& e : this->_range())
         try
         {
           reinterpret_cast<T&>(e).~T();
@@ -169,6 +171,24 @@ namespace elle
         }
     if (ptr)
       std::rethrow_exception(ptr);
+  }
+
+  template <typename T, typename ... Indexes>
+  elle::detail::range<T*>
+  TableImpl<T, Indexes...>::_range()
+  {
+    return elle::as_range(
+      reinterpret_cast<T*>(&this->_table[0]),
+      reinterpret_cast<T*>(&this->_table[this->size()]));
+  }
+
+  template <typename T, typename ... Indexes>
+  elle::detail::range<T const*>
+  TableImpl<T, Indexes...>::_range() const
+  {
+    return elle::as_range(
+      reinterpret_cast<T const*>(&this->_table[0]),
+      reinterpret_cast<T const*>(&this->_table[this->size()]));
   }
 
   template <typename T, typename ... Indexes>
@@ -357,6 +377,26 @@ namespace elle
     this->~TableImpl();
     new (this) TableImpl(table);
     return *this;
+  }
+
+  template <typename T, typename ... Indexes>
+  bool
+  TableImpl<T, Indexes...>::operator ==(TableImpl const& rhs) const
+  {
+    if (this->dimensions() != rhs.dimensions())
+      return false;
+    return
+      ranges::accumulate(
+        ranges::view::zip_with([] (T const& a, T const& b) { return a == b; },
+                               this->_range(), rhs._range()),
+        true, [] (bool a, bool b) { return a && b; });
+  }
+
+  template <typename T, typename ... Indexes>
+  bool
+  TableImpl<T, Indexes...>::operator !=(TableImpl const& table) const
+  {
+    return !(*this == table);
   }
 
   template <typename T, typename ... Indexes>

@@ -61,6 +61,11 @@ namespace elle
     TableImpl&
     operator =(TableImpl const& table);
 
+    bool
+    operator ==(TableImpl const& table) const;
+    bool
+    operator !=(TableImpl const& table) const;
+
   private:
     TableImpl(std::tuple<Indexes...> dimensions, bool);
 
@@ -74,6 +79,11 @@ namespace elle
     template <std::size_t ... S>
     int
     _index_offset(std::index_sequence<S...>) const;
+    elle::detail::range<T*>
+    _range();
+    elle::detail::range<T const*>
+    _range() const;
+
 
     ELLE_ATTRIBUTE_R(int, size);
     ELLE_ATTRIBUTE_R(std::tuple<Indexes...>, dimensions);

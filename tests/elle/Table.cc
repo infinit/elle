@@ -296,6 +296,26 @@ assign()
   BOOST_TEST(!t.at(2, 2));
 }
 
+static
+void
+compare()
+{
+  elle::Table<int, 2> t1 = {
+    {0, 1},
+    {2, 3},
+  };
+  BOOST_TEST(t1 == t1);
+  auto t2 = t1;
+  BOOST_TEST(t1 == t2);
+  BOOST_TEST(t2 == t1);
+  t2.at(1, 0) = 4;
+  BOOST_TEST(t1 != t2);
+  BOOST_TEST(t2 != t1);
+  t1.at(1, 0) = 4;
+  BOOST_TEST(t1 == t2);
+  BOOST_TEST(t2 == t1);
+}
+
 ELLE_TEST_SUITE()
 {
   auto& master = boost::unit_test::framework::master_test_suite();
@@ -310,4 +330,5 @@ ELLE_TEST_SUITE()
   master.add(BOOST_TEST_CASE(iteration));
   master.add(BOOST_TEST_CASE(table_index));
   master.add(BOOST_TEST_CASE(assign));
+  master.add(BOOST_TEST_CASE(compare));
 }
