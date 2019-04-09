@@ -65,10 +65,18 @@ bounds()
   auto constexpr h = 2;
   elle::Table<int, 2> table(w, h);
   for (auto i : boost::irange(0, w))
+  {
+    BOOST_TEST(!table.contains({i, h}));
     BOOST_CHECK_THROW(table.at(i, h), elle::Error);
+  }
   for (auto j : boost::irange(0, h))
+  {
+    BOOST_TEST(!table.contains({w, j}));
     BOOST_CHECK_THROW(table.at(w, j), elle::Error);
+  }
+  BOOST_TEST(!table.contains({-1, 0}));
   BOOST_CHECK_THROW(table.at(-1, 0), elle::Error);
+  BOOST_TEST(!table.contains({0, -1}));
   BOOST_CHECK_THROW(table.at(0, -1), elle::Error);
 }
 

@@ -53,6 +53,9 @@ namespace elle
   | Access |
   `-------*/
   public:
+    /// Whether \a index is within the table boundaries.
+    bool
+    contains(Index const& index) const;
     /// Get element at index (\a indexes...).
     T&
     at(Indexes const& ... indexes);
@@ -69,7 +72,7 @@ namespace elle
   private:
     template <std::size_t ... S>
     bool
-    _check_boundaries(Index const& index, std::index_sequence<S...>);
+    _contains(Index const& index, std::index_sequence<S...>) const;
 
   /*---------.
   | Indexing |

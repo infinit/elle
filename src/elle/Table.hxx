@@ -210,8 +210,8 @@ namespace elle
   T&
   TableImpl<T, Indexes...>::at(Index const& index)
   {
-    if (!this->_check_boundaries(index, std::make_index_sequence<sizeof...(Indexes)>()))
-      elle::err("{} is out on bounds ({})", index, this->_dimensions);
+    if (!this->contains(index))
+      elle::err("{} is out of bounds {}", index, this->_dimensions);
     // Don't just check index is in bound, because {2, 2} fits in {1, 100} but
     // is still out of bounds.
     auto const i = this->index(index);
@@ -234,9 +234,19 @@ namespace elle
   }
 
   template <typename T, typename ... Indexes>
+  bool
+  TableImpl<T, Indexes...>::contains(Index const& index) const
+  {
+    return this->_contains(
+      index, std::make_index_sequence<sizeof...(Indexes)>());
+  }
+
+
+  template <typename T, typename ... Indexes>
   template <std::size_t ... S>
   bool
-  TableImpl<T, Indexes...>::_check_boundaries(Index const& index, std::index_sequence<S...>)
+  TableImpl<T, Indexes...>::_contains(Index const& index,
+                                              std::index_sequence<S...>) const
   {
     return ((std::get<S>(index) < std::get<S>(this->_dimensions) &&
              std::get<S>(index) >= 0) && ...);
