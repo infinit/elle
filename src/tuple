@@ -38,6 +38,49 @@ namespace std
     return std::apply(f, std::forward<T>(tuple));
   }
 
+  /*----------.
+  | Operators |
+  `----------*/
+
+  template <typename ... T1, typename ... T2, typename F>
+  auto
+  tuple_zip(std::tuple<T1...> const& lhs, std::tuple<T2...> const& rhs,
+            F const& f)
+  {
+    return std::apply(
+      [&] (auto&& ... l)
+      {
+        return std::apply(
+          [&] (auto&& ... r)
+          {
+            return std::tuple(f(l, r)...);
+          },
+          rhs);
+      },
+          lhs);
+  }
+
+#define ELLE_TUPLE_OP(Op)                                               \
+  template <typename ... T1, typename ... T2>                           \
+  auto                                                                  \
+  operator Op(std::tuple<T1...> const& lhs,                             \
+              std::tuple<T2...> const& rhs)                             \
+  {                                                                     \
+    return tuple_zip(                                                   \
+      lhs, rhs,                                                         \
+      [] (auto&& l, auto&& r)                                           \
+      {                                                                 \
+        return std::forward<decltype(l)>(l) Op                          \
+          std::forward<decltype(r)>(r);                                 \
+      });                                                               \
+  }
+  ELLE_TUPLE_OP(+);
+  ELLE_TUPLE_OP(-);
+  ELLE_TUPLE_OP(*);
+  ELLE_TUPLE_OP(/);
+  ELLE_TUPLE_OP(%);
+#undef ELLE_TUPLE_OP
+
   /*----.
   | Any |
   `----*/
