@@ -10,6 +10,10 @@
 
 namespace elle
 {
+  /*--------.
+  | Helpers |
+  `--------*/
+
   namespace _details
   {
     namespace table
@@ -83,6 +87,10 @@ namespace elle
     }
   }
 
+  /*-------------.
+  | Construction |
+  `-------------*/
+
   template <typename T, typename ... Indexes>
   TableImpl<T, Indexes...>::TableImpl(Indexes ... dimensions)
     : TableImpl(std::make_tuple(std::forward<Indexes>(dimensions)...))
@@ -122,6 +130,13 @@ namespace elle
       throw;
     }
   }
+
+  template <typename T, typename ... Indexes>
+  TableImpl<T, Indexes...>::TableImpl(TableImpl&& src)
+    : _size(src._size)
+    , _dimensions(src._dimensions)
+    , _table(std::move(src._table))
+  {}
 
   template <typename T, typename ... Indexes>
   TableImpl<T, Indexes...>::TableImpl(TableImpl const& src)
@@ -174,22 +189,15 @@ namespace elle
   }
 
   template <typename T, typename ... Indexes>
-  elle::detail::range<T*>
-  TableImpl<T, Indexes...>::_range()
-  {
-    return elle::as_range(
-      reinterpret_cast<T*>(&this->_table[0]),
-      reinterpret_cast<T*>(&this->_table[this->size()]));
-  }
+  TableImpl<T, Indexes...>::TableImpl(std::tuple<Indexes...> dimensions, bool)
+    : _size(_details::table::size(dimensions))
+    , _dimensions(std::move(dimensions))
+    , _table(new Storage[this->_size])
+  {}
 
-  template <typename T, typename ... Indexes>
-  elle::detail::range<T const*>
-  TableImpl<T, Indexes...>::_range() const
-  {
-    return elle::as_range(
-      reinterpret_cast<T const*>(&this->_table[0]),
-      reinterpret_cast<T const*>(&this->_table[this->size()]));
-  }
+  /*-------.
+  | Access |
+  `-------*/
 
   template <typename T, typename ... Indexes>
   T&
@@ -223,6 +231,60 @@ namespace elle
   TableImpl<T, Indexes...>::at(Index const& index) const
   {
     return unconst(*this).at(index);
+  }
+
+  template <typename T, typename ... Indexes>
+  template <std::size_t ... S>
+  bool
+  TableImpl<T, Indexes...>::_check_boundaries(Index const& index, std::index_sequence<S...>)
+  {
+    return ((std::get<S>(index) < std::get<S>(this->_dimensions) &&
+             std::get<S>(index) >= 0) && ...);
+  }
+
+  /*---------.
+  | Indexing |
+  `---------*/
+
+  template <typename T, typename ... Indexes>
+  int
+  TableImpl<T, Indexes...>::index(Index const& index) const
+  {
+    return this->_index(index, std::make_index_sequence<sizeof...(Indexes)>());
+  }
+
+  template <typename T, typename ... Indexes>
+  template <std::size_t ... S>
+  int
+  TableImpl<T, Indexes...>::_index(
+    Index const& index, std::index_sequence<S...>) const
+  {
+    return sum(
+      (std::get<S>(index) *
+       this->_index_offset(
+         std::make_index_sequence<sizeof...(Indexes) - S - 1>()))...);
+  }
+
+  template <typename T, typename ... Indexes>
+  template <std::size_t ... S>
+  int
+  TableImpl<T, Indexes...>::_index_offset(std::index_sequence<S...>) const
+  {
+    return product(
+      std::get<sizeof...(Indexes) - S - 1>(this->_dimensions)...);
+  }
+
+  /*-------------.
+  | Modification |
+  `-------------*/
+
+  template <typename T, typename ... Indexes>
+  TableImpl<T, Indexes...>&
+  TableImpl<T, Indexes...>::operator =(TableImpl const& table)
+  {
+    this->~TableImpl();
+    new (this) TableImpl(table);
+    return *this;
   }
 
   /*----------.
@@ -339,45 +401,27 @@ namespace elle
     return elle::as_range(p, p + this->size());
   }
 
-
   template <typename T, typename ... Indexes>
-  TableImpl<T, Indexes...>::TableImpl(std::tuple<Indexes...> dimensions, bool)
-    : _size(_details::table::size(dimensions))
-    , _dimensions(std::move(dimensions))
-    , _table(new Storage[this->_size])
-  {}
-
-  template <typename T, typename ... Indexes>
-  TableImpl<T, Indexes...>::TableImpl(TableImpl&& src)
-    : _size(src._size)
-    , _dimensions(src._dimensions)
-    , _table(std::move(src._table))
-  {}
-
-  template <typename T, typename ... Indexes>
-  template <std::size_t ... S>
-  bool
-  TableImpl<T, Indexes...>::_check_boundaries(Index const& index, std::index_sequence<S...>)
+  elle::detail::range<T*>
+  TableImpl<T, Indexes...>::_range()
   {
-    return ((std::get<S>(index) < std::get<S>(this->_dimensions) &&
-             std::get<S>(index) >= 0) && ...);
+    return elle::as_range(
+      reinterpret_cast<T*>(&this->_table[0]),
+      reinterpret_cast<T*>(&this->_table[this->size()]));
   }
 
   template <typename T, typename ... Indexes>
-  int
-  TableImpl<T, Indexes...>::index(Index const& index) const
+  elle::detail::range<T const*>
+  TableImpl<T, Indexes...>::_range() const
   {
-    return this->_index(index, std::make_index_sequence<sizeof...(Indexes)>());
+    return elle::as_range(
+      reinterpret_cast<T const*>(&this->_table[0]),
+      reinterpret_cast<T const*>(&this->_table[this->size()]));
   }
 
-  template <typename T, typename ... Indexes>
-  TableImpl<T, Indexes...>&
-  TableImpl<T, Indexes...>::operator =(TableImpl const& table)
-  {
-    this->~TableImpl();
-    new (this) TableImpl(table);
-    return *this;
-  }
+  /*-----------.
+  | Comparison |
+  `-----------*/
 
   template <typename T, typename ... Indexes>
   bool
@@ -397,26 +441,5 @@ namespace elle
   TableImpl<T, Indexes...>::operator !=(TableImpl const& table) const
   {
     return !(*this == table);
-  }
-
-  template <typename T, typename ... Indexes>
-  template <std::size_t ... S>
-  int
-  TableImpl<T, Indexes...>::_index(
-    Index const& index, std::index_sequence<S...>) const
-  {
-    return sum(
-      (std::get<S>(index) *
-       this->_index_offset(
-         std::make_index_sequence<sizeof...(Indexes) - S - 1>()))...);
-  }
-
-  template <typename T, typename ... Indexes>
-  template <std::size_t ... S>
-  int
-  TableImpl<T, Indexes...>::_index_offset(std::index_sequence<S...>) const
-  {
-    return product(
-      std::get<sizeof...(Indexes) - S - 1>(this->_dimensions)...);
   }
 }
