@@ -195,6 +195,24 @@ namespace elle
     , _table(new Storage[this->_size])
   {}
 
+  /*-----------.
+  | Dimensions |
+  `-----------*/
+
+  template <typename T, typename ... Indexes>
+  void
+  TableImpl<T, Indexes...>::dimensions(std::tuple<Indexes...> dimensions)
+  {
+    TableImpl table(dimensions, true);
+    for (auto e: table)
+      if (this->contains(e.first))
+        new (&e.second) T(std::move(this->at(e.first)));
+      else
+        new (&e.second) T();
+    this->~TableImpl();
+    new (this) TableImpl(std::move(table));
+  }
+
   /*-------.
   | Access |
   `-------*/

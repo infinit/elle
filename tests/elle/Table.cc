@@ -324,6 +324,43 @@ compare()
   BOOST_TEST(t2 == t1);
 }
 
+static
+void
+resize()
+{
+  auto p1 = std::make_shared<int>();
+  auto p2 = std::make_shared<int>();
+  elle::Table<std::shared_ptr<int>, 2> t = {
+    {p1, p2, p1},
+    {p2, p1, p2},
+    {p1, p2, p1},
+  };
+  auto const odd =
+    [] (std::tuple<int, int> i)
+    {
+      return bool((std::get<0>(i) + std::get<1>(i)) % 2);
+    };
+  for (auto const& e: t)
+    BOOST_TEST(e.second == (odd(e.first) ? p2 : p1));
+  t.dimensions({4, 4});
+  BOOST_TEST(t.dimensions() == std::tuple(4, 4));
+  BOOST_TEST(t.size() == 16);
+  BOOST_TEST(p1.use_count() == 6);
+  BOOST_TEST(p2.use_count() == 5);
+  for (auto const& e: t)
+    if (std::get<0>(e.first) > 2 || std::get<1>(e.first) > 2)
+      BOOST_TEST(e.second == nullptr);
+    else
+      BOOST_TEST(e.second == (odd(e.first) ? p2 : p1));
+  t.dimensions({2, 2});
+  BOOST_TEST(t.dimensions() == std::tuple(2, 2));
+  BOOST_TEST(t.size() == 4);
+  BOOST_TEST(p1.use_count() == 3);
+  BOOST_TEST(p2.use_count() == 3);
+  for (auto const& e: t)
+    BOOST_TEST(e.second == (odd(e.first) ? p2 : p1));
+}
+
 ELLE_TEST_SUITE()
 {
   auto& master = boost::unit_test::framework::master_test_suite();
@@ -339,4 +376,5 @@ ELLE_TEST_SUITE()
   master.add(BOOST_TEST_CASE(table_index));
   master.add(BOOST_TEST_CASE(assign));
   master.add(BOOST_TEST_CASE(compare));
+  master.add(BOOST_TEST_CASE(resize));
 }

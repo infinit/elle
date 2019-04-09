@@ -47,7 +47,10 @@ namespace elle
     /// Number of elements.
     ELLE_ATTRIBUTE_R(int, size);
     /// Dimensions.
-    ELLE_ATTRIBUTE_R(std::tuple<Indexes...>, dimensions);
+    ///
+    /// When resizing, all elements that are still part of the table are
+    /// moved. New elements are default constructed.
+    ELLE_ATTRIBUTE_Rw(std::tuple<Indexes...>, dimensions);
 
   /*-------.
   | Access |
