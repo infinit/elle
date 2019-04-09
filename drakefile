@@ -127,6 +127,7 @@ def configure(cxx_toolkit = None,
   valgrind_suppressions = drake.node('valgrind.suppr')
   config = drake.cxx.Config()
   config.add_local_include_path('src')
+  config.add_local_include_path('range-v3')
   cxx_config = drake.cxx.Config(cxx_config)
   cxx_config.add_local_include_path('src')
   cxx_toolkit = cxx_toolkit or drake.cxx.Toolkit()
