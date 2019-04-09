@@ -13,9 +13,10 @@ namespace elle
 {
   namespace json
   {
+    template <typename F>
     static
     auto
-    wrap_errors(auto f)
+    wrap_errors(F const& f)
     {
       try
       {
