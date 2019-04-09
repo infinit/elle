@@ -100,12 +100,13 @@ namespace elle
         O>
       deserialize_switch(elle::serialization::SerializerIn& s)
       {
-        return std::forward_tuple(
+        return std::apply(
           [] (auto&& ... args) -> O
           {
             return O(std::move(args)...);
           },
-          M::Fields::template map<Serializer<O, M>::template Deserialize>::value(s));
+          M::Fields::template map<Serializer<O, M>::
+          template Deserialize>::value(s));
       }
 
       template <typename M>
