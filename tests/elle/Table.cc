@@ -205,15 +205,17 @@ exceptions()
       })), elle::Error);
     BOOST_TEST(Beacon::instances == 0);
   }
-  BOOST_CHECK_THROW(([&]
-                     {
-                       elle::Table<Thrower, 2> t = {
-                         {{false, false}, {false, false}, {false, false}},
-                         {{false, false}, {false, true}, {false, true}},
-                       };
-                       BOOST_TEST(Beacon::instances == 6);
-                     }()), elle::Error);
-  BOOST_TEST(Beacon::instances == 0);
+  // FIXME: this cannot be implemented with Tables being backed by a
+  // `std::vector`
+  // BOOST_CHECK_THROW(([&]
+  //                    {
+  //                      elle::Table<Thrower, 2> t = {
+  //                        {{false, false}, {false, false}, {false, false}},
+  //                        {{false, false}, {false, true}, {false, true}},
+  //                      };
+  //                      BOOST_TEST(Beacon::instances == 6);
+  //                    }()), elle::Error);
+  // BOOST_TEST(Beacon::instances == 0);
 }
 
 static

@@ -16,7 +16,6 @@ namespace elle
   {
   public:
     using Index = std::tuple<Indexes...>;
-    using Storage = typename std::aligned_storage<sizeof(T), alignof(T)>::type;
 
     static auto constexpr dimension = sizeof...(Indexes);
 
@@ -59,17 +58,19 @@ namespace elle
     /// Whether \a index is within the table boundaries.
     bool
     contains(Index const& index) const;
+    using Access = decltype(std::declval<std::vector<T>&>()[0]);
     /// Get element at index (\a indexes...).
-    T&
+    Access
     at(Indexes const& ... indexes);
     /// Get element at index \a index.
-    T&
+    Access
     at(Index const& index);
+    using CAccess = decltype(std::declval<std::vector<T> const&>()[0]);
     /// Get element at index (\a indexes...).
-    T const&
+    CAccess
     at(Indexes const& ... indexes) const;
     /// Get element at index \a index.
-    T const&
+    CAccess
     at(Index const& index) const;
 
   private:
@@ -82,13 +83,21 @@ namespace elle
   `---------*/
   public:
     /// A unique, implementation-defined integer different for each index.
+    ///
+    /// Result is contained within [0, this->size()[
     int
     index(Index const& index) const;
+    /// The index corresponding to the implementation-defined integer.
+    Index
+    index(int index) const;
 
   private:
     template <std::size_t ... S>
     int
     _index(Index const& index, std::index_sequence<S...>) const;
+    template <std::size_t ... S>
+    Index
+    _index(int index, std::index_sequence<S...>) const;
     template <std::size_t ... S>
     int
     _index_offset(std::index_sequence<S...>) const;
@@ -106,12 +115,13 @@ namespace elle
   `----------*/
   public:
     /// Base iterator.
-    template <template <typename> class Const>
+    template <typename It>
     class iterator_base;
     /// Constant iterator to (index, element) pairs.
-    using const_iterator = iterator_base<std::add_const_t>;
+    using const_iterator =
+      iterator_base<typename std::vector<T>::const_iterator>;
     /// Iterator to (index, element) pairs.
-    using iterator = iterator_base<std::identity_t>;;
+    using iterator = iterator_base<typename std::vector<T>::iterator>;;
     /// Beginning iterator to (index, element) pairs.
     iterator
     begin();
@@ -152,7 +162,7 @@ namespace elle
   | Details |
   `--------*/
   private:
-    ELLE_ATTRIBUTE(std::unique_ptr<Storage[]>, table, protected);
+    ELLE_ATTRIBUTE(std::vector<T>, table, protected);
   };
 
   template <typename T, int dimension>

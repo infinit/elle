@@ -1,6 +1,7 @@
 #include <type_traits>
 
 #include <range/v3/numeric/accumulate.hpp>
+#include <range/v3/view/indices.hpp>
 #include <range/v3/view/zip.hpp>
 
 #include <boost/range/irange.hpp>
@@ -63,12 +64,12 @@ namespace elle
           typename Initializer<T, Index, index - 1>::type>;
         static
         void
-        distribute(Index const& dimensions, type const& init, aligned<T>*& p)
+        distribute(Index const& dimensions, type const& init, std::vector<T>& t)
         {
           if (init.size() != unsigned(std::get<dimension - index>(dimensions)))
             elle::err("wrong row size in Table initializer");
           for (auto& e: init)
-            Initializer<T, Index, index - 1>::distribute(dimensions, e, p);
+            Initializer<T, Index, index - 1>::distribute(dimensions, e, t);
         }
       };
 
@@ -78,10 +79,9 @@ namespace elle
         using type = T;
         static
         void
-        distribute(Index const& dimensions, T const& e, aligned<T>*& p)
+        distribute(Index const& dimensions, T const& e, std::vector<T>& table)
         {
-          new (p) T(e);
-          p += 1;
+          table.emplace_back(e);
         }
       };
     }
@@ -100,8 +100,8 @@ namespace elle
   TableImpl<T, Indexes...>::TableImpl(std::tuple<Indexes...> dimensions)
     : TableImpl(std::move(dimensions), true)
   {
-    for (auto i : boost::irange(0, this->size()))
-      new (&this->_table[i]) T();
+    this->_table.reserve(this->size());
+    this->_table.resize(this->size());
   }
 
   template <typename T, typename ... Indexes>
@@ -109,26 +109,8 @@ namespace elle
     elle::meta::fold1<dimension, std::initializer_list, T> init)
     : TableImpl(_details::table::dimensions<dimension>(init), true)
   {
-    Storage* p = &this->_table[0];
-    try
-    {
-      _details::table::Initializer<T, Index, dimension>::distribute(
-        this->_dimensions, std::move(init), p);
-    }
-    catch (...)
-    {
-      for (auto& e : elle::as_range(&this->_table[0], p))
-      {
-        try
-        {
-          reinterpret_cast<T&>(e).~T();
-        }
-        catch (...)
-        {}
-      }
-      this->_table.reset();
-      throw;
-    }
+    _details::table::Initializer<T, Index, dimension>::distribute(
+      this->_dimensions, std::move(init), this->_table);
   }
 
   template <typename T, typename ... Indexes>
@@ -142,57 +124,20 @@ namespace elle
   TableImpl<T, Indexes...>::TableImpl(TableImpl const& src)
     : TableImpl(src._dimensions, true)
   {
-    Storage* p;
-    try
-    {
-      for (p = &this->_table[0]; p < &this->_table[this->_size]; ++p)
-        new (p) T(reinterpret_cast<T const&>(src._table[p - &this->_table[0]]));
-    }
-    catch (...)
-    {
-      for (auto& e : elle::as_range(&this->_table[0], p))
-      {
-        try
-        {
-          reinterpret_cast<T&>(e).~T();
-        }
-        catch (...)
-        {}
-      }
-      this->_table.reset();
-      throw;
-    }
+    for (auto const& e: src._table)
+      this->_table.emplace_back(e);
   }
 
   template <typename T, typename ... Indexes>
   TableImpl<T, Indexes...>::~TableImpl()
   noexcept(noexcept(std::declval<T>().~T()))
-  {
-    ELLE_LOG_COMPONENT("elle.Table");
-    std::exception_ptr ptr;
-    if (this->_table)
-      for (auto& e : this->_range())
-        try
-        {
-          reinterpret_cast<T&>(e).~T();
-        }
-        catch (...)
-        {
-          if (!ptr)
-            ptr = std::current_exception();
-          else
-            ELLE_WARN("ignoring additional exception destroying {}: {}",
-                      this, elle::exception_string());
-        }
-    if (ptr)
-      std::rethrow_exception(ptr);
-  }
+  {}
 
   template <typename T, typename ... Indexes>
   TableImpl<T, Indexes...>::TableImpl(std::tuple<Indexes...> dimensions, bool)
     : _size(_details::table::size(dimensions))
     , _dimensions(std::move(dimensions))
-    , _table(new Storage[this->_size])
+    , _table()
   {}
 
   /*-----------.
@@ -204,11 +149,14 @@ namespace elle
   TableImpl<T, Indexes...>::dimensions(std::tuple<Indexes...> dimensions)
   {
     TableImpl table(dimensions, true);
-    for (auto e: table)
-      if (this->contains(e.first))
-        new (&e.second) T(std::move(this->at(e.first)));
+    for (auto i: ranges::view::indices(0, table.size()))
+    {
+      auto index = table.index(i);
+      if (this->contains(index))
+        table._table.emplace_back(std::move(this->at(index)));
       else
-        new (&e.second) T();
+        table._table.emplace_back();
+    }
     this->~TableImpl();
     new (this) TableImpl(std::move(table));
   }
@@ -218,14 +166,14 @@ namespace elle
   `-------*/
 
   template <typename T, typename ... Indexes>
-  T&
+  typename TableImpl<T, Indexes...>::Access
   TableImpl<T, Indexes...>::at(Indexes const& ... indexes)
   {
     return this->at(Index(indexes...));
   }
 
   template <typename T, typename ... Indexes>
-  T&
+  typename TableImpl<T, Indexes...>::Access
   TableImpl<T, Indexes...>::at(Index const& index)
   {
     if (!this->contains(index))
@@ -234,18 +182,18 @@ namespace elle
     // is still out of bounds.
     auto const i = this->index(index);
     ELLE_ASSERT_LT(i, this->_size);
-    return reinterpret_cast<T&>(this->_table[i]);
+    return this->_table[i];
   }
 
   template <typename T, typename ... Indexes>
-  T const&
+  typename TableImpl<T, Indexes...>::CAccess
   TableImpl<T, Indexes...>::at(Indexes const& ... indexes) const
   {
     return unconst(*this).at(indexes...);
   }
 
   template <typename T, typename ... Indexes>
-  T const&
+  typename TableImpl<T, Indexes...>::CAccess
   TableImpl<T, Indexes...>::at(Index const& index) const
   {
     return unconst(*this).at(index);
@@ -279,6 +227,27 @@ namespace elle
   TableImpl<T, Indexes...>::index(Index const& index) const
   {
     return this->_index(index, std::make_index_sequence<sizeof...(Indexes)>());
+  }
+
+  template <typename T, typename ... Indexes>
+  typename TableImpl<T, Indexes...>::Index
+  TableImpl<T, Indexes...>::index(int i) const
+  {
+    return this->_index(i, std::make_index_sequence<sizeof...(Indexes)>());
+  }
+
+  template <typename T, typename ... Indexes>
+  template <std::size_t ... I>
+  typename TableImpl<T, Indexes...>::Index
+  TableImpl<T, Indexes...>::_index(
+    int i, std::index_sequence<I...>) const
+  {
+    return {
+      i %
+      this->_index_offset(std::make_index_sequence<sizeof...(Indexes) - I>()) /
+      this->_index_offset(std::make_index_sequence<sizeof...(Indexes) - I - 1>())
+      ...
+    };
   }
 
   template <typename T, typename ... Indexes>
@@ -323,7 +292,7 @@ namespace elle
   typename TableImpl<T, Indexes...>::iterator
   TableImpl<T, Indexes...>::begin()
   {
-    return iterator(*this, reinterpret_cast<T*>(&this->_table[0]));
+    return iterator(*this, std::begin(this->_table));
   }
 
   template <typename T, typename ... Indexes>
@@ -337,7 +306,7 @@ namespace elle
   typename TableImpl<T, Indexes...>::const_iterator
   TableImpl<T, Indexes...>::begin() const
   {
-    return const_iterator(*this, reinterpret_cast<T*>(&this->_table[0]));
+    return const_iterator(elle::unconst(*this), std::begin(this->_table));
   }
 
   template <typename T, typename ... Indexes>
@@ -348,15 +317,15 @@ namespace elle
   }
 
   template <typename T, typename ... Indexes>
-  template <template <typename> class Const>
+  template <typename It>
   struct TableImpl<T, Indexes...>::iterator_base
   {
   public:
     using iterator_category = std::input_iterator_tag;
     using value_type = std::pair<Index, T>;
     using difference_type = int;
-    using pointer = std::pair<Index, Const<T>*>;
-    using reference = std::pair<Index, Const<T>&>;
+    using pointer = std::pair<Index, typename It::pointer>;
+    using reference = std::pair<Index, typename It::reference>;
 
     friend class TableImpl;
 
@@ -383,7 +352,7 @@ namespace elle
     operator *()
     {
       auto offset =
-        this->_iterator - reinterpret_cast<Const<T>*>(&this->_table._table[0]);
+        this->_iterator - std::begin(this->_table._table);
       return {
         this->_index(offset, std::make_index_sequence<sizeof...(Indexes)>()),
         *this->_iterator,
@@ -391,7 +360,7 @@ namespace elle
     }
 
   private:
-    iterator_base(Const<TableImpl>& table, Const<T>* iterator)
+    iterator_base(TableImpl& table, It iterator)
       : _table(table)
       , _iterator(iterator)
     {}
@@ -409,8 +378,8 @@ namespace elle
       };
     }
 
-    ELLE_ATTRIBUTE((Const<TableImpl>&), table);
-    ELLE_ATTRIBUTE(Const<T>*, iterator);
+    ELLE_ATTRIBUTE((TableImpl&), table);
+    ELLE_ATTRIBUTE(It, iterator);
   };
 
   template <typename T, typename ... Indexes>
