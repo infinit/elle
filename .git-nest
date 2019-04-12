@@ -1,1 +1,1 @@
-{"range-v3": {"remote": "https://github.com/ericniebler/range-v3", "branch": "master"}}
+{"range-v3": {"remote": "https://github.com/ericniebler/range-v3", "branch": "master"}, "drake": {"remote": "git@gitlab.gruntech.org:infinit/drake", "branch": "master"}}
