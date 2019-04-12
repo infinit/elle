@@ -37,10 +37,13 @@ from itertools import chain
 from drake.sched import logger
 from drake.utils import property_memoize, pretty_listing
 
+def env(name, default = None):
+  return _OS.environ.get('DRAKE_{}'.format(name), default)
+
 # The default timeout value for shell commands, in seconds.
-TIMEOUT = int(_OS.getenv('DRAKE_TIMEOUT', '3600'))
-PRETTY = 'DRAKE_PRETTY' in _OS.environ
-PROFILE = 'DRAKE_PROFILE' in _OS.environ
+TIMEOUT = int(env('TIMEOUT', '3600'))
+PRETTY = env('PRETTY') is not None
+PROFILE = env('PROFILE') is not None
 
 
 def _scheduled():
@@ -140,7 +143,7 @@ class Drake:
   def __option(self, name, default, override = None):
     if override is not None:
       return override
-    v = _OS.environ.get('DRAKE_%s' % name)
+    v = env(name)
     if v is None:
       return default
     else:
@@ -329,7 +332,7 @@ class Drake:
       except Exception as e:
         self.notify(1, str(e), start)
         print('%s: %s' % (sys.argv[0], e))
-        if 'DRAKE_DEBUG_BACKTRACE' in _OS.environ:
+        if env('DEBUG_BACKTRACE') is not None:
           import traceback
           traceback.print_exc()
         sys.exit(1)
@@ -338,7 +341,7 @@ class Drake:
         sys.exit(1)
       self.notify(0, ' '.join(args), start)
 
-EXPLAIN = 'DRAKE_EXPLAIN' in _OS.environ
+EXPLAIN = env('EXPLAIN') is not None
 def explain(node, reason):
   if EXPLAIN:
     print('Execute %s because %s' % (node, reason))
@@ -454,8 +457,8 @@ class BuilderRedefinition(Exception):
     return self.__new
 
 
-_RAW = 'DRAKE_RAW' in _OS.environ
-_SILENT = 'DRAKE_SILENT' in _OS.environ
+_RAW = env('RAW') is not None
+_SILENT = env('SILENT') is not None
 
 class Path:
 
@@ -1321,7 +1324,7 @@ class _BaseNodeType(type, metaclass = _BaseNodeTypeType):
       return node
 
 _DEBUG_NODE_CREATION = \
-  [v for v in os.environ.get('DRAKE_DEBUG_NODE_CREATION', '').split(',') if v]
+  [v for v in env('DEBUG_NODE_CREATION', '').split(',') if v]
 
 class BaseNode(object, metaclass = _BaseNodeType):
 
@@ -1865,6 +1868,9 @@ def command_flatten(command, env = None):
     env_ = ''
   return env_ + ' '.join(pipes.quote(str(a)) for a in command)
 
+NO_TIME_REPORTS = env('NO_TIME_REPORTS') is not None
+TIME_REPORT_THRESHOLD = int(env('TIME_REPORT_THRESHOLD', '30'))
+
 @contextlib.contextmanager
 def log_time(runner):
   '''Display running times periodically.'''
@@ -1887,9 +1893,10 @@ def log_time(runner):
   finally:
     timer[0].cancel()
     end_time = time.time()
-    if 'DRAKE_NO_TIME_REPORTS' not in _OS.environ:
-      print('Ran {} in {}'.format(
-        runner, duration(start_time, end_time)))
+    if not NO_TIME_REPORTS:
+      d = duration(start_time, end_time)
+      if TIME_REPORT_THRESHOLD is None or d.seconds > TIME_REPORT_THRESHOLD:
+        print('Ran {} in {}'.format(runner, d))
 
 class Builder:
 
@@ -2334,7 +2341,7 @@ class Builder:
           if not e_pretty:
             e_pretty = repr(e)
           print('%s: %s' % (self, e_pretty), file = sys.stderr)
-          if 'DRAKE_DEBUG_BACKTRACE' in _OS.environ:
+          if env('DEBUG_BACKTRACE') is not None:
             import traceback
             traceback.print_exc()
           raise Builder.Failed(self) from e
