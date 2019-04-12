@@ -601,6 +601,25 @@ namespace
     round_trip<Format>(path("./elle"));
     round_trip<Format>(path("."));
   }
+
+  template <typename Format>
+  void
+  tuple()
+  {
+    round_trip<Format>(std::tuple<>());
+    round_trip<Format>(std::tuple(0, 1, 2));
+    round_trip<Format>(std::tuple("foo"s, 42, 49.3));
+    {
+      using namespace elle::serialization;
+      auto s = serialize<Format>(std::tuple(0, 1));
+      BOOST_CHECK_THROW(
+        (deserialize<Format, std::tuple<int>>(s)), Error);
+      BOOST_CHECK_THROW(
+        (deserialize<Format, std::tuple<int, int, int>>(s)), Error);
+      BOOST_CHECK_THROW(
+        (deserialize<Format, std::tuple<int, std::string>>(s)), Error);
+    }
+  }
 }
 
 template <bool Versioned>
@@ -1706,6 +1725,7 @@ ELLE_TEST_SUITE()
   FOR_ALL_SERIALIZATION_TYPES(version);
   FOR_ALL_SERIALIZATION_TYPES(chrono);
   FOR_ALL_SERIALIZATION_TYPES(path);
+  FOR_ALL_SERIALIZATION_TYPES(tuple);
   {
     auto* subsuite = BOOST_TEST_SUITE("hierarchy");
     {

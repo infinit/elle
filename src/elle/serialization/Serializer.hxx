@@ -1166,6 +1166,85 @@ namespace elle
       }
     }
 
+    template <typename S, typename ... T>
+    void
+    Serializer::_serialize(std::tuple<T...>& t)
+    {
+      ELLE_LOG_COMPONENT("elle.serialization.Serializer");
+      if (this->out())
+        this->_serialize_array(
+          sizeof...(T),
+          [this, &t] ()
+          {
+            std::apply(
+               [this] (auto& ... e)
+               {
+                 if constexpr(sizeof...(e) > 0)
+                 {
+                   // Capturing this directly causes an ICE on GCC 8.2.0.
+                   auto* const self = this;
+                   auto const ser =
+                     [self] (auto& v)
+                     {
+                       ELLE_DEBUG_SCOPE(
+                         "serialize element of {!r}", self->current_name());
+                       if (auto entry = self->enter(self->current_name()))
+                         Serializer::serialize_switch<S>
+                           (static_cast<SerializerOut&>(*self), v);
+                     };
+                   [[maybe_unused]] auto _ = { (ser(e), 0)... };
+                 }
+               }, t);
+          });
+      else
+      {
+        auto f = std::apply(
+          [this] (auto& ... e)
+          {
+            // Capturing this directly causes an ICE on GCC 8.2.0.
+            [[maybe_unused]] auto* const self = this;
+            if constexpr(sizeof...(e) > 0)
+            {
+              return std::vector{
+                std::function<void()>([self, &e]
+                {
+                  ELLE_DEBUG_SCOPE(
+                    "deserialize element of {!r} ({})",
+                    self->current_name(), elle::type_info(e));
+                  self->serialize_forward(e);
+                })...
+               };
+            }
+            else
+            {
+              return std::vector<std::function<void()>>();
+            }
+          }, t);
+        int idx = 0;
+        // Capturing this directly causes an ICE on GCC 8.2.0.
+        auto* const self = this;
+        this->_serialize_array(
+          -1,
+          [self, &idx, &t, &f] ()
+          {
+            if (idx >= signed(f.size()))
+              elle::err<Error>("too many elements for tuple size ({})",
+                               f.size());
+            f[idx++]();
+          });
+        if (idx < signed(f.size()))
+          elle::err<Error>("not enough elements ({}) for tuple size ({})",
+                           idx - 1, f.size());
+      }
+    }
+
+    // template <typename S, int i, typename ... T>
+    // void
+    // Serializer::_deserialize_in_tuple(std::tuple<T...>& t)
+    // {
+    //   this->serialize(std::get<i>(t));
+    // }
+
     template <typename S,
               template <typename, typename> class C,
               typename T,

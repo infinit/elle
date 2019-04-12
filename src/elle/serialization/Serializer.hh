@@ -703,6 +703,11 @@ namespace elle
       void
       _serialize(std::chrono::duration<Repr, Ratio>& duration);
 
+      /// Serialize tuples
+      template <typename S = void, typename ... T>
+      void
+      _serialize(std::tuple<T...>& t);
+
       /// Serialize or deserialize a Duration type from its ticks, numerator
       /// and denominator.
       ///
