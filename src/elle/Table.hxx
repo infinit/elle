@@ -439,4 +439,29 @@ namespace elle
   {
     return !(*this == table);
   }
+
+  /*--------------.
+  | Serialization |
+  `--------------*/
+
+  template <typename T, typename ... Indexes>
+  TableImpl<T, Indexes...>::TableImpl(serialization::SerializerIn& s)
+    : _dimensions()
+    , _table()
+  {
+    this->serialize(s);
+  }
+
+  template <typename T, typename ... Indexes>
+  void
+  TableImpl<T, Indexes...>::serialize(serialization::Serializer& s)
+  {
+    s.serialize("dimensions", this->_dimensions);
+    this->_size = _details::table::size(this->_dimensions);
+    s.serialize("elements", this->_table);
+    if (signed(this->_table.size()) != this->size())
+      elle::err<serialization::Error>(
+        "wrong number of elements: {} instead of {}",
+        this->_table.size(), this->size());
+  }
 }

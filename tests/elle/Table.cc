@@ -6,6 +6,8 @@
 
 #include <elle/log.hh>
 #include <elle/range.hh>
+#include <elle/serialization/binary.hh>
+#include <elle/serialization/json.hh>
 #include <elle/test.hh>
 
 ELLE_LOG_COMPONENT("elle.Table.test");
@@ -362,6 +364,47 @@ resize()
   for (auto const& e: t)
     BOOST_TEST(e.second == (odd(e.first) ? p2 : p1));
 }
+namespace serialization
+{
+  template <typename Format>
+  static
+  void
+  serialization()
+  {
+    using T = elle::Table<int, 2>;
+    T t = {
+      {0, 1},
+      {2, 3},
+      {4, 5},
+    };
+    auto s = elle::serialization::serialize<Format>(t, false);
+    ELLE_LOG("serialized: {}", s);
+    auto u = elle::serialization::deserialize<Format, T>(s, false);
+    BOOST_TEST(u == t);
+  }
+
+  static
+  void
+  errors()
+  {
+    using T = elle::Table<int, 2>;
+    auto const fmt = R"(
+      \{
+        "dimensions": [2, 2],
+        "elements": [{}]
+      \})";
+    BOOST_CHECK_THROW(
+      elle::serialization::json::deserialize<T>(
+        elle::Buffer(elle::print(fmt, "0, 1, 2")), false),
+      elle::Error);
+    elle::serialization::json::deserialize<T>(
+      elle::Buffer(elle::print(fmt, "0, 1, 2, 3")), false);
+    BOOST_CHECK_THROW(
+      elle::serialization::json::deserialize<T>(
+        elle::Buffer(elle::print(fmt, "0, 1, 2, 3, 4")), false),
+      elle::Error);
+  }
+}
 
 ELLE_TEST_SUITE()
 {
@@ -379,4 +422,14 @@ ELLE_TEST_SUITE()
   master.add(BOOST_TEST_CASE(assign));
   master.add(BOOST_TEST_CASE(compare));
   master.add(BOOST_TEST_CASE(resize));
+  {
+    boost::unit_test::test_suite* s = BOOST_TEST_SUITE("serialization");
+    master.add(s);
+    auto json = &serialization::serialization<elle::serialization::Json>;
+    s->add(BOOST_TEST_CASE(json));
+    auto binary = &serialization::serialization<elle::serialization::Binary>;
+    s->add(BOOST_TEST_CASE(binary));
+    using namespace serialization;
+    s->add(BOOST_TEST_CASE(errors));
+  }
 }

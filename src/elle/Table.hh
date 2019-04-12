@@ -8,6 +8,7 @@
 #include <elle/math.hh>
 #include <elle/meta.hh>
 #include <elle/range.hh>
+#include <elle/serialization/Serializer.hh>
 
 namespace elle
 {
@@ -157,6 +158,16 @@ namespace elle
     /// Whether two tables are different.
     bool
     operator !=(TableImpl const& table) const;
+
+  /*--------------.
+  | Serialization |
+  `--------------*/
+  public:
+    /// Deserialize.
+    TableImpl(serialization::SerializerIn& s);
+    /// Serialize.
+    void
+    serialize(serialization::Serializer& s);
 
   /*--------.
   | Details |
