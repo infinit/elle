@@ -1869,6 +1869,7 @@ def command_flatten(command, env = None):
   return env_ + ' '.join(pipes.quote(str(a)) for a in command)
 
 NO_TIME_REPORTS = env('NO_TIME_REPORTS') is not None
+TIME_REPORT_THRESHOLD = int(env('TIME_REPORT_THRESHOLD', '30'))
 
 @contextlib.contextmanager
 def log_time(runner):
@@ -1893,7 +1894,9 @@ def log_time(runner):
     timer[0].cancel()
     end_time = time.time()
     if not NO_TIME_REPORTS:
-      print('Ran {} in {}'.format(runner, duration(start_time, end_time)))
+      d = duration(start_time, end_time)
+      if TIME_REPORT_THRESHOLD is None or d.seconds > TIME_REPORT_THRESHOLD:
+        print('Ran {} in {}'.format(runner, d))
 
 class Builder:
 
