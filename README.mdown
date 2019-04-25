@@ -2,7 +2,7 @@
 
 The well-formed build system.
 
-[![pipeline status](https://gitlab.gruntech.org/mefyl/drake/badges/master/pipeline.svg)](https://gitlab.gruntech.org/mefyl/drake/commits/master)
+[![pipeline status](https://gitlab.gruntech.org/mefyl/drake/badges/master/pipeline.svg)](https://gitlab.gruntech.org/mefyl/drake/commits/master) [![coverage report](https://gitlab.gruntech.org/infinit/drake/badges/master/coverage.svg)](https://gitlab.gruntech.org/infinit/drake/commits/master)
 
 ## About
 
