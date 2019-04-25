@@ -95,7 +95,7 @@ def configure(prefix = '.', coverage: bool = False):
   ]
 
   if coverage:
-    coverage = ['coverage', 'run', '--include', str(drake.path_source('src/*.py')), '--append']
+    coverage = ['coverage', 'run', '--source', str(drake.path_source('src')), '--append']
   else:
     coverage = None
 
