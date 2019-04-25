@@ -1,7 +1,7 @@
 (c++-project
  '()
  "_build"
- "./drake //check"
+ "src/bin/drake . --workdir _build //check"
  ""
  '()
 )
