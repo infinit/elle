@@ -3145,6 +3145,8 @@ def run(root, *cfg, **kwcfg):
       workdir = True
   if workdir is True:
     raise Exception('missing argument for option {}'.format(arg))
+  if workdir is not None and not _OS.path.exists(workdir):
+    _OS.makedirs(workdir)
   with Drake(root = root, workdir = workdir) as d:
     d.run(*cfg, **kwcfg)
 
