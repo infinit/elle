@@ -9,7 +9,7 @@ sys.path.insert(0, root)
 import drake
 
 path = '.'
-if len(sys.argv) > 1:
+if len(sys.argv) > 1 and not sys.argv[1].startswith('-'):
   path = sys.argv[1]
   del sys.argv[1]
 
