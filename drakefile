@@ -11,11 +11,12 @@ source = '%s/%s' % (os.getcwd(), drake.path_source('src'))
 PYTHONPATH = '%s:%s' % (source, PYTHONPATH)
 os.environ['PYTHONPATH'] = PYTHONPATH
 
-def configure(prefix = '.'):
+def configure(prefix = '.', coverage: bool = False):
 
   """Configure drake.
 
   prefix -- The prefix where to install.
+  coverage -- Whether to collect test suite coverage.
   """
 
   prefix = drake.Path(prefix)
@@ -93,12 +94,18 @@ def configure(prefix = '.'):
     'HTTPDownload',
   ]
 
+  if coverage:
+    coverage = ['coverage', 'run', '--include', str(drake.path_source('src/*.py')), '--append']
+  else:
+    coverage = None
+
   for test in tests:
     test = drake.node('tests/%s' % test)
     test.dependencies_add(sources)
     runner = drake.Runner(
       test,
       env = {'PYTHONPATH': '{}:{}'.format(PYTHONPATH, drake.path_source('tests'))},
+      prefix = coverage,
     )
     runner.reporting = drake.Runner.Reporting.on_failure
     check << runner.status
@@ -141,10 +148,13 @@ def configure(prefix = '.'):
         else:
           raise
       shutil.copytree(fr, to)
+      cmd = [str(drake.Path(os.getcwd()) / self.__exe.path())]
+      if coverage is not None:
+        cmd = coverage + cmd
       res = self.cmd('Test %s' % self.__name,
                      # Use an absolute path, because we chdir, and
                      # "./test" isn't very helpful in backtraces.
-                     [str(drake.Path(os.getcwd()) / self.__exe.path())],
+                     cmd,
                      cwd = to)
       if res:
         self.__target.path().touch()

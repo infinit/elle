@@ -8,5 +8,5 @@ check:x86_64-trusty-gcc4:
   stage: check
   image: registry.gitlab.gruntech.org/infinit/drake/trusty-ci
   script:
-    - pip3 install -r requirements.txt
-    - src/bin/drake . --workdir _build
+    - pip3 install -r requirements.txt coverage
+    - src/bin/drake . --workdir _build --coverage=true
