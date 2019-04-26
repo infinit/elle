@@ -389,9 +389,9 @@ namespace serialization
       {2, 3},
       {4, 5},
     };
-    auto s = elle::serialization::serialize<Format>(t, false);
+    auto s = elle::serialization::serialize<Format>(t);
     ELLE_LOG("serialized: {}", s);
-    auto u = elle::serialization::deserialize<Format, T>(s, false);
+    auto u = elle::serialization::deserialize<Format, T>(s);
     BOOST_TEST(u == t);
   }
 

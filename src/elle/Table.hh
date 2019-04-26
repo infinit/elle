@@ -16,9 +16,11 @@ namespace elle
   class TableImpl
     : public Printable::as<TableImpl<T, Indexes...>>
   {
+  /*------.
+  | Types |
+  `------*/
   public:
     using Index = std::tuple<Indexes...>;
-
     static auto constexpr dimension = sizeof...(Indexes);
 
   /*-------------.
@@ -175,6 +177,8 @@ namespace elle
   | Serialization |
   `--------------*/
   public:
+    /// Serialization version.
+    using serialization_tag = elle::serialization_tag;
     /// Deserialize.
     TableImpl(serialization::SerializerIn& s);
     /// Serialize.
