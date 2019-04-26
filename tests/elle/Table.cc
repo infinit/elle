@@ -328,6 +328,18 @@ compare()
   BOOST_TEST(t2 == t1);
 }
 
+
+static
+void
+print()
+{
+  elle::Table<int, 2> t = {
+    {0, 1, 2},
+    {3, 4, 5},
+  };
+  BOOST_TEST(elle::print("{}", t) == "[[0, 1, 2], [3, 4, 5]]");
+}
+
 static
 void
 resize()
@@ -421,6 +433,7 @@ ELLE_TEST_SUITE()
   master.add(BOOST_TEST_CASE(table_index));
   master.add(BOOST_TEST_CASE(assign));
   master.add(BOOST_TEST_CASE(compare));
+  master.add(BOOST_TEST_CASE(print));
   master.add(BOOST_TEST_CASE(resize));
   {
     boost::unit_test::test_suite* s = BOOST_TEST_SUITE("serialization");

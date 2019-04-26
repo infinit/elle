@@ -1,5 +1,6 @@
 #include <type_traits>
 
+#include <range/v3/algorithm/for_each.hpp>
 #include <range/v3/numeric/accumulate.hpp>
 #include <range/v3/view/indices.hpp>
 #include <range/v3/view/zip.hpp>
@@ -438,6 +439,43 @@ namespace elle
   TableImpl<T, Indexes...>::operator !=(TableImpl const& table) const
   {
     return !(*this == table);
+  }
+
+  /*------.
+  | Print |
+  `------*/
+
+  template <typename T, typename ... Indexes>
+  void
+  TableImpl<T, Indexes...>::print(std::ostream& s) const
+  {
+    auto it = std::begin(this->_table);
+    this->_print<0>(s, it);
+  }
+
+  template <typename T, typename ... Indexes>
+  template<int I>
+  void
+  TableImpl<T, Indexes...>::_print(
+    std::ostream& s,
+    typename std::vector<T>::const_iterator& it) const
+  {
+    if constexpr(I == sizeof...(Indexes))
+      elle::print(s, "{}", *it++);
+    else
+    {
+      elle::print(s, "[");
+      auto size = std::get<I>(this->_dimensions);
+      ranges::for_each(
+        ranges::view::indices(size),
+        [&] (int i)
+        {
+          if (i > 0)
+            elle::print(s, ", ");
+          this->_print<I + 1>(s, it);
+        });
+      elle::print(s, "]");
+    }
   }
 
   /*--------------.

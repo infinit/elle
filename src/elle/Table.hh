@@ -14,6 +14,7 @@ namespace elle
 {
   template <typename T, typename ... Indexes>
   class TableImpl
+    : public Printable::as<TableImpl<T, Indexes...>>
   {
   public:
     using Index = std::tuple<Indexes...>;
@@ -78,6 +79,17 @@ namespace elle
     template <std::size_t ... S>
     bool
     _contains(Index const& index, std::index_sequence<S...>) const;
+
+  /*------.
+  | Print |
+  `------*/
+  public:
+    void
+    print(std::ostream& s) const;
+  private:
+    template <int I>
+    void
+    _print(std::ostream& s, typename std::vector<T>::const_iterator& it) const;
 
   /*---------.
   | Indexing |
