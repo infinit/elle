@@ -1,0 +1,12 @@
+#ifndef ELLE_STD_OVERRIDE
+# define ELLE_STD_OVERRIDE
+# include_next <iomanip>
+# include <elle/std-override.hxx>
+# undef ELLE_STD_OVERRIDE
+#else
+# include_next <iomanip>
+#endif
+
+// Local Variables:
+// mode: c++
+// End:

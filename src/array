@@ -1,25 +1,17 @@
-#pragma once
+#ifndef ELLE_ARRAY
+# define ELLE_ARRAY
 
-#include <ostream>
-#include_next <array>
+# ifndef ELLE_STD_OVERRIDE
+#  define ELLE_STD_OVERRIDE
+#  include_next <array>
+#  include <elle/std-override.hxx>
+#  undef ELLE_STD_OVERRIDE
+# else
+#  include_next <array>
+# endif
 
-#include <elle/print/object.hh>
+#endif
 
-namespace std
-{
-  template <typename... Args>
-  ostream&
-  operator <<(ostream& out, array<Args...> const& s)
-  {
-    out << '[';
-    auto* sep = "";
-    for (auto const& e: s)
-    {
-      elle::_details::print(out, sep);
-      elle::_details::print(out, e);
-      sep = ", ";
-    }
-    out << ']';
-    return out;
-  }
-}
+// Local Variables:
+// mode: c++
+// End:

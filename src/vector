@@ -1,28 +1,16 @@
-#pragma once
+#ifndef ELLE_VECTOR
+# define ELLE_VECTOR
 
-#include <ostream>
-#include_next <vector>
+# ifndef ELLE_STD_OVERRIDE
+#  define ELLE_STD_OVERRIDE
+#  include_next <vector>
+#  include <elle/std-override.hxx>
+#  undef ELLE_STD_OVERRIDE
+# else
+#  include_next <vector>
+# endif
 
-#include <elle/print/object.hh>
-
-namespace std
-{
-  template <typename... Args>
-  ostream&
-  operator <<(ostream& out, vector<Args...> const& s)
-  {
-    out << '[';
-    auto* sep = "";
-    for (auto const& e: s)
-    {
-      elle::_details::print(out, sep);
-      elle::_details::print(out, e);
-      sep = ", ";
-    }
-    out << ']';
-    return out;
-  }
-}
+#endif
 
 // Local Variables:
 // mode: c++
