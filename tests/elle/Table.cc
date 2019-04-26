@@ -276,6 +276,14 @@ iteration()
     for (auto const& e: ct.elements())
       BOOST_TEST(e == i++);
   }
+  {
+    // Check we can iterate on booleans, as the underlying vector packs them.
+    elle::Table<bool, 2> t = {{true, true}};
+    for (auto b: t.elements())
+      BOOST_TEST(b);
+    for (auto e: t)
+      BOOST_TEST(std::get<1>(e));
+  }
 }
 
 static

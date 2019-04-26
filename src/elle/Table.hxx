@@ -384,37 +384,17 @@ namespace elle
   };
 
   template <typename T, typename ... Indexes>
-  elle::detail::range<T*>
+  elle::detail::range<typename std::vector<T>::iterator>
   TableImpl<T, Indexes...>::elements()
   {
-    auto p = reinterpret_cast<T*>(&this->_table[0]);
-    return elle::as_range(p, p + this->size());
+    return elle::as_range(std::begin(this->_table), std::end(this->_table));
   }
 
   template <typename T, typename ... Indexes>
-  elle::detail::range<T const*>
+  elle::detail::range<typename std::vector<T>::const_iterator>
   TableImpl<T, Indexes...>::elements() const
   {
-    auto p = reinterpret_cast<T const*>(&this->_table[0]);
-    return elle::as_range(p, p + this->size());
-  }
-
-  template <typename T, typename ... Indexes>
-  elle::detail::range<T*>
-  TableImpl<T, Indexes...>::_range()
-  {
-    return elle::as_range(
-      reinterpret_cast<T*>(&this->_table[0]),
-      reinterpret_cast<T*>(&this->_table[this->size()]));
-  }
-
-  template <typename T, typename ... Indexes>
-  elle::detail::range<T const*>
-  TableImpl<T, Indexes...>::_range() const
-  {
-    return elle::as_range(
-      reinterpret_cast<T const*>(&this->_table[0]),
-      reinterpret_cast<T const*>(&this->_table[this->size()]));
+    return elle::as_range(std::begin(this->_table), std::end(this->_table));
   }
 
   /*-----------.
@@ -430,7 +410,7 @@ namespace elle
     return
       ranges::accumulate(
         ranges::view::zip_with([] (T const& a, T const& b) { return a == b; },
-                               this->_range(), rhs._range()),
+                               this->elements(), rhs.elements()),
         true, [] (bool a, bool b) { return a && b; });
   }
 

@@ -150,10 +150,10 @@ namespace elle
     const_iterator
     end() const;
     /// Iterate on elements only.
-    elle::detail::range<T*>
+    elle::detail::range<typename std::vector<T>::iterator>
     elements();
     /// Iterate on elements only.
-    elle::detail::range<T const*>
+    elle::detail::range<typename std::vector<T>::const_iterator>
     elements() const;
 
   private:
