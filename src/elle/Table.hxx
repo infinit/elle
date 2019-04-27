@@ -98,7 +98,7 @@ namespace elle
   {}
 
   template <typename T, typename ... Indexes>
-  TableImpl<T, Indexes...>::TableImpl(std::tuple<Indexes...> dimensions)
+  TableImpl<T, Indexes...>::TableImpl(Dimensions dimensions)
     : TableImpl(std::move(dimensions), true)
   {
     this->_table.reserve(this->size());
@@ -135,7 +135,7 @@ namespace elle
   {}
 
   template <typename T, typename ... Indexes>
-  TableImpl<T, Indexes...>::TableImpl(std::tuple<Indexes...> dimensions, bool)
+  TableImpl<T, Indexes...>::TableImpl(Dimensions dimensions, bool)
     : _size(_details::table::size(dimensions))
     , _dimensions(std::move(dimensions))
     , _table()
@@ -147,7 +147,7 @@ namespace elle
 
   template <typename T, typename ... Indexes>
   void
-  TableImpl<T, Indexes...>::dimensions(std::tuple<Indexes...> dimensions)
+  TableImpl<T, Indexes...>::dimensions(Dimensions dimensions)
   {
     TableImpl table(dimensions, true);
     for (auto i: ranges::view::indices(0, table.size()))

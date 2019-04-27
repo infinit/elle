@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <memory>
 
 #include <elle/assert.hh>
@@ -20,8 +21,11 @@ namespace elle
   | Types |
   `------*/
   public:
-    using Index = std::tuple<Indexes...>;
     static auto constexpr dimension = sizeof...(Indexes);
+    // If we either decide on heterogeneous indexes, this can be a tuple
+    // using Index = std::tuple<Indexes...>;
+    using Index = std::array<int, dimension>;
+    using Dimensions = std::array<int, dimension>;
 
   /*-------------.
   | Construction |
@@ -30,7 +34,7 @@ namespace elle
     /// A Table with given \a dimensions and elements default-constructed.
     TableImpl(Indexes ... dimensions);
     /// A Table with given \a dimensions and elements default-constructed.
-    TableImpl(std::tuple<Indexes...> dimensions);
+    TableImpl(Dimensions dimensions);
     /// A Table with dimension deduced and elements moved from \a init.
     TableImpl(elle::meta::fold1<dimension, std::initializer_list, T> init);
     /// Table \a src moved.
@@ -41,7 +45,7 @@ namespace elle
     ~TableImpl() noexcept(noexcept(std::declval<T>().~T()));
 
   private:
-    TableImpl(std::tuple<Indexes...> dimensions, bool);
+    TableImpl(Dimensions dimensions, bool);
 
   /*-----------.
   | Dimensions |
@@ -53,7 +57,7 @@ namespace elle
     ///
     /// When resizing, all elements that are still part of the table are
     /// moved. New elements are default constructed.
-    ELLE_ATTRIBUTE_Rw(std::tuple<Indexes...>, dimensions);
+    ELLE_ATTRIBUTE_Rw(Dimensions, dimensions);
 
   /*-------.
   | Access |

@@ -136,7 +136,7 @@ initializer()
       {Beacon("0"), Beacon("1"), Beacon("2")},
       {Beacon("3"), Beacon("4"), Beacon("5")},
     };
-    BOOST_TEST(table.dimensions() == std::make_tuple(2, 3));
+    BOOST_TEST(table.dimensions() == std::tuple(2, 3));
     BOOST_TEST(table.at(0, 0).str == "0");
     BOOST_TEST(table.at(0, 1).str == "1");
     BOOST_TEST(table.at(0, 2).str == "2");
@@ -348,6 +348,15 @@ print()
   BOOST_TEST(elle::print("{}", t) == "[[0, 1, 2], [3, 4, 5]]");
 }
 
+// Required so we can bounce to ADL definitions of get(<tuple_like>).
+template <std::size_t I, typename T>
+auto
+get(T&& v)
+  -> decltype(std::get<I>(std::forward<T>(v)))
+{
+  return std::get<I>(std::forward<T>(v));
+}
+
 static
 void
 resize()
@@ -360,9 +369,9 @@ resize()
     {p1, p2, p1},
   };
   auto const odd =
-    [] (std::tuple<int, int> i)
+    [] (std::array<int, 2> i)
     {
-      return bool((std::get<0>(i) + std::get<1>(i)) % 2);
+      return bool((get<0>(i) + get<1>(i)) % 2);
     };
   for (auto const& e: t)
     BOOST_TEST(e.second == (odd(e.first) ? p2 : p1));
