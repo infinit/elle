@@ -1,5 +1,8 @@
 #pragma once
 
+#include <elle/assert.hh>
+#include <elle/attribute.hh>
+
 namespace elle
 {
   /// Set a value and reset it at the end if the scope.
