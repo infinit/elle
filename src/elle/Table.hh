@@ -13,6 +13,45 @@
 
 namespace elle
 {
+  // Required so we can bounce to ADL definitions of get(<tuple_like>).
+  template <std::size_t I, typename T>
+  auto
+  get(T&& v)
+    -> decltype(std::get<I>(std::forward<T>(v)))
+  {
+    return std::get<I>(std::forward<T>(v));
+  }
+
+  template <typename T, std::size_t S>
+  struct array_like
+    : public std::array<T, S>
+  {
+    using Super = std::array<T, S>;
+    using Super::Super;
+
+    template <typename I>
+    array_like(I&& i)
+      : array_like(std::forward<I>(i), std::make_index_sequence<S>())
+    {}
+
+    template <typename I, std::size_t ... Indices>
+    array_like(I&& i, std::integer_sequence<std::size_t, Indices...> const&)
+      : Super{get<Indices>(std::forward<I>(i))...}
+    {}
+
+    array_like(std::initializer_list<T> init)
+      : array_like(
+        std::move(init),
+        (ELLE_ASSERT(init.size() == S), std::make_index_sequence<S>()))
+    {}
+
+    template <std::size_t ... Indices>
+    array_like(std::initializer_list<T> init,
+               std::integer_sequence<std::size_t, Indices...> const&)
+      : Super{(*(std::begin(init) + Indices))...}
+    {}
+  };
+
   template <typename T, typename ... Indexes>
   class TableImpl
     : public Printable::as<TableImpl<T, Indexes...>>
@@ -65,21 +104,21 @@ namespace elle
   public:
     /// Whether \a index is within the table boundaries.
     bool
-    contains(Index const& index) const;
+    contains(array_like<int, dimension> index) const;
     using Access = decltype(std::declval<std::vector<T>&>()[0]);
     /// Get element at index (\a indexes...).
     Access
     at(Indexes const& ... indexes);
     /// Get element at index \a index.
     Access
-    at(Index const& index);
+    at(array_like<int, dimension> index);
     using CAccess = decltype(std::declval<std::vector<T> const&>()[0]);
     /// Get element at index (\a indexes...).
     CAccess
     at(Indexes const& ... indexes) const;
     /// Get element at index \a index.
     CAccess
-    at(Index const& index) const;
+    at(array_like<int, dimension> index) const;
 
   private:
     template <std::size_t ... S>

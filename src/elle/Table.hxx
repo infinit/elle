@@ -20,15 +20,12 @@ namespace elle
   {
     namespace table
     {
-      template <int index = 0, typename ... T>
+      template <typename T, std::size_t S>
       constexpr
       int
-      size(std::tuple<T...> const& t)
+      size(std::array<T, S> const& t)
       {
-        if constexpr(index == sizeof...(T))
-          return 1;
-        else
-          return std::get<index>(t) * size<index + 1>(t);
+        return std::apply([] (auto&& ... v) { return (v * ... * 1); }, t);
       }
 
       template <int dimension, typename I, typename T>
@@ -46,8 +43,7 @@ namespace elle
       auto
       dimensions(T init)
       {
-        typename elle::meta::repeat<int, dimension>::
-          template apply<std::tuple> res;
+        std::array<int, dimension> res;
         _dimensions<0>(init, res);
         return res;
       }
@@ -94,7 +90,7 @@ namespace elle
 
   template <typename T, typename ... Indexes>
   TableImpl<T, Indexes...>::TableImpl(Indexes ... dimensions)
-    : TableImpl(std::make_tuple(std::forward<Indexes>(dimensions)...))
+    : TableImpl(std::array{std::forward<Indexes>(dimensions)...})
   {}
 
   template <typename T, typename ... Indexes>
@@ -170,12 +166,12 @@ namespace elle
   typename TableImpl<T, Indexes...>::Access
   TableImpl<T, Indexes...>::at(Indexes const& ... indexes)
   {
-    return this->at(Index(indexes...));
+    return this->at({indexes...});
   }
 
   template <typename T, typename ... Indexes>
   typename TableImpl<T, Indexes...>::Access
-  TableImpl<T, Indexes...>::at(Index const& index)
+  TableImpl<T, Indexes...>::at(array_like<int, dimension> index)
   {
     if (!this->contains(index))
       elle::err("{} is out of bounds {}", index, this->_dimensions);
@@ -195,14 +191,14 @@ namespace elle
 
   template <typename T, typename ... Indexes>
   typename TableImpl<T, Indexes...>::CAccess
-  TableImpl<T, Indexes...>::at(Index const& index) const
+  TableImpl<T, Indexes...>::at(array_like<int, dimension> index) const
   {
     return unconst(*this).at(index);
   }
 
   template <typename T, typename ... Indexes>
   bool
-  TableImpl<T, Indexes...>::contains(Index const& index) const
+  TableImpl<T, Indexes...>::contains(array_like<int, dimension> index) const
   {
     return this->_contains(
       index, std::make_index_sequence<sizeof...(Indexes)>());
