@@ -785,6 +785,15 @@ namespace elle
       template <typename S = void, typename T, typename A>
       void
       _serialize(std::vector<T, A>& collection);
+      /// Serialize or deserialize an array.
+      ///
+      /// @tparam S XXX[doc]
+      /// @tparam T The type of the elements the vector stores.
+      /// @tparam A The type of the allocator for the elements.
+      /// @param collection A vector.
+      template <typename S = void, typename T, std::size_t N>
+      void
+      _serialize(std::array<T, N>& collection);
       /// Serialize or deserialize a set.
       ///
       /// @tparam T The type of the elements the set stores.
@@ -903,7 +912,7 @@ namespace elle
           std::declval<C>().emplace(
             std::declval<elle::serialization::SerializerIn>())),
         void>
-      _deserialize_in_array(C& collection);
+      _deserialize_in_array(C& collection, std::size_t idx);
       /// Deserialize and emplace_back a value in a collection.
       ///
       /// @tparam S
@@ -915,7 +924,15 @@ namespace elle
           std::declval<C>().emplace_back(
             std::declval<elle::serialization::SerializerIn>())),
         void>
-      _deserialize_in_array(C& collection);
+      _deserialize_in_array(C& collection, std::size_t idx);
+      /// Deserialize a value in a std::array.
+      ///
+      /// @tparam S
+      /// @tparam C The type of the collection.
+      /// @param collection The collection.
+      template <typename S = void, typename T, std::size_t N>
+      void
+      _deserialize_in_array(std::array<T, N>& collection, std::size_t idx);
       template <typename T>
       friend struct Serialize;
       class Details;

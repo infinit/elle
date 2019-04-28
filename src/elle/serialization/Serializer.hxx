@@ -1082,7 +1082,7 @@ namespace elle
         std::declval<C>().emplace(
           std::declval<elle::serialization::SerializerIn>())),
       void>
-    Serializer::_deserialize_in_array(C& collection)
+    Serializer::_deserialize_in_array(C& collection, std::size_t)
     {
       collection.emplace(
         Details::deserialize<typename C::value_type, S>(
@@ -1095,11 +1095,22 @@ namespace elle
         std::declval<C>().emplace_back(
           std::declval<elle::serialization::SerializerIn>())),
       void>
-    Serializer::_deserialize_in_array(C& collection)
+    Serializer::_deserialize_in_array(C& collection, std::size_t)
     {
       collection.emplace_back(
         Details::deserialize<typename C::value_type, S>(
           static_cast<SerializerIn&>(*this), 42));
+    }
+
+    template <typename S, typename T, std::size_t N>
+    void
+    Serializer::_deserialize_in_array(std::array<T, N>& collection,
+                                      std::size_t idx)
+    {
+      if (idx >= N)
+        elle::err("to many elements ({}+) for array size ({})", idx, N);
+      collection[idx] =
+        Details::deserialize<T, S>(static_cast<SerializerIn&>(*this), 42);
     }
 
     // Specific overload to catch std::vector subclasses (for das, namely).
@@ -1108,6 +1119,14 @@ namespace elle
     Serializer::_serialize(std::vector<T, A>& collection)
     {
       this->_serialize<S, std::vector, T, A>(collection);
+    }
+
+    // Specific overload to catch std::array subclasses.
+    template <typename S, typename T, std::size_t N>
+    void
+    Serializer::_serialize(std::array<T, N>& collection)
+    {
+      this->_serialize_collection<S>(collection);
     }
 
     // Specific overload to catch std::set subclasses (for das, namely).
@@ -1280,6 +1299,8 @@ namespace elle
             }
           });
       else // this->in()
+      {
+        std::size_t i = 0;
         this->_serialize_array(
           -1,
           [&] ()
@@ -1287,8 +1308,9 @@ namespace elle
             ELLE_LOG_COMPONENT("elle.serialization.Serializer");
             ELLE_DEBUG_SCOPE("deserialize element of \"%s\"",
                              this->current_name());
-            this->_deserialize_in_array<S>(collection);
+            this->_deserialize_in_array<S>(collection, i++);
           });
+      }
     }
 
     template <typename As,

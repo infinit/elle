@@ -330,6 +330,14 @@ vector()
 template <typename Format>
 static
 void
+array()
+{
+  round_trip<Format>(std::array<int, 3>{1, 5, 9});
+}
+
+template <typename Format>
+static
+void
 pair()
 {
   round_trip<Format>(std::pair<int, std::string>(4, "foo"));
@@ -1713,6 +1721,7 @@ ELLE_TEST_SUITE()
   FOR_ALL_SERIALIZATION_TYPES(list);
   FOR_ALL_SERIALIZATION_TYPES(deque);
   FOR_ALL_SERIALIZATION_TYPES(vector);
+  FOR_ALL_SERIALIZATION_TYPES(array);
   FOR_ALL_SERIALIZATION_TYPES(pair);
   FOR_ALL_SERIALIZATION_TYPES(option);
   FOR_ALL_SERIALIZATION_TYPES(unique_ptr);
