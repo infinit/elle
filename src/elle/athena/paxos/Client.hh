@@ -135,8 +135,7 @@ namespace elle
         /// @param version The version of the proposal.
         /// @returns The value that was chosen if not the one we submitted
         Choice
-        choose(elle::_detail::attribute_r_t<Version> version,
-               Value const& value);
+        choose(optimal_argument_type_t<Version> version,  Value const& value);
         /// Get the latest chosen value.
         boost::optional<T>
         get();

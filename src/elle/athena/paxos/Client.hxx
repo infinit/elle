@@ -148,8 +148,7 @@ namespace elle
       template <typename T, typename Version, typename ClientId>
       auto
       Client<T, Version, ClientId>::choose(
-        elle::_detail::attribute_r_t<Version> version,
-        Value const& value)
+        optimal_argument_type_t<Version> version, Value const& value)
         -> Choice
       {
         ELLE_LOG_COMPONENT("athena.paxos.Client");

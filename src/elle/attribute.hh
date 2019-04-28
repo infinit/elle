@@ -8,6 +8,8 @@
 #include <boost/preprocessor/seq/for_each.hpp>
 #include <boost/preprocessor/variadic/to_seq.hpp>
 
+#include <elle/argument.hh>
+
 /// Define a private attribute.
 /// This is equivalent to:
 ///
@@ -40,7 +42,7 @@
   public:                                                           \
   ELLE_ATTRIBUTE_PROPERTIES_PREFUN(                                 \
     BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))                          \
-  ::elle::_detail::attribute_r_t<ELLE_ATTRIBUTE_STRIP_PARENS(Type)> \
+  ::elle::optimal_argument_type_t<ELLE_ATTRIBUTE_STRIP_PARENS(Type)> \
   Name() const                                                      \
   ELLE_ATTRIBUTE_PROPERTIES_POSTFUN(                                \
     BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))                          \
@@ -577,23 +579,3 @@
   BOOST_PP_SEQ_FOR_EACH(ELLE_ATTRIBUTE_PROPERTY, _POSTFUN, Properties)
 #define ELLE_ATTRIBUTE_PROPERTY(R, Data, Elem)                         \
   BOOST_PP_CAT(BOOST_PP_CAT(ELLE_ATTRIBUTE_PROPERTY_, Elem), Data)
-
-namespace elle
-{
-  namespace _detail
-  {
-    template <typename T>
-    struct attribute_r_type
-    {
-      constexpr static auto plain
-        = (std::is_fundamental<T>{}
-           || std::is_enum<T>{}
-           || std::is_pointer<T>{});
-
-      using type = std::conditional_t<plain, T, T const&>;
-    };
-
-    template <typename T>
-    using attribute_r_t = typename attribute_r_type<T>::type;
-  }
-}
