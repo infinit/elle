@@ -96,6 +96,22 @@ namespace elle
     }
 
     void
+    Serializer::_serialize(std::vector<bool>::reference& v)
+    {
+      if (this->in())
+      {
+        bool b;
+        this->_serialize(b);
+        v = b;
+      }
+      else
+      {
+        bool b = v;
+        this->_serialize(b);
+      }
+    }
+
+    void
     Serializer::_serialize(elle::WeakBuffer& v)
     {
       if (this->in())

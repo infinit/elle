@@ -1287,15 +1287,14 @@ namespace elle
           collection.size(),
           [&] ()
           {
-            for (auto& elt: collection)
+            for (auto&& elt: collection)
             {
               ELLE_LOG_COMPONENT("elle.serialization.Serializer");
               ELLE_DEBUG_SCOPE("serialize element of \"%s\"",
                                this->current_name());
               if (auto entry = this->enter(this->current_name()))
                 Serializer::serialize_switch<S>
-                  (static_cast<SerializerOut&>(*this),
-                   const_cast<typename C::value_type&>(elt));
+                  (static_cast<SerializerOut&>(*this), elle::unconst(elt));
             }
           });
       else // this->in()

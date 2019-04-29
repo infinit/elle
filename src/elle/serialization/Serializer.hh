@@ -682,6 +682,9 @@ namespace elle
       virtual
       void
       _serialize(bool& v) = 0;
+      /// Serialize a bool as packed in a vector.
+      void
+      _serialize(std::vector<bool>::reference& v);
       /// Serialize or deserialize a std::string.
       virtual
       void

@@ -242,17 +242,19 @@ object_composite()
   round_trip<Format>(Segment{Point{42, 51}, Point{69, 86}});
 }
 
-template <template <typename, typename> class Container>
+template <template <typename> class Container>
 class Lists
 {
 public:
   Lists()
-    : ints()
+    : bools()
+    , ints()
     , strings()
   {}
 
   Lists(elle::serialization::Serializer& s)
-    : ints()
+    : bools()
+    , ints()
     , strings()
   {
     this->serialize(s);
@@ -261,19 +263,21 @@ public:
   void
   serialize(elle::serialization::Serializer& s)
   {
+    s.serialize("bools", this->bools);
     s.serialize("ints", this->ints);
     s.serialize("strings", this->strings);
     s.serialize("empty", this->empty);
     s.serialize("options", this->options);
   }
 
-  Container<int, std::allocator<int>> ints;
-  Container<std::string, std::allocator<std::string>> strings;
-  Container<int, std::allocator<int>> empty;
-  Container<boost::optional<int>, std::allocator<boost::optional<int>>> options;
+  Container<bool> bools;
+  Container<int> ints;
+  Container<std::string> strings;
+  Container<int> empty;
+  Container<boost::optional<int>> options;
 };
 
-template <typename Format, template <typename, typename> class Container>
+template <typename Format, template <typename> class Container>
 static
 void
 collection()
@@ -282,6 +286,7 @@ collection()
   {
     typename Format::SerializerOut output(stream);
     Lists<Container> l;
+    l.bools = {true, false};
     l.ints = {0, 1, 2};
     l.strings = {"foo", "bar", "baz"};
     l.options = {{42}, {}};
@@ -290,16 +295,13 @@ collection()
   {
     typename Format::SerializerIn input(stream);
     Lists<Container> l(input);
-    BOOST_CHECK_EQUAL(l.ints,
-                      (Container<int, std::allocator<int>>{0, 1, 2}));
+    BOOST_CHECK_EQUAL(l.ints, (Container<int>{0, 1, 2}));
     BOOST_CHECK_EQUAL(l.strings,
-                      (Container<std::string, std::allocator<std::string>>
-                      {"foo", "bar", "baz"}));
+                      (Container<std::string>{"foo", "bar", "baz"}));
     BOOST_CHECK(l.empty.empty());
     BOOST_CHECK_EQUAL(
       l.options,
-      (Container<boost::optional<int>, std::allocator<boost::optional<int>>>
-      {{42}, {}}));
+      (Container<boost::optional<int>>{{42}, {}}));
   }
 }
 
