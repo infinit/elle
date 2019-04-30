@@ -221,7 +221,7 @@ namespace elle
 
   template <typename T, typename ... Indexes>
   int
-  TableImpl<T, Indexes...>::index(Index const& index) const
+  TableImpl<T, Indexes...>::index(array_like<int, dimension> index) const
   {
     return this->_index(index, std::make_index_sequence<sizeof...(Indexes)>());
   }

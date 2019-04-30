@@ -144,7 +144,7 @@ namespace elle
     ///
     /// Result is contained within [0, this->size()[
     int
-    index(Index const& index) const;
+    index(array_like<int, dimension> index) const;
     /// The index corresponding to the implementation-defined integer.
     Index
     index(int index) const;
