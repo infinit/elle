@@ -229,6 +229,14 @@ to_string()
   check(Default());
 }
 
+static
+void
+repr()
+{
+  BOOST_TEST(elle::print("{} {!r}", "foo", "foo") == "foo \"foo\"");
+  BOOST_TEST(elle::print("{!r}", "foo\"bar") == "\"foo\\\"bar\"");
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -250,4 +258,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(default_print));
   suite.add(BOOST_TEST_CASE(to_string));
   suite.add(BOOST_TEST_CASE(void_pointers));
+  suite.add(BOOST_TEST_CASE(repr));
 }

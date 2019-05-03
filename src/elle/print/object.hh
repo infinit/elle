@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iomanip>
 #include <ostream>
 #include <memory>
 
@@ -10,15 +11,6 @@ namespace elle
     /// Default print for non-streamable objects.
     void
     default_print(std::ostream& o, std::type_info const& info, void const* p);
-
-    template <typename T>
-    constexpr
-    std::enable_if_exists_t<
-      decltype(std::declval<std::ostream&>() << std::declval<T>()), bool>
-    _is_streamable(int)
-    {
-      return true;
-    };
   }
 
   template <typename T>
@@ -33,6 +25,15 @@ namespace elle
 
   namespace _details
   {
+    template <typename T>
+    constexpr
+    std::enable_if_exists_t<
+      decltype(std::declval<std::ostream&>() << std::declval<T>()), bool>
+    _is_streamable(int)
+    {
+      return true;
+    };
+
     template <typename T>
     constexpr
     bool
@@ -54,7 +55,9 @@ namespace elle
     `--------------------------*/
 
     template <typename T>
-    std::enable_if_t<is_streamable<T>(), void>
+    std::enable_if_t<
+      is_streamable<T>() &&
+      !std::is_same<std::remove_cv_reference_t<T>, std::string>::value, void>
     print(std::ostream& o, T&& value)
     {
       o << std::forward<T>(value);
@@ -76,16 +79,32 @@ namespace elle
 
     inline
     void
+    print(std::ostream& o, std::string const& value)
+    {
+      if (repr(o))
+        o << std::quoted(value);
+      else
+        o << value;
+    }
+
+    inline
+    void
     print(std::ostream& o, char const* value)
     {
-      o << (value ? value : "");
+      auto const r = repr(o);
+      if (value && r)
+        ::elle::_details::print(o, std::string(value));
+      else if (value)
+        o << value;
+      else if (r)
+        o << "\"\"";;
     }
 
     inline
     void
     print(std::ostream& o, char* value)
     {
-      o << (value ? value : "");
+      print(o, (char const*)value);
     }
 
     template <typename T>
