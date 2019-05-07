@@ -3,38 +3,32 @@
 #include <boost/filesystem.hpp>
 
 #include <elle/format/gzip.hh>
+#include <elle/log.hh>
 #include <elle/test.hh>
+
+ELLE_LOG_COMPONENT("elle.format.gzip.test");
 
 static
 void
-data_size(std::string content, bool flush, int buffer_size)
+roundtrip(std::string content, bool flush, int buffer_size)
 {
+  ELLE_LOG("raw size: {}", content.size());
   std::stringstream buffer;
-
   {
-    elle::format::gzip::Stream filter(buffer, flush, buffer_size);
-    filter << content;
+    elle::format::gzip::Stream deflate(buffer, flush, buffer_size);
+    deflate << content;
   }
-
+  ELLE_LOG("compressed size: {}", buffer.str().size());
   BOOST_CHECK_LE(buffer.str().size(), content.size() * 80 / 100 + 20);
-
-  /*
-   elle::Buffer output(content.size());
-  {
-    boost::iostreams::filtering_istream filter;
-    filter.push(boost::iostreams::gzip_decompressor());
-    filter.push(buffer);
-    filter.read(reinterpret_cast<char*>(output.mutable_contents()),
-                output.size());
-    BOOST_CHECK_EQUAL(filter.gcount(), content.size());
-    char c;
-    filter.read(&c, 1);
-    BOOST_CHECK_EQUAL(filter.gcount(), 0);
-    BOOST_CHECK(filter.eof());
-  }
+  auto data =
+    [&]
+    {
+      elle::format::gzip::Stream inflate(buffer, flush, buffer_size);
+      return std::string(std::istreambuf_iterator<char>(inflate), {});
+    }();
+  BOOST_TEST(content.size() == data.size());
   // Do not use BOOST_CHECK_EQUAL because the output is HUGE.
-  BOOST_CHECK(content == output.string());
-  */
+  BOOST_CHECK(content == data);
 }
 
 static
@@ -61,28 +55,28 @@ static
 void
 data_big_buffer()
 {
-  return data_size(content(), true, 1 << 18);
+  return roundtrip(content(), true, 1 << 18);
 }
 
 static
 void
 data_big_buffer_noflush()
 {
-  return data_size(content(), false, 1 << 18);
+  return roundtrip(content(), false, 1 << 18);
 }
 
 static
 void
 data_small_buffer()
 {
-  return data_size(content(), true, 1 << 12);
+  return roundtrip(content(), true, 1 << 12);
 }
 
 static
 void
 data_small_buffer_noflush()
 {
-  return data_size(content(), false, 1 << 12);
+  return roundtrip(content(), false, 1 << 12);
 }
 
 static
@@ -90,22 +84,22 @@ void
 data_pico_buffer_noflush()
 {
   // This checks that with honor_flush = false, data is not encoded by chunks of
-  // 8 bytes, this yielding a bigger size.
-  return data_size(content(), false, 8);
+  // 8 bytes, thus yielding a bigger size.
+  return roundtrip(content(), false, 8);
 }
 
 static
 void
 empty_content()
 {
-  return data_size("", true, 1024);
+  return roundtrip("", true, 1024);
 }
 
 static
 void
 empty_content_noflush()
 {
-  return data_size("", false, 1024);
+  return roundtrip("", false, 1024);
 }
 
 static
@@ -125,6 +119,8 @@ flush()
     BOOST_CHECK_GT(buffer.str().size(), size);
   }
 }
+
+
 
 ELLE_TEST_SUITE()
 {

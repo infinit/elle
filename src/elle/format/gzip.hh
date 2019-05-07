@@ -26,8 +26,6 @@ namespace elle
       /// when it sees fit, but compressing network packet should set it to true
       /// to ensure compressed packets are sent immediately on flush() and not
       /// waiting to be compressed with the next ones.
-      ///
-      /// Decompression is not supported for now.
       class ELLE_API Stream
         : public elle::IOStream
       {
@@ -37,7 +35,7 @@ namespace elle
         /// \param underlying  The wrapped stream to write compressed data to.
         /// \param honor_flush Whether to force output when flushed.
         /// \param buffer_size The chunk size to compress data by.
-        Stream(std::ostream& underlying,
+        Stream(std::iostream& underlying,
                bool honor_flush,
                Buffer::Size buffer_size = 1 << 16);
       };
