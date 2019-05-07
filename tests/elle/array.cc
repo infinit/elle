@@ -22,11 +22,19 @@ namespace operators
   array()
   {
     using A = std::array<int, 3>;
+    using B = std::array<bool, 4>;
     BOOST_TEST((A{0, 1, 2} + A{3, 4, 5}) == (A{3, 5, 7}));
     BOOST_TEST((A{0, 1, 2} - A{5, 4, 3}) == (A{-5, -3, -1}));
     BOOST_TEST((A{0, 1, 2} * A{2, 3, 4}) == (A{0, 3, 8}));
     BOOST_TEST((A{4, 8, 16} / A{2, 1, 4}) == (A{2, 8, 4}));
     BOOST_TEST((A{4, 8, 16} % A{2, 3, 5}) == (A{0, 2, 1}));
+    BOOST_TEST((+A{1, 2, 3}) == (A{1, 2, 3}));
+    BOOST_TEST((-A{1, 2, 3}) == (A{-1, -2, -3}));
+    BOOST_TEST((!B{true, false, true, false}) == (B{false, true, false, true}));
+    BOOST_TEST((B{true, true, false, false} && B{true, false, true, false}) ==
+               (B{true, false, false, false}));
+    BOOST_TEST((B{true, true, false, false} || B{true, false, true, false}) ==
+               (B{true, true, true, false}));
   }
 }
 

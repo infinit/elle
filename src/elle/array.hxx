@@ -22,8 +22,7 @@ namespace std
     return out;
   }
 
-
-#define ELLE_ARRAY_OP(Op)                               \
+#define ELLE_ARRAY_OP_BINARY(Op)                        \
   template <typename T, std::size_t N, typename S>      \
   auto                                                  \
   operator Op(std::array<T, N> const& v, S&& s)         \
@@ -53,12 +52,32 @@ namespace std
       }, lhs);                                          \
   }                                                     \
 
-  ELLE_ARRAY_OP(+);
-  ELLE_ARRAY_OP(-);
-  ELLE_ARRAY_OP(*);
-  ELLE_ARRAY_OP(/);
-  ELLE_ARRAY_OP(%);
-#undef ELLE_ARRAY_OP
+#define ELLE_ARRAY_OP_UNARY(Op)                         \
+  template <typename T, std::size_t N>                  \
+  auto                                                  \
+  operator Op(std::array<T, N> const& v)                \
+    -> std::array<decltype(Op v[0]), N>                 \
+  {                                                     \
+    return std::apply(                                  \
+      [&] (auto&& ... elts)                             \
+      {                                                 \
+        return std::array{Op elts ...};                 \
+      },                                                \
+      v);                                               \
+  }                                                     \
+
+  ELLE_ARRAY_OP_BINARY(+);
+  ELLE_ARRAY_OP_BINARY(-);
+  ELLE_ARRAY_OP_BINARY(*);
+  ELLE_ARRAY_OP_BINARY(/);
+  ELLE_ARRAY_OP_BINARY(%);
+  ELLE_ARRAY_OP_BINARY(&&);
+  ELLE_ARRAY_OP_BINARY(||);
+  ELLE_ARRAY_OP_UNARY(+);
+  ELLE_ARRAY_OP_UNARY(-);
+  ELLE_ARRAY_OP_UNARY(!);
+#undef ELLE_ARRAY_OP_BINARY
+#undef ELLE_ARRAY_OP_UNARY
 
   /// Compare array with any tuple-like.
   template <typename T, std::size_t S, typename U>
