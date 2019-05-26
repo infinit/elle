@@ -41,6 +41,30 @@ namespace
     BOOST_TEST(elle::tail(std::string{"foobar"}, "foo") == std::string{"bar"});
     BOOST_TEST(!elle::tail(std::string{"foobar"}, "bar"));
   }
+
+  void
+  more_or_less()
+  {
+#define ELLE_ALGORITHM_TEST(F, Y, N)            \
+    BOOST_TEST(! F(0, 0));                      \
+    BOOST_TEST(Y F(1, 0));                      \
+    BOOST_TEST(N F(0, 1));                      \
+    BOOST_TEST(! F(0u, 0));                     \
+    BOOST_TEST(Y F(1u, 0));                     \
+    BOOST_TEST(N F(0u, 1));                     \
+    BOOST_TEST(! F(0, 0u));                     \
+    BOOST_TEST(Y F(1, 0u));                     \
+    BOOST_TEST(N F(0, 1u));                     \
+    BOOST_TEST(! F(0u, 0u));                    \
+    BOOST_TEST(Y F(1u, 0u));                    \
+    BOOST_TEST(N F(0u, 1u));                    \
+    BOOST_TEST(Y F(0u, -1));                    \
+    BOOST_TEST(N F(-1, 0u));
+
+    ELLE_ALGORITHM_TEST(elle::less, !, );
+    ELLE_ALGORITHM_TEST(elle::greater, , !);
+#undef ELLE_ALGORITHM_TEST
+  }
 }
 
 ELLE_TEST_SUITE()
@@ -48,4 +72,5 @@ ELLE_TEST_SUITE()
   auto& master = boost::unit_test::framework::master_test_suite();
   master.add(BOOST_TEST_CASE(push_back), 0, 1);
   master.add(BOOST_TEST_CASE(tail), 0, 1);
+  master.add(BOOST_TEST_CASE(more_or_less), 0, 1);
 }

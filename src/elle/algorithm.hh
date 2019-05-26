@@ -148,4 +148,50 @@ namespace elle
   {
     return tail(range, std::string{prefix});
   }
+
+  // Comparison functions that DTRT for signed vs unsigned.
+#define ELLE_ALGORITHM_CMP(Name, Op, Lhs, Rhs)                  \
+  template <typename T, typename U>                             \
+  bool                                                          \
+  Name(T const& t, U const& u)                                  \
+  {                                                             \
+    if constexpr(std::is_integral_v<T>)                         \
+    {                                                           \
+      if constexpr(std::is_signed_v<T> == std::is_signed_v<U>)  \
+        return t Op u;                                          \
+      else                                                      \
+        if constexpr(std::is_signed_v<T>)                       \
+          return t < 0 ? Lhs : unsigned(t) Op u;                \
+        else                                                    \
+          return u < 0 ? Rhs : t Op unsigned(u);                \
+    }                                                           \
+    else                                                        \
+      return t Op u;                                            \
+  }
+
+  ELLE_ALGORITHM_CMP(less,    <, true,  false)
+  ELLE_ALGORITHM_CMP(greater, >, false, true )
+#undef ELLE_ALGORITHM_CMP
+
+  /// Set v to m if m is less than v.
+  ///
+  /// A shortcut for v = std::min(v, m)
+  template <typename T, typename U>
+  void
+  minify(T& v, U&& m)
+  {
+    if (less(m, v))
+      v = std::forward<U>(m);
+  }
+
+  /// Set v to m if m is greater than v.
+  ///
+  /// A shortcut for v = std::max(v, m)
+  template <typename T, typename U>
+  void
+  maxify(T& v, U&& m)
+  {
+    if (greater(m, v))
+      v = std::forward<U>(m);
+  }
 }
