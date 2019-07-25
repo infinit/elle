@@ -1,0 +1,6 @@
+[MESSAGES CONTROL]
+	disable=abstract-method, broad-except, no-else-return, no-self-use, redefined-outer-name
+
+[FORMAT]
+indent-string='  '
+indent-after-paren=2
