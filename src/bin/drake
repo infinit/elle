@@ -3,8 +3,24 @@
 import os
 import sys
 
-root = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
-sys.path.insert(0, root)
+prefix = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
+search =  [
+  os.path.join('lib', 'python{}.{}'.format(*sys.version_info), 'site-packages'),
+  'lib',
+  '.',
+]
+
+lib = None
+for p in (os.path.join(prefix, s) for s in search):
+  if os.path.exists(os.path.join(p, 'drake')):
+    lib = p
+    break
+
+if lib is None:
+  print('{}: unable to find drake libraries'.format(sys.argv[0]), file = sys.stderr)
+  exit(1)
+
+sys.path.insert(0, lib)
 
 import drake
 
