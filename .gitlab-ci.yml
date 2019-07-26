@@ -1,8 +1,12 @@
 stages:
   - check
+  - containerize
 
 variables:
   PYTHONUNBUFFERED: "1"
+
+before_script:
+  - TAG="$(git describe --always)"
 
 check:
   stage: check
@@ -12,3 +16,12 @@ check:
     - src/bin/drake . --workdir _build --coverage=true
     - cd _build && coverage report
   coverage: '/TOTAL.+ ([0-9]{1,3}%)/'
+
+containerize:
+  stage: containerize
+  image: registry.gitlab.gruntech.org/infinit/drake/trusty-ci
+  script:
+    - docker build --tag "drake:$TAG" .
+    - docker run --rm "drake:$TAG"
+  dependencies:
+    - check

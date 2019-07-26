@@ -1,8 +1,13 @@
-FROM ubuntu:16.04 AS trusty-ci
+FROM alpine:latest AS drake-build
 
-RUN apt-get update && apt-get install -y git python3.5 python3-pip && rm -rf /var/lib/apt/lists/*
+RUN apk add --no-cache gcc musl-dev python3 python3-dev py-pip
+ADD . /root/
+RUN pip3 install -r /root/requirements.txt
+RUN /root/src/bin/drake /root --prefix=/usr //install
 
-FROM trusty-ci AS trusty-check
+FROM alpine:latest
 
-ADD requirements.txt .
-RUN pip3 install -r requirements.txt
+RUN apk add --no-cache python3
+COPY --from=drake-build /usr/bin/drake /usr/bin/drake
+COPY --from=drake-build /usr/lib/python3.6/site-packages/ /usr/lib/python3.6/site-packages/
+ENTRYPOINT /usr/bin/drake
