@@ -1,0 +1,65 @@
+#!/bin/sh
+
+set -e
+
+# Redirect output to stderr.
+exec 1>&2
+
+rv=0
+
+message ()
+{
+    echo 1>&2 "$0: $@"
+}
+
+error ()
+{
+    message "$@"
+    rv=1
+}
+
+fatal ()
+{
+    message "$@"
+    exit 1
+}
+
+if git rev-parse --verify HEAD >/dev/null 2>&1
+then
+    against=HEAD
+else
+    # Initial commit: diff against an empty tree object
+    against=4b825dc642cb6eb9a060e54bf8d69288fbee4904
+fi
+
+DIR=$(mktemp -d)
+
+cleanup ()
+{
+    rm -rf "$DIR"
+}
+
+trap cleanup INT QUIT
+
+git checkout-index --prefix="$DIR/index/" --all --force
+mkdir -p "$DIR/prev"
+git archive "$against" --format=tar | tar -C "$DIR/prev" -x
+
+score ()
+{
+    PYTHONPATH="$PWD/src" pylint "$DIR/$1" | sed -n 's,.*rated at \([0-9.]\+\)/10.*,\1,p'
+}
+
+for f in $(git diff --cached --name-only --diff-filter=CMR); do
+    if file "$f" | grep -iq 'python'; then
+        before=$(score "prev/$f")
+        after=$(score "index/$f")
+        if test $(awk "BEGIN{ print \"$after\" < \"$before\" }") -eq 1; then
+            error "pylint regression: $f ($after < $before)"
+        fi
+    fi
+done
+
+cleanup
+
+exit "$rv"
