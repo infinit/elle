@@ -1,65 +1,56 @@
-#!/bin/sh
+#!/usr/bin/env python3
 
-set -e
+'''Run all pre-commit hooks and reject commit if any exception is raised.'''
 
-# Redirect output to stderr.
-exec 1>&2
+import os
+import subprocess
+import tempfile
 
-rv=0
+import git
+import githooks
+import hooks
 
-message ()
-{
-    echo 1>&2 "$0: $@"
-}
+HEAD = git.head()
 
-error ()
-{
-    message "$@"
-    rv=1
-}
+def main():
 
-fatal ()
-{
-    message "$@"
-    exit 1
-}
+  '''Main entrypoint.'''
 
-if git rev-parse --verify HEAD >/dev/null 2>&1
-then
-    against=HEAD
-else
-    # Initial commit: diff against an empty tree object
-    against=4b825dc642cb6eb9a060e54bf8d69288fbee4904
-fi
+  with tempfile.TemporaryDirectory() as root:
+    try:
+      params = {
+        'head': HEAD,
+        'root': root,
+      }
+      git.git(['checkout-index', '--prefix={root}/index/'.format(**params), '--all', '--force'])
+      os.mkdir('{root}/prev'.format(**params))
+      subprocess.run(['tar', '-C', '{root}/prev'.format(**params), '-x'],
+                     stdin=git.pipe(['archive', HEAD, '--format=tar']))
+      for line in git.git(['diff', '--cached', '--name-status', '--diff-filter=ACMR']).split('\n'):
+        status, file = line.split('\t', maxsplit=1)
+        if status == 'A':
+          before = None
+          after = '{root}/index/{f}'.format(f=file, **params)
+        elif status in ['C', 'M']:
+          before = '{root}/prev/{f}'.format(f=file, **params)
+          after = '{root}/index/{f}'.format(f=file, **params)
+        elif status.startswith('R'):
+          before, after = file.split('\t')
+          file = after
+          before = '{root}/prev/{f}'.format(f=before, **params)
+          after = '{root}/index/{f}'.format(f=after, **params)
+        for hook in hooks.REGRESSION_HOOKS:
+          try:
+            hook(before, after, file)
+          except Exception as error:
+            raise Exception('error on {}'.format(file)) from error
+    except Exception as error:
+      def clean_exn(error):
+        if hasattr(error, 'output'):
+          error.output = error.output.replace('{}/index/'.format(root), '')
+        if error.__cause__ is not None:
+          clean_exn(error.__cause__)
+      clean_exn(error)
+      raise error
 
-DIR=$(mktemp -d)
-
-cleanup ()
-{
-    rm -rf "$DIR"
-}
-
-trap cleanup INT QUIT
-
-git checkout-index --prefix="$DIR/index/" --all --force
-mkdir -p "$DIR/prev"
-git archive "$against" --format=tar | tar -C "$DIR/prev" -x
-
-score ()
-{
-    PYTHONPATH="$PWD/src" pylint "$DIR/$1" | sed -n 's,.*rated at \([0-9.]\+\)/10.*,\1,p'
-}
-
-for f in $(git diff --cached --name-only --diff-filter=CMR); do
-    if file "$f" | grep -iq 'python'; then
-        before=$(score "prev/$f")
-        after=$(score "index/$f")
-        if test $(awk "BEGIN{ print \"$after\" < \"$before\" }") -eq 1; then
-            error "pylint regression: $f ($after < $before)"
-        fi
-    fi
-done
-
-cleanup
-
-exit "$rv"
+githooks.main(main)

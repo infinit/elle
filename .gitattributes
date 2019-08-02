@@ -1,0 +1,1 @@
+.githooks/pre-*	pylint-disable=C0103
