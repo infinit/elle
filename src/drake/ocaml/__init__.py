@@ -9,6 +9,7 @@
 '''OCaml compilation support.'''
 
 import copy
+import pipes
 import subprocess
 
 import drake
@@ -203,11 +204,16 @@ class Ocamldep(drake.Builder):
     # the module must be compiled, the content does not matter. Wild idea: simply touch those files
     # ?
 
+    # The wild idea of just touching those files seems to be working. The whole comment is left here
+    # for now as an explanation and to ease a potential rollback in case it's a not-so-great
+    # idea. And also because I'm a bit proud and amused, admittedly.
+
     for node in drake.Drake.current.nodes.values():
       if isinstance(node, (Implementation, Interface)) and node.builder is not None:
         for include in self.__config.include_directories:
-          if node.name().dirname() is include:
-            self.add_dynsrc('ocamldep-need-sources', node)
+          if node.name().dirname() is include and not node.path().exists():
+            self.output('touch {}'.format(pipes.quote(str(node))), pretty='Touch {}'.format(node))
+            node.path().touch()
 
 class Dependencies(drake.Node):
 
