@@ -178,7 +178,10 @@ class Compiler(drake.Builder):
     with open(str(self.__deps.path()), 'r') as deps:
       for line in deps:
         target, sources = map(str.strip, line.split(':'))
-        if target == str(self.__target.path()):
+        target = drake.Path(target)
+        if self.__source.builder is None:
+          target = target.without_prefix(drake.path_source())
+        if target == self.__target.path():
           for source in sources.split(' '):
             self.add_dynsrc('ocamldep', drake.node(source))
           return
