@@ -27,6 +27,8 @@ def main():
       subprocess.run(['tar', '-C', '{root}/prev'.format(**params), '-x'],
                      stdin=git.pipe(['archive', HEAD, '--format=tar']))
       for line in git.git(['diff', '--cached', '--name-status', '--diff-filter=ACMR']).split('\n'):
+        if line == '':
+          continue
         status, file = line.split('\t', maxsplit=1)
         if status == 'A':
           before = None
