@@ -133,6 +133,8 @@ drake.Node.extensions['cmi'] = InterfaceObject
 def _to_objects(node, toolkit, config):
   if isinstance(node, Object):
     return [node]
+  elif not isinstance(node, Node):
+    raise Exception('non-OCaml source for an OCaml binary: {}'.format(node))
   else:
     return _flatten(_to_objects(o, toolkit, config) for o in node.to_objects(toolkit, config))
 
