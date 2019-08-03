@@ -34,12 +34,12 @@ class Toolkit:
   def __init__(self, ocamlfind='ocamlfind'):
     '''Create an OCaml toolchain from the given `ocamlfind` binary.'''
     self.__find = drake.Path(ocamlfind)
+    self.__dependencies = {}
 
   def _compile_command(self, source, target, config):
     return self.__command('ocamlc', ['-c', source, '-o', target], config)
 
   def _link_command(self, sources, target, config):
-    sources = filter(lambda n: n.__class__ is not InterfaceObject, sources)
     return self.__command('ocamlc', list(sources) + ['-o', target], config)
 
   def _dependencies_command(self, node, config):
@@ -50,6 +50,35 @@ class Toolkit:
 
   def __compile_flags(self, config):
     return _flatten(['-I', dir] for dir in config.include_directories)
+
+  def _register_dependency(self, depender, dependee):
+    # ocamldep will report dependencies on cmi files. My hypothesis here is that this can be used to
+    # deduce dependencies between associated cmo files.
+    if isinstance(dependee, InterfaceObject):
+      name = dependee.name().with_extension('cmo')
+      # I'm not too sure it systematically exist yet, better safe than sorry.
+      assert name in drake.Drake.current.nodes
+      dependee = drake.node(name)
+      if dependee is depender:
+        # cmo depends on their cmi, don't create a loop
+        return
+    self.__dependencies.setdefault(depender, set()).add(dependee)
+
+  def _dependencies_topological(self, nodes):
+    dependencies = dict(
+      (node, set(filter(lambda n: n in nodes, self.__dependencies.get(node, set()))))
+      for node in nodes)
+    while dependencies:
+      free = None
+      for k, values in dependencies.items():
+        if not values:
+          free = k
+      if free is None:
+        raise Exception('circular dependencies')
+      for values in dependencies.values():
+        values.discard(free)
+      dependencies.pop(free)
+      yield free
 
 class Config:
 
@@ -79,7 +108,7 @@ class Source(Node):
 
     '''Convert to the associated bytecode object file.'''
 
-    kind = InterfaceObject if self.name().extension == 'mli' else ImplementationObject
+    kind = InterfaceObject if isinstance(self, Interface) else ImplementationObject
     obj = kind(self.name().with_extension(self.extension))
     Compiler(self, obj, toolkit, config)
     return [obj]
@@ -205,8 +234,11 @@ class Compiler(drake.Builder):
         if self.__source.builder is None:
           target = target.without_prefix(drake.path_source())
         if target == self.__target.path():
-          for source in sources.split(' '):
-            self.add_dynsrc('ocamldep', drake.node(source))
+          if sources:
+            for source in sources.split(' '):
+              dep = drake.node(source)
+              self.__toolkit._register_dependency(self.__target, dep)
+              self.add_dynsrc('ocamldep', dep)
           return
     raise Exception('could not find {} in {}'.format(self.__target, self.__deps))
 
@@ -223,8 +255,10 @@ class Linker(drake.Builder):
     super().__init__(sources, [target])
 
   def execute(self):
+    sources = set(filter(lambda n: n.__class__ is not InterfaceObject, self.__sources))
+    sources = self.__toolkit._dependencies_topological(sources)
     self.cmd('Compile {}'.format(self.__target),
-             self.__toolkit._link_command(self.__sources, self.__target, self.__config),
+             self.__toolkit._link_command(sources, self.__target, self.__config),
              throw=True)
     return True
 
