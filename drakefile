@@ -44,6 +44,8 @@ def configure(prefix='.', coverage: bool = False):
     'src/drake/git.py',
     'src/drake/go/__init__.py',
     'src/drake/log.py',
+    'src/drake/ocaml/__init__.py',
+    'src/drake/ocaml/menhir.py',
     'src/drake/python/__init__.py',
     'src/drake/sched.py',
     'src/drake/templating.py',

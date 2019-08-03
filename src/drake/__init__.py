@@ -1899,6 +1899,9 @@ def log_time(runner):
       if TIME_REPORT_THRESHOLD is None or d.seconds > TIME_REPORT_THRESHOLD:
         print('Ran {} in {}'.format(runner, d))
 
+def _default_deps_handler(builder, path, type_, data):
+  return node(path, type_)
+
 class Builder:
 
   """Produces a set of BaseNodes from an other set of BaseNodes."""
@@ -2031,7 +2034,10 @@ class Builder:
               return str(e)
           c = list(map(convert, c))
           if _RAW or pretty is None:
-            self.output(command_flatten(c, env))
+            raw = command_flatten(c, env)
+            if redirect_stdout is not None:
+              raw += ' > {}'.format(out_file)
+            self.output(raw)
           with contextlib.ExitStack() as stack:
             if out_file:
               stdout = stack.enter_context(open(out_file, 'w'))
@@ -2082,10 +2088,9 @@ class Builder:
     return None
 
   def dependencies(self):
-    """Recompute dynamic dependencies list and return them.
+    """Recompute dynamic dependencies.
 
-    Reimplemented by subclasses. This implementation returns an
-    empty list.
+    Reimplemented by subclasses. This implementation does nothing.
     """
     pass
 
@@ -2401,7 +2406,7 @@ class Builder:
         if depfile._DepFile__invalid:
           explain(self, 'dependency file %s is invalid' % f)
           return True
-        handler = self._deps_handlers[f]
+        handler = self._deps_handlers.get(f, _default_deps_handler)
         with sched.logger.log(
             'drake.Builder',
             drake.log.LogLevel.dump,
