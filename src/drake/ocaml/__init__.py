@@ -196,8 +196,12 @@ class Ocamldep(drake.Builder):
     # semantic understanding of .ml files, much more than parsing '#include <...>'. The current
     # approach seems a minor setback and a more reasonable implementation for now.
 
+    # The saddest part is that AFAICT the generated file need only exist so ocamldep picks up that
+    # the module must be compiled, the content does not matter. Wild idea: simply touch those files
+    # ?
+
     for node in drake.Drake.current.nodes.values():
-      if isinstance(node, (Implementation, Interface)):
+      if isinstance(node, (Implementation, Interface)) and node.builder is not None:
         for include in self.__config.include_directories:
           if node.name().dirname() is include:
             self.add_dynsrc('ocamldep-need-sources', node)
