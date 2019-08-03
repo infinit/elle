@@ -244,10 +244,21 @@ class Compiler(drake.Builder):
           if sources:
             for source in sources.split(' '):
               dep = drake.node(source)
-              self.__toolkit._register_dependency(self.__target, dep)
+              self.__handle_ocamldep(dep)
               self.add_dynsrc('ocamldep', dep)
           return
     raise Exception('could not find {} in {}'.format(self.__target, self.__deps))
+
+  def __handle_ocamldep(self, dep):
+    self.__toolkit._register_dependency(self.__target, dep)
+
+  @classmethod
+  def _ocamldep_handler(cls, builder, path, type_, _):
+    res = drake.node(path, type_)
+    builder.__handle_ocamldep(res)
+    return res
+
+drake.Builder.register_deps_handler('ocamldep', Compiler._ocamldep_handler)
 
 class Linker(drake.Builder):
 
