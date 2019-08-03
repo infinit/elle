@@ -551,7 +551,7 @@ class Path:
       else:
         absolute = False
         virtual = False
-      path = tuple(path.split('/'))
+      path = tuple(filter(lambda c: c, path.split('/')))
     return path, absolute, virtual, volume
 
   separator = '/'
