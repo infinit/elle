@@ -178,6 +178,9 @@ class Ocamldep(drake.Builder):
     self.__toolkit = toolkit
     super().__init__([source], [target])
 
+  def __str__(self):
+    return 'dependencies of {}'.format(self.__source)
+
   def execute(self):
     return self.cmd('Dependencies {}'.format(self.__target),
                     self.__toolkit._dependencies_command(self.__source, self.__config),
