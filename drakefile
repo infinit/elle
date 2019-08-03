@@ -46,6 +46,7 @@ def configure(prefix='.', coverage: bool = False):
     'src/drake/log.py',
     'src/drake/ocaml/__init__.py',
     'src/drake/ocaml/menhir.py',
+    'src/drake/ocaml/ocamllex.py',
     'src/drake/python/__init__.py',
     'src/drake/sched.py',
     'src/drake/templating.py',
