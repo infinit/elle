@@ -37,7 +37,7 @@ from itertools import chain
 from drake.sched import logger
 from drake.utils import property_memoize, pretty_listing
 
-def env(name, default = None):
+def env(name, default=None):
   return _OS.environ.get('DRAKE_{}'.format(name), default)
 
 # The default timeout value for shell commands, in seconds.
@@ -50,7 +50,7 @@ def _scheduled():
   return Coroutine.current and \
     Coroutine.current._Coroutine__scheduler
 
-def path_source(path = None):
+def path_source(path=None):
   if path is None:
     return Drake.current.path_source
   path = Path(path)
@@ -59,7 +59,7 @@ def path_source(path = None):
   else:
     return Drake.current.path_source / Drake.current.prefix / path
 
-def duration(start, stop = None):
+def duration(start, stop=None):
   '''The duration from start to stop, with nice conversion to string.'''
   if not stop:
     stop = time.time()
@@ -140,7 +140,7 @@ class Drake:
         self.__drake._Drake__prefix = self.__previous
     return Recurser(self)
 
-  def __option(self, name, default, override = None):
+  def __option(self, name, default, override=None):
     if override is not None:
       return override
     v = env(name)
@@ -150,14 +150,14 @@ class Drake:
       return bool(int(v))
 
   def __init__(self,
-               root = None,
-               jobs = None,
-               workdir = None,
-               kill_builders_on_failure = False,
-               use_mtime = None,
-               adjust_mtime = None,
-               adjust_mtime_future = None,
-               adjust_mtime_second = None,
+               root=None,
+               jobs=None,
+               workdir=None,
+               kill_builders_on_failure=False,
+               use_mtime=None,
+               adjust_mtime=None,
+               adjust_mtime_future=None,
+               adjust_mtime_second=None,
   ):
     root = Path(root) if root is not None else Path.dot
     with contextlib.ExitStack() as ctx:
@@ -172,7 +172,7 @@ class Drake:
       self.__kill_builders_on_failure = kill_builders_on_failure
       self.__nodes = {}
       self.__prefix = drake.Path('.')
-      self.__scheduler = Scheduler(policy = sched.DepthFirst())
+      self.__scheduler=Scheduler(policy=sched.DepthFirst())
       self.__source = root
       self.__use_mtime = self.__option(
         'MTIME', True, use_mtime)
@@ -348,7 +348,7 @@ def explain(node, reason):
     print('Execute %s because %s' % (node, reason))
 
 def warn(msg):
-  print('Warning: %s.' % msg, file = sys.stderr)
+  print('Warning: %s.' % msg, file=sys.stderr)
 
 class Profile:
 
@@ -469,10 +469,10 @@ class Path:
 
   def __new__(self,
               path,
-              absolute = None,
-              virtual = None,
-              volume = None,
-              string = None):
+              absolute=None,
+              virtual=None,
+              volume=None,
+              string=None):
     if path.__class__ is Path:
       return path
     elif path.__class__ is str:
@@ -588,9 +588,9 @@ class Path:
         self.__canonized = self
       else:
         self.__canonized = drake.Path(res,
-                                      absolute = self.__absolute,
-                                      virtual = self.__virtual,
-                                      volume = self.__volume)
+                                      absolute=self.__absolute,
+                                      virtual=self.__virtual,
+                                      volume=self.__volume)
     return self.__canonized
 
   def absolute(self):
@@ -639,7 +639,7 @@ class Path:
     return self.__volume
 
 
-  def remove(self, err = False):
+  def remove(self, err=False):
       """Remove the target file.
 
       err -- Whether this is an error for non-existent file.
@@ -699,21 +699,21 @@ class Path:
       else:
         parts = [parts[0], value]
       return Path(self.__path[:-1] + ('.'.join(parts),),
-                  absolute = self.__absolute,
-                  virtual = self.__virtual,
-                  volume = self.__volume)
+                  absolute=self.__absolute,
+                  virtual=self.__virtual,
+                  volume=self.__volume)
     else:
       if value != '':
         return Path(self.__path[:-1] + ('%s.%s' % (parts[0], value),),
-                    absolute = self.__absolute,
-                    virtual = self.__virtual,
-                    volume = self.__volume)
+                    absolute=self.__absolute,
+                    virtual=self.__virtual,
+                    volume=self.__volume)
       else:
         return self
 
   extension = property(
-      fget = __extension_get,
-      doc = """Extension of the file name.
+      fget=__extension_get,
+      doc="""Extension of the file name.
 
       The extension is the part after the first dot of the basename,
       or the empty string if there are no dot.
@@ -839,9 +839,9 @@ class Path:
     if not self.__path:
       raise Exception('Cannot take the basename of an empty path.')
     return Path(self.__path[-1:],
-                absolute = False,
-                virtual = False,
-                volume = '')
+                absolute=False,
+                virtual=False,
+                volume='')
 
   def dirname(self):
     """The directory part of the path.
@@ -858,9 +858,9 @@ class Path:
       return Path.dot
     else:
       return Path(self.__path[0:-1],
-                  absolute = self.__absolute,
-                  virtual = self.__virtual,
-                  volume = self.__volume)
+                  absolute=self.__absolute,
+                  virtual=self.__virtual,
+                  volume=self.__volume)
 
   def realpath(self):
     """The absolute path of the real file represented by this path.
@@ -956,9 +956,9 @@ class Path:
     if rhs.__absolute:
       return rhs
     return drake.Path(self.__path + rhs.__path,
-                      absolute = self.__absolute,
-                      virtual = self.__virtual,
-                      volume = self.__volume)
+                      absolute=self.__absolute,
+                      virtual=self.__virtual,
+                      volume=self.__volume)
 
   def prefix_of(self, rhs):
       """Whether self is a prefix of rhs.
@@ -978,7 +978,7 @@ class Path:
         path = path[1:]
       return len(path) == 0
 
-  def without_prefix(self, rhs, force = True):
+  def without_prefix(self, rhs, force=True):
       """Remove rhs prefix from self.
 
       rhs -- the prefix to strip, as a Path or a string.
@@ -1020,9 +1020,9 @@ class Path:
       if not path:
         path = ('.',)
       return drake.Path(path,
-                        absolute = False,
-                        virtual = False,
-                        volume = '')
+                        absolute=False,
+                        virtual=False,
+                        volume='')
 
   def __len__(self):
       return len(self.__path)
@@ -1052,9 +1052,9 @@ class Path:
       if not path:
         path = ('.',)
       return drake.Path(path,
-                        absolute = self.__absolute,
-                        virtual = self.__virtual,
-                        volume = self.__volume)
+                        absolute=self.__absolute,
+                        virtual=self.__virtual,
+                        volume=self.__volume)
 
   @classmethod
   def cwd(self):
@@ -1079,9 +1079,9 @@ class Path:
     def persistent_load(self, obj):
       return drake.Path(
         obj[0],
-        absolute = obj[1],
-        virtual = obj[2],
-        volume = obj[3],
+        absolute=obj[1],
+        virtual=obj[2],
+        volume=obj[3],
       )
 
   def __iter__(self):
@@ -1156,7 +1156,7 @@ class DepFile:
       self.__dirty = dirty
       self.save()
 
-    def register(self, node, source = True):
+    def register(self, node, source=True):
         """Add the node to the hashed files."""
         self.__files.append((node, source))
 
@@ -1265,7 +1265,7 @@ class DepFile:
         """String representation."""
         return repr(self)
 
-def path_build(path = None, absolute = False):
+def path_build(path=None, absolute=False):
   """Return path as found in the build directory.
 
   This function prepend the necessary prefix to a path relative to
@@ -1311,7 +1311,7 @@ class _BaseNodeTypeType(type):
 
         return type.__call__(*arg)
 
-class _BaseNodeType(type, metaclass = _BaseNodeTypeType):
+class _BaseNodeType(type, metaclass=_BaseNodeTypeType):
 
   def __call__(c, *args, **kwargs):
     try:
@@ -1327,7 +1327,7 @@ class _BaseNodeType(type, metaclass = _BaseNodeTypeType):
 _DEBUG_NODE_CREATION = \
   [v for v in env('DEBUG_NODE_CREATION', '').split(',') if v]
 
-class BaseNode(object, metaclass = _BaseNodeType):
+class BaseNode(object, metaclass=_BaseNodeType):
 
   """Base entity manipulated by drake.
 
@@ -1392,7 +1392,7 @@ class BaseNode(object, metaclass = _BaseNodeType):
     """Print a representation of this node compilation."""
     if self.builder is None:
       return
-    if not re.match('.*\.o$', self.makefile_name()):
+    if not re.match('.*\\.o$', self.makefile_name()):
       return
     def to_string(s):
       from pipes import quote
@@ -1491,10 +1491,10 @@ class BaseNode(object, metaclass = _BaseNodeType):
 
   def makefile_name(self):
     path = self.path() if isinstance(self, Node)  \
-           else Path(self.name(), virtual = False)
+           else Path(self.name(), virtual=False)
     return str(path)
 
-  def makefile(self, marks = None):
+  def makefile(self, marks=None):
     """Print a Makefile for this node."""
     from pipes import quote
     if self.builder is None:
@@ -1655,7 +1655,7 @@ class Node(BaseNode):
             print('Deleting %s' % self)
             _OS.remove(str(self.path()))
 
-  def path(self, absolute = False):
+  def path(self, absolute=False):
     """Filesystem path to node file, relative to the root of the
     build directory.
 
@@ -1787,7 +1787,7 @@ class Node(BaseNode):
     # http://bugs.python.org/issue14965 for instance.
     BaseNode.builder.__set__(self, builder)
 
-def node(path, type = None):
+def node(path, type=None):
   """Create or get a BaseNode.
 
   path -- path to the node file.
@@ -1827,16 +1827,16 @@ def node(path, type = None):
   return res
 
 
-def nodes(*paths, type = None):
+def nodes(*paths, type=None):
     """Call node() on each given path and return the list of results.
 
     nodes('foo', 'bar', ...) is equivalent to
     [node('foo'), node('bar'), ...]
     """
-    return list(map(lambda p: node(p, type = type), paths))
+    return list(map(lambda p: node(p, type=type), paths))
 
 
-def run_command(cmd, cwd = None, env = None, timeout = TIMEOUT,
+def run_command(cmd, cwd=None, env=None, timeout=TIMEOUT,
             **kwargs):
   """Run the shell command.
 
@@ -1849,15 +1849,15 @@ def run_command(cmd, cwd = None, env = None, timeout = TIMEOUT,
     env = {k: str(v) for k, v in env.items()}
   try:
     returncode = subprocess.call(cmd,
-                                 cwd = cwd, env = env, timeout = timeout,
+                                 cwd=cwd, env=env, timeout=timeout,
                                  **kwargs)
     return returncode == 0
   except getattr(__builtins__,'FileNotFoundError', IOError) as e:
-    print(e, file = sys.stderr)
+    print(e, file=sys.stderr)
     return False
 
 
-def command_flatten(command, env = None):
+def command_flatten(command, env=None):
   if env:
     env_ = ['%s=%s' % (var, pipes.quote(str(val)))
             for var, val in sorted(env.items())]
@@ -1877,7 +1877,7 @@ def log_time(runner):
   '''Display running times periodically.'''
   start_time = time.time()
   timer = [None]
-  def start_timer(first = True):
+  def start_timer(first=True):
     if not first:
       print("{}: running for {} already"
             .format(runner, duration(start_time)))
@@ -1931,7 +1931,7 @@ class Builder:
     """Add a dependency handler."""
     self._deps_handlers[name] = f
 
-  def __init__(self, srcs, dsts, create_directories = True):
+  def __init__(self, srcs, dsts, create_directories=True):
     """Create a builder.
 
     srcs -- List of source nodes.
@@ -1983,12 +1983,12 @@ class Builder:
   def cmd(self,
           pretty,
           cmd,
-          cwd = None,
-          leave_stdout = False,
-          env = None,
-          throw = False,
-          redirect_stdout = None,
-          cut_stderr = False):
+          cwd=None,
+          leave_stdout=False,
+          env=None,
+          throw=False,
+          redirect_stdout=None,
+          cut_stderr=False):
     """Run a shell command.
 
     pretty  -- A pretty version for output.
@@ -2023,7 +2023,7 @@ class Builder:
     def fun():
       with contextlib.ExitStack() as ctx:
         if cwd is not None:
-          ctx.enter_context(CWDPrinter(drake.path_build(cwd, absolute = True)))
+          ctx.enter_context(CWDPrinter(drake.path_build(cwd, absolute=True)))
         if not _RAW and pretty is not None:
           self.output(pretty)
         for c in cmd:
@@ -2050,9 +2050,10 @@ class Builder:
             else:
               my_env = env
             if not run_command(c,
-                           cwd = cwd,
-                           stdout = stdout, stderr = stderr,
-                           env = my_env):
+                               cwd=cwd,
+                               stdout=stdout,
+                               stderr=stderr,
+                               env=my_env):
               if throw:
                 raise Exception(
                   'command failed: %s' % command_flatten(c, env))
@@ -2061,7 +2062,7 @@ class Builder:
         return True
     return self._run_job(fun)
 
-  def output(self, raw, pretty = None):
+  def output(self, raw, pretty=None):
     """Output pretty, or raw if drake is in raw mode."""
     if not _SILENT:
       print((not _RAW and pretty) or raw)
@@ -2079,7 +2080,7 @@ class Builder:
       rel = drake.Path(path._Path__path, False, False)
       return Builder.CACHEDIR / rel
     else:
-      rel = drake.Path(drake.path_build(absolute = True)._Path__path,
+      rel = drake.Path(drake.path_build(absolute=True)._Path__path,
                        False, False)
       return Builder.CACHEDIR / rel / path
 
@@ -2100,9 +2101,9 @@ class Builder:
       self._depfiles[name] = DepFile(self, name)
     return self._depfiles[name]
 
-  def add_dynsrc(self, name, node, data = None, source = True):
+  def add_dynsrc(self, name, node, data=None, source=True):
     """Add a dynamic source node."""
-    self.depfile(name).register(node, source = source)
+    self.depfile(name).register(node, source=source)
     if source:
       self.__sources_dyn[node.path()] = node
 
@@ -2346,7 +2347,7 @@ class Builder:
           e_pretty = str(e)
           if not e_pretty:
             e_pretty = repr(e)
-          print('%s: %s' % (self, e_pretty), file = sys.stderr)
+          print('%s: %s' % (self, e_pretty), file=sys.stderr)
           if env('DEBUG_BACKTRACE') is not None:
             import traceback
             traceback.print_exc()
@@ -2515,11 +2516,11 @@ class ShellCommand(Builder):
     """
 
     def __init__(self, sources, targets, command,
-                 pretty = None,
-                 cwd = None,
-                 workdir = None,
-                 environment = None,
-                 stdout = None):
+                 pretty=None,
+                 cwd=None,
+                 workdir=None,
+                 environment=None,
+                 stdout=None):
         """Create a builder that runs command.
 
         sources -- List of source nodes, or source node if
@@ -2549,9 +2550,9 @@ class ShellCommand(Builder):
         """Run the command given at construction time."""
         return self.cmd(self.__pretty or ' '.join(self.command),
                         self.command,
-                        cwd = self.__workdir,
-                        env = self.__environment,
-                        redirect_stdout = self.__stdout)
+                        cwd=self.__workdir,
+                        env=self.__environment,
+                        redirect_stdout=self.__stdout)
 
     @property
     def command(self):
@@ -2576,7 +2577,7 @@ class Dictionary(VirtualNode):
     such as configuration.
     """
 
-    def __init__(self, name, content = {}):
+    def __init__(self, name, content={}):
         """Build a dictionary with given content.
 
         name    -- The node name.
@@ -2603,7 +2604,7 @@ class Converter(Builder):
   This builder itself doesn't do anything. It is used as a flag to
   discover a node is convertible to another expected type.
   """
-  def __init__(self, source, target, additional_sources = []):
+  def __init__(self, source, target, additional_sources=[]):
     super().__init__(itertools.chain([source], additional_sources),
                      [target])
     self.__source = source
@@ -2697,8 +2698,8 @@ class Expander(Builder):
     'Kiwis are @kiwi-color@.\\n'
     """
 
-    def __init__(self, dicts, target, sources = [],
-               matcher = '@([a-zA-Z0-9_-]+)@', missing_fatal = True):
+    def __init__(self, dicts, target, sources=[],
+               matcher='@([a-zA-Z0-9_-]+)@', missing_fatal=True):
       """Create and expander that expands the given dictionaries.
 
       dicts         -- The dictionaries from which to expand keys.
@@ -2711,7 +2712,7 @@ class Expander(Builder):
                        dictionaries is fatal.
       """
       if not isinstance(dicts, list):
-          dicts = [dicts]
+        dicts = [dicts]
       super().__init__(sources + dicts, [target])
       self.__dicts = dicts
       self.matcher = re.compile(matcher)
@@ -2739,7 +2740,7 @@ class Expander(Builder):
                     return False
 
         with open(str(self.__target.path()), 'w') as f:
-            print(content, file = f)
+            print(content, file=f)
         return True
 
     def dictionaries(self):
@@ -2755,7 +2756,7 @@ class FileExpander(Expander):
 
     >>> source = Node('/tmp/.drake.file.expander.source')
     >>> with open(str(source.path()), 'w') as f:
-    ...   print('Expand @this@.', file = f)
+    ...   print('Expand @this@.', file=f)
     >>> target = Node('/tmp/.drake.file.expander.target')
     >>> builder = FileExpander(source, [Dictionary('d_file',
     ...                                 { 'this': 'that' })], target)
@@ -2767,7 +2768,7 @@ class FileExpander(Expander):
     >>> content
     'Expand that.\\n\\n'
     """
-    def __init__(self, source, dicts, target = None, *args, **kwargs):
+    def __init__(self, source, dicts, target=None, *args, **kwargs):
       """Create a file expander.
 
       source       -- The file to expand.
@@ -2782,9 +2783,9 @@ class FileExpander(Expander):
         assert isinstance(target, BaseNode)
         self.__target = target
       Expander.__init__(self,
-                        dicts = dicts,
-                        sources = [source],
-                        target = target,
+                        dicts=dicts,
+                        sources=[source],
+                        target=target,
                         *args, **kwargs)
 
     def execute(self):
@@ -2887,7 +2888,7 @@ class _Module:
   def __init__(self, globals):
     self.globals = globals
 
-  def __getattr__(self, name, default = None):
+  def __getattr__(self, name, default=None):
     return self.globals.get(name, default)
 
   def __getitem__(self, name):
@@ -2970,7 +2971,7 @@ def command_add(name, action):
 
 class CWDPrinter:
 
-  def __init__(self, path = None):
+  def __init__(self, path=None):
     self.__path = path or _OS.getcwd()
 
   def __enter__(self):
@@ -3034,8 +3035,8 @@ def _register_commands():
                   sys.argv[0])
         for node in nodes:
             p = subprocess.Popen('dot -Tpng | xv -',
-                                 shell = True,
-                                 stdin = subprocess.PIPE)
+                                 shell=True,
+                                 stdin=subprocess.PIPE)
             stdout = sys.stdout
             sys.stdout = p.stdin
             dot(node)
@@ -3152,7 +3153,7 @@ def run(root, *cfg, **kwcfg):
     raise Exception('missing argument for option {}'.format(arg))
   if workdir is not None and not _OS.path.exists(workdir):
     _OS.makedirs(workdir)
-  with Drake(root = root, workdir = workdir) as d:
+  with Drake(root=root, workdir=workdir) as d:
     d.run(*cfg, **kwcfg)
 
 
@@ -3222,7 +3223,7 @@ class Copy(Builder):
     else:
       return node
 
-  def __init__(self, source, to, post_process = None, follow_symlinks = True):
+  def __init__(self, source, to, post_process=None, follow_symlinks=True):
     """Create a copy builder.
 
     source -- Node to copy.
@@ -3283,7 +3284,7 @@ class Copy(Builder):
       try:
         shutil.copy2(str(self.__source.path()),
                      str(self.__target.path()),
-                     follow_symlinks = self.__follow_symlinks)
+                     follow_symlinks=self.__follow_symlinks)
       except PermissionError as e:
         # Landing here means that we didn't have permission to do a copystat as
         # part of the copy2. Fallback to a straight copy with a log.
@@ -3295,7 +3296,7 @@ class Copy(Builder):
           'unable to copy2 %s, falling back to copy', str(self.__source.path()))
         shutil.copy(str(self.__source.path()),
                     str(self.__target.path()),
-                    follow_symlinks = self.__follow_symlinks)
+                    follow_symlinks=self.__follow_symlinks)
       except OSError as e:
         if e.errno == 95 and _OS.path.lexists(target_path):
           # On symlinks on python 3.5, alpine version, copy and copy2 perform the copy,
@@ -3338,8 +3339,8 @@ class Install(Copy):
       return False
     if self.target.install_command is not None:
       with WritePermissions(self.target):
-        return self.cmd(pretty = None,
-                        cmd = self.target.install_command)
+        return self.cmd(pretty=None,
+                        cmd=self.target.install_command)
     return True
 
   @property
@@ -3420,10 +3421,10 @@ def __copy_stripped(source, to, strip_prefix, builder, post_process, follow_syml
 
 def copy(sources,
          to,
-         strip_prefix = None,
-         post_process = None,
-         builder = Copy,
-         follow_symlinks = True):
+         strip_prefix=None,
+         post_process=None,
+         builder=Copy,
+         follow_symlinks=True):
   """Convenience function to create Copy builders.
 
   When copying large file trees, iterating and creating Copy
@@ -3449,21 +3450,21 @@ def copy(sources,
   >>> sources = [node('/tmp/.drake.copy.source/a'),
   ...            node('/tmp/.drake.copy.source/b')]
   >>> targets = copy(sources, '/tmp/.drake.copy.dest',
-  ...                strip_prefix = '/tmp')
+  ...                strip_prefix='/tmp')
   >>> targets
   [/tmp/.drake.copy.dest/.drake.copy.source/a, /tmp/.drake.copy.dest/.drake.copy.source/b]
   """
   return __copy(sources, to, strip_prefix, builder, post_process, follow_symlinks)
 
 
-def install(sources, to, strip_prefix = None, post_process = None, follow_symlinks = True):
+def install(sources, to, strip_prefix=None, post_process=None, follow_symlinks=True):
   """Convenience function to create Install builders.
 
   See documentation of copy.
   """
   return __copy(sources, to, strip_prefix, Install, post_process, follow_symlinks)
 
-def symlink(sources, to, strip_prefix = None):
+def symlink(sources, to, strip_prefix=None):
   """Convenience function to create Symlinker builders.
 
   See documentation of copy.
@@ -3495,7 +3496,7 @@ class Rule(VirtualNode):
   Copy /tmp/.drake.rule.dest/.drake.rule2
   """
 
-  def __init__(self, name, nodes = []):
+  def __init__(self, name, nodes=[]):
     """Create a rule.
 
     name  -- Node name.
@@ -3550,14 +3551,14 @@ class WriteBuilder(Builder):
     Hello world!
     """
 
-    def __init__(self, input, nodes, permissions = None):
+    def __init__(self, input, nodes, permissions=None):
         """Create a WriteBuilder.
 
         input -- Text or bytes.
         nodes -- target nodes list, or a single target node.
         """
         if not isinstance(input, bytes):
-          input = bytes(input, encoding = 'utf-8')
+          input = bytes(input, encoding='utf-8')
         self.__input = input
         if isinstance(nodes, BaseNode):
             nodes = [nodes]
@@ -3615,7 +3616,7 @@ def touch(path):
 
 # Architectures
 class architecture(Enumerated,
-                   values = ['x86', 'x86_64', 'arm']):
+                   values=['x86', 'x86_64', 'arm']):
   pass
 
 # OSes
@@ -3666,7 +3667,7 @@ class Configuration:
     res = []
     for root in where:
       path = root / what
-      rel = root.without_prefix(drake.path_root(), force = False)
+      rel = root.without_prefix(drake.path_root(), force=False)
       if path.exists():
         if all:
           res.append(rel)
@@ -3689,10 +3690,10 @@ class Configuration:
                     (what, pretty_listing(where)))
 
   def _search_all(self, what, where):
-    return self.__search(what, where, all = True)
+    return self.__search(what, where, all=True)
 
   def _search_one(self, what, where):
-    return self.__search(what, where, all = False)
+    return self.__search(what, where, all=False)
 
   def _search_many(self, whats, where, all, prefer):
     res = []
@@ -3714,13 +3715,13 @@ class Configuration:
       return res[0]
     return res
 
-  def _search_many_all(self, whats, where, prefer = None):
+  def _search_many_all(self, whats, where, prefer=None):
     return self._search_many(whats, where,
-                             all = True, prefer = prefer)
+                             all=True, prefer=prefer)
 
-  def _search_many_one(self, whats, where, prefer = None):
+  def _search_many_one(self, whats, where, prefer=None):
     return self._search_many(whats, where,
-                             all = False, prefer = prefer)
+                             all=False, prefer=prefer)
 
   def __search_version(self, what, where, major, minor, subminor):
     """ """
@@ -3754,7 +3755,7 @@ class Range:
 
     """A numeric range."""
 
-    def __init__(self, inf, sup = True):
+    def __init__(self, inf, sup=True):
         """Create a numeric range with the given boundaries
 
         inf -- the inferior boundary.
@@ -3843,7 +3844,7 @@ class Range:
 
 class Version:
 
-    def __init__(self, major = None, minor = None, subminor = None):
+    def __init__(self, major=None, minor=None, subminor=None):
       ''' A version or range of versions.
 
       >>> Version('1.2')
@@ -3996,24 +3997,24 @@ class Version:
 class Runner(Builder):
 
   class Reporting(Enumerated,
-                  values = ['always', 'never', 'on_failure']):
+                  values=['always', 'never', 'on_failure']):
     pass
 
   def __init__(self,
                exe,
-               args = None,
-               env = None,
-               stdin = None,
-               prefix = None,
-               targets = None,
-               sources = [],
-               runs = 1,
-               name = None,
-               timeout = TIMEOUT,
-               out = None,
-               err = None,
-               status = None,
-               bench = None
+               args=None,
+               env=None,
+               stdin=None,
+               prefix=None,
+               targets=None,
+               sources=[],
+               runs=1,
+               name=None,
+               timeout=TIMEOUT,
+               out=None,
+               err=None,
+               status=None,
+               bench=None
   ):
     '''
     name -- the basename for the output files, defaults to exe
@@ -4057,7 +4058,7 @@ class Runner(Builder):
       [self.__out, self.__err, self.__status, self.__bench] + (targets or []))
 
   @staticmethod
-  def basename(exe, name = None):
+  def basename(exe, name=None):
     return exe.name_relative.dirname() / (name or exe.path().basename())
 
   @property
@@ -4072,7 +4073,7 @@ class Runner(Builder):
   def __reporting_set(self, val):
     self.stdout_reporting = val
     self.stderr_reporting = val
-  reporting = property(fget = None, fset = __reporting_set)
+  reporting = property(fget=None, fset=__reporting_set)
 
   def _must_report(self, reporting, status):
     if reporting is Runner.Reporting.always:
@@ -4127,8 +4128,8 @@ class Runner(Builder):
             line = str('-' * len(run_name))
             header = '%s%s\n%s\n%s\n' % (
               '' if count == 1 else '\n', line, run_name, line)
-            print(header, file = out, flush = True)
-            print(header, file = err, flush = True)
+            print(header, file=out, flush=True)
+            print(header, file=err, flush=True)
           if self.__env is not None:
             output_env = ('%s=%s ' % (var, pipes.quote(str(value)))
                           for var, value in sorted(self.__env.items()))
@@ -4146,15 +4147,15 @@ class Runner(Builder):
           try:
             start_time = time.time()
             p = subprocess.Popen([str(c) for c in self.command],
-                                 stdout = out,
-                                 stderr = err,
-                                 stdin = subprocess.PIPE,
-                                 env = env)
+                                 stdout=out,
+                                 stderr=err,
+                                 stdin=subprocess.PIPE,
+                                 env=env)
             if self.__input:
-              p.communicate(self.__input, timeout = self.__timeout)
-            p.wait(timeout = self.__timeout)
+              p.communicate(self.__input, timeout=self.__timeout)
+            p.wait(timeout=self.__timeout)
             end_time = time.time()
-            print('%s' % (end_time - start_time), file = bench)
+            print('%s' % (end_time - start_time), file=bench)
             status = p.returncode
             if status != 0:
               break
@@ -4162,7 +4163,7 @@ class Runner(Builder):
             import traceback
             traceback.print_exc()
             return False
-        print(status, file = rv)
+        print(status, file=rv)
         return status
     status = self._run_job(run)
     if status is False:
@@ -4235,8 +4236,8 @@ class TestSuite(Rule):
 
 class HTTPDownload(Builder):
 
-  def __init__(self, url, dest, fingerprint = None,
-               disable_ssl_certificate_validation = False,
+  def __init__(self, url, dest, fingerprint=None,
+               disable_ssl_certificate_validation=False,
                **kwargs):
     self.__urls = [url] if isinstance(url, str) else url
     self.__dest = dest
@@ -4246,7 +4247,7 @@ class HTTPDownload(Builder):
   def execute(self):
     def job():
       self.output('Download {} to {}'.format(
-        pretty_listing(self.__urls, any = True), self.__dest),
+        pretty_listing(self.__urls, any=True), self.__dest),
                   'Download {}'.format(self.__dest))
       response = None
       for url in self.__urls:
@@ -4261,12 +4262,12 @@ class HTTPDownload(Builder):
         raise Exception(
           'unable to download {}'.format(
             pretty_listing(
-              self.__urls, any = True, quantifier = True)))
+              self.__urls, any=True, quantifier=True)))
       return response.status_code, response.content
     status, content = self._run_job(job)
     if status != 200:
       print('download failed with status %s' % status,
-            file = sys.stderr)
+            file=sys.stderr)
       return False
     if self.__fingerprint is not None:
       import hashlib
@@ -4287,10 +4288,10 @@ class HTTPDownload(Builder):
     return 'HTTPDownload(%s, %s)' % (self.__urls, self.__dest)
 
 def download(url,
-             fingerprint = None,
-             where = drake.Path('.'),
-             name = None,
-             disable_ssl_certificate_validation = False,
+             fingerprint=None,
+             where=drake.Path('.'),
+             name=None,
+             disable_ssl_certificate_validation=False,
            ):
   where = drake.Path(where)
   if name is None:
@@ -4300,16 +4301,16 @@ def download(url,
   downloader = drake.HTTPDownload(
     url,
     target,
-    fingerprint = fingerprint,
-    disable_ssl_certificate_validation = disable_ssl_certificate_validation,
+    fingerprint=fingerprint,
+    disable_ssl_certificate_validation=disable_ssl_certificate_validation,
   )
   return target
 
 
 class ArchiveExtractor(Builder):
 
-  def __init__(self, tarball, targets = [],
-               patches = None, patch_dir = drake.Path('.')):
+  def __init__(self, tarball, targets=[],
+               patches=None, patch_dir=drake.Path('.')):
     """ Constructor
         @param targets: list of paths (not nodes)
         @param patches: list of (patch_node, strip_level)
@@ -4330,7 +4331,7 @@ class ArchiveExtractor(Builder):
     patch_nodes = map(lambda x: x[0], self.__patches)
     Builder.__init__(self, list(chain((tarball,), patch_nodes)),
                      self.__targets,
-                     create_directories = False)
+                     create_directories=False)
 
   @property
   def tarball(self):
@@ -4351,7 +4352,7 @@ class ArchiveExtractor(Builder):
           [
             'patch', '-N', '-p', str(patch[1]),
             '-d', str(self.__destination / self.__patch_dir),
-            '-i', patch[0].path(absolute = True)
+            '-i', patch[0].path(absolute=True)
           ]):
         return False
     return True
@@ -4368,8 +4369,8 @@ class TarballExtractor(ArchiveExtractor):
   def tmpdir(self):
     import tempfile
     return tempfile.TemporaryDirectory(
-           prefix = str(self.tarball.name().basename()) + '.',
-           dir = str(self.destination))
+           prefix=str(self.tarball.name().basename()) + '.',
+           dir=str(self.destination))
 
   def install(self, tmp):
     '''Move the extracted files to the destination.'''
@@ -4433,11 +4434,11 @@ def Extractor(tarball, *args, **kwargs):
     type = ZipExtractor
   else:
     type = TarballExtractor
-  return type(tarball = tarball, *args, **kwargs)
+  return type(tarball=tarball, *args, **kwargs)
 
 class Zipper(Builder):
 
-  def __init__(self, target, sources, prefix = None, whole_folder = None):
+  def __init__(self, target, sources, prefix=None, whole_folder=None):
 
     """ Constructor
     """
@@ -4462,13 +4463,13 @@ class Zipper(Builder):
         for root, dirs, files in _OS.walk(str(folder)):
           for file in files:
             file = drake.Path(root) / file
-            filename = file.without_prefix(self.__prefix, force = True)
-            archive.write(str(file), arcname = str(filename))
+            filename = file.without_prefix(self.__prefix, force=True)
+            archive.write(str(file), arcname=str(filename))
       else:
         for source in self.__sources:
           source = source.path()
-          filename = source.without_prefix(self.__prefix, force = True)
-          archive.write(str(source), arcname = str(filename))
+          filename = source.without_prefix(self.__prefix, force=True)
+          archive.write(str(source), arcname=str(filename))
     return True
 
   def execute(self):
@@ -4535,9 +4536,9 @@ class PythonModule(Builder):
   '''
   def __init__(self, package_name,
                python_path,
-               version = None,
-               dependencies = [],
-               module_name = None):
+               version=None,
+               dependencies=[],
+               module_name=None):
     self.__path = python_path
     self.__python_path = drake.path_build(python_path)
     self.__module_name = module_name or package_name
@@ -4553,7 +4554,7 @@ class PythonModule(Builder):
   def root(self):
     return self.__path
 
-  def command(self, directory = None):
+  def command(self, directory=None):
     options = ['pip3', 'install',
                '--no-compile', '--install-option=--prefix=']
     if directory is not None:
@@ -4567,7 +4568,7 @@ class PythonModule(Builder):
 
   def execute(self):
     for p in self.__dependencies + [self.__module_name]:
-      shutil.rmtree(str(self.__python_path / p), ignore_errors = True)
+      shutil.rmtree(str(self.__python_path / p), ignore_errors=True)
     from os import environ as os_env
     import copy
     environment = copy.deepcopy(os_env)
@@ -4576,16 +4577,16 @@ class PythonModule(Builder):
     with TemporaryDirectory() as tmp:
       return self.cmd('Installing package %s' % self.__package_name,
                       self.command(tmp.dir),
-                      leave_stdout = True,
-                      throw = True,
-                      env = environment)
+                      leave_stdout=True,
+                      throw=True,
+                      env=environment)
   def hash(self):
     return self.command(None)
 
 
 class Symlinker(ShellCommand):
 
-  def __init__(self, link, linked, build_linked = True, relative = False):
+  def __init__(self, link, linked, build_linked=True, relative=False):
     self.__target = link
     self.__linked = linked
     self.__path = self.__linked.path()
@@ -4627,7 +4628,7 @@ class Symlinker(ShellCommand):
         command_flatten(self.command) if _RAW else self.pretty)
       _OS.symlink(str(self.__path), str(self.__target.path()))
     except Exception as e:
-      print(e, file = sys.stderr)
+      print(e, file=sys.stderr)
       return False
     else:
       return True
@@ -4638,8 +4639,8 @@ class Symlinker(ShellCommand):
 class Symlink(Node):
 
   def __init__(self, path, target,
-               build_target = True,
-               relative = False):
+               build_target=True,
+               relative=False):
     '''Create a Symlink node.
 
     path         -- Path of the symlink
@@ -4649,14 +4650,14 @@ class Symlink(Node):
     '''
     super().__init__(path)
     self.__target = target
-    Symlinker(self, target, build_linked = build_target, relative = relative)
+    Symlinker(self, target, build_linked=build_target, relative=relative)
 
   @property
   def target(self):
     return self.__target
 
 
-def config(c, t, force = False):
+def config(c, t, force=False):
   '''Convert a configure argument to type t.
 
   It is intended to be systematically used on configure arguments as follow:
