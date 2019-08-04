@@ -334,7 +334,7 @@ for prop, library in Qt._Qt__libraries.items():
     setattr(Qt, 'config_%s' % prop, config_getter)
   unclosure(prop, library)
 
-def deps_handler(builder, path_obj, t, data):
+def deps_handler(builder, path_obj, t):
   if isinstance(builder, (drake.cxx.Linker, drake.cxx.DynLibLinker)):
     with logger.log(
         'drake.cxx.qt',

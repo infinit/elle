@@ -259,7 +259,7 @@ class Compiler(drake.Builder):
     self.__toolkit._register_dependency(self.__target, dep)
 
   @classmethod
-  def _ocamldep_handler(cls, builder, path, type_, _):
+  def _ocamldep_handler(cls, builder, path, type_):
     res = drake.node(path, type_)
     builder.__handle_ocamldep(res)
     return res

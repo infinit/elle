@@ -1899,7 +1899,7 @@ def log_time(runner):
       if TIME_REPORT_THRESHOLD is None or d.seconds > TIME_REPORT_THRESHOLD:
         print('Ran {} in {}'.format(runner, d))
 
-def _default_deps_handler(builder, path, type_, data):
+def _default_deps_handler(builder, path, type_):
   return node(path, type_)
 
 class Builder:
@@ -2414,7 +2414,7 @@ class Builder:
             '%s: consider dependencies file %s', self, f):
           for path, (hash, data) in depfile.hashes.items():
             if path not in self.__sources and path not in self.__sources_dyn:
-              node = handler(self, path, self.get_type(data), None)
+              node = handler(self, path, self.get_type(data))
               if node is not None:
                 sched.logger.log(
                   'drake.Builder',

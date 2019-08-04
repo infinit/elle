@@ -14,7 +14,7 @@ class DynNode(drake.Node):
 
   pass
 
-def handler(b, path, type, data):
+def handler(b, path, type):
 
   global dyndeps
   global builder
