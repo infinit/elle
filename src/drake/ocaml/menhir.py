@@ -28,6 +28,7 @@ class Menhir(drake.Builder):
   '''Menhir parser generator.'''
 
   def __init__(self, source):
+    self.__strict = True
     self.__source = source
     self.__target_source = drake.ocaml.Implementation(source.name().with_extension('ml'))
     self.__target_interface = drake.ocaml.Interface(source.name().with_extension('mli'))
@@ -35,8 +36,11 @@ class Menhir(drake.Builder):
 
   def execute(self):
     base = self.__target_source.path().without_last_extension()
+    cmd = ['menhir', self.__source, '--base', base]
+    if self.__strict:
+      cmd.append('--strict')
     self.cmd('Menhir {}'.format(self.__target_source),
-             ['menhir', self.__source, '--base', base],
+             cmd,
              throw=True)
     return True
 
@@ -54,3 +58,12 @@ class Menhir(drake.Builder):
   def target_interface(self):
     '''The produced interface source file.'''
     return self.__target_interface
+
+  @property
+  def strict(self):
+    '''Whether to pass `--strict` to menhir, making all grammar warnings errors.'''
+    return self.__strict
+
+  @strict.setter
+  def strict(self, value: bool):
+    self.__strict = value
