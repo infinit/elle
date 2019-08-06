@@ -14,8 +14,11 @@ import subprocess
 
 import drake
 
-def _flatten(nested):
-  return (item for sublist in nested for item in sublist)
+def _flatten(*lists):
+  for nested in lists:
+    for sublist in nested:
+      for item in sublist:
+        yield item
 
 class Node(drake.Node):
 
@@ -53,7 +56,9 @@ class Toolkit:
     return [self.__find, binary] + list(self.__compile_flags(config)) + args
 
   def __compile_flags(self, config):
-    return _flatten(['-I', dir, '-I', drake.path_source(dir)] for dir in config.include_directories)
+    return _flatten(
+      (['-I', dir, '-I', drake.path_source(dir)] for dir in config.include_directories),
+      (['-package', p] for p in config.packages))
 
   def _register_dependency(self, depender, dependee):
     # ocamldep will report dependencies on cmi files. My hypothesis here is that this can be used to
@@ -92,8 +97,10 @@ class Config:
     '''An empty configuration or a copy of the given source.'''
     if source is not None:
       self.__include = copy.deepcopy(source.__include)
+      self.__packages = copy.deepcopy(source.__packages)
     else:
       self.__include = []
+      self.__packages = set()
 
   def add_include_dir(self, directory):
     '''Add a directory to search modules in.'''
@@ -103,6 +110,16 @@ class Config:
   def include_directories(self):
     '''Directories to search modules in.'''
     return self.__include
+
+  def package_add(self, package):
+    '''Add a package to link with.'''
+    self.__packages.add(package)
+
+  @property
+  def packages(self):
+    '''The packages to link with.'''
+    return self.__packages
+
 
 class Source(Node):
 
