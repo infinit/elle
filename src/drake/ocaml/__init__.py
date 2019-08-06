@@ -12,6 +12,9 @@ import copy
 import pipes
 import subprocess
 
+from collections import OrderedDict as odict
+from orderedset import OrderedSet as oset
+
 import drake
 
 def _flatten(*lists):
@@ -74,7 +77,7 @@ class Toolkit:
     self.__dependencies.setdefault(depender, set()).add(dependee)
 
   def _dependencies_topological(self, nodes):
-    dependencies = dict(
+    dependencies = odict(
       (node, set(filter(lambda n: n in nodes, self.__dependencies.get(node, set()))))
       for node in nodes)
     while dependencies:
@@ -82,6 +85,7 @@ class Toolkit:
       for k, values in dependencies.items():
         if not values:
           free = k
+          break
       if free is None:
         raise Exception('circular dependencies')
       for values in dependencies.values():
@@ -303,7 +307,7 @@ class Linker(drake.Builder):
     super().__init__(sources, [target])
 
   def execute(self):
-    sources = set(filter(lambda n: n.__class__ is not InterfaceObject, self.__sources))
+    sources = oset(filter(lambda n: n.__class__ is not InterfaceObject, self.__sources))
     sources = self.__toolkit._dependencies_topological(sources)
     self.cmd('Compile {}'.format(self.__target),
              self.__toolkit._link_command(
