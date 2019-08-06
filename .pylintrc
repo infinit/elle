@@ -1,5 +1,5 @@
 [MESSAGES CONTROL]
-	disable=abstract-method, broad-except, no-else-return, no-self-use, redefined-outer-name, expression-not-assigned, pointless-statement, too-few-public-methods, protected-access
+	disable=abstract-method, broad-except, no-else-return, no-self-use, redefined-outer-name, expression-not-assigned, pointless-statement, too-few-public-methods, protected-access, too-many-arguments
 
 [FORMAT]
 indent-string='  '

@@ -40,8 +40,11 @@ class Toolkit:
   def _compile_command(self, source, target, config):
     return self.__command('ocamlc', ['-c', source, '-o', target], config)
 
-  def _link_command(self, sources, target, config):
-    return self.__command('ocamlc', list(sources) + ['-o', target], config)
+  def _link_command(self, sources, target, config, library):
+    return self.__command(
+      'ocamlc',
+      list(sources) + (['-a'] if library else []) + ['-o', target],
+      config)
 
   def _dependencies_command(self, node, config):
     return self.__command('ocamldep', ['-one-line', node], config)
@@ -270,21 +273,33 @@ class Linker(drake.Builder):
 
   '''OCaml bytecode linker.'''
 
-  def __init__(self, sources, target, toolkit, config):
+  def __init__(self, sources, target, toolkit, config, library):
     sources = list(_flatten(_to_objects(source, toolkit, config) for source in sources))
     self.__config = config
     self.__sources = sources
     self.__target = target
     self.__toolkit = toolkit
+    self.__library = library
     super().__init__(sources, [target])
 
   def execute(self):
     sources = set(filter(lambda n: n.__class__ is not InterfaceObject, self.__sources))
     sources = self.__toolkit._dependencies_topological(sources)
     self.cmd('Compile {}'.format(self.__target),
-             self.__toolkit._link_command(sources, self.__target, self.__config),
+             self.__toolkit._link_command(
+               sources, self.__target, self.__config, library=self.__library),
              throw=True)
     return True
+
+class Library(Object):
+
+  '''OCaml bytecode Library.'''
+
+  def __init__(self, path, sources, toolkit, config):
+    super().__init__(path)
+    Linker(sources, self, toolkit, config, library=True)
+
+drake.Node.extensions['cma'] = Library
 
 class Executable(Node):
 
@@ -292,4 +307,4 @@ class Executable(Node):
 
   def __init__(self, path, sources, toolkit, config):
     super().__init__(path)
-    Linker(sources, self, toolkit, config)
+    Linker(sources, self, toolkit, config, library=False)
