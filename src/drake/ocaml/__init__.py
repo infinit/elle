@@ -53,7 +53,7 @@ class Toolkit:
     return [self.__find, binary] + list(self.__compile_flags(config)) + args
 
   def __compile_flags(self, config):
-    return _flatten(['-I', dir] for dir in config.include_directories)
+    return _flatten(['-I', dir, '-I', drake.path_source(dir)] for dir in config.include_directories)
 
   def _register_dependency(self, depender, dependee):
     # ocamldep will report dependencies on cmi files. My hypothesis here is that this can be used to
@@ -243,16 +243,19 @@ class Compiler(drake.Builder):
     return True
 
   def dependencies(self):
+    def strip_source_dir(path):
+      src = drake.path_source()
+      if src.prefix_of(path):
+        return path.without_prefix(src)
+      return path
     with open(str(self.__deps.path()), 'r') as deps:
       for line in deps:
         target, sources = map(str.strip, line.split(':'))
-        target = drake.Path(target)
-        if self.__source.builder is None:
-          target = target.without_prefix(drake.path_source())
+        target = strip_source_dir(drake.Path(target))
         if target == self.__target.path():
           if sources:
             for source in sources.split(' '):
-              dep = drake.node(source)
+              dep = drake.node(strip_source_dir(drake.Path(source)))
               self.__handle_ocamldep(dep)
               self.add_dynsrc('ocamldep', dep)
           return
