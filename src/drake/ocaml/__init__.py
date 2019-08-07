@@ -257,6 +257,9 @@ class Compiler(drake.Builder):
     self.__toolkit = toolkit
     super().__init__([self.__deps, self.__source], [self.__target])
 
+  def __str__(self):
+    return 'compilation of {}'.format(self.__target)
+
   def execute(self):
     self.cmd('Compile {}'.format(self.__target),
              self.__toolkit._compile_command(self.__source, self.__target, self.__config),
@@ -305,6 +308,9 @@ class Linker(drake.Builder):
     self.__toolkit = toolkit
     self.__library = library
     super().__init__(sources, [target])
+
+  def __str__(self):
+    return 'linkage of {}'.format(self.__target)
 
   def execute(self):
     sources = oset(filter(lambda n: n.__class__ is not InterfaceObject, self.__sources))
