@@ -49,7 +49,7 @@ class Toolkit:
   def _link_command(self, sources, target, config, library):
     return self.__command(
       'ocamlc',
-      list(sources) + (['-a'] if library else []) + ['-o', target],
+      list(sources) + (['-a'] if library else ['-linkpkg']) + ['-o', target],
       config)
 
   def _dependencies_command(self, node, config):
