@@ -1940,8 +1940,9 @@ class Builder:
     self.__create_dirs = create_directories
     self.__sources = {}
     self.__sources_dyn = {}
-    for src in srcs:
-      self.add_src(src)
+    for source in srcs:
+      self.__sources[source._BaseNode__name] = source
+      source.consumers.append(self)
     self.__targets = []
     for dst in dsts:
       if dst.builder is not None:
@@ -2437,11 +2438,6 @@ class Builder:
   def __str__(self):
     """String representation."""
     return self.__class__.__name__
-
-  def add_src(self, src):
-    """Add a static source."""
-    self.__sources[src._BaseNode__name] = src
-    src.consumers.append(self)
 
   def all_srcs(self):
     """All sources, recursively."""

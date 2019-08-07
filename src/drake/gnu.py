@@ -31,7 +31,7 @@ class GNUBuilder(drake.Builder):
       step is needed)""" = None,
       working_directory: "Deduced from configure" = None,
       configure_args: "Arguments of the configure script" = [],
-      sources = [],
+      sources = None,
       make_binary: "Make binary" = None,
       makefile: "Makefile filename, used if not None" = None,
       build_args: "Additional arguments for the make command" = ['install'],
@@ -68,12 +68,14 @@ class GNUBuilder(drake.Builder):
                 "Cannot deduce the working directory (no configure script)"
             )
         self.__working_directory = self.__configure.path().dirname()
+    if sources is None:
+      sources = []
+    if isinstance(cxx_toolkit.patchelf, drake.BaseNode):
+      sources.append(cxx_toolkit.patchelf)
     drake.Builder.__init__(
       self,
       (configure is not None and [configure] or []) + sources,
       self.__targets)
-    if isinstance(cxx_toolkit.patchelf, drake.BaseNode):
-      self.add_src(cxx_toolkit.patchelf)
 
   def execute(self):
     env = dict(self.__env)
