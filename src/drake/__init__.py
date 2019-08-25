@@ -67,6 +67,14 @@ def duration(start, stop=None):
   return datetime.timedelta(seconds=round(stop - start))
 
 
+class CyclicDependency(Exception):
+
+  def __init__(self, node_a, node_b):
+    self.__a = node_a
+    self.__b = node_b
+
+  def __str__(self):
+    return 'cyclic dependency between {} and {}'.format(self.__a, self.__b)
 class Drake:
 
   current = None
@@ -197,6 +205,20 @@ class Drake:
         self.__configure = None
       if jobs is not None:
         self.jobs_set(jobs)
+      self.__dependency_graph = {}
+
+  def __register_dependency(self, sources, targets, select = lambda a, b: (a, b)):
+    def propagate(starts, ends, select):
+      for end in ends:
+        a, b = select(*self.__dependency_graph.setdefault(end, (set(), set())))
+        for start in starts:
+          if start in b:
+            raise CyclicDependency(start, end)
+          a.add(start)
+        propagate(starts, b, select)
+
+    propagate(sources, targets, lambda a, b: (a, b))
+    propagate(targets, sources, lambda a, b: (b, a))
 
   @property
   def kill_builders_on_failure(self):
@@ -1949,6 +1971,7 @@ class Builder:
         raise BuilderRedefinition(dst, dst.builder, self)
       self.__targets.append(dst)
       dst.builder = self
+    drake.Drake.current._Drake__register_dependency(list(self.__sources.values()), self.__targets)
     self.uid = Builder.uid
     Builder.uid += 1
     Builder.builders.append(self)
@@ -2106,6 +2129,7 @@ class Builder:
     """Add a dynamic source node."""
     self.depfile(name).register(node, source=source)
     if source:
+      drake.Drake.current._Drake__register_dependency([node], self.__targets)
       self.__sources_dyn[node.path()] = node
 
   def get_type(self, tname):
@@ -2421,6 +2445,12 @@ class Builder:
                   'drake.Builder',
                   drake.log.LogLevel.dump,
                   '%s: add %s to sources', self, path)
+                try:
+                  drake.Drake.current._Drake__register_dependency([node], self.__targets)
+                except CyclicDependency:
+                  explain(self, 'dependency file %s introduces a cyclic dependency' % f)
+                  return True
+
                 self.__sources_dyn[node.path()] = node
 
   def execute(self):
