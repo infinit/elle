@@ -3605,10 +3605,11 @@ class TouchBuilder(WriteBuilder):
     def __str__(self):
       return 'TouchBuilder(%r)' % self.targets()
 
-def touch(path):
-  res = node(Path(path))
-  TouchBuilder(res)
-  return res
+def touch(target):
+  if not isinstance(target, drake.Node):
+    target = node(Path(target))
+  TouchBuilder(target)
+  return target
 
 # Architectures
 class architecture(Enumerated,
