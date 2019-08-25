@@ -207,7 +207,7 @@ class Qt(drake.Configuration):
                                               self.__version.major,
                                               self.__version.minor)))
         tests.append(filename)
-    search_path = [self.__prefix / p for p in ['lib/qt5', 'lib']]
+        search_path = [self.__prefix / lib / p for lib in ['lib', 'lib64'] for p in ['.', 'qt5']]
     prefix, lib = self._search_many_one(tests, search_path)
     if static:
       return drake.cxx.StaticLib(prefix / lib)
