@@ -27,6 +27,7 @@ def configure(prefix='.', coverage: bool = False):
   # Sources
   sources = drake.nodes(
     'src/drake/__init__.py',
+    'src/drake/command.py',
     'src/drake/enumeration.py',
     'src/drake/deprecation.py',
     'src/drake/docker.py',
@@ -38,10 +39,12 @@ def configure(prefix='.', coverage: bool = False):
     'src/drake/cxx/ipp.py',
     'src/drake/cxx/opengl.py',
     'src/drake/cxx/qt.py',
+    'src/drake/cxx/qt5.py',
     'src/drake/cxx/sdl.py',
     'src/drake/cxx/sofia_sip.py',
     'src/drake/debug.py',
     'src/drake/git.py',
+    'src/drake/gnu.py',
     'src/drake/go/__init__.py',
     'src/drake/log.py',
     'src/drake/ocaml/__init__.py',
