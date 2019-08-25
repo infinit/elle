@@ -332,7 +332,7 @@ class Drake:
               break
       except Exception as e:
         self.notify(1, str(e), start)
-        print('%s: %s' % (sys.argv[0], e))
+        print('%s: error: %s' % (sys.argv[0], e))
         if env('DEBUG_BACKTRACE') is not None:
           import traceback
           traceback.print_exc()
