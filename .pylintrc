@@ -4,3 +4,7 @@
 [FORMAT]
 indent-string='  '
 indent-after-paren=2
+
+[MISCELLANEOUS]
+
+notes=
