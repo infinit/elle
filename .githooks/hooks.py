@@ -44,10 +44,14 @@ def no_pylint_regression(before, after, path):
 
   If there was no previous file, check the file lints perfectly.'''
   command = []
-  prefix = '{}: pylint-disable: '.format(path)
+  prefix_lint = '{}: lint: '.format(path)
+  prefix_disable = '{}: pylint-disable: '.format(path)
   for line in git.git(['check-attr', '-a', path]).split('\n'):
-    if line.startswith(prefix):
-      command.append('--disable={}'.format(line[len(prefix):]))
+    if line.startswith(prefix_lint):
+      if line[len(prefix_lint):] == 'false':
+        return
+    if line.startswith(prefix_disable):
+      command.append('--disable={}'.format(line[len(prefix_disable):]))
   if is_python(after):
     if is_python(before):
       (score_b, _), (score_a, output_a) = (
