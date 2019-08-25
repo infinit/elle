@@ -213,7 +213,8 @@ class Drake:
       target._BaseNode__order = order
       for consumer in target.consumers:
         for tgt in consumer.targets():
-          propagate(origin, tgt, order + 1)
+          if tgt.order <= order:
+            propagate(origin, tgt, order + 1)
     with profile_cycle():
       for source in sources:
         for target in targets:

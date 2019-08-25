@@ -11,7 +11,7 @@ import drake
 with tempfile.TemporaryDirectory() as wd:
   os.chdir(wd)
   with drake.Drake():
-    nodes = drake.nodes('a', 'b', 'c')
+    nodes = drake.nodes('a', 'b', 'c', 'd', 'e')
     try:
       drake.Builder([nodes[0]], [nodes[0]])
     except drake.CyclicDependency:
@@ -28,3 +28,21 @@ with tempfile.TemporaryDirectory() as wd:
     else:
       raise Exception('cyclic dependency not detected')
     assert nodes[0].builder is None
+
+
+with tempfile.TemporaryDirectory() as wd:
+  os.chdir(wd)
+  with drake.Drake():
+    nodes = drake.nodes('a', 'b', 'c', 'd', 'e', 'f')
+    drake.Builder([nodes[1]], [nodes[2]])
+    drake.Builder([nodes[2]], [nodes[3]])
+    drake.Builder([nodes[3]], [nodes[4]])
+    drake.Builder([nodes[4], nodes[0]], [nodes[5]])
+
+    drake.Builder([drake.node('z')], [nodes[0]])
+    try:
+      drake.Builder([nodes[5]], [nodes[4]])
+    except drake.CyclicDependency:
+      pass
+    except:
+      raise Exception('cyclic dependency not detected')
