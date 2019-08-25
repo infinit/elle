@@ -205,20 +205,20 @@ class Drake:
         self.__configure = None
       if jobs is not None:
         self.jobs_set(jobs)
-      self.__dependency_graph = {}
 
-  def __register_dependency(self, sources, targets, select = lambda a, b: (a, b)):
-    def propagate(starts, ends, select):
-      for end in ends:
-        a, b = select(*self.__dependency_graph.setdefault(end, (set(), set())))
-        for start in starts:
-          if start in b:
-            raise CyclicDependency(start, end)
-          a.add(start)
-        propagate(starts, b, select)
-
-    propagate(sources, targets, lambda a, b: (a, b))
-    propagate(targets, sources, lambda a, b: (b, a))
+  def __register_dependency(self, sources, targets):
+    def propagate(origin, target, order):
+      if target is origin:
+        raise CyclicDependency(origin, target)
+      target._BaseNode__order = order
+      for consumer in target.consumers:
+        for tgt in consumer.targets():
+          propagate(origin, tgt, order + 1)
+    with profile_cycle():
+      for source in sources:
+        for target in targets:
+          if source.order >= target.order:
+            propagate(source, target, source.order + 1)
 
   @property
   def kill_builders_on_failure(self):
@@ -326,7 +326,8 @@ class Drake:
                 effective[name] = config(value, t)
           # Configure
           with self:
-            configure(**effective)
+            with profile_configuration():
+              configure(**effective)
         # Run callbacks.
         for cb in callbacks:
           cb()
@@ -410,9 +411,11 @@ class ProfileInstance:
     self.__parent._Profile__time  += t
 
 
+profile_configuration = Profile('configuration')
 profile_hashing = Profile('files hashing')
 profile_unpickling = Profile('dependencies files reading')
 profile_pickling = Profile('dependencies files writing')
+profile_cycle = Profile('cycle detection')
 
 class NodeRedefinition(Exception):
 
@@ -1384,6 +1387,11 @@ class BaseNode(object, metaclass=_BaseNodeType):
     self.__dependencies = sched.OrderedSet()
     self.__hash = None
     self.__skippable = False
+    self.__order = 0
+
+  @property
+  def order(self):
+    return self.__order
 
   def name(self):
     '''The node name.'''
@@ -1961,12 +1969,12 @@ class Builder:
     """
     self.__create_dirs = create_directories
     self.__sources = {}
+    self.__sources = {source._BaseNode__name: source for source in srcs}
     self.__sources_dyn = {}
-    for source in srcs:
-      self.__sources[source._BaseNode__name] = source
-      source.consumers.append(self)
     self.__targets = list(dsts)
     drake.Drake.current._Drake__register_dependency(list(self.__sources.values()), self.__targets)
+    for source in self.__sources.values():
+      source.consumers.append(self)
     for dst in self.__targets:
       if dst.builder is not None:
         raise BuilderRedefinition(dst, dst.builder, self)

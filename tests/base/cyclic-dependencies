@@ -12,6 +12,13 @@ with tempfile.TemporaryDirectory() as wd:
   os.chdir(wd)
   with drake.Drake():
     nodes = drake.nodes('a', 'b', 'c')
+    try:
+      drake.Builder([nodes[0]], [nodes[0]])
+    except drake.CyclicDependency:
+      pass
+    else:
+      raise Exception('cyclic dependency not detected')
+    assert nodes[0].builder is None
     drake.Builder([nodes[0]], [nodes[1]])
     drake.Builder([nodes[1]], [nodes[2]])
     try:
