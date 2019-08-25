@@ -1,0 +1,23 @@
+#!/usr/bin/env python3
+
+'''Check that removing and then changing a dynamic dependency results in the
+   new dependency being built.'''
+
+import os
+import tempfile
+
+import drake
+
+with tempfile.TemporaryDirectory() as wd:
+  os.chdir(wd)
+  with drake.Drake():
+    nodes = drake.nodes('a', 'b', 'c')
+    drake.Builder([nodes[0]], [nodes[1]])
+    drake.Builder([nodes[1]], [nodes[2]])
+    try:
+      drake.Builder([nodes[2]], [nodes[0]])
+    except drake.CyclicDependency:
+      pass
+    else:
+      raise Exception('cyclic dependency not detected')
+    assert nodes[0].builder is None

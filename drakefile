@@ -75,15 +75,16 @@ def configure(prefix='.', coverage: bool = False):
   check = drake.Rule('check')
 
   tests = [
-    'base/obsolete-path-cache',
     'base/change-dynamic-dependency',
     'base/command-line',
+    'base/cyclic-dependencies',
     'base/dependency',
     'base/dynamic-termination',
     'base/failure',
     'base/failure-cmd',
     'base/interrupt-dynamic-dependency',
     'base/mtime',
+    'base/obsolete-path-cache',
     'base/range',
     'base/runner-env',
     'base/symlink',

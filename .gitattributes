@@ -1,2 +1,3 @@
 .githooks/pre-*	pylint-disable=C0103
+tests/base/* pylint-disable=C0103
 README.md lint=false
