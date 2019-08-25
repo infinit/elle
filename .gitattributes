@@ -1,1 +1,2 @@
 .githooks/pre-*	pylint-disable=C0103
+README.md lint=false
