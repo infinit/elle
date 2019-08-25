@@ -20,6 +20,10 @@ def main():
   for line in sys.stdin:
     _, local_sha, _, remote_sha = line.strip().split(' ')
 
+    if remote_sha == '0000000000000000000000000000000000000000':
+      # FIXME: We should still check, but against what?
+      continue
+
     # Only check commits we are adding.
     base_sha = git.git(['merge-base', local_sha, remote_sha])
 
