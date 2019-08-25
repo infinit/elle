@@ -1,4 +1,4 @@
-# <img src="docs/static_files/drake_logotype@2x.png" alt="Drake" title="Drake logotype" width="300" style="max-width:300px;">
+# <img src="static_files/drake_logotype@2x.png" alt="Drake" title="Drake" width="300" style="max-width:300px;">
 
 The well-formed build system.
 
@@ -60,7 +60,7 @@ Drake is bootstrapped. From the root of the repository, simply run:
 src/bin/drake --prefix=/usr/local //install
 ```
 
-## Getting starting
+## Getting started
 
-Refer to the [quickstart](docs/quickstarts/quickstart.md) for a fast
-functional setup of Drake.
+The [quickstart](docs/quickstarts/quickstart.md) will give you
+the minimal operational understanding of Drake.
