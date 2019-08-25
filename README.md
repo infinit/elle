@@ -449,9 +449,11 @@ commands.
 
 ### Further specific quickstarts
 
-* [C++ compilation quickstart]
-* [OCaml compilation quickstart]
-* [Go compilation quickstart]
+* [C++ compilation quickstart (WIP)](docs/quickstarts/cxx.md)
+* [OCaml compilation quickstart (WIP)](docs/quickstarts/ocaml.md)
+* [Go compilation quickstart (WIP)](docs/quickstarts/go.md)
+* [GNU autotools quickstart (WIP)](docs/quickstarts/gnu.md)
+* [Python quickstart (WIP)](docs/quickstarts/gnu.md)
 
 
 ## Helpful Environment Variables
