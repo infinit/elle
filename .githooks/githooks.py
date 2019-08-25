@@ -35,7 +35,7 @@ def status_to_string(status):
     return 'copied'
   elif status == 'M':
     return 'modified'
-  elif status == 'R':
+  elif status.startswith('R'):
     return 'renamed'
   else:
     raise Exception('unrecognized git status {!r}'.format(status))
