@@ -1965,13 +1965,12 @@ class Builder:
     for source in srcs:
       self.__sources[source._BaseNode__name] = source
       source.consumers.append(self)
-    self.__targets = []
-    for dst in dsts:
+    self.__targets = list(dsts)
+    drake.Drake.current._Drake__register_dependency(list(self.__sources.values()), self.__targets)
+    for dst in self.__targets:
       if dst.builder is not None:
         raise BuilderRedefinition(dst, dst.builder, self)
-      self.__targets.append(dst)
       dst.builder = self
-    drake.Drake.current._Drake__register_dependency(list(self.__sources.values()), self.__targets)
     self.uid = Builder.uid
     Builder.uid += 1
     Builder.builders.append(self)
