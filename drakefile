@@ -1,14 +1,16 @@
 import collections
+import os
+import sys
+
+from itertools import chain
+
 import drake
 import drake.cxx
 import drake.cxx.boost
 import drake.docker
-import os
-import sys
+import drake.valgrind
 
 from drake.gnu import GNUBuilder
-from itertools import chain
-
 MACOSX_DEPLOYMENT_TARGET = '10.7'
 
 archs = None
@@ -74,8 +76,8 @@ def configure(cxx_toolkit = None,
               python_version = None,
               enable_cryptographic_rotation = False,
               prefix = False,
-              valgrind = None,
-              valgrind_tests = False,
+              valgrind: drake.valgrind.Valgrind = None,
+              valgrind_tests: bool = False,
               build_openssl_eay = False,
               cryptography_python = True,
               codesign = False,
@@ -112,19 +114,13 @@ def configure(cxx_toolkit = None,
   ## Valgrind ##
   ## -------- ##
 
-  if valgrind is not False:
-    if valgrind is True or valgrind is None:
-      try:
-        valgrind = drake.valgrind.Valgrind()
-      except Exception as e:
-        if valgrind is True:
-          raise
-        else:
-          valgrind = None
-  else:
-    valgrind = None
   set_valgrind(valgrind)
   valgrind_suppressions = drake.node('valgrind.suppr')
+
+  ## ------- ##
+  ## Toolkit ##
+  ## ------- ##
+
   config = drake.cxx.Config()
   config.add_local_include_path('src')
   config.add_local_include_path('range-v3/include')
