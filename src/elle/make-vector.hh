@@ -106,21 +106,18 @@ namespace elle
   {
     using std::begin;
     using std::end;
-    using Res = decltype(make_vector<R, Cont>(std::forward<Cont>(c)));
-    return elle::meta::static_if<
-      std::is_same<std::remove_reference_t<Cont>, Cont>::value &&
-      detail::make_vector_move<std::remove_reference_t<Cont>>::value >(
-        [] (auto&& c) -> Res
-        {
-          return {
-            std::make_move_iterator(c.begin()),
-            std::make_move_iterator(c.end()),
-          };
-        },
-        [] (auto const& c) -> Res
-        {
-          return {begin(c), end(c)};
-        })(std::forward<Cont>(c));
+    if constexpr(std::is_same<std::remove_reference_t<Cont>, Cont>::value &&
+                 detail::make_vector_move<std::remove_reference_t<Cont>>::value)
+    {
+      return {
+        std::make_move_iterator(c.begin()),
+        std::make_move_iterator(c.end()),
+      };
+    }
+    else
+    {
+      return {begin(c), end(c)};
+    }
   }
 
   /// This is really the `filter` function in functional languages:
