@@ -12,10 +12,26 @@
 #include <vector>
 #include <sstream>
 #include <iostream>
+#include <range/v3/functional/overload.hpp>
+#include <range/v3/numeric/accumulate.hpp>
 #include <range/v3/utility/variant.hpp>
+#include <range/v3/view/concat.hpp>
+#include <range/v3/view/partial_sum.hpp>
+#include <range/v3/view/transform.hpp>
 #include "../simple_test.hpp"
 #include "../test_utils.hpp"
 
+void bug_1217()
+{
+    std::vector<int> vec;
+
+    if(auto tx = vec | ranges::views::transform( [](int){ return 0; } ))
+    {
+        auto positions_visited = ranges::views::concat( tx, tx ) | ranges::views::partial_sum;
+        ranges::accumulate( positions_visited, 0 );
+    }
+}
+ 
 int main()
 {
     using namespace ranges;
@@ -79,7 +95,7 @@ int main()
         int i = 42;
         std::string s = "hello world";
         variant<int&, std::string&> v{emplaced_index<0>, i};
-        CONCEPT_ASSERT(!DefaultConstructible<variant<int&, std::string&>>());
+        CPP_assert(!default_constructible<variant<int&, std::string&>>);
         CHECK(v.index() == 0u);
         CHECK(get<0>(v) == 42);
         CHECK(&get<0>(v) == &i);

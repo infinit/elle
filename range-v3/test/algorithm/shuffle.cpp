@@ -39,7 +39,7 @@ int main()
         for (auto p : {&a, &b, &c})
             ranges::iota(*p, 0);
         std::minstd_rand g1, g2 = g1;
-        ranges::shuffle(random_access_iterator<int*>(a.data()), sentinel<int*>(a.data()+N), g1);
+        ranges::shuffle(RandomAccessIterator<int*>(a.data()), Sentinel<int*>(a.data()+N), g1);
         CHECK(!ranges::equal(a, b));
 
         CHECK(ranges::shuffle(b.begin(), b.end(), g1) == b.end());
@@ -55,7 +55,7 @@ int main()
         for (auto p : {&a, &b, &c})
             ranges::iota(*p, 0);
         std::minstd_rand g1, g2 = g1;
-        auto rng = ranges::make_iterator_range(random_access_iterator<int*>(a.data()), sentinel<int*>(a.data() + N));
+        auto rng = ::MakeTestRange(RandomAccessIterator<int*>(a.data()), Sentinel<int*>(a.data() + N));
         ranges::shuffle(rng, g1);
         CHECK(!ranges::equal(a, b));
 
@@ -67,7 +67,7 @@ int main()
         CHECK(!ranges::equal(b, c));
 
         ranges::iota(a, 0);
-        CHECK(ranges::shuffle(std::move(rng), g1).get_unsafe().base() == a.data() + N);
+        CHECK(::is_dangling(ranges::shuffle(std::move(rng), g1)));
         CHECK(!ranges::equal(a, c));
     }
 
@@ -75,7 +75,7 @@ int main()
         std::array<int, N> a, b, c;
         for (auto p : {&a, &b, &c})
             ranges::iota(*p, 0);
-        ranges::shuffle(random_access_iterator<int*>(a.data()), sentinel<int*>(a.data() + N));
+        ranges::shuffle(RandomAccessIterator<int*>(a.data()), Sentinel<int*>(a.data() + N));
         CHECK(!ranges::equal(a, c));
 
         ranges::shuffle(b);

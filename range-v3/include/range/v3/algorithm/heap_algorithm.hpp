@@ -22,173 +22,224 @@
 #define RANGES_V3_ALGORITHM_HEAP_ALGORITHM_HPP
 
 #include <functional>
+
 #include <meta/meta.hpp>
+
 #include <range/v3/range_fwd.hpp>
-#include <range/v3/distance.hpp>
-#include <range/v3/begin_end.hpp>
-#include <range/v3/range_concepts.hpp>
-#include <range/v3/range_traits.hpp>
-#include <range/v3/utility/iterator.hpp>
-#include <range/v3/utility/iterator_concepts.hpp>
-#include <range/v3/utility/iterator_traits.hpp>
-#include <range/v3/utility/functional.hpp>
+
+#include <range/v3/functional/comparisons.hpp>
+#include <range/v3/functional/identity.hpp>
+#include <range/v3/functional/invoke.hpp>
+#include <range/v3/iterator/concepts.hpp>
+#include <range/v3/iterator/operations.hpp>
+#include <range/v3/iterator/traits.hpp>
+#include <range/v3/range/access.hpp>
+#include <range/v3/range/concepts.hpp>
+#include <range/v3/range/dangling.hpp>
+#include <range/v3/range/traits.hpp>
 #include <range/v3/utility/static_const.hpp>
 
 namespace ranges
 {
-    inline namespace v3
+    /// \cond
+    namespace detail
     {
-        /// \ingroup group-concepts
-        template<typename I, typename C = ordered_less, typename P = ident>
-        using IsHeapable = meta::strict_and<
-            RandomAccessIterator<I>,
-            IndirectRelation<C, projected<I, P>>>;
-
-        /// \cond
-        namespace detail
+        struct is_heap_until_n_fn
         {
-            struct is_heap_until_n_fn
+            template<typename I, typename C = less, typename P = identity>
+            auto operator()(I const begin_, iter_difference_t<I> const n_, C pred = C{},
+                            P proj = P{}) const -> CPP_ret(I)( //
+                requires random_access_iterator<I> &&
+                    indirect_strict_weak_order<C, projected<I, P>>)
             {
-                template<typename I, typename C = ordered_less, typename P = ident,
-                    CONCEPT_REQUIRES_(IsHeapable<I, C, P>())>
-                I operator()(I const begin_, difference_type_t<I> const n_, C pred = C{}, P proj = P{}) const
+                RANGES_EXPECT(0 <= n_);
+                iter_difference_t<I> p = 0, c = 1;
+                I pp = begin_;
+                while(c < n_)
                 {
-                    RANGES_EXPECT(0 <= n_);
-                    difference_type_t<I> p = 0, c = 1;
-                    I pp = begin_;
-                    while(c < n_)
-                    {
-                        I cp = begin_ + c;
-                        if(invoke(pred, invoke(proj, *pp), invoke(proj, *cp)))
-                            return cp;
-                        ++c;
-                        ++cp;
-                        if(c == n_ || invoke(pred, invoke(proj, *pp), invoke(proj, *cp)))
-                            return cp;
-                        ++p;
-                        ++pp;
-                        c = 2 * p + 1;
-                    }
-                    return begin_ + n_;
+                    I cp = begin_ + c;
+                    if(invoke(pred, invoke(proj, *pp), invoke(proj, *cp)))
+                        return cp;
+                    ++c;
+                    ++cp;
+                    if(c == n_ || invoke(pred, invoke(proj, *pp), invoke(proj, *cp)))
+                        return cp;
+                    ++p;
+                    ++pp;
+                    c = 2 * p + 1;
                 }
-            };
+                return begin_ + n_;
+            }
+        };
 
-            RANGES_INLINE_VARIABLE(is_heap_until_n_fn, is_heap_until_n)
+        RANGES_INLINE_VARIABLE(is_heap_until_n_fn, is_heap_until_n)
 
-            struct is_heap_n_fn
+        struct is_heap_n_fn
+        {
+            template<typename I, typename C = less, typename P = identity>
+            auto operator()(I first, iter_difference_t<I> n, C pred = C{},
+                            P proj = P{}) const -> CPP_ret(bool)( //
+                requires random_access_iterator<I> &&
+                    indirect_strict_weak_order<C, projected<I, P>>)
             {
-                template<typename I, typename C = ordered_less, typename P = ident,
-                    CONCEPT_REQUIRES_(IsHeapable<I, C, P>())>
-                bool operator()(I begin, difference_type_t<I> n, C pred = C{}, P proj = P{}) const
-                {
-                    return is_heap_until_n(begin, n, std::move(pred), std::move(proj)) == begin + n;
-                }
-            };
+                return is_heap_until_n(first, n, std::move(pred), std::move(proj)) ==
+                       first + n;
+            }
+        };
 
-            RANGES_INLINE_VARIABLE(is_heap_n_fn, is_heap_n)
+        RANGES_INLINE_VARIABLE(is_heap_n_fn, is_heap_n)
+    } // namespace detail
+    /// \endcond
+
+    /// \addtogroup group-algorithms
+    /// @{
+    RANGES_BEGIN_NIEBLOID(is_heap_until)
+
+        /// \brief function template \c is_heap_until
+        template<typename I, typename S, typename C = less, typename P = identity>
+        auto RANGES_FUN_NIEBLOID(is_heap_until)(
+            I first, S last, C pred = C{}, P proj = P{})
+            ->CPP_ret(I)( //
+                requires random_access_iterator<I> && sentinel_for<S, I> &&
+                indirect_strict_weak_order<C, projected<I, P>>)
+        {
+            return detail::is_heap_until_n(std::move(first),
+                                           distance(first, last),
+                                           std::move(pred),
+                                           std::move(proj));
         }
-        /// \endcond
 
-        /// \addtogroup group-algorithms
-        /// @{
-        struct is_heap_until_fn
+        /// \overload
+        template<typename Rng, typename C = less, typename P = identity>
+        auto RANGES_FUN_NIEBLOID(is_heap_until)(Rng && rng, C pred = C{}, P proj = P{})
+            ->CPP_ret(safe_iterator_t<Rng>)( //
+                requires random_access_range<Rng> &&
+                indirect_strict_weak_order<C, projected<iterator_t<Rng>, P>>)
         {
-            template<typename I, typename S, typename C = ordered_less, typename P = ident,
-                CONCEPT_REQUIRES_(IsHeapable<I, C, P>() && Sentinel<S, I>())>
-            I operator()(I begin, S end, C pred = C{}, P proj = P{}) const
-            {
-                return detail::is_heap_until_n(std::move(begin), distance(begin, end), std::move(pred),
-                    std::move(proj));
-            }
+            return detail::is_heap_until_n(
+                begin(rng), distance(rng), std::move(pred), std::move(proj));
+        }
 
-            template<typename Rng, typename C = ordered_less, typename P = ident,
-                typename I = iterator_t<Rng>,
-                CONCEPT_REQUIRES_(IsHeapable<I, C, P>() && Range<Rng>())>
-            safe_iterator_t<Rng> operator()(Rng &&rng, C pred = C{}, P proj = P{}) const
-            {
-                return detail::is_heap_until_n(begin(rng), distance(rng), std::move(pred),
-                    std::move(proj));
-            }
-        };
+    RANGES_END_NIEBLOID(is_heap_until)
 
-        /// \sa `is_heap_until_fn`
-        /// \ingroup group-algorithms
-        RANGES_INLINE_VARIABLE(with_braced_init_args<is_heap_until_fn>,
-                               is_heap_until)
+    namespace cpp20
+    {
+        using ranges::is_heap_until;
+    }
 
-        struct is_heap_fn
+    RANGES_BEGIN_NIEBLOID(is_heap)
+
+        /// \brief function template \c is_heap
+        template<typename I, typename S, typename C = less, typename P = identity>
+        auto RANGES_FUN_NIEBLOID(is_heap)(I first, S last, C pred = C{}, P proj = P{}) //
+            ->CPP_ret(bool)(                                                           //
+                requires random_access_iterator<I> && sentinel_for<S, I> &&
+                indirect_strict_weak_order<C, projected<I, P>>)
         {
-            template<typename I, typename S, typename C = ordered_less, typename P = ident,
-                CONCEPT_REQUIRES_(IsHeapable<I, C, P>() && Sentinel<S, I>())>
-            bool operator()(I begin, S end, C pred = C{}, P proj = P{}) const
-            {
-                return detail::is_heap_n(std::move(begin), distance(begin, end), std::move(pred),
-                    std::move(proj));
-            }
+            return detail::is_heap_n(std::move(first),
+                                     distance(first, last),
+                                     std::move(pred),
+                                     std::move(proj));
+        }
 
-            template<typename Rng, typename C = ordered_less, typename P = ident,
-                typename I = iterator_t<Rng>,
-                CONCEPT_REQUIRES_(IsHeapable<I, C, P>() && Range<Rng>())>
-            bool operator()(Rng &&rng, C pred = C{}, P proj = P{}) const
-            {
-                return detail::is_heap_n(begin(rng), distance(rng), std::move(pred), std::move(proj));
-            }
-        };
-
-        /// \sa `is_heap_fn`
-        /// \ingroup group-algorithms
-        RANGES_INLINE_VARIABLE(with_braced_init_args<is_heap_fn>, is_heap)
-        /// @}
-
-        /// \cond
-        namespace detail
+        /// \overload
+        template<typename Rng, typename C = less, typename P = identity>
+        auto RANGES_FUN_NIEBLOID(is_heap)(Rng && rng, C pred = C{}, P proj = P{}) //
+            ->CPP_ret(bool)(                                                      //
+                requires random_access_range<Rng> &&
+                indirect_strict_weak_order<C, projected<iterator_t<Rng>, P>>)
         {
-            struct sift_up_n_fn
+            return detail::is_heap_n(
+                begin(rng), distance(rng), std::move(pred), std::move(proj));
+        }
+
+    RANGES_END_NIEBLOID(is_heap)
+
+    namespace cpp20
+    {
+        using ranges::is_heap;
+    }
+    /// @}
+
+    /// \cond
+    namespace detail
+    {
+        struct sift_up_n_fn
+        {
+            template<typename I, typename C = less, typename P = identity>
+            void operator()(I first, iter_difference_t<I> len, C pred = C{},
+                            P proj = P{}) const
             {
-                template<typename I, typename C = ordered_less, typename P = ident>
-                void operator()(I begin, difference_type_t<I> len, C pred = C{}, P proj = P{}) const
+                if(len > 1)
                 {
-                    if(len > 1)
+                    I last = first + len;
+                    len = (len - 2) / 2;
+                    I i = first + len;
+                    if(invoke(pred, invoke(proj, *i), invoke(proj, *--last)))
                     {
-                        I end = begin + len;
-                        len = (len - 2) / 2;
-                        I i = begin + len;
-                        if(invoke(pred, invoke(proj, *i), invoke(proj, *--end)))
+                        iter_value_t<I> v = iter_move(last);
+                        do
                         {
-                            value_type_t<I> v = iter_move(end);
-                            do
-                            {
-                                *end = iter_move(i);
-                                end = i;
-                                if(len == 0)
-                                    break;
-                                len = (len - 1) / 2;
-                                i = begin + len;
-                            } while(invoke(pred, invoke(proj, *i), invoke(proj, v)));
-                            *end = std::move(v);
-                        }
+                            *last = iter_move(i);
+                            last = i;
+                            if(len == 0)
+                                break;
+                            len = (len - 1) / 2;
+                            i = first + len;
+                        } while(invoke(pred, invoke(proj, *i), invoke(proj, v)));
+                        *last = std::move(v);
                     }
                 }
-            };
+            }
+        };
 
-            RANGES_INLINE_VARIABLE(sift_up_n_fn, sift_up_n)
+        RANGES_INLINE_VARIABLE(sift_up_n_fn, sift_up_n)
 
-            struct sift_down_n_fn
+        struct sift_down_n_fn
+        {
+            template<typename I, typename C = less, typename P = identity>
+            void operator()(I first, iter_difference_t<I> len, I start, C pred = C{},
+                            P proj = P{}) const
             {
-                template<typename I, typename C = ordered_less, typename P = ident>
-                void operator()(I begin, difference_type_t<I> len, I start, C pred = C {}, P proj = P{}) const
+                // left-child of start is at 2 * start + 1
+                // right-child of start is at 2 * start + 2
+                auto child = start - first;
+
+                if(len < 2 || (len - 2) / 2 < child)
+                    return;
+
+                child = 2 * child + 1;
+                I child_i = first + child;
+
+                if((child + 1) < len &&
+                   invoke(pred, invoke(proj, *child_i), invoke(proj, *(child_i + 1))))
                 {
-                    // left-child of start is at 2 * start + 1
-                    // right-child of start is at 2 * start + 2
-                    auto child = start - begin;
+                    // right-child exists and is greater than left-child
+                    ++child_i;
+                    ++child;
+                }
 
-                    if(len < 2 || (len - 2) / 2 < child)
-                        return;
+                // check if we are in heap-order
+                if(invoke(pred, invoke(proj, *child_i), invoke(proj, *start)))
+                    // we are, start is larger than it's largest child
+                    return;
 
+                iter_value_t<I> top = iter_move(start);
+                do
+                {
+                    // we are not in heap-order, swap the parent with it's largest child
+                    *start = iter_move(child_i);
+                    start = child_i;
+
+                    if((len - 2) / 2 < child)
+                        break;
+
+                    // recompute the child based off of the updated parent
                     child = 2 * child + 1;
-                    I child_i = begin + child;
+                    child_i = first + child;
 
-                    if((child + 1) < len && invoke(pred, invoke(proj, *child_i), invoke(proj, *(child_i + 1))))
+                    if((child + 1) < len &&
+                       invoke(pred, invoke(proj, *child_i), invoke(proj, *(child_i + 1))))
                     {
                         // right-child exists and is greater than left-child
                         ++child_i;
@@ -196,185 +247,184 @@ namespace ranges
                     }
 
                     // check if we are in heap-order
-                    if(invoke(pred, invoke(proj, *child_i), invoke(proj, *start)))
-                        // we are, start is larger than it's largest child
-                        return;
-
-                    value_type_t<I> top = iter_move(start);
-                    do
-                    {
-                        // we are not in heap-order, swap the parent with it's largest child
-                        *start = iter_move(child_i);
-                        start = child_i;
-
-                        if((len - 2) / 2 < child)
-                            break;
-
-                        // recompute the child based off of the updated parent
-                        child = 2 * child + 1;
-                        child_i = begin + child;
-
-                        if((child + 1) < len && invoke(pred, invoke(proj, *child_i), invoke(proj, *(child_i + 1))))
-                        {
-                            // right-child exists and is greater than left-child
-                            ++child_i;
-                            ++child;
-                        }
-
-                        // check if we are in heap-order
-                    } while(!invoke(pred, invoke(proj, *child_i), invoke(proj, top)));
-                    *start = std::move(top);
-                }
-            };
-
-            RANGES_INLINE_VARIABLE(sift_down_n_fn, sift_down_n)
-        }
-        /// \endcond
-
-        /// \addtogroup group-algorithms
-        /// @{
-        struct push_heap_fn
-        {
-            template<typename I, typename S, typename C = ordered_less, typename P = ident,
-                CONCEPT_REQUIRES_(RandomAccessIterator<I>() && Sentinel<S, I>() && Sortable<I, C, P>())>
-            I operator()(I begin, S end, C pred = C{}, P proj = P{}) const
-            {
-                auto n = distance(begin, end);
-                detail::sift_up_n(begin, n, std::move(pred), std::move(proj));
-                return begin + n;
-            }
-
-            template<typename Rng, typename C = ordered_less, typename P = ident,
-                typename I = iterator_t<Rng>,
-                CONCEPT_REQUIRES_(RandomAccessRange<Rng>() && Sortable<I, C, P>())>
-            safe_iterator_t<Rng> operator()(Rng &&rng, C pred = C{}, P proj = P{}) const
-            {
-                I begin = ranges::begin(rng);
-                auto n = distance(rng);
-                detail::sift_up_n(begin, n, std::move(pred), std::move(proj));
-                return begin + n;
+                } while(!invoke(pred, invoke(proj, *child_i), invoke(proj, top)));
+                *start = std::move(top);
             }
         };
 
-        /// \sa `push_heap_fn`
-        /// \ingroup group-algorithms
-        RANGES_INLINE_VARIABLE(with_braced_init_args<push_heap_fn>, push_heap)
-        /// @}
+        RANGES_INLINE_VARIABLE(sift_down_n_fn, sift_down_n)
+    } // namespace detail
+    /// \endcond
 
-        /// \cond
-        namespace detail
+    /// \addtogroup group-algorithms
+    /// @{
+    RANGES_BEGIN_NIEBLOID(push_heap)
+
+        /// \brief function template \c push_heap
+        template<typename I, typename S, typename C = less, typename P = identity>
+        auto RANGES_FUN_NIEBLOID(push_heap)(
+            I first, S last, C pred = C{}, P proj = P{}) //
+            ->CPP_ret(I)(                                //
+                requires random_access_iterator<I> && sentinel_for<S, I> &&
+                sortable<I, C, P>)
         {
-            struct pop_heap_n_fn
+            auto n = distance(first, last);
+            detail::sift_up_n(first, n, std::move(pred), std::move(proj));
+            return first + n;
+        }
+
+        /// \overload
+        template<typename Rng, typename C = less, typename P = identity>
+        auto RANGES_FUN_NIEBLOID(push_heap)(Rng && rng, C pred = C{}, P proj = P{}) //
+            ->CPP_ret(safe_iterator_t<Rng>)(                                        //
+                requires random_access_range<Rng> && sortable<iterator_t<Rng>, C, P>)
+        {
+            iterator_t<Rng> first = ranges::begin(rng);
+            auto n = distance(rng);
+            detail::sift_up_n(first, n, std::move(pred), std::move(proj));
+            return first + n;
+        }
+
+    RANGES_END_NIEBLOID(push_heap)
+
+    namespace cpp20
+    {
+        using ranges::push_heap;
+    }
+    /// @}
+
+    /// \cond
+    namespace detail
+    {
+        struct pop_heap_n_fn
+        {
+            template<typename I, typename C = less, typename P = identity>
+            auto operator()(I first, iter_difference_t<I> len, C pred = C{},
+                            P proj = P{}) const -> CPP_ret(void)( //
+                requires random_access_iterator<I> && sortable<I, C, P>)
             {
-                template<typename I, typename C = ordered_less, typename P = ident,
-                    CONCEPT_REQUIRES_(RandomAccessIterator<I>() && Sortable<I, C, P>())>
-                void operator()(I begin, difference_type_t<I> len, C pred = C{},
-                    P proj = P{}) const
+                if(len > 1)
                 {
-                    if(len > 1)
-                    {
-                        ranges::iter_swap(begin, begin + (len-1));
-                        detail::sift_down_n(begin, len-1, begin, std::move(pred), std::move(proj));
-                    }
+                    ranges::iter_swap(first, first + (len - 1));
+                    detail::sift_down_n(
+                        first, len - 1, first, std::move(pred), std::move(proj));
                 }
-            };
+            }
+        };
 
-            RANGES_INLINE_VARIABLE(pop_heap_n_fn, pop_heap_n)
+        RANGES_INLINE_VARIABLE(pop_heap_n_fn, pop_heap_n)
+    } // namespace detail
+    /// \endcond
+
+    /// \addtogroup group-algorithms
+    /// @{
+    RANGES_BEGIN_NIEBLOID(pop_heap)
+
+        /// \brief function template \c pop_heap
+        template<typename I, typename S, typename C = less, typename P = identity>
+        auto RANGES_FUN_NIEBLOID(pop_heap)(I first, S last, C pred = C{}, P proj = P{})
+            ->CPP_ret(I)( //
+                requires random_access_iterator<I> && sentinel_for<S, I> &&
+                sortable<I, C, P>)
+        {
+            auto n = distance(first, last);
+            detail::pop_heap_n(first, n, std::move(pred), std::move(proj));
+            return first + n;
         }
-        /// \endcond
 
-        /// \addtogroup group-algorithms
-        /// @{
-        struct pop_heap_fn
+        /// \overload
+        template<typename Rng, typename C = less, typename P = identity>
+        auto RANGES_FUN_NIEBLOID(pop_heap)(Rng && rng, C pred = C{}, P proj = P{})
+            ->CPP_ret(safe_iterator_t<Rng>)( //
+                requires random_access_range<Rng> && sortable<iterator_t<Rng>, C, P>)
         {
-            template<typename I, typename S, typename C = ordered_less, typename P = ident,
-                CONCEPT_REQUIRES_(RandomAccessIterator<I>() && Sentinel<S, I>() && Sortable<I, C, P>())>
-            I operator()(I begin, S end, C pred = C{}, P proj = P{}) const
-            {
-                auto n = distance(begin, end);
-                detail::pop_heap_n(begin, n, std::move(pred), std::move(proj));
-                return begin + n;
-            }
+            iterator_t<Rng> first = ranges::begin(rng);
+            auto n = distance(rng);
+            detail::pop_heap_n(first, n, std::move(pred), std::move(proj));
+            return first + n;
+        }
 
-            template<typename Rng, typename C = ordered_less, typename P = ident,
-                typename I = iterator_t<Rng>,
-                CONCEPT_REQUIRES_(RandomAccessRange<Rng>() && Sortable<I, C, P>())>
-            safe_iterator_t<Rng> operator()(Rng &&rng, C pred = C{}, P proj = P{}) const
-            {
-                I begin = ranges::begin(rng);
-                auto n = distance(rng);
-                detail::pop_heap_n(begin, n, std::move(pred), std::move(proj));
-                return begin + n;
-            }
-        };
+    RANGES_END_NIEBLOID(pop_heap)
 
-        /// \sa `pop_heap_fn`
-        /// \ingroup group-algorithms
-        RANGES_INLINE_VARIABLE(with_braced_init_args<pop_heap_fn>, pop_heap)
+    namespace cpp20
+    {
+        using ranges::pop_heap;
+    }
 
-        struct make_heap_fn
+    RANGES_BEGIN_NIEBLOID(make_heap)
+
+        /// \brief function template \c make_heap
+        template<typename I, typename S, typename C = less, typename P = identity>
+        auto RANGES_FUN_NIEBLOID(make_heap)(I first, S last, C pred = C{}, P proj = P{})
+            ->CPP_ret(I)( //
+                requires random_access_iterator<I> && sentinel_for<S, I> &&
+                sortable<I, C, P>)
         {
-            template<typename I, typename S, typename C = ordered_less, typename P = ident,
-                CONCEPT_REQUIRES_(RandomAccessIterator<I>() && Sentinel<S, I>() && Sortable<I, C, P>())>
-            I operator()(I begin, S end, C pred = C{}, P proj = P{}) const
-            {
-                difference_type_t<I> const n = distance(begin, end);
-                if(n > 1)
-                    // start from the first parent, there is no need to consider children
-                    for(auto start = (n - 2) / 2; start >= 0; --start)
-                        detail::sift_down_n(begin, n, begin + start, std::ref(pred), std::ref(proj));
-                return begin + n;
-            }
+            iter_difference_t<I> const n = distance(first, last);
+            if(n > 1)
+                // start from the first parent, there is no need to consider children
+                for(auto start = (n - 2) / 2; start >= 0; --start)
+                    detail::sift_down_n(
+                        first, n, first + start, std::ref(pred), std::ref(proj));
+            return first + n;
+        }
 
-            template<typename Rng, typename C = ordered_less, typename P = ident,
-                typename I = iterator_t<Rng>,
-                CONCEPT_REQUIRES_(RandomAccessRange<Rng>() && Sortable<I, C, P>())>
-            safe_iterator_t<Rng> operator()(Rng &&rng, C pred = C{}, P proj = P{}) const
-            {
-                I begin = ranges::begin(rng);
-                difference_type_t<I> const n = distance(rng);
-                if(n > 1)
-                    // start from the first parent, there is no need to consider children
-                    for(auto start = (n - 2) / 2; start >= 0; --start)
-                        detail::sift_down_n(begin, n, begin + start, std::ref(pred), std::ref(proj));
-                return begin + n;
-            }
-        };
-
-        /// \sa `make_heap_fn`
-        /// \ingroup group-algorithms
-        RANGES_INLINE_VARIABLE(with_braced_init_args<make_heap_fn>, make_heap)
-
-        struct sort_heap_fn
+        /// \overload
+        template<typename Rng, typename C = less, typename P = identity>
+        auto RANGES_FUN_NIEBLOID(make_heap)(Rng && rng, C pred = C{}, P proj = P{})
+            ->CPP_ret(safe_iterator_t<Rng>)( //
+                requires random_access_range<Rng> && sortable<iterator_t<Rng>, C, P>)
         {
-            template<typename I, typename S, typename C = ordered_less, typename P = ident,
-                CONCEPT_REQUIRES_(RandomAccessIterator<I>() && Sentinel<S, I>() && Sortable<I, C, P>())>
-            I operator()(I begin, S end, C pred = C{}, P proj = P{}) const
-            {
-                difference_type_t<I> const n = distance(begin, end);
-                for(auto i = n; i > 1; --i)
-                    detail::pop_heap_n(begin, i, std::ref(pred), std::ref(proj));
-                return begin + n;
-            }
+            iterator_t<Rng> first = ranges::begin(rng);
+            auto const n = distance(rng);
+            if(n > 1)
+                // start from the first parent, there is no need to consider children
+                for(auto start = (n - 2) / 2; start >= 0; --start)
+                    detail::sift_down_n(
+                        first, n, first + start, std::ref(pred), std::ref(proj));
+            return first + n;
+        }
 
-            template<typename Rng, typename C = ordered_less, typename P = ident,
-                typename I = iterator_t<Rng>,
-                CONCEPT_REQUIRES_(RandomAccessRange<Rng &>() && Sortable<I, C, P>())>
-            safe_iterator_t<Rng> operator()(Rng &&rng, C pred = C{}, P proj = P{}) const
-            {
-                I begin = ranges::begin(rng);
-                difference_type_t<I> const n = distance(rng);
-                for(auto i = n; i > 1; --i)
-                    detail::pop_heap_n(begin, i, std::ref(pred), std::ref(proj));
-                return begin + n;
-            }
-        };
+    RANGES_END_NIEBLOID(make_heap)
 
-        /// \sa `sort_heap_fn`
-        /// \ingroup group-algorithms
-        RANGES_INLINE_VARIABLE(with_braced_init_args<sort_heap_fn>, sort_heap)
-        /// @}
-    } // namespace v3
+    namespace cpp20
+    {
+        using ranges::make_heap;
+    }
+
+    RANGES_BEGIN_NIEBLOID(sort_heap)
+
+        template<typename I, typename S, typename C = less, typename P = identity>
+        auto RANGES_FUN_NIEBLOID(sort_heap)(I first, S last, C pred = C{}, P proj = P{})
+            ->CPP_ret(I)( //
+                requires random_access_iterator<I> && sentinel_for<S, I> &&
+                sortable<I, C, P>)
+        {
+            iter_difference_t<I> const n = distance(first, last);
+            for(auto i = n; i > 1; --i)
+                detail::pop_heap_n(first, i, std::ref(pred), std::ref(proj));
+            return first + n;
+        }
+
+        template<typename Rng, typename C = less, typename P = identity>
+        auto RANGES_FUN_NIEBLOID(sort_heap)(Rng && rng, C pred = C{}, P proj = P{})
+            ->CPP_ret(safe_iterator_t<Rng>)( //
+                requires random_access_range<Rng &> && sortable<iterator_t<Rng>, C, P>)
+        {
+            iterator_t<Rng> first = ranges::begin(rng);
+            auto const n = distance(rng);
+            for(auto i = n; i > 1; --i)
+                detail::pop_heap_n(first, i, std::ref(pred), std::ref(proj));
+            return first + n;
+        }
+
+    RANGES_END_NIEBLOID(sort_heap)
+
+    namespace cpp20
+    {
+        using ranges::sort_heap;
+    }
+    /// @}
 } // namespace ranges
 
 #endif // include guard

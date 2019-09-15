@@ -14,59 +14,62 @@
 #define RANGES_V3_ALGORITHM_FIND_HPP
 
 #include <utility>
+
 #include <range/v3/range_fwd.hpp>
-#include <range/v3/begin_end.hpp>
-#include <range/v3/range_concepts.hpp>
-#include <range/v3/range_traits.hpp>
-#include <range/v3/utility/iterator_concepts.hpp>
-#include <range/v3/utility/iterator_traits.hpp>
-#include <range/v3/utility/functional.hpp>
+
+#include <range/v3/functional/identity.hpp>
+#include <range/v3/functional/invoke.hpp>
+#include <range/v3/iterator/concepts.hpp>
+#include <range/v3/iterator/traits.hpp>
+#include <range/v3/range/access.hpp>
+#include <range/v3/range/concepts.hpp>
+#include <range/v3/range/dangling.hpp>
+#include <range/v3/range/traits.hpp>
 #include <range/v3/utility/static_const.hpp>
 
 namespace ranges
 {
-    inline namespace v3
-    {
-        /// \addtogroup group-algorithms
-        /// @{
-        struct find_fn
+    /// \addtogroup group-algorithms
+    /// @{
+    RANGES_BEGIN_NIEBLOID(find)
+        /// \brief template function \c find
+        ///
+        /// range-based version of the \c find std algorithm
+        ///
+        /// \pre `Rng` is a model of the `Range` concept
+        /// \pre `I` is a model of the `input_iterator` concept
+        /// \pre `S` is a model of the `sentinel_for<I>` concept
+        /// \pre `P` is a model of the `invocable<iter_common_reference_t<I>>` concept
+        /// \pre The ResultType of `P` is equality_comparable with V
+        template<typename I, typename S, typename V, typename P = identity>
+        auto RANGES_FUN_NIEBLOID(find)(I first, S last, V const & val, P proj = P{})
+            ->CPP_ret(I)( //
+                requires input_iterator<I> && sentinel_for<S, I> &&
+                indirect_relation<equal_to, projected<I, P>, V const *>)
         {
-            /// \brief template function \c find_fn::operator()
-            ///
-            /// range-based version of the \c find std algorithm
-            ///
-            /// \pre `Rng` is a model of the `Range` concept
-            /// \pre `I` is a model of the `InputIterator` concept
-            /// \pre `S` is a model of the `Sentinel<I>` concept
-            /// \pre `P` is a model of the `Invocable<iter_common_reference_t<I>>` concept
-            /// \pre The ResultType of `P` is EqualityComparable with V
-            template<typename I, typename S, typename V, typename P = ident,
-                CONCEPT_REQUIRES_(InputIterator<I>() && Sentinel<S, I>() &&
-                    IndirectRelation<equal_to, projected<I, P>, V const *>())>
-            I operator()(I begin, S end, V const &val, P proj = P{}) const
-            {
-                for(; begin != end; ++begin)
-                    if(invoke(proj, *begin) == val)
-                        break;
-                return begin;
-            }
+            for(; first != last; ++first)
+                if(invoke(proj, *first) == val)
+                    break;
+            return first;
+        }
 
-            /// \overload
-            template<typename Rng, typename V, typename P = ident,
-                typename I = iterator_t<Rng>,
-                CONCEPT_REQUIRES_(InputRange<Rng>() &&
-                    IndirectRelation<equal_to, projected<I, P>, V const *>())>
-            safe_iterator_t<Rng> operator()(Rng &&rng, V const &val, P proj = P{}) const
-            {
-                return (*this)(begin(rng), end(rng), val, std::move(proj));
-            }
-        };
+        /// \overload
+        template<typename Rng, typename V, typename P = identity>
+        auto RANGES_FUN_NIEBLOID(find)(Rng && rng, V const & val, P proj = P{})
+            ->CPP_ret(safe_iterator_t<Rng>)( //
+                requires input_range<Rng> &&
+                indirect_relation<equal_to, projected<iterator_t<Rng>, P>, V const *>)
+        {
+            return (*this)(begin(rng), end(rng), val, std::move(proj));
+        }
 
-        /// \sa `find_fn`
-        /// \ingroup group-algorithms
-        RANGES_INLINE_VARIABLE(with_braced_init_args<find_fn>, find)
-        /// @}
-    } // namespace v3
+    RANGES_END_NIEBLOID(find)
+
+    namespace cpp20
+    {
+        using ranges::find;
+    }
+    /// @}
 } // namespace ranges
 
 #endif // include guard

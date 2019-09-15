@@ -14,51 +14,54 @@
 #define RANGES_V3_ALGORITHM_ALL_OF_HPP
 
 #include <utility>
+
 #include <range/v3/range_fwd.hpp>
-#include <range/v3/begin_end.hpp>
-#include <range/v3/range_concepts.hpp>
-#include <range/v3/range_traits.hpp>
-#include <range/v3/utility/functional.hpp>
-#include <range/v3/utility/iterator_concepts.hpp>
-#include <range/v3/utility/iterator_traits.hpp>
+
+#include <range/v3/functional/identity.hpp>
+#include <range/v3/functional/invoke.hpp>
+#include <range/v3/iterator/concepts.hpp>
+#include <range/v3/iterator/traits.hpp>
+#include <range/v3/range/access.hpp>
+#include <range/v3/range/concepts.hpp>
+#include <range/v3/range/traits.hpp>
 #include <range/v3/utility/static_const.hpp>
 
 namespace ranges
 {
-    inline namespace v3
-    {
-        /// \addtogroup group-algorithms
-        /// @{
-        struct all_of_fn
+    /// \addtogroup group-algorithms
+    /// @{
+    RANGES_BEGIN_NIEBLOID(all_of)
+
+        /// \brief function template \c all_of
+        template<typename I, typename S, typename F, typename P = identity>
+        auto RANGES_FUN_NIEBLOID(all_of)(I first, S last, F pred, P proj = P{}) //
+            ->CPP_ret(bool)(                                                    //
+                requires input_iterator<I> && sentinel_for<S, I> &&
+                indirect_unary_predicate<F, projected<I, P>>)
         {
-            template<typename I, typename S, typename F, typename P = ident,
-                CONCEPT_REQUIRES_(InputIterator<I>() && Sentinel<S, I>() &&
-                    IndirectPredicate<F, projected<I, P> >())>
-            bool
-            operator()(I first, S last, F pred, P proj = P{}) const
-            {
-                for(; first != last; ++first)
-                    if(!invoke(pred, invoke(proj, *first)))
-                        break;
-                return first == last;
-            }
+            for(; first != last; ++first)
+                if(!invoke(pred, invoke(proj, *first)))
+                    break;
+            return first == last;
+        }
 
-            template<typename Rng, typename F, typename P = ident,
-                typename I = iterator_t<Rng>,
-                CONCEPT_REQUIRES_(InputRange<Rng>() && IndirectPredicate<F, projected<I, P> >())>
-            bool
-            operator()(Rng &&rng, F pred, P proj = P{}) const
-            {
-                return (*this)(begin(rng), end(rng), std::move(pred), std::move(proj));
-            }
-        };
+        /// \overload
+        template<typename Rng, typename F, typename P = identity>
+        auto RANGES_FUN_NIEBLOID(all_of)(Rng && rng, F pred, P proj = P{}) //
+            ->CPP_ret(bool)(                                               //
+                requires input_range<Rng> &&
+                indirect_unary_predicate<F, projected<iterator_t<Rng>, P>>)
+        {
+            return (*this)(begin(rng), end(rng), std::move(pred), std::move(proj));
+        }
 
-        /// \sa `all_of_fn`
-        /// \ingroup group-algorithms
-        RANGES_INLINE_VARIABLE(with_braced_init_args<all_of_fn>, all_of)
-        /// @}
+    RANGES_END_NIEBLOID(all_of)
 
-    } // inline namespace v3
+    namespace cpp20
+    {
+        using ranges::all_of;
+    }
+    /// @}
 } // namespace ranges
 
 #endif // include guard

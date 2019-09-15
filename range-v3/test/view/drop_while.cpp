@@ -32,47 +32,48 @@ int main()
 {
     using namespace ranges;
 
-    auto rng0 = view::iota(10) | view::drop_while([](int i) { return i < 25; });
-    CONCEPT_ASSERT(range_cardinality<decltype(rng0)>::value == unknown);
-    ::models<concepts::RandomAccessView>(aux::copy(rng0));
-    ::models_not<concepts::BoundedView>(aux::copy(rng0));
-    ::models<concepts::RandomAccessIterator>(rng0.begin());
+    auto rng0 = views::iota(10) | views::drop_while([](int i) { return i < 25; });
+    CPP_assert(range_cardinality<decltype(rng0)>::value == unknown);
+    CPP_assert(view_<decltype(rng0)>);
+    CPP_assert(random_access_range<decltype(rng0)>);
+    CPP_assert(!common_range<decltype(rng0)>);
+    CPP_assert(random_access_iterator<decltype(rng0.begin())>);
     auto b = rng0.begin();
     CHECK(*b == 25);
     CHECK(*(b+1) == 26);
-    ::check_equal(rng0 | view::take(10), {25, 26, 27, 28, 29, 30, 31, 32, 33, 34});
+    ::check_equal(rng0 | views::take(10), {25, 26, 27, 28, 29, 30, 31, 32, 33, 34});
 
     std::list<int> vi{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-    auto rng1 = vi | view::drop_while([](int i) { return i != 50; });
-    CONCEPT_ASSERT(range_cardinality<decltype(rng1)>::value == ranges::finite);
-    ::models<concepts::BidirectionalView>(aux::copy(rng1));
-    ::models<concepts::BoundedView>(aux::copy(rng1));
-    ::models<concepts::BidirectionalIterator>(rng1.begin());
+    auto rng1 = vi | views::drop_while([](int i) { return i != 50; });
+    CPP_assert(range_cardinality<decltype(rng1)>::value == ranges::finite);
+    CPP_assert(view_<decltype(rng1)>);
+    CPP_assert(bidirectional_range<decltype(rng1)>);
+    CPP_assert(common_range<decltype(rng1)>);
+    CPP_assert(bidirectional_iterator<decltype(rng1.begin())>);
     CHECK(rng1.begin() == rng1.end());
 
     // Check with a mutable predicate
     static int const rgi[] = {0,1,2,3,4,5,6,7,8,9};
     int cnt = 0;
-    auto mutable_only = view::drop_while(rgi, [cnt](int) mutable { return ++cnt <= 5;});
+    auto mutable_only = views::drop_while(rgi, [cnt](int) mutable { return ++cnt <= 5;});
     ::check_equal(mutable_only, {5,6,7,8,9});
-    CONCEPT_ASSERT(View<decltype(mutable_only)>());
-    CONCEPT_ASSERT(!View<decltype(mutable_only) const>());
+    CPP_assert(view_<decltype(mutable_only)>);
+    CPP_assert(!view_<decltype(mutable_only) const>);
 
     {
-        // Check with move-only subview
-        auto rng = debug_input_view<const int>{rgi} | view::drop_while([](int i){ return i < 4; });
+        auto rng = debug_input_view<const int>{rgi} | views::drop_while([](int i){ return i < 4; });
         using R = decltype(rng);
-        CONCEPT_ASSERT(InputView<R>());
-        CONCEPT_ASSERT(!ForwardRange<R>());
-        CONCEPT_ASSERT(!BoundedRange<R>());
-        CONCEPT_ASSERT(Same<int const&, range_reference_t<R>>());
+        CPP_assert(input_range<R> && view_<R>);
+        CPP_assert(!forward_range<R>);
+        CPP_assert(!common_range<R>);
+        CPP_assert(same_as<int const&, range_reference_t<R>>);
         ::check_equal(rng, {4,5,6,7,8,9});
     }
 
     {
         // with projection
         const std::list<my_data> data_list{{1}, {2}, {3}, {1}};
-        auto rng = data_list | view::drop_while([](int i){ return i <= 2; }, &my_data::i);
+        auto rng = data_list | views::drop_while([](int i){ return i <= 2; }, &my_data::i);
         ::check_equal(rng, std::list<my_data>{{3}, {1}});
     }
 

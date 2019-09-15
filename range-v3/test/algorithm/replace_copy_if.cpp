@@ -35,10 +35,10 @@ void test_iter()
     int ia[] = {0, 1, 2, 3, 4};
     const unsigned sa = sizeof(ia)/sizeof(ia[0]);
     int ib[sa] = {0};
-    std::pair<InIter, OutIter> r = ranges::replace_copy_if(InIter(ia), Sent(ia+sa), OutIter(ib),
+    ranges::replace_copy_if_result<InIter, OutIter> r = ranges::replace_copy_if(InIter(ia), Sent(ia+sa), OutIter(ib),
         [](int i){return 2==i;}, 5);
-    CHECK(base(r.first) == ia + sa);
-    CHECK(base(r.second) == ib + sa);
+    CHECK(base(r.in) == ia + sa);
+    CHECK(base(r.out) == ib + sa);
     CHECK(ib[0] == 0);
     CHECK(ib[1] == 1);
     CHECK(ib[2] == 5);
@@ -52,11 +52,11 @@ void test_rng()
     int ia[] = {0, 1, 2, 3, 4};
     const unsigned sa = sizeof(ia)/sizeof(ia[0]);
     int ib[sa] = {0};
-    auto rng = ranges::make_iterator_range(InIter(ia), Sent(ia+sa));
-    std::pair<InIter, OutIter> r = ranges::replace_copy_if(rng, OutIter(ib),
+    auto rng = ranges::make_subrange(InIter(ia), Sent(ia+sa));
+    ranges::replace_copy_if_result<InIter, OutIter> r = ranges::replace_copy_if(rng, OutIter(ib),
         [](int i){return 2==i;}, 5);
-    CHECK(base(r.first) == ia + sa);
-    CHECK(base(r.second) == ib + sa);
+    CHECK(base(r.in) == ia + sa);
+    CHECK(base(r.out) == ib + sa);
     CHECK(ib[0] == 0);
     CHECK(ib[1] == 1);
     CHECK(ib[2] == 5);
@@ -76,34 +76,34 @@ void test()
 
 int main()
 {
-    test<input_iterator<const int*>, output_iterator<int*> >();
-    test<input_iterator<const int*>, forward_iterator<int*> >();
-    test<input_iterator<const int*>, bidirectional_iterator<int*> >();
-    test<input_iterator<const int*>, random_access_iterator<int*> >();
-    test<input_iterator<const int*>, int*>();
+    test<InputIterator<const int*>, OutputIterator<int*> >();
+    test<InputIterator<const int*>, ForwardIterator<int*> >();
+    test<InputIterator<const int*>, BidirectionalIterator<int*> >();
+    test<InputIterator<const int*>, RandomAccessIterator<int*> >();
+    test<InputIterator<const int*>, int*>();
 
-    test<forward_iterator<const int*>, output_iterator<int*> >();
-    test<forward_iterator<const int*>, forward_iterator<int*> >();
-    test<forward_iterator<const int*>, bidirectional_iterator<int*> >();
-    test<forward_iterator<const int*>, random_access_iterator<int*> >();
-    test<forward_iterator<const int*>, int*>();
+    test<ForwardIterator<const int*>, OutputIterator<int*> >();
+    test<ForwardIterator<const int*>, ForwardIterator<int*> >();
+    test<ForwardIterator<const int*>, BidirectionalIterator<int*> >();
+    test<ForwardIterator<const int*>, RandomAccessIterator<int*> >();
+    test<ForwardIterator<const int*>, int*>();
 
-    test<bidirectional_iterator<const int*>, output_iterator<int*> >();
-    test<bidirectional_iterator<const int*>, forward_iterator<int*> >();
-    test<bidirectional_iterator<const int*>, bidirectional_iterator<int*> >();
-    test<bidirectional_iterator<const int*>, random_access_iterator<int*> >();
-    test<bidirectional_iterator<const int*>, int*>();
+    test<BidirectionalIterator<const int*>, OutputIterator<int*> >();
+    test<BidirectionalIterator<const int*>, ForwardIterator<int*> >();
+    test<BidirectionalIterator<const int*>, BidirectionalIterator<int*> >();
+    test<BidirectionalIterator<const int*>, RandomAccessIterator<int*> >();
+    test<BidirectionalIterator<const int*>, int*>();
 
-    test<random_access_iterator<const int*>, output_iterator<int*> >();
-    test<random_access_iterator<const int*>, forward_iterator<int*> >();
-    test<random_access_iterator<const int*>, bidirectional_iterator<int*> >();
-    test<random_access_iterator<const int*>, random_access_iterator<int*> >();
-    test<random_access_iterator<const int*>, int*>();
+    test<RandomAccessIterator<const int*>, OutputIterator<int*> >();
+    test<RandomAccessIterator<const int*>, ForwardIterator<int*> >();
+    test<RandomAccessIterator<const int*>, BidirectionalIterator<int*> >();
+    test<RandomAccessIterator<const int*>, RandomAccessIterator<int*> >();
+    test<RandomAccessIterator<const int*>, int*>();
 
-    test<const int*, output_iterator<int*> >();
-    test<const int*, forward_iterator<int*> >();
-    test<const int*, bidirectional_iterator<int*> >();
-    test<const int*, random_access_iterator<int*> >();
+    test<const int*, OutputIterator<int*> >();
+    test<const int*, ForwardIterator<int*> >();
+    test<const int*, BidirectionalIterator<int*> >();
+    test<const int*, RandomAccessIterator<int*> >();
     test<const int*, int*>();
 
     // Test projection
@@ -111,10 +111,10 @@ int main()
         using P = std::pair<int, std::string>;
         P in[] = {{0, "0"}, {1, "1"}, {2, "2"}, {3, "3"}, {4, "4"}};
         P out[ranges::size(in)] = {};
-        std::pair<P *, P *> r = ranges::replace_copy_if(in, out,
+        ranges::replace_copy_if_result<P *, P *> r = ranges::replace_copy_if(in, out,
             [](int i){return 2==i;}, P{5, "5"}, &std::pair<int, std::string>::first);
-        CHECK(r.first == ranges::end(in));
-        CHECK(r.second == ranges::end(out));
+        CHECK(r.in == ranges::end(in));
+        CHECK(r.out == ranges::end(out));
         CHECK(out[0] == P{0, "0"});
         CHECK(out[1] == P{1, "1"});
         CHECK(out[2] == P{5, "5"});

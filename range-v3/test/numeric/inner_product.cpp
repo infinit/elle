@@ -74,7 +74,7 @@ namespace
       // rng test:
       auto rng3 = [](int* b1, int l1, int* b2, int i)
       {
-        return ranges::inner_product(ranges::make_iterator_range(Iter1(b1), Sent1(b1+l1)), Iter2(b2), i);
+        return ranges::inner_product(ranges::make_subrange(Iter1(b1), Sent1(b1+l1)), Iter2(b2), i);
       };
       CHECK(rng3(a, 0, b, 0) == 0);
       CHECK(rng3(a, 0, b, 10)  == 10);
@@ -87,8 +87,8 @@ namespace
 
       auto rng4 = [](int* b1, int l1, int* b2, int i)
       {
-        return ranges::inner_product(ranges::make_iterator_range(Iter1(b1), Sent1(b1+l1)),
-                                    ranges::make_iterator_range(Iter2(b2), Iter2(b2+l1)), i);
+        return ranges::inner_product(ranges::make_subrange(Iter1(b1), Sent1(b1+l1)),
+                                    ranges::make_subrange(Iter2(b2), Iter2(b2+l1)), i);
       };
       CHECK(rng4(a, 0, b, 0) == 0);
       CHECK(rng4(a, 0, b, 10)  == 10);
@@ -102,8 +102,8 @@ namespace
       // rng + bops:
       auto bops = [](int* b1, int l1, int* b2, int i)
       {
-        return ranges::inner_product(ranges::make_iterator_range(Iter1(b1), Sent1(b1+l1)),
-                                    ranges::make_iterator_range(Iter2(b2), Iter2(b2+l1)), i,
+        return ranges::inner_product(ranges::make_subrange(Iter1(b1), Sent1(b1+l1)),
+                                    ranges::make_subrange(Iter2(b2), Iter2(b2+l1)), i,
                                     std::multiplies<int>(), std::plus<int>());
       };
       CHECK(bops(a, 0, b, 1) == 1);
@@ -119,38 +119,35 @@ namespace
 
 int main()
 {
-    test<input_iterator<const int*>, input_iterator<const int*> >();
-    test<input_iterator<const int*>, forward_iterator<const int*> >();
-    test<input_iterator<const int*>, bidirectional_iterator<const int*> >();
-    test<input_iterator<const int*>, random_access_iterator<const int*> >();
-    test<input_iterator<const int*>, const int*>();
+    test<InputIterator<const int*>, InputIterator<const int*> >();
+    test<InputIterator<const int*>, ForwardIterator<const int*> >();
+    test<InputIterator<const int*>, BidirectionalIterator<const int*> >();
+    test<InputIterator<const int*>, RandomAccessIterator<const int*> >();
+    test<InputIterator<const int*>, const int*>();
 
-    test<forward_iterator<const int*>, input_iterator<const int*> >();
-    test<forward_iterator<const int*>, forward_iterator<const int*> >();
-    test<forward_iterator<const int*>, bidirectional_iterator<const int*> >();
-    test<forward_iterator<const int*>, random_access_iterator<const int*> >();
-    test<forward_iterator<const int*>, const int*>();
+    test<ForwardIterator<const int*>, InputIterator<const int*> >();
+    test<ForwardIterator<const int*>, ForwardIterator<const int*> >();
+    test<ForwardIterator<const int*>, BidirectionalIterator<const int*> >();
+    test<ForwardIterator<const int*>, RandomAccessIterator<const int*> >();
+    test<ForwardIterator<const int*>, const int*>();
 
-    test<bidirectional_iterator<const int*>, input_iterator<const int*> >();
-    test<bidirectional_iterator<const int*>, forward_iterator<const int*> >();
-    test<bidirectional_iterator<const int*>, bidirectional_iterator<const int*> >();
-    test<bidirectional_iterator<const int*>, random_access_iterator<const int*> >();
-    test<bidirectional_iterator<const int*>, const int*>();
+    test<BidirectionalIterator<const int*>, InputIterator<const int*> >();
+    test<BidirectionalIterator<const int*>, ForwardIterator<const int*> >();
+    test<BidirectionalIterator<const int*>, BidirectionalIterator<const int*> >();
+    test<BidirectionalIterator<const int*>, RandomAccessIterator<const int*> >();
+    test<BidirectionalIterator<const int*>, const int*>();
 
-    test<random_access_iterator<const int*>, input_iterator<const int*> >();
-    test<random_access_iterator<const int*>, forward_iterator<const int*> >();
-    test<random_access_iterator<const int*>, bidirectional_iterator<const int*> >();
-    test<random_access_iterator<const int*>, random_access_iterator<const int*> >();
-    test<random_access_iterator<const int*>, const int*>();
+    test<RandomAccessIterator<const int*>, InputIterator<const int*> >();
+    test<RandomAccessIterator<const int*>, ForwardIterator<const int*> >();
+    test<RandomAccessIterator<const int*>, BidirectionalIterator<const int*> >();
+    test<RandomAccessIterator<const int*>, RandomAccessIterator<const int*> >();
+    test<RandomAccessIterator<const int*>, const int*>();
 
-    test<const int*, input_iterator<const int*> >();
-    test<const int*, forward_iterator<const int*> >();
-    test<const int*, bidirectional_iterator<const int*> >();
-    test<const int*, random_access_iterator<const int*> >();
+    test<const int*, InputIterator<const int*> >();
+    test<const int*, ForwardIterator<const int*> >();
+    test<const int*, BidirectionalIterator<const int*> >();
+    test<const int*, RandomAccessIterator<const int*> >();
     test<const int*, const int*>();
-
-    // Test initializer lists:
-    CHECK(ranges::inner_product({1,2,3}, {4,5,6}, 0) == 32);
 
     // test projections:
     {
@@ -158,15 +155,15 @@ int main()
       S b[] = {{6}, {5}, {4}, {3}, {2}, {1}};
       unsigned sa = sizeof(a) / sizeof(a[0]);
 
-      using Iter1 = input_iterator<const S*>;
-      using Sent1 = input_iterator<const S*>;
+      using Iter1 = InputIterator<const S*>;
+      using Sent1 = InputIterator<const S*>;
       using Iter2 = Iter1;
 
       // rng + bops:
       auto bops = [&](S* b1, int l1, S* b2, int i)
       {
-        return ranges::inner_product(ranges::make_iterator_range(Iter1(b1), Sent1(b1+l1)),
-                                     ranges::make_iterator_range(Iter2(b2), Iter2(b2+l1)), i,
+        return ranges::inner_product(ranges::make_subrange(Iter1(b1), Sent1(b1+l1)),
+                                     ranges::make_subrange(Iter2(b2), Iter2(b2+l1)), i,
                                      std::multiplies<int>(), std::plus<int>(),
                                      &S::i, &S::i);
       };

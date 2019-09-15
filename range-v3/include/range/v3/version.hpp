@@ -15,11 +15,10 @@
 #define RANGES_V3_VERSION_HPP
 
 #define RANGE_V3_MAJOR 0
-#define RANGE_V3_MINOR 4
-#define RANGE_V3_PATCHLEVEL 0
+#define RANGE_V3_MINOR 9
+#define RANGE_V3_PATCHLEVEL 1
 
-#define RANGE_V3_VERSION (RANGE_V3_MAJOR * 10000 \
-                        + RANGE_V3_MINOR * 100 \
-                        + RANGE_V3_PATCHLEVEL)
+#define RANGE_V3_VERSION \
+    (RANGE_V3_MAJOR * 10000 + RANGE_V3_MINOR * 100 + RANGE_V3_PATCHLEVEL)
 
 #endif

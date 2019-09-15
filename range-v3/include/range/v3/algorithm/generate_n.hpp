@@ -15,44 +15,49 @@
 
 #include <tuple>
 #include <utility>
+
 #include <range/v3/range_fwd.hpp>
-#include <range/v3/begin_end.hpp>
-#include <range/v3/range_concepts.hpp>
-#include <range/v3/range_traits.hpp>
-#include <range/v3/utility/iterator.hpp>
-#include <range/v3/utility/iterator_concepts.hpp>
+
+#include <range/v3/algorithm/result_types.hpp>
+#include <range/v3/functional/invoke.hpp>
+#include <range/v3/iterator/concepts.hpp>
+#include <range/v3/iterator/operations.hpp>
+#include <range/v3/range/access.hpp>
+#include <range/v3/range/concepts.hpp>
+#include <range/v3/range/traits.hpp>
 #include <range/v3/utility/static_const.hpp>
-#include <range/v3/utility/tagged_pair.hpp>
-#include <range/v3/algorithm/tagspec.hpp>
 
 namespace ranges
 {
-    inline namespace v3
-    {
-        /// \addtogroup group-algorithms
-        /// @{
-        struct generate_n_fn
-        {
-            template<typename O, typename F,
-                CONCEPT_REQUIRES_(Invocable<F &>() &&
-                    OutputIterator<O, invoke_result_t<F &>>())>
-            tagged_pair<tag::out(O), tag::fun(F)>
-            operator()(O begin, difference_type_t<O> n, F fun) const
-            {
-                RANGES_EXPECT(n >= 0);
-                auto norig = n;
-                auto b = uncounted(begin);
-                for(; 0 != n; ++b, --n)
-                    *b = invoke(fun);
-                return {recounted(begin, b, norig), detail::move(fun)};
-            }
-        };
+    /// \addtogroup group-algorithms
+    /// @{
+    template<typename O, typename F>
+    using generate_n_result = detail::out_fun_result<O, F>;
 
-        /// \sa `generate_n_fn`
-        /// \ingroup group-algorithms
-        RANGES_INLINE_VARIABLE(generate_n_fn, generate_n)
-        // @}
-    } // namespace v3
+    RANGES_BEGIN_NIEBLOID(generate_n)
+
+        /// \brief function template \c generate_n
+        template<typename O, typename F>
+        auto RANGES_FUN_NIEBLOID(generate_n)(O first, iter_difference_t<O> n, F fun)
+            ->CPP_ret(generate_n_result<O, F>)( //
+                requires invocable<F &> && output_iterator<O, invoke_result_t<F &>>)
+        {
+            RANGES_EXPECT(n >= 0);
+            auto norig = n;
+            auto b = uncounted(first);
+            for(; 0 != n; ++b, --n)
+                *b = invoke(fun);
+            return {recounted(first, b, norig), detail::move(fun)};
+        }
+
+    RANGES_END_NIEBLOID(generate_n)
+
+    namespace cpp20
+    {
+        using ranges::generate_n;
+        using ranges::generate_n_result;
+    } // namespace cpp20
+    // @}
 } // namespace ranges
 
 #endif // include guard

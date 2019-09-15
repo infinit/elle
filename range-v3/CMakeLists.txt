@@ -23,11 +23,19 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 add_library(meta INTERFACE)
 target_include_directories(meta INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>)
 target_include_directories(meta SYSTEM INTERFACE $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>)
+target_compile_options(meta INTERFACE $<$<CXX_COMPILER_ID:MSVC>:/permissive->)
+
+add_library(concepts INTERFACE)
+target_include_directories(concepts INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>)
+target_include_directories(concepts SYSTEM INTERFACE $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>)
+target_compile_options(concepts INTERFACE $<$<CXX_COMPILER_ID:MSVC>:/permissive- /experimental:preprocessor /wd5105>)
+target_link_libraries(concepts INTERFACE meta)
 
 add_library(range-v3 INTERFACE)
 target_include_directories(range-v3 INTERFACE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/>)
 target_include_directories(range-v3 SYSTEM INTERFACE $<INSTALL_INTERFACE:$<INSTALL_PREFIX>/include>)
-target_link_libraries(range-v3 INTERFACE meta)
+target_compile_options(range-v3 INTERFACE $<$<CXX_COMPILER_ID:MSVC>:/permissive->)
+target_link_libraries(range-v3 INTERFACE concepts meta)
 
 function(rv3_add_test TESTNAME EXENAME FIRSTSOURCE)
   add_executable(${EXENAME} ${FIRSTSOURCE} ${ARGN})
@@ -35,7 +43,6 @@ function(rv3_add_test TESTNAME EXENAME FIRSTSOURCE)
   add_test(${TESTNAME} ${EXENAME})
 endfunction(rv3_add_test)
 
-include(TestHeaders)
 include(ranges_options)
 include(ranges_env)
 include(ranges_flags)
@@ -57,25 +64,38 @@ if(RANGE_V3_PERF)
   add_subdirectory(perf)
 endif()
 
-# Test all headers
-file(GLOB_RECURSE RANGE_V3_PUBLIC_HEADERS
-                  RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/include"
-                  "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp")
-
 # Add header files as sources to fix MSVS 2017 not finding source during debugging
 file(GLOB_RECURSE RANGE_V3_PUBLIC_HEADERS_ABSOLUTE
                   "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp")
+add_custom_target(headers SOURCES ${RANGE_V3_PUBLIC_HEADERS_ABSOLUTE})
+set_target_properties(headers PROPERTIES FOLDER "header")
 
-include(TestHeaders)
+# Test all headers
 if(RANGE_V3_HEADER_CHECKS)
-  add_custom_target(headers ALL SOURCES ${RANGE_V3_PUBLIC_HEADERS_ABSOLUTE})
-else()
-  add_custom_target(headers SOURCES ${RANGE_V3_PUBLIC_HEADERS_ABSOLUTE})
+  include(TestHeaders)
+
+  file(GLOB_RECURSE RANGE_V3_PUBLIC_HEADERS
+                    RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/include"
+                    "${CMAKE_CURRENT_SOURCE_DIR}/include/*.hpp")
+  # This header is not meant to be included directly:
+  list(REMOVE_ITEM RANGE_V3_PUBLIC_HEADERS std/detail/associated_types.hpp)
+  # Deprecated headers
+  if(CMAKE_CXX_COMPILER_ID STREQUAL GNU)
+    foreach(header ${RANGE_V3_PUBLIC_HEADERS})
+      file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/include/${header}" is_deprecated
+           LIMIT_COUNT 1
+           REGEX ".*RANGES_DEPRECATED_HEADER.*")
+      if(is_deprecated)
+        list(APPEND RANGE_V3_DEPRECATED_PUBLIC_HEADERS "${header}")
+      endif()
+    endforeach()
+  endif()
+
+  add_header_test(test.range.v3.headers
+    EXCLUDE ${RANGE_V3_DEPRECATED_PUBLIC_HEADERS}
+    HEADERS ${RANGE_V3_PUBLIC_HEADERS})
+  target_link_libraries(test.range.v3.headers PRIVATE range-v3)
 endif()
-generate_standalone_header_tests(EXCLUDE_FROM_ALL MASTER_TARGET headers HEADERS ${RANGE_V3_PUBLIC_HEADERS})
-set_target_properties(headers
-    PROPERTIES FOLDER "test/header"
-)
 
 # Grab the range-v3 version numbers:
 include(${CMAKE_CURRENT_SOURCE_DIR}/Version.cmake)
@@ -96,7 +116,7 @@ if(NOT RANGE_V3_NEW_VERSION_HPP STREQUAL RANGE_V3_OLD_VERSION_HPP)
     OUTPUT_STRIP_TRAILING_WHITESPACE
   )
   string(REPLACE "\n" ";"  RANGE_V3_GIT_STATUS ${RANGE_V3_GIT_STATUS})
-  if (NOT "x${RANGE_V3_GIT_STATUS}" STREQUAL "x M README.md; M Version.cmake")
+  if (NOT "x${RANGE_V3_GIT_STATUS}" STREQUAL "x M Version.cmake; M doc/release_notes.md")
     message(FATAL_ERROR "Cannot update version.hpp: range-v3 source directory has a dirty status")
   endif()
   file(
@@ -128,17 +148,24 @@ if(NOT RANGE_V3_NEW_VERSION_HPP STREQUAL RANGE_V3_OLD_VERSION_HPP)
 endif()
 
 include(CMakePackageConfigHelpers)
+
+# write_basic_package_version_file(...) gained ARCH_INDEPENDENT in CMake 3.14.
+# For CMake 3.6, this workaround makes the version file ARCH_INDEPENDENT
+# by making CMAKE_SIZEOF_VOID_P empty.
+set(OLD_CMAKE_SIZEOF_VOID_P ${CMAKE_SIZEOF_VOID_P})
+set(CMAKE_SIZEOF_VOID_P "")
 write_basic_package_version_file(
   ${CMAKE_CURRENT_BINARY_DIR}/range-v3-config-version.cmake
   VERSION ${RANGE_V3_VERSION}
   COMPATIBILITY ExactVersion
 )
+set(CMAKE_SIZEOF_VOID_P ${OLD_CMAKE_SIZEOF_VOID_P})
 
-install(TARGETS meta range-v3 EXPORT range-v3-targets DESTINATION lib)
+install(TARGETS concepts meta range-v3 EXPORT range-v3-targets DESTINATION lib)
 install(EXPORT range-v3-targets FILE range-v3-config.cmake DESTINATION lib/cmake/range-v3)
 install(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/range-v3-config-version.cmake
   DESTINATION lib/cmake/range-v3)
-install(DIRECTORY include/ DESTINATION include FILES_MATCHING PATTERN "*.hpp")
+install(DIRECTORY include/ DESTINATION include FILES_MATCHING PATTERN "*")
 
 export(EXPORT range-v3-targets FILE range-v3-config.cmake)

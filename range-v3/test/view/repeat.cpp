@@ -20,10 +20,10 @@
 int main()
 {
     using namespace ranges;
-    auto rng = view::repeat(9) | view::take(10);
-    ::models<concepts::SizedView>(aux::copy(rng));
-    ::models<concepts::View>(aux::copy(rng));
-    ::models<concepts::RandomAccessIterator>(rng.begin());
+    auto rng = views::repeat(9) | views::take(10);
+    CPP_assert(view_<decltype(rng)>);
+    CPP_assert(sized_range<decltype(rng)>);
+    CPP_assert(random_access_iterator<decltype(rng.begin())>);
     ::check_equal(rng, {9, 9, 9, 9, 9, 9, 9, 9, 9, 9});
 
     return test_result();

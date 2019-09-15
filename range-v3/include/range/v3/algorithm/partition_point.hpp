@@ -23,86 +23,84 @@
 #define RANGES_V3_ALGORITHM_PARTITION_POINT_HPP
 
 #include <meta/meta.hpp>
+
 #include <range/v3/range_fwd.hpp>
-#include <range/v3/begin_end.hpp>
-#include <range/v3/distance.hpp>
-#include <range/v3/range_concepts.hpp>
-#include <range/v3/range_traits.hpp>
+
 #include <range/v3/algorithm/aux_/partition_point_n.hpp>
-#include <range/v3/utility/iterator.hpp>
-#include <range/v3/utility/iterator_concepts.hpp>
-#include <range/v3/utility/iterator_traits.hpp>
-#include <range/v3/utility/functional.hpp>
+#include <range/v3/functional/identity.hpp>
+#include <range/v3/functional/invoke.hpp>
+#include <range/v3/iterator/concepts.hpp>
+#include <range/v3/iterator/operations.hpp>
+#include <range/v3/iterator/traits.hpp>
+#include <range/v3/range/access.hpp>
+#include <range/v3/range/concepts.hpp>
+#include <range/v3/range/dangling.hpp>
+#include <range/v3/range/traits.hpp>
 #include <range/v3/utility/static_const.hpp>
 
 namespace ranges
 {
-    inline namespace v3
-    {
-        /// \addtogroup group-algorithms
-        /// @{
+    /// \addtogroup group-algorithms
+    /// @{
 
-        struct partition_point_fn
+    RANGES_BEGIN_NIEBLOID(partition_point)
+
+        /// \brief function template \c partition_point
+        template<typename I, typename S, typename C, typename P = identity>
+        auto RANGES_FUN_NIEBLOID(partition_point)(
+            I first, S last, C pred, P proj = P{}) //
+            ->CPP_ret(I)(                          //
+                requires forward_iterator<I> && sentinel_for<S, I> &&
+                indirect_unary_predicate<C, projected<I, P>>)
         {
-            template<typename I, typename S, typename C, typename P = ident,
-                CONCEPT_REQUIRES_(PartitionPointable<I, C, P>() &&
-                    Sentinel<S, I>() && !SizedSentinel<S, I>())>
-            I operator()(I begin, S end, C pred, P proj = P{}) const
+            if(RANGES_CONSTEXPR_IF(sized_sentinel_for<S, I>))
             {
-                // Probe exponentially for either end-of-range or an iterator
-                // that is past the partition point (i.e., does not satisfy pred).
-                auto len = difference_type_t<I>{1};
-                while(true)
-                {
-                    auto mid = begin;
-                    auto d = advance(mid, len, end);
-                    if(mid == end || !invoke(pred, invoke(proj, *mid)))
-                    {
-                        len -= d;
-                        return aux::partition_point_n(
-                            std::move(begin), len, std::ref(pred), std::ref(proj));
-                    }
-                    begin = std::move(mid);
-                    len *= 2;
-                }
-            }
-
-            template<typename I, typename S, typename C, typename P = ident,
-                CONCEPT_REQUIRES_(PartitionPointable<I, C, P>() &&
-                    SizedSentinel<S, I>())>
-            I operator()(I begin, S end, C pred, P proj = P{}) const
-            {
-                auto len = distance(begin, std::move(end));
+                auto len = distance(first, std::move(last));
                 return aux::partition_point_n(
-                    std::move(begin), len, std::move(pred), std::move(proj));
+                    std::move(first), len, std::move(pred), std::move(proj));
             }
 
-            template<typename Rng, typename C, typename P = ident,
-                typename I = iterator_t<Rng>,
-                CONCEPT_REQUIRES_(Range<Rng>() && !SizedRange<Rng>() &&
-                    PartitionPointable<I, C, P>())>
-            safe_iterator_t<Rng> operator()(Rng && rng, C pred, P proj = P{}) const
+            // Probe exponentially for either last-of-range or an iterator
+            // that is past the partition point (i.e., does not satisfy pred).
+            auto len = iter_difference_t<I>{1};
+            while(true)
             {
-                return (*this)(
-                    begin(rng), end(rng), std::move(pred), std::move(proj));
+                auto mid = first;
+                auto d = advance(mid, len, last);
+                if(mid == last || !invoke(pred, invoke(proj, *mid)))
+                {
+                    len -= d;
+                    return aux::partition_point_n(
+                        std::move(first), len, std::ref(pred), std::ref(proj));
+                }
+                first = std::move(mid);
+                len *= 2;
             }
+        }
 
-            template<typename Rng, typename C, typename P = ident,
-                typename I = iterator_t<Rng>,
-                CONCEPT_REQUIRES_(SizedRange<Rng>() && PartitionPointable<I, C, P>())>
-            safe_iterator_t<Rng> operator()(Rng && rng, C pred, P proj = P{}) const
+        /// \overload
+        template<typename Rng, typename C, typename P = identity>
+        auto RANGES_FUN_NIEBLOID(partition_point)(Rng && rng, C pred, P proj = P{}) //
+            ->CPP_ret(safe_iterator_t<Rng>)(                                        //
+                requires forward_range<Rng> &&
+                indirect_unary_predicate<C, projected<iterator_t<Rng>, P>>)
+        {
+            if(RANGES_CONSTEXPR_IF(sized_range<Rng>))
             {
                 auto len = distance(rng);
                 return aux::partition_point_n(
                     begin(rng), len, std::move(pred), std::move(proj));
             }
-        };
+            return (*this)(begin(rng), end(rng), std::move(pred), std::move(proj));
+        }
 
-        /// \sa `partition_point_fn`
-        /// \ingroup group-algorithms
-        RANGES_INLINE_VARIABLE(with_braced_init_args<partition_point_fn>, partition_point)
-        /// @}
-    } // namespace v3
+    RANGES_END_NIEBLOID(partition_point)
+
+    namespace cpp20
+    {
+        using ranges::partition_point;
+    }
+    /// @}
 } // namespace ranges
 
 #endif // include guard

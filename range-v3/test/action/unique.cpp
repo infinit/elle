@@ -29,16 +29,16 @@ int main()
     std::mt19937 gen;
 
     // [1,2,2,3,3,3,4,4,4,4,5,5,5,5,5,...]
-    std::vector<int> v =
-        view::for_each(view::ints(1,100), [](int i){
-            return yield_from(view::repeat_n(i,i));
-        });
-    check_equal(view::take(v, 15), {1,2,2,3,3,3,4,4,4,4,5,5,5,5,5});
-    v |= action::shuffle(gen);
+    auto v =
+        views::for_each(views::ints(1,100), [](int i){
+            return yield_from(views::repeat_n(i,i));
+        }) | to<std::vector>();
+    check_equal(views::take(v, 15), {1,2,2,3,3,3,4,4,4,4,5,5,5,5,5});
+    v |= actions::shuffle(gen);
     CHECK(!is_sorted(v));
 
-    v |= action::sort | action::unique;
-    CHECK(equal(v, view::ints(1,100)));
+    v |= actions::sort | actions::unique;
+    CHECK(equal(v, views::ints(1,100)));
 
     return ::test_result();
 }

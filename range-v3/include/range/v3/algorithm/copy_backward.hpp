@@ -14,58 +14,58 @@
 #define RANGES_V3_ALGORITHM_COPY_BACKWARD_HPP
 
 #include <utility>
+
 #include <range/v3/range_fwd.hpp>
-#include <range/v3/begin_end.hpp>
-#include <range/v3/range_concepts.hpp>
-#include <range/v3/range_traits.hpp>
-#include <range/v3/utility/iterator_concepts.hpp>
-#include <range/v3/utility/iterator_traits.hpp>
+
+#include <range/v3/algorithm/result_types.hpp>
+#include <range/v3/iterator/concepts.hpp>
+#include <range/v3/iterator/operations.hpp>
+#include <range/v3/iterator/traits.hpp>
+#include <range/v3/range/access.hpp>
+#include <range/v3/range/concepts.hpp>
+#include <range/v3/range/dangling.hpp>
+#include <range/v3/range/traits.hpp>
 #include <range/v3/utility/static_const.hpp>
-#include <range/v3/utility/tagged_pair.hpp>
-#include <range/v3/algorithm/tagspec.hpp>
 
 namespace ranges
 {
-    inline namespace v3
-    {
-        /// \addtogroup group-algorithms
-        /// @{
-        struct copy_backward_fn
+    /// \addtogroup group-algorithms
+    /// @{
+    template<typename I, typename O>
+    using copy_backward_result = detail::in_out_result<I, O>;
+
+    RANGES_BEGIN_NIEBLOID(copy_backward)
+
+        /// \brief function template \c copy_backward
+        template<typename I, typename S, typename O>
+        auto RANGES_FUN_NIEBLOID(copy_backward)(I first, S end_, O out)
+            ->CPP_ret(copy_backward_result<I, O>)( //
+                requires bidirectional_iterator<I> && sentinel_for<S, I> &&
+                bidirectional_iterator<O> && indirectly_copyable<I, O>)
         {
-            template<typename I, typename S, typename O,
-                CONCEPT_REQUIRES_(
-                    BidirectionalIterator<I>() && Sentinel<S, I>() &&
-                    BidirectionalIterator<O>() &&
-                    IndirectlyCopyable<I, O>()
-                )>
-            tagged_pair<tag::in(I), tag::out(O)> operator()(I begin, S end_, O out) const
-            {
-                I i = ranges::next(begin, end_), end = i;
-                while(begin != i)
-                    *--out = *--i;
-                return {end, out};
-            }
+            I i = ranges::next(first, end_), last = i;
+            while(first != i)
+                *--out = *--i;
+            return {last, out};
+        }
 
-            template<typename Rng, typename O,
-                typename I = iterator_t<Rng>,
-                CONCEPT_REQUIRES_(
-                    BidirectionalRange<Rng>() &&
-                    BidirectionalIterator<O>() &&
-                    IndirectlyCopyable<I, O>()
-                )>
-            tagged_pair<tag::in(safe_iterator_t<Rng>), tag::out(O)>
-            operator()(Rng &&rng, O out) const
-            {
-                return (*this)(begin(rng), end(rng), std::move(out));
-            }
-        };
+        /// \overload
+        template<typename Rng, typename O>
+        auto RANGES_FUN_NIEBLOID(copy_backward)(Rng && rng, O out)
+            ->CPP_ret(copy_backward_result<safe_iterator_t<Rng>, O>)( //
+                requires bidirectional_range<Rng> && bidirectional_iterator<O> &&
+                indirectly_copyable<iterator_t<Rng>, O>)
+        {
+            return (*this)(begin(rng), end(rng), std::move(out));
+        }
+    RANGES_END_NIEBLOID(copy_backward)
 
-        /// \sa `copy_backward_fn`
-        /// \ingroup group-algorithms
-        RANGES_INLINE_VARIABLE(with_braced_init_args<copy_backward_fn>,
-                               copy_backward)
-        /// @}
-    } // namespace v3
+    namespace cpp20
+    {
+        using ranges::copy_backward;
+        using ranges::copy_backward_result;
+    } // namespace cpp20
+    /// @}
 } // namespace ranges
 
 #endif // include guard

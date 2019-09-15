@@ -43,37 +43,37 @@ int main()
     };
 
     {
-        auto rng0 = v | view::group_by([](P p0, P p1) {return p0.second == p1.second;});
-        CONCEPT_ASSERT(ForwardRange<decltype(rng0)>());
-        CONCEPT_ASSERT(!BidirectionalRange<decltype(rng0)>());
+        auto rng0 = v | views::group_by([](P p0, P p1) {return p0.second == p1.second;});
+        CPP_assert(forward_range<decltype(rng0)>);
+        CPP_assert(!bidirectional_range<decltype(rng0)>);
         CHECK(distance(rng0) == 3);
         check_equal(*rng0.begin(), {P{1,1},P{1,1}});
         check_equal(*next(rng0.begin()), {P{1,2},P{1,2},P{1,2},P{1,2},P{2,2},P{2,2}});
         check_equal(*next(rng0.begin(), 2), {P{2,3},P{2,3},P{2,3},P{2,3}});
 
-        auto rng1 = v | view::group_by([](P p0, P p1) {return p0.first == p1.first;});
-        CONCEPT_ASSERT(ForwardRange<decltype(rng1)>());
-        CONCEPT_ASSERT(!BidirectionalRange<decltype(rng1)>());
+        auto rng1 = v | views::group_by([](P p0, P p1) {return p0.first == p1.first;});
+        CPP_assert(forward_range<decltype(rng1)>);
+        CPP_assert(!bidirectional_range<decltype(rng1)>);
         CHECK(distance(rng1) == 2);
         check_equal(*rng1.begin(), {P{1,1},P{1,1},P{1,2},P{1,2},P{1,2},P{1,2}});
         check_equal(*next(rng1.begin()), {P{2,2},P{2,2},P{2,3},P{2,3},P{2,3},P{2,3}});
     }
 
     {
-        forward_iterator<std::vector<P>::iterator> b{v.begin()};
-        auto rng0 = view::counted(b, v.size())
-            | view::group_by([](P p0, P p1) {return p0.second == p1.second;});
-        CONCEPT_ASSERT(ForwardRange<decltype(rng0)>());
-        CONCEPT_ASSERT(!BidirectionalRange<decltype(rng0)>());
+        ForwardIterator<std::vector<P>::iterator> b{v.begin()};
+        auto rng0 = views::counted(b, v.size())
+            | views::group_by([](P p0, P p1) {return p0.second == p1.second;});
+        CPP_assert(forward_range<decltype(rng0)>);
+        CPP_assert(!bidirectional_range<decltype(rng0)>);
         CHECK(distance(rng0) == 3);
         check_equal(*rng0.begin(), {P{1,1},P{1,1}});
         check_equal(*next(rng0.begin()), {P{1,2},P{1,2},P{1,2},P{1,2},P{2,2},P{2,2}});
         check_equal(*next(rng0.begin(), 2), {P{2,3},P{2,3},P{2,3},P{2,3}});
 
-        auto rng1 = view::counted(b, v.size())
-            | view::group_by([](P p0, P p1) {return p0.first == p1.first;});
-        CONCEPT_ASSERT(ForwardRange<decltype(rng1)>());
-        CONCEPT_ASSERT(!BidirectionalRange<decltype(rng1)>());
+        auto rng1 = views::counted(b, v.size())
+            | views::group_by([](P p0, P p1) {return p0.first == p1.first;});
+        CPP_assert(forward_range<decltype(rng1)>);
+        CPP_assert(!bidirectional_range<decltype(rng1)>);
         CHECK(distance(rng1) == 2);
         check_equal(*rng1.begin(), {P{1,1},P{1,1},P{1,2},P{1,2},P{1,2},P{1,2}});
         check_equal(*next(rng1.begin()), {P{2,2},P{2,2},P{2,3},P{2,3},P{2,3},P{2,3}});
@@ -81,19 +81,20 @@ int main()
 
     {
         int a[] = {0, 1, 2, 3, 4, 5};
-        auto rng = a | view::remove_if([](int n) { return n % 2 == 0; })
-          | view::group_by([](int, int) { return true; });
+        auto rng = a | views::remove_if([](int n) { return n % 2 == 0; })
+          | views::group_by([](int, int) { return true; });
         check_equal(*rng.begin(), {1, 3, 5});
     }
 
     {
-        std::vector<int> v {0,1,2,3,4,5,6,7,8,9};
-        auto rng0 = ranges::view::group_by(v, [](int i, int j){ return j - i < 3; });
+        std::vector<int> v2 {0,1,2,3,4,5,6,7,8,9};
+        auto rng0 = ranges::views::group_by(v2, [](int i, int j){ return j - i < 3; });
         check_equal(*rng0.begin(), {0, 1, 2});
         check_equal(*next(rng0.begin()), {3, 4, 5});
         check_equal(*next(rng0.begin(), 2), {6, 7, 8});
         check_equal(*next(rng0.begin(), 3), {9});
         CHECK(distance(rng0) == 4);
     }
+
     return test_result();
 }

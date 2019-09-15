@@ -14,20 +14,28 @@
 #include <range/v3/view/intersperse.hpp>
 #include <range/v3/view/delimit.hpp>
 #include <range/v3/view/reverse.hpp>
-#include <range/v3/to_container.hpp>
+#include <range/v3/range/conversion.hpp>
 #include "../simple_test.hpp"
 #include "../test_utils.hpp"
 
+#ifdef RANGES_WORKAROUND_MSVC_790554
 template<std::size_t N>
-ranges::iterator_range<char const*> c_str(char const (&sz)[N])
+auto c_str(char const (&sz)[N])
+{
+    return ranges::subrange<char const*>{&sz[0], &sz[N-1]};
+}
+#else // ^^^ workaround / no workaround vvv
+template<std::size_t N>
+ranges::subrange<char const*> c_str(char const (&sz)[N])
 {
     return {&sz[0], &sz[N-1]};
 }
+#endif // RANGES_WORKAROUND_MSVC_790554
 
-ranges::delimit_view<ranges::iterator_range<char const *, ranges::unreachable>, char>
+ranges::delimit_view<ranges::subrange<char const *, ranges::unreachable_sentinel_t>, char>
 c_str_(char const *sz)
 {
-    return ranges::view::delimit(sz, '\0');
+    return ranges::views::delimit(sz, '\0');
 }
 
 int main()
@@ -35,66 +43,66 @@ int main()
     using namespace ranges;
 
     {
-        auto r0 = view::intersperse(c_str("abcde"), ',');
-        models<concepts::BoundedRange>(r0);
+        auto r0 = views::intersperse(c_str("abcde"), ',');
+        CPP_assert(common_range<decltype(r0)>);
         CHECK((r0.end() - r0.begin()) == 9);
-        CHECK(std::string(r0) == "a,b,c,d,e");
+        CHECK(to<std::string>(r0) == "a,b,c,d,e");
         CHECK(r0.size() == 9u);
 
-        auto r1 = view::intersperse(c_str(""), ',');
-        models<concepts::BoundedRange>(r1);
-        CHECK(std::string(r1) == "");
+        auto r1 = views::intersperse(c_str(""), ',');
+        CPP_assert(common_range<decltype(r1)>);
+        CHECK(to<std::string>(r1) == "");
         CHECK(r1.size() == 0u);
 
-        auto r2 = view::intersperse(c_str("a"), ',');
-        models<concepts::BoundedRange>(r2);
-        CHECK(std::string(r2) == "a");
+        auto r2 = views::intersperse(c_str("a"), ',');
+        CPP_assert(common_range<decltype(r2)>);
+        CHECK(to<std::string>(r2) == "a");
         CHECK(r2.size() == 1u);
 
-        auto r3 = view::intersperse(c_str("ab"), ',');
-        models<concepts::BoundedRange>(r3);
-        CHECK(std::string(r3) == "a,b");
+        auto r3 = views::intersperse(c_str("ab"), ',');
+        CPP_assert(common_range<decltype(r3)>);
+        CHECK(to<std::string>(r3) == "a,b");
         CHECK(r3.size() == 3u);
     }
 
     {
-        auto r0 = view::intersperse(c_str("abcde"), ',') | view::reverse;
-        models<concepts::BoundedRange>(r0);
-        CHECK(std::string(r0) == "e,d,c,b,a");
+        auto r0 = views::intersperse(c_str("abcde"), ',') | views::reverse;
+        CPP_assert(common_range<decltype(r0)>);
+        CHECK(to<std::string>(r0) == "e,d,c,b,a");
 
-        auto r1 = view::intersperse(c_str(""), ',') | view::reverse;
-        models<concepts::BoundedRange>(r1);
-        CHECK(std::string(r1) == "");
+        auto r1 = views::intersperse(c_str(""), ',') | views::reverse;
+        CPP_assert(common_range<decltype(r1)>);
+        CHECK(to<std::string>(r1) == "");
 
-        auto r2 = view::intersperse(c_str("a"), ',') | view::reverse;
-        models<concepts::BoundedRange>(r2);
-        CHECK(std::string(r2) == "a");
+        auto r2 = views::intersperse(c_str("a"), ',') | views::reverse;
+        CPP_assert(common_range<decltype(r2)>);
+        CHECK(to<std::string>(r2) == "a");
 
-        auto r3 = view::intersperse(c_str("ab"), ',') | view::reverse;
-        models<concepts::BoundedRange>(r3);
-        CHECK(std::string(r3) == "b,a");
+        auto r3 = views::intersperse(c_str("ab"), ',') | views::reverse;
+        CPP_assert(common_range<decltype(r3)>);
+        CHECK(to<std::string>(r3) == "b,a");
     }
 
     {
-        auto r0 = view::intersperse(c_str_("abcde"), ',');
-        models_not<concepts::BoundedRange>(r0);
-        CHECK(std::string(r0) == "a,b,c,d,e");
+        auto r0 = views::intersperse(c_str_("abcde"), ',');
+        CPP_assert(!common_range<decltype(r0)>);
+        CHECK(to<std::string>(r0) == "a,b,c,d,e");
 
-        auto r1 = view::intersperse(c_str_(""), ',');
-        models_not<concepts::BoundedRange>(r1);
-        CHECK(std::string(r1) == "");
+        auto r1 = views::intersperse(c_str_(""), ',');
+        CPP_assert(!common_range<decltype(r1)>);
+        CHECK(to<std::string>(r1) == "");
 
-        auto r2 = view::intersperse(c_str_("a"), ',');
-        models_not<concepts::BoundedRange>(r2);
-        CHECK(std::string(r2) == "a");
+        auto r2 = views::intersperse(c_str_("a"), ',');
+        CPP_assert(!common_range<decltype(r2)>);
+        CHECK(to<std::string>(r2) == "a");
 
-        auto r3 = view::intersperse(c_str_("ab"), ',');
-        models_not<concepts::BoundedRange>(r3);
-        CHECK(std::string(r3) == "a,b");
+        auto r3 = views::intersperse(c_str_("ab"), ',');
+        CPP_assert(!common_range<decltype(r3)>);
+        CHECK(to<std::string>(r3) == "a,b");
     }
 
     {
-        auto r0 = view::intersperse(c_str("abcde"), ',');
+        auto r0 = views::intersperse(c_str("abcde"), ',');
         auto it = r0.begin();
         CHECK(*(it+0) == 'a');
         CHECK(*(it+1) == ',');
@@ -144,13 +152,13 @@ int main()
 
     {
         std::stringstream str{"1 2 3 4 5"};
-        auto r0 = istream<int>(str) | view::intersperse(42);
+        auto r0 = istream<int>(str) | views::intersperse(42);
         check_equal(r0, {1,42,2,42,3,42,4,42,5});
     }
 
     {
         int const some_ints[] = {1,2,3,4,5};
-        auto rng = debug_input_view<int const>{some_ints} | view::intersperse(42);
+        auto rng = debug_input_view<int const>{some_ints} | views::intersperse(42);
         check_equal(rng, {1,42,2,42,3,42,4,42,5});
     }
 

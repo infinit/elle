@@ -14,65 +14,66 @@
 #define RANGES_V3_ALGORITHM_REMOVE_IF_HPP
 
 #include <meta/meta.hpp>
+
 #include <range/v3/range_fwd.hpp>
-#include <range/v3/begin_end.hpp>
-#include <range/v3/range_concepts.hpp>
-#include <range/v3/range_traits.hpp>
-#include <range/v3/utility/iterator.hpp>
-#include <range/v3/utility/iterator_concepts.hpp>
-#include <range/v3/utility/iterator_traits.hpp>
-#include <range/v3/utility/functional.hpp>
+
 #include <range/v3/algorithm/find_if.hpp>
+#include <range/v3/functional/identity.hpp>
+#include <range/v3/functional/invoke.hpp>
+#include <range/v3/iterator/concepts.hpp>
+#include <range/v3/iterator/operations.hpp>
+#include <range/v3/iterator/traits.hpp>
+#include <range/v3/range/access.hpp>
+#include <range/v3/range/concepts.hpp>
+#include <range/v3/range/dangling.hpp>
+#include <range/v3/range/traits.hpp>
 #include <range/v3/utility/static_const.hpp>
 
 namespace ranges
 {
-    inline namespace v3
-    {
-        /// \ingroup group-concepts
-        template<typename I, typename C, typename P = ident>
-        using RemovableIf = meta::strict_and<
-            ForwardIterator<I>,
-            IndirectPredicate<C, projected<I, P>>,
-            Permutable<I>>;
+    /// \addtogroup group-algorithms
+    /// @{
+    RANGES_BEGIN_NIEBLOID(remove_if)
 
-        /// \addtogroup group-algorithms
-        /// @{
-        struct remove_if_fn
+        /// \brief function template \c remove_if
+        template<typename I, typename S, typename C, typename P = identity>
+        auto RANGES_FUN_NIEBLOID(remove_if)(I first, S last, C pred, P proj = P{}) //
+            ->CPP_ret(I)(                                                          //
+                requires permutable<I> && sentinel_for<S, I> &&
+                indirect_unary_predicate<C, projected<I, P>>)
         {
-            template<typename I, typename S, typename C, typename P = ident,
-                CONCEPT_REQUIRES_(RemovableIf<I, C, P>() && Sentinel<S, I>())>
-            I operator()(I begin, S end, C pred, P proj = P{}) const
+            first = find_if(std::move(first), last, std::ref(pred), std::ref(proj));
+            if(first != last)
             {
-                begin = find_if(std::move(begin), end, std::ref(pred), std::ref(proj));
-                if(begin != end)
+                for(I i = next(first); i != last; ++i)
                 {
-                    for(I i = next(begin); i != end; ++i)
+                    if(!(invoke(pred, invoke(proj, *i))))
                     {
-                        if(!(invoke(pred, invoke(proj, *i))))
-                        {
-                            *begin = iter_move(i);
-                            ++begin;
-                        }
+                        *first = iter_move(i);
+                        ++first;
                     }
                 }
-                return begin;
             }
+            return first;
+        }
 
-            template<typename Rng, typename C, typename P = ident,
-                typename I = iterator_t<Rng>,
-                CONCEPT_REQUIRES_(RemovableIf<I, C, P>() && ForwardRange<Rng>())>
-            safe_iterator_t<Rng> operator()(Rng &&rng, C pred, P proj = P{}) const
-            {
-                return (*this)(begin(rng), end(rng), std::move(pred), std::move(proj));
-            }
-        };
+        /// \overload
+        template<typename Rng, typename C, typename P = identity>
+        auto RANGES_FUN_NIEBLOID(remove_if)(Rng && rng, C pred, P proj = P{}) //
+            ->CPP_ret(safe_iterator_t<Rng>)(                                  //
+                requires forward_range<Rng> && permutable<iterator_t<Rng>> &&
+                indirect_unary_predicate<C, projected<iterator_t<Rng>, P>>)
+        {
+            return (*this)(begin(rng), end(rng), std::move(pred), std::move(proj));
+        }
 
-        /// \sa `remove_if_fn`
-        /// \ingroup group-algorithms
-        RANGES_INLINE_VARIABLE(with_braced_init_args<remove_if_fn>, remove_if)
-        /// @}
-    } // namespace v3
+    RANGES_END_NIEBLOID(remove_if)
+
+    namespace cpp20
+    {
+        using ranges::remove_if;
+    }
+    /// @}
 } // namespace ranges
 
 #endif // include guard

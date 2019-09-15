@@ -47,7 +47,7 @@ namespace
         else
             CHECK(i == last);
 
-        auto rng = ranges::make_iterator_range(first, last);
+        auto rng = ::MakeTestRange(first, last);
         i = ranges::min_element(rng);
         if (first != last)
         {
@@ -58,13 +58,7 @@ namespace
             CHECK(i == last);
 
         auto res = ranges::min_element(std::move(rng));
-        if (first != last)
-        {
-            for (Iter j = first; j != last; ++j)
-                CHECK(!(*j < *res.get_unsafe()));
-        }
-        else
-            CHECK(res.get_unsafe() == last);
+        CHECK(::is_dangling(res));
     }
 
     template<class Iter, class Sent = Iter>
@@ -102,7 +96,7 @@ namespace
         else
             CHECK(i == last);
 
-        auto rng = ranges::make_iterator_range(first, last);
+        auto rng = ::MakeTestRange(first, last);
         i = ranges::min_element(rng, std::greater<int>());
         if (first != last)
         {
@@ -113,13 +107,7 @@ namespace
             CHECK(i == last);
 
         auto res = ranges::min_element(std::move(rng), std::greater<int>());
-        if (first != last)
-        {
-            for (Iter j = first; j != last; ++j)
-                CHECK(!std::greater<int>()(*j, *res.get_unsafe()));
-        }
-        else
-            CHECK(res.get_unsafe() == last);
+        CHECK(::is_dangling(res));
     }
 
     template<class Iter, class Sent = Iter>
@@ -152,21 +140,21 @@ namespace
 
 int main()
 {
-    test_iter<forward_iterator<const int*> >();
-    test_iter<bidirectional_iterator<const int*> >();
-    test_iter<random_access_iterator<const int*> >();
+    test_iter<ForwardIterator<const int*> >();
+    test_iter<BidirectionalIterator<const int*> >();
+    test_iter<RandomAccessIterator<const int*> >();
     test_iter<const int*>();
-    test_iter<forward_iterator<const int*>, sentinel<const int*>>();
-    test_iter<bidirectional_iterator<const int*>, sentinel<const int*>>();
-    test_iter<random_access_iterator<const int*>, sentinel<const int*>>();
+    test_iter<ForwardIterator<const int*>, Sentinel<const int*>>();
+    test_iter<BidirectionalIterator<const int*>, Sentinel<const int*>>();
+    test_iter<RandomAccessIterator<const int*>, Sentinel<const int*>>();
 
-    test_iter_comp<forward_iterator<const int*> >();
-    test_iter_comp<bidirectional_iterator<const int*> >();
-    test_iter_comp<random_access_iterator<const int*> >();
+    test_iter_comp<ForwardIterator<const int*> >();
+    test_iter_comp<BidirectionalIterator<const int*> >();
+    test_iter_comp<RandomAccessIterator<const int*> >();
     test_iter_comp<const int*>();
-    test_iter_comp<forward_iterator<const int*>, sentinel<const int*>>();
-    test_iter_comp<bidirectional_iterator<const int*>, sentinel<const int*>>();
-    test_iter_comp<random_access_iterator<const int*>, sentinel<const int*>>();
+    test_iter_comp<ForwardIterator<const int*>, Sentinel<const int*>>();
+    test_iter_comp<BidirectionalIterator<const int*>, Sentinel<const int*>>();
+    test_iter_comp<RandomAccessIterator<const int*>, Sentinel<const int*>>();
 
     // Works with projections?
     S s[] = {S{1},S{2},S{3},S{4},S{-4},S{5},S{6},S{7},S{8},S{9}};

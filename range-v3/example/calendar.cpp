@@ -9,6 +9,14 @@
 //
 // Project home: https://github.com/ericniebler/range-v3
 //
+
+#include <range/v3/detail/config.hpp>
+
+#if RANGES_CXX_RETURN_TYPE_DEDUCTION >= RANGES_CXX_RETURN_TYPE_DEDUCTION_14 && \
+    RANGES_CXX_GENERIC_LAMBDAS >= RANGES_CXX_GENERIC_LAMBDAS_14
+
+///[calendar]
+
 // Usage:
 //     calendar 2015
 //
@@ -50,15 +58,11 @@
 //   Thanks to github's Arzar for bringing date::week_number
 //     to my attention.
 
-#include <range/v3/detail/config.hpp>
-
-#if RANGES_CXX_RETURN_TYPE_DEDUCTION >= RANGES_CXX_RETURN_TYPE_DEDUCTION_14 && \
-    RANGES_CXX_GENERIC_LAMBDAS >= RANGES_CXX_GENERIC_LAMBDAS_14
-
 #include <boost/date_time/gregorian/gregorian.hpp>
 #include <boost/format.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/program_options.hpp>
+#include <algorithm>
 #include <cstddef>
 #include <functional>
 #include <iostream>
@@ -67,7 +71,9 @@
 #include <range/v3/algorithm/for_each.hpp>
 #include <range/v3/algorithm/mismatch.hpp>
 #include <range/v3/core.hpp>
+#include <range/v3/iterator/stream_iterators.hpp>
 #include <range/v3/view/all.hpp>
+#include <range/v3/view/chunk.hpp>
 #include <range/v3/view/concat.hpp>
 #include <range/v3/view/group_by.hpp>
 #include <range/v3/view/iota.hpp>
@@ -104,36 +110,36 @@ namespace boost
 namespace ranges
 {
     template<>
-    struct difference_type<date>
+    struct incrementable_traits<date>
     {
-        using type = date::duration_type::duration_rep::int_type;
+        using difference_type = date::duration_type::duration_rep::int_type;
     };
 }
-CONCEPT_ASSERT(Incrementable<date>());
+CPP_assert(incrementable<date>);
 
 auto
 dates(unsigned short start, unsigned short stop)
 {
-    return view::iota(date{start, greg::Jan, 1}, date{stop, greg::Jan, 1});
+    return views::iota(date{start, greg::Jan, 1}, date{stop, greg::Jan, 1});
 }
 
 auto
 dates_from(unsigned short year)
 {
-    return view::iota(date{year, greg::Jan, 1});
+    return views::iota(date{year, greg::Jan, 1});
 }
 
 auto
 by_month()
 {
-    return view::group_by(
+    return views::group_by(
         [](date a, date b) { return a.month() == b.month(); });
 }
 
 auto
 by_week()
 {
-    return view::group_by([](date a, date b) {
+    return views::group_by([](date a, date b) {
         // ++a because week_number is Mon-Sun and we want Sun-Sat
         return (++a).week_number() == (++b).week_number();
     });
@@ -145,15 +151,15 @@ format_day(date d)
     return boost::str(boost::format("%|3|") % d.day());
 }
 
-// In:  Range<Range<date>>: month grouped by weeks.
-// Out: Range<std::string>: month with formatted weeks.
+// In:  range<range<date>>: month grouped by weeks.
+// Out: range<std::string>: month with formatted weeks.
 auto
 format_weeks()
 {
-    return view::transform([](/*Range<date>*/ auto week) {
+    return views::transform([](/*range<date>*/ auto week) {
         return boost::str(boost::format("%1%%2%%|22t|") %
                           std::string(front(week).day_of_week() * 3u, ' ') %
-                          (week | view::transform(format_day) | action::join));
+                          (week | views::transform(format_day) | actions::join));
     });
 }
 
@@ -165,84 +171,18 @@ month_title(date d)
     return boost::str(boost::format("%|=22|") % d.month().as_long_string());
 }
 
-// In:  Range<Range<date>>: year of months of days
-// Out: Range<Range<std::string>>: year of months of formatted wks
+// In:  range<range<date>>: year of months of days
+// Out: range<range<std::string>>: year of months of formatted wks
 auto
 layout_months()
 {
-    return view::transform([](/*Range<date>*/ auto month) {
+    return views::transform([](/*range<date>*/ auto month) {
         auto week_count =
             static_cast<std::ptrdiff_t>(distance(month | by_week()));
-        return view::concat(
-            view::single(month_title(front(month))),
+        return views::concat(
+            views::single(month_title(front(month))),
             month | by_week() | format_weeks(),
-            view::repeat_n(std::string(22, ' '), 6 - week_count));
-    });
-}
-
-namespace cal_example
-{
-
-    // In:  Range<T>
-    // Out: Range<Range<T>>, where each inner range has $n$ elements.
-    //                       The last range may have fewer.
-    template<class Rng>
-    class chunk_view : public view_adaptor<chunk_view<Rng>, Rng>
-    {
-        CONCEPT_ASSERT(ForwardRange<Rng>());
-        ranges::range_difference_type_t<Rng> n_;
-        friend range_access;
-        class adaptor;
-        adaptor begin_adaptor()
-        {
-            return adaptor{n_, ranges::end(this->base())};
-        }
-
-    public:
-        chunk_view() = default;
-        chunk_view(Rng rng, ranges::range_difference_type_t<Rng> n)
-          : chunk_view::view_adaptor(std::move(rng))
-          , n_(n)
-        {}
-    };
-
-    template<class Rng>
-    class chunk_view<Rng>::adaptor : public adaptor_base
-    {
-        ranges::range_difference_type_t<Rng> n_;
-        sentinel_t<Rng> end_;
-
-    public:
-        adaptor() = default;
-        adaptor(ranges::range_difference_type_t<Rng> n, sentinel_t<Rng> end)
-          : n_(n)
-          , end_(end)
-        {}
-        auto read(iterator_t<Rng> it) const
-        {
-            return view::take(make_iterator_range(std::move(it), end_), n_);
-        }
-        void next(iterator_t<Rng> &it)
-        {
-            ranges::advance(it, n_, end_);
-        }
-        void prev() = delete;
-        void distance_to() = delete;
-    };
-
-} // namespace cal_example
-
-// In:  Range<T>
-// Out: Range<Range<T>>, where each inner range has $n$ elements.
-//                       The last range may have fewer.
-auto
-chunk(std::size_t n)
-{
-    return make_pipeable([=](auto &&rng) {
-        using Rng = decltype(rng);
-        return cal_example::chunk_view<view::all_t<Rng>>{
-            view::all(std::forward<Rng>(rng)),
-            static_cast<ranges::range_difference_type_t<Rng>>(n)};
+            views::repeat_n(std::string(22, ' '), 6 - week_count));
     });
 }
 
@@ -252,17 +192,17 @@ template<class Rngs>
 class interleave_view : public view_facade<interleave_view<Rngs>>
 {
     friend range_access;
-    std::vector<range_value_type_t<Rngs>> rngs_;
+    std::vector<range_value_t<Rngs>> rngs_;
     struct cursor;
     cursor begin_cursor()
     {
-        return {0, &rngs_, view::transform(rngs_, ranges::begin)};
+        return {0, &rngs_, views::transform(rngs_, ranges::begin) | to<std::vector>};
     }
 
 public:
     interleave_view() = default;
     explicit interleave_view(Rngs rngs)
-      : rngs_(std::move(rngs))
+      : rngs_(std::move(rngs) | to<std::vector>)
     {}
 };
 
@@ -270,8 +210,8 @@ template<class Rngs>
 struct interleave_view<Rngs>::cursor
 {
     std::size_t n_;
-    std::vector<range_value_type_t<Rngs>> *rngs_;
-    std::vector<iterator_t<range_value_type_t<Rngs>>> its_;
+    std::vector<range_value_t<Rngs>> *rngs_;
+    std::vector<iterator_t<range_value_t<Rngs>>> its_;
     decltype(auto) read() const
     {
         return *its_[n_];
@@ -281,87 +221,85 @@ struct interleave_view<Rngs>::cursor
         if(0 == ((++n_) %= its_.size()))
             for_each(its_, [](auto &it) { ++it; });
     }
-    bool equal(default_sentinel) const
+    bool equal(default_sentinel_t) const
     {
-        return n_ == 0 && its_.end() != mismatch(its_,
-                                                 *rngs_,
-                                                 std::not_equal_to<>(),
-                                                 ident(),
-                                                 ranges::end)
-                                            .in1();
+        if(n_ != 0)
+            return false;
+        auto ends = *rngs_ | views::transform(ranges::end);
+        return its_.end() != std::mismatch(
+            its_.begin(), its_.end(), ends.begin(), std::not_equal_to<>{}).first;
     }
-    CONCEPT_REQUIRES(ForwardRange<range_value_type_t<Rngs>>())
-    bool equal(cursor const &that) const
+    CPP_member
+    auto equal(cursor const& that) const -> CPP_ret(bool)(
+        requires forward_range<range_value_t<Rngs>>)
     {
         return n_ == that.n_ && its_ == that.its_;
     }
 };
 
-// In:  Range<Range<T>>
-// Out: Range<T>, flattened by walking the ranges
+// In:  range<range<T>>
+// Out: range<T>, flattened by walking the ranges
 //                round-robin fashion.
 auto
 interleave()
 {
     return make_pipeable([](auto &&rngs) {
         using Rngs = decltype(rngs);
-        return interleave_view<view::all_t<Rngs>>(
-            view::all(std::forward<Rngs>(rngs)));
+        return interleave_view<views::all_t<Rngs>>(
+            views::all(std::forward<Rngs>(rngs)));
     });
 }
 
-// In:  Range<Range<T>>
-// Out: Range<Range<T>>, transposing the rows and columns.
+// In:  range<range<T>>
+// Out: range<range<T>>, transposing the rows and columns.
 auto
 transpose()
 {
     return make_pipeable([](auto &&rngs) {
         using Rngs = decltype(rngs);
-        CONCEPT_ASSERT(ForwardRange<Rngs>());
-        return std::forward<Rngs>(rngs) | interleave() |
-               chunk(static_cast<std::size_t>(distance(rngs)));
+        CPP_assert(forward_range<Rngs>);
+        return std::forward<Rngs>(rngs)
+            | interleave()
+            | views::chunk(static_cast<std::size_t>(distance(rngs)));
     });
 }
 
-// In:  Range<Range<Range<string>>>
-// Out: Range<Range<Range<string>>>, transposing months.
+// In:  range<range<range<string>>>
+// Out: range<range<range<string>>>, transposing months.
 auto
 transpose_months()
 {
-    return view::transform(
-        [](/*Range<Range<string>>*/ auto rng) { return rng | transpose(); });
+    return views::transform(
+        [](/*range<range<string>>*/ auto rng) { return rng | transpose(); });
 }
 
-// In:  Range<Range<string>>
-// Out: Range<string>, joining the strings of the inner ranges
+// In:  range<range<string>>
+// Out: range<string>, joining the strings of the inner ranges
 auto
 join_months()
 {
-    return view::transform(
-        [](/*Range<string>*/ auto rng) { return action::join(rng); });
+    return views::transform(
+        [](/*range<string>*/ auto rng) { return actions::join(rng); });
 }
 
-// In:  Range<date>
-// Out: Range<string>, lines of formatted output
+// In:  range<date>
+// Out: range<string>, lines of formatted output
 auto
 format_calendar(std::size_t months_per_line)
 {
-    return make_pipeable([=](auto &&rng) {
-        using Rng = decltype(rng);
-        return std::forward<Rng>(rng)
-               // Group the dates by month:
-               | by_month()
-               // Format the month into a range of strings:
-               | layout_months()
-               // Group the months that belong side-by-side:
-               | chunk(months_per_line)
-               // Transpose the rows and columns of the size-by-side months:
-               | transpose_months()
-               // Ungroup the side-by-side months:
-               | view::join
-               // Join the strings of the transposed months:
-               | join_months();
-    });
+    return
+        // Group the dates by month:
+        by_month()
+        // Format the month into a range of strings:
+      | layout_months()
+        // Group the months that belong side-by-side:
+      | views::chunk(months_per_line)
+        // Transpose the rows and columns of the size-by-side months:
+      | transpose_months()
+        // Ungroup the side-by-side months:
+      | views::join
+        // Join the strings of the transposed months:
+      | join_months();
 }
 
 int
@@ -424,6 +362,7 @@ catch(std::exception &e)
     std::cerr << "  what(): " << e.what();
     return 1;
 }
+///[calendar]
 
 #else
 #pragma message( \

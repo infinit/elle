@@ -14,35 +14,56 @@
 #ifndef RANGES_V3_UTILITY_GET_HPP
 #define RANGES_V3_UTILITY_GET_HPP
 
-#include <utility>
 #include <meta/meta.hpp>
+
+#include <concepts/concepts.hpp>
+
+#include <range/v3/detail/adl_get.hpp>
 
 namespace ranges
 {
-    inline namespace v3
+    /// \addtogroup group-utility Utility
+    /// @{
+    ///
+
+    /// \cond
+    namespace _get_
     {
-        /// \addtogroup group-utility Utility
-        /// @{
-        ///
-        template<typename T>
-        T & get(meta::id_t<T> & value)
+        /// \endcond
+        // clang-format off
+        template<std::size_t I, typename TupleLike>
+        constexpr auto CPP_auto_fun(get)(TupleLike &&t)
+        (
+            return detail::adl_get<I>(static_cast<TupleLike &&>(t))
+        )
+        template<typename T, typename TupleLike>
+        constexpr auto CPP_auto_fun(get)(TupleLike &&t)
+        (
+            return detail::adl_get<T>(static_cast<TupleLike &&>(t))
+        )
+            // clang-format on
+
+            template<typename T>
+            T & get(meta::id_t<T> & value) noexcept
         {
             return value;
         }
-
         template<typename T>
-        T const & get(meta::id_t<T> const & value)
+        T const & get(meta::id_t<T> const & value) noexcept
         {
             return value;
         }
-
         template<typename T>
-        T && get(meta::id_t<T> && value)
+        T && get(meta::id_t<T> && value) noexcept
         {
-            return std::move(value);
+            return static_cast<T &&>(value);
         }
-        /// @}
-    }
-}
+        /// \cond
+    } // namespace _get_
+    using namespace _get_;
+    /// \endcond
+
+    /// @}
+} // namespace ranges
 
 #endif

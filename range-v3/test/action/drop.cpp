@@ -19,21 +19,21 @@ int main()
 {
     using namespace ranges;
 
-    std::vector<int> v = view::ints(1,21);
-    auto & v2 = action::drop(v, 3);
+    auto v = views::ints(1,21) | to<std::vector>();
+    auto & v2 = actions::drop(v, 3);
     CHECK(&v2 == &v);
     CHECK(v.size() == 17u);
     CHECK(v[0] == 4);
 
-    v = std::move(v) | action::drop(3);
+    v = std::move(v) | actions::drop(3);
     CHECK(v.size() == 14u);
     CHECK(v[0] == 7);
 
-    v |= action::drop(3);
+    v |= actions::drop(3);
     CHECK(v.size() == 11u);
     CHECK(v[0] == 10);
 
-    v |= action::drop(100);
+    v |= actions::drop(100);
     CHECK(v.size() == 0u);
 
     return ::test_result();

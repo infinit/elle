@@ -36,15 +36,15 @@ struct S
 template<class InIter, class OutIter, class InSent = InIter> void test()
 {
     using ranges::partial_sum;
-    using ranges::make_iterator_range;
+    using ranges::make_subrange;
     { // iterator
         int ir[] = {1, 3, 6, 10, 15};
         const unsigned s = sizeof(ir) / sizeof(ir[0]);
         int ia[] = {1, 2, 3, 4, 5};
         int ib[s] = {0};
         auto r = partial_sum(InIter(ia), InSent(ia + s), OutIter(ib));
-        CHECK(base(std::get<0>(r)) == ia + s);
-        CHECK(base(std::get<1>(r)) == ib + s);
+        CHECK(base(r.in) == ia + s);
+        CHECK(base(r.out) == ib + s);
         for(unsigned i = 0; i < s; ++i)
         {
             CHECK(ib[i] == ir[i]);
@@ -56,10 +56,10 @@ template<class InIter, class OutIter, class InSent = InIter> void test()
         const unsigned s = sizeof(ir) / sizeof(ir[0]);
         int ia[] = {1, 2, 3, 4, 5};
         int ib[s] = {0};
-        auto rng = make_iterator_range(InIter(ia), InSent(ia + s));
+        auto rng = make_subrange(InIter(ia), InSent(ia + s));
         auto r = partial_sum(rng, OutIter(ib));
-        CHECK(base(std::get<0>(r)) == ia + s);
-        CHECK(base(std::get<1>(r)) == ib + s);
+        CHECK(base(r.in) == ia + s);
+        CHECK(base(r.out) == ib + s);
         for(unsigned i = 0; i < s; ++i)
         {
             CHECK(ib[i] == ir[i]);
@@ -71,11 +71,11 @@ template<class InIter, class OutIter, class InSent = InIter> void test()
         const unsigned s = sizeof(ir) / sizeof(ir[0]);
         int ia[] = {1, 2, 3, 4, 5};
         int ib[s] = {0};
-        auto rng = make_iterator_range(InIter(ia), InSent(ia + s));
-        auto orng = make_iterator_range(OutIter(ib), OutIter(ib + s));
+        auto rng = make_subrange(InIter(ia), InSent(ia + s));
+        auto orng = make_subrange(OutIter(ib), OutIter(ib + s));
         auto r = partial_sum(rng, orng);
-        CHECK(base(std::get<0>(r)) == ia + s);
-        CHECK(base(std::get<1>(r)) == ib + s);
+        CHECK(base(r.in) == ia + s);
+        CHECK(base(r.out) == ib + s);
         for(unsigned i = 0; i < s; ++i)
         {
             CHECK(ib[i] == ir[i]);
@@ -87,11 +87,11 @@ template<class InIter, class OutIter, class InSent = InIter> void test()
         int ir[] = {1, -1, -4, -8, -13};
         const unsigned s = sizeof(ia) / sizeof(ia[0]);
         int ib[s] = {0};
-        auto rng = make_iterator_range(InIter(ia), InSent(ia + s));
-        auto orng = make_iterator_range(OutIter(ib), OutIter(ib + s));
+        auto rng = make_subrange(InIter(ia), InSent(ia + s));
+        auto orng = make_subrange(OutIter(ib), OutIter(ib + s));
         auto r = partial_sum(rng, orng, std::minus<int>());
-        CHECK(base(std::get<0>(r)) == ia + s);
-        CHECK(base(std::get<1>(r)) == ib + s);
+        CHECK(base(r.in) == ia + s);
+        CHECK(base(r.out) == ib + s);
         for(unsigned i = 0; i < s; ++i)
         {
             CHECK(ib[i] == ir[i]);
@@ -101,34 +101,34 @@ template<class InIter, class OutIter, class InSent = InIter> void test()
 
 int main()
 {
-    test<input_iterator<const int *>, input_iterator<int *>>();
-    test<input_iterator<const int *>, forward_iterator<int *>>();
-    test<input_iterator<const int *>, bidirectional_iterator<int *>>();
-    test<input_iterator<const int *>, random_access_iterator<int *>>();
-    test<input_iterator<const int *>, int *>();
+    test<InputIterator<const int *>, InputIterator<int *>>();
+    test<InputIterator<const int *>, ForwardIterator<int *>>();
+    test<InputIterator<const int *>, BidirectionalIterator<int *>>();
+    test<InputIterator<const int *>, RandomAccessIterator<int *>>();
+    test<InputIterator<const int *>, int *>();
 
-    test<forward_iterator<const int *>, input_iterator<int *>>();
-    test<forward_iterator<const int *>, forward_iterator<int *>>();
-    test<forward_iterator<const int *>, bidirectional_iterator<int *>>();
-    test<forward_iterator<const int *>, random_access_iterator<int *>>();
-    test<forward_iterator<const int *>, int *>();
+    test<ForwardIterator<const int *>, InputIterator<int *>>();
+    test<ForwardIterator<const int *>, ForwardIterator<int *>>();
+    test<ForwardIterator<const int *>, BidirectionalIterator<int *>>();
+    test<ForwardIterator<const int *>, RandomAccessIterator<int *>>();
+    test<ForwardIterator<const int *>, int *>();
 
-    test<bidirectional_iterator<const int *>, input_iterator<int *>>();
-    test<bidirectional_iterator<const int *>, forward_iterator<int *>>();
-    test<bidirectional_iterator<const int *>, bidirectional_iterator<int *>>();
-    test<bidirectional_iterator<const int *>, random_access_iterator<int *>>();
-    test<bidirectional_iterator<const int *>, int *>();
+    test<BidirectionalIterator<const int *>, InputIterator<int *>>();
+    test<BidirectionalIterator<const int *>, ForwardIterator<int *>>();
+    test<BidirectionalIterator<const int *>, BidirectionalIterator<int *>>();
+    test<BidirectionalIterator<const int *>, RandomAccessIterator<int *>>();
+    test<BidirectionalIterator<const int *>, int *>();
 
-    test<random_access_iterator<const int *>, input_iterator<int *>>();
-    test<random_access_iterator<const int *>, forward_iterator<int *>>();
-    test<random_access_iterator<const int *>, bidirectional_iterator<int *>>();
-    test<random_access_iterator<const int *>, random_access_iterator<int *>>();
-    test<random_access_iterator<const int *>, int *>();
+    test<RandomAccessIterator<const int *>, InputIterator<int *>>();
+    test<RandomAccessIterator<const int *>, ForwardIterator<int *>>();
+    test<RandomAccessIterator<const int *>, BidirectionalIterator<int *>>();
+    test<RandomAccessIterator<const int *>, RandomAccessIterator<int *>>();
+    test<RandomAccessIterator<const int *>, int *>();
 
-    test<const int *, input_iterator<int *>>();
-    test<const int *, forward_iterator<int *>>();
-    test<const int *, bidirectional_iterator<int *>>();
-    test<const int *, random_access_iterator<int *>>();
+    test<const int *, InputIterator<int *>>();
+    test<const int *, ForwardIterator<int *>>();
+    test<const int *, BidirectionalIterator<int *>>();
+    test<const int *, RandomAccessIterator<int *>>();
     test<const int *, int *>();
 
     using ranges::partial_sum;
@@ -140,8 +140,8 @@ int main()
         int ib[s] = {0};
         auto r = partial_sum(ranges::begin(ia), ranges::begin(ia) + s, ranges::begin(ib),
                              std::plus<int>(), &S::i);
-        CHECK(base(std::get<0>(r)) == ia + s);
-        CHECK(base(std::get<1>(r)) == ib + s);
+        CHECK(base(r.in) == ia + s);
+        CHECK(base(r.out) == ib + s);
         for(unsigned i = 0; i < s; ++i)
         {
             CHECK(ib[i] == ir[i]);
@@ -154,8 +154,8 @@ int main()
         const unsigned s = sizeof(ir) / sizeof(ir[0]);
         int ib[s] = {0};
         auto r = partial_sum(ia, ranges::begin(ib), std::multiplies<int>());
-        CHECK(base(std::get<0>(r)) == ia + s);
-        CHECK(base(std::get<1>(r)) == ib + s);
+        CHECK(base(r.in) == ia + s);
+        CHECK(base(r.out) == ib + s);
         for(unsigned i = 0; i < s; ++i)
         {
             CHECK(ib[i] == ir[i]);
@@ -168,8 +168,8 @@ int main()
         const unsigned s = sizeof(ir) / sizeof(ir[0]);
         int ib[s] = {0};
         auto r = partial_sum(ia, ib, std::multiplies<int>());
-        CHECK(base(std::get<0>(r)) == ia + s);
-        CHECK(base(std::get<1>(r)) == ib + s);
+        CHECK(base(r.in) == ia + s);
+        CHECK(base(r.out) == ib + s);
         for(unsigned i = 0; i < s; ++i)
         {
             CHECK(ib[i] == ir[i]);
@@ -183,11 +183,11 @@ int main()
         int ir[] = {1, 2, 6, 24, 120};
         const unsigned s = sizeof(ir) / sizeof(ir[0]);
         int ic[s] = {0};
-        auto rng = view::zip(ia, ib);
+        auto rng = views::zip(ia, ib);
         using CR = iter_common_reference_t<iterator_t<decltype(rng)>>;
         auto r = partial_sum(rng, ic, std::multiplies<int>(), [](CR p) {return p.first;});
-        CHECK(base(std::get<0>(r)) == ranges::begin(rng) + s);
-        CHECK(base(std::get<1>(r)) == ic + s);
+        CHECK(base(r.in) == ranges::begin(rng) + s);
+        CHECK(base(r.out) == ic + s);
         for(unsigned i = 0; i < s; ++i)
         {
             CHECK(ic[i] == ir[i]);

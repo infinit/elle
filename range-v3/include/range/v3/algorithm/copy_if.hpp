@@ -13,62 +13,71 @@
 #ifndef RANGES_V3_ALGORITHM_COPY_IF_HPP
 #define RANGES_V3_ALGORITHM_COPY_IF_HPP
 
-#include <utility>
 #include <functional>
+#include <utility>
+
 #include <range/v3/range_fwd.hpp>
-#include <range/v3/begin_end.hpp>
-#include <range/v3/range_traits.hpp>
-#include <range/v3/range_concepts.hpp>
-#include <range/v3/utility/functional.hpp>
-#include <range/v3/utility/iterator_traits.hpp>
-#include <range/v3/utility/iterator_concepts.hpp>
+
+#include <range/v3/algorithm/result_types.hpp>
+#include <range/v3/functional/identity.hpp>
+#include <range/v3/functional/invoke.hpp>
+#include <range/v3/iterator/concepts.hpp>
+#include <range/v3/iterator/traits.hpp>
+#include <range/v3/range/access.hpp>
+#include <range/v3/range/concepts.hpp>
+#include <range/v3/range/dangling.hpp>
+#include <range/v3/range/traits.hpp>
 #include <range/v3/utility/static_const.hpp>
-#include <range/v3/utility/tagged_pair.hpp>
-#include <range/v3/algorithm/tagspec.hpp>
 
 namespace ranges
 {
-    inline namespace v3
-    {
-        /// \addtogroup group-algorithms
-        /// @{
-        struct copy_if_fn
+    /// \addtogroup group-algorithms
+    /// @{
+    template<typename I, typename O>
+    using copy_if_result = detail::in_out_result<I, O>;
+
+    RANGES_BEGIN_NIEBLOID(copy_if)
+
+        /// \brief function template \c copy_if
+        template<typename I, typename S, typename O, typename F, typename P = identity>
+        auto RANGES_FUN_NIEBLOID(copy_if)(I first, S last, O out, F pred, P proj = P{}) //
+            ->CPP_ret(copy_if_result<I, O>)(                                            //
+                requires input_iterator<I> && sentinel_for<S, I> &&
+                weakly_incrementable<O> && indirect_unary_predicate<F, projected<I, P>> &&
+                indirectly_copyable<I, O>)
         {
-            template<typename I, typename S, typename O, typename F, typename P = ident,
-                CONCEPT_REQUIRES_(InputIterator<I>() && Sentinel<S, I>() &&
-                    WeaklyIncrementable<O>() && IndirectPredicate<F, projected<I, P> >() &&
-                    IndirectlyCopyable<I, O>())>
-            tagged_pair<tag::in(I), tag::out(O)>
-            operator()(I begin, S end, O out, F pred, P proj = P{}) const
+            for(; first != last; ++first)
             {
-                for(; begin != end; ++begin)
+                auto && x = *first;
+                if(invoke(pred, invoke(proj, x)))
                 {
-                    auto &&x = *begin;
-                    if(invoke(pred, invoke(proj, x)))
-                    {
-                        *out = (decltype(x) &&) x;
-                        ++out;
-                    }
+                    *out = (decltype(x) &&)x;
+                    ++out;
                 }
-                return {begin, out};
             }
+            return {first, out};
+        }
 
-            template<typename Rng, typename O, typename F, typename P = ident,
-                typename I = iterator_t<Rng>,
-                CONCEPT_REQUIRES_(InputRange<Rng>() && WeaklyIncrementable<O>() &&
-                    IndirectPredicate<F, projected<I, P> >() && IndirectlyCopyable<I, O>())>
-            tagged_pair<tag::in(safe_iterator_t<Rng>), tag::out(O)>
-            operator()(Rng &&rng, O out, F pred, P proj = P{}) const
-            {
-                return (*this)(begin(rng), end(rng), std::move(out), std::move(pred), std::move(proj));
-            }
-        };
+        /// \overload
+        template<typename Rng, typename O, typename F, typename P = identity>
+        auto RANGES_FUN_NIEBLOID(copy_if)(Rng && rng, O out, F pred, P proj = P{})
+            ->CPP_ret(copy_if_result<safe_iterator_t<Rng>, O>)( //
+                requires input_range<Rng> && weakly_incrementable<O> &&
+                indirect_unary_predicate<F, projected<iterator_t<Rng>, P>> &&
+                indirectly_copyable<iterator_t<Rng>, O>)
+        {
+            return (*this)(
+                begin(rng), end(rng), std::move(out), std::move(pred), std::move(proj));
+        }
 
-        /// \sa `copy_if_fn`
-        /// \ingroup group-algorithms
-        RANGES_INLINE_VARIABLE(with_braced_init_args<copy_if_fn>, copy_if)
-        /// @}
-    } // namespace v3
+    RANGES_END_NIEBLOID(copy_if)
+
+    namespace cpp20
+    {
+        using ranges::copy_if;
+        using ranges::copy_if_result;
+    } // namespace cpp20
+    /// @}
 } // namespace ranges
 
 #endif // include guard

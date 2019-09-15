@@ -12,8 +12,8 @@ int main()
 #if !defined(__GNUC__) || defined(__clang__) || __GNUC__ > 4 || __GNUC_MINOR__ > 8
     std::string txt{"abc\ndef\tghi"};
     const std::regex rx{R"delim(([\w]+))delim"};
-    auto rng = txt | view::tokenize(rx,1);
-    const auto& crng = txt | view::tokenize(rx,1);
+    auto rng = txt | views::tokenize(rx,1);
+    const auto crng = txt | views::tokenize(rx,1);
 
     ::check_equal(rng, {"abc","def","ghi"});
     ::check_equal(crng, {"abc","def","ghi"});
@@ -21,20 +21,18 @@ int main()
     ::has_type<const std::sub_match<std::string::iterator>&>(*ranges::begin(rng));
     ::has_type<const std::sub_match<std::string::iterator>&>(*ranges::begin(crng));
 
-    ::models<concepts::BoundedRange>(rng);
-    ::models<concepts::ForwardRange>(rng);
-    ::models_not<concepts::BidirectionalRange>(rng);
-    ::models_not<concepts::SizedRange>(rng);
-    ::models_not<concepts::OutputRange>(rng);
+    CPP_assert(common_range<decltype(rng)>);
+    CPP_assert(forward_range<decltype(rng)>);
+    CPP_assert(!bidirectional_range<decltype(rng)>);
+    CPP_assert(!sized_range<decltype(rng)>);
 
-    ::models<concepts::BoundedRange>(crng);
-    ::models<concepts::ForwardRange>(crng);
-    ::models_not<concepts::BidirectionalRange>(crng);
-    ::models_not<concepts::SizedRange>(crng);
-    ::models_not<concepts::OutputRange>(crng);
+    CPP_assert(common_range<decltype(crng)>);
+    CPP_assert(forward_range<decltype(crng)>);
+    CPP_assert(!bidirectional_range<decltype(crng)>);
+    CPP_assert(!sized_range<decltype(crng)>);
 
-    ::models<concepts::View>(aux::copy(rng));
-    ::models<concepts::View>(aux::copy(crng));
+    CPP_assert(view_<decltype(rng)>);
+    CPP_assert(!view_<decltype(crng)>);
 #endif
 
     return test_result();

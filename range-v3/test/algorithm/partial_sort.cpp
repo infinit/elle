@@ -51,8 +51,8 @@ namespace
         for(int i = 0; i < N; ++i)
             array[i] = i;
 
-        using I = random_access_iterator<int*>;
-        using S = sentinel<int*>;
+        using I = RandomAccessIterator<int*>;
+        using S = Sentinel<int*>;
 
         std::shuffle(array, array+N, gen);
         int *res = ranges::partial_sort(array, array+M, array+N);
@@ -67,26 +67,26 @@ namespace
             CHECK(array[i] == i);
 
         std::shuffle(array, array+N, gen);
-        res = ranges::partial_sort(::as_lvalue(ranges::make_iterator_range(array, array+N)), array+M);
+        res = ranges::partial_sort(ranges::make_subrange(array, array+N), array+M);
         CHECK(res == array+N);
         for(int i = 0; i < M; ++i)
             CHECK(array[i] == i);
 
         std::shuffle(array, array+N, gen);
-        res2 = ranges::partial_sort(::as_lvalue(ranges::make_iterator_range(I{array}, S{array+N})), I{array+M});
+        res2 = ranges::partial_sort(ranges::make_subrange(I{array}, S{array+N}), I{array+M});
         CHECK(res2.base() == array+N);
         for(int i = 0; i < M; ++i)
             CHECK(array[i] == i);
 
         std::shuffle(array, array+N, gen);
-        auto res3 = ranges::partial_sort(ranges::make_iterator_range(array, array+N), array+M);
-        CHECK(res3.get_unsafe() == array+N);
+        auto res3 = ranges::partial_sort(::MakeTestRange(array, array+N), array+M);
+        CHECK(::is_dangling(res3));
         for(int i = 0; i < M; ++i)
             CHECK(array[i] == i);
 
         std::shuffle(array, array+N, gen);
-        auto res4 = ranges::partial_sort(ranges::make_iterator_range(I{array}, S{array+N}), I{array+M});
-        CHECK(res4.get_unsafe().base() == array+N);
+        auto res4 = ranges::partial_sort(::MakeTestRange(I{array}, S{array+N}), I{array+M});
+        CHECK(::is_dangling(res4));
         for(int i = 0; i < M; ++i)
             CHECK(array[i] == i);
 
@@ -103,13 +103,13 @@ namespace
             CHECK(array[i] == N-i-1);
 
         std::shuffle(array, array+N, gen);
-        res = ranges::partial_sort(::as_lvalue(ranges::make_iterator_range(array, array+N)), array+M, std::greater<int>());
+        res = ranges::partial_sort(ranges::make_subrange(array, array+N), array+M, std::greater<int>());
         CHECK(res == array+N);
         for(int i = 0; i < M; ++i)
             CHECK(array[i] == N-i-1);
 
         std::shuffle(array, array+N, gen);
-        res2 = ranges::partial_sort(::as_lvalue(ranges::make_iterator_range(I{array}, S{array+N})), I{array+M}, std::greater<int>());
+        res2 = ranges::partial_sort(ranges::make_subrange(I{array}, S{array+N}), I{array+M}, std::greater<int>());
         CHECK(res2.base() == array+N);
         for(int i = 0; i < M; ++i)
             CHECK(array[i] == N-i-1);
@@ -156,26 +156,26 @@ int main()
     // Check move-only types
     {
         std::vector<std::unique_ptr<int> > v(1000);
-        for(int i = 0; i < (int)v.size(); ++i)
-            v[i].reset(new int((int)v.size() - i - 1));
+        for(int j = 0; j < (int)v.size(); ++j)
+            v[j].reset(new int((int)v.size() - j - 1));
         ranges::partial_sort(v, v.begin() + v.size()/2, indirect_less());
-        for(int i = 0; i < (int)v.size()/2; ++i)
-            CHECK(*v[i] == i);
+        for(int j = 0; j < (int)v.size()/2; ++j)
+            CHECK(*v[j] == j);
     }
 
     // Check projections
     {
         std::vector<S> v(1000, S{});
-        for(int i = 0; (std::size_t)i < v.size(); ++i)
+        for(int j = 0; (std::size_t)j < v.size(); ++j)
         {
-            v[i].i = (int)v.size() - i - 1;
-            v[i].j = i;
+            v[j].i = (int)v.size() - j - 1;
+            v[j].j = j;
         }
         ranges::partial_sort(v, v.begin() + v.size()/2, std::less<int>{}, &S::i);
-        for(int i = 0; (std::size_t)i < v.size()/2; ++i)
+        for(int j = 0; (std::size_t)j < v.size()/2; ++j)
         {
-            CHECK(v[i].i == i);
-            CHECK((std::size_t)v[i].j == v.size() - i - 1);
+            CHECK(v[j].i == j);
+            CHECK((std::size_t)v[j].j == v.size() - j - 1);
         }
     }
 

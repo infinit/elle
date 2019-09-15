@@ -14,52 +14,57 @@
 #define RANGES_V3_ALGORITHM_GENERATE_HPP
 
 #include <utility>
+
 #include <range/v3/range_fwd.hpp>
-#include <range/v3/begin_end.hpp>
-#include <range/v3/range_concepts.hpp>
-#include <range/v3/range_traits.hpp>
-#include <range/v3/utility/iterator_concepts.hpp>
+
+#include <range/v3/algorithm/result_types.hpp>
+#include <range/v3/functional/invoke.hpp>
+#include <range/v3/functional/reference_wrapper.hpp>
+#include <range/v3/iterator/concepts.hpp>
+#include <range/v3/range/access.hpp>
+#include <range/v3/range/concepts.hpp>
+#include <range/v3/range/dangling.hpp>
+#include <range/v3/range/traits.hpp>
 #include <range/v3/utility/static_const.hpp>
-#include <range/v3/utility/tagged_pair.hpp>
-#include <range/v3/algorithm/tagspec.hpp>
 
 namespace ranges
 {
-    inline namespace v3
-    {
-        /// \addtogroup group-algorithms
-        /// @{
-        struct generate_fn
+    /// \addtogroup group-algorithms
+    /// @{
+    template<typename O, typename F>
+    using generate_result = detail::out_fun_result<O, F>;
+
+    RANGES_BEGIN_NIEBLOID(generate)
+
+        /// \brief function template \c generate_n
+        template<typename O, typename S, typename F>
+        auto RANGES_FUN_NIEBLOID(generate)(O first, S last, F fun) //
+            ->CPP_ret(generate_result<O, F>)(                      //
+                requires invocable<F &> && output_iterator<O, invoke_result_t<F &>> &&
+                sentinel_for<S, O>)
         {
-            template<typename O, typename S, typename F,
-                CONCEPT_REQUIRES_(Invocable<F &>() &&
-                    OutputIterator<O, invoke_result_t<F &>>() &&
-                    Sentinel<S, O>())>
-            tagged_pair<tag::out(O), tag::fun(F)>
-            operator()(O begin, S end, F fun) const
-            {
-                for(; begin != end; ++begin)
-                    *begin = invoke(fun);
-                return {detail::move(begin), detail::move(fun)};
-            }
+            for(; first != last; ++first)
+                *first = invoke(fun);
+            return {detail::move(first), detail::move(fun)};
+        }
 
-            template<typename Rng, typename F,
-                typename O = iterator_t<Rng>,
-                CONCEPT_REQUIRES_(Invocable<F &>() &&
-                    OutputRange<Rng, invoke_result_t<F &>>())>
-            tagged_pair<tag::out(safe_iterator_t<Rng>), tag::fun(F)>
-            operator()(Rng &&rng, F fun) const
-            {
-                return {(*this)(begin(rng), end(rng), ref(fun)).out(),
-                    detail::move(fun)};
-            }
-        };
+        /// \overload
+        template<typename Rng, typename F>
+        auto RANGES_FUN_NIEBLOID(generate)(Rng && rng, F fun)
+            ->CPP_ret(generate_result<safe_iterator_t<Rng>, F>)( //
+                requires invocable<F &> && output_range<Rng, invoke_result_t<F &>>)
+        {
+            return {(*this)(begin(rng), end(rng), ref(fun)).out, detail::move(fun)};
+        }
 
-        /// \sa `generate_fn`
-        /// \ingroup group-algorithms
-        RANGES_INLINE_VARIABLE(with_braced_init_args<generate_fn>, generate)
-        /// @}
-    } // namespace v3
+    RANGES_END_NIEBLOID(generate)
+
+    namespace cpp20
+    {
+        using ranges::generate;
+        using ranges::generate_result;
+    } // namespace cpp20
+    /// @}
 } // namespace ranges
 
 #endif // include guard

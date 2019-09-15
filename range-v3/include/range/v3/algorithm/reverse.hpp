@@ -14,67 +14,76 @@
 #define RANGES_V3_ALGORITHM_REVERSE_HPP
 
 #include <range/v3/range_fwd.hpp>
-#include <range/v3/begin_end.hpp>
-#include <range/v3/range_concepts.hpp>
-#include <range/v3/range_traits.hpp>
-#include <range/v3/utility/iterator.hpp>
-#include <range/v3/utility/iterator_concepts.hpp>
-#include <range/v3/utility/iterator_traits.hpp>
-#include <range/v3/utility/swap.hpp>
+
+#include <range/v3/iterator/concepts.hpp>
+#include <range/v3/iterator/operations.hpp>
+#include <range/v3/iterator/traits.hpp>
+#include <range/v3/range/access.hpp>
+#include <range/v3/range/concepts.hpp>
+#include <range/v3/range/dangling.hpp>
+#include <range/v3/range/traits.hpp>
 #include <range/v3/utility/static_const.hpp>
+#include <range/v3/utility/swap.hpp>
 
 namespace ranges
 {
-    inline namespace v3
+    /// \addtogroup group-algorithms
+    /// @{
+
+    /// \cond
+    namespace detail
     {
-        /// \addtogroup group-algorithms
-        /// @{
-        struct reverse_fn
+        template<typename I>
+        void reverse_impl(I first, I last, detail::bidirectional_iterator_tag_)
         {
-        private:
-            template<typename I>
-            static void impl(I begin, I end, concepts::BidirectionalIterator*)
+            while(first != last)
             {
-                while(begin != end)
-                {
-                    if(begin == --end)
-                        break;
-                    ranges::iter_swap(begin, end);
-                    ++begin;
-                }
+                if(first == --last)
+                    break;
+                ranges::iter_swap(first, last);
+                ++first;
             }
+        }
 
-            template<typename I>
-            static void impl(I begin, I end, concepts::RandomAccessIterator*)
-            {
-                if(begin != end)
-                    for(; begin < --end; ++begin)
-                        ranges::iter_swap(begin, end);
-            }
+        template<typename I>
+        void reverse_impl(I first, I last, detail::random_access_iterator_tag_)
+        {
+            if(first != last)
+                for(; first < --last; ++first)
+                    ranges::iter_swap(first, last);
+        }
+    } // namespace detail
+    /// \endcond
 
-        public:
-            template<typename I, typename S,
-                CONCEPT_REQUIRES_(BidirectionalIterator<I>() && Sentinel<S, I>() && Permutable<I>())>
-            I operator()(I begin, S end_) const
-            {
-                I end = ranges::next(begin, end_);
-                reverse_fn::impl(begin, end, iterator_concept<I>{});
-                return end;
-            }
+    RANGES_BEGIN_NIEBLOID(reverse)
 
-            template<typename Rng, typename I = iterator_t<Rng>,
-                CONCEPT_REQUIRES_(BidirectionalRange<Rng>() && Permutable<I>())>
-            safe_iterator_t<Rng> operator()(Rng &&rng) const
-            {
-                return (*this)(begin(rng), end(rng));
-            }
-        };
+        /// \brief function template \c reverse
+        template<typename I, typename S>
+        auto RANGES_FUN_NIEBLOID(reverse)(I first, S end_) //
+            ->CPP_ret(I)(                                  //
+                requires bidirectional_iterator<I> && sentinel_for<S, I> && permutable<I>)
+        {
+            I last = ranges::next(first, end_);
+            detail::reverse_impl(first, last, iterator_tag_of<I>{});
+            return last;
+        }
 
-        /// \sa `reverse_fn`
-        /// \ingroup group-algorithms
-        RANGES_INLINE_VARIABLE(with_braced_init_args<reverse_fn>, reverse)
-        /// @}
-    } // namespace v3
+        /// \overload
+        template<typename Rng, typename I = iterator_t<Rng>>
+        auto RANGES_FUN_NIEBLOID(reverse)(Rng && rng) //
+            ->CPP_ret(safe_iterator_t<Rng>)(          //
+                requires bidirectional_range<Rng> && permutable<I>)
+        {
+            return (*this)(begin(rng), end(rng));
+        }
+
+    RANGES_END_NIEBLOID(reverse)
+
+    namespace cpp20
+    {
+        using ranges::reverse;
+    }
+    /// @}
 } // namespace ranges
 
 #endif // include guard

@@ -29,23 +29,23 @@ int main()
     using namespace ranges;
     std::mt19937 gen;
 
-    std::vector<int> v = view::ints(0,100);
-    v |= action::shuffle(gen);
+    auto v = views::ints(0,100) | to<std::vector>();
+    v |= actions::shuffle(gen);
     CHECK(!is_sorted(v));
 
-    auto v2 = v | copy | action::sort;
+    auto v2 = v | copy | actions::sort;
     CHECK(size(v2) == size(v));
     CHECK(is_sorted(v2));
     CHECK(!is_sorted(v));
-    ::models<concepts::Same>(v, v2);
+    CPP_assert(same_as<decltype(v), decltype(v2)>);
 
-    v |= action::sort;
+    v |= actions::sort;
     CHECK(is_sorted(v));
 
-    v |= action::shuffle(gen);
+    v |= actions::shuffle(gen);
     CHECK(!is_sorted(v));
 
-    v = v | move | action::sort(std::less<int>());
+    v = v | move | actions::sort(std::less<int>());
     CHECK(is_sorted(v));
     CHECK(equal(v, v2));
 
@@ -53,17 +53,17 @@ int main()
     // in which case they take and return by reference
     shuffle(v, gen);
     CHECK(!is_sorted(v));
-    auto & v3 = action::sort(v);
+    auto & v3 = actions::sort(v);
     CHECK(is_sorted(v));
     CHECK(&v3 == &v);
 
-    auto ref=std::ref(v);
-    ref |= action::sort;
+    auto r = views::ref(v);
+    r |= actions::sort;
 
     // Can pipe a view to a "container" algorithm.
-    action::sort(v, std::greater<int>());
-    v | view::stride(2) | action::sort;
-    check_equal(view::take(v, 10), {1,98,3,96,5,94,7,92,9,90});
+    actions::sort(v, std::greater<int>());
+    v | views::stride(2) | actions::sort;
+    check_equal(views::take(v, 10), {1,98,3,96,5,94,7,92,9,90});
 
     return ::test_result();
 }

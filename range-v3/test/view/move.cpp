@@ -15,7 +15,7 @@
 #include <range/v3/core.hpp>
 #include <range/v3/view/move.hpp>
 #include <range/v3/algorithm/copy.hpp>
-#include <range/v3/utility/iterator.hpp>
+#include <range/v3/iterator/operations.hpp>
 #include <range/v3/utility/copy.hpp>
 #include "../simple_test.hpp"
 #include "../test_utils.hpp"
@@ -25,30 +25,37 @@ int main()
     using namespace ranges;
     static const char * const data[] = {"'allo", "'allo", "???"};
     std::vector<MoveOnlyString> vs(begin(data), end(data));
-
-    auto x = vs | view::move;
-    CONCEPT_ASSERT(Same<bounded_view_concept_t<decltype(x)>, concepts::BoundedView>());
-    CONCEPT_ASSERT(Same<sized_view_concept_t<decltype(x)>, concepts::SizedView>());
-    ::models<concepts::BoundedView>(aux::copy(x));
-    ::models<concepts::SizedView>(aux::copy(x));
-    ::models<concepts::RandomAccessIterator>(x.begin());
-    using I = decltype(x.begin());
-    CONCEPT_ASSERT(Same<iterator_concept_t<I>, concepts::RandomAccessIterator>());
-    CONCEPT_ASSERT(Same<iterator_category_t<I>, ranges::random_access_iterator_tag>());
-
-    CHECK(bool(*x.begin() == "'allo"));
-
-    std::vector<MoveOnlyString> vs2(x.begin(), x.end());
-    static_assert(std::is_same<MoveOnlyString&&, decltype(*x.begin())>::value, "");
-    ::check_equal(vs2, {"'allo", "'allo", "???"});
-    ::check_equal(vs, {"", "", ""});
+    auto x = vs | views::move;
 
     {
-        MoveOnlyString data[] = {"can", "you", "hear", "me", "now?"};
-        auto rng = debug_input_view<MoveOnlyString>{data} | view::move;
-        MoveOnlyString target[sizeof(data) / sizeof(data[0])];
+        CPP_assert(common_range<decltype(x)>);
+        CPP_assert(sized_range<decltype(x)>);
+        CPP_assert(view_<decltype(x)>);
+        CPP_assert(common_range<decltype(x)>);
+        CPP_assert(sized_range<decltype(x)>);
+        CPP_assert(random_access_iterator<decltype(x.begin())>);
+        using I = decltype(x.begin());
+        CPP_assert(same_as<iterator_tag_of<I>, ranges::detail::random_access_iterator_tag_>);
+        CPP_assert(same_as<
+            typename std::iterator_traits<I>::iterator_category,
+            std::random_access_iterator_tag>);
+
+        CHECK(bool(*x.begin() == "'allo"));
+    }
+
+    {
+        std::vector<MoveOnlyString> vs2(x.begin(), x.end());
+        static_assert(std::is_same<MoveOnlyString&&, decltype(*x.begin())>::value, "");
+        ::check_equal(vs2, {"'allo", "'allo", "???"});
+        ::check_equal(vs, {"", "", ""});
+    }
+
+    {
+        MoveOnlyString rgs[] = {"can", "you", "hear", "me", "now?"};
+        auto rng = debug_input_view<MoveOnlyString>{rgs} | views::move;
+        MoveOnlyString target[sizeof(rgs) / sizeof(rgs[0])];
         copy(rng, target);
-        ::check_equal(data, {"", "", "", "", ""});
+        ::check_equal(rgs, {"", "", "", "", ""});
         ::check_equal(target, {"can", "you", "hear", "me", "now?"});
     }
 

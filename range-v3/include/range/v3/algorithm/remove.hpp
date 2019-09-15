@@ -14,66 +14,66 @@
 #define RANGES_V3_ALGORITHM_REMOVE_HPP
 
 #include <meta/meta.hpp>
+
 #include <range/v3/range_fwd.hpp>
-#include <range/v3/begin_end.hpp>
-#include <range/v3/range_concepts.hpp>
-#include <range/v3/range_traits.hpp>
-#include <range/v3/utility/iterator.hpp>
-#include <range/v3/utility/iterator_concepts.hpp>
-#include <range/v3/utility/iterator_traits.hpp>
-#include <range/v3/utility/functional.hpp>
+
 #include <range/v3/algorithm/find.hpp>
+#include <range/v3/functional/identity.hpp>
+#include <range/v3/functional/invoke.hpp>
+#include <range/v3/iterator/concepts.hpp>
+#include <range/v3/iterator/operations.hpp>
+#include <range/v3/iterator/traits.hpp>
+#include <range/v3/range/access.hpp>
+#include <range/v3/range/concepts.hpp>
+#include <range/v3/range/dangling.hpp>
+#include <range/v3/range/traits.hpp>
 #include <range/v3/utility/static_const.hpp>
 
 namespace ranges
 {
-    inline namespace v3
-    {
-        /// \ingroup group-concepts
-        template<typename I, typename T, typename P = ident>
-        using Removable = meta::strict_and<
-            ForwardIterator<I>,
-            IndirectRelation<equal_to, projected<I, P>, T const *>,
-            Permutable<I>>;
+    /// \addtogroup group-algorithms
+    /// @{
+    RANGES_BEGIN_NIEBLOID(remove)
 
-        /// \addtogroup group-algorithms
-        /// @{
-        struct remove_fn
+        /// \brief function template \c remove
+        template<typename I, typename S, typename T, typename P = identity>
+        auto RANGES_FUN_NIEBLOID(remove)(I first, S last, T const & val, P proj = P{}) //
+            ->CPP_ret(I)(                                                              //
+                requires permutable<I> && sentinel_for<S, I> &&
+                indirect_relation<equal_to, projected<I, P>, T const *>)
         {
-            template<typename I, typename S, typename T, typename P = ident,
-                CONCEPT_REQUIRES_(Removable<I, T, P>() && Sentinel<S, I>())>
-            I operator()(I begin, S end, T const &val, P proj = P{}) const
+            first = find(std::move(first), last, val, std::ref(proj));
+            if(first != last)
             {
-                begin = find(std::move(begin), end, val, std::ref(proj));
-                if(begin != end)
+                for(I i = next(first); i != last; ++i)
                 {
-                    for(I i = next(begin); i != end; ++i)
+                    if(!(invoke(proj, *i) == val))
                     {
-                        if(!(invoke(proj, *i) == val))
-                        {
-                            *begin = iter_move(i);
-                            ++begin;
-                        }
+                        *first = iter_move(i);
+                        ++first;
                     }
                 }
-                return begin;
             }
+            return first;
+        }
 
-            template<typename Rng, typename T, typename P = ident,
-                typename I = iterator_t<Rng>,
-                CONCEPT_REQUIRES_(Removable<I, T, P>() && ForwardRange<Rng>())>
-            safe_iterator_t<Rng> operator()(Rng &&rng, T const &val, P proj = P{}) const
-            {
-                return (*this)(begin(rng), end(rng), val, std::move(proj));
-            }
-        };
+        /// \overload
+        template<typename Rng, typename T, typename P = identity>
+        auto RANGES_FUN_NIEBLOID(remove)(Rng && rng, T const & val, P proj = P{})
+            ->CPP_ret(safe_iterator_t<Rng>)( //
+                requires forward_range<Rng> && permutable<iterator_t<Rng>> &&
+                indirect_relation<equal_to, projected<iterator_t<Rng>, P>, T const *>)
+        {
+            return (*this)(begin(rng), end(rng), val, std::move(proj));
+        }
 
-        /// \sa `remove_fn`
-        /// \ingroup group-algorithms
-        RANGES_INLINE_VARIABLE(with_braced_init_args<remove_fn>, remove)
+    RANGES_END_NIEBLOID(remove)
 
-        /// @}
-    } // namespace v3
+    namespace cpp20
+    {
+        using ranges::remove;
+    }
+    /// @}
 } // namespace ranges
 
 #endif // include guard

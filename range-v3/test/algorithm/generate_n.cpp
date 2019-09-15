@@ -21,6 +21,7 @@
 #include <vector>
 #include <range/v3/core.hpp>
 #include <range/v3/algorithm/generate_n.hpp>
+#include <range/v3/iterator/insert_iterators.hpp>
 #include "../simple_test.hpp"
 #include "../test_utils.hpp"
 #include "../test_iterators.hpp"
@@ -39,13 +40,13 @@ test()
 {
     const unsigned n = 4;
     int ia[n] = {0};
-    std::pair<Iter, gen_test> res = ranges::generate_n(Iter(ia), n, gen_test(1));
+    ranges::generate_n_result<Iter, gen_test> res = ranges::generate_n(Iter(ia), n, gen_test(1));
     CHECK(ia[0] == 1);
     CHECK(ia[1] == 2);
     CHECK(ia[2] == 3);
     CHECK(ia[3] == 4);
-    CHECK(res.first == Iter(ia + n));
-    CHECK(res.second.i_ == 5);
+    CHECK(res.out == Iter(ia + n));
+    CHECK(res.fun.i_ == 5);
 }
 
 void test2()
@@ -63,14 +64,14 @@ void test2()
 
 int main()
 {
-    test<forward_iterator<int*> >();
-    test<bidirectional_iterator<int*> >();
-    test<random_access_iterator<int*> >();
+    test<ForwardIterator<int*> >();
+    test<BidirectionalIterator<int*> >();
+    test<RandomAccessIterator<int*> >();
     test<int*>();
 
-    test<forward_iterator<int*>, sentinel<int*> >();
-    test<bidirectional_iterator<int*>, sentinel<int*> >();
-    test<random_access_iterator<int*>, sentinel<int*> >();
+    test<ForwardIterator<int*>, Sentinel<int*> >();
+    test<BidirectionalIterator<int*>, Sentinel<int*> >();
+    test<RandomAccessIterator<int*>, Sentinel<int*> >();
 
     test2();
 

@@ -37,9 +37,10 @@ test()
             ia[i] = i;
         int ib[N] = {0};
 
-        std::pair<InIter, OutIter> r = ranges::move_backward(InIter(ia), InIter(ia+N), OutIter(ib+N));
-        CHECK(base(r.first) == ia+N);
-        CHECK(base(r.second) == ib);
+        ranges::move_backward_result<InIter, OutIter> r =
+            ranges::move_backward(InIter(ia), InIter(ia+N), OutIter(ib+N));
+        CHECK(base(r.in) == ia+N);
+        CHECK(base(r.out) == ib);
         for(int i = 0; i < N; ++i)
             CHECK(ia[i] == ib[i]);
     }
@@ -51,9 +52,10 @@ test()
             ia[i] = i;
         int ib[N] = {0};
 
-        std::pair<InIter, OutIter> r = ranges::move_backward(as_lvalue(ranges::make_iterator_range(InIter(ia), InIter(ia+N))), OutIter(ib+N));
-        CHECK(base(r.first) == ia+N);
-        CHECK(base(r.second) == ib);
+        ranges::move_backward_result<InIter, OutIter> r =
+            ranges::move_backward(ranges::make_subrange(InIter(ia), InIter(ia+N)), OutIter(ib+N));
+        CHECK(base(r.in) == ia+N);
+        CHECK(base(r.out) == ib);
         for(int i = 0; i < N; ++i)
             CHECK(ia[i] == ib[i]);
     }
@@ -75,9 +77,10 @@ test1()
             ia[i].reset(new int(i));
         std::unique_ptr<int> ib[N];
 
-        std::pair<InIter, OutIter> r = ranges::move_backward(InIter(ia), InIter(ia+N), OutIter(ib+N));
-        CHECK(base(r.first) == ia+N);
-        CHECK(base(r.second) == ib);
+        ranges::move_backward_result<InIter, OutIter> r =
+            ranges::move_backward(InIter(ia), InIter(ia+N), OutIter(ib+N));
+        CHECK(base(r.in) == ia+N);
+        CHECK(base(r.out) == ib);
         for(int i = 0; i < N; ++i)
         {
             CHECK(ia[i].get() == nullptr);
@@ -92,9 +95,10 @@ test1()
             ia[i].reset(new int(i));
         std::unique_ptr<int> ib[N];
 
-        std::pair<InIter, OutIter> r = ranges::move_backward(as_lvalue(ranges::make_iterator_range(InIter(ia), InIter(ia+N))), OutIter(ib+N));
-        CHECK(base(r.first) == ia+N);
-        CHECK(base(r.second) == ib);
+        ranges::move_backward_result<InIter, OutIter> r =
+            ranges::move_backward(ranges::make_subrange(InIter(ia), InIter(ia+N)), OutIter(ib+N));
+        CHECK(base(r.in) == ia+N);
+        CHECK(base(r.out) == ib);
         for(int i = 0; i < N; ++i)
         {
             CHECK(ia[i].get() == nullptr);
@@ -103,9 +107,9 @@ test1()
 
         ranges::move_backward(ib, ib+N, ia+N);
 
-        auto r2 = ranges::move_backward(ranges::make_iterator_range(InIter(ia), InIter(ia+N)), OutIter(ib+N));
-        CHECK(base(r2.first.get_unsafe()) == ia+N);
-        CHECK(base(r2.second) == ib);
+        auto r2 = ranges::move_backward(ranges::make_subrange(InIter(ia), InIter(ia+N)), OutIter(ib+N));
+        CHECK(base(r2.in) == ia+N);
+        CHECK(base(r2.out) == ib);
         for(int i = 0; i < N; ++i)
         {
             CHECK(ia[i].get() == nullptr);
@@ -116,28 +120,28 @@ test1()
 
 int main()
 {
-    test<bidirectional_iterator<const int*>, bidirectional_iterator<int*> >();
-    test<bidirectional_iterator<const int*>, random_access_iterator<int*> >();
-    test<bidirectional_iterator<const int*>, int*>();
+    test<BidirectionalIterator<const int*>, BidirectionalIterator<int*> >();
+    test<BidirectionalIterator<const int*>, RandomAccessIterator<int*> >();
+    test<BidirectionalIterator<const int*>, int*>();
 
-    test<random_access_iterator<const int*>, bidirectional_iterator<int*> >();
-    test<random_access_iterator<const int*>, random_access_iterator<int*> >();
-    test<random_access_iterator<const int*>, int*>();
+    test<RandomAccessIterator<const int*>, BidirectionalIterator<int*> >();
+    test<RandomAccessIterator<const int*>, RandomAccessIterator<int*> >();
+    test<RandomAccessIterator<const int*>, int*>();
 
-    test<const int*, bidirectional_iterator<int*> >();
-    test<const int*, random_access_iterator<int*> >();
+    test<const int*, BidirectionalIterator<int*> >();
+    test<const int*, RandomAccessIterator<int*> >();
     test<const int*, int*>();
 
-    test1<bidirectional_iterator<std::unique_ptr<int>*>, bidirectional_iterator<std::unique_ptr<int>*> >();
-    test1<bidirectional_iterator<std::unique_ptr<int>*>, random_access_iterator<std::unique_ptr<int>*> >();
-    test1<bidirectional_iterator<std::unique_ptr<int>*>, std::unique_ptr<int>*>();
+    test1<BidirectionalIterator<std::unique_ptr<int>*>, BidirectionalIterator<std::unique_ptr<int>*> >();
+    test1<BidirectionalIterator<std::unique_ptr<int>*>, RandomAccessIterator<std::unique_ptr<int>*> >();
+    test1<BidirectionalIterator<std::unique_ptr<int>*>, std::unique_ptr<int>*>();
 
-    test1<random_access_iterator<std::unique_ptr<int>*>, bidirectional_iterator<std::unique_ptr<int>*> >();
-    test1<random_access_iterator<std::unique_ptr<int>*>, random_access_iterator<std::unique_ptr<int>*> >();
-    test1<random_access_iterator<std::unique_ptr<int>*>, std::unique_ptr<int>*>();
+    test1<RandomAccessIterator<std::unique_ptr<int>*>, BidirectionalIterator<std::unique_ptr<int>*> >();
+    test1<RandomAccessIterator<std::unique_ptr<int>*>, RandomAccessIterator<std::unique_ptr<int>*> >();
+    test1<RandomAccessIterator<std::unique_ptr<int>*>, std::unique_ptr<int>*>();
 
-    test1<std::unique_ptr<int>*, bidirectional_iterator<std::unique_ptr<int>*> >();
-    test1<std::unique_ptr<int>*, random_access_iterator<std::unique_ptr<int>*> >();
+    test1<std::unique_ptr<int>*, BidirectionalIterator<std::unique_ptr<int>*> >();
+    test1<std::unique_ptr<int>*, RandomAccessIterator<std::unique_ptr<int>*> >();
     test1<std::unique_ptr<int>*, std::unique_ptr<int>*>();
 
     return test_result();

@@ -18,102 +18,118 @@
 #define RANGES_V3_NUMERIC_ADJACENT_DIFFERENCE_HPP
 
 #include <meta/meta.hpp>
-#include <range/v3/begin_end.hpp>
-#include <range/v3/range_traits.hpp>
-#include <range/v3/range_concepts.hpp>
-#include <range/v3/algorithm/tagspec.hpp>
-#include <range/v3/utility/functional.hpp>
-#include <range/v3/utility/iterator_traits.hpp>
-#include <range/v3/utility/iterator_concepts.hpp>
+
+#include <range/v3/algorithm/result_types.hpp>
+#include <range/v3/functional/arithmetic.hpp>
+#include <range/v3/functional/identity.hpp>
+#include <range/v3/functional/invoke.hpp>
+#include <range/v3/iterator/concepts.hpp>
+#include <range/v3/iterator/traits.hpp>
+#include <range/v3/iterator/unreachable_sentinel.hpp>
+#include <range/v3/range/access.hpp>
+#include <range/v3/range/concepts.hpp>
+#include <range/v3/range/dangling.hpp>
+#include <range/v3/range/traits.hpp>
 #include <range/v3/utility/static_const.hpp>
-#include <range/v3/utility/unreachable.hpp>
 
 namespace ranges
 {
-    inline namespace v3
+    /// \addtogroup group-numerics
+    /// @{
+    // clang-format off
+    CPP_def
+    (
+        template(typename I, typename O, typename BOp = minus, typename P = identity)
+        (concept differenceable)(I, O, BOp, P),
+            input_iterator<I> &&
+            invocable<P&, iter_value_t<I>> &&
+            copy_constructible<uncvref_t<invoke_result_t<P&, iter_value_t<I>>>> &&
+            movable<uncvref_t<invoke_result_t<P&, iter_value_t<I>>>> &&
+            output_iterator<O, invoke_result_t<P&, iter_value_t<I>>> &&
+            invocable<BOp&, invoke_result_t<P&, iter_value_t<I>>, invoke_result_t<P&, iter_value_t<I>>> &&
+            output_iterator<O, invoke_result_t<BOp&, invoke_result_t<P&, iter_value_t<I>>, invoke_result_t<P&, iter_value_t<I>>>>
+    );
+    // clang-format on
+
+    template<typename I, typename O>
+    using adjacent_difference_result = detail::in_out_result<I, O>;
+
+    struct adjacent_difference_fn
     {
-        template<typename I, typename O, typename BOp = minus, typename P = ident,
-            typename V = value_type_t<I>,
-            typename X = concepts::Invocable::result_t<P&, V>,
-            typename Y = concepts::Invocable::result_t<BOp&, X, X>>
-        using AdjacentDifferentiable = meta::strict_and<
-            InputIterator<I>,
-            OutputIterator<O, X>,
-            OutputIterator<O, Y>,
-            Invocable<P&, V>,
-            Invocable<BOp&, X, X>,
-            CopyConstructible<uncvref_t<X>>,
-            Movable<uncvref_t<X>>>;
-
-        struct adjacent_difference_fn
+        template<typename I, typename S, typename O, typename S2, typename BOp = minus,
+                 typename P = identity>
+        auto operator()(I first, S last, O result, S2 end_result, BOp bop = BOp{},
+                        P proj = P{}) const
+            -> CPP_ret(adjacent_difference_result<I, O>)( //
+                requires sentinel_for<S, I> && sentinel_for<S2, O> &&
+                    differenceable<I, O, BOp, P>)
         {
-            template<typename I, typename S, typename O, typename S2,
-                typename BOp = minus, typename P = ident,
-                CONCEPT_REQUIRES_(Sentinel<S, I>() && Sentinel<S2, O>() &&
-                    AdjacentDifferentiable<I, O, BOp, P>())>
-            tagged_pair<tag::in(I), tag::out(O)>
-            operator()(I begin, S end, O result, S2 end_result, BOp bop = BOp{},
-                       P proj = P{}) const
-            {
-                // BUGBUG think about the use of coerce here.
-                using V = value_type_t<I>;
-                using X = concepts::Invocable::result_t<P&, V>;
-                coerce<V> v;
-                coerce<X> x;
+            // BUGBUG think about the use of coerce here.
+            using V = iter_value_t<I>;
+            using X = invoke_result_t<P &, V>;
+            coerce<V> v;
+            coerce<X> x;
 
-                if(begin != end && result != end_result)
+            if(first != last && result != end_result)
+            {
+                auto t1(x(invoke(proj, v(*first))));
+                *result = t1;
+                for(++first, ++result; first != last && result != end_result;
+                    ++first, ++result)
                 {
-                    auto t1(x(invoke(proj, v(*begin))));
-                    *result = t1;
-                    for(++begin, ++result; begin != end && result != end_result;
-                        ++begin, ++result)
-                    {
-                        auto t2(x(invoke(proj, v(*begin))));
-                        *result = invoke(bop, t2, t1);
-                        t1 = std::move(t2);
-                    }
+                    auto t2(x(invoke(proj, v(*first))));
+                    *result = invoke(bop, t2, t1);
+                    t1 = std::move(t2);
                 }
-                return {begin, result};
             }
+            return {first, result};
+        }
 
-            template<typename I, typename S, typename O, typename BOp = minus,
-                typename P = ident,
-                CONCEPT_REQUIRES_(Sentinel<S, I>() &&
-                    AdjacentDifferentiable<I, O, BOp, P>())>
-            tagged_pair<tag::in(I), tag::out(O)>
-            operator()(I begin, S end, O result, BOp bop = BOp{}, P proj = P{}) const
-            {
-                return (*this)(std::move(begin), std::move(end), std::move(result),
-                               unreachable{}, std::move(bop), std::move(proj));
-            }
+        template<typename I, typename S, typename O, typename BOp = minus,
+                 typename P = identity>
+        auto operator()(I first, S last, O result, BOp bop = BOp{}, P proj = P{}) const
+            -> CPP_ret(adjacent_difference_result<I, O>)( //
+                requires sentinel_for<S, I> && differenceable<I, O, BOp, P>)
+        {
+            return (*this)(std::move(first),
+                           std::move(last),
+                           std::move(result),
+                           unreachable,
+                           std::move(bop),
+                           std::move(proj));
+        }
 
-            template<typename Rng, typename ORef, typename BOp = minus, typename P = ident,
-                typename I = iterator_t<Rng>, typename O = uncvref_t<ORef>,
-                CONCEPT_REQUIRES_(Range<Rng>() &&
-                    AdjacentDifferentiable<I, O, BOp, P>())>
-            tagged_pair<tag::in(safe_iterator_t<Rng>), tag::out(O)>
-            operator()(Rng && rng, ORef &&result, BOp bop = BOp{}, P proj = P{}) const
-            {
-                return (*this)(begin(rng), end(rng), static_cast<ORef&&>(result), std::move(bop),
-                               std::move(proj));
-            }
+        template<typename Rng, typename ORef, typename BOp = minus, typename P = identity,
+                 typename I = iterator_t<Rng>, typename O = uncvref_t<ORef>>
+        auto operator()(Rng && rng, ORef && result, BOp bop = BOp{}, P proj = P{}) const
+            -> CPP_ret(adjacent_difference_result<safe_iterator_t<Rng>, O>)( //
+                requires range<Rng> && differenceable<I, O, BOp, P>)
+        {
+            return (*this)(begin(rng),
+                           end(rng),
+                           static_cast<ORef &&>(result),
+                           std::move(bop),
+                           std::move(proj));
+        }
 
-            template<typename Rng, typename ORng, typename BOp = minus,
-                typename P = ident, typename I = iterator_t<Rng>,
-                typename O = iterator_t<ORng>,
-                CONCEPT_REQUIRES_(Range<Rng>() && Range<ORng>() &&
-                    AdjacentDifferentiable<I, O, BOp, P>())>
-            tagged_pair<tag::in(safe_iterator_t<Rng>),
-                tag::out(safe_iterator_t<ORng>)>
-            operator()(Rng && rng, ORng && result, BOp bop = BOp{}, P proj = P{}) const
-            {
-                return (*this)(begin(rng), end(rng), begin(result), end(result),
-                               std::move(bop), std::move(proj));
-            }
-        };
+        template<typename Rng, typename ORng, typename BOp = minus, typename P = identity,
+                 typename I = iterator_t<Rng>, typename O = iterator_t<ORng>>
+        auto operator()(Rng && rng, ORng && result, BOp bop = BOp{}, P proj = P{}) const
+            -> CPP_ret(adjacent_difference_result<safe_iterator_t<Rng>,
+                                                  safe_iterator_t<ORng>>)( //
+                requires range<Rng> && range<ORng> && differenceable<I, O, BOp, P>)
+        {
+            return (*this)(begin(rng),
+                           end(rng),
+                           begin(result),
+                           end(result),
+                           std::move(bop),
+                           std::move(proj));
+        }
+    };
 
-        RANGES_INLINE_VARIABLE(adjacent_difference_fn, adjacent_difference)
-    }
-}
+    RANGES_INLINE_VARIABLE(adjacent_difference_fn, adjacent_difference)
+    /// @}
+} // namespace ranges
 
 #endif

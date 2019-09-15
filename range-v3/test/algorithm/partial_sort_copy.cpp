@@ -18,10 +18,10 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include <algorithm>
 #include <memory>
 #include <random>
 #include <vector>
-#include <algorithm>
 #include <range/v3/core.hpp>
 #include <range/v3/algorithm/partial_sort_copy.hpp>
 #include "../simple_test.hpp"
@@ -121,10 +121,10 @@ int main()
     int * r = ranges::partial_sort_copy(&i, &i, &i, &i+5);
     CHECK(r == &i);
     CHECK(i == 0);
-    test<input_iterator<const int*> >();
-    test<forward_iterator<const int*> >();
-    test<bidirectional_iterator<const int*> >();
-    test<random_access_iterator<const int*> >();
+    test<InputIterator<const int*> >();
+    test<ForwardIterator<const int*> >();
+    test<BidirectionalIterator<const int*> >();
+    test<RandomAccessIterator<const int*> >();
     test<const int*>();
 
     // Check projections
@@ -133,15 +133,15 @@ int main()
         constexpr int M = N/2-1;
         S input[N];
         U output[M];
-        for (int i = 0; i < N; ++i)
-            input[i].i = i;
+        for (int j = 0; j < N; ++j)
+            input[j].i = j;
         std::shuffle(input, input+N, gen);
-        U * r = ranges::partial_sort_copy(input, output, std::less<int>(), &S::i, &U::i);
+        U * r2 = ranges::partial_sort_copy(input, output, std::less<int>(), &S::i, &U::i);
         U* e = output + std::min(N, M);
-        CHECK(r == e);
-        int i = 0;
-        for (U* x = output; x < e; ++x, ++i)
-            CHECK(x->i == i);
+        CHECK(r2 == e);
+        int i2 = 0;
+        for (U* x = output; x < e; ++x, ++i2)
+            CHECK(x->i == i2);
     }
 
     // Check rvalue ranges
@@ -150,28 +150,27 @@ int main()
         constexpr int M = N/2-1;
         S input[N];
         U output[M];
-        for (int i = 0; i < N; ++i)
-            input[i].i = i;
+        for (int j = 0; j < N; ++j)
+            input[j].i = j;
         std::shuffle(input, input+N, gen);
-        auto r = ranges::partial_sort_copy(input, ranges::view::all(output), std::less<int>(), &S::i, &U::i);
+        auto r0 = ranges::partial_sort_copy(input, std::move(output), std::less<int>(), &S::i, &U::i);
         U* e = output + std::min(N, M);
-        CHECK(r.get_unsafe() == e);
-        int i = 0;
-        for (U* x = output; x < e; ++x, ++i)
-            CHECK(x->i == i);
-    }
+#ifndef RANGES_WORKAROUND_MSVC_573728
+        CHECK(::is_dangling(r0));
+#endif // RANGES_WORKAROUND_MSVC_573728
 
-    // Check initialize_list
-    {
-        U output[9];
-        U * r = ranges::partial_sort_copy(
-            {S{5}, S{3}, S{4}, S{1}, S{8}, S{2}, S{6}, S{7}, S{0}, S{9}},
-            output, std::less<int>(), &S::i, &U::i);
-        U* e = output + 9;
-        CHECK(r == e);
-        int i = 0;
-        for (U* x = output; x < e; ++x, ++i)
-            CHECK(x->i == i);
+        int i2 = 0;
+        for (U* x = output; x < e; ++x, ++i2)
+            CHECK(x->i == i2);
+
+        std::vector<U> vec(M);
+        auto r1 = ranges::partial_sort_copy(input, std::move(vec), std::less<int>(), &S::i, &U::i);
+        e = vec.data() + std::min(N, M);
+        CHECK(::is_dangling(r1));
+
+        i2 = 0;
+        for (U* x = vec.data(); x < e; ++x, ++i2)
+            CHECK(x->i == i2);
     }
 
     return ::test_result();

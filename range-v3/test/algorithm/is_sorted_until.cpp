@@ -26,6 +26,7 @@
 // Implementation based on the code in libc++
 //   http://http://libcxx.llvm.org/
 
+#include <vector>
 #include <range/v3/core.hpp>
 #include <range/v3/algorithm/is_sorted_until.hpp>
 #include "../simple_test.hpp"
@@ -58,10 +59,10 @@ struct range_call
 
     template<class B, class E, class... Args>
     auto operator()(B &&It, E &&e, Args &&... args)
-     -> decltype(ranges::is_sorted_until(::as_lvalue(ranges::make_iterator_range(begin_t{It}, sentinel_t{e})),
+     -> decltype(ranges::is_sorted_until(::as_lvalue(ranges::make_subrange(begin_t{It}, sentinel_t{e})),
                                          std::forward<Args>(args)...))
     {
-        return ranges::is_sorted_until(::as_lvalue(ranges::make_iterator_range(begin_t{It}, sentinel_t{e})),
+        return ranges::is_sorted_until(::as_lvalue(ranges::make_subrange(begin_t{It}, sentinel_t{e})),
                                        std::forward<Args>(args)...);
     }
 };
@@ -375,14 +376,14 @@ struct A { int a; };
 
 int main()
 {
-    test<forward_iterator<const int*>, iter_call>();
-    test<bidirectional_iterator<const int*>, iter_call>();
-    test<random_access_iterator<const int*>, iter_call>();
+    test<ForwardIterator<const int*>, iter_call>();
+    test<BidirectionalIterator<const int*>, iter_call>();
+    test<RandomAccessIterator<const int*>, iter_call>();
     test<const int*, iter_call>();
 
-    test<forward_iterator<const int*>, range_call>();
-    test<bidirectional_iterator<const int*>, range_call>();
-    test<random_access_iterator<const int*>, range_call>();
+    test<ForwardIterator<const int*>, range_call>();
+    test<BidirectionalIterator<const int*>, range_call>();
+    test<RandomAccessIterator<const int*>, range_call>();
     test<const int*, range_call>();
 
     /// Initializer list test:
@@ -401,8 +402,13 @@ int main()
     /// Rvalue range test:
     {
         A as[] = {{0}, {1}, {2}, {3}, {4}};
-        CHECK(ranges::is_sorted_until(ranges::view::all(as), std::less<int>{}, &A::a).get_unsafe() == ranges::end(as));
-        CHECK(ranges::is_sorted_until(ranges::view::all(as), std::greater<int>{}, &A::a).get_unsafe() == ranges::next(ranges::begin(as),1));
+#ifndef RANGES_WORKAROUND_MSVC_573728
+        CHECK(::is_dangling(ranges::is_sorted_until(std::move(as), std::less<int>{}, &A::a)));
+        CHECK(::is_dangling(ranges::is_sorted_until(std::move(as), std::greater<int>{}, &A::a)));
+#endif // RANGES_WORKAROUND_MSVC_573728
+        std::vector<A> vec(ranges::begin(as), ranges::end(as));
+        CHECK(::is_dangling(ranges::is_sorted_until(std::move(vec), std::less<int>{}, &A::a)));
+        CHECK(::is_dangling(ranges::is_sorted_until(std::move(vec), std::greater<int>{}, &A::a)));
     }
 
     return ::test_result();

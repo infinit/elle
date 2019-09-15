@@ -14,137 +14,164 @@
 #define RANGES_V3_ALGORITHM_UNIQUE_COPY_HPP
 
 #include <meta/meta.hpp>
+
 #include <range/v3/range_fwd.hpp>
-#include <range/v3/begin_end.hpp>
-#include <range/v3/range_concepts.hpp>
-#include <range/v3/range_traits.hpp>
-#include <range/v3/utility/iterator_concepts.hpp>
-#include <range/v3/utility/iterator_traits.hpp>
-#include <range/v3/utility/functional.hpp>
+
+#include <range/v3/algorithm/result_types.hpp>
+#include <range/v3/functional/comparisons.hpp>
+#include <range/v3/functional/identity.hpp>
+#include <range/v3/functional/invoke.hpp>
+#include <range/v3/iterator/concepts.hpp>
+#include <range/v3/iterator/traits.hpp>
+#include <range/v3/range/access.hpp>
+#include <range/v3/range/concepts.hpp>
+#include <range/v3/range/dangling.hpp>
+#include <range/v3/range/traits.hpp>
 #include <range/v3/utility/static_const.hpp>
-#include <range/v3/utility/tagged_pair.hpp>
-#include <range/v3/algorithm/tagspec.hpp>
 
 namespace ranges
 {
-    inline namespace v3
+    /// \addtogroup group-algorithms
+    /// @{
+
+    template<typename I, typename O>
+    using unique_copy_result = detail::in_out_result<I, O>;
+
+    /// \cond
+    namespace detail
     {
-        /// \ingroup group-concepts
-        template<typename I, typename O, typename C = equal_to, typename P = ident>
-        using UniqueCopyable = meta::strict_and<
-            InputIterator<I>,
-            IndirectRelation<C, projected<I, P>>,
-            WeaklyIncrementable<O>,
-            IndirectlyCopyable<I, O>,
-            meta::strict_or<
-                ForwardIterator<I>,
-                ForwardIterator<O>,
-                IndirectlyCopyableStorable<I, O>>>;
-
-        /// \addtogroup group-algorithms
-        /// @{
-        struct unique_copy_fn
+        template<typename I, typename S, typename O, typename C, typename P>
+        unique_copy_result<I, O> unique_copy_impl(I first, S last, O out, C pred, P proj,
+                                                  detail::input_iterator_tag_,
+                                                  std::false_type)
         {
-        private:
-            template<typename I, typename S, typename O, typename C, typename P>
-            static tagged_pair<tag::in(I), tag::out(O)> impl(I begin, S end, O out, C pred, P proj,
-                concepts::InputIterator*, std::false_type)
+            if(first != last)
             {
-                if(begin != end)
+                // Must save a copy into a local because we will need this value
+                // even after we advance the input iterator.
+                iter_value_t<I> value =
+                    *first; // This is guaranteed by indirectly_copyable
+                *out = value;
+                ++out;
+                while(++first != last)
                 {
-                    // Must save a copy into a local because we will need this value
-                    // even after we advance the input iterator.
-                    value_type_t<I> value = *begin; // This is guaranteed by IndirectlyCopyable
-                    *out = value;
-                    ++out;
-                    while(++begin != end)
+                    auto && x = *first;
+                    if(!invoke(pred, invoke(proj, value), invoke(proj, x)))
                     {
-                        auto &&x = *begin;
-                        if(!invoke(pred, invoke(proj, value), invoke(proj, x)))
-                        {
-                            value = (decltype(x) &&) x;
-                            *out = value;
-                            ++out;
-                        }
+                        value = (decltype(x) &&)x;
+                        *out = value;
+                        ++out;
                     }
                 }
-                return {begin, out};
             }
+            return {first, out};
+        }
 
-            template<typename I, typename S, typename O, typename C, typename P>
-            static tagged_pair<tag::in(I), tag::out(O)> impl(I begin, S end, O out, C pred, P proj,
-                concepts::ForwardIterator*, std::false_type)
+        template<typename I, typename S, typename O, typename C, typename P>
+        unique_copy_result<I, O> unique_copy_impl(I first, S last, O out, C pred, P proj,
+                                                  detail::forward_iterator_tag_,
+                                                  std::false_type)
+        {
+            if(first != last)
             {
-                if(begin != end)
+                I tmp = first;
+                *out = *tmp;
+                ++out;
+                while(++first != last)
                 {
-                    I tmp = begin;
-                    *out = *tmp;
-                    ++out;
-                    while(++begin != end)
+                    auto && x = *first;
+                    if(!invoke(pred, invoke(proj, *tmp), invoke(proj, x)))
                     {
-                        auto &&x = *begin;
-                        if(!invoke(pred, invoke(proj, *tmp), invoke(proj, x)))
-                        {
-                            *out = (decltype(x) &&) x;
-                            ++out;
-                            tmp = begin;
-                        }
+                        *out = (decltype(x) &&)x;
+                        ++out;
+                        tmp = first;
                     }
                 }
-                return {begin, out};
             }
+            return {first, out};
+        }
 
-            template<typename I, typename S, typename O, typename C, typename P>
-            static tagged_pair<tag::in(I), tag::out(O)> impl(I begin, S end, O out, C pred, P proj,
-                concepts::InputIterator*, std::true_type)
+        template<typename I, typename S, typename O, typename C, typename P>
+        unique_copy_result<I, O> unique_copy_impl(I first, S last, O out, C pred, P proj,
+                                                  detail::input_iterator_tag_,
+                                                  std::true_type)
+        {
+            if(first != last)
             {
-                if(begin != end)
+                *out = *first;
+                while(++first != last)
                 {
-                    *out = *begin;
-                    while(++begin != end)
-                    {
-                        auto &&x = *begin;
-                        if(!invoke(pred, invoke(proj, *out), invoke(proj, x)))
-                            *++out = (decltype(x) &&) x;
-                    }
-                    ++out;
+                    auto && x = *first;
+                    if(!invoke(pred, invoke(proj, *out), invoke(proj, x)))
+                        *++out = (decltype(x) &&)x;
                 }
-                return {begin, out};
+                ++out;
             }
+            return {first, out};
+        }
+    } // namespace detail
+    /// \endcond
 
-        public:
-            /// \brief template function unique_copy
-            ///
-            /// range-based version of the `unique_copy` std algorithm
-            ///
-            /// \pre InputView is a model of the `InputView` concept
-            /// \pre `O` is a model of the `WeakOutputIterator` concept
-            /// \pre `C` is a model of the `Relation` concept
-            template<typename I, typename S, typename O, typename C = equal_to, typename P = ident,
-                CONCEPT_REQUIRES_(UniqueCopyable<I, O, C, P>() && Sentinel<S, I>())>
-            tagged_pair<tag::in(I), tag::out(O)> operator()(I begin, S end, O out, C pred = C{}, P proj = P{}) const
-            {
-                return unique_copy_fn::impl(std::move(begin), std::move(end), std::move(out),
-                    std::move(pred), std::move(proj), iterator_concept<I>(), ForwardIterator<O>());
-            }
+    RANGES_BEGIN_NIEBLOID(unique_copy)
 
-            /// \overload
-            template<typename Rng, typename O, typename C = equal_to, typename P = ident,
-                typename I = iterator_t<Rng>,
-                CONCEPT_REQUIRES_(UniqueCopyable<I, O, C, P>() && Range<Rng>())>
-            tagged_pair<tag::in(safe_iterator_t<Rng>), tag::out(O)>
-            operator()(Rng &&rng, O out, C pred = C{}, P proj = P{}) const
-            {
-                return unique_copy_fn::impl(begin(rng), end(rng), std::move(out),
-                    std::move(pred), std::move(proj), iterator_concept<I>(), ForwardIterator<O>());
-            }
-        };
+        /// \brief template function unique_copy
+        ///
+        /// range-based version of the `unique_copy` std algorithm
+        ///
+        /// \pre `Rng` is a model of the `input_range` concept
+        /// \pre `O` is a model of the `weakly_incrementable` concept
+        /// \pre `C` is a model of the `relation` concept
+        template<typename I,
+                 typename S,
+                 typename O,
+                 typename C = equal_to,
+                 typename P = identity>
+        auto RANGES_FUN_NIEBLOID(unique_copy)(
+            I first, S last, O out, C pred = C{}, P proj = P{}) //
+            ->CPP_ret(unique_copy_result<I, O>)(                //
+                requires input_iterator<I> && sentinel_for<S, I> &&
+                indirect_relation<C, projected<I, P>> && weakly_incrementable<O> &&
+                indirectly_copyable<I, O> &&
+                (forward_iterator<I> || forward_iterator<O> ||
+                 indirectly_copyable_storable<I, O>))
+        {
+            return detail::unique_copy_impl(std::move(first),
+                                            std::move(last),
+                                            std::move(out),
+                                            std::move(pred),
+                                            std::move(proj),
+                                            iterator_tag_of<I>(),
+                                            meta::bool_<forward_iterator<O>>{});
+        }
 
-        /// \sa `unique_copy_fn`
-        /// \ingroup group-algorithms
-        RANGES_INLINE_VARIABLE(with_braced_init_args<unique_copy_fn>, unique_copy)
-        /// @}
-    } // namespace v3
+        /// \overload
+        template<typename Rng, typename O, typename C = equal_to, typename P = identity>
+        auto RANGES_FUN_NIEBLOID(unique_copy)(
+            Rng && rng, O out, C pred = C{}, P proj = P{})          //
+            ->CPP_ret(unique_copy_result<safe_iterator_t<Rng>, O>)( //
+                requires input_range<Rng> &&
+                indirect_relation<C, projected<iterator_t<Rng>, P>> &&
+                weakly_incrementable<O> && indirectly_copyable<iterator_t<Rng>, O> &&
+                (forward_iterator<iterator_t<Rng>> || forward_iterator<O> ||
+                 indirectly_copyable_storable<iterator_t<Rng>, O>))
+        {
+            return detail::unique_copy_impl(begin(rng),
+                                            end(rng),
+                                            std::move(out),
+                                            std::move(pred),
+                                            std::move(proj),
+                                            iterator_tag_of<iterator_t<Rng>>(),
+                                            meta::bool_<forward_iterator<O>>{});
+        }
+
+    RANGES_END_NIEBLOID(unique_copy)
+
+    namespace cpp20
+    {
+        using ranges::unique_copy;
+        using ranges::unique_copy_result;
+    } // namespace cpp20
+    /// @}
 } // namespace ranges
 
 #endif // include guard

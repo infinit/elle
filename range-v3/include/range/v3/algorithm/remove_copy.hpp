@@ -14,63 +14,71 @@
 #define RANGES_V3_ALGORITHM_REMOVE_COPY_HPP
 
 #include <meta/meta.hpp>
+
 #include <range/v3/range_fwd.hpp>
-#include <range/v3/begin_end.hpp>
-#include <range/v3/range_concepts.hpp>
-#include <range/v3/range_traits.hpp>
-#include <range/v3/utility/iterator_concepts.hpp>
-#include <range/v3/utility/iterator_traits.hpp>
-#include <range/v3/utility/functional.hpp>
+
+#include <range/v3/algorithm/result_types.hpp>
+#include <range/v3/functional/identity.hpp>
+#include <range/v3/functional/invoke.hpp>
+#include <range/v3/iterator/concepts.hpp>
+#include <range/v3/iterator/traits.hpp>
+#include <range/v3/range/access.hpp>
+#include <range/v3/range/concepts.hpp>
+#include <range/v3/range/dangling.hpp>
+#include <range/v3/range/traits.hpp>
 #include <range/v3/utility/static_const.hpp>
-#include <range/v3/utility/tagged_pair.hpp>
-#include <range/v3/algorithm/tagspec.hpp>
 
 namespace ranges
 {
-    inline namespace v3
-    {
-        /// \ingroup group-concepts
-        template<typename I, typename O, typename T, typename P = ident>
-        using RemoveCopyable = meta::strict_and<
-            InputIterator<I>,
-            WeaklyIncrementable<O>,
-            IndirectRelation<equal_to, projected<I, P>, T const *>,
-            IndirectlyCopyable<I, O>>;
+    /// \addtogroup group-algorithms
+    /// @{
+    template<typename I, typename O>
+    using remove_copy_result = detail::in_out_result<I, O>;
 
-        /// \addtogroup group-algorithms
-        /// @{
-        struct remove_copy_fn
+    RANGES_BEGIN_NIEBLOID(remove_copy)
+
+        /// \brief function template \c remove_copy
+        template<typename I, typename S, typename O, typename T, typename P = identity>
+        auto RANGES_FUN_NIEBLOID(remove_copy)(
+            I first, S last, O out, T const & val, P proj = P{}) //
+            ->CPP_ret(remove_copy_result<I, O>)(                 //
+                requires input_iterator<I> && sentinel_for<S, I> &&
+                weakly_incrementable<O> &&
+                indirect_relation<equal_to, projected<I, P>, T const *> &&
+                indirectly_copyable<I, O>)
         {
-            template<typename I, typename S, typename O, typename T, typename P = ident,
-                CONCEPT_REQUIRES_(RemoveCopyable<I, O, T, P>() && Sentinel<S, I>())>
-            tagged_pair<tag::in(I), tag::out(O)> operator()(I begin, S end, O out, T const &val, P proj = P{}) const
+            for(; first != last; ++first)
             {
-                for(; begin != end; ++begin)
+                auto && x = *first;
+                if(!(invoke(proj, x) == val))
                 {
-                    auto &&x = *begin;
-                    if(!(invoke(proj, x) == val))
-                    {
-                        *out = (decltype(x) &&) x;
-                        ++out;
-                    }
+                    *out = (decltype(x) &&)x;
+                    ++out;
                 }
-                return {begin, out};
             }
+            return {first, out};
+        }
 
-            template<typename Rng, typename O, typename T, typename P = ident,
-                typename I = iterator_t<Rng>,
-                CONCEPT_REQUIRES_(RemoveCopyable<I, O, T, P>() && InputRange<Rng>())>
-            tagged_pair<tag::in(safe_iterator_t<Rng>), tag::out(O)> operator()(Rng &&rng, O out, T const &val, P proj = P{}) const
-            {
-                return (*this)(begin(rng), end(rng), std::move(out), val, std::move(proj));
-            }
-        };
+        /// \overload
+        template<typename Rng, typename O, typename T, typename P = identity>
+        auto RANGES_FUN_NIEBLOID(remove_copy)(
+            Rng && rng, O out, T const & val, P proj = P{})         //
+            ->CPP_ret(remove_copy_result<safe_iterator_t<Rng>, O>)( //
+                requires input_range<Rng> && weakly_incrementable<O> &&
+                indirect_relation<equal_to, projected<iterator_t<Rng>, P>, T const *> &&
+                indirectly_copyable<iterator_t<Rng>, O>)
+        {
+            return (*this)(begin(rng), end(rng), std::move(out), val, std::move(proj));
+        }
 
-        /// \sa `remove_copy_fn`
-        /// \ingroup group-algorithms
-        RANGES_INLINE_VARIABLE(with_braced_init_args<remove_copy_fn>, remove_copy)
-        /// @}
-    } // namespace v3
+    RANGES_END_NIEBLOID(remove_copy)
+
+    namespace cpp20
+    {
+        using ranges::remove_copy;
+        using ranges::remove_copy_result;
+    } // namespace cpp20
+    /// @}
 } // namespace ranges
 
 #endif // include guard

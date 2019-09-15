@@ -12,7 +12,6 @@
 #include <range/v3/view/iota.hpp>
 #include <range/v3/view/repeat_n.hpp>
 #include <range/v3/view/for_each.hpp>
-#include <range/v3/algorithm/equal.hpp>
 #include <range/v3/action/reverse.hpp>
 #include <range/v3/action/unique.hpp>
 #include "../simple_test.hpp"
@@ -23,14 +22,14 @@ using namespace ranges;
 int main()
 {
     // [1,2,2,3,3,3,4,4,4,4,5,5,5,5,5,...]
-    std::vector<int> v =
-        view::for_each(view::ints(1,6), [](int i){
-            return yield_from(view::repeat_n(i,i));
-        });
+    auto v =
+        views::for_each(views::ints(1,6), [](int i){
+            return yield_from(views::repeat_n(i,i));
+        }) | to<std::vector>();
     check_equal(v, {1,2,2,3,3,3,4,4,4,4,5,5,5,5,5});
 
-    v |= action::unique | action::reverse;
-    CHECK(equal(v, {5,4,3,2,1}));
+    v |= actions::unique | actions::reverse;
+    check_equal(v, {5,4,3,2,1});
 
     return ::test_result();
 }

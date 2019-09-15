@@ -32,7 +32,7 @@ struct noncopyable2 : noncopyable
 struct X {};
 struct Y {};
 struct Z {};
-namespace ranges
+namespace concepts
 {
     template<>
     struct common_type<X, Y>
@@ -45,6 +45,18 @@ namespace ranges
         using type = Z;
     };
 }
+
+template<typename T>
+struct ConvTo
+{
+    operator T();
+};
+
+// Whoops, fails:
+static_assert(std::is_same<
+    ranges::common_type_t<ConvTo<int>, int>,
+    int
+>::value, "");
 
 int main()
 {
@@ -98,7 +110,7 @@ int main()
     >::value, "");
 
     static_assert(std::is_same<
-        detail::_builtin_common_t<common_pair<int, int> const &, std::pair<int, int> &>,
+        ::concepts::detail::_builtin_common_t<common_pair<int, int> const &, std::pair<int, int> &>,
         std::pair<int, int> const &
     >::value, "");
 #endif
@@ -110,17 +122,17 @@ int main()
 
     // Some tests with noncopyable types
     static_assert(std::is_same<
-        detail::_builtin_common_t<noncopyable const &, noncopyable>,
+        ::concepts::detail::_builtin_common_t<noncopyable const &, noncopyable>,
         noncopyable
     >::value, "");
 
     static_assert(std::is_same<
-        detail::_builtin_common_t<noncopyable2 const &, noncopyable>,
+        ::concepts::detail::_builtin_common_t<noncopyable2 const &, noncopyable>,
         noncopyable
     >::value, "");
 
     static_assert(std::is_same<
-        detail::_builtin_common_t<noncopyable const &, noncopyable2>,
+        ::concepts::detail::_builtin_common_t<noncopyable const &, noncopyable2>,
         noncopyable
     >::value, "");
 
@@ -132,6 +144,6 @@ int main()
     {
         // Regression test for #367
         using CP = common_pair<int, int>;
-        CONCEPT_ASSERT(Same<common_type_t<CP, CP>, CP>());
+        CPP_assert(same_as<common_type_t<CP, CP>, CP>);
     }
 }

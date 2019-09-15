@@ -12,6 +12,7 @@
 #include <memory>
 #include <range/v3/core.hpp>
 #include <range/v3/action/concepts.hpp>
+#include <range/v3/view/ref.hpp>
 #include "../simple_test.hpp"
 #include "../test_utils.hpp"
 
@@ -20,24 +21,23 @@ int main()
     using namespace ranges;
 
     int rgi[6];
-    ::models<concepts::Range>(rgi);
-    ::models_not<concepts::SemiContainer>(rgi);
+    CPP_assert(range<decltype(rgi)>);
+    CPP_assert(!semi_container<decltype(rgi)>);
 
     std::array<int, 6> a;
-    ::models<concepts::SemiContainer>(a);
-    ::models_not<concepts::Container>(a);
+    CPP_assert(semi_container<decltype(a)>);
+    CPP_assert(!container<decltype(a)>);
 
     std::vector<int> v;
-    ::models<concepts::Container>(v);
+    CPP_assert(container<decltype(v)>);
 
     std::vector<std::unique_ptr<int>> v2;
-    ::models<concepts::Container>(v2);
+    CPP_assert(container<decltype(v2)>);
 
-    ::models<concepts::LvalueContainerLike>(v2);
-    ::models_not<concepts::LvalueContainerLike>(std::move(v2));
+    CPP_assert(lvalue_container_like<decltype((v2))>);
+    CPP_assert(!lvalue_container_like<decltype(std::move(v2))>);
 
-    ::models<concepts::LvalueContainerLike>(ranges::ref(v2));
-    ::models<concepts::LvalueContainerLike>(std::ref(v2));
+    CPP_assert(lvalue_container_like<decltype(views::ref(v2))>);
 
     return ::test_result();
 }
