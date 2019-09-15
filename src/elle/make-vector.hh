@@ -100,9 +100,10 @@ namespace elle
   auto
   make_vector(Cont&& c)
     -> std::conditional_t<
-        std::is_same<R, void>::value,
-        std::vector<typename std::remove_reference_t<Cont>::value_type>,
-        R>
+      std::is_same<R, void>::value,
+      std::vector<
+        typename std::iterator_traits<decltype(std::begin(c))>::value_type>,
+      R>
   {
     using std::begin;
     using std::end;
