@@ -8,8 +8,8 @@ def configure(cxx_toolkit = None,
   # This will use the default system compiler.
   cxx_toolkit = cxx_toolkit or drake.cxx.GccToolkit()
 
-  # Use c++14 standard.
-  cxx_config.standard = drake.cxx.Config.cxx_14
+  # Use c++17 standard.
+  cxx_config.standard = drake.cxx.Config.cxx_17
   # Add a compiler flag.
   cxx_config.flag('-Werror')
 
