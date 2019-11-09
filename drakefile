@@ -1220,6 +1220,7 @@ using python : %(python_version)s : %(python_prefix)s/%(python_bin)s : %(python_
         )
     ldap_config = drake.cxx.Config(cxx_config)
     ldap_config.add_local_include_path(ldap_prefix / 'include')
+    ldap_config.lib('gnutls')
     drake.Rule('openldap') << ldap_targets
 
   ## ------------- ##
