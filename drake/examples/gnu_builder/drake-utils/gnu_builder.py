@@ -36,7 +36,7 @@ class GNUBuilder(drake.Builder):
                   step is needed)""" = None,
     working_directory: "Deduced from configure" = None,
     configure_args: "Arguments of the configure script" = [],
-    sources = [],
+    sources = None,
     make_binary: "Make binary" = _DEFAULT_MAKE_BINARY,
     makefile: "Makefile filename, used if not None" = None,
     build_args: "Additional arguments for the make command" = ['install'],
@@ -69,12 +69,14 @@ class GNUBuilder(drake.Builder):
       self.__working_directory = self.__configure.path().dirname()
     # We instantiate the super class passing it the list of sources (srcs) and
     # targets (dsts). This allows drake to develop the the dependency map.
+    if sources is None:
+      sources = []
+    if isinstance(cxx_toolkit.patchelf, drake.BaseNode):
+      sources.append(cxx_toolkit.patchelf)
     drake.Builder.__init__(
       self,
       srcs = (configure is not None and [configure] or []) + sources,
       dsts = self.__targets)
-    if isinstance(cxx_toolkit.patchelf, drake.BaseNode):
-      self.add_src(cxx_toolkit.patchelf)
 
   # The `execute` function is what is actually run to make the targets.
   # This is only done once all the dependency chains have been resolved.

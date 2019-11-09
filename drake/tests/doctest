@@ -6,6 +6,9 @@ import os.path
 import sys
 import unittest
 
+# Ignore DRAKE_RAW from the test environment as it will fail the docstring outputs.
+os.environ.pop('DRAKE_RAW', None)
+
 import drake
 import drake.cxx
 import drake.cxx.boost

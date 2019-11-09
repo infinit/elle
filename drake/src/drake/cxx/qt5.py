@@ -1,4 +1,4 @@
-# Copyright (C) 2009-2016, Quentin "mefyl" Hocquet
+# Copyright (C) 2009-2019, Quentin "mefyl" Hocquet
 #
 # This software is provided "as is" without warranty of any kind,
 # either expressed or implied, including but not limited to the
@@ -207,7 +207,7 @@ class Qt(drake.Configuration):
                                               self.__version.major,
                                               self.__version.minor)))
         tests.append(filename)
-    search_path = [self.__prefix / p for p in ['lib/qt5', 'lib']]
+        search_path = [self.__prefix / lib / p for lib in ['lib', 'lib64'] for p in ['.', 'qt5']]
     prefix, lib = self._search_many_one(tests, search_path)
     if static:
       return drake.cxx.StaticLib(prefix / lib)
@@ -334,7 +334,7 @@ for prop, library in Qt._Qt__libraries.items():
     setattr(Qt, 'config_%s' % prop, config_getter)
   unclosure(prop, library)
 
-def deps_handler(builder, path_obj, t, data):
+def deps_handler(builder, path_obj, t):
   if isinstance(builder, (drake.cxx.Linker, drake.cxx.DynLibLinker)):
     with logger.log(
         'drake.cxx.qt',

@@ -1,4 +1,4 @@
-# Copyright (C) 2009-2016, Quentin "mefyl" Hocquet
+# Copyright (C) 2009-2019, Quentin "mefyl" Hocquet
 #
 # This software is provided "as is" without warranty of any kind,
 # either expressed or implied, including but not limited to the
@@ -1293,9 +1293,6 @@ class VisualToolkit(Toolkit):
   def version(self):
     return self.__version
 
-def deps_handler(builder, path, t, data):
-  return node(path, t)
-
 profile_deps = drake.Profile('C++ dependencies exploration')
 
 def inclusion_dependencies(n, toolkit, config):
@@ -1504,8 +1501,6 @@ class ResourceCompiler(_Compiler):
   name = 'C++ resource compilation'
   deps = 'drake.cxx.inclusions'
 
-  Builder.register_deps_handler(deps, deps_handler)
-
   def __init__(self, src, obj, tk, cfg, c = False):
     super().__init__(src, obj, tk, cfg)
 
@@ -1518,8 +1513,6 @@ class Compiler(_Compiler):
 
   name = 'C++ compilation'
   deps = 'drake.cxx.inclusions'
-
-  Builder.register_deps_handler(deps, deps_handler)
 
   def __init__(self, src, obj, tk, cfg, c = False):
     super().__init__(src, obj, tk, cfg)

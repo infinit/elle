@@ -1,16 +1,34 @@
 #!/usr/bin/env python3
 
+'''Main driver for drake.'''
+
 import os
 import sys
 
-root = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
-sys.path.insert(0, root)
+PREFIX = os.path.realpath(os.path.dirname(os.path.dirname(__file__)))
+SEARCH = [
+  os.path.join('lib', 'python{}.{}'.format(*sys.version_info), 'site-packages'),
+  'lib',
+  '.',
+]
+
+LIB = None
+for p in (os.path.join(PREFIX, s) for s in SEARCH):
+  if os.path.exists(os.path.join(p, 'drake')):
+    LIB = p
+    break
+
+if LIB is None:
+  print('{}: unable to find drake libraries'.format(sys.argv[0]), file=sys.stderr)
+  exit(1)
+
+sys.path.insert(0, LIB)
 
 import drake
 
-path = '.'
-if len(sys.argv) > 1:
-  path = sys.argv[1]
+PATH = '.'
+if len(sys.argv) > 1 and not sys.argv[1].startswith('-'):
+  PATH = sys.argv[1]
   del sys.argv[1]
 
-drake.run(path)
+drake.run(PATH)

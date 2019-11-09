@@ -2,8 +2,8 @@ language: python
 python:
   - "3.5"
 install:
-  - "pip install -r requirements.txt"
+  - "pip install -r requirements.txt coverage"
   - "git config --global user.email mefyl@gruntech.org"
   - "git config --global user.name mefyl"
 script:
-  - cd _build && ./drake //check
+  - src/bin/drake . --workdir _build --coverage=true

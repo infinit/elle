@@ -1,0 +1,49 @@
+#!/usr/bin/env python3
+
+'''Run all pre-push hooks and reject commit if any exception is raised.'''
+
+import os
+import subprocess
+import sys
+import tempfile
+
+import git
+import githooks
+
+REMOTE = sys.argv[1]
+URL = sys.argv[2]
+
+def main():
+
+  '''Main entrypoint.'''
+
+  for line in sys.stdin:
+    _, local_sha, _, remote_sha = line.strip().split(' ')
+
+    if remote_sha == '0000000000000000000000000000000000000000':
+      # FIXME: We should still check, but against what?
+      continue
+
+    # Only check commits we are adding.
+    base_sha = git.git(['merge-base', local_sha, remote_sha])
+
+    with tempfile.TemporaryDirectory() as root:
+      try:
+        def checkout(path, ref):
+          os.mkdir(path)
+          subprocess.run(['tar', '-C', path, '-x'],
+                         stdin=git.pipe(['archive', ref, '--format=tar']))
+        before, after = (os.path.join(root, dir) for dir in ['before', 'after'])
+        checkout(after, local_sha)
+        checkout(before, base_sha)
+        githooks.run_regression_hooks(before, base_sha, after, local_sha)
+      except Exception as error:
+        def clean_exn(error, root):
+          if hasattr(error, 'output'):
+            error.output = error.output.replace('{}/index/'.format(root), '')
+          if error.__cause__ is not None:
+            clean_exn(error.__cause__, root)
+        clean_exn(error, root)
+        raise error
+
+githooks.main(main)

@@ -1,0 +1,18 @@
+#!/bin/sh
+
+DIR="$(dirname $(readlink -f $0))"
+GIT="$(dirname "$DIR")/.git"
+
+if ! test -d "$GIT"; then
+    echo "$0: expected the git directory to be located at $GIT" 1>&2
+    exit 1
+fi
+
+for h in "$DIR"/*; do
+    name="$(basename $h)"
+    if test "$name" == "$(basename $0)"; then
+        continue
+    fi
+    echo "$GIT/hooks/$name"
+    ln -s "$DIR/$name" "$GIT/hooks/$name"
+done

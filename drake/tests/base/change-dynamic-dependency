@@ -10,7 +10,7 @@ import utils
 
 class DependentBuilder(drake.TouchBuilder):
 
-  def deps_handler(builder, path, t, data):
+  def deps_handler(builder, path, t):
     return drake.node(path, t)
 
   deps = 'some.identifier'

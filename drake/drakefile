@@ -1,56 +1,62 @@
-import drake
+'''Drake bootstrap drakefile'''
+
 import os
 import shutil
 import sys
+
+import drake
 
 # Put ourselves in the path.
 PYTHONPATH = ''
 if 'PYTHONPATH' in os.environ:
   PYTHONPATH = os.environ['PYTHONPATH']
-source = '%s/%s' % (os.getcwd(), drake.path_source('src'))
-PYTHONPATH = '%s:%s' % (source, PYTHONPATH)
+SOURCE = '%s/%s' % (os.getcwd(), drake.path_source('src'))
+PYTHONPATH = '%s:%s' % (SOURCE, PYTHONPATH)
 os.environ['PYTHONPATH'] = PYTHONPATH
 
-def configure(prefix = '.'):
+def configure(prefix='.', coverage: bool = False):
 
   """Configure drake.
 
   prefix -- The prefix where to install.
+  coverage -- Whether to collect test suite coverage.
   """
 
   prefix = drake.Path(prefix)
 
   # Sources
   sources = drake.nodes(
-     'src/drake/__init__.py',
-     'src/drake/air.py',
-     'src/drake/enumeration.py',
-     'src/drake/docker.py',
-     'src/drake/imagemagick.py',
-     'src/drake/cxx/__init__.py',
-     'src/drake/cxx/bison.py',
-     'src/drake/cxx/boost.py',
-     'src/drake/cxx/curl.py',
-     'src/drake/cxx/flex.py',
-     'src/drake/cxx/ipp.py',
-     'src/drake/cxx/opengl.py',
-     'src/drake/cxx/qt.py',
-     'src/drake/cxx/sdl.py',
-     'src/drake/cxx/sofia_sip.py',
-     'src/drake/debug.py',
-     'src/drake/flex.py',
-     'src/drake/git.py',
-     'src/drake/go/__init__.py',
-     'src/drake/log.py',
-     'src/drake/opencv.py',
-     'src/drake/python/__init__.py',
-     'src/drake/sched.py',
-     'src/drake/templating.py',
-     'src/drake/threadpool.py',
-     'src/drake/urbi/__init__.py',
-     'src/drake/utils.py',
-     'src/drake/valgrind.py',
-     'src/drake/which.py',
+    'src/drake/__init__.py',
+    'src/drake/command.py',
+    'src/drake/enumeration.py',
+    'src/drake/deprecation.py',
+    'src/drake/docker.py',
+    'src/drake/cxx/__init__.py',
+    'src/drake/cxx/bison.py',
+    'src/drake/cxx/boost.py',
+    'src/drake/cxx/curl.py',
+    'src/drake/cxx/flex.py',
+    'src/drake/cxx/ipp.py',
+    'src/drake/cxx/opengl.py',
+    'src/drake/cxx/qt.py',
+    'src/drake/cxx/qt5.py',
+    'src/drake/cxx/sdl.py',
+    'src/drake/cxx/sofia_sip.py',
+    'src/drake/debug.py',
+    'src/drake/git.py',
+    'src/drake/gnu.py',
+    'src/drake/go/__init__.py',
+    'src/drake/log.py',
+    'src/drake/ocaml/__init__.py',
+    'src/drake/ocaml/menhir.py',
+    'src/drake/ocaml/ocamllex.py',
+    'src/drake/python/__init__.py',
+    'src/drake/sched.py',
+    'src/drake/templating.py',
+    'src/drake/threadpool.py',
+    'src/drake/utils.py',
+    'src/drake/valgrind.py',
+    'src/drake/which.py',
   )
   command = drake.node('src/bin/drake')
 
@@ -69,15 +75,16 @@ def configure(prefix = '.'):
   check = drake.Rule('check')
 
   tests = [
-    'base/obsolete-path-cache',
     'base/change-dynamic-dependency',
     'base/command-line',
+    'base/cyclic-dependencies',
     'base/dependency',
     'base/dynamic-termination',
     'base/failure',
     'base/failure-cmd',
     'base/interrupt-dynamic-dependency',
     'base/mtime',
+    'base/obsolete-path-cache',
     'base/range',
     'base/runner-env',
     'base/symlink',
@@ -93,15 +100,22 @@ def configure(prefix = '.'):
     'HTTPDownload',
   ]
 
+  if coverage:
+    coverage = ['coverage', 'run', '--source', str(drake.path_source('src')), '--append']
+  else:
+    coverage = None
+
   for test in tests:
     test = drake.node('tests/%s' % test)
     test.dependencies_add(sources)
     runner = drake.Runner(
       test,
-      env = {'PYTHONPATH': '{}:{}'.format(PYTHONPATH, drake.path_source('tests'))},
+      env={'PYTHONPATH': '{}:{}'.format(PYTHONPATH, drake.path_source('tests'))},
+      prefix=coverage,
     )
     runner.reporting = drake.Runner.Reporting.on_failure
     check << runner.status
+
   # Old style tests
 
   tests = [
@@ -123,6 +137,8 @@ def configure(prefix = '.'):
 
   class Tester(drake.Builder):
 
+    '''Copy the whole test tree and run test script there.'''
+
     def __init__(self, name):
       self.__name = name
       path = drake.Path('tests') / drake.Path(name)
@@ -131,26 +147,30 @@ def configure(prefix = '.'):
       drake.Builder.__init__(self, [self.__exe] + sources, [self.__target])
 
     def execute(self):
-      fr = str(self.__exe.path().dirname())
-      to = str(self.__exe.name().dirname())
+      source = str(self.__exe.path().dirname())
+      dest = str(self.__exe.name().dirname())
       try:
-        shutil.rmtree(to)
-      except OSError as e:
-        if e.errno == 2:
+        shutil.rmtree(dest)
+      except OSError as error:
+        if error.errno == 2:
           pass
         else:
           raise
-      shutil.copytree(fr, to)
+      shutil.copytree(source, dest)
+      cmd = [str(drake.Path(os.getcwd()) / self.__exe.path())]
+      if coverage is not None:
+        cmd = coverage + cmd
       res = self.cmd('Test %s' % self.__name,
                      # Use an absolute path, because we chdir, and
                      # "./test" isn't very helpful in backtraces.
-                     [str(drake.Path(os.getcwd()) / self.__exe.path())],
-                     cwd = to)
+                     cmd,
+                     cwd=dest)
       if res:
         self.__target.path().touch()
       return res
 
     def target(self):
+      '''Test status output node'''
       return self.__target
 
   for test in tests:

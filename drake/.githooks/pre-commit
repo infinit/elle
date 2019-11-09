@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+
+'''Run all pre-commit hooks and reject commit if any exception is raised.'''
+
+import os
+import subprocess
+import tempfile
+
+import git
+import githooks
+import hooks
+
+HEAD = git.head()
+
+def main():
+
+  '''Main entrypoint.'''
+
+  with tempfile.TemporaryDirectory() as root:
+    try:
+      params = {
+        'head': HEAD,
+        'root': root,
+      }
+      git.git(['checkout-index', '--prefix={root}/index/'.format(**params), '--all', '--force'])
+      os.mkdir('{root}/prev'.format(**params))
+      subprocess.run(['tar', '-C', '{root}/prev'.format(**params), '-x'],
+                     stdin=git.pipe(['archive', HEAD, '--format=tar']))
+      for line in git.git(['diff', '--cached', '--name-status', '--diff-filter=ACMR']).split('\n'):
+        if line == '':
+          continue
+        status, file = line.split('\t', maxsplit=1)
+        if status == 'A':
+          before = None
+          after = '{root}/index/{f}'.format(f=file, **params)
+        elif status in ['C', 'M']:
+          before = '{root}/prev/{f}'.format(f=file, **params)
+          after = '{root}/index/{f}'.format(f=file, **params)
+        elif status.startswith('R'):
+          before, after = file.split('\t')
+          file = after
+          before = '{root}/prev/{f}'.format(f=before, **params)
+          after = '{root}/index/{f}'.format(f=after, **params)
+        for hook in hooks.REGRESSION_HOOKS:
+          try:
+            hook(before, after, file)
+          except Exception as error:
+            raise Exception('error on {}'.format(file)) from error
+    except Exception as error:
+      def clean_exn(error):
+        if hasattr(error, 'output'):
+          error.output = error.output.replace('{}/index/'.format(root), '')
+        if error.__cause__ is not None:
+          clean_exn(error.__cause__)
+      clean_exn(error)
+      raise error
+
+githooks.main(main)
