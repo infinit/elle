@@ -52,9 +52,9 @@ namespace elle
     {}
   };
 
-  template <typename T, typename ... Indexes>
+  template <typename T, typename DefaultConstructible, typename ... Indexes>
   class TableImpl
-    : public Printable::as<TableImpl<T, Indexes...>>
+    : public Printable::as<TableImpl<T, DefaultConstructible, Indexes...>>
   {
   /*------.
   | Types |
@@ -97,6 +97,10 @@ namespace elle
     /// When resizing, all elements that are still part of the table are
     /// moved. New elements are default constructed.
     ELLE_ATTRIBUTE_Rw(Dimensions, dimensions);
+  public:
+    /// Resize, copying \a value into potential
+    void
+    dimensions(Dimensions dimensions, T value);
 
   /*-------.
   | Access |
@@ -237,11 +241,14 @@ namespace elle
 
   template <typename T, int dimension>
   class Table:
-    public elle::meta::repeat<int, dimension>::template apply<TableImpl, T>
+    public elle::meta::repeat<int, dimension>::template
+    apply<TableImpl, T, typename std::is_default_constructible<T>::type>
   {
   public:
-    using Super = typename elle::meta::repeat<int, dimension>::
-      template apply<TableImpl, T>::TableImpl;
+    using Super = typename elle::meta::repeat<int, dimension>:: template apply<
+      TableImpl,
+      T,
+      typename std::is_default_constructible<T>::type>;
     using Super::Super;
   };
 }
