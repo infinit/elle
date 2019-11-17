@@ -32,12 +32,10 @@ static
 void
 set_logger(boost::python::object& object)
 {
-  elle::generic_unique_ptr<elle::log::Logger> logger(
-    boost::python::extract<elle::log::Logger*>(object),
-    [] (elle::log::Logger*)
-    {
-      /* The logger will be deleted by python itself upon exit */
-    });
+  // This will, I think, cause a double free: since the logger is a Python
+  // object, it will be freed at the end by cpython too.
+  auto logger = std::unique_ptr<elle::log::Logger>(
+    boost::python::extract<elle::log::Logger*>(object));
   boost::python::incref(object.ptr());
   elle::log::logger(std::move(logger));
 }
@@ -66,7 +64,7 @@ public:
   void
   enter()
   {
-    this->_indent();
+    this->_indent("FIXME");
   }
 
   void
