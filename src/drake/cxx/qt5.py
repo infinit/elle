@@ -354,11 +354,12 @@ def deps_handler(builder, path_obj, t):
         'drake.cxx.qt',
         drake.log.LogLevel.debug,
         '%s: retrieve reference to MOC %s', builder, path_obj):
-      source = drake.node(drake.Path(path_obj).with_extension('moc.hh'))
+      header = drake.node(drake.Path(path_obj).with_extension('hh'))
+      source = drake.node(drake.Path(path_obj).with_extension('moc.cc'))
       qt = builder.toolkit.qt
       res = qt._Qt__moc_cache.get(source)
       if res is None:
-        res = moc_file(qt, builder, source)
+        res = moc_file(qt, builder, header)
       if res is not None:
         qt._Qt__dependencies.setdefault(builder.object, []).append(res)
         logger.log(
