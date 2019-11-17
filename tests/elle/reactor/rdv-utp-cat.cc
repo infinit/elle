@@ -1,3 +1,5 @@
+#include <chrono>
+
 #include <elle/reactor/Barrier.hh>
 #include <elle/reactor/network/rdv.hh>
 #include <elle/reactor/network/utp-server.hh>
@@ -9,7 +11,7 @@
 ELLE_LOG_COMPONENT("rdvcat");
 
 using namespace elle::reactor::network;
-
+using namespace std::chrono_literals;
 
 elle::reactor::network::UTPSocket* utpsocket = nullptr;
 std::unique_ptr<elle::reactor::network::UTPSocket> hsocket;

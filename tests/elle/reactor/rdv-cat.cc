@@ -1,3 +1,5 @@
+#include <chrono>
+
 #include <elle/reactor/network/rdv-socket.hh>
 #include <elle/reactor/network/rdv.hh>
 #include <elle/reactor/scheduler.hh>
@@ -5,7 +7,7 @@
 ELLE_LOG_COMPONENT("rdvcat");
 
 using namespace elle::reactor::network;
-
+using namespace std::chrono_literals;
 
 elle::reactor::network::RDVSocket* rdvsocket = nullptr;
 rdv::Endpoint remote;
