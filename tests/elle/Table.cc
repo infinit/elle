@@ -393,6 +393,7 @@ resize()
   for (auto const& e: t)
     BOOST_TEST(e.second == (odd(e.first) ? p2 : p1));
 }
+
 namespace serialization
 {
   template <typename Format>
@@ -435,6 +436,19 @@ namespace serialization
   }
 }
 
+static
+void
+non_default_constructible()
+{
+  static_assert(!std::is_default_constructible<Beacon>::value);
+  elle::Table<Beacon, 2> table(2, 2, Beacon("initial"));
+  BOOST_TEST(Beacon::instances == 4);
+  table.dimensions({3, 2}, Beacon("extended"));
+  BOOST_TEST(Beacon::instances == 6);
+  table.dimensions({3, 1}, Beacon("unused"));
+  BOOST_TEST(Beacon::instances == 3);
+}
+
 ELLE_TEST_SUITE()
 {
   auto& master = boost::unit_test::framework::master_test_suite();
@@ -452,7 +466,7 @@ ELLE_TEST_SUITE()
   master.add(BOOST_TEST_CASE(compare));
   master.add(BOOST_TEST_CASE(print));
   master.add(BOOST_TEST_CASE(resize));
-  {
+ {
     boost::unit_test::test_suite* s = BOOST_TEST_SUITE("serialization");
     master.add(s);
     auto json = &serialization::serialization<elle::serialization::Json>;
@@ -462,4 +476,5 @@ ELLE_TEST_SUITE()
     using namespace serialization;
     s->add(BOOST_TEST_CASE(errors));
   }
+  master.add(BOOST_TEST_CASE(non_default_constructible));
 }

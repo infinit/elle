@@ -89,8 +89,9 @@ namespace elle
   `-------------*/
 
   template <typename T, typename DC, typename ... Indexes>
-  TableImpl<T, DC, Indexes...>::TableImpl(Indexes ... dimensions)
-    : TableImpl(std::array{std::forward<Indexes>(dimensions)...})
+  TableImpl<T, DC, Indexes...>::TableImpl(Indexes ... dimensions, T value)
+    : TableImpl(std::array{std::forward<Indexes>(dimensions)...},
+                std::move(value))
   {}
 
   template <typename T, typename DC, typename ... Indexes>
@@ -98,8 +99,18 @@ namespace elle
     : TableImpl(std::move(dimensions), no_init())
   {
     this->_table.reserve(this->size());
-    this->_table.resize(this->size());
+    this->_table.resize(this->size(), std::move(value));
   }
+
+  template <typename T, typename ... Indexes>
+  TableImpl<T, std::true_type, Indexes...>::TableImpl(Indexes ... dimensions)
+    : Super(dimensions..., T())
+  {}
+
+  template <typename T, typename ... Indexes>
+  TableImpl<T, std::true_type, Indexes...>::TableImpl(Dimensions dimensions)
+    : Super(dimensions, T())
+  {}
 
   template <typename T, typename DC, typename ... Indexes>
   TableImpl<T, DC, Indexes...>::TableImpl(
@@ -144,9 +155,16 @@ namespace elle
   | Dimensions |
   `-----------*/
 
+  template <typename T, typename ... Indexes>
+  void
+  TableImpl<T, std::true_type, Indexes...>::dimensions(Dimensions dimensions)
+  {
+    this->dimensions(std::move(dimensions), T());
+  }
+
   template <typename T, typename DC, typename ... Indexes>
   void
-  TableImpl<T, DC, Indexes...>::dimensions(Dimensions dimensions)
+  TableImpl<T, DC, Indexes...>::dimensions(Dimensions dimensions, T value)
   {
     TableImpl table(dimensions, no_init());
     for (auto i: ranges::view::indices(0, table.size()))
@@ -155,7 +173,7 @@ namespace elle
       if (this->contains(index))
         table._table.emplace_back(std::move(this->at(index)));
       else
-        table._table.emplace_back();
+        table._table.emplace_back(value);
     }
     this->~TableImpl();
     new (this) TableImpl(std::move(table));

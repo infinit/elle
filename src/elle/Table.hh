@@ -71,9 +71,9 @@ namespace elle
   `-------------*/
   public:
     /// A Table with given \a dimensions and elements default-constructed.
-    TableImpl(Indexes ... dimensions);
+    TableImpl(Indexes ... dimensions, T value);
     /// A Table with given \a dimensions and elements default-constructed.
-    TableImpl(Dimensions dimensions);
+    TableImpl(Dimensions dimensions, T value);
     /// A Table with dimension deduced and elements moved from \a init.
     TableImpl(elle::meta::fold1<dimension, std::initializer_list, T> init);
     /// Table \a src moved.
@@ -94,12 +94,9 @@ namespace elle
     /// Number of elements.
     ELLE_ATTRIBUTE_R(int, size);
     /// Dimensions.
-    ///
-    /// When resizing, all elements that are still part of the table are
-    /// moved. New elements are default constructed.
-    ELLE_ATTRIBUTE_Rw(Dimensions, dimensions);
+    ELLE_ATTRIBUTE_R(Dimensions, dimensions);
   public:
-    /// Resize, copying \a value into potential
+    /// Resize, copying \a value into potential new cells.
     void
     dimensions(Dimensions dimensions, T value);
 
@@ -238,6 +235,25 @@ namespace elle
   `--------*/
   private:
     ELLE_ATTRIBUTE(std::vector<T>, table, protected);
+  };
+
+  template <typename T, typename ... Indexes>
+  class TableImpl<T, std::true_type, Indexes ...>
+    : public TableImpl<T, std::false_type, Indexes ...>
+  {
+  public:
+    using Super = TableImpl<T, std::false_type, Indexes ...>;
+    using Dimensions = typename Super::Dimensions;
+    using Super::Super;
+    /// A Table with given \a dimensions and elements default-constructed.
+    TableImpl(Indexes ... dimensions);
+    /// A Table with given \a dimensions and elements default-constructed.
+    TableImpl(Dimensions dimensions);
+    /// When resizing, all elements that are still part of the table are
+    /// moved. New elements are default constructed.
+    void
+    dimensions(Dimensions d);
+    using Super::dimensions;
   };
 
   template <typename T, int dimension>
