@@ -2101,8 +2101,9 @@ class LibraryConfiguration(drake.Configuration):
     prefix -- Where to find the library.
     token --  Which file to look for (typically, the main header).
     """
-    self.__libs = None
     self.__config = drake.cxx.Config()
+    self.__libs = None
+    self.__prefix = None
     # Search the library with pkg-config
     if prefix is None and PkgConfig.available and name is not None:
       pkg_config = PkgConfig(name)
@@ -2116,8 +2117,8 @@ class LibraryConfiguration(drake.Configuration):
           self.__libraries_path.append(library_path)
         for library in pkg_config.library:
           self.__config.lib(library)
-    else:
-      # Search the library manually.
+    if self.__prefix is None:
+       # Search the library manually.
       if token is not None:
         include_dir = include_dir or 'include'
         if not isinstance(include_dir, list):
