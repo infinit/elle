@@ -84,7 +84,8 @@ namespace elle
     ~TableImpl() noexcept(noexcept(std::declval<T>().~T()));
 
   private:
-    TableImpl(Dimensions dimensions, bool);
+    struct no_init;
+    TableImpl(Dimensions dimensions, no_init);
 
   /*-----------.
   | Dimensions |

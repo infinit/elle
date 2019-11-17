@@ -94,8 +94,8 @@ namespace elle
   {}
 
   template <typename T, typename DC, typename ... Indexes>
-  TableImpl<T, DC, Indexes...>::TableImpl(Dimensions dimensions)
-    : TableImpl(std::move(dimensions), true)
+  TableImpl<T, DC, Indexes...>::TableImpl(Dimensions dimensions, T value)
+    : TableImpl(std::move(dimensions), no_init())
   {
     this->_table.reserve(this->size());
     this->_table.resize(this->size());
@@ -104,7 +104,7 @@ namespace elle
   template <typename T, typename DC, typename ... Indexes>
   TableImpl<T, DC, Indexes...>::TableImpl(
     elle::meta::fold1<dimension, std::initializer_list, T> init)
-    : TableImpl(_details::table::dimensions<dimension>(init), true)
+    : TableImpl(_details::table::dimensions<dimension>(init), no_init())
   {
     _details::table::Initializer<T, Index, dimension>::distribute(
       this->_dimensions, std::move(init), this->_table);
@@ -119,7 +119,7 @@ namespace elle
 
   template <typename T, typename DC, typename ... Indexes>
   TableImpl<T, DC, Indexes...>::TableImpl(TableImpl const& src)
-    : TableImpl(src._dimensions, true)
+    : TableImpl(src._dimensions, no_init())
   {
     for (auto const& e: src._table)
       this->_table.emplace_back(e);
@@ -131,7 +131,10 @@ namespace elle
   {}
 
   template <typename T, typename DC, typename ... Indexes>
-  TableImpl<T, DC, Indexes...>::TableImpl(Dimensions dimensions, bool)
+  struct TableImpl<T, DC, Indexes...>::no_init {};
+
+  template <typename T, typename DC, typename ... Indexes>
+  TableImpl<T, DC, Indexes...>::TableImpl(Dimensions dimensions, no_init)
     : _size(_details::table::size(dimensions))
     , _dimensions(std::move(dimensions))
     , _table()
@@ -145,7 +148,7 @@ namespace elle
   void
   TableImpl<T, DC, Indexes...>::dimensions(Dimensions dimensions)
   {
-    TableImpl table(dimensions, true);
+    TableImpl table(dimensions, no_init());
     for (auto i: ranges::view::indices(0, table.size()))
     {
       auto index = table.index(i);
