@@ -97,5 +97,13 @@ namespace elle
       p.release();
       return std::unique_ptr<T>(res);
     }
+
+    /// Unconditionnaly cast \a p to type \a T.
+    template <typename U>
+    static std::shared_ptr<T>
+    compiletime(std::shared_ptr<U> const& p)
+    {
+      return std::static_pointer_cast<T>(p);
+    }
   };
 }
