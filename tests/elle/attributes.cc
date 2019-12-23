@@ -179,6 +179,35 @@ class Child:
   x() override;
 };
 
+struct Signal
+{
+  Signal()
+    : _x(0)
+  {}
+
+  ELLE_ATTRIBUTE_RW(int, x, signal);
+};
+
+static
+void
+signals()
+{
+  bool beacon = false;
+  Signal s;
+  s.x(192);
+  s.xChanged([&] (int x) { beacon = true;});
+  s.x(195);
+  BOOST_CHECK(beacon);
+  BOOST_CHECK(s.x() == 195);
+  beacon = false;
+  s.x(195);
+  BOOST_CHECK(!beacon);
+  BOOST_CHECK(s.x() == 195);
+  s.x(204);
+  BOOST_CHECK(beacon);
+  BOOST_CHECK(s.x() == 204);
+}
+
 ELLE_TEST_SUITE()
 {
   auto& suite = boost::unit_test::framework::master_test_suite();
@@ -187,4 +216,5 @@ ELLE_TEST_SUITE()
   suite.add(BOOST_TEST_CASE(test_x), 0, valgrind(3));
   suite.add(BOOST_TEST_CASE(types), 0, valgrind(3));
   suite.add(BOOST_TEST_CASE(thread_safe), 0, valgrind(10));
+  suite.add(BOOST_TEST_CASE(signals), 0, valgrind(3));
 }

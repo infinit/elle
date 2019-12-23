@@ -108,6 +108,9 @@
 ///   <Name>(<Type>[ const&] val)
 ///
 #define ELLE_attribute_w(Type, Name, ...)                           \
+  BOOST_PP_EXPAND(                                                  \
+    ELLE_ATTRIBUTE_PROPERTIES_SIGNAL_DECLARE(                       \
+      BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))(Type, Name))           \
   public:                                                           \
   ELLE_ATTRIBUTE_PROPERTIES_PREFUN(                                 \
     BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))                          \
@@ -127,11 +130,24 @@
 ///     this->_<Name> = val;
 ///   }
 ///
-#define ELLE_attribute_W(Type, Name, ...)                           \
-  ELLE_attribute_w(Type, Name, __VA_ARGS__)                         \
-  {                                                                 \
-    this->BOOST_PP_CAT(_, Name) = std::move(value);                 \
-  }                                                                 \
+#define ELLE_attribute_W(Type, Name, ...)                               \
+  ELLE_attribute_w(Type, Name, __VA_ARGS__)                             \
+  {                                                                     \
+    BOOST_PP_CAT(                                                       \
+      ELLE_attribute_W_, ELLE_ATTRIBUTE_PROPERTIES_SIGNAL_HAS(          \
+        BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__)))(Type, Name);            \
+  }
+
+#define ELLE_attribute_W_(Type, Name) \
+  this->BOOST_PP_CAT(_, Name) = std::move(value);       \
+
+#define ELLE_attribute_W_signal(Type, Name) \
+  if (value != BOOST_PP_CAT(_, Name))                           \
+  {                                                             \
+    this->BOOST_PP_CAT(_, Name) = std::move(value);             \
+    this->BOOST_PP_CAT(_, BOOST_PP_CAT(Name, _changed))(        \
+      this->BOOST_PP_CAT(_, Name));                             \
+  }                                                             \
 
 /// Define a private attribute _Name and define its setter.
 ///
@@ -524,6 +540,7 @@
 #define ELLE_ATTRIBUTE_PROPERTY_override_PRE
 #define ELLE_ATTRIBUTE_PROPERTY_protected_PRE protected:
 #define ELLE_ATTRIBUTE_PROPERTY_public_PRE public:
+#define ELLE_ATTRIBUTE_PROPERTY_signal_PRE
 #define ELLE_ATTRIBUTE_PROPERTY_static_PRE
 #define ELLE_ATTRIBUTE_PROPERTY_virtual_PRE
 
@@ -532,6 +549,7 @@
 #define ELLE_ATTRIBUTE_PROPERTY_override_PRETYPE
 #define ELLE_ATTRIBUTE_PROPERTY_protected_PRETYPE
 #define ELLE_ATTRIBUTE_PROPERTY_public_PRETYPE
+#define ELLE_ATTRIBUTE_PROPERTY_signal_PRETYPE
 #define ELLE_ATTRIBUTE_PROPERTY_static_PRETYPE static
 #define ELLE_ATTRIBUTE_PROPERTY_virtual_PRETYPE
 
@@ -540,17 +558,47 @@
 #define ELLE_ATTRIBUTE_PROPERTY_override_PREFUN
 #define ELLE_ATTRIBUTE_PROPERTY_protected_PREFUN
 #define ELLE_ATTRIBUTE_PROPERTY_public_PREFUN
+#define ELLE_ATTRIBUTE_PROPERTY_signal_PREFUN
 #define ELLE_ATTRIBUTE_PROPERTY_static_PREFUN
 #define ELLE_ATTRIBUTE_PROPERTY_virtual_PREFUN virtual
-
 
 #define ELLE_ATTRIBUTE_PROPERTY__POSTFUN
 #define ELLE_ATTRIBUTE_PROPERTY_mutable_POSTFUN
 #define ELLE_ATTRIBUTE_PROPERTY_override_POSTFUN override
 #define ELLE_ATTRIBUTE_PROPERTY_protected_POSTFUN
 #define ELLE_ATTRIBUTE_PROPERTY_public_POSTFUN
+#define ELLE_ATTRIBUTE_PROPERTY_signal_POSTFUN
 #define ELLE_ATTRIBUTE_PROPERTY_static_POSTFUN
 #define ELLE_ATTRIBUTE_PROPERTY_virtual_POSTFUN
+
+#define ELLE_ATTRIBUTE_PROPERTY__SIGNAL_DECLARE(Type, Name)
+#define ELLE_ATTRIBUTE_PROPERTY_mutable_SIGNAL_DECLARE(Type, Name)
+#define ELLE_ATTRIBUTE_PROPERTY_override_SIGNAL_DECLARE(Type, Name)
+#define ELLE_ATTRIBUTE_PROPERTY_protected_SIGNAL_DECLARE(Type, Name)
+#define ELLE_ATTRIBUTE_PROPERTY_public_SIGNAL_DECLARE(Type, Name)
+#define ELLE_ATTRIBUTE_PROPERTY_static_SIGNAL_DECLARE(Type, Name)
+#define ELLE_ATTRIBUTE_PROPERTY_signal_SIGNAL_DECLARE(Type, Name)       \
+  public:                                                               \
+  auto                                                                  \
+  BOOST_PP_CAT(Name, Changed)(                                          \
+    std::function<void (ELLE_ATTRIBUTE_STRIP_PARENS(Type))> cb)         \
+  {                                                                     \
+    return                                                              \
+      this->BOOST_PP_CAT(_, BOOST_PP_CAT(Name, _changed)).connect(cb);  \
+  }                                                                     \
+  private:                                                              \
+  boost::signals2::signal<void (ELLE_ATTRIBUTE_STRIP_PARENS(Type))>     \
+  BOOST_PP_CAT(_, BOOST_PP_CAT(Name, _changed));
+#define ELLE_ATTRIBUTE_PROPERTY_virtual_SIGNAL_DECLARE(Type, Name)
+
+#define ELLE_ATTRIBUTE_PROPERTY__SIGNAL_HAS
+#define ELLE_ATTRIBUTE_PROPERTY_mutable_SIGNAL_HAS
+#define ELLE_ATTRIBUTE_PROPERTY_override_SIGNAL_HAS
+#define ELLE_ATTRIBUTE_PROPERTY_protected_SIGNAL_HAS
+#define ELLE_ATTRIBUTE_PROPERTY_public_SIGNAL_HAS
+#define ELLE_ATTRIBUTE_PROPERTY_static_SIGNAL_HAS
+#define ELLE_ATTRIBUTE_PROPERTY_signal_SIGNAL_HAS signal
+#define ELLE_ATTRIBUTE_PROPERTY_virtual_SIGNAL_HAS
 
 /*--------.
 | Helpers |
@@ -577,5 +625,11 @@
   BOOST_PP_SEQ_FOR_EACH(ELLE_ATTRIBUTE_PROPERTY, _PREFUN, Properties)
 #define ELLE_ATTRIBUTE_PROPERTIES_POSTFUN(Properties)                   \
   BOOST_PP_SEQ_FOR_EACH(ELLE_ATTRIBUTE_PROPERTY, _POSTFUN, Properties)
+#define ELLE_ATTRIBUTE_PROPERTIES_SIGNAL_DECLARE(Properties)            \
+  BOOST_PP_SEQ_FOR_EACH(ELLE_ATTRIBUTE_PROPERTY, _SIGNAL_DECLARE, Properties)
+#define ELLE_ATTRIBUTE_PROPERTIES_SIGNAL_DECLARE(Properties)            \
+  BOOST_PP_SEQ_FOR_EACH(ELLE_ATTRIBUTE_PROPERTY, _SIGNAL_DECLARE, Properties)
+#define ELLE_ATTRIBUTE_PROPERTIES_SIGNAL_HAS(Properties)                \
+  BOOST_PP_SEQ_FOR_EACH(ELLE_ATTRIBUTE_PROPERTY, _SIGNAL_HAS, Properties)
 #define ELLE_ATTRIBUTE_PROPERTY(R, Data, Elem)                         \
   BOOST_PP_CAT(BOOST_PP_CAT(ELLE_ATTRIBUTE_PROPERTY_, Elem), Data)
