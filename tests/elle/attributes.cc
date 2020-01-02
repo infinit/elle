@@ -186,6 +186,7 @@ struct Signal
   {}
 
   ELLE_ATTRIBUTE_RW(int, x, signal);
+  ELLE_ATTRIBUTE_R(int, y, signal);
 };
 
 static
@@ -195,7 +196,8 @@ signals()
   bool beacon = false;
   Signal s;
   s.x(192);
-  s.xChanged([&] (int x) { beacon = true;});
+  s.x_changed([&] (int x) { beacon = true; });
+  s.y_changed([&] (int y) { BOOST_FAIL("y_changed called"); });
   s.x(195);
   BOOST_CHECK(beacon);
   BOOST_CHECK(s.x() == 195);

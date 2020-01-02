@@ -19,12 +19,14 @@
 #define ELLE_ATTRIBUTE(Type, ...)                                   \
   ELLE_ATTRIBUTE_(Type, BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))      \
 
-#define ELLE_ATTRIBUTE_(Type, Args)                                 \
-  private:                                                          \
-  ELLE_ATTRIBUTE_PROPERTIES_PRE(BOOST_PP_SEQ_TAIL(Args))            \
-  ELLE_ATTRIBUTE_PROPERTIES_PRETYPE(BOOST_PP_SEQ_TAIL(Args))        \
-  ELLE_ATTRIBUTE_STRIP_PARENS(Type)                                 \
-  BOOST_PP_CAT(_, BOOST_PP_SEQ_HEAD(Args));                         \
+#define ELLE_ATTRIBUTE_(Type, Args)                                     \
+  private:                                                              \
+  ELLE_ATTRIBUTE_PROPERTIES_PRE(BOOST_PP_SEQ_TAIL(Args))                \
+  ELLE_ATTRIBUTE_PROPERTIES_PRETYPE(BOOST_PP_SEQ_TAIL(Args))            \
+  ELLE_ATTRIBUTE_STRIP_PARENS(Type)                                     \
+  BOOST_PP_CAT(_, BOOST_PP_SEQ_HEAD(Args));                             \
+  ELLE_ATTRIBUTE_PROPERTIES_SIGNAL_DECLARE(                             \
+    BOOST_PP_SEQ_TAIL(Args), Type, BOOST_PP_SEQ_HEAD(Args))
 
 /*--.
 | r |
@@ -108,9 +110,6 @@
 ///   <Name>(<Type>[ const&] val)
 ///
 #define ELLE_attribute_w(Type, Name, ...)                           \
-  BOOST_PP_EXPAND(                                                  \
-    ELLE_ATTRIBUTE_PROPERTIES_SIGNAL_DECLARE(                       \
-      BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))(Type, Name))           \
   public:                                                           \
   ELLE_ATTRIBUTE_PROPERTIES_PREFUN(                                 \
     BOOST_PP_VARIADIC_TO_SEQ(__VA_ARGS__))                          \
@@ -580,7 +579,7 @@
 #define ELLE_ATTRIBUTE_PROPERTY_signal_SIGNAL_DECLARE(Type, Name)       \
   public:                                                               \
   auto                                                                  \
-  BOOST_PP_CAT(Name, Changed)(                                          \
+  BOOST_PP_CAT(Name, _changed)(                                         \
     std::function<void (ELLE_ATTRIBUTE_STRIP_PARENS(Type))> cb)         \
   {                                                                     \
     return                                                              \
@@ -625,11 +624,15 @@
   BOOST_PP_SEQ_FOR_EACH(ELLE_ATTRIBUTE_PROPERTY, _PREFUN, Properties)
 #define ELLE_ATTRIBUTE_PROPERTIES_POSTFUN(Properties)                   \
   BOOST_PP_SEQ_FOR_EACH(ELLE_ATTRIBUTE_PROPERTY, _POSTFUN, Properties)
-#define ELLE_ATTRIBUTE_PROPERTIES_SIGNAL_DECLARE(Properties)            \
-  BOOST_PP_SEQ_FOR_EACH(ELLE_ATTRIBUTE_PROPERTY, _SIGNAL_DECLARE, Properties)
-#define ELLE_ATTRIBUTE_PROPERTIES_SIGNAL_DECLARE(Properties)            \
-  BOOST_PP_SEQ_FOR_EACH(ELLE_ATTRIBUTE_PROPERTY, _SIGNAL_DECLARE, Properties)
+#define ELLE_ATTRIBUTE_PROPERTIES_SIGNAL_DECLARE(Properties, Type, Name) \
+  BOOST_PP_SEQ_FOR_EACH(                                                \
+    ELLE_ATTRIBUTE_PROPERTY_ARGS, (_SIGNAL_DECLARE)(Type, Name), Properties)
 #define ELLE_ATTRIBUTE_PROPERTIES_SIGNAL_HAS(Properties)                \
   BOOST_PP_SEQ_FOR_EACH(ELLE_ATTRIBUTE_PROPERTY, _SIGNAL_HAS, Properties)
 #define ELLE_ATTRIBUTE_PROPERTY(R, Data, Elem)                         \
   BOOST_PP_CAT(BOOST_PP_CAT(ELLE_ATTRIBUTE_PROPERTY_, Elem), Data)
+#define ELLE_ATTRIBUTE_PROPERTY_ARGS(R, Data, Elem)                     \
+  BOOST_PP_EXPAND(                                                      \
+  BOOST_PP_CAT(BOOST_PP_CAT(ELLE_ATTRIBUTE_PROPERTY_, Elem),            \
+               BOOST_PP_SEQ_HEAD(Data))                                 \
+  BOOST_PP_SEQ_TAIL(Data))
