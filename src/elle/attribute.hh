@@ -577,6 +577,8 @@
 #define ELLE_ATTRIBUTE_PROPERTY_public_SIGNAL_DECLARE(Type, Name)
 #define ELLE_ATTRIBUTE_PROPERTY_static_SIGNAL_DECLARE(Type, Name)
 #define ELLE_ATTRIBUTE_PROPERTY_signal_SIGNAL_DECLARE(Type, Name)       \
+  boost::signals2::signal<void (ELLE_ATTRIBUTE_STRIP_PARENS(Type))>     \
+  BOOST_PP_CAT(_, BOOST_PP_CAT(Name, _changed));                        \
   public:                                                               \
   auto                                                                  \
   BOOST_PP_CAT(Name, _changed)(                                         \
@@ -584,10 +586,7 @@
   {                                                                     \
     return                                                              \
       this->BOOST_PP_CAT(_, BOOST_PP_CAT(Name, _changed)).connect(cb);  \
-  }                                                                     \
-  private:                                                              \
-  boost::signals2::signal<void (ELLE_ATTRIBUTE_STRIP_PARENS(Type))>     \
-  BOOST_PP_CAT(_, BOOST_PP_CAT(Name, _changed));
+  }
 #define ELLE_ATTRIBUTE_PROPERTY_virtual_SIGNAL_DECLARE(Type, Name)
 
 #define ELLE_ATTRIBUTE_PROPERTY__SIGNAL_HAS
