@@ -1,4 +1,4 @@
-Mako==1.0.7
+Mako==1.2.2
 greenlet==0.4.15
 mistune==0.8.4
 orderedset==2.0.1
